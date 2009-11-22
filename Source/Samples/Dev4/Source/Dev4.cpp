@@ -49,9 +49,9 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static Label* tri = FindWidget<Label>(mUI, "Triangles");
-	static Label* fps = FindWidget<Label>(mUI, "FPS");
-	static Label* inf = FindWidget<Label>(mUI, "Info");
+	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
+	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
+	static UILabel* inf = FindWidget<UILabel>(mUI, "Info");
 
 	static ITechnique*	opaque	 = mGraphics->GetTechnique("Opaque");
 	static ITechnique*	deferred = mGraphics->GetTechnique("Deferred");

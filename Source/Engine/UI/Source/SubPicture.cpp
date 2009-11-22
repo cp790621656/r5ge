@@ -5,12 +5,12 @@ using namespace R5;
 // Changes the skin and face for the image
 //============================================================================================================
 
-void SubPicture::Set (const Skin* skin, const String& face, bool setDirty)
+void UISubPicture::Set (const UISkin* skin, const String& face, bool setDirty)
 {
 	if (mSkin != skin || mFace == 0 || mFace->GetName() != face)
 	{
 		if (setDirty) SetDirty();
-		mSkin = const_cast<Skin*>(skin);
+		mSkin = const_cast<UISkin*>(skin);
 		mFace = (mSkin == 0) ? 0 : mSkin->GetFace(face);
 		if (setDirty) SetDirty();
 	}
@@ -20,12 +20,12 @@ void SubPicture::Set (const Skin* skin, const String& face, bool setDirty)
 // Changes the skin
 //============================================================================================================
 
-void SubPicture::SetSkin (const Skin* skin, bool setDirty)
+void UISubPicture::SetSkin (const UISkin* skin, bool setDirty)
 {
 	if (mSkin != skin)
 	{
 		if (setDirty) SetDirty();
-		mSkin = const_cast<Skin*>(skin);
+		mSkin = const_cast<UISkin*>(skin);
 
 		if (mFace) mFace = mSkin->GetFace(mFace->GetName());
 		if (setDirty) SetDirty();
@@ -36,7 +36,7 @@ void SubPicture::SetSkin (const Skin* skin, bool setDirty)
 // Changes the face
 //============================================================================================================
 
-void SubPicture::SetFace (const String& face, bool setDirty)
+void UISubPicture::SetFace (const String& face, bool setDirty)
 {
 	if (mSkin != 0)
 	{
@@ -60,7 +60,7 @@ void SubPicture::SetFace (const String& face, bool setDirty)
 // Called when something changes in the skin
 //============================================================================================================
 
-void SubPicture::OnTextureChanged (const ITexture* ptr)
+void UISubPicture::OnTextureChanged (const ITexture* ptr)
 {
 	const ITexture* tex = GetTexture();
 	if (tex == ptr) OnDirty(tex);
@@ -70,7 +70,7 @@ void SubPicture::OnTextureChanged (const ITexture* ptr)
 // If the border size changes, the dimensions consider to be changed
 //============================================================================================================
 
-bool SubPicture::OnUpdate (bool dimensionsChanged)
+bool UISubPicture::OnUpdate (bool dimensionsChanged)
 {
 	short border = ((mFace != 0) ? mFace->GetBorder() : 0);
 
@@ -82,9 +82,9 @@ bool SubPicture::OnUpdate (bool dimensionsChanged)
 		// Only non-negative border matters for the sub-region
 		if (border < 0) border = 0;
 
-		mSubRegion.SetLeft	 (0.0f,  (float)border);
+		mSubRegion.SetLeft	(0.0f,  (float)border);
 		mSubRegion.SetRight (1.0f, -(float)border);
-		mSubRegion.SetTop	 (0.0f,  (float)border);
+		mSubRegion.SetTop	(0.0f,  (float)border);
 		mSubRegion.SetBottom(1.0f, -(float)border);
 
 		// Dimensions have been updated and the area should be considered changed
@@ -99,11 +99,11 @@ bool SubPicture::OnUpdate (bool dimensionsChanged)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void SubPicture::OnFill (Queue* queue)
+void UISubPicture::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
-		queue->mTex	!= 0 &&
-		queue->mTex	== GetTexture() &&
+		queue->mTex		!= 0 &&
+		queue->mTex		== GetTexture() &&
 		queue->mArea	== 0 &&
 		mFace != 0)
 	{
@@ -116,7 +116,7 @@ void SubPicture::OnFill (Queue* queue)
 
 		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetAlpha() ));
 		const Vector2i& texSize (queue->mTex->GetSize());
-		Face::Rectangle face (mFace->GetRectangle(texSize));
+		UIFace::Rectangle face (mFace->GetRectangle(texSize));
 
 		if (mFace->GetBorder() == 0)
 		{
@@ -208,7 +208,7 @@ void SubPicture::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool SubPicture::CustomSerializeFrom(const TreeNode& root)
+bool UISubPicture::CustomSerializeFrom(const TreeNode& root)
 {
 	const Variable& value = root.mValue;
 	
@@ -229,7 +229,7 @@ bool SubPicture::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void SubPicture::CustomSerializeTo(TreeNode& root) const
+void UISubPicture::CustomSerializeTo(TreeNode& root) const
 {
 	TreeNode& skinNode = root.AddChild("Skin");
 	if (mSkin != 0) skinNode.mValue = mSkin->GetName();

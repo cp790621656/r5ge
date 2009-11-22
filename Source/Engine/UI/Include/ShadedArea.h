@@ -7,7 +7,7 @@
 // Area affected by a shader
 //============================================================================================================
 
-class ShadedArea : public Area
+class UIShadedArea : public UIArea
 {
 protected:
 
@@ -16,7 +16,7 @@ protected:
 
 public:
 
-	ShadedArea() : mShader(0) {}
+	UIShadedArea() : mShader(0) {}
 
 	const IShader* GetShader() const { return mShader; }
 	void SetShader (const IShader* shader);
@@ -27,11 +27,11 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Shaded Area", ShadedArea, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Shaded Area", UIShadedArea, UIArea, UIArea);
 
 	// Area functions
-	virtual void SetDirty()					{ OnDirty(0, mLayer, this); }
-	virtual void OnFill (Queue* queue);
+	virtual void SetDirty()	{ OnDirty(0, mLayer, this); }
+	virtual void OnFill (UIQueue* queue);
 
 	// Called before and after rendering the queue, respectively
 	virtual void OnPreRender (IGraphics* graphics) const;

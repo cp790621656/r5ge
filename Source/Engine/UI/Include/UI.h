@@ -4,27 +4,23 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
-// R5 engine-based implementation of the rendering queue
+// R5 engine-based implementation of the UIRoot
 //============================================================================================================
 
-struct R5Queue : public Queue
-{
-	IGraphics*	mGraphics;		// In order to release the VBOs properly, graphics controller must be remembered
-	IVBO*		mVbo;			// Vertex buffer object, created as needed
-	uint		mVertexCount;	// Number of vertices in the VBO
-
-	R5Queue (IGraphics* graphics) : Queue(), mGraphics(graphics), mVbo(0), mVertexCount(0) {}
-
-	virtual bool IsValid() const { return mVertices.IsValid() || mVertexCount > 0; }
-};
-
-//============================================================================================================
-// R5 engine-based implementation of the Root
-//============================================================================================================
-
-class UI : public Root
+class UI : public UIRoot
 {
 private:
+
+	struct CustomQueue : public UIQueue
+	{
+		IGraphics*	mGraphics;		// In order to release the VBOs properly, graphics controller must be remembered
+		IVBO*		mVbo;			// Vertex buffer object, created as needed
+		uint		mVertexCount;	// Number of vertices in the VBO
+
+		CustomQueue (IGraphics* graphics) : UIQueue(), mGraphics(graphics), mVbo(0), mVertexCount(0) {}
+
+		virtual bool IsValid() const { return mVertices.IsValid() || mVertexCount > 0; }
+	};
 
 	IGraphics*  mGraphics;
 
@@ -41,9 +37,9 @@ public:
 
 protected:
 
-	virtual Queue*	CreateQueue()				{ return new R5Queue(mGraphics); }
-	virtual void	UpdateBuffer(Queue* queue);	// Updates the buffer associated with the rendering queue
-	virtual void	OnPreRender() const;		// Prepares to render
-	virtual uint	RenderQueue(Queue* queue);	// Renders a single queue, returning the number of triangles drawn
-	virtual void	OnPostRender() const;		// Post-render cleanup
+	virtual UIQueue*	CreateQueue()					{ return new CustomQueue(mGraphics); }
+	virtual void		UpdateBuffer(UIQueue* queue);	// Updates the buffer associated with the rendering queue
+	virtual void		OnPreRender() const;			// Prepares to render
+	virtual uint		RenderQueue(UIQueue* queue);	// Renders a single queue, returning the number of triangles drawn
+	virtual void		OnPostRender() const;			// Post-render cleanup
 };

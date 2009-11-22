@@ -43,8 +43,8 @@ void ModelViewer::Run()
 		mLight			= FindObject<DirectionalLight>	(mScene, "Default Light");
 		mStage			= FindObject<Object>			(mScene, "Stage");
 		mInst			= FindObject<ModelInstance>		(mScene, "Default Instance");
-		mSbHighlight	= FindWidget<Highlight>			(mUI,	 "Status Highlight");
-		mSbLabel		= FindWidget<Label>				(mUI,	 "Status Label");
+		mSbHighlight	= FindWidget<UIHighlight>			(mUI,	 "Status Highlight");
+		mSbLabel		= FindWidget<UILabel>				(mUI,	 "Status Label");
 
 		// Model viewer deals with only one model
 		mModel = mCore->GetModel("Default Model");
@@ -198,7 +198,7 @@ uint ModelViewer::OnDeferredDraw (const ITechnique* tech, bool insideOut)
 
 float ModelViewer::UpdateFPS()
 {
-	static Label* fps = FindWidget<Label>(mUI, "FPS");
+	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
 	if (fps != 0) fps->SetText( String("%u", Time::GetFPS()) );
 	return 0.25f;
 }

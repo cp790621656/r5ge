@@ -5,7 +5,7 @@ using namespace R5;
 // Default function that fills the tooltip
 //============================================================================================================
 
-Root::Root() :	mSerializable	(true),
+UIRoot::UIRoot() :	mSerializable	(true),
 				mDimsChanged	(false),
 				mIsDirty		(false),
 				mHoverArea		(0),
@@ -27,29 +27,29 @@ Root::Root() :	mSerializable	(true),
 	mTooltip.SetName("Tooltip");
 	mTooltip.SetReceivesEvents(false);
 
-	RegisterWidget<Area>			(this);
-	RegisterWidget<Highlight>		(this);
-	RegisterWidget<Picture>			(this);
-	RegisterWidget<SubPicture>		(this);
-	RegisterWidget<Label>			(this);
-	RegisterWidget<TextArea>		(this);
-	RegisterWidget<Input>			(this);
-	RegisterWidget<Context>			(this);
-	RegisterWidget<Menu>			(this);
-	RegisterWidget<List>			(this);
-	RegisterWidget<Window>			(this);
-	RegisterWidget<AnimatedFrame>	(this);
-	RegisterWidget<AnimatedSlider>	(this);
-	RegisterWidget<AnimatedButton>	(this);
-	RegisterWidget<AnimatedCheckbox>(this);
-	RegisterWidget<ShadedArea>		(this);
+	RegisterWidget<UIArea>				(this);
+	RegisterWidget<UIHighlight>			(this);
+	RegisterWidget<UIPicture>			(this);
+	RegisterWidget<UISubPicture>		(this);
+	RegisterWidget<UILabel>				(this);
+	RegisterWidget<UITextArea>			(this);
+	RegisterWidget<UIInput>				(this);
+	RegisterWidget<UIContext>			(this);
+	RegisterWidget<UIMenu>				(this);
+	RegisterWidget<UIList>				(this);
+	RegisterWidget<UIWindow>			(this);
+	RegisterWidget<UIAnimatedFrame>		(this);
+	RegisterWidget<UIAnimatedSlider>	(this);
+	RegisterWidget<UIAnimatedButton>	(this);
+	RegisterWidget<UIAnimatedCheckbox>	(this);
+	RegisterWidget<UIShadedArea>		(this);
 }
 
 //============================================================================================================
 // If an area is being deleted, the root must be told so it removes all local references to it
 //============================================================================================================
 
-void Root::RemoveAllReferencesTo (const Area* area)
+void UIRoot::RemoveAllReferencesTo (const UIArea* area)
 {
 	if (mHoverArea		== area) mHoverArea		= 0;
 	if (mFocusArea		== area) mFocusArea		= 0;
@@ -61,9 +61,9 @@ void Root::RemoveAllReferencesTo (const Area* area)
 // Retrieves the specified skin (creates if necessary)
 //============================================================================================================
 
-Skin* Root::GetSkin (const String& name)
+UISkin* UIRoot::GetSkin (const String& name)
 {
-	typedef Skin* SkinPtr;
+	typedef UISkin* SkinPtr;
 	SkinPtr ptr (0);
 
 	if (name.IsValid())
@@ -71,7 +71,7 @@ Skin* Root::GetSkin (const String& name)
 		mSkins.Lock();
 		{
 			SkinPtr& skin = mSkins[name];
-			if (skin == 0) skin = new Skin(this, name);
+			if (skin == 0) skin = new UISkin(this, name);
 			ptr = skin;
 		}
 		mSkins.Unlock();
@@ -83,7 +83,7 @@ Skin* Root::GetSkin (const String& name)
 // Registers a callback that would create a widget of specified type
 //============================================================================================================
 
-void Root::_RegisterWidget(const String& type, const CreateDelegate& callback)
+void UIRoot::_RegisterWidget(const String& type, const CreateDelegate& callback)
 {
 	mCreators.Lock();
 	mCreators[type] = callback;
@@ -94,9 +94,9 @@ void Root::_RegisterWidget(const String& type, const CreateDelegate& callback)
 // Find an area by position that will respond to events
 //============================================================================================================
 
-Area* Root::_FindChild (const Vector2i& pos)
+UIArea* UIRoot::_FindChild (const Vector2i& pos)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	mChildren.Lock();
 	{
 		for (uint i = mChildren.GetSize(); i > 0; )
@@ -111,9 +111,9 @@ Area* Root::_FindChild (const Vector2i& pos)
 // Finds an area with the specified name
 //============================================================================================================
 
-Area* Root::_FindChild (const String& name, bool recursive)
+UIArea* UIRoot::_FindChild (const String& name, bool recursive)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	mChildren.Lock();
 	{
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
@@ -144,9 +144,9 @@ Area* Root::_FindChild (const String& name, bool recursive)
 // Adds a top-level child of specified type (or returns a child with the same name, if found)
 //============================================================================================================
 
-Area* Root::_AddChild (const String& type, const String& name, bool unique)
+UIArea* UIRoot::_AddChild (const String& type, const String& name, bool unique)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	mChildren.Lock();
 	{
 		if (unique)
@@ -178,11 +178,11 @@ Area* Root::_AddChild (const String& type, const String& name, bool unique)
 // Retrieves a pointer to the context menu
 //============================================================================================================
 
-Context* Root::GetContextMenu (bool createIfMissing)
+UIContext* UIRoot::GetContextMenu (bool createIfMissing)
 {
 	if (mContext == 0 && createIfMissing)
 	{
-		mContext = AddWidget<Context>(this, "_Context Menu_");
+		mContext = AddWidget<UIContext>(this, "_Context Menu_");
 		mContext->SetSerializable(false);
 	}
 	return mContext;
@@ -192,7 +192,7 @@ Context* Root::GetContextMenu (bool createIfMissing)
 // Informs all areas that the texture has changed
 //============================================================================================================
 
-void Root::_TextureChanged (const ITexture* ptr)
+void UIRoot::_TextureChanged (const ITexture* ptr)
 {
 	mChildren.Lock();
 	{
@@ -208,7 +208,7 @@ void Root::_TextureChanged (const ITexture* ptr)
 // Changes the hovering area
 //============================================================================================================
 
-void Root::_SetHoverArea (Area* ptr)
+void UIRoot::_SetHoverArea (UIArea* ptr)
 {
 	if (mHoverArea != ptr)
 	{
@@ -223,11 +223,11 @@ void Root::_SetHoverArea (Area* ptr)
 // Manual way of changing the focus area
 //============================================================================================================
 
-void Root::_SetFocusArea (Area* ptr)
+void UIRoot::_SetFocusArea (UIArea* ptr)
 {
 	if (mFocusArea != ptr)
 	{
-		Area* oldInput = mFocusArea;
+		UIArea* oldInput = mFocusArea;
 		mFocusArea = ptr;
 		
 		if (oldInput) oldInput->OnFocus(false);
@@ -240,7 +240,7 @@ void Root::_SetFocusArea (Area* ptr)
 // Manual way of changing the selected area
 //============================================================================================================
 
-void Root::_SetEventArea (Area* ptr)
+void UIRoot::_SetEventArea (UIArea* ptr)
 {
 	mSelectedArea = ptr;
 }
@@ -249,7 +249,7 @@ void Root::_SetEventArea (Area* ptr)
 // Sets event handlers for the specified area
 //============================================================================================================
 
-void Root::SetOnMouseOver (const String& areaName, const EventHandler::OnMouseOverDelegate& fnct)
+void UIRoot::SetOnMouseOver (const String& areaName, const UIEventHandler::OnMouseOverDelegate& fnct)
 {
 	mHandlers.Lock();
 	_GetHandler(areaName)->SetOnMouseOver(fnct);
@@ -258,7 +258,7 @@ void Root::SetOnMouseOver (const String& areaName, const EventHandler::OnMouseOv
 
 //============================================================================================================
 
-void Root::SetOnMouseMove (const String& areaName, const EventHandler::OnMouseMoveDelegate& fnct)
+void UIRoot::SetOnMouseMove (const String& areaName, const UIEventHandler::OnMouseMoveDelegate& fnct)
 {
 	mHandlers.Lock();
 	_GetHandler(areaName)->SetOnMouseMove(fnct);
@@ -267,11 +267,11 @@ void Root::SetOnMouseMove (const String& areaName, const EventHandler::OnMouseMo
 
 //============================================================================================================
 
-void Root::SetOnKey (const String& areaName, const EventHandler::OnKeyDelegate& fnct)
+void UIRoot::SetOnKey (const String& areaName, const UIEventHandler::OnKeyDelegate& fnct)
 {
 	mHandlers.Lock();
 	{
-		EventHandler* handler = _GetHandler(areaName);
+		UIEventHandler* handler = _GetHandler(areaName);
 		handler->SetOnKey(fnct);
 	}
 	mHandlers.Unlock();
@@ -279,7 +279,7 @@ void Root::SetOnKey (const String& areaName, const EventHandler::OnKeyDelegate& 
 
 //============================================================================================================
 
-void Root::SetSetOnScroll (const String& areaName, const EventHandler::OnScrollDelegate& fnct)
+void UIRoot::SetSetOnScroll (const String& areaName, const UIEventHandler::OnScrollDelegate& fnct)
 {
 	mHandlers.Lock();
 	_GetHandler(areaName)->SetOnScroll(fnct);
@@ -288,7 +288,7 @@ void Root::SetSetOnScroll (const String& areaName, const EventHandler::OnScrollD
 
 //============================================================================================================
 
-void Root::SetOnStateChange (const String& areaName, const EventHandler::OnChangeDelegate& fnct)
+void UIRoot::SetOnStateChange (const String& areaName, const UIEventHandler::OnChangeDelegate& fnct)
 {
 	mHandlers.Lock();
 	_GetHandler(areaName)->SetOnStateChange(fnct);
@@ -297,7 +297,7 @@ void Root::SetOnStateChange (const String& areaName, const EventHandler::OnChang
 
 //============================================================================================================
 
-void Root::SetOnValueChange (const String& areaName, const EventHandler::OnChangeDelegate& fnct)
+void UIRoot::SetOnValueChange (const String& areaName, const UIEventHandler::OnChangeDelegate& fnct)
 {
 	mHandlers.Lock();
 	_GetHandler(areaName)->SetOnValueChange(fnct);
@@ -308,7 +308,7 @@ void Root::SetOnValueChange (const String& areaName, const EventHandler::OnChang
 // Creates a default tooltip (returns whether the tooltip is valid)
 //============================================================================================================
 
-bool Root::CreateDefaultTooltip (Area* area)
+bool UIRoot::CreateDefaultTooltip (UIArea* area)
 {
 	// If there is no area to work with, or there is no default font, no need to do anything
 	if (area == 0 || mDefaultFont == 0) return false;
@@ -323,21 +323,21 @@ bool Root::CreateDefaultTooltip (Area* area)
 	// If the printable text has no width, no point in showing an empty tooltip
 	if (textWidth == 0) return false;
 
-	Area* parent (0);
+	UIArea* parent (0);
 
 	if (mDefaultSkin == 0 || mDefaultSkin->GetFace("Tooltip")->GetSize() == 0)
 	{
 		// No skin available -- use a simple highlight
-		Highlight* hl = AddWidget<Highlight>(&mTooltip, "Tooltip Backdrop");
+		UIHighlight* hl = AddWidget<UIHighlight>(&mTooltip, "Tooltip Backdrop");
 		hl->SetColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
 
-		Region& hlrgn (hl->GetRegion());
+		UIRegion& hlrgn (hl->GetRegion());
 		hlrgn.GetRelativeLeft().Set		(0.0f, -3.0f);
 		hlrgn.GetRelativeRight().Set	(1.0f,  3.0f);
 		hlrgn.GetRelativeTop().Set		(0.0f, -3.0f);
 		hlrgn.GetRelativeBottom().Set	(1.0f,  3.0f);
 
-		Region& rgn = mTooltip.GetRegion();
+		UIRegion& rgn = mTooltip.GetRegion();
 		rgn.GetRelativeRight().Set (0.0f, (float)textWidth);
 		rgn.GetRelativeBottom().Set(0.0f, (float)textSize);
 
@@ -345,13 +345,13 @@ bool Root::CreateDefaultTooltip (Area* area)
 	}
 	else
 	{
-		SubPicture* img = AddWidget<SubPicture>(&mTooltip, "Tooltip Background");
+		UISubPicture* img = AddWidget<UISubPicture>(&mTooltip, "Tooltip Background");
 		img->Set(mDefaultSkin, "Tooltip");
 
 		short border = img->GetFace()->GetBorder();
 		if (border < 0) border = 0;
 
-		Region& rgn = mTooltip.GetRegion();
+		UIRegion& rgn = mTooltip.GetRegion();
 		rgn.GetRelativeRight().Set (0.0f, (float)(textWidth + border * 2));
 		rgn.GetRelativeBottom().Set(0.0f, (float)(textSize  + border * 2));
 
@@ -360,7 +360,7 @@ bool Root::CreateDefaultTooltip (Area* area)
 
 	if (parent != 0)
 	{
-		Label* lbl = AddWidget<Label>(parent, "Tooltip Label");
+		UILabel* lbl = AddWidget<UILabel>(parent, "Tooltip Label");
 		lbl->SetLayer(1, true);
 		lbl->SetFont(mDefaultFont);
 		lbl->SetText(text);
@@ -372,10 +372,10 @@ bool Root::CreateDefaultTooltip (Area* area)
 // Aligns the tooltip using default logic (returns whether the tooltip is valid)
 //============================================================================================================
 
-bool Root::AlignDefaultTooltip()
+bool UIRoot::AlignDefaultTooltip()
 {
 	// Update
-	Region& rgn  = mTooltip.GetRegion();
+	UIRegion& rgn  = mTooltip.GetRegion();
 	float left   = (float)mMousePos.x;
 	float top    = (float)mMousePos.y;
 	float topOff = top + 25.0f;
@@ -404,7 +404,7 @@ bool Root::AlignDefaultTooltip()
 // Hides the tooltip if it's currently visible
 //============================================================================================================
 
-void Root::_HideTooltip()
+void UIRoot::_HideTooltip()
 {
 	mTtQueued = false;
 	mTtTime = GetCurrentTime();
@@ -420,12 +420,12 @@ void Root::_HideTooltip()
 // Calls mOnFillTooltip function, and fills out the default tooltip if the return val is 'false'
 //============================================================================================================
 
-bool Root::_FillTooltip (Area* area)
+bool UIRoot::_FillTooltip (UIArea* area)
 {
 	if (area)
 	{
 		mTooltip.DeleteAllChildren();
-		Region& rgn = mTooltip.GetRegion();
+		UIRegion& rgn = mTooltip.GetRegion();
 		rgn.SetRect(0, 0, 0, 0);
 
 		return (mTtDelegate ? mTtDelegate(mTooltip, area) :
@@ -438,15 +438,15 @@ bool Root::_FillTooltip (Area* area)
 // Internal function that retrieves an event handler associated with the specified area
 //============================================================================================================
 
-EventHandler* Root::_GetHandler (const String& areaName)
+UIEventHandler* UIRoot::_GetHandler (const String& areaName)
 {
-	EventHandler* ptr = _FindChild(areaName);
+	UIEventHandler* ptr = _FindChild(areaName);
 
 	if (ptr == 0)
 	{
-		typedef EventHandler* HandlerPtr;
+		typedef UIEventHandler* HandlerPtr;
 		HandlerPtr& h = mHandlers[areaName];
-		if (h == 0) h = new EventHandler();
+		if (h == 0) h = new UIEventHandler();
 		ptr = h;
 	}
 	return ptr;
@@ -456,7 +456,7 @@ EventHandler* Root::_GetHandler (const String& areaName)
 // Brings the specified area to foreground
 //============================================================================================================
 
-void Root::_BringToFront (Area* ptr)
+void UIRoot::_BringToFront (UIArea* ptr)
 {
 	if (ptr != 0)
 	{
@@ -476,9 +476,9 @@ void Root::_BringToFront (Area* ptr)
 // Create an area of specified type
 //============================================================================================================
 
-Area* Root::_CreateArea (const String& type, const String& name, Area* parent)
+UIArea* UIRoot::_CreateArea (const String& type, const String& name, UIArea* parent)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	mCreators.Lock();
 	{
 		const CreateDelegate* callback = mCreators.GetIfExists(type);
@@ -493,7 +493,7 @@ Area* Root::_CreateArea (const String& type, const String& name, Area* parent)
 			mHandlers.Lock();
 			{
 				uint	key		= HashKey(name);
-				EventHandler*	handler = mHandlers.GetIfExists(key);
+				UIEventHandler*	handler = mHandlers.GetIfExists(key);
 
 				if (handler != 0)
 				{
@@ -512,7 +512,7 @@ Area* Root::_CreateArea (const String& type, const String& name, Area* parent)
 // Mark the entire Root as dirty so it's rebuilt on the next frame
 //============================================================================================================
 
-void Root::OnResize(const Vector2i& size)
+void UIRoot::OnResize(const Vector2i& size)
 {
 	if ( mSize != size )
 	{
@@ -527,7 +527,7 @@ void Root::OnResize(const Vector2i& size)
 // Run through all areas and ask them to update their regions, and associated widgets
 //============================================================================================================
 
-bool Root::Update()
+bool UIRoot::Update()
 {
 	// Run through all children and update them
 	mChildren.Lock();
@@ -565,7 +565,7 @@ bool Root::Update()
 // Handle mouse movement
 //============================================================================================================
 
-bool Root::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
+bool UIRoot::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 {
 	_HideTooltip();
 	mMousePos = pos;
@@ -598,7 +598,7 @@ bool Root::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 // Handle keys
 //============================================================================================================
 
-bool Root::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIRoot::OnKey (const Vector2i& pos, byte key, bool isDown)
 {
 	_HideTooltip();
 	mKey[key] = isDown;
@@ -624,7 +624,7 @@ bool Root::OnKey (const Vector2i& pos, byte key, bool isDown)
 // Respond to the mouse wheel event
 //============================================================================================================
 
-bool Root::OnScroll (const Vector2i& pos, float delta)
+bool UIRoot::OnScroll (const Vector2i& pos, float delta)
 {
 	_HideTooltip();
 	return (mHoverArea != 0) ? mHoverArea->OnScroll(pos, delta) : false;
@@ -634,7 +634,7 @@ bool Root::OnScroll (const Vector2i& pos, float delta)
 // Respond to printable characters
 //============================================================================================================
 
-bool Root::OnChar (byte character)
+bool UIRoot::OnChar (byte character)
 {
 	_HideTooltip();
 	return (mFocusArea != 0) ? mFocusArea->OnChar(character) : false;
@@ -644,7 +644,7 @@ bool Root::OnChar (byte character)
 // Serialization -- Load
 //============================================================================================================
 
-bool Root::SerializeFrom (const TreeNode& root)
+bool UIRoot::SerializeFrom (const TreeNode& root)
 {
 	bool localSerializable (true);
 
@@ -676,7 +676,7 @@ bool Root::SerializeFrom (const TreeNode& root)
 		}
 		else if (tag == "Skin")
 		{
-			Skin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
+			UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
 			skin->SerializeFrom(node);
 			if (!localSerializable) skin->SetSerializable(false);
 		}
@@ -686,7 +686,7 @@ bool Root::SerializeFrom (const TreeNode& root)
 			{
 				const TreeNode& area = node.mChildren[b];
 
-				Area* ptr = _AddChild(area.mTag,  area.mValue.IsString() ?
+				UIArea* ptr = _AddChild(area.mTag,  area.mValue.IsString() ?
 					area.mValue.AsString() : area.mValue.GetString() );
 
 				if (ptr != 0)
@@ -704,7 +704,7 @@ bool Root::SerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-bool Root::SerializeTo (TreeNode& root) const
+bool UIRoot::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
@@ -718,7 +718,7 @@ bool Root::SerializeTo (TreeNode& root) const
 
 		mSkins.Lock();
 		{
-			const PointerArray<Skin>& allSkins = mSkins.GetAllValues();
+			const PointerArray<UISkin>& allSkins = mSkins.GetAllValues();
 
 			if (allSkins.IsValid())
 			{
@@ -758,7 +758,7 @@ bool Root::SerializeTo (TreeNode& root) const
 // Render everything
 //============================================================================================================
 
-uint Root::Render()
+uint UIRoot::Render()
 {
 	mIsDirty = false;
 	uint triangles (0);

@@ -7,7 +7,7 @@
 // Expanded text line, adding start and end boundaries
 //============================================================================================================
 
-class BasicLabel : public TextLine
+class BasicLabel : public UITextLine
 {
 protected:
 
@@ -19,8 +19,8 @@ public:
 	BasicLabel() : mStart(0), mEnd(0) {}
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Basic Label", BasicLabel, TextLine, Area);
+	R5_DECLARE_INHERITED_CLASS("Basic Label", BasicLabel, UITextLine, UIArea);
 
 	// Called when a queue is being rebuilt
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 };

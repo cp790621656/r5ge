@@ -3,19 +3,19 @@ using namespace R5;
 
 //============================================================================================================
 
-Input::Input() : mMaxHistorySize(0), mShowHistory(true)
+UIInput::UIInput() : mMaxHistorySize(0), mShowHistory(true)
 {
 	mLabel.SetLayer(1, false);
-	mLabel.SetOnKey		( bind(&Input::_OnLabelKey,		this) );
-	mLabel.SetOnFocus		( bind(&Input::_OnLabelFocus,	this) );
-	mLabel.SetOnValueChange( bind(&Input::_OnLabelValue,	this) );
+	mLabel.SetOnKey			( bind(&UIInput::_OnLabelKey,	this) );
+	mLabel.SetOnFocus		( bind(&UIInput::_OnLabelFocus,	this) );
+	mLabel.SetOnValueChange	( bind(&UIInput::_OnLabelValue,	this) );
 }
 
 //============================================================================================================
 // Sets the maximum number of lines in the history list
 //============================================================================================================
 
-void Input::SetMaxHistorySize (uint	lines)
+void UIInput::SetMaxHistorySize (uint	lines)
 {
 	if (lines < mMaxHistorySize)
 	{
@@ -32,7 +32,7 @@ void Input::SetMaxHistorySize (uint	lines)
 // Adds a new entry to the history list
 //============================================================================================================
 
-void Input::AddToHistory (const String& text)
+void UIInput::AddToHistory (const String& text)
 {
 	if (mMaxHistorySize > 0)
 	{
@@ -63,13 +63,13 @@ void Input::AddToHistory (const String& text)
 // If any key is pressed on the label it should hide history
 //============================================================================================================
 
-bool Input::_OnLabelKey (Area* area, const Vector2i& pos, byte key, bool isDown)
+bool UIInput::_OnLabelKey (UIArea* area, const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown && mLabel.GetRegion().Contains(pos))
 	{
 		if ( key > Key::MouseFirst && key < Key::MouseLast )
 		{
-			const Context* context = mRoot->GetContextMenu();
+			const UIContext* context = mRoot->GetContextMenu();
 
 			if (context == 0 || context->GetAlpha() == 0.0f)
 			{
@@ -92,12 +92,12 @@ bool Input::_OnLabelKey (Area* area, const Vector2i& pos, byte key, bool isDown)
 // Private callback triggered when the label gains or loses focus
 //============================================================================================================
 
-bool Input::_OnLabelFocus (Area* area, bool hasFocus)
+bool UIInput::_OnLabelFocus (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
-		const Area*		focus	= mRoot->GetFocusArea();
-		const Context*	context = mRoot->GetContextMenu();
+		const UIArea*		focus	= mRoot->GetFocusArea();
+		const UIContext*	context = mRoot->GetContextMenu();
 
 		if (focus == 0 || !focus->IsChildOf(context))
 		{
@@ -111,7 +111,7 @@ bool Input::_OnLabelFocus (Area* area, bool hasFocus)
 // Private callback triggered when the label's value changes
 //============================================================================================================
 
-bool Input::_OnLabelValue (Area* area)
+bool UIInput::_OnLabelValue (UIArea* area)
 {
 	if (mOnValueChange) mOnValueChange(this);
 	return true;
@@ -121,9 +121,9 @@ bool Input::_OnLabelValue (Area* area)
 // Triggered when the context menu was clicked on, choosing a value
 //============================================================================================================
 
-bool Input::_OnContextValue	(Area* area)
+bool UIInput::_OnContextValue	(UIArea* area)
 {
-	Context* menu = _HideHistory();
+	UIContext* menu = _HideHistory();
 
 	if (menu != 0)
 	{
@@ -141,14 +141,14 @@ bool Input::_OnContextValue	(Area* area)
 // Shows the selection menu
 //============================================================================================================
 
-Context* Input::_ShowHistory()
+UIContext* UIInput::_ShowHistory()
 {
-	Context* menu = mRoot->GetContextMenu();
+	UIContext* menu = mRoot->GetContextMenu();
 
 	if (mShowHistory && mMaxHistorySize > 0 && mHistory.GetSize() > 0 && menu != 0)
 	{
 		menu->SetOnFocus(0);
-		menu->SetOnValueChange( bind(&Input::_OnContextValue, this) );
+		menu->SetOnValueChange( bind(&UIInput::_OnContextValue, this) );
 		menu->ClearAllEntries();
 
 		mHistory.Lock();
@@ -159,7 +159,7 @@ Context* Input::_ShowHistory()
 		}
 		mHistory.Unlock();
 
-		const Face* face = GetFace();
+		const UIFace* face = GetFace();
 
 		if (face != 0)
 		{
@@ -170,7 +170,7 @@ Context* Input::_ShowHistory()
 		menu->SetColor( GetColor() );
 		menu->SetAnchor( Vector3f(mRegion.GetLeft(), mRegion.GetBottom(), mRegion.GetHeight()) );
 		menu->SetMinWidth( mRegion.GetWidth() );
-		menu->SetAlignment( Label::Alignment::Left );
+		menu->SetAlignment( UILabel::Alignment::Left );
 		menu->Show();
 		menu->BringToFront();
 	}
@@ -181,9 +181,9 @@ Context* Input::_ShowHistory()
 // Hides the selection menu
 //============================================================================================================
 
-Context* Input::_HideHistory()
+UIContext* UIInput::_HideHistory()
 {
-	Context* menu = mRoot->GetContextMenu();
+	UIContext* menu = mRoot->GetContextMenu();
 
 	if (menu != 0 && menu->GetAlpha() > 0.0f)
 	{
@@ -200,18 +200,18 @@ Context* Input::_HideHistory()
 // Internal functions. These values are normally set by Root::CreateArea
 //============================================================================================================
 
-void Input::_SetParentPtr (Area* ptr)
+void UIInput::_SetParentPtr (UIArea* ptr)
 {
-	Area::_SetParentPtr(ptr);
+	UIArea::_SetParentPtr(ptr);
 	mImage._SetParentPtr(this);
 	mLabel._SetParentPtr(this);
 }
 
 //============================================================================================================
 
-void Input::_SetRootPtr (Root* ptr)
+void UIInput::_SetRootPtr (UIRoot* ptr)
 {
-	Area::_SetRootPtr(ptr);
+	UIArea::_SetRootPtr(ptr);
 	mImage._SetRootPtr(ptr);
 	mLabel._SetRootPtr(ptr);
 }
@@ -220,7 +220,7 @@ void Input::_SetRootPtr (Root* ptr)
 // Any per-frame animation should go here
 //============================================================================================================
 
-bool Input::OnUpdate (bool dimensionsChanged)
+bool UIInput::OnUpdate (bool dimensionsChanged)
 {
 	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged);
 	dimensionsChanged |= mLabel.Update(mImage.GetSubRegion(), dimensionsChanged);
@@ -231,7 +231,7 @@ bool Input::OnUpdate (bool dimensionsChanged)
 // Serialization -- Load
 //============================================================================================================
 
-bool Input::CustomSerializeFrom (const TreeNode& root)
+bool UIInput::CustomSerializeFrom (const TreeNode& root)
 {
 	if ( mImage.CustomSerializeFrom(root) ) return true;
 	if ( mLabel.CustomSerializeFrom(root) ) return true;
@@ -256,7 +256,7 @@ bool Input::CustomSerializeFrom (const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void Input::CustomSerializeTo (TreeNode& root) const
+void UIInput::CustomSerializeTo (TreeNode& root) const
 {
 	mImage.CustomSerializeTo(root);
 	mLabel.CustomSerializeTo(root);

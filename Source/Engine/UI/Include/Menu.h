@@ -7,12 +7,12 @@
 // Drop-down menu, based on the animated button class
 //============================================================================================================
 
-class Menu : public AnimatedButton
+class UIMenu : public UIAnimatedButton
 {
 public:
 
 	typedef Array<String> Entries;
-	typedef AnimatedButton BaseClass;
+	typedef UIAnimatedButton BaseClass;
 
 protected:
 
@@ -34,8 +34,8 @@ public:
 protected:
 
 	// Shows or hides the popup menu
-	Context* _ShowMenu();
-	Context* _HideMenu();
+	UIContext* _ShowMenu();
+	UIContext* _HideMenu();
 
 	// Overrideable function triggered when the value changes (used by the List widget)
 	virtual void _OnValue (const String& val) {}
@@ -43,8 +43,8 @@ protected:
 private:
 
 	// Context menu callbacks
-	bool _OnContextFocus (Area* area, bool hasFocus);
-	bool _OnContextValue (Area* area);
+	bool _OnContextFocus (UIArea* area, bool hasFocus);
+	bool _OnContextValue (UIArea* area);
 
 public:
 
@@ -55,12 +55,12 @@ public:
 protected:
 
 	// Menu items are always left-aligned
-	virtual uint _GetMenuItemAlignment() { return Label::Alignment::Left; }
+	virtual uint _GetMenuItemAlignment() { return UILabel::Alignment::Left; }
 
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Menu", Menu, AnimatedButton, Area);
+	R5_DECLARE_INHERITED_CLASS("Menu", UIMenu, UIAnimatedButton, UIArea);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

@@ -7,35 +7,37 @@
 // Expanded region, holding a pointer to an associated Widget, parent, and children
 //============================================================================================================
 
-class Root;
-class Area : public EventHandler
+class UIRoot;
+class UIArea : public UIEventHandler
 {
-	friend class Root;
-	friend class Frame;
+	friend class UIRoot;
+	friend class UIFrame;
 
 protected:
 
-	String				mName;				// Every area needs a name
-	Region				mRegion;			// As well as a region
-	String				mTooltip;			// All areas can have a tooltip
-	bool				mReceivesEvents;	// Whether the area will receive events
-	bool				mIsFading;			// Whether the area is fading (will not respond to events)
-	Root*				mRoot;				// Pointer to the ui that controls this area
-    Area*				mParent;			// Pointer to the parent area
-	PointerArray<Area>	mChildren;			// Array of children nodes
-	int					mLayer;				// Layer used by this area
-	bool				mSerializable;		// Whether the area is saved along with everything else
+	typedef PointerArray<UIArea> Children;
+
+	String		mName;				// Every area needs a name
+	UIRegion	mRegion;			// As well as a region
+	String		mTooltip;			// All areas can have a tooltip
+	bool		mReceivesEvents;	// Whether the area will receive events
+	bool		mIsFading;			// Whether the area is fading (will not respond to events)
+	UIRoot*		mRoot;				// Pointer to the ui that controls this area
+    UIArea*		mParent;			// Pointer to the parent area
+	Children	mChildren;			// Array of children nodes
+	int			mLayer;				// Layer used by this area
+	bool		mSerializable;		// Whether the area is saved along with everything else
 
 public:
 
-	Area() :	mReceivesEvents (true),
+	UIArea() :	mReceivesEvents (true),
 				mIsFading		(false),
 				mRoot			(0),
 				mParent			(0),
 				mLayer			(0),
 				mSerializable	(true) {}
 
-	virtual ~Area() {}
+	virtual ~UIArea() {}
 
 public:
 
@@ -43,18 +45,18 @@ public:
 	const String& GetTooltip() const	{ return mTooltip; }
 	void SetName(const String& name)	{ mName = name;    }
 	void SetTooltip(const String& text)	{ mTooltip = text; }
-	Area* GetParent()					{ return mParent;  }
+	UIArea* GetParent()					{ return mParent;  }
 
 	// Returns whether the specified parent is reachable by going up the hierarchy tree
-	bool IsChildOf (const Area* parent) const { return (parent == this || (mParent == 0 ? false : mParent->IsChildOf(parent))); }
+	bool IsChildOf (const UIArea* parent) const { return (parent == this || (mParent == 0 ? false : mParent->IsChildOf(parent))); }
 
 public:
 
 	// Find existing areas or add new ones -- should not be used directly.
 	// Use this template instead:  Find<ClassType>(parent, "Name");
-	Area* _FindChild (const Vector2i& pos);
-	Area* _FindChild (const String& name, bool recursive = true);
-	Area* _AddChild  (const String& type, const String& name, bool unique = true);
+	UIArea* _FindChild (const Vector2i& pos);
+	UIArea* _FindChild (const String& name, bool recursive = true);
+	UIArea* _AddChild  (const String& type, const String& name, bool unique = true);
 
 public:
 
@@ -70,7 +72,7 @@ public:
 	void DeleteAllChildren();
 
 	// Brings the area to the foreground
-	void BringToFront (Area* child = 0);
+	void BringToFront (UIArea* child = 0);
 
 	// Gives this area undivided attention
 	void SetFocus (bool focus);
@@ -85,7 +87,7 @@ public:
 	void SetReceivesEvents(bool val)	{ mReceivesEvents = val; }
 
 	// Having access to the area's dimensions can come in handy
-	Region& GetRegion() { return mRegion; }
+	UIRegion& GetRegion() { return mRegion; }
 	void	SetRegion (float left, float top, float width, float height) { mRegion.SetRect(left, top, width, height); }
 
 	// Calls OnTextureChanged() and recurses through children
@@ -93,7 +95,7 @@ public:
 
 	// Updates the region's dimensions, calls Area::OnUpdate(), and recurses through children
 	bool Update  (const Vector2i& size, bool forceUpdate = false);
-	bool Update  (const Region& parent, bool forceUpdate = false);
+	bool Update  (const UIRegion& parent, bool forceUpdate = false);
 
 	// Calls the virtual Area::OnRender() and recurses through children
 	uint Render();
@@ -108,18 +110,18 @@ protected:
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
 
 	// Functions overwritten by Frame class
-	virtual void OnDirty (const ITexture* tex, int layer, const Area* area = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, area); }
-	virtual void Fill (Queue* queue);
+	virtual void OnDirty (const ITexture* tex, int layer, const UIArea* area = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, area); }
+	virtual void Fill (UIQueue* queue);
 	virtual uint OnRender() { return 0; }
 
 public:
 
 	// Area creation
-	R5_DECLARE_BASE_CLASS("Area", Area);
+	R5_DECLARE_BASE_CLASS("Area", UIArea);
 
 	// Internal functions. These values are normally set by Root::CreateArea
-	virtual void _SetParentPtr (Area* ptr) { mParent = ptr; }
-	virtual void _SetRootPtr   (Root* ptr) { mRoot   = ptr; }
+	virtual void _SetParentPtr (UIArea* ptr) { mParent = ptr; }
+	virtual void _SetRootPtr   (UIRoot* ptr) { mRoot   = ptr; }
 
 public:
 
@@ -128,7 +130,7 @@ public:
 	virtual void  SetAlpha (float val, float animTime = 0.0f)	{ mRegion.SetAlpha(val);		}
 
 	// Area::Update() function gets the sub-region, and that gets passed to all children (see Window class for an example)
-	virtual const Region& GetSubRegion() const { return mRegion; }
+	virtual const UIRegion& GetSubRegion() const { return mRegion; }
 
 	// Marks this specific area as needing to be rebuilt
 	virtual void SetDirty() {}
@@ -146,7 +148,7 @@ public:
 	virtual bool OnUpdate (bool dimensionsChanged) { return false; }
 
 	// Called when a queue is being rebuilt
-	virtual void OnFill (Queue* queue) {}
+	virtual void OnFill (UIQueue* queue) {}
 
 	// Called before and after rendering the queue, respectively
 	virtual void OnPreRender (IGraphics* graphics) const {}

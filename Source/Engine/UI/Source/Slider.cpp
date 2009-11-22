@@ -5,7 +5,7 @@ using namespace R5;
 // Changes the slider's value
 //============================================================================================================
 
-void Slider::SetValue (float val)
+void UISlider::SetValue (float val)
 {
 	val = Float::Clamp(val, 0.0f, 1.0f);
 
@@ -20,7 +20,7 @@ void Slider::SetValue (float val)
 // Sets the slider's value by the 2D position
 //============================================================================================================
 
-void Slider::SetValue (const Vector2i& pos)
+void UISlider::SetValue (const Vector2i& pos)
 {
 	float left	 ( mRegion.GetLeft()   );
 	float bottom ( mRegion.GetBottom() );
@@ -41,12 +41,12 @@ void Slider::SetValue (const Vector2i& pos)
 // Changes the skin
 //============================================================================================================
 
-void Slider::SetSkin (const Skin* skin)
+void UISlider::SetSkin (const UISkin* skin)
 {
 	if (mSkin != skin)
 	{
 		SetDirty();
-		mSkin	= const_cast<Skin*>(skin);
+		mSkin	= const_cast<UISkin*>(skin);
 		mFull  = mSkin->GetFace( "Slider: Full"  );
 		mEmpty = mSkin->GetFace( "Slider: Empty" );
 		mKnob  = mSkin->GetFace( "Slider: Knob"  );
@@ -58,7 +58,7 @@ void Slider::SetSkin (const Skin* skin)
 // Changes the color
 //============================================================================================================
 
-void Slider::SetColor(const Color3f& color)
+void UISlider::SetColor(const Color3f& color)
 {
 	if (mColor != color)
 	{
@@ -71,7 +71,7 @@ void Slider::SetColor(const Color3f& color)
 // Called when something changes in the skin
 //============================================================================================================
 
-void Slider::OnTextureChanged (const ITexture* ptr)
+void UISlider::OnTextureChanged (const ITexture* ptr)
 {
 	const ITexture* tex = GetTexture();
 	if (tex == ptr) OnDirty(tex);
@@ -81,11 +81,11 @@ void Slider::OnTextureChanged (const ITexture* ptr)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void Slider::OnFill (Queue* queue)
+void UISlider::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
-		queue->mTex	!= 0 &&
-		queue->mTex	== GetTexture() &&
+		queue->mTex		!= 0 &&
+		queue->mTex		== GetTexture() &&
 		queue->mArea	== 0)
 	{
 		Array<IUI::Vertex>& v (queue->mVertices);
@@ -101,9 +101,9 @@ void Slider::OnFill (Queue* queue)
 		Color4ub color   ( mColor, mRegion.GetAlpha() );
 		Vector2i texSize ( queue->mTex->GetSize() );
 
-		Face::Rectangle  full  (  mFull->GetRectangle(texSize) );
-		Face::Rectangle  empty ( mEmpty->GetRectangle(texSize) );
-		Face::Rectangle  knob  (  mKnob->GetRectangle(texSize) );
+		UIFace::Rectangle  full  (  mFull->GetRectangle(texSize) );
+		UIFace::Rectangle  empty ( mEmpty->GetRectangle(texSize) );
+		UIFace::Rectangle  knob  (  mKnob->GetRectangle(texSize) );
 
 		if ( width > height )
 		{
@@ -119,20 +119,20 @@ void Slider::OnFill (Queue* queue)
 			float tcCenterEmpty = empty.mRight - (empty.mRight - empty.mLeft) * invFactor;
 
 			// Full bar
-			v.Expand().Set( left,			top,    full.mLeft,	full.mTop,		color );
-			v.Expand().Set( left,			bottom, full.mLeft,	full.mBottom,	color );
+			v.Expand().Set( left,			top,    full.mLeft,		full.mTop,		color );
+			v.Expand().Set( left,			bottom, full.mLeft,		full.mBottom,	color );
 			v.Expand().Set( centerFull,		bottom, tcCenterFull,	full.mBottom,	color );
 			v.Expand().Set( centerFull,		top,    tcCenterFull,	full.mTop,		color );
 
 			// Empty bar
-			v.Expand().Set( centerEmpty,	top,    tcCenterEmpty,	empty.mTop,	white );
+			v.Expand().Set( centerEmpty,	top,    tcCenterEmpty,	empty.mTop,		white );
 			v.Expand().Set( centerEmpty,	bottom, tcCenterEmpty,	empty.mBottom,	white );
 			v.Expand().Set( right,			bottom, empty.mRight,	empty.mBottom,	white );
-			v.Expand().Set( right,			top,    empty.mRight,	empty.mTop,	white );
+			v.Expand().Set( right,			top,    empty.mRight,	empty.mTop,		white );
 
 			// Knob
-			v.Expand().Set( knobLeft,		top,	knob.mLeft,	knob.mTop,		white);
-			v.Expand().Set( knobLeft,		bottom, knob.mLeft,	knob.mBottom,	white);
+			v.Expand().Set( knobLeft,		top,	knob.mLeft,		knob.mTop,		white);
+			v.Expand().Set( knobLeft,		bottom, knob.mLeft,		knob.mBottom,	white);
 			v.Expand().Set( knobRight,		bottom, knob.mRight,	knob.mBottom,	white);
 			v.Expand().Set( knobRight,		top,	knob.mRight,	knob.mTop,		white);
 		}
@@ -151,20 +151,20 @@ void Slider::OnFill (Queue* queue)
 			float tcCenterEmpty = empty.mTop   + (empty.mBottom - empty.mTop) * invFactor;
 
 			// Full bar
-			v.Expand().Set( left,	centerFull,		full.mLeft,	tcCenterFull,	color);
-			v.Expand().Set( left,	bottom,			full.mLeft,	full.mBottom,	color);
+			v.Expand().Set( left,	centerFull,		full.mLeft,		tcCenterFull,	color);
+			v.Expand().Set( left,	bottom,			full.mLeft,		full.mBottom,	color);
 			v.Expand().Set( right,	bottom,			full.mRight,	full.mBottom,	color);
 			v.Expand().Set( right,	centerFull,		full.mRight,	tcCenterFull,	color);
 
 			// Empty bar
-			v.Expand().Set( left,	top,			empty.mLeft,	empty.mTop,	color);
+			v.Expand().Set( left,	top,			empty.mLeft,	empty.mTop,		color);
 			v.Expand().Set( left,	centerEmpty,	empty.mLeft,	tcCenterEmpty,	color);
 			v.Expand().Set( right,	centerEmpty,	empty.mRight,	tcCenterEmpty,	color);
-			v.Expand().Set( right,	top,			empty.mRight,	empty.mTop,	color);
+			v.Expand().Set( right,	top,			empty.mRight,	empty.mTop,		color);
 
 			// Knob
-			v.Expand().Set( left,	knobTop,		knob.mLeft,	knob.mTop,		color);
-			v.Expand().Set( left,	knobBottom,		knob.mLeft,	knob.mBottom,	color);
+			v.Expand().Set( left,	knobTop,		knob.mLeft,		knob.mTop,		color);
+			v.Expand().Set( left,	knobBottom,		knob.mLeft,		knob.mBottom,	color);
 			v.Expand().Set( right,	knobBottom,		knob.mRight,	knob.mBottom,	color);
 			v.Expand().Set( right,	knobTop,		knob.mRight,	knob.mTop,		color);
 		}
@@ -175,7 +175,7 @@ void Slider::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool Slider::CustomSerializeFrom(const TreeNode& root)
+bool UISlider::CustomSerializeFrom(const TreeNode& root)
 {
 	const Variable& value = root.mValue;
 
@@ -207,7 +207,7 @@ bool Slider::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void Slider::CustomSerializeTo(TreeNode& root) const
+void UISlider::CustomSerializeTo(TreeNode& root) const
 {
 	TreeNode& skin = root.AddChild("Skin");
 	if (mSkin != 0) skin.mValue = mSkin->GetName();
@@ -219,13 +219,13 @@ void Slider::CustomSerializeTo(TreeNode& root) const
 // Respond to mouse movement
 //============================================================================================================
 
-bool Slider::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+bool UISlider::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if ( mRoot->IsKeyDown(Key::MouseLeft) )
 	{
 		SetValue(pos);
 	}
-	Area::OnMouseMove(pos, delta);
+	UIArea::OnMouseMove(pos, delta);
 	return true;
 }
 
@@ -233,13 +233,13 @@ bool Slider::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 // Respond to key events -- namely the left mouse button
 //============================================================================================================
 
-bool Slider::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UISlider::OnKey (const Vector2i& pos, byte key, bool isDown)
 {
 	if ( key == Key::MouseLeft )
 	{
 		if (isDown) SetValue(pos);
-		Area::OnKey(pos, key, isDown);
+		UIArea::OnKey(pos, key, isDown);
 		return true;
 	}
-	return Area::OnKey(pos, key, isDown);
+	return UIArea::OnKey(pos, key, isDown);
 }

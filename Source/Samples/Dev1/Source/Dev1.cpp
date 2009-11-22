@@ -74,7 +74,7 @@ bool TestApp::OnKey(const Vector2i& pos, byte key, bool isDown)
 		}
 		else if ( key == Key::H && isDown )
 		{
-			Window* window = FindWidget<Window>(mUI, "First Window");
+			UIWindow* window = FindWidget<UIWindow>(mUI, "First Window");
 			if (window) window->Show();
 		}
 		else if ( key == Key::F5 )
@@ -93,9 +93,9 @@ bool TestApp::OnKey(const Vector2i& pos, byte key, bool isDown)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnChangeDelegate (Area* area)
+bool TestApp::OnChangeDelegate (UIArea* area)
 {
-	Slider* slider = R5_CAST(Slider, area);
+	UISlider* slider = R5_CAST(UISlider, area);
 
 	if (slider)
 	{
@@ -110,15 +110,15 @@ bool TestApp::OnChangeDelegate (Area* area)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnBrightnessChange (Area* area)
+bool TestApp::OnBrightnessChange (UIArea* area)
 {
-	Slider* slider = R5_CAST(Slider, area);
+	UISlider* slider = R5_CAST(UISlider, area);
 
 	if (slider)
 	{
 		float val = slider->GetValue() * 4.0f;
 
-		TextLine* txt = FindWidget<TextLine>(slider, slider->GetName() + " Value", false);
+		UITextLine* txt = FindWidget<UITextLine>(slider, slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
 		PointLight* light = FindObject<PointLight>(mCore->GetScene(), "First Light");
@@ -129,15 +129,15 @@ bool TestApp::OnBrightnessChange (Area* area)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnRangeChange (Area* area)
+bool TestApp::OnRangeChange (UIArea* area)
 {
-	Slider* slider = R5_CAST(Slider, area);
+	UISlider* slider = R5_CAST(UISlider, area);
 
 	if (slider)
 	{
 		float val = slider->GetValue() * 40.0f;
 
-		TextLine* txt = FindWidget<TextLine>(slider, slider->GetName() + " Value", false);
+		UITextLine* txt = FindWidget<UITextLine>(slider, slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.2f", val) );
 
 		PointLight* light = FindObject<PointLight>(mCore->GetScene(), "First Light");
@@ -148,15 +148,15 @@ bool TestApp::OnRangeChange (Area* area)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnPowerChange (Area* area)
+bool TestApp::OnPowerChange (UIArea* area)
 {
-	Slider* slider = R5_CAST(Slider, area);
+	UISlider* slider = R5_CAST(UISlider, area);
 
 	if (slider)
 	{
 		float val = 1.0f + slider->GetValue() * 3.0f;
 
-		TextLine* txt = FindWidget<TextLine>(slider, slider->GetName() + " Value", false);
+		UITextLine* txt = FindWidget<UITextLine>(slider, slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
 		PointLight* light = FindObject<PointLight>(mCore->GetScene(), "First Light");
@@ -167,18 +167,18 @@ bool TestApp::OnPowerChange (Area* area)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnButtonStateChange (Area* area)
+bool TestApp::OnButtonStateChange (UIArea* area)
 {
-	Button* btn = R5_CAST(Button, area);
+	UIButton* btn = R5_CAST(UIButton, area);
 
 	if (btn)
 	{
 		String state;
 
-		if (btn->GetState() & Button::State::Enabled)		state = "Enabled";
+		if (btn->GetState() & UIButton::State::Enabled)		state = "Enabled";
 		else												state = "Disabled";
-		if (btn->GetState() & Button::State::Pressed)		state << ", Pressed";
-		if (btn->GetState() & Button::State::Highlighted)	state << ", Highlighted";
+		if (btn->GetState() & UIButton::State::Pressed)		state << ", Pressed";
+		if (btn->GetState() & UIButton::State::Highlighted)	state << ", Highlighted";
 
 		state << " - ";
 		state << Time::GetTime();

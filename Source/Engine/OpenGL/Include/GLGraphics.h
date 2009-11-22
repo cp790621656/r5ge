@@ -27,8 +27,8 @@ protected:
 	uint				mQuery;
 
 	// Resources
-	PointerArray<VBO>	mVbos;
-	PointerArray<FBO>	mFbos;
+	PointerArray<GLVBO>	mVbos;
+	PointerArray<GLFBO>	mFbos;
 	Delegates			mDelegates;
 	Techniques			mTechs;
 	Materials			mMaterials;

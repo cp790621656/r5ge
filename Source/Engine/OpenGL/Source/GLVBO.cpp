@@ -19,7 +19,7 @@ void DeleteBuffer(void* ptr)
 uint g_vertexBuffer = 0;
 uint g_indexBuffer  = 0;
 
-void VBO::Activate(uint id, uint type)
+void GLVBO::Activate(uint id, uint type)
 {
 	if (type == IVBO::Type::Vertex)
 	{
@@ -45,13 +45,13 @@ void VBO::Activate(uint id, uint type)
 
 //============================================================================================================
 
-VBO::VBO(IGraphics* graphics) : mGraphics(graphics), mVbo(0), mSize(0), mType(Type::Invalid), mGlType(0), mData(0) {}
+GLVBO::GLVBO(IGraphics* graphics) : mGraphics(graphics), mVbo(0), mSize(0), mType(Type::Invalid), mGlType(0), mData(0) {}
 
 //============================================================================================================
 // INTERNAL: Releases the VBO
 //============================================================================================================
 
-void VBO::_InternalRelease(bool delayExecution)
+void GLVBO::_InternalRelease(bool delayExecution)
 {
 	if (mVbo != 0)
 	{
@@ -85,7 +85,7 @@ void VBO::_InternalRelease(bool delayExecution)
 // PRIVATE: Changes the VBO's type if necessary, and activates the VBO
 //============================================================================================================
 
-void VBO::_ActivateAs(uint type)
+void GLVBO::_ActivateAs(uint type)
 {
 	if ( mType != type && mVbo != 0 )
 	{
@@ -109,7 +109,7 @@ void VBO::_ActivateAs(uint type)
 // Retrieves the buffer's contents from the video memory
 //============================================================================================================
 
-void VBO::Get (VoidPtr& data, uint& size, uint& type)
+void GLVBO::Get (VoidPtr& data, uint& size, uint& type)
 {
 	// Don't allow more than one VBO operation per lock/unlock session
 	if (mSize > 0 && mData == 0)
@@ -135,7 +135,7 @@ void VBO::Get (VoidPtr& data, uint& size, uint& type)
 // Updates the vertex buffer's data, creating a new VBO if necessary
 //============================================================================================================
 
-void VBO::Set (const void* data, uint size, uint type, bool dynamic)
+void GLVBO::Set (const void* data, uint size, uint type, bool dynamic)
 {
 	if (data != 0 && mData == 0)
 	{
@@ -151,7 +151,7 @@ void VBO::Set (const void* data, uint size, uint type, bool dynamic)
 // Reserves the specified size chunk of memory on the videocard and returns a pointer to the editable data
 //============================================================================================================
 
-void* VBO::Reserve (uint size, uint type, bool dynamic)
+void* GLVBO::Reserve (uint size, uint type, bool dynamic)
 {
 	// Don't allow more than one VBO operation per lock/unlock session
 	if (mData != 0) return 0;
@@ -177,7 +177,7 @@ void* VBO::Reserve (uint size, uint type, bool dynamic)
 // Submits the data to the videocard
 //============================================================================================================
 
-void VBO::Unlock()
+void GLVBO::Unlock()
 {
 	if (mData != 0)
 	{

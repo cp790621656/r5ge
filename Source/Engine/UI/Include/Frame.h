@@ -7,11 +7,11 @@
 // Simple invisible frame that holds rendering queues for all its children
 //============================================================================================================
 
-class Frame : public Area
+class UIFrame : public UIArea
 {
 private:
 
-	PointerArray<Queue>	mQs;
+	PointerArray<UIQueue>	mQs;
 
 public:
 
@@ -22,16 +22,16 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Frame", Frame, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Frame", UIFrame, UIArea, UIArea);
 
 	// Marks a rendering queue associated with this texture as being dirty
-	virtual void OnDirty (const ITexture* tex, int layer, const Area* area);
+	virtual void OnDirty (const ITexture* tex, int layer, const UIArea* area);
 
 	// Marks all rendering queues as needing to be rebuilt
 	virtual void SetDirty();
 
 	// Called by parent, so do nothing. Frame::OnRender() takes care of all the children.
-	virtual void Fill (Queue* queue) {}
+	virtual void Fill (UIQueue* queue) {}
 
 	// Updates the rendering queues as necessary, then draws them to the screen
 	virtual uint OnRender();

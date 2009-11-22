@@ -926,8 +926,8 @@ void GLController::SetActiveProjection (uint projection)
 
 void GLController::SetActiveVBO (const IVBO* ptr, uint type)
 {
-	if (ptr != 0) VBO::Activate( ptr->GetID(), ptr->GetType() );
-	else		  VBO::Activate( 0, type );
+	if (ptr != 0) GLVBO::Activate( ptr->GetID(), ptr->GetType() );
+	else		  GLVBO::Activate( 0, type );
 }
 
 //============================================================================================================

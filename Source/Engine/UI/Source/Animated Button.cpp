@@ -3,9 +3,9 @@ using namespace R5;
 
 //============================================================================================================
 
-AnimatedButton::AnimatedButton() : mAnimTime(0.15f)
+UIAnimatedButton::UIAnimatedButton() : mAnimTime(0.15f)
 {
-	memset(mCurrentAlpha,  0, sizeof(float)*2);
+	memset(mCurrentAlpha,	0, sizeof(float)*2);
 	memset(mTargetAlpha,	0, sizeof(float)*2);
 	memset(mStartTime,		0, sizeof(float)*2);
 }
@@ -14,9 +14,9 @@ AnimatedButton::AnimatedButton() : mAnimTime(0.15f)
 // Changes the button's state
 //============================================================================================================
 
-bool AnimatedButton::SetState (uint state, bool val)
+bool UIAnimatedButton::SetState (uint state, bool val)
 {
-	if ( Button::SetState(state, val) )
+	if ( UIButton::SetState(state, val) )
 	{
 		float current = mRoot->GetCurrentTime();
 
@@ -40,9 +40,9 @@ bool AnimatedButton::SetState (uint state, bool val)
 // Any per-frame animation should go here
 //============================================================================================================
 
-bool AnimatedButton::OnUpdate (bool dimensionsChanged)
+bool UIAnimatedButton::OnUpdate (bool dimensionsChanged)
 {
-	dimensionsChanged |= Button::OnUpdate(dimensionsChanged);
+	dimensionsChanged |= UIButton::OnUpdate(dimensionsChanged);
 
 	// If the button is currently in the process of animation, mark the SubPicture as dirty
 	for (uint i = 0; i < 2; ++i)
@@ -56,7 +56,7 @@ bool AnimatedButton::OnUpdate (bool dimensionsChanged)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void AnimatedButton::OnFill (Queue* queue)
+void UIAnimatedButton::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
 		queue->mTex	== mImage.GetTexture() &&
@@ -64,7 +64,7 @@ void AnimatedButton::OnFill (Queue* queue)
 	{
 		static String faceName[] = {"Button: Disabled", "Button: Enabled", "Button: Highlighted", "Button: Pressed"};
 
-		Region& rgn = mImage.GetRegion();
+		UIRegion& rgn = mImage.GetRegion();
 
 		if (mState & State::Enabled)
 		{
@@ -115,22 +115,22 @@ void AnimatedButton::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool AnimatedButton::CustomSerializeFrom(const TreeNode& root)
+bool UIAnimatedButton::CustomSerializeFrom(const TreeNode& root)
 {
 	if (root.mTag == "Animation Time")
 	{
 		root.mValue >> mAnimTime;
 		return true;
 	}
-	return Button::CustomSerializeFrom(root);
+	return UIButton::CustomSerializeFrom(root);
 }
 
 //============================================================================================================
 // Serialization - Save
 //============================================================================================================
 
-void AnimatedButton::CustomSerializeTo(TreeNode& root) const
+void UIAnimatedButton::CustomSerializeTo(TreeNode& root) const
 {
-	Button::CustomSerializeTo(root);
+	UIButton::CustomSerializeTo(root);
 	root.AddChild("Animation Time", mAnimTime);
 }

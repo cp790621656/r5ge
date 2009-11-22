@@ -5,7 +5,7 @@ using namespace R5;
 // Sets the active shader
 //============================================================================================================
 
-void ShadedArea::SetShader (const IShader* shader)
+void UIShadedArea::SetShader (const IShader* shader)
 {
 	if (mShader != shader)
 	{
@@ -19,7 +19,7 @@ void ShadedArea::SetShader (const IShader* shader)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void ShadedArea::OnFill (Queue* queue)
+void UIShadedArea::OnFill (UIQueue* queue)
 {
 	if (queue->mTex	== 0 &&
 		queue->mLayer	== mLayer &&
@@ -45,7 +45,7 @@ void ShadedArea::OnFill (Queue* queue)
 // Activate the shader and bind the textures
 //============================================================================================================
 
-void ShadedArea::OnPreRender (IGraphics* graphics) const
+void UIShadedArea::OnPreRender (IGraphics* graphics) const
 {
 	for (uint i = 0; i < mTex.GetSize(); ++i)
 		graphics->SetActiveTexture(i, mTex[i]);
@@ -57,7 +57,7 @@ void ShadedArea::OnPreRender (IGraphics* graphics) const
 // Disable the shader and deactivate all textures
 //============================================================================================================
 
-void ShadedArea::OnPostRender (IGraphics* graphics) const
+void UIShadedArea::OnPostRender (IGraphics* graphics) const
 {
 	graphics->SetActiveShader(0);
 
@@ -69,7 +69,7 @@ void ShadedArea::OnPostRender (IGraphics* graphics) const
 // Serialization - Load
 //============================================================================================================
 
-bool ShadedArea::CustomSerializeFrom(const TreeNode& root)
+bool UIShadedArea::CustomSerializeFrom(const TreeNode& root)
 {
 	const Variable& value = root.mValue;
 
@@ -104,7 +104,7 @@ bool ShadedArea::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void ShadedArea::CustomSerializeTo(TreeNode& root) const
+void UIShadedArea::CustomSerializeTo(TreeNode& root) const
 {
 	TreeNode& shader = root.AddChild("Shader");
 	if (mShader != 0) shader.mValue = mShader->GetName();

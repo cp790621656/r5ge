@@ -70,7 +70,7 @@ void DeleteFBO(void* ptr)
 // FBO constructor
 //============================================================================================================
 
-FBO::FBO(IGraphics* graphics) :
+GLFBO::GLFBO(IGraphics* graphics) :
 	mGraphics	(graphics),
 	mFbo		(0),
 	mDepthTex	(0),
@@ -88,7 +88,7 @@ FBO::FBO(IGraphics* graphics) :
 // Releases the resources associated with the FBO
 //============================================================================================================
 
-void FBO::_InternalRelease(bool delayExecution)
+void GLFBO::_InternalRelease(bool delayExecution)
 {
 	if (mAttachment != 0)
 	{
@@ -115,7 +115,7 @@ void FBO::_InternalRelease(bool delayExecution)
 // Returns the maximum number of color attachments
 //============================================================================================================
 
-uint FBO::GetMaxColorAttachments() const
+uint GLFBO::GetMaxColorAttachments() const
 {
 	return g_caps.mMaxFBOAttachments;
 }
@@ -124,7 +124,7 @@ uint FBO::GetMaxColorAttachments() const
 // Whether stencil buffer attachments are supported -- only via the GL_EXT_packed_depth_stencil
 //============================================================================================================
 
-bool FBO::SupportsStencilAttachments() const
+bool GLFBO::SupportsStencilAttachments() const
 {
 	return g_caps.mDepthStencil;
 }
@@ -133,7 +133,7 @@ bool FBO::SupportsStencilAttachments() const
 // Changes the buffer's size
 //============================================================================================================
 
-bool FBO::SetSize( const Vector2i& size )
+bool GLFBO::SetSize( const Vector2i& size )
 {
 	if ( mSize != size )
 	{
@@ -170,7 +170,7 @@ bool FBO::SetSize( const Vector2i& size )
 // Attaches a texture to the specified color index
 //============================================================================================================
 
-bool FBO::AttachColorTexture( uint bufferIndex, ITexture* tex, uint format )
+bool GLFBO::AttachColorTexture( uint bufferIndex, ITexture* tex, uint format )
 {
 	if ( bufferIndex < g_caps.mMaxFBOAttachments )
 	{
@@ -234,7 +234,7 @@ bool FBO::AttachColorTexture( uint bufferIndex, ITexture* tex, uint format )
 // Attaches a depth texture
 //============================================================================================================
 
-bool FBO::AttachDepthTexture (ITexture* tex)
+bool GLFBO::AttachDepthTexture (ITexture* tex)
 {
 	if (mDepthTex != tex)
 	{
@@ -252,7 +252,7 @@ bool FBO::AttachDepthTexture (ITexture* tex)
 // Attaches a stencil texture
 //============================================================================================================
 
-bool FBO::AttachStencilTexture (ITexture* tex)
+bool GLFBO::AttachStencilTexture (ITexture* tex)
 {
 	if (mStencilTex != tex)
 	{
@@ -277,7 +277,7 @@ bool FBO::AttachStencilTexture (ITexture* tex)
 // Determines if we have a valid color attachment
 //============================================================================================================
 
-bool FBO::HasColor() const
+bool GLFBO::HasColor() const
 {
 	for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
 	{
@@ -291,7 +291,7 @@ bool FBO::HasColor() const
 // Activates (or deactivates) the buffer
 //============================================================================================================
 
-void FBO::Activate() const
+void GLFBO::Activate() const
 {
 	// If the buffer isn't valid, don't bother
 	if ( mSize == 0 ) return;
@@ -485,7 +485,7 @@ void FBO::Activate() const
 // Deactivates the current frame buffer
 //============================================================================================================
 
-void FBO::Deactivate() const
+void GLFBO::Deactivate() const
 {
 	if (g_activeBuffer != 0)
 	{

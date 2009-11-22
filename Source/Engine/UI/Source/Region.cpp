@@ -5,7 +5,7 @@ using namespace R5;
 // Convenience function
 //====================================================================================================
 
-inline bool ToAnchor (const Variable& value, Anchor& a)
+inline bool ToAnchor (const Variable& value, UIAnchor& a)
 {
 	Vector2f v;
 	
@@ -22,7 +22,7 @@ inline bool ToAnchor (const Variable& value, Anchor& a)
 // Mostly a convenience function to quickly set absolute position and size
 //====================================================================================================
 
-void Region::SetRect (float x, float y, float w, float h)
+void UIRegion::SetRect (float x, float y, float w, float h)
 {
 	mRelativeLeft.Set(0.0f, x);
 	mRelativeTop.Set(0.0f, y);
@@ -35,7 +35,7 @@ void Region::SetRect (float x, float y, float w, float h)
 // Check to see if the position lies inside the region
 //====================================================================================================
 
-bool Region::Contains (const Vector2i& pos) const
+bool UIRegion::Contains (const Vector2i& pos) const
 {
 	if ( pos.x < mRect.mLeft   ) return false;
 	if ( pos.y < mRect.mTop    ) return false;
@@ -48,7 +48,7 @@ bool Region::Contains (const Vector2i& pos) const
 // Allows to adjust relative coordinates by the specified amount
 //====================================================================================================
 
-void Region::Adjust (float left, float top, float right, float bottom)
+void UIRegion::Adjust (float left, float top, float right, float bottom)
 {
 	mRelativeLeft.mAbsolute	+= left;
 	mRelativeTop.mAbsolute	+= top;
@@ -61,7 +61,7 @@ void Region::Adjust (float left, float top, float right, float bottom)
 // Serialization -- Load
 //====================================================================================================
 
-bool Region::Load (const String& tag, const Variable& value)
+bool UIRegion::Load (const String& tag, const Variable& value)
 {
 	if		( tag == "Left"	  && ToAnchor(value, mRelativeLeft)		)	return mDimsChanged  = true;
 	else if ( tag == "Right"  && ToAnchor(value, mRelativeRight)	)	return mDimsChanged  = true;
@@ -75,7 +75,7 @@ bool Region::Load (const String& tag, const Variable& value)
 // Serialization -- Save
 //====================================================================================================
 
-void Region::SerializeTo (TreeNode& root) const
+void UIRegion::SerializeTo (TreeNode& root) const
 {
 	root.AddChild("Left",	Vector2f(mRelativeLeft.mRelative,	mRelativeLeft.mAbsolute));
 	root.AddChild("Right",	Vector2f(mRelativeRight.mRelative,	mRelativeRight.mAbsolute));
@@ -88,9 +88,9 @@ void Region::SerializeTo (TreeNode& root) const
 // Convenience function for the top-level areas
 //====================================================================================================
 
-bool Region::Update (const Vector2i& size, bool forceUpdate)
+bool UIRegion::Update (const Vector2i& size, bool forceUpdate)
 {
-	static Region screen;
+	static UIRegion screen;
 	screen.mRect.Set(0.0f, size.x, 0.0f, size.y);
 	return Update(screen, forceUpdate);
 }
@@ -99,7 +99,7 @@ bool Region::Update (const Vector2i& size, bool forceUpdate)
 // Updates the region's position and size based on the provided parent's values
 //====================================================================================================
 
-bool Region::Update (const Region& parent, bool forceUpdate)
+bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
 {
 	bool changed (forceUpdate);
 	bool wasVisible ( mIsVisible && mAlpha > 0.001f );
@@ -137,10 +137,10 @@ bool Region::Update (const Region& parent, bool forceUpdate)
 						Float::IsNotEqual(bottom, mRect.mBottom);
 
 		// Check to see if the area is really visible according to dimensions
-		bool isVisible = (!(left	> pr.mRight	||
+		bool isVisible = (!(left	> pr.mRight		||
 							right	< pr.mLeft		||
 							top		> pr.mBottom	||
-							bottom	< pr.mTop))	&&
+							bottom	< pr.mTop))		&&
 							right	> left			&&
 							bottom	> top;
 

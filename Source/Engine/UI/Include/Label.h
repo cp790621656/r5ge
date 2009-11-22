@@ -7,7 +7,7 @@
 // Simple left/center/right-aligned text label
 //============================================================================================================
 
-class Label : public BasicLabel
+class UILabel : public BasicLabel
 {
 public:
 
@@ -27,7 +27,7 @@ protected:
 
 public:
 
-	Label() : mAlignment(Alignment::Left) {}
+	UILabel() : mAlignment(Alignment::Left) {}
 
 	char GetAlignment()	const { return mAlignment; }
 	void SetAlignment (char alignment);
@@ -35,10 +35,10 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Label", Label, BasicLabel, Area);
+	R5_DECLARE_INHERITED_CLASS("Label", UILabel, BasicLabel, UIArea);
 
 	// Called when a queue is being rebuilt
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

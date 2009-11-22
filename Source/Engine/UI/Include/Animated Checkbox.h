@@ -7,7 +7,7 @@
 // Same as the AnimatedButton, but based on the Checkbox
 //============================================================================================================
 
-class AnimatedCheckbox : public Checkbox
+class UIAnimatedCheckbox : public UICheckbox
 {
 protected:
 
@@ -19,7 +19,7 @@ protected:
 
 public:
 
-	AnimatedCheckbox();
+	UIAnimatedCheckbox();
 
 	float GetAnimationTime() const		{ return mAnimTime; }
 	void  SetAnimationTime(float val)	{ mAnimTime = val;  }
@@ -30,11 +30,11 @@ public:
 public:
 
 	// Area creation
-	static Area* _CreateNew() { return new AnimatedCheckbox(); }
+	static UIArea* _CreateNew() { return new UIAnimatedCheckbox(); }
 
 	// Area functions
 	virtual bool OnUpdate (bool dimensionsChanged);
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

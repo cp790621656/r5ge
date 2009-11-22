@@ -29,10 +29,10 @@ public:
 		bool		mOpen;		// Whether this node is currently open
 
 		bool		mPassable;
-		Highlight*	mHlt;
-		Label*		mLblCost;
-		Label*		mLblEstimate;
-		Label*		mLblTotal;
+		UIHighlight*	mHlt;
+		UILabel*		mLblCost;
+		UILabel*		mLblEstimate;
+		UILabel*		mLblTotal;
 		Vector2i	mPos;
 
 		Node() :	mParent		(0),
@@ -53,10 +53,10 @@ protected:
 	
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
-	Root*			mUI;
+	UIRoot*			mUI;
 	Core*			mCore;
-	Frame*			mRoot;
-	Label*			mStatus;
+	UIFrame*			mRoot;
+	UILabel*			mStatus;
 
 	Array<Node>		mNodes;		// Pathfinding nodes
 	Node*			mStart;		// Pointer to the starting node
@@ -76,8 +76,8 @@ public:
 	void Run();
 	void Update();
 
-	bool OnHighlightKey  (Area* ptr, const Vector2i& pos, byte key, bool isDown);
-	bool OnHighlightMove (Area* ptr, const Vector2i& pos, const Vector2i& delta);
+	bool OnHighlightKey  (UIArea* ptr, const Vector2i& pos, byte key, bool isDown);
+	bool OnHighlightMove (UIArea* ptr, const Vector2i& pos, const Vector2i& delta);
 	bool OnKey (const Vector2i& pos, byte key, bool isDown);
 };
 

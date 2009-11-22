@@ -7,7 +7,7 @@
 // Window is a complex widget based on Animated Frame, using several other widgets
 //============================================================================================================
 
-class Window : public AnimatedFrame
+class UIWindow : public UIAnimatedFrame
 {
 	struct Movement
 	{
@@ -23,19 +23,19 @@ class Window : public AnimatedFrame
 
 protected:
 
-	SubPicture	mBackground;
-	SubPicture	mTitlebar;
-	Label		mTitle;
-	Region		mContent;
-	byte		mTitleHeight;
-	byte		mMovement;
-	bool		mResizable;
+	UISubPicture	mBackground;
+	UISubPicture	mTitlebar;
+	UILabel			mTitle;
+	UIRegion		mContent;
+	byte			mTitleHeight;
+	byte			mMovement;
+	bool			mResizable;
 
 public:
 
-	Window();
+	UIWindow();
 
-	const Skin*		GetSkin()			const		{ return mBackground.GetSkin();	}
+	const UISkin*	GetSkin()			const		{ return mBackground.GetSkin();	}
 	const Color3f&	GetColor()			const		{ return mTitle.GetColor();		}
 	const String&	GetText()			const		{ return mTitle.GetText();		}
 	const IFont*	GetFont()			const		{ return mTitle.GetFont();		}
@@ -43,7 +43,7 @@ public:
 	byte			GetTitlebarHeight() const		{ return mTitleHeight;			}
 	bool			IsResizable()		const		{ return mResizable;			}
 
-	void SetSkin			(const Skin* skin);
+	void SetSkin			(const UISkin* skin);
 	void SetColor			(const Color3f& color)	{ mTitle.SetColor(color);		}
 	void SetText			(const String& text)	{ mTitle.SetText(text);			}
 	void SetFont			(const IFont* font)		{ mTitle.SetFont(font);			}
@@ -57,16 +57,16 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Window", Window, AnimatedFrame, Area);
+	R5_DECLARE_INHERITED_CLASS("Window", UIWindow, UIAnimatedFrame, UIArea);
 
 	// Internal functions. These values are normally set by Root::CreateArea
-	virtual void _SetParentPtr (Area* ptr);
-	virtual void _SetRootPtr   (Root* ptr);
+	virtual void _SetParentPtr (UIArea* ptr);
+	virtual void _SetRootPtr   (UIRoot* ptr);
 
 public:
 
 	// Window uses a content region which is smaller than the actual region. All children use this content region.
-	virtual const Region& GetSubRegion() const { return mContent; }
+	virtual const UIRegion& GetSubRegion() const { return mContent; }
 
 	// Marks this specific area as needing to be rebuilt
 	virtual void SetDirty();
@@ -78,7 +78,7 @@ public:
 	virtual bool OnUpdate (bool dimensionsChanged);
 
 	// Called when a queue is being rebuilt
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom (const TreeNode& root);

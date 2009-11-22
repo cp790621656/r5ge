@@ -3,9 +3,9 @@ using namespace R5;
 
 //============================================================================================================
 
-Window::Window() : mTitleHeight(0), mMovement(Movement::None), mResizable(true)
+UIWindow::UIWindow() : mTitleHeight(0), mMovement(Movement::None), mResizable(true)
 {
-	mTitle.SetAlignment(Label::Alignment::Center);
+	mTitle.SetAlignment(UILabel::Alignment::Center);
 	mTitlebar.GetRegion().SetBottom(0, 0);
 	mTitle.SetLayer(1, false);
 }
@@ -14,7 +14,7 @@ Window::Window() : mTitleHeight(0), mMovement(Movement::None), mResizable(true)
 // Changes the active skin
 //============================================================================================================
 
-void Window::SetSkin (const Skin* skin)
+void UIWindow::SetSkin (const UISkin* skin)
 {
 	mBackground.Set(skin, "Window: Background");
 	mTitlebar.Set(skin, "Window: Titlebar");
@@ -24,7 +24,7 @@ void Window::SetSkin (const Skin* skin)
 // Changes the height of the titlebar
 //============================================================================================================
 
-void Window::SetTitlebarHeight (byte val)
+void UIWindow::SetTitlebarHeight (byte val)
 {
 	if (mTitleHeight != val)
 	{
@@ -38,7 +38,7 @@ void Window::SetTitlebarHeight (byte val)
 // Resize the window so that the content region matches these dimensions
 //============================================================================================================
 
-Vector2f Window::GetSizeForContent (float x, float y)
+Vector2f UIWindow::GetSizeForContent (float x, float y)
 {
 	float paddingX = mRegion.GetWidth()  - mContent.GetWidth();
 	float paddingY = mRegion.GetHeight() - mContent.GetHeight();
@@ -49,9 +49,9 @@ Vector2f Window::GetSizeForContent (float x, float y)
 // Changes the parent pointer -- must be passed down to internal members
 //============================================================================================================
 
-void Window::_SetParentPtr (Area* ptr)
+void UIWindow::_SetParentPtr (UIArea* ptr)
 {
-	Area::_SetParentPtr(ptr);
+	UIArea::_SetParentPtr(ptr);
 	mBackground._SetParentPtr(this);
 	mTitlebar._SetParentPtr(this);
 	mTitle._SetParentPtr(this);
@@ -61,9 +61,9 @@ void Window::_SetParentPtr (Area* ptr)
 // Changes the root pointer -- must be passed down to internal members
 //============================================================================================================
 
-void Window::_SetRootPtr (Root* ptr)
+void UIWindow::_SetRootPtr (UIRoot* ptr)
 {
-	Area::_SetRootPtr(ptr);
+	UIArea::_SetRootPtr(ptr);
 	mBackground._SetRootPtr(ptr);
 	mTitlebar._SetRootPtr(ptr);
 	mTitle._SetRootPtr(ptr);
@@ -73,7 +73,7 @@ void Window::_SetRootPtr (Root* ptr)
 // Marks this specific area as needing to be rebuilt
 //============================================================================================================
 
-void Window::SetDirty()
+void UIWindow::SetDirty()
 {
 	mBackground.SetDirty();
 	mTitlebar.SetDirty();
@@ -84,7 +84,7 @@ void Window::SetDirty()
 // Called when something changes in the texture
 //============================================================================================================
 
-void Window::OnTextureChanged (const ITexture* ptr)
+void UIWindow::OnTextureChanged (const ITexture* ptr)
 {
 	mBackground.OnTextureChanged(ptr);
 	mTitlebar.OnTextureChanged(ptr);
@@ -94,7 +94,7 @@ void Window::OnTextureChanged (const ITexture* ptr)
 // Any per-frame animation should go here
 //============================================================================================================
 
-bool Window::OnUpdate (bool dimensionsChanged)
+bool UIWindow::OnUpdate (bool dimensionsChanged)
 {
 	// Update the background. If background changes, it affects everything else
 	dimensionsChanged |= mBackground.Update(mRegion, dimensionsChanged);
@@ -105,7 +105,7 @@ bool Window::OnUpdate (bool dimensionsChanged)
 	// Update the content pane
 	if (dimensionsChanged)
 	{
-		const Face* face = mBackground.GetFace();
+		const UIFace* face = mBackground.GetFace();
 
 		float border = (face) ? (float)face->GetBorder() : 0.0f;
 		if (border < 0.0f) border = 0.0f;
@@ -113,7 +113,7 @@ bool Window::OnUpdate (bool dimensionsChanged)
 		float height = mTitlebar.GetRegion().GetHeight();
 		if (height < border) height = border;
 
-		mContent.SetTop	(0.0f,  height);
+		mContent.SetTop		(0.0f,  height);
 		mContent.SetBottom	(1.0f, -border);
 		mContent.SetLeft	(0.0f,  border);
 		mContent.SetRight	(1.0f, -border);
@@ -128,7 +128,7 @@ bool Window::OnUpdate (bool dimensionsChanged)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void Window::OnFill (Queue* queue)
+void UIWindow::OnFill (UIQueue* queue)
 {
 	mBackground.OnFill(queue);
 	if (mTitlebar.GetRegion().IsVisible()) mTitlebar.OnFill(queue);
@@ -139,7 +139,7 @@ void Window::OnFill (Queue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool Window::CustomSerializeFrom (const TreeNode& root)
+bool UIWindow::CustomSerializeFrom (const TreeNode& root)
 {
 	const Variable& value = root.mValue;
 
@@ -167,9 +167,9 @@ bool Window::CustomSerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void Window::CustomSerializeTo (TreeNode& root) const
+void UIWindow::CustomSerializeTo (TreeNode& root) const
 {
-	const Skin* skin = GetSkin();
+	const UISkin* skin = GetSkin();
 	if (skin != 0) root.AddChild("Skin", skin->GetName());
 	else root.AddChild("Skin");
 	root.AddChild("Titlebar Height", mTitleHeight);
@@ -181,7 +181,7 @@ void Window::CustomSerializeTo (TreeNode& root) const
 // Windows can be moved and resized
 //============================================================================================================
 
-bool Window::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+bool UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if (mMovement == Movement::Move)
 	{
@@ -201,7 +201,7 @@ bool Window::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 
 		if (move.Dot() > 0.0f) mRegion.Adjust(0, 0, move.x, move.y);
 	}
-	if (mMovement == Movement::None) Area::OnMouseMove(pos, delta);
+	if (mMovement == Movement::None) UIArea::OnMouseMove(pos, delta);
 	return true;
 }
 
@@ -209,13 +209,13 @@ bool Window::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 // Depending on where in the window the click happens, the window may be moved or resized
 //============================================================================================================
 
-bool Window::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIWindow::OnKey (const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft)
 	{
 		if (isDown)
 		{
-			const Face* face = mBackground.GetFace();
+			const UIFace* face = mBackground.GetFace();
 			float border = (face) ? (float)face->GetBorder() : 0.0f;
 			if (border < 8) border = 8;
 
@@ -242,5 +242,5 @@ bool Window::OnKey (const Vector2i& pos, byte key, bool isDown)
 	if (mMovement != Movement::None) return true;
 
 	// Inform the children and intercept all mouse events
-	return Area::OnKey(pos, key, isDown) || (key > Key::MouseFirst && key < Key::MouseLast);
+	return UIArea::OnKey(pos, key, isDown) || (key > Key::MouseFirst && key < Key::MouseLast);
 }

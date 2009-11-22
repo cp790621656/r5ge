@@ -38,8 +38,8 @@ void TestApp::Run()
 
 			mInst0		= FindObject<ModelInstance>(mCore->GetScene(), "Instance 0");
 			mInst1		= FindObject<ModelInstance>(mCore->GetScene(), "Instance 1");
-			mStatus		= FindWidget<Label>(mUI, "Status");
-			mMode		= FindWidget<Label>(mUI, "Technique");
+			mStatus		= FindWidget<UILabel>(mUI, "Status");
+			mMode		= FindWidget<UILabel>(mUI, "Technique");
 
 			ToggleTechnique();
 			PlayAnimation(GetModel0(), "Walk");
@@ -58,8 +58,8 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static Label* fps = FindWidget<Label>(mUI, "FPS");
-	static Label* tri = FindWidget<Label>(mUI, "Triangles");
+	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
+	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
 
 	mCore->BeginFrame();
 	mCore->CullScene(mCam);

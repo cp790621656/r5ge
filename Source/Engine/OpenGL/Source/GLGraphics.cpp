@@ -752,11 +752,11 @@ IVBO* GLGraphics::CreateVBO()
 		{
 			if ( mVbos[i] == 0 )
 			{
-				mVbos[i] = new VBO(this);
+				mVbos[i] = new GLVBO(this);
 				return mVbos[i];
 			}
 		}
-		mVbos.Expand() = new VBO(this);
+		mVbos.Expand() = new GLVBO(this);
 		return mVbos.Back();
 	}
 	return 0;
@@ -775,11 +775,11 @@ IRenderTarget* GLGraphics::CreateRenderTarget()
 		{
 			if ( mFbos[i] == 0 )
 			{
-				mFbos[i] = new FBO(this);
+				mFbos[i] = new GLFBO(this);
 				return mFbos[i];
 			}
 		}
-		mFbos.Expand() = new FBO(this);
+		mFbos.Expand() = new GLFBO(this);
 		return mFbos.Back();
 	}
 	return 0;

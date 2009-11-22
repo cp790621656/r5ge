@@ -219,10 +219,10 @@ uint TestApp::DrawScene()
 
 float TestApp::UpdateStats()
 {
-	static Label* tri = FindWidget<Label>(mUI, "Triangles");
-	static Label* fps = FindWidget<Label>(mUI, "FPS");
-	static Label* vis = FindWidget<Label>(mUI, "Visible");
-	static Label* deb = FindWidget<Label>(mUI, "Debug");
+	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
+	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
+	static UILabel* vis = FindWidget<UILabel>(mUI, "Visible");
+	static UILabel* deb = FindWidget<UILabel>(mUI, "Debug");
 
 	if (tri) tri->SetText( String("TRI: %u", mTriangles) );
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );

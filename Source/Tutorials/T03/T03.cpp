@@ -23,7 +23,7 @@ class TestApp
 	Core*			mCore;
 	UI*				mUI;
 	DebugCamera*	mCam;
-	Label*			mLabel;
+	UILabel*			mLabel;
 
 public:
 
@@ -32,7 +32,7 @@ public:
 	void Run();
 	void OnDraw();
 	void CreateWindow();
-	bool OnSliderChange(Area* area);
+	bool OnSliderChange(UIArea* area);
 };
 
 //============================================================================================================
@@ -101,7 +101,7 @@ void TestApp::OnDraw()
 void TestApp::CreateWindow()
 {
 	// Default skin and font are defined in the UI config file we loaded above
-	Skin*  skin = mUI->GetDefaultSkin();
+	UISkin*  skin = mUI->GetDefaultSkin();
 	IFont* font = mUI->GetDefaultFont();
 
 	// Add a new UI widget: a simple window. Note that simply adding any widget to the UI root will NOT
@@ -112,7 +112,7 @@ void TestApp::CreateWindow()
 	// is drawn BY that frame. UI's "Window" class is derived from "Frame", so it has the ability to render
 	// itself in addition to all of its children.
 
-	Window* win = AddWidget<Window>(mUI, "First Window");
+	UIWindow* win = AddWidget<UIWindow>(mUI, "First Window");
 
 	// All widgets have a region which is defined by 4 relative and absolute coordinate pairs.
 	// Relative coordinates are typically in the 0-1 range, 0 being the left/top, and 1 being
@@ -148,7 +148,7 @@ void TestApp::CreateWindow()
 
 	// Now we want to add a slider to the window. Note that instead of 'mUI' we pass 'win'.
 	{
-		Slider* sld = AddWidget<Slider>(win, "First Slider");
+		UISlider* sld = AddWidget<UISlider>(win, "First Slider");
 
 		// The slider will use the same UI
 		sld->SetSkin(skin);
@@ -157,7 +157,7 @@ void TestApp::CreateWindow()
 		sld->SetOnValueChange( bind(&TestApp::OnSliderChange, this) );
 
 		// The slider's region is padded 5 pixels on all sides, bottom side being fixed to the top
-		Region& rgn = sld->GetRegion();
+		UIRegion& rgn = sld->GetRegion();
 		rgn.SetLeft		(0.0f,  5.0f);
 		rgn.SetRight	(1.0f, -5.0f);
 		rgn.SetTop		(0.0f,  5.0f);
@@ -165,13 +165,13 @@ void TestApp::CreateWindow()
 
 		// Add a label on top of the slider
 		{
-			mLabel = AddWidget<Label>(sld, "Slider Value");
+			mLabel = AddWidget<UILabel>(sld, "Slider Value");
 
 			// Label will use the default font
 			mLabel->SetFont(font);
 
 			// We want to center the text inside the label
-			mLabel->SetAlignment( Label::Alignment::Center );
+			mLabel->SetAlignment( UILabel::Alignment::Center );
 
 			// Note that we don't set the label's region at all. This means the label will use the full
 			// dimensions of the parent. The problem with this is that since the label covers the slider
@@ -203,10 +203,10 @@ void TestApp::CreateWindow()
 // Callback triggered when the slider's value changes
 //============================================================================================================
 
-bool TestApp::OnSliderChange (Area* area)
+bool TestApp::OnSliderChange (UIArea* area)
 {
 	// The passed area is actually a slider
-	Slider* sld = R5_CAST(Slider, area);
+	UISlider* sld = R5_CAST(UISlider, area);
 	
 	// Set the label's text, mirroring the slider's value
 	if (sld != 0 && mLabel != 0) mLabel->SetText( String("Value: %.2f", sld->GetValue()) );

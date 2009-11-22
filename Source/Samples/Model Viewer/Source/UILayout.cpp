@@ -35,115 +35,115 @@ using namespace R5;
 // Not the best code, I agree, but keeping it local here makes everything much more compartmentalized.
 //============================================================================================================
 
-IFont*		_font			= 0;
-Skin*		_skin			= 0;
-ITechnique*	_deferred0		= 0;
-ITechnique*	_deferred1		= 0;
-ITechnique*	_wireframe		= 0;
+IFont*			_font			= 0;
+UISkin*			_skin			= 0;
+ITechnique*		_deferred0		= 0;
+ITechnique*		_deferred1		= 0;
+ITechnique*		_wireframe		= 0;
 
-Frame*		_loadFrame		= 0;
+UIFrame*		_loadFrame		= 0;
 
-float		_menuOffset		= 0.0f;
-Frame*		_menuFrame		= 0;
+float			_menuOffset		= 0.0f;
+UIFrame*		_menuFrame		= 0;
 
-Menu*		_fileMenu		= 0;
-Menu*		_limbMenu		= 0;
-Menu*		_meshMenu		= 0;
-Menu*		_matMenu		= 0;
-Menu*		_texMenu		= 0;
-Menu*		_animMenu		= 0;
+UIMenu*			_fileMenu		= 0;
+UIMenu*			_limbMenu		= 0;
+UIMenu*			_meshMenu		= 0;
+UIMenu*			_matMenu		= 0;
+UIMenu*			_texMenu		= 0;
+UIMenu*			_animMenu		= 0;
 
-Window*		_fileDialog		= 0;
-Label*		_fileLabel		= 0;
-Input*		_fileInput		= 0;
-Button*		_fileOK			= 0;
+UIWindow*		_fileDialog		= 0;
+UILabel*		_fileLabel		= 0;
+UIInput*		_fileInput		= 0;
+UIButton*		_fileOK			= 0;
 
-Window*		_confirmDialog	= 0;
-Label*		_confirmLabel	= 0;
-Button*		_confirmOK		= 0;
+UIWindow*		_confirmDialog	= 0;
+UILabel*		_confirmLabel	= 0;
+UIButton*		_confirmOK		= 0;
 
-Frame*		_optFrame		= 0;
+UIFrame*		_optFrame		= 0;
 
-Frame*		_modelFrame		= 0;
-Label*		_modelTri		= 0;
-Label*		_modelSource	= 0;
-Input*		_modelPos		= 0;
-Input*		_modelRot		= 0;
-Input*		_modelScale		= 0;
-Checkbox*	_modelUsePos	= 0;
-Checkbox*	_modelUseRot	= 0;
-Checkbox*	_modelUseScale	= 0;
-Checkbox*	_modelSpin		= 0;
-Checkbox*	_modelBounds	= 0;
-Button*		_modelBake		= 0;
+UIFrame*		_modelFrame		= 0;
+UILabel*		_modelTri		= 0;
+UILabel*		_modelSource	= 0;
+UIInput*		_modelPos		= 0;
+UIInput*		_modelRot		= 0;
+UIInput*		_modelScale		= 0;
+UICheckbox*		_modelUsePos	= 0;
+UICheckbox*		_modelUseRot	= 0;
+UICheckbox*		_modelUseScale	= 0;
+UICheckbox*		_modelSpin		= 0;
+UICheckbox*		_modelBounds	= 0;
+UIButton*		_modelBake		= 0;
 
-Frame*		_limbFrame		= 0;
-Input*		_limbName		= 0;
-List*		_limbMesh		= 0;
-List*		_limbMat		= 0;
+UIFrame*		_limbFrame		= 0;
+UIInput*		_limbName		= 0;
+UIList*			_limbMesh		= 0;
+UIList*			_limbMat		= 0;
 
-Frame*		_meshFrame		= 0;
-Label*		_meshName		= 0;
-Label*		_meshTri		= 0;
+UIFrame*		_meshFrame		= 0;
+UILabel*		_meshName		= 0;
+UILabel*		_meshTri		= 0;
 
-Frame*		_matFrame		= 0;
-Input*		_matName		= 0;
-Highlight*	_matDiff		= 0;
-Highlight*	_matSpec		= 0;
-Slider*		_matGlow		= 0;
-Slider*		_matADT			= 0;
-List*		_matTech		= 0;
-List*		_matShaderList	= 0;
-Input*		_matShaderInput	= 0;
-List*		_matTexList  [TEXTURES]	= {0};
-Input*		_matTexInput [TEXTURES]	= {0};
+UIFrame*		_matFrame		= 0;
+UIInput*		_matName		= 0;
+UIHighlight*	_matDiff		= 0;
+UIHighlight*	_matSpec		= 0;
+UISlider*		_matGlow		= 0;
+UISlider*		_matADT			= 0;
+UIList*			_matTech		= 0;
+UIList*			_matShaderList	= 0;
+UIInput*		_matShaderInput	= 0;
+UIList*			_matTexList  [TEXTURES]	= {0};
+UIInput*		_matTexInput [TEXTURES]	= {0};
 
-Frame*		_colorFrame		= 0;
-Label*		_colorLabel		= 0;
-Slider*		_colorRed		= 0;
-Slider*		_colorGreen		= 0;
-Slider*		_colorBlue		= 0;
-Slider*		_colorAlpha		= 0;
+UIFrame*		_colorFrame		= 0;
+UILabel*		_colorLabel		= 0;
+UISlider*		_colorRed		= 0;
+UISlider*		_colorGreen		= 0;
+UISlider*		_colorBlue		= 0;
+UISlider*		_colorAlpha		= 0;
 
-Frame*		_techFrame		= 0;
-Frame*		_detFrame		= 0;
-Frame*		_colFrame		= 0;
+UIFrame*		_techFrame		= 0;
+UIFrame*		_detFrame		= 0;
+UIFrame*		_colFrame		= 0;
 
-Frame*		_texFrame		= 0;
-Label*		_texName		= 0;
-Label*		_texDims		= 0;
-Label*		_texSize		= 0;
-List*		_texWrap		= 0;
-List*		_texFilter		= 0;
-List*		_texFormat		= 0;
-R5::Picture* _texImage		= 0;
+UIFrame*		_texFrame		= 0;
+UILabel*		_texName		= 0;
+UILabel*		_texDims		= 0;
+UILabel*		_texSize		= 0;
+UIList*			_texWrap		= 0;
+UIList*			_texFilter		= 0;
+UIList*			_texFormat		= 0;
+UIPicture*		_texImage		= 0;
 
-Frame*		_animFrame		= 0;
-Input*		_animName		= 0;
-Input*		_animRange		= 0;
-Input*		_animDuration	= 0;
-Button*		_animPlay		= 0;
-Checkbox*	_animLoop		= 0;
+UIFrame*		_animFrame		= 0;
+UIInput*		_animName		= 0;
+UIInput*		_animRange		= 0;
+UIInput*		_animDuration	= 0;
+UIButton*		_animPlay		= 0;
+UICheckbox*		_animLoop		= 0;
 
-String		_currentLimb;
-String		_currentMesh;
-String		_currentMat;
-String		_currentTex;
-String		_currentTech;
-String		_currentAnim;
+String			_currentLimb;
+String			_currentMesh;
+String			_currentMat;
+String			_currentTex;
+String			_currentTech;
+String			_currentAnim;
 
 //============================================================================================================
 // A pair of empty functions that are used to intercept keyboard and mouse events for frames
 //============================================================================================================
 
-bool OnIgnoreKey	(Area* area, const Vector2i& pos, byte key, bool isDown)	{ return true; }
-bool OnIgnoreMouse	(Area* area, const Vector2i& pos, const Vector2i& delta)	{ return true; }
+bool OnIgnoreKey	(UIArea* area, const Vector2i& pos, byte key, bool isDown)	{ return true; }
+bool OnIgnoreMouse	(UIArea* area, const Vector2i& pos, const Vector2i& delta)	{ return true; }
 
 //============================================================================================================
 // Helper function used by widget creation functions
 //============================================================================================================
 
-void SetRegion (Region& rgn, uint line, int flag, float x, float y)
+void SetRegion (UIRegion& rgn, uint line, int flag, float x, float y)
 {
 	float offset = PADDING * 2.0f + (PADDING + LINE) * line;
 	float xp = x + PADDING;
@@ -172,11 +172,11 @@ void SetRegion (Region& rgn, uint line, int flag, float x, float y)
 // Simple callback function that hides the area's parent
 //============================================================================================================
 
-bool HideParent (Area* area, bool hasFocus)
+bool HideParent (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		Frame* parent = R5_CAST(Frame, area->GetParent());
+		UIFrame* parent = R5_CAST(UIFrame, area->GetParent());
 		if (parent != 0) parent->Hide();
 	}
 	return true;
@@ -230,7 +230,7 @@ bool ModelViewer::SerializeTo (TreeNode& root) const
 {
 	if (_fileInput != 0)
 	{
-		const Input::HistoryList& history = _fileInput->GetHistory();
+		const UIInput::HistoryList& history = _fileInput->GetHistory();
 
 		if (history.IsValid())
 		{
@@ -265,10 +265,10 @@ bool ModelViewer::CreateUI()
 
 	// Create the menu frame at the top of the screen
 	{
-		_menuFrame = AddWidget<Frame>(mUI, "Menu Frame");
+		_menuFrame = AddWidget<UIFrame>(mUI, "Menu Frame");
 		_menuFrame->SetSerializable(false);
 		{
-			Region& rgn = _menuFrame->GetRegion();
+			UIRegion& rgn = _menuFrame->GetRegion();
 			rgn.SetTop	 (0.0f, -3.0f);
 			rgn.SetBottom(0.0f, 24.0f);
 			rgn.SetRight (0.0f, 0.0f);
@@ -289,7 +289,7 @@ bool ModelViewer::CreateUI()
 
 	// View menu
 	{
-		Menu* menu = AddMenuItem("View");
+		UIMenu* menu = AddMenuItem("View");
 		menu->AddEntry(RESET_CAMERA);
 		menu->AddEntry(RESET_WINDOW);
 		menu->AddEntry(TOGGLE_FULLSCREEN);
@@ -301,22 +301,22 @@ bool ModelViewer::CreateUI()
 
 	// The options menu is different as it has to be saved for options to stay persistent
 	{
-		_optFrame = FindWidget<Frame>(mUI, "Options Frame");
+		_optFrame = FindWidget<UIFrame>(mUI, "Options Frame");
 
 		if (_optFrame != 0)
 		{
-			Button* btn = AddMenuButton("Options");
+			UIButton* btn = AddMenuButton("Options");
 			btn->SetTooltip("Non-model related options: rendering method, background, bloom");
 
 			_optFrame->SetAlpha(0.0f);
 			_optFrame->SetOnKey( &OnIgnoreKey );
 			_optFrame->SetOnMouseMove( &OnIgnoreMouse );
 
-			SubPicture*	bnd = FindWidget<SubPicture>(_optFrame, "Options Background", false);
-			List*		ren = FindWidget<List>		(_optFrame, "Rendering Method");
-			List*		bgd = FindWidget<List>		(_optFrame, "Background");
-			Checkbox*	chk = FindWidget<Checkbox>	(_optFrame, "Bloom Checkbox");
-			Slider*		sld = FindWidget<Slider>	(_optFrame, "Bloom Slider");
+			UISubPicture*	bnd = FindWidget<UISubPicture>	(_optFrame, "Options Background", false);
+			UIList*			ren = FindWidget<UIList>		(_optFrame, "Rendering Method");
+			UIList*			bgd = FindWidget<UIList>		(_optFrame, "Background");
+			UICheckbox*		chk = FindWidget<UICheckbox>	(_optFrame, "Bloom Checkbox");
+			UISlider*			sld = FindWidget<UISlider>		(_optFrame, "Bloom Slider");
 
 			if (bnd != 0)
 			{
@@ -352,7 +352,7 @@ bool ModelViewer::CreateUI()
 
 	// Model options menu
 	{
-		Button* btn = AddMenuButton("Model");
+		UIButton* btn = AddMenuButton("Model");
 		btn->SetOnFocus( bind(&ModelViewer::OnFillModelMenu, this) );
 		btn->SetTooltip("Options affecting the entire model");
 
@@ -374,8 +374,8 @@ bool ModelViewer::CreateUI()
 		_modelScale		= AddInput (_modelFrame, 4, "Model Scale Value",	2);
 		_modelBake		= AddButton(_modelFrame, 7, "Model Bake");
 
-		Label* spinLabel	= AddLabel (_modelFrame, 5, "Model Spin Label", 2);
-		Label* boundsLabel	= AddLabel (_modelFrame, 6, "Model Bounds Label", 2);
+		UILabel* spinLabel	= AddLabel (_modelFrame, 5, "Model Spin Label", 2);
+		UILabel* boundsLabel	= AddLabel (_modelFrame, 6, "Model Bounds Label", 2);
 
 		_modelPos->SetTooltip	("Positional offset. Don't forget to check the checkbox to the left.");
 		_modelRot->SetTooltip	("You can specify a directional vector if you prefer. [0 0 1] will make the model face up.");
@@ -567,7 +567,7 @@ bool ModelViewer::CreateUI()
 		AddCaption(_texFrame, 3, "Wrap mode:");
 		AddCaption(_texFrame, 4, "Filtering:");
 
-		Button* btn = AddButton(_texFrame, 5, "Texture Reload", 0);
+		UIButton* btn = AddButton(_texFrame, 5, "Texture Reload", 0);
 		btn->SetOnFocus( bind(&ModelViewer::OnTexReload, this) );
 		btn->SetText("Reload as:");
 		btn->SetTooltip("Clicking this button will discard then reload this texture");
@@ -607,7 +607,7 @@ bool ModelViewer::CreateUI()
 		_texImage = AddWidget<R5::Picture>(_texFrame, "Texture Image");
 		_texImage->SetOnKey( &OnIgnoreKey );
 		_texImage->SetOnMouseMove( &OnIgnoreMouse );
-		Region& tr = _texImage->GetRegion();
+		UIRegion& tr = _texImage->GetRegion();
 		tr.SetLeft		(0.0f,  5.0f);
 		tr.SetRight		(1.0f, -5.0f);
 		tr.SetTop		(0.0f, 127.0f);
@@ -648,7 +648,7 @@ bool ModelViewer::CreateUI()
 	{
 		// Dialog window
 		{
-			_fileDialog = AddWidget<Window>(mUI, "File Dialog");
+			_fileDialog = AddWidget<UIWindow>(mUI, "File Dialog");
 			_fileDialog->SetSerializable(false);
 			_fileDialog->SetResizable(false);
 			_fileDialog->SetAlpha(0.0f);
@@ -661,13 +661,13 @@ bool ModelViewer::CreateUI()
 
 		// Caption label
 		{
-			_fileLabel = AddWidget<Label>(_fileDialog, "File Dialog Label");
+			_fileLabel = AddWidget<UILabel>(_fileDialog, "File Dialog Label");
 			_fileLabel->SetLayer(1, false);
-			_fileLabel->SetAlignment( Label::Alignment::Center );
+			_fileLabel->SetAlignment( UILabel::Alignment::Center );
 			_fileLabel->SetFont(_font);
 			_fileLabel->SetReceivesEvents(false);
 
-			Region& rgn = _fileLabel->GetRegion();
+			UIRegion& rgn = _fileLabel->GetRegion();
 			rgn.SetLeft		(0.0f,   5.0f);
 			rgn.SetRight	(1.0f,  -5.0f);
 			rgn.SetTop		(0.0f,   5.0f);
@@ -676,7 +676,7 @@ bool ModelViewer::CreateUI()
 
 		// Input field
 		{
-			_fileInput = AddWidget<Input>(_fileDialog, "File Dialog Input");
+			_fileInput = AddWidget<UIInput>(_fileDialog, "File Dialog Input");
 			_fileInput->SetSkin(_skin);
 			_fileInput->SetFont(_font);
 			_fileInput->SetFace("Dark Area");
@@ -697,7 +697,7 @@ bool ModelViewer::CreateUI()
 				mSavedHistory.Unlock();
 			}
 
-			Region& rgn = _fileInput->GetRegion();
+			UIRegion& rgn = _fileInput->GetRegion();
 			rgn.SetLeft		(0.0f,   5.0f);
 			rgn.SetRight	(1.0f,  -5.0f);
 			rgn.SetTop		(1.0f, -50.0f);
@@ -706,13 +706,13 @@ bool ModelViewer::CreateUI()
 
 		// Cancel button
 		{
-			Button* cancel = AddWidget<Button>(_fileDialog, "File Dialog Cancel");
+			UIButton* cancel = AddWidget<UIButton>(_fileDialog, "File Dialog Cancel");
 			cancel->SetOnFocus( &HideParent );
 			cancel->SetSkin(_skin);
 			cancel->SetFont(_font);
 			cancel->SetText("Cancel");
 
-			Region& rgn = cancel->GetRegion();
+			UIRegion& rgn = cancel->GetRegion();
 			rgn.SetLeft		(0.5f,  10.0f);
 			rgn.SetRight	(0.5f, 150.0f);
 			rgn.SetTop		(1.0f, -25.0f);
@@ -721,12 +721,12 @@ bool ModelViewer::CreateUI()
 
 		// OK button
 		{
-			_fileOK = AddWidget<Button>(_fileDialog, "File Dialog OK");
+			_fileOK = AddWidget<UIButton>(_fileDialog, "File Dialog OK");
 			_fileOK->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
 			_fileOK->SetSkin(_skin);
 			_fileOK->SetFont(_font);
 
-			Region& rgn = _fileOK->GetRegion();
+			UIRegion& rgn = _fileOK->GetRegion();
 			rgn.SetLeft		(0.5f, -150.0f);
 			rgn.SetRight	(0.5f,  -10.0f);
 			rgn.SetTop		(1.0f,  -25.0f);
@@ -738,7 +738,7 @@ bool ModelViewer::CreateUI()
 	{
 		// Dialog window
 		{
-			_confirmDialog = AddWidget<Window>(mUI, "Confirm Dialog");
+			_confirmDialog = AddWidget<UIWindow>(mUI, "Confirm Dialog");
 			_confirmDialog->SetSerializable(false);
 			_confirmDialog->SetAlpha(0.0f);
 			_confirmDialog->SetSkin(_skin);
@@ -750,13 +750,13 @@ bool ModelViewer::CreateUI()
 
 		// Caption label
 		{
-			_confirmLabel = AddWidget<Label>(_confirmDialog, "Confirm Dialog Label");
+			_confirmLabel = AddWidget<UILabel>(_confirmDialog, "Confirm Dialog Label");
 			_confirmLabel->SetLayer(1, false);
-			_confirmLabel->SetAlignment( Label::Alignment::Center );
+			_confirmLabel->SetAlignment( UILabel::Alignment::Center );
 			_confirmLabel->SetFont(_font);
 			_confirmLabel->SetReceivesEvents(false);
 
-			Region& rgn = _confirmLabel->GetRegion();
+			UIRegion& rgn = _confirmLabel->GetRegion();
 			rgn.SetLeft		(0.0f,   5.0f);
 			rgn.SetRight	(1.0f,  -5.0f);
 			rgn.SetTop		(0.0f,   5.0f);
@@ -765,13 +765,13 @@ bool ModelViewer::CreateUI()
 
 		// Cancel button
 		{
-			Button* cancel = AddWidget<Button>(_confirmDialog, "Confirm Dialog Cancel");
+			UIButton* cancel = AddWidget<UIButton>(_confirmDialog, "Confirm Dialog Cancel");
 			cancel->SetOnFocus( &HideParent );
 			cancel->SetText("Cancel");
 			cancel->SetSkin(_skin);
 			cancel->SetFont(_font);
 
-			Region& rgn = cancel->GetRegion();
+			UIRegion& rgn = cancel->GetRegion();
 			rgn.SetLeft		(0.5f,  10.0f);
 			rgn.SetRight	(0.5f, 150.0f);
 			rgn.SetTop		(1.0f, -25.0f);
@@ -780,12 +780,12 @@ bool ModelViewer::CreateUI()
 
 		// OK button
 		{
-			_confirmOK = AddWidget<Button>(_confirmDialog, "Confirm Dialog OK");
+			_confirmOK = AddWidget<UIButton>(_confirmDialog, "Confirm Dialog OK");
 			_confirmOK->SetOnKey( bind(&ModelViewer::OnConfirmDialogOK, this) );
 			_confirmOK->SetSkin(_skin);
 			_confirmOK->SetFont(_font);
 
-			Region& rgn = _confirmOK->GetRegion();
+			UIRegion& rgn = _confirmOK->GetRegion();
 			rgn.SetLeft		(0.5f, -150.0f);
 			rgn.SetRight	(0.5f,  -10.0f);
 			rgn.SetTop		(1.0f,  -25.0f);
@@ -795,18 +795,18 @@ bool ModelViewer::CreateUI()
 
 	// Loading frame
 	{
-		_loadFrame = AddWidget<Frame>(mUI, "Loading Frame");
+		_loadFrame = AddWidget<UIFrame>(mUI, "Loading Frame");
 		_loadFrame->SetSerializable(false);
 		_loadFrame->SetOnKey( &OnIgnoreKey );
 		_loadFrame->SetOnMouseMove( &OnIgnoreMouse );
 		_loadFrame->SetAlpha(0.0f);
 
-		Highlight* hlt = AddWidget<Highlight>(_loadFrame, "Loading Frame Background");
+		UIHighlight* hlt = AddWidget<UIHighlight>(_loadFrame, "Loading Frame Background");
 		hlt->SetColor( Color4f(0.0f, 0.0f, 0.0f, 0.0f) );
 		hlt->SetAlpha(0.85f);
 		hlt->SetReceivesEvents(false);
 
-		Region& rgn = hlt->GetRegion();
+		UIRegion& rgn = hlt->GetRegion();
 		rgn.SetBottom(1.0f, -20.0f);
 	}
 	return true;
@@ -845,7 +845,7 @@ void ModelViewer::ShowOpenDialog()
 {
 	if (_fileDialog != 0)
 	{
-		Region& rgn = _fileDialog->GetRegion();
+		UIRegion& rgn = _fileDialog->GetRegion();
 		rgn.SetLeft		(0.5f, -200.0f);
 		rgn.SetRight	(0.5f,  200.0f);
 		rgn.SetTop		(0.5f, -50.0f);
@@ -867,7 +867,7 @@ void ModelViewer::ShowSaveAsDialog()
 {
 	if (_fileDialog != 0)
 	{
-		Region& rgn = _fileDialog->GetRegion();
+		UIRegion& rgn = _fileDialog->GetRegion();
 		rgn.SetLeft		(0.5f, -200.0f);
 		rgn.SetRight	(0.5f,  200.0f);
 		rgn.SetTop		(0.5f, -50.0f);
@@ -889,7 +889,7 @@ void ModelViewer::ShowConfirmClearMatsDialog()
 {
 	if (_confirmDialog != 0)
 	{
-		Region& rgn = _confirmDialog->GetRegion();
+		UIRegion& rgn = _confirmDialog->GetRegion();
 		rgn.SetLeft		(0.5f, -200.0f);
 		rgn.SetRight	(0.5f,  200.0f);
 		rgn.SetTop		(0.5f, -50.0f);
@@ -910,7 +910,7 @@ void ModelViewer::ShowConfirmClearTexDialog()
 {
 	if (_confirmDialog != 0)
 	{
-		Region& rgn = _confirmDialog->GetRegion();
+		UIRegion& rgn = _confirmDialog->GetRegion();
 		rgn.SetLeft		(0.5f, -200.0f);
 		rgn.SetRight	(0.5f,  200.0f);
 		rgn.SetTop		(0.5f, -50.0f);
@@ -931,7 +931,7 @@ void ModelViewer::ShowConfirmClearAnimDialog()
 {
 	if (_confirmDialog != 0)
 	{
-		Region& rgn = _confirmDialog->GetRegion();
+		UIRegion& rgn = _confirmDialog->GetRegion();
 		rgn.SetLeft		(0.5f, -200.0f);
 		rgn.SetRight	(0.5f,  200.0f);
 		rgn.SetTop		(0.5f, -50.0f);
@@ -996,19 +996,19 @@ void ModelViewer::UpdateAnimPanel (const Animation* anim)
 		_animName->SetText		( anim->GetName() );
 		_animRange->SetText		( String("%u %u", frames.x, frames.y) );
 		_animDuration->SetText	( String("%.2f %.2f %.2f", duration.x, duration.y, duration.z) );
-		_animLoop->SetState		( Checkbox::State::Checked, anim->IsLooping() );
+		_animLoop->SetState		( UICheckbox::State::Checked, anim->IsLooping() );
 
 		float end = mModel->GetTimeToAnimationEnd(anim);
 
 		if (end == 0.0f)
 		{
 			_animPlay->SetText("Play");
-			_animPlay->SetState( Button::State::Enabled, true );
+			_animPlay->SetState( UIButton::State::Enabled, true );
 		}
 		else
 		{
 			_animPlay->SetText("Stop");
-			_animPlay->SetState( Button::State::Enabled, true );
+			_animPlay->SetState( UIButton::State::Enabled, true );
 		}
 	}
 }
@@ -1037,9 +1037,9 @@ void ModelViewer::UpdateTechPanel (const RenderingMethod* method)
 // Adds a new menu item to the top of the screen
 //============================================================================================================
 
-Menu* ModelViewer::AddMenuItem (const String& name)
+UIMenu* ModelViewer::AddMenuItem (const String& name)
 {
-	Menu* menu = AddWidget<Menu>(_menuFrame, name);
+	UIMenu* menu = AddWidget<UIMenu>(_menuFrame, name);
 
 	if (menu != 0)
 	{
@@ -1049,10 +1049,10 @@ Menu* ModelViewer::AddMenuItem (const String& name)
 
 		_menuOffset = right;
 
-		Region& par = _menuFrame->GetRegion();
+		UIRegion& par = _menuFrame->GetRegion();
 		par.SetRight(0.0f, right);
 
-		Region& rgn = menu->GetRegion();
+		UIRegion& rgn = menu->GetRegion();
 		rgn.SetLeft(0.0f, left);
 		rgn.SetRight(0.0f, right);
 
@@ -1060,7 +1060,7 @@ Menu* ModelViewer::AddMenuItem (const String& name)
 		menu->SetSticky(true);
 		menu->SetSkin(_skin);
 		menu->SetText(name);
-		menu->SetAlignment( Label::Alignment::Center );
+		menu->SetAlignment( UILabel::Alignment::Center );
 		menu->SetFont(_font);
 		menu->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
 	}
@@ -1071,9 +1071,9 @@ Menu* ModelViewer::AddMenuItem (const String& name)
 // Adds a new menu button to the top of the screen
 //============================================================================================================
 
-Button* ModelViewer::AddMenuButton (const String& name)
+UIButton* ModelViewer::AddMenuButton (const String& name)
 {
-	Button* btn = AddWidget<Button>(_menuFrame, name);
+	UIButton* btn = AddWidget<UIButton>(_menuFrame, name);
 
 	if (btn != 0)
 	{
@@ -1083,10 +1083,10 @@ Button* ModelViewer::AddMenuButton (const String& name)
 
 		_menuOffset = right;
 
-		Region& par = _menuFrame->GetRegion();
+		UIRegion& par = _menuFrame->GetRegion();
 		par.SetRight(0.0f, right);
 
-		Region& rgn = btn->GetRegion();
+		UIRegion& rgn = btn->GetRegion();
 		rgn.SetLeft(0.0f, left);
 		rgn.SetRight(0.0f, right);
 
@@ -1094,7 +1094,7 @@ Button* ModelViewer::AddMenuButton (const String& name)
 		btn->SetSkin(_skin);
 		btn->SetSticky(true);
 		btn->SetText(name);
-		btn->SetAlignment( Label::Alignment::Center );
+		btn->SetAlignment( UILabel::Alignment::Center );
 		btn->SetFont(_font);
 		btn->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
 	}
@@ -1105,9 +1105,9 @@ Button* ModelViewer::AddMenuButton (const String& name)
 // Adds a new frame (with a background)
 //============================================================================================================
 
-Frame* ModelViewer::AddArea (const String& name, uint lines)
+UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 {
-	Window* frame = AddWidget<Window>(mUI, name + " Frame");
+	UIWindow* frame = AddWidget<UIWindow>(mUI, name + " Frame");
 
 	//frame->SetSkin(_skin);
 
@@ -1116,12 +1116,12 @@ Frame* ModelViewer::AddArea (const String& name, uint lines)
 	frame->SetOnKey( &OnIgnoreKey );
 	frame->SetOnMouseMove( &OnIgnoreMouse );
 
-	Region& rgn = frame->GetRegion();
+	UIRegion& rgn = frame->GetRegion();
 	rgn.SetRight (0.0f, WIDTH);
 	rgn.SetTop	 (0.0f, OFFSET);
 	rgn.SetBottom(0.0f, OFFSET + (PADDING + LINE) * lines + PADDING * 4.0f);
 
-	SubPicture* pic = AddWidget<SubPicture>(frame, name + " Background");
+	UISubPicture* pic = AddWidget<UISubPicture>(frame, name + " Background");
 	pic->SetSkin(_skin, false);
 	pic->SetFace("Grey Area");
 	pic->SetReceivesEvents(false);
@@ -1134,9 +1134,9 @@ Frame* ModelViewer::AddArea (const String& name, uint lines)
 // Adds a new caption to the specified area
 //============================================================================================================
 
-Label* ModelViewer::AddCaption (Area* parent, uint line, const String& text)
+UILabel* ModelViewer::AddCaption (UIArea* parent, uint line, const String& text)
 {
-	Label* lbl = AddLabel(parent, line, String("Caption %u", line), 0);
+	UILabel* lbl = AddLabel(parent, line, String("Caption %u", line), 0);
 	lbl->SetReceivesEvents(false);
 	lbl->SetSerializable(false);
 	lbl->SetText(text);
@@ -1148,16 +1148,16 @@ Label* ModelViewer::AddCaption (Area* parent, uint line, const String& text)
 // Adds a new text label to the specified area
 //============================================================================================================
 
-Label* ModelViewer::AddLabel (Area* parent, uint line, const String& name, int offset)
+UILabel* ModelViewer::AddLabel (UIArea* parent, uint line, const String& name, int offset)
 {
-	Label* lbl = AddWidget<Label>(parent, name);
+	UILabel* lbl = AddWidget<UILabel>(parent, name);
 
 	SetRegion(lbl->GetRegion(), line, offset, 0, 0);
 
 	lbl->SetSerializable(false);
 	lbl->SetReceivesEvents(false);
 	lbl->SetLayer(1, false);
-	lbl->SetAlignment( (offset == 0 ? Label::Alignment::Right : Label::Alignment::Left) );
+	lbl->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
 	lbl->SetFont(_font);
 
 	return lbl;
@@ -1167,14 +1167,14 @@ Label* ModelViewer::AddLabel (Area* parent, uint line, const String& name, int o
 // Adds a new button tot he specified frame
 //============================================================================================================
 
-Button*	ModelViewer::AddButton (Area* parent, uint line, const String& name, int offset)
+UIButton*	ModelViewer::AddButton (UIArea* parent, uint line, const String& name, int offset)
 {
-	Button* btn = AddWidget<Button>(parent, name);
+	UIButton* btn = AddWidget<UIButton>(parent, name);
 
 	SetRegion(btn->GetRegion(), line, offset, 0, -PADDING * 0.6f);
 
 	btn->SetSerializable(false);
-	btn->SetAlignment( Label::Alignment::Center );
+	btn->SetAlignment( UILabel::Alignment::Center );
 	btn->SetSkin(_skin);
 	btn->SetFont(_font);
 
@@ -1185,13 +1185,13 @@ Button*	ModelViewer::AddButton (Area* parent, uint line, const String& name, int
 // Adds a new checkbox to the specified area
 //============================================================================================================
 
-Checkbox* ModelViewer::AddCheckbox (Area* parent, uint line, const String& name)
+UICheckbox* ModelViewer::AddCheckbox (UIArea* parent, uint line, const String& name)
 {
-	Checkbox* chk = AddWidget<Checkbox>(parent, name);
+	UICheckbox* chk = AddWidget<UICheckbox>(parent, name);
 
 	float top = PADDING * 2 + (PADDING + LINE) * line;
 
-	Region& rgn = chk->GetRegion();
+	UIRegion& rgn = chk->GetRegion();
 	rgn.SetLeft	  (SEPARATOR, PADDING * 2.0f);
 	rgn.SetRight  (SEPARATOR, PADDING + LINE);
 	rgn.SetTop	  (0.0f, top);
@@ -1207,9 +1207,9 @@ Checkbox* ModelViewer::AddCheckbox (Area* parent, uint line, const String& name)
 // Adds a new input field to the specified area
 //============================================================================================================
 
-Input* ModelViewer::AddInput (Area* parent, uint line, const String& name, int offset)
+UIInput* ModelViewer::AddInput (UIArea* parent, uint line, const String& name, int offset)
 {
-	Input* inp = AddWidget<Input>(parent, name);
+	UIInput* inp = AddWidget<UIInput>(parent, name);
 
 	SetRegion(inp->GetRegion(), line, offset, -PADDING * 0.3f, -PADDING * 0.6f);
 
@@ -1225,9 +1225,9 @@ Input* ModelViewer::AddInput (Area* parent, uint line, const String& name, int o
 // Adds a new drop-down list to the specified area
 //============================================================================================================
 
-List* ModelViewer::AddList (Area* parent, uint line, const String& name, int offset)
+UIList* ModelViewer::AddList (UIArea* parent, uint line, const String& name, int offset)
 {
-	List* list = AddWidget<List>(parent, name);
+	UIList* list = AddWidget<UIList>(parent, name);
 
 	SetRegion(list->GetRegion(), line, offset, 0, -PADDING * 0.6f);
 
@@ -1235,7 +1235,7 @@ List* ModelViewer::AddList (Area* parent, uint line, const String& name, int off
 	list->SetFont(_font);
 	list->SetSkin(_skin);
 	list->SetSymbol("Down Arrow");
-	list->SetAlignment( (offset == 0 ? Label::Alignment::Right : Label::Alignment::Left) );
+	list->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
 
 	return list;
 }
@@ -1244,9 +1244,9 @@ List* ModelViewer::AddList (Area* parent, uint line, const String& name, int off
 // Adds a new slider to the specified area
 //============================================================================================================
 
-Slider* ModelViewer::AddSlider (Area* parent, uint line, const String& name, int offset)
+UISlider* ModelViewer::AddSlider (UIArea* parent, uint line, const String& name, int offset)
 {
-	Slider* slider = AddWidget<Slider>(parent, name);
+	UISlider* slider = AddWidget<UISlider>(parent, name);
 	SetRegion(slider->GetRegion(), line, offset, 1, 0);
 	slider->SetSerializable(false);
 	slider->SetSkin(_skin);
@@ -1257,9 +1257,9 @@ Slider* ModelViewer::AddSlider (Area* parent, uint line, const String& name, int
 // Adds a new highlight to the specified area
 //============================================================================================================
 
-Highlight* ModelViewer::AddHighlight (Area* parent, uint line, const String& name, int offset)
+UIHighlight* ModelViewer::AddHighlight (UIArea* parent, uint line, const String& name, int offset)
 {
-	Highlight* hlt = AddWidget<Highlight>(parent, name);
+	UIHighlight* hlt = AddWidget<UIHighlight>(parent, name);
 	SetRegion(hlt->GetRegion(), line, offset, 1, 0);
 	hlt->SetSerializable(false);
 	hlt->SetLayer(1, false);
@@ -1270,7 +1270,7 @@ Highlight* ModelViewer::AddHighlight (Area* parent, uint line, const String& nam
 // Delegate function triggered when an "OK" button is clicked on the file dialog menu
 //============================================================================================================
 
-bool ModelViewer::OnFileDialogOK (Area* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnFileDialogOK (UIArea* area, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
 	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
@@ -1284,19 +1284,19 @@ bool ModelViewer::OnFileDialogOK (Area* area, const Vector2i& pos, byte key, boo
 // Delegate triggered when the "OK" button is pressed in a confirmation dialog window
 //============================================================================================================
 
-bool ModelViewer::OnConfirmDialogOK	(Area* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnConfirmDialogOK	(UIArea* area, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
 	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
 	{
-		Button* btn		= R5_CAST(Button, area);
-		Frame*	parent	= R5_CAST(Frame, area->GetParent());
+		UIButton* btn		= R5_CAST(UIButton, area);
+		UIFrame*	parent	= R5_CAST(UIFrame, area->GetParent());
 
 		const String& text = btn->GetText();
 
 		if ( text == "Clear Materials" )
 		{
-			const Menu::Entries& entries = _matMenu->GetAllEntries();
+			const UIMenu::Entries& entries = _matMenu->GetAllEntries();
 
 			entries.Lock();
 			{
@@ -1322,7 +1322,7 @@ bool ModelViewer::OnConfirmDialogOK	(Area* area, const Vector2i& pos, byte key, 
 		}
 		else if ( text == "Clear Textures" )
 		{
-			const Menu::Entries& entries = _texMenu->GetAllEntries();
+			const UIMenu::Entries& entries = _texMenu->GetAllEntries();
 
 			entries.Lock();
 			{
@@ -1388,12 +1388,12 @@ bool ModelViewer::OnConfirmDialogOK	(Area* area, const Vector2i& pos, byte key, 
 // Helper callback functions that toggle the visibility of the options frames
 //============================================================================================================
 
-bool ModelViewer::ToggleBoth (Area* area)
+bool ModelViewer::ToggleBoth (UIArea* area)
 {
-	Button* btn = (Button*)area;
-	bool pressed = ((btn->GetState() & Button::State::Pressed) != 0);
+	UIButton* btn = (UIButton*)area;
+	bool pressed = ((btn->GetState() & UIButton::State::Pressed) != 0);
 
-	Frame* frame = FindWidget<Frame>(mUI, btn->GetName() + " Frame", false);
+	UIFrame* frame = FindWidget<UIFrame>(mUI, btn->GetName() + " Frame", false);
 
 	if (frame != 0)
 	{
@@ -1409,14 +1409,14 @@ bool ModelViewer::ToggleBoth (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::ToggleOff (Area* area)
+bool ModelViewer::ToggleOff (UIArea* area)
 {
-	Button* btn = (Button*)area;
-	bool pressed = ((btn->GetState() & Button::State::Pressed) != 0);
+	UIButton* btn = (UIButton*)area;
+	bool pressed = ((btn->GetState() & UIButton::State::Pressed) != 0);
 
 	if (!pressed)
 	{
-		Frame* frame = FindWidget<Frame>(mUI, btn->GetName() + " Frame", false);
+		UIFrame* frame = FindWidget<UIFrame>(mUI, btn->GetName() + " Frame", false);
 
 		if ( frame != 0 )
 		{
@@ -1430,7 +1430,7 @@ bool ModelViewer::ToggleOff (Area* area)
 // Updates the limb menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillLimbMenu (Area* area, bool hasFocus)
+bool ModelViewer::OnFillLimbMenu (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1454,7 +1454,7 @@ bool ModelViewer::OnFillLimbMenu (Area* area, bool hasFocus)
 // Updates the mesh menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillMeshMenu (Area* area, bool hasFocus)
+bool ModelViewer::OnFillMeshMenu (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1483,7 +1483,7 @@ bool ModelViewer::OnFillMeshMenu (Area* area, bool hasFocus)
 // Updates the material menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillMatMenu (Area* area, bool hasFocus)
+bool ModelViewer::OnFillMatMenu (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1515,7 +1515,7 @@ bool ModelViewer::OnFillMatMenu (Area* area, bool hasFocus)
 // Updates the texture menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillTexMenu (Area* area, bool hasFocus)
+bool ModelViewer::OnFillTexMenu (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1548,7 +1548,7 @@ bool ModelViewer::OnFillTexMenu (Area* area, bool hasFocus)
 // Updates the animation menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillAnimMenu (Area* area, bool hasFocus)
+bool ModelViewer::OnFillAnimMenu (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1588,7 +1588,7 @@ bool ModelViewer::OnFillAnimMenu (Area* area, bool hasFocus)
 // Updates the model's information panel
 //============================================================================================================
 
-bool ModelViewer::OnFillModelMenu (Area* area, bool hasFocus)
+bool ModelViewer::OnFillModelMenu (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1605,9 +1605,9 @@ bool ModelViewer::OnFillModelMenu (Area* area, bool hasFocus)
 		bool useRot		= !(mInst->GetRelativeRotation().IsIdentity());
 		bool useScale	=  (mInst->GetRelativeScale() != 1.0f);
 
-		_modelUsePos->SetState	( Checkbox::State::Checked, usePos );
-		_modelUseRot->SetState	( Checkbox::State::Checked, useRot );
-		_modelUseScale->SetState( Checkbox::State::Checked, useScale );
+		_modelUsePos->SetState	( UICheckbox::State::Checked, usePos );
+		_modelUseRot->SetState	( UICheckbox::State::Checked, useRot );
+		_modelUseScale->SetState( UICheckbox::State::Checked, useScale );
 	}
 	return true;
 }
@@ -1616,7 +1616,7 @@ bool ModelViewer::OnFillModelMenu (Area* area, bool hasFocus)
 // Menu callback functions
 //============================================================================================================
 
-bool ModelViewer::OnFileMenuSelection (Area* area)
+bool ModelViewer::OnFileMenuSelection (UIArea* area)
 {
 	const String& item = _fileMenu->GetLastSelection();
 
@@ -1641,9 +1641,9 @@ bool ModelViewer::OnFileMenuSelection (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnViewMenuSelection (Area* area)
+bool ModelViewer::OnViewMenuSelection (UIArea* area)
 {
-	Menu* menu = R5_CAST(Menu, area);
+	UIMenu* menu = R5_CAST(UIMenu, area);
 
 	if (menu != 0)
 	{
@@ -1671,7 +1671,7 @@ bool ModelViewer::OnViewMenuSelection (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnLimbMenuSelection (Area* area)
+bool ModelViewer::OnLimbMenuSelection (UIArea* area)
 {
 	if (mModel != 0)
 	{
@@ -1699,7 +1699,7 @@ bool ModelViewer::OnLimbMenuSelection (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnMeshMenuSelection (Area* area)
+bool ModelViewer::OnMeshMenuSelection (UIArea* area)
 {
 	_currentMesh = _meshMenu->GetLastSelection();
 
@@ -1726,7 +1726,7 @@ bool ModelViewer::OnMeshMenuSelection (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnMatMenuSelection (Area* area)
+bool ModelViewer::OnMatMenuSelection (UIArea* area)
 {
 	_currentMat.Clear();
 	_currentTech.Clear();
@@ -1740,7 +1740,7 @@ bool ModelViewer::OnMatMenuSelection (Area* area)
 			if (_currentMat == CLEAR)
 			{
 				_currentMat.Clear();
-				_matMenu->SetState( Button::State::Pressed, false );
+				_matMenu->SetState( UIButton::State::Pressed, false );
 				ShowConfirmClearMatsDialog();
 			}
 			else
@@ -1846,14 +1846,14 @@ bool ModelViewer::OnMatMenuSelection (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnTexMenuSelection (Area* area)
+bool ModelViewer::OnTexMenuSelection (UIArea* area)
 {
 	_currentTex = _texMenu->GetLastSelection();
 
 	if (_currentTex == CLEAR)
 	{
 		_currentTex.Clear();
-		_texMenu->SetState( Button::State::Pressed, false );
+		_texMenu->SetState( UIButton::State::Pressed, false );
 		ShowConfirmClearTexDialog();
 	}
 	else
@@ -1876,14 +1876,14 @@ bool ModelViewer::OnTexMenuSelection (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimMenuSelection (Area* area)
+bool ModelViewer::OnAnimMenuSelection (UIArea* area)
 {
 	_currentAnim = _animMenu->GetLastSelection();
 
 	if (_currentAnim == CLEAR)
 	{
 		_currentAnim.Clear();
-		_animMenu->SetState( Button::State::Pressed, false );
+		_animMenu->SetState( UIButton::State::Pressed, false );
 		ShowConfirmClearAnimDialog();
 	}
 	else
@@ -1911,9 +1911,9 @@ bool ModelViewer::OnAnimMenuSelection (Area* area)
 // Program options panel callbacks
 //============================================================================================================
 
-bool ModelViewer::OnRenderMode (Area* area)
+bool ModelViewer::OnRenderMode (UIArea* area)
 {
-	List* list = (List*)area;
+	UIList* list = (UIList*)area;
 	const String& value (list->GetLastSelection());
 
 	if		(value == "Deferred")			mParams.mSsao = 0;
@@ -1925,9 +1925,9 @@ bool ModelViewer::OnRenderMode (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnBackground (Area* area)
+bool ModelViewer::OnBackground (UIArea* area)
 {
-	List* list = reinterpret_cast<List*>(area);
+	UIList* list = reinterpret_cast<UIList*>(area);
 	const String& value (list->GetLastSelection());
 
 	if (value == "Black Color")
@@ -1955,18 +1955,18 @@ bool ModelViewer::OnBackground (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnBloomToggle	(Area* area)
+bool ModelViewer::OnBloomToggle	(UIArea* area)
 {
-	Checkbox* chk = (Checkbox*)area;
-	mParams.mBloom = ((chk->GetState() & Checkbox::State::Checked) != 0);
+	UICheckbox* chk = (UICheckbox*)area;
+	mParams.mBloom = ((chk->GetState() & UICheckbox::State::Checked) != 0);
 	return true;
 }
 
 //============================================================================================================
 
-bool ModelViewer::OnBloomChange	(Area* area)
+bool ModelViewer::OnBloomChange	(UIArea* area)
 {
-	Slider* sld = (Slider*)area;
+	UISlider* sld = (UISlider*)area;
 	mParams.mThreshold = sld->GetValue();
 	return true;
 }
@@ -1975,7 +1975,7 @@ bool ModelViewer::OnBloomChange	(Area* area)
 // Force-applies all active transformations to all of the model's meshes
 //============================================================================================================
 
-bool ModelViewer::OnModelBake (Area* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnModelBake (UIArea* area, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
 	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
@@ -2114,10 +2114,10 @@ bool ModelViewer::OnModelBake (Area* area, const Vector2i& pos, byte key, bool i
 // Whether to spin the model around the model (or spin it around)
 //============================================================================================================
 
-bool ModelViewer::OnModelSpin (Area* area)
+bool ModelViewer::OnModelSpin (UIArea* area)
 {
-	Checkbox* chk = (Checkbox*)area;
-	mAnimate = ((chk->GetState() & Checkbox::State::Checked) != 0);
+	UICheckbox* chk = (UICheckbox*)area;
+	mAnimate = ((chk->GetState() & UICheckbox::State::Checked) != 0);
 	if (!mAnimate) mStage->SetRelativeRotation( Quaternion() );
 	return true;
 }
@@ -2126,10 +2126,10 @@ bool ModelViewer::OnModelSpin (Area* area)
 // Whether to show the model's bounds
 //============================================================================================================
 
-bool ModelViewer::OnModelBounds (Area* area)
+bool ModelViewer::OnModelBounds (UIArea* area)
 {
-	Checkbox* chk = (Checkbox*)area;
-	bool bounds = ((chk->GetState() & Checkbox::State::Checked) != 0);
+	UICheckbox* chk = (UICheckbox*)area;
+	bool bounds = ((chk->GetState() & UICheckbox::State::Checked) != 0);
 	if (mInst != 0) mInst->SetShowOutline(bounds);
 	return true;
 }
@@ -2138,7 +2138,7 @@ bool ModelViewer::OnModelBounds (Area* area)
 // Delegate triggered when the material name input field gains or loses focus
 //============================================================================================================
 
-bool ModelViewer::OnMatNameSelect (Area* area, bool hasFocus)
+bool ModelViewer::OnMatNameSelect (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2151,7 +2151,7 @@ bool ModelViewer::OnMatNameSelect (Area* area, bool hasFocus)
 // Delegate triggered when the material name changes
 //============================================================================================================
 
-bool ModelViewer::OnMatNameValue (Area* area)
+bool ModelViewer::OnMatNameValue (UIArea* area)
 {
 	const String& name = _matName->GetText();
 
@@ -2184,7 +2184,7 @@ bool ModelViewer::OnMatNameValue (Area* area)
 // Responds to standard material properties changes
 //============================================================================================================
 
-bool ModelViewer::OnMatProperties (Area* area)
+bool ModelViewer::OnMatProperties (UIArea* area)
 {
 	IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
 
@@ -2200,7 +2200,7 @@ bool ModelViewer::OnMatProperties (Area* area)
 // Triggered when a new material technique is selected from the drop-down menu
 //============================================================================================================
 
-bool ModelViewer::OnMatTech (Area* area)
+bool ModelViewer::OnMatTech (UIArea* area)
 {
 	if (_matTech == area)
 	{
@@ -2240,7 +2240,7 @@ bool ModelViewer::OnMatTech (Area* area)
 // Triggered on material shader list selection change
 //============================================================================================================
 
-bool ModelViewer::OnMatShaderList (Area* area)
+bool ModelViewer::OnMatShaderList (UIArea* area)
 {
 	if (_matShaderList != 0)
 	{
@@ -2265,7 +2265,7 @@ bool ModelViewer::OnMatShaderList (Area* area)
 // Triggered when material shader field gains or loses focus
 //============================================================================================================
 
-bool ModelViewer::OnMatShaderInput (Area* area, bool hasFocus)
+bool ModelViewer::OnMatShaderInput (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2279,7 +2279,7 @@ bool ModelViewer::OnMatShaderInput (Area* area, bool hasFocus)
 // Responds to material shader input field changes
 //============================================================================================================
 
-bool ModelViewer::OnMatShaderValue (Area* area)
+bool ModelViewer::OnMatShaderValue (UIArea* area)
 {
 	if (_matShaderInput != 0)
 	{
@@ -2293,9 +2293,9 @@ bool ModelViewer::OnMatShaderValue (Area* area)
 // Triggered on material texture list selection change
 //============================================================================================================
 
-bool ModelViewer::OnMatTexList (Area* area)
+bool ModelViewer::OnMatTexList (UIArea* area)
 {
-	List* list = R5_CAST(List, area);
+	UIList* list = R5_CAST(UIList, area);
 
 	if (list != 0)
 	{
@@ -2331,7 +2331,7 @@ bool ModelViewer::OnMatTexList (Area* area)
 // Triggered when material texture field gains or loses focus
 //============================================================================================================
 
-bool ModelViewer::OnMatTexInput	(Area* area, bool hasFocus)
+bool ModelViewer::OnMatTexInput	(UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2348,9 +2348,9 @@ bool ModelViewer::OnMatTexInput	(Area* area, bool hasFocus)
 // Responds to material texture input field changes
 //============================================================================================================
 
-bool ModelViewer::OnMatTexValue (Area* area)
+bool ModelViewer::OnMatTexValue (UIArea* area)
 {
-	Input* input = R5_CAST(Input, area);
+	UIInput* input = R5_CAST(UIInput, area);
 
 	if (input != 0)
 	{
@@ -2374,7 +2374,7 @@ bool ModelViewer::OnMatTexValue (Area* area)
 // Responds to color selection in the material pane
 //============================================================================================================
 
-bool ModelViewer::OnMatColor (Area* area, bool hasFocus)
+bool ModelViewer::OnMatColor (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -2411,7 +2411,7 @@ bool ModelViewer::OnMatColor (Area* area, bool hasFocus)
 // Delegate triggered when material color sliders are moved
 //============================================================================================================
 
-bool ModelViewer::OnColor (Area* area)
+bool ModelViewer::OnColor (UIArea* area)
 {
 	// Color's alpha should never get down to 0. Diffuse alpha of 0 makes the material invisible,
 	// which means it won't show up in the list of materials. We don't want that happening.
@@ -2442,11 +2442,11 @@ bool ModelViewer::OnColor (Area* area)
 // Delegate triggered on color panel's selections
 //============================================================================================================
 
-bool ModelViewer::OnColorSelect (Area* area, bool hasFocus)
+bool ModelViewer::OnColorSelect (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
-		const Area* input = mUI->GetFocusArea();
+		const UIArea* input = mUI->GetFocusArea();
 		if ( input == 0 || !input->IsChildOf(_colorFrame) ) _colorFrame->Hide();
 	}
 	return true;
@@ -2456,7 +2456,7 @@ bool ModelViewer::OnColorSelect (Area* area, bool hasFocus)
 // Texture options panel callbacks
 //============================================================================================================
 
-bool ModelViewer::OnTexReload (Area* area, bool hasFocus)
+bool ModelViewer::OnTexReload (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -2480,7 +2480,7 @@ bool ModelViewer::OnTexReload (Area* area, bool hasFocus)
 
 //============================================================================================================
 
-bool ModelViewer::OnTexChange (Area* area)
+bool ModelViewer::OnTexChange (UIArea* area)
 {
 	uint wrap = ITexture::StringToWrapMode( _texWrap->GetText() );
 	uint filt = ITexture::StringToFilter( _texFilter->GetText() );
@@ -2497,7 +2497,7 @@ bool ModelViewer::OnTexChange (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimNameSelect (Area* area, bool hasFocus)
+bool ModelViewer::OnAnimNameSelect (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2508,7 +2508,7 @@ bool ModelViewer::OnAnimNameSelect (Area* area, bool hasFocus)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimNameValue (Area* area)
+bool ModelViewer::OnAnimNameValue (UIArea* area)
 {
 	const String& name = _animName->GetText();
 
@@ -2539,20 +2539,20 @@ bool ModelViewer::OnAnimNameValue (Area* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimLoop (Area* area)
+bool ModelViewer::OnAnimLoop (UIArea* area)
 {
 	Animation* anim = mModel->GetAnimation(_currentAnim, false);
 
 	if (anim != 0)
 	{
-		anim->SetLooping( (_animLoop->GetState() & Checkbox::State::Checked) != 0 );
+		anim->SetLooping( (_animLoop->GetState() & UICheckbox::State::Checked) != 0 );
 	}
 	return true;
 }
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimProperties (Area* area, bool hasFocus)
+bool ModelViewer::OnAnimProperties (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2582,7 +2582,7 @@ void OnAnimationEnd (Model* model, const Animation* anim, float timeToEnd)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimPlay (Area* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnAnimPlay (UIArea* area, const Vector2i& pos, byte key, bool isDown)
 {
 	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
 	{
@@ -2609,11 +2609,11 @@ bool ModelViewer::OnAnimPlay (Area* area, const Vector2i& pos, byte key, bool is
 // Fills the list with all available meshes when it's selected
 //============================================================================================================
 
-bool ModelViewer::OnMeshListFocus (Area* area, bool hasFocus)
+bool ModelViewer::OnMeshListFocus (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		List* list = R5_CAST(List, area);
+		UIList* list = R5_CAST(UIList, area);
 
 		if (list != 0)
 		{
@@ -2637,11 +2637,11 @@ bool ModelViewer::OnMeshListFocus (Area* area, bool hasFocus)
 // Fills the list with all available materials when it's selected
 //============================================================================================================
 
-bool ModelViewer::OnMatListFocus (Area* area, bool hasFocus)
+bool ModelViewer::OnMatListFocus (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		List* list = R5_CAST(List, area);
+		UIList* list = R5_CAST(UIList, area);
 
 		if (list != 0)
 		{
@@ -2672,11 +2672,11 @@ bool ModelViewer::OnMatListFocus (Area* area, bool hasFocus)
 // Fills the list with all available textures when it's selected
 //============================================================================================================
 
-bool ModelViewer::OnTexListFocus (Area* area, bool hasFocus)
+bool ModelViewer::OnTexListFocus (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		List* list = R5_CAST(List, area);
+		UIList* list = R5_CAST(UIList, area);
 
 		if (list != 0)
 		{
@@ -2717,11 +2717,11 @@ bool ModelViewer::OnTexListFocus (Area* area, bool hasFocus)
 // Fills in the list with all available shaders on selection
 //============================================================================================================
 
-bool ModelViewer::OnShaderListFocus (Area* area, bool hasFocus)
+bool ModelViewer::OnShaderListFocus (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		List* list = R5_CAST(List, area);
+		UIList* list = R5_CAST(UIList, area);
 
 		if (list != 0)
 		{
@@ -2833,9 +2833,9 @@ void ModelViewer::_UpdateModelData()
 	Quaternion rot;
 	float scale (1.0f);
 
-	bool usePos		= (_modelUsePos->GetState()	  & Checkbox::State::Checked) != 0;
-	bool useRot		= (_modelUseRot->GetState()	  & Checkbox::State::Checked) != 0;
-	bool useScale	= (_modelUseScale->GetState() & Checkbox::State::Checked) != 0;
+	bool usePos		= (_modelUsePos->GetState()	  & UICheckbox::State::Checked) != 0;
+	bool useRot		= (_modelUseRot->GetState()	  & UICheckbox::State::Checked) != 0;
+	bool useScale	= (_modelUseScale->GetState() & UICheckbox::State::Checked) != 0;
 
 	if (usePos)		_modelPos->GetText()	>> pos;
 	if (useRot)		_modelRot->GetText()	>> rot;

@@ -182,39 +182,39 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Controller.cpp"
+				RelativePath=".\Source\GLController.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\FBO.cpp"
+				RelativePath=".\Source\GLFBO.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Font.cpp"
+				RelativePath=".\Source\GLFont.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Graphics.cpp"
+				RelativePath=".\Source\GLGraphics.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Material.cpp"
+				RelativePath=".\Source\GLMaterial.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Shader.cpp"
+				RelativePath=".\Source\GLShader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Technique.cpp"
+				RelativePath=".\Source\GLTechnique.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Texture.cpp"
+				RelativePath=".\Source\GLTexture.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\VBO.cpp"
+				RelativePath=".\Source\GLVBO.cpp"
 				>
 			</File>
 		</Filter>
@@ -240,39 +240,39 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Controller.h"
+				RelativePath=".\Include\GLController.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\FBO.h"
+				RelativePath=".\Include\GLFBO.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Font.h"
+				RelativePath=".\Include\GLFont.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Graphics.h"
+				RelativePath=".\Include\GLGraphics.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Material.h"
+				RelativePath=".\Include\GLMaterial.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Shader.h"
+				RelativePath=".\Include\GLShader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Technique.h"
+				RelativePath=".\Include\GLTechnique.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Texture.h"
+				RelativePath=".\Include\GLTexture.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\VBO.h"
+				RelativePath=".\Include\GLVBO.h"
 				>
 			</File>
 		</Filter>

@@ -5,7 +5,7 @@ using namespace R5;
 // List selection should update the label
 //============================================================================================================
 
-void List::_OnValue (const String& val)
+void UIList::_OnValue (const String& val)
 {
 	mLabel.SetText(val);
 }
@@ -14,25 +14,25 @@ void List::_OnValue (const String& val)
 // Internal functions. These values are normally set by Root::CreateArea
 //============================================================================================================
 
-void List::_SetParentPtr (Area* ptr)
+void UIList::_SetParentPtr (UIArea* ptr)
 {
-	Menu::_SetParentPtr(ptr);
+	UIMenu::_SetParentPtr(ptr);
 	mSymbol._SetParentPtr(this);
 }
 
 //============================================================================================================
 
-void List::_SetRootPtr (Root* ptr)
+void UIList::_SetRootPtr (UIRoot* ptr)
 {
-	Menu::_SetRootPtr(ptr);
+	UIMenu::_SetRootPtr(ptr);
 	mSymbol._SetRootPtr(ptr);
 }
 
 //============================================================================================================
 
-void List::OnLayerChanged()
+void UIList::OnLayerChanged()
 {
-	Menu::OnLayerChanged();
+	UIMenu::OnLayerChanged();
 	mSymbol.SetLayer(mLayer, false);
 }
 
@@ -40,20 +40,20 @@ void List::OnLayerChanged()
 // Triggered once per frame
 //============================================================================================================
 
-bool List::OnUpdate (bool dimensionsChanged)
+bool UIList::OnUpdate (bool dimensionsChanged)
 {
-	dimensionsChanged |= Menu::OnUpdate(dimensionsChanged);
+	dimensionsChanged |= UIMenu::OnUpdate(dimensionsChanged);
 
 	if (dimensionsChanged)
 	{
-		const Face* face = mSymbol.GetFace();
+		const UIFace* face = mSymbol.GetFace();
 
 		if (face != 0)
 		{
 			const Vector2i& size = face->GetSize();
 			float ratio = (float)size.x / size.y;
 
-			if (mLabel.GetAlignment() == Label::Alignment::Right)
+			if (mLabel.GetAlignment() == UILabel::Alignment::Right)
 			{
 				mSymbol.GetRegion().SetRight(0.0f, ratio * mImage.GetSubRegion().GetHeight());
 			}
@@ -71,9 +71,9 @@ bool List::OnUpdate (bool dimensionsChanged)
 // Fills the rendering queue
 //============================================================================================================
 
-void List::OnFill (Queue* queue)
+void UIList::OnFill (UIQueue* queue)
 {
-	Menu::OnFill(queue);
+	UIMenu::OnFill(queue);
 	mSymbol.OnFill(queue);
 }
 
@@ -81,9 +81,9 @@ void List::OnFill (Queue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool List::CustomSerializeFrom (const TreeNode& root)
+bool UIList::CustomSerializeFrom (const TreeNode& root)
 {
-	if (Menu::CustomSerializeFrom(root))
+	if (UIMenu::CustomSerializeFrom(root))
 	{
 		if (root.mTag == "Text")
 		{

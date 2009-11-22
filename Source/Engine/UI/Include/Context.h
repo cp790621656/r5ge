@@ -10,7 +10,7 @@
 // when it's shown. It's meant to be used for quick menus, not as a full-fledged UI widget.
 //============================================================================================================
 
-class Context : public AnimatedFrame
+class UIContext : public UIAnimatedFrame
 {
 public:
 
@@ -18,7 +18,7 @@ public:
 
 protected:
 
-	const Skin*		mSkin;
+	const UISkin*	mSkin;
 	const IFont*	mFont;
 	String			mFace;
 	Color3f			mColor;
@@ -33,9 +33,9 @@ protected:
 
 public:
 
-	Context();
+	UIContext();
 
-	const Skin*		GetSkin()			const	{ return mSkin; }
+	const UISkin*	GetSkin()			const	{ return mSkin; }
 	const IFont*	GetFont()			const	{ return mFont; }
 	const Color3f&	GetColor()			const	{ return mColor; }
 	bool			DropsShadow()		const	{ return mShadow;  }
@@ -45,7 +45,7 @@ public:
 	const Vector3f&	GetAnchor()			const	{ return mAnchor; }
 	const String&	GetLastSelection()	const	{ return mLast; }
 
-	void SetSkin		(const Skin* skin)		{ mSkin		 = skin; mIsDirty = true; }
+	void SetSkin		(const UISkin* skin)	{ mSkin		 = skin; mIsDirty = true; }
 	void SetFace		(const String& face)	{ mFace		 = face; mIsDirty = true; }
 	void SetFont		(const IFont* font)		{ mFont		 = font; mIsDirty = true; }
 	void SetColor		(const Color3f& c)		{ mColor	 = c;	 mIsDirty = true; }
@@ -66,13 +66,13 @@ protected:
 	void _Rebuild();
 
 	// Event callback for a visual highlight
-	bool _OnMouseOverItem (Area* area, bool inside);
-	bool _OnItemFocus (Area* area, bool hasFocus);
+	bool _OnMouseOverItem (UIArea* area, bool inside);
+	bool _OnItemFocus (UIArea* area, bool hasFocus);
 
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Context", Context, AnimatedFrame, Area);
+	R5_DECLARE_INHERITED_CLASS("Context", UIContext, UIAnimatedFrame, UIArea);
 
 	// If alpha is set to '1', rebuild the entry list
 	virtual void SetAlpha (float val, float animTime = 0.0f);

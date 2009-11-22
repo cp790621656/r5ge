@@ -5,7 +5,7 @@ using namespace R5;
 // Changes the label's alignment
 //============================================================================================================
 
-void Label::SetAlignment (char alignment)
+void UILabel::SetAlignment (char alignment)
 {
 	if (mAlignment != alignment)
 	{
@@ -18,7 +18,7 @@ void Label::SetAlignment (char alignment)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void Label::OnFill (Queue* queue)
+void UILabel::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer != mLayer || queue->mArea != 0) return;
 
@@ -77,9 +77,9 @@ void Label::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool Label::CustomSerializeFrom(const TreeNode& root)
+bool UILabel::CustomSerializeFrom(const TreeNode& root)
 {
-	if (TextLine::CustomSerializeFrom(root))
+	if (UITextLine::CustomSerializeFrom(root))
 	{
 		return true;
 	}
@@ -101,9 +101,9 @@ bool Label::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void Label::CustomSerializeTo(TreeNode& root) const
+void UILabel::CustomSerializeTo(TreeNode& root) const
 {
-	TextLine::CustomSerializeTo(root);
+	UITextLine::CustomSerializeTo(root);
 
 	if		(mAlignment == Alignment::Left)		root.AddChild("Alignment", "Left");
 	else if (mAlignment == Alignment::Right)	root.AddChild("Alignment", "Right");

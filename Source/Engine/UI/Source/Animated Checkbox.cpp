@@ -3,9 +3,9 @@ using namespace R5;
 
 //============================================================================================================
 
-AnimatedCheckbox::AnimatedCheckbox() : mAnimTime(0.15f)
+UIAnimatedCheckbox::UIAnimatedCheckbox() : mAnimTime(0.15f)
 {
-	memset(mCurrentAlpha,  0, sizeof(float)*2);
+	memset(mCurrentAlpha,	0, sizeof(float)*2);
 	memset(mTargetAlpha,	0, sizeof(float)*2);
 	memset(mStartTime,		0, sizeof(float)*2);
 }
@@ -14,9 +14,9 @@ AnimatedCheckbox::AnimatedCheckbox() : mAnimTime(0.15f)
 // Changes the checkbox state
 //============================================================================================================
 
-bool AnimatedCheckbox::SetState(uint state, bool val)
+bool UIAnimatedCheckbox::SetState(uint state, bool val)
 {
-	if ( Checkbox::SetState(state, val) )
+	if ( UICheckbox::SetState(state, val) )
 	{
 		float current = mRoot->GetCurrentTime();
 
@@ -40,9 +40,9 @@ bool AnimatedCheckbox::SetState(uint state, bool val)
 // Any per-frame animation should go here
 //============================================================================================================
 
-bool AnimatedCheckbox::OnUpdate (bool dimensionsChanged)
+bool UIAnimatedCheckbox::OnUpdate (bool dimensionsChanged)
 {
-	dimensionsChanged |= Checkbox::OnUpdate(dimensionsChanged);
+	dimensionsChanged |= UICheckbox::OnUpdate(dimensionsChanged);
 
 	// If the button is currently in the process of animation, mark the SubPicture as dirty
 	for (uint i = 0; i < 2; ++i)
@@ -56,7 +56,7 @@ bool AnimatedCheckbox::OnUpdate (bool dimensionsChanged)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void AnimatedCheckbox::OnFill (Queue* queue)
+void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
 		queue->mTex	== mImage.GetTexture() &&
@@ -109,22 +109,22 @@ void AnimatedCheckbox::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool AnimatedCheckbox::CustomSerializeFrom(const TreeNode& root)
+bool UIAnimatedCheckbox::CustomSerializeFrom(const TreeNode& root)
 {
 	if (root.mTag == "Animation Time")
 	{
 		root.mValue >> mAnimTime;
 		return true;
 	}
-	return Checkbox::CustomSerializeFrom(root);
+	return UICheckbox::CustomSerializeFrom(root);
 }
 
 //============================================================================================================
 // Serialization - Save
 //============================================================================================================
 
-void AnimatedCheckbox::CustomSerializeTo(TreeNode& root) const
+void UIAnimatedCheckbox::CustomSerializeTo(TreeNode& root) const
 {
-	Checkbox::CustomSerializeTo(root);
+	UICheckbox::CustomSerializeTo(root);
 	root.AddChild("Animation Time", mAnimTime);
 }

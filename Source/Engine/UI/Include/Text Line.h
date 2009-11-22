@@ -7,7 +7,7 @@
 // Basic printable text line with no alignment or boundaries
 //============================================================================================================
 
-class TextLine : public Area
+class UITextLine : public UIArea
 {
 protected:
 
@@ -19,7 +19,7 @@ protected:
 
 public:
 
-	TextLine() : mColor(1.0f), mFont(0), mShadow(true), mTags( IFont::Tags::Process ) {}
+	UITextLine() : mColor(1.0f), mFont(0), mShadow(true), mTags( IFont::Tags::Process ) {}
 
 	const ITexture* GetTexture()	const	{ return (mFont != 0) ? mFont->GetTexture() : 0; }
 	const Color3f&	GetColor()		const	{ return mColor;	}
@@ -40,11 +40,11 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Text Line", TextLine, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Text Line", UITextLine, UIArea, UIArea);
 
 	// Area functions
 	virtual void SetDirty();
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

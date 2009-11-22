@@ -23,10 +23,10 @@ public:
 	void OnDraw();
 	bool OnKey (const Vector2i& pos, byte key, bool isDown);
 
-	bool OnChangeDelegate	 (Area* area);
-	bool OnBrightnessChange	 (Area* area);
-	bool OnRangeChange		 (Area* area);
-	bool OnPowerChange		 (Area* area);
-	bool OnButtonStateChange (Area* area);
+	bool OnChangeDelegate	 (UIArea* area);
+	bool OnBrightnessChange	 (UIArea* area);
+	bool OnRangeChange		 (UIArea* area);
+	bool OnPowerChange		 (UIArea* area);
+	bool OnButtonStateChange (UIArea* area);
 };
 }

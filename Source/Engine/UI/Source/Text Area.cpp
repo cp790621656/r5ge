@@ -5,7 +5,7 @@ using namespace R5;
 // Clear all text
 //============================================================================================================
 
-void TextArea::Clear()
+void UITextArea::Clear()
 {
 	SetDirty();
 
@@ -24,7 +24,7 @@ void TextArea::Clear()
 // Add a single paragraph
 //============================================================================================================
 
-void TextArea::AddParagraph (const String& text, const IFont* font, const Color3f& color, bool shadow)
+void UITextArea::AddParagraph (const String& text, const IFont* font, const Color3f& color, bool shadow)
 {
 	if (font != 0)
 	{
@@ -66,7 +66,7 @@ void TextArea::AddParagraph (const String& text, const IFont* font, const Color3
 // Set the scroll amount
 //============================================================================================================
 
-void TextArea::SetScroll (float val)
+void UITextArea::SetScroll (float val)
 {
 	val = Float::Clamp(val, 0.0f, 1.0f);
 
@@ -81,7 +81,7 @@ void TextArea::SetScroll (float val)
 // Mark all associated textures as dirty
 //============================================================================================================
 
-void TextArea::_MarkTexturesAsDirty()
+void UITextArea::_MarkTexturesAsDirty()
 {
 	mParagraphs.Lock();
 	{
@@ -107,7 +107,7 @@ void TextArea::_MarkTexturesAsDirty()
 // INTERNAL: Rebuilds the drawn lines
 //============================================================================================================
 
-void TextArea::_Rebuild (uint offset)
+void UITextArea::_Rebuild (uint offset)
 {
 	mNeedsRebuild = false;
 
@@ -134,7 +134,7 @@ void TextArea::_Rebuild (uint offset)
 				mHeight += Float::RoundToUInt(1.15f * par.mFont->GetSize());
 
 				// Create a new line
-				TextLine* line = (TextLine*)TextLine::_CreateNew();
+				UITextLine* line = (UITextLine*)UITextLine::_CreateNew();
 
 				// Set the root first
 				line->_SetRootPtr(mRoot);
@@ -163,7 +163,7 @@ void TextArea::_Rebuild (uint offset)
 // Not only do textures get marked, but the lines have to be rebuilt
 //============================================================================================================
 
-void TextArea::SetDirty()
+void UITextArea::SetDirty()
 {
 	mNeedsRebuild = true;
 	_MarkTexturesAsDirty();
@@ -173,7 +173,7 @@ void TextArea::SetDirty()
 // Rebuild the lines if necessary and fill the draw queues
 //============================================================================================================
 
-void TextArea::OnFill (Queue* queue)
+void UITextArea::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer != mLayer || queue->mArea != 0) return;
 
@@ -203,7 +203,7 @@ void TextArea::OnFill (Queue* queue)
 			{
 				for (uint i = skip; i < mLines.GetSize(); ++i)
 				{
-					TextLine* line = mLines[mLines.GetSize() - 1 - i];
+					UITextLine* line = mLines[mLines.GetSize() - 1 - i];
 					uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
 					uint nextOffset = offset + lineHeight;
 
@@ -211,7 +211,7 @@ void TextArea::OnFill (Queue* queue)
 					{
 						if (nextOffset < maxHeight)
 						{
-							Region& rgn = line->GetRegion();
+							UIRegion& rgn = line->GetRegion();
 
 							// Calculate the line's regional dimensions
 							rgn.SetTop(1.0f, -(float)nextOffset);
@@ -237,7 +237,7 @@ void TextArea::OnFill (Queue* queue)
 			{
 				for (uint i = skip; i < mLines.GetSize(); ++i)
 				{
-					TextLine* line = mLines[i];
+					UITextLine* line = mLines[i];
 					uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
 					uint nextOffset = offset + lineHeight;
 
@@ -245,7 +245,7 @@ void TextArea::OnFill (Queue* queue)
 					{
 						if (nextOffset < maxHeight)
 						{
-							Region& rgn = line->GetRegion();
+							UIRegion& rgn = line->GetRegion();
 
 							// Calculate the line's regional dimensions
 							rgn.SetTop(0.0f, (float)offset);
@@ -276,9 +276,9 @@ void TextArea::OnFill (Queue* queue)
 // Scrolling should affect the text view
 //============================================================================================================
 
-bool TextArea::OnScroll (const Vector2i& pos, float delta)
+bool UITextArea::OnScroll (const Vector2i& pos, float delta)
 {
-	if (Area::OnScroll(pos, delta)) return true;
+	if (UIArea::OnScroll(pos, delta)) return true;
 
 	if (mLines.IsValid())
 	{
@@ -302,7 +302,7 @@ bool TextArea::OnScroll (const Vector2i& pos, float delta)
 // Serialization -- Load
 //============================================================================================================
 
-bool TextArea::CustomSerializeFrom(const TreeNode& root)
+bool UITextArea::CustomSerializeFrom(const TreeNode& root)
 {
 	if (root.mTag == "Style" && root.mValue.IsString())
 	{
@@ -317,7 +317,7 @@ bool TextArea::CustomSerializeFrom(const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void TextArea::CustomSerializeTo(TreeNode& root) const
+void UITextArea::CustomSerializeTo(TreeNode& root) const
 {
 	root.AddChild("Style", (mStyle == Style::Chat) ? "Chat" : "Normal");
 }

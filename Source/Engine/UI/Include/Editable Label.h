@@ -7,7 +7,7 @@
 // Modifiable left-aligned text label
 //============================================================================================================
 
-class EditableLabel : public BasicLabel
+class UIEditableLabel : public BasicLabel
 {
 protected:
 
@@ -18,7 +18,7 @@ protected:
 
 public:
 
-	EditableLabel() :	mSelColor(1.0f, 0.667f, 0.161f, 0.5f),
+	UIEditableLabel() :	mSelColor(1.0f, 0.667f, 0.161f, 0.5f),
 						mHasFocus(false),
 						mSelectionEnd(0),
 						mSelectionStart(0) { mTags = IFont::Tags::Ignore; }
@@ -44,11 +44,11 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Editable Label", EditableLabel, BasicLabel, Area);
+	R5_DECLARE_INHERITED_CLASS("Editable Label", UIEditableLabel, BasicLabel, UIArea);
 
 	// Area functions
 	virtual void SetDirty();
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

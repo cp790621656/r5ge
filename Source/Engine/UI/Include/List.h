@@ -7,17 +7,18 @@
 // Drop-down list (or up, depending on space)
 //============================================================================================================
 
-class List : public Menu
+class UIList : public UIMenu
 {
 protected:
 
-	SubPicture	mSymbol;
+	UISubPicture	mSymbol;
 
 public:
 
-	const Face*		GetSymbol()	const		{ return mSymbol.GetFace();}
+	const UIFace* GetSymbol() const { return mSymbol.GetFace();}
+
 	void SetSymbol	(const String& face)	{ mSymbol.SetFace(face);	}
-	void SetSkin	(const Skin* skin)		{ Menu::SetSkin(skin); mSymbol.SetSkin(skin); }
+	void SetSkin	(const UISkin* skin)	{ UIMenu::SetSkin(skin); mSymbol.SetSkin(skin); }
 
 	virtual const String& GetLastSelection() const	{ return (mSelection.IsValid() ? mSelection : mLabel.GetText()); }
 
@@ -32,16 +33,16 @@ protected:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("List", List, Menu, Area);
+	R5_DECLARE_INHERITED_CLASS("List", UIList, UIMenu, UIArea);
 
 	// Internal functions. These values are normally set by Root::CreateArea
-	virtual void _SetParentPtr (Area* ptr);
-	virtual void _SetRootPtr   (Root* ptr);
+	virtual void _SetParentPtr (UIArea* ptr);
+	virtual void _SetRootPtr   (UIRoot* ptr);
 
 	// Area functions
 	virtual void OnLayerChanged();
 	virtual bool OnUpdate (bool dimensionsChanged);
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom (const TreeNode& root);

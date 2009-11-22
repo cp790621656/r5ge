@@ -7,7 +7,7 @@
 // Struct containing a pair of UV texture coordinates
 //============================================================================================================
 
-class Face
+class UIFace
 {
 public:
 
@@ -19,7 +19,7 @@ public:
 		float	mBottom;
 	};
 
-	friend class Skin;
+	friend class UISkin;
 private:
 
 	String		mName;
@@ -27,15 +27,15 @@ private:
 	Vector2i	mSize;
 	short		mBorder;
 
-	Face() : mBorder(0) {}
+	UIFace() : mBorder(0) {}
 
 public:
-	~Face() {}
+	~UIFace() {}
 
-	const String&	GetName()	const { return mName;	 }
-	const Vector2i& GetPos()	const { return mPos;	 }
-	const Vector2i& GetSize()	const { return mSize;	 }
-	short			GetBorder() const { return mBorder; }
+	const String&	GetName()	const { return mName;	}
+	const Vector2i& GetPos()	const { return mPos;	}
+	const Vector2i& GetSize()	const { return mSize;	}
+	short			GetBorder() const { return mBorder;	}
 
 	// Calculates the 4 texture coordinates for the image of specified size
 	Rectangle GetRectangle (const Vector2i& size) const;

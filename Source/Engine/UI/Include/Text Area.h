@@ -7,7 +7,7 @@
 // Text Area containing paragraphs of text
 //============================================================================================================
 
-class TextArea : public Area
+class UITextArea : public UIArea
 {
 protected:
 
@@ -36,7 +36,7 @@ protected:
 protected:
 
 	Array<Paragraph>		mParagraphs;	// Paragraph entries
-	PointerArray<TextLine>	mLines;			// Generated lines based on the paragraphs above
+	PointerArray<UITextLine>	mLines;			// Generated lines based on the paragraphs above
 
 	bool	mNeedsRebuild;	// Whether the paragraph lines need to be rebuilt
 	float	mScroll;		// Current scrolling amount determining visible text
@@ -46,7 +46,7 @@ protected:
 
 public:
 
-	TextArea() :
+	UITextArea() :
 		mScroll			(0.0f),
 		mNeedsRebuild	(false),
 		mStyle			(Style::Normal),
@@ -83,11 +83,11 @@ private:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Text Area", TextArea, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Text Area", UITextArea, UIArea, UIArea);
 
 	// Area functions
 	virtual void SetDirty();
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 	virtual bool OnScroll (const Vector2i& pos, float delta);
 
 	// Serialization

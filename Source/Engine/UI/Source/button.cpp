@@ -3,9 +3,9 @@ using namespace R5;
 
 //============================================================================================================
 
-Button::Button() : mState(State::Enabled), mSticky(false), mIgnoreMouseKey(false)
+UIButton::UIButton() : mState(State::Enabled), mSticky(false), mIgnoreMouseKey(false)
 {
-	mLabel.SetAlignment(Label::Alignment::Center);
+	mLabel.SetAlignment(UILabel::Alignment::Center);
 	mImage.SetLayer(0, false);
 	mLabel.SetLayer(1, false);
 }
@@ -14,7 +14,7 @@ Button::Button() : mState(State::Enabled), mSticky(false), mIgnoreMouseKey(false
 // Changes the button's state by changing the background face
 //============================================================================================================
 
-bool Button::SetState (uint state, bool val)
+bool UIButton::SetState (uint state, bool val)
 {
 	uint newState ( val ? (mState | state) : (mState & ~state) );
 
@@ -37,18 +37,18 @@ bool Button::SetState (uint state, bool val)
 // Internal functions. These values are normally set by Root::CreateArea
 //============================================================================================================
 
-void Button::_SetParentPtr (Area* ptr)
+void UIButton::_SetParentPtr (UIArea* ptr)
 {
-	Area::_SetParentPtr(ptr);
+	UIArea::_SetParentPtr(ptr);
 	mImage._SetParentPtr(this);
 	mLabel._SetParentPtr(this);
 }
 
 //============================================================================================================
 
-void Button::_SetRootPtr (Root* ptr)
+void UIButton::_SetRootPtr (UIRoot* ptr)
 {
-	Area::_SetRootPtr(ptr);
+	UIArea::_SetRootPtr(ptr);
 	mImage._SetRootPtr(ptr);
 	mLabel._SetRootPtr(ptr);
 }
@@ -57,7 +57,7 @@ void Button::_SetRootPtr (Root* ptr)
 // Any per-frame animation should go here
 //============================================================================================================
 
-bool Button::OnUpdate (bool dimensionsChanged)
+bool UIButton::OnUpdate (bool dimensionsChanged)
 {
 	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged);
 	mLabel.Update(mImage.GetSubRegion(), dimensionsChanged);
@@ -68,10 +68,10 @@ bool Button::OnUpdate (bool dimensionsChanged)
 // Fills the rendering queue
 //============================================================================================================
 
-void Button::OnFill (Queue* queue)
+void UIButton::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
-		queue->mTex	== mImage.GetTexture() &&
+		queue->mTex		== mImage.GetTexture() &&
 		queue->mArea	== 0)
 	{
 		static String faceName[] =
@@ -112,7 +112,7 @@ void Button::OnFill (Queue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool Button::CustomSerializeFrom (const TreeNode& root)
+bool UIButton::CustomSerializeFrom (const TreeNode& root)
 {
 	if ( mImage.CustomSerializeFrom(root) )
 	{
@@ -143,10 +143,10 @@ bool Button::CustomSerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void Button::CustomSerializeTo (TreeNode& root) const
+void UIButton::CustomSerializeTo (TreeNode& root) const
 {
 	// Only the skin is saved from the SubPicture. Face is ignored.
-	const Skin* skin = mImage.GetSkin();
+	const UISkin* skin = mImage.GetSkin();
 	TreeNode& child = root.AddChild("Skin");
 	if (skin) child.mValue = skin->GetName();
 
@@ -166,12 +166,12 @@ void Button::CustomSerializeTo (TreeNode& root) const
 // Event handling -- mouse hovering over the button should highlight it
 //============================================================================================================
 
-bool Button::OnMouseOver (bool inside)
+bool UIButton::OnMouseOver (bool inside)
 {
 	if (mState & State::Enabled)
 	{
 		SetState (State::Highlighted, inside);
-		Area::OnMouseOver(inside);
+		UIArea::OnMouseOver(inside);
 	}
 	return true;
 }
@@ -180,9 +180,9 @@ bool Button::OnMouseOver (bool inside)
 // Event handling -- mouse movement should be intercepted
 //============================================================================================================
 
-bool Button::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
+bool UIButton::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 {
-	if (mState & State::Enabled) Area::OnMouseMove(pos, delta);
+	if (mState & State::Enabled) UIArea::OnMouseMove(pos, delta);
 	return true;
 }
 
@@ -190,7 +190,7 @@ bool Button::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 // Event handling -- left mouse button presses the button
 //============================================================================================================
 
-bool Button::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIButton::OnKey (const Vector2i& pos, byte key, bool isDown)
 {
 	bool retVal = false;
 
@@ -235,7 +235,7 @@ bool Button::OnKey (const Vector2i& pos, byte key, bool isDown)
 				}
 			}
 		}
-		Area::OnKey(pos, key, isDown);
+		UIArea::OnKey(pos, key, isDown);
 	}
 	return retVal;
 }

@@ -5,7 +5,7 @@ using namespace R5;
 // Changes the label's color
 //============================================================================================================
 
-void TextLine::SetColor(const Color3f& color)
+void UITextLine::SetColor(const Color3f& color)
 {
 	if (mColor != color)
 	{
@@ -18,7 +18,7 @@ void TextLine::SetColor(const Color3f& color)
 // Changes the shadow setting (text is drawn twice, once in black, once in normal color if it's on)
 //============================================================================================================
 
-void TextLine::SetShadow (bool val)
+void UITextLine::SetShadow (bool val)
 {
 	if (mShadow != val)
 	{
@@ -31,7 +31,7 @@ void TextLine::SetShadow (bool val)
 // Changes the label's text
 //============================================================================================================
 
-void TextLine::SetText (const String& text)
+void UITextLine::SetText (const String& text)
 {
 	if (mText != text)
 	{
@@ -44,7 +44,7 @@ void TextLine::SetText (const String& text)
 // Changes the font used by the label
 //============================================================================================================
 
-void TextLine::SetFont (const IFont* font)
+void UITextLine::SetFont (const IFont* font)
 {
 	if (mFont != font)
 	{
@@ -58,7 +58,7 @@ void TextLine::SetFont (const IFont* font)
 // Marks the associated queue as needing to be rebuilt
 //============================================================================================================
 
-void TextLine::SetDirty()
+void UITextLine::SetDirty()
 {
 	if (mFont != 0)
 	{
@@ -71,7 +71,7 @@ void TextLine::SetDirty()
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void TextLine::OnFill (Queue* queue)
+void UITextLine::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer == mLayer && queue->mTex != 0 && queue->mTex == GetTexture())
 	{
@@ -102,7 +102,7 @@ void TextLine::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool TextLine::CustomSerializeFrom(const TreeNode& root)
+bool UITextLine::CustomSerializeFrom(const TreeNode& root)
 {
 	const Variable& value = root.mValue;
 
@@ -140,7 +140,7 @@ bool TextLine::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void TextLine::CustomSerializeTo(TreeNode& root) const
+void UITextLine::CustomSerializeTo(TreeNode& root) const
 {
 	root.AddChild("Color", mColor);
 

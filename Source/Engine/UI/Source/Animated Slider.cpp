@@ -5,7 +5,7 @@ using namespace R5;
 // Sets the slider's value directly
 //============================================================================================================
 
-void AnimatedSlider::SetValue (float val)
+void UIAnimatedSlider::SetValue (float val)
 {
 	val = Float::Clamp(val, 0.0f, 1.0f);
 
@@ -21,7 +21,7 @@ void AnimatedSlider::SetValue (float val)
 // Updates the slider's value
 //============================================================================================================
 
-bool AnimatedSlider::OnUpdate (bool dimensionsChanged)
+bool UIAnimatedSlider::OnUpdate (bool dimensionsChanged)
 {
 	if ( Float::IsNotEqual(mVal, mTargetVal) )
 	{
@@ -40,22 +40,22 @@ bool AnimatedSlider::OnUpdate (bool dimensionsChanged)
 // Serialization - Load
 //============================================================================================================
 
-bool AnimatedSlider::CustomSerializeFrom(const TreeNode& root)
+bool UIAnimatedSlider::CustomSerializeFrom(const TreeNode& root)
 {
 	if (root.mTag == "Animation Time")
 	{
 		root.mValue >> mAnimTime;
 		return true;
 	}
-	return Slider::CustomSerializeFrom(root);
+	return UISlider::CustomSerializeFrom(root);
 }
 
 //============================================================================================================
 // Serialization - Save
 //============================================================================================================
 
-void AnimatedSlider::CustomSerializeTo(TreeNode& root) const
+void UIAnimatedSlider::CustomSerializeTo(TreeNode& root) const
 {
-	Slider::CustomSerializeTo(root);
+	UISlider::CustomSerializeTo(root);
 	root.AddChild("Animation Time", mAnimTime);
 }

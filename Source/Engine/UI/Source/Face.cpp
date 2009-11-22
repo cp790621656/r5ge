@@ -5,15 +5,15 @@ using namespace R5;
 // Calculates the 4 texture coordinates for the image of specified size
 //==============================================================================================
 
-Face::Rectangle Face::GetRectangle (const Vector2i& size) const
+UIFace::Rectangle UIFace::GetRectangle (const Vector2i& size) const
 {
 	// NOTE: The face coordinates are stored as top-left based, matching Photoshop and
 	// windows coordinates. R5 textures are bottom-left based, however. Solution? Flip the Y.
 	Rectangle out;
-	out.mLeft	 =  ((float)mPos.x) / size.x;
-	out.mTop	 = -((float)mPos.y) / size.y;
+	out.mLeft	=  ((float)mPos.x) / size.x;
+	out.mTop	= -((float)mPos.y) / size.y;
 	out.mBottom = -((float)(mPos.y + mSize.y)) / size.y;
-	out.mRight	 =  ((float)(mPos.x + mSize.x)) / size.x;
+	out.mRight	=  ((float)(mPos.x + mSize.x)) / size.x;
 	return out;
 }
 
@@ -21,7 +21,7 @@ Face::Rectangle Face::GetRectangle (const Vector2i& size) const
 // Serialization -- Load
 //==============================================================================================
 
-void Face::SerializeFrom (const TreeNode& root)
+void UIFace::SerializeFrom (const TreeNode& root)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -43,7 +43,7 @@ void Face::SerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //==============================================================================================
 
-void Face::SerializeTo (TreeNode& root) const
+void UIFace::SerializeTo (TreeNode& root) const
 {
 	if (mSize != 0)
 	{

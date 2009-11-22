@@ -5,7 +5,7 @@ using namespace R5;
 // Changes the texture for the image
 //============================================================================================================
 
-void Picture::SetTexture (const ITexture* tex)
+void UIPicture::SetTexture (const ITexture* tex)
 {
 	if (mTex != tex)
 	{
@@ -19,7 +19,7 @@ void Picture::SetTexture (const ITexture* tex)
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void Picture::OnFill (Queue* queue)
+void UIPicture::OnFill (UIQueue* queue)
 {
 	if (mTex != 0 &&
 		queue->mLayer	== mLayer &&
@@ -46,7 +46,7 @@ void Picture::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool Picture::CustomSerializeFrom(const TreeNode& root)
+bool UIPicture::CustomSerializeFrom(const TreeNode& root)
 {
 	const Variable& value = root.mValue;
 
@@ -66,7 +66,7 @@ bool Picture::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void Picture::CustomSerializeTo(TreeNode& root) const
+void UIPicture::CustomSerializeTo(TreeNode& root) const
 {
 	if (mTex != 0)
 	{

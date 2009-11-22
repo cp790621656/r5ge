@@ -5,13 +5,13 @@ using namespace R5;
 // Any per-frame animation should go here
 //============================================================================================================
 
-bool Checkbox::OnUpdate (bool dimensionsChanged)
+bool UICheckbox::OnUpdate (bool dimensionsChanged)
 {
 	if (dimensionsChanged)
 	{
 		float height = mRegion.GetHeight();
 
-		if (GetAlignment() == Label::Alignment::Right)
+		if (GetAlignment() == UILabel::Alignment::Right)
 		{
 			mImage.GetRegion().SetLeft (1.0f, -height);
 			mLabel.GetRegion().SetRight(1.0f, -height);
@@ -31,10 +31,10 @@ bool Checkbox::OnUpdate (bool dimensionsChanged)
 // Fills the rendering queue
 //============================================================================================================
 
-void Checkbox::OnFill (Queue* queue)
+void UICheckbox::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
-		queue->mTex	== mImage.GetTexture() &&
+		queue->mTex		== mImage.GetTexture() &&
 		queue->mArea	== 0)
 	{
 		static String faceName[] = {"Checkbox: Disabled", "Checkbox: Unchecked", "Checkbox: Highlighted", "Checkbox: Checked"};
@@ -69,7 +69,7 @@ void Checkbox::OnFill (Queue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool Checkbox::CustomSerializeFrom (const TreeNode& root)
+bool UICheckbox::CustomSerializeFrom (const TreeNode& root)
 {
 	if ( mImage.CustomSerializeFrom(root) )
 	{
@@ -94,9 +94,9 @@ bool Checkbox::CustomSerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void Checkbox::CustomSerializeTo (TreeNode& root) const
+void UICheckbox::CustomSerializeTo (TreeNode& root) const
 {
-	const Skin* skin = mImage.GetSkin();
+	const UISkin* skin = mImage.GetSkin();
 	TreeNode& child = root.AddChild("Skin");
 	if (skin) child.mValue = skin->GetName();
 

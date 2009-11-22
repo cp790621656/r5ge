@@ -239,7 +239,7 @@ TestApp::TestApp()
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
 	mCore		= new Core(mWin, mGraphics, mUI);
-	mRoot		= AddWidget<Frame>(mUI, "Root");
+	mRoot		= AddWidget<UIFrame>(mUI, "Root");
 	mStart		= 0;
 	mEnd		= 0;
 	mOpen		= 0;
@@ -254,12 +254,12 @@ TestApp::TestApp()
 	IFont* font0 = mGraphics->GetFont("Arial 12");
 	IFont* font1 = mGraphics->GetFont("Arial 15");
 
-	mStatus = AddWidget<Label>(mRoot, "Status");
+	mStatus = AddWidget<UILabel>(mRoot, "Status");
 	mStatus->SetFont(font1);
 	mStatus->GetRegion().SetTop(1.0f, -20.0f);
 	mStatus->SetText("Keys: [S]tart, [E]nd, [A]dvance, [C]omplete, [O]verestimate, [B]acktrace");
 	mStatus->SetLayer(2);
-	mStatus->SetAlignment( Label::Alignment::Center );
+	mStatus->SetAlignment( UILabel::Alignment::Center );
 	mStatus->SetReceivesEvents(false);
 	
 	float fx = ((float)WIDTH  / XCOUNT) / WIDTH;
@@ -271,11 +271,11 @@ TestApp::TestApp()
 		{
 			String identifier ( String(" %u %u", x, y) );
 
-			Highlight*	hlt  = AddWidget<Highlight>(mRoot, "Highlight" + identifier);
-			Label*		lbl0 = AddWidget<Label>(hlt, "Label0" + identifier);
-			Label*		lbl1 = AddWidget<Label>(hlt, "Label1" + identifier);
-			Label*		lbl2 = AddWidget<Label>(hlt, "Label2" + identifier);
-			Region&		rgn  = hlt->GetRegion();
+			UIHighlight*	hlt  = AddWidget<UIHighlight>(mRoot, "Highlight" + identifier);
+			UILabel*		lbl0 = AddWidget<UILabel>(hlt, "Label0" + identifier);
+			UILabel*		lbl1 = AddWidget<UILabel>(hlt, "Label1" + identifier);
+			UILabel*		lbl2 = AddWidget<UILabel>(hlt, "Label2" + identifier);
+			UIRegion&		rgn  = hlt->GetRegion();
 
 			rgn.SetLeft		(fx * x, 1.0f);
 			rgn.SetTop		(fy * y, 1.0f);
@@ -287,7 +287,7 @@ TestApp::TestApp()
 
 			lbl0->SetFont(font0);
 			lbl0->SetReceivesEvents(false);
-			lbl0->SetAlignment( Label::Alignment::Center );
+			lbl0->SetAlignment( UILabel::Alignment::Center );
 			lbl0->SetColor(0);
 			lbl0->SetShadow(false);
 			lbl0->SetLayer(1, false);
@@ -295,14 +295,14 @@ TestApp::TestApp()
 
 			lbl1->SetFont(font1);
 			lbl1->SetReceivesEvents(false);
-			lbl1->SetAlignment( Label::Alignment::Center );
+			lbl1->SetAlignment( UILabel::Alignment::Center );
 			lbl1->SetColor(0);
 			lbl1->SetShadow(false);
 			lbl1->SetLayer(1, false);
 
 			lbl2->SetFont(font0);
 			lbl2->SetReceivesEvents(false);
-			lbl2->SetAlignment( Label::Alignment::Center );
+			lbl2->SetAlignment( UILabel::Alignment::Center );
 			lbl2->SetColor(0);
 			lbl2->SetShadow(false);
 			lbl2->SetLayer(1, false);
@@ -397,7 +397,7 @@ void TestApp::Update()
 // Delegate triggered when a key is pressed over the grid
 //============================================================================================================
 
-bool TestApp::OnHighlightKey (Area* ptr, const Vector2i& pos, byte key, bool isDown)
+bool TestApp::OnHighlightKey (UIArea* ptr, const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft || key == Key::MouseRight)
 	{
@@ -411,14 +411,14 @@ bool TestApp::OnHighlightKey (Area* ptr, const Vector2i& pos, byte key, bool isD
 // Delegate triggered when mouse is moving over the grid
 //============================================================================================================
 
-bool TestApp::OnHighlightMove (Area* ptr, const Vector2i& pos, const Vector2i& delta)
+bool TestApp::OnHighlightMove (UIArea* ptr, const Vector2i& pos, const Vector2i& delta)
 {
 	bool left  = mCore->IsKeyDown(Key::MouseLeft);
 	bool right = mCore->IsKeyDown(Key::MouseRight);
 	
 	if (left || right)
 	{
-		Highlight* hlt = FindWidget<Highlight>(mUI, pos);
+		UIHighlight* hlt = FindWidget<UIHighlight>(mUI, pos);
 
 		if (hlt != 0)
 		{
@@ -471,7 +471,7 @@ bool TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
 		}
 		else if ( key == Key::S )
 		{
-			Highlight* hlt = FindWidget<Highlight>(mUI, pos);
+			UIHighlight* hlt = FindWidget<UIHighlight>(mUI, pos);
 
 			if (hlt != 0)
 			{
@@ -491,7 +491,7 @@ bool TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
 		}
 		else if ( key == Key::E )
 		{
-			Highlight* hlt = FindWidget<Highlight>(mUI, pos);
+			UIHighlight* hlt = FindWidget<UIHighlight>(mUI, pos);
 			
 			if (hlt != 0)
 			{

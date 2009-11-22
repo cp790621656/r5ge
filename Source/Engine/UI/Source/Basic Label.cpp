@@ -5,11 +5,11 @@ using namespace R5;
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void BasicLabel::OnFill (Queue* queue)
+void BasicLabel::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer	== mLayer &&
-		queue->mTex	!= 0 &&
-		queue->mTex	== GetTexture() &&
+		queue->mTex		!= 0 &&
+		queue->mTex		== GetTexture() &&
 		queue->mArea	== 0)
 	{
 		byte height ( GetFontSize() );

@@ -7,7 +7,7 @@
 // Button class
 //============================================================================================================
 
-class Button : public Area
+class UIButton : public UIArea
 {
 public:
 
@@ -23,17 +23,17 @@ public:
 
 protected:
 
-	SubPicture	mImage;
-	Label		mLabel;
-	uint		mState;
-	bool		mSticky;
-	bool		mIgnoreMouseKey;
+	UISubPicture	mImage;
+	UILabel			mLabel;
+	uint			mState;
+	bool			mSticky;
+	bool			mIgnoreMouseKey;
 
 public:
 
-	Button();
+	UIButton();
 
-	const Skin*		GetSkin()		const	{ return mImage.GetSkin();			}
+	const UISkin*	GetSkin()		const	{ return mImage.GetSkin();			}
 	const Color3f&	GetColor()		const	{ return mLabel.GetColor();			}
 	const String&	GetText()		const	{ return mLabel.GetText();			}
 	const IFont*	GetFont()		const	{ return mLabel.GetFont();			}
@@ -41,7 +41,7 @@ public:
 	bool			IsSticky()		const	{ return mSticky;					}
 	uint			GetState()		const	{ return mState;					}
 
-	void SetSkin	  (const Skin* skin)	{ mImage.SetSkin(skin);				}
+	void SetSkin	  (const UISkin* skin)	{ mImage.SetSkin(skin);				}
 	void SetColor	  (const Color3f& color){ mLabel.SetColor(color);			}
 	void SetText	  (const String& text)	{ mLabel.SetText(text);				}
 	void SetFont	  (const IFont* font)	{ mLabel.SetFont(font);				}
@@ -54,18 +54,18 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Button", Button, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Button", UIButton, UIArea, UIArea);
 
 	// Internal functions. These values are normally set by Root::CreateArea
-	virtual void _SetParentPtr (Area* ptr);
-	virtual void _SetRootPtr   (Root* ptr);
+	virtual void _SetParentPtr (UIArea* ptr);
+	virtual void _SetRootPtr   (UIRoot* ptr);
 
 	// Area functions
 	virtual void SetDirty()								{ mImage.SetDirty(); mLabel.SetDirty(); }
 	virtual void OnTextureChanged (const ITexture* ptr)	{ mImage.OnTextureChanged(ptr); }
 	virtual void OnLayerChanged()						{ mImage.SetLayer(mLayer, false); mLabel.SetLayer(mLayer+1, false); }
 	virtual bool OnUpdate (bool dimensionsChanged);
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 protected:
 

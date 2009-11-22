@@ -7,7 +7,7 @@
 // Button that smoothly fades from one state to the next
 //============================================================================================================
 
-class AnimatedButton : public Button
+class UIAnimatedButton : public UIButton
 {
 protected:
 
@@ -19,7 +19,7 @@ protected:
 
 public:
 
-	AnimatedButton();
+	UIAnimatedButton();
 
 	float GetAnimationTime() const		{ return mAnimTime; }
 	void  SetAnimationTime(float val)	{ mAnimTime = val;  }
@@ -30,11 +30,11 @@ public:
 public:
 
 	// Area creation
-	static Area* _CreateNew() { return new AnimatedButton(); }
+	static UIArea* _CreateNew() { return new UIAnimatedButton(); }
 
 	// Area functions
 	virtual bool OnUpdate (bool dimensionsChanged);
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

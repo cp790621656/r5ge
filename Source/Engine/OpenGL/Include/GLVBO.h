@@ -6,7 +6,7 @@
 
 class GLGraphics;
 
-class VBO : public IVBO
+class GLVBO : public IVBO
 {
 protected:
 
@@ -23,11 +23,11 @@ private:
 
 	// Only the R5::GLGraphics class should be able to create VBOs
 	friend class R5::GLGraphics;
-	VBO(IGraphics* graphics);
+	GLVBO(IGraphics* graphics);
 
 public:
 
-	virtual ~VBO() { _InternalRelease(false); }
+	virtual ~GLVBO() { _InternalRelease(false); }
 
 private:
 

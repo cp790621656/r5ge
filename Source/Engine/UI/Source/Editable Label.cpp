@@ -5,7 +5,7 @@ using namespace R5;
 // Get the index of a character at the specified position
 //=============================================================================================
 
-uint EditableLabel::_GetIndexAt (const Vector2i& pos) const
+uint UIEditableLabel::_GetIndexAt (const Vector2i& pos) const
 {
 	if ( mFont != 0 && mText.IsValid() && pos.x > mRegion.GetLeft() )
 	{
@@ -20,7 +20,7 @@ uint EditableLabel::_GetIndexAt (const Vector2i& pos) const
 // Moves the cursor to the specified location
 //=============================================================================================
 
-void  EditableLabel::_MoveCursorTo(uint index)
+void  UIEditableLabel::_MoveCursorTo(uint index)
 {
 	if (mFont)
 	{
@@ -66,7 +66,7 @@ void  EditableLabel::_MoveCursorTo(uint index)
 // Retrieves the selected text
 //=============================================================================================
 
-String  EditableLabel::GetSelectedText() const
+String  UIEditableLabel::GetSelectedText() const
 {
 	// String class automatically figures out which one is less than the other -- start or end
 	String text;
@@ -78,7 +78,7 @@ String  EditableLabel::GetSelectedText() const
 // Changes the label's text
 //=============================================================================================
 
-void  EditableLabel::SetText (const String& text)
+void  UIEditableLabel::SetText (const String& text)
 {
 	if ( mText != text )
 	{
@@ -95,7 +95,7 @@ void  EditableLabel::SetText (const String& text)
 // Changes the label's font
 //=============================================================================================
 
-void  EditableLabel::SetFont (const IFont* font)
+void  UIEditableLabel::SetFont (const IFont* font)
 {
 	if (mFont != font)
 	{
@@ -112,7 +112,7 @@ void  EditableLabel::SetFont (const IFont* font)
 // Changes the selection color
 //=============================================================================================
 
-void  EditableLabel::SetSelectionColor (const Color4f& color)
+void  UIEditableLabel::SetSelectionColor (const Color4f& color)
 {
 	if ( mSelColor != color )
 	{
@@ -125,7 +125,7 @@ void  EditableLabel::SetSelectionColor (const Color4f& color)
 // Marks this specific area as needing to be rebuilt
 //=============================================================================================
 
-void EditableLabel::SetDirty()
+void UIEditableLabel::SetDirty()
 {
 	const ITexture* tex = GetTexture();
 	if (tex != 0) OnDirty(tex, mLayer);
@@ -136,14 +136,14 @@ void EditableLabel::SetDirty()
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void EditableLabel::OnFill (Queue* queue)
+void UIEditableLabel::OnFill (UIQueue* queue)
 {
 	byte fontSize ( GetFontSize() );
 
 	if (fontSize > 5)
 	{
 		if (queue->mLayer	== (mLayer + 1) &&
-			queue->mTex	== 0 &&
+			queue->mTex		== 0 &&
 			queue->mArea	== 0)
 		{
 			if (mHasFocus)
@@ -214,9 +214,9 @@ void EditableLabel::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool EditableLabel::CustomSerializeFrom(const TreeNode& root)
+bool UIEditableLabel::CustomSerializeFrom(const TreeNode& root)
 {
-	if (TextLine::CustomSerializeFrom(root))
+	if (UITextLine::CustomSerializeFrom(root))
 	{
 		return true;
 	}
@@ -232,9 +232,9 @@ bool EditableLabel::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void EditableLabel::CustomSerializeTo(TreeNode& root) const
+void UIEditableLabel::CustomSerializeTo(TreeNode& root) const
 {
-	TextLine::CustomSerializeTo(root);
+	UITextLine::CustomSerializeTo(root);
 	root.AddChild("Selection Color", mSelColor);
 }
 
@@ -242,7 +242,7 @@ void EditableLabel::CustomSerializeTo(TreeNode& root) const
 // Repond to mouse movement
 //============================================================================================================
 
-bool EditableLabel::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+bool UIEditableLabel::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if ( mRoot->IsKeyDown(Key::MouseLeft) )
 	{
@@ -254,7 +254,7 @@ bool EditableLabel::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 			OnDirty(0, mLayer+1);
 		}
 	}
-	Area::OnMouseMove(pos, delta);
+	UIArea::OnMouseMove(pos, delta);
 	return true;
 }
 
@@ -262,7 +262,7 @@ bool EditableLabel::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 // Respond to mouse buttons
 //============================================================================================================
 
-bool EditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIEditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)
 {
 	if (isDown)
 	{
@@ -292,7 +292,7 @@ bool EditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)
 		mRoot->_SetFocusArea(0);
 	}
 
-	Area::OnKey(pos, key, isDown);
+	UIArea::OnKey(pos, key, isDown);
 	return true;
 }
 
@@ -300,11 +300,11 @@ bool EditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)
 // Select the area
 //============================================================================================================
 
-bool EditableLabel::OnFocus (bool selected)
+bool UIEditableLabel::OnFocus (bool selected)
 {
 	mHasFocus = selected;
 	OnDirty(0, mLayer+1);
-	Area::OnFocus(selected);
+	UIArea::OnFocus(selected);
 	return true;
 }
 
@@ -312,7 +312,7 @@ bool EditableLabel::OnFocus (bool selected)
 // Add typed characters to the label's text
 //============================================================================================================
 
-bool EditableLabel::OnChar (byte character)
+bool UIEditableLabel::OnChar (byte character)
 {
 	uint left, right;
 
@@ -367,6 +367,6 @@ bool EditableLabel::OnChar (byte character)
 	mSelectionEnd = mSelectionStart = left;
 
 	SetDirty();
-	Area::OnChar(character);
+	UIArea::OnChar(character);
 	return true;
 }

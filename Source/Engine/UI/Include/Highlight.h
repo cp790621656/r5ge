@@ -7,7 +7,7 @@
 // Most basic visible Root component -- a colored quad
 //============================================================================================================
 
-class Highlight : public Area
+class UIHighlight : public UIArea
 {
 protected:
 
@@ -15,7 +15,7 @@ protected:
 
 public:
 
-	Highlight() : mColor(1.0f) {}
+	UIHighlight() : mColor(1.0f) {}
 
 	const Color4f& GetColor() const			{ return mColor; }
 	void SetColor (const Color4f& color)	{ mColor = color; OnDirty(0); }
@@ -23,11 +23,11 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Highlight", Highlight, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Highlight", UIHighlight, UIArea, UIArea);
 
 	// Area functions
 	virtual void SetDirty()					{ OnDirty(0); }
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom (const TreeNode& root);

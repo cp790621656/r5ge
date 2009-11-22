@@ -7,7 +7,7 @@
 // Basic anchored 2D region with a depth component
 //============================================================================================================
 
-class Region
+class UIRegion
 {
 public:
 
@@ -35,23 +35,23 @@ public:
 
 private:
 
-	Anchor	mRelativeLeft;		 // Anchored left side
-	Anchor	mRelativeTop;		 // Anchored top side
-	Anchor	mRelativeRight;		 // Anchored right side
-	Anchor	mRelativeBottom;	 // Anchored bottom side
-	float	mRelativeAlpha;		 // Alpha is cumulative, parent*this
-	float	mParentAlpha;		 // Saved parent alpha, used in animation
-	bool	mDimsChanged;		 // Whether the region's dimensions has been modified and will need to be updated
+	UIAnchor	mRelativeLeft;		// Anchored left side
+	UIAnchor	mRelativeTop;		// Anchored top side
+	UIAnchor	mRelativeRight;		// Anchored right side
+	UIAnchor	mRelativeBottom;	// Anchored bottom side
+	float		mRelativeAlpha;		// Alpha is cumulative, parent*this
+	float		mParentAlpha;		// Saved parent alpha, used in animation
+	bool		mDimsChanged;		// Whether the region's dimensions has been modified and will need to be updated
 
 private:
 
-	Rectangle<float> mRect;		 // Calculated dimensions with floating-point precision
-	float			 mAlpha;	 // Calculated alpha
-	bool			 mIsVisible; // Whether the region is visible according to dimensions
+	Rectangle<float> mRect;			// Calculated dimensions with floating-point precision
+	float			 mAlpha;		// Calculated alpha
+	bool			 mIsVisible;	// Whether the region is visible according to dimensions
 
 public:
 
-	Region() :  mRelativeLeft	(0.0f, 0),
+	UIRegion() :  mRelativeLeft	(0.0f, 0),
 				mRelativeTop	(0.0f, 0),
 				mRelativeRight	(1.0f, 0),
 				mRelativeBottom	(1.0f, 0),
@@ -83,15 +83,15 @@ public:
 	inline float GetAlpha()	 const	{ return mAlpha;			}
 
 	// Relative anchors
-	inline Anchor& GetRelativeLeft()	{ return mRelativeLeft;		}
-	inline Anchor& GetRelativeRight()	{ return mRelativeRight;	}
-	inline Anchor& GetRelativeTop()		{ return mRelativeTop;		}
-	inline Anchor& GetRelativeBottom()	{ return mRelativeBottom;	}
+	inline UIAnchor& GetRelativeLeft()		{ return mRelativeLeft;		}
+	inline UIAnchor& GetRelativeRight()		{ return mRelativeRight;	}
+	inline UIAnchor& GetRelativeTop()		{ return mRelativeTop;		}
+	inline UIAnchor& GetRelativeBottom()	{ return mRelativeBottom;	}
 
-	inline const Anchor& GetRelativeLeft()	 const	{ return mRelativeLeft;		}
-	inline const Anchor& GetRelativeRight()	 const	{ return mRelativeRight;	}
-	inline const Anchor& GetRelativeTop()	 const	{ return mRelativeTop;		}
-	inline const Anchor& GetRelativeBottom() const	{ return mRelativeBottom;	}
+	inline const UIAnchor& GetRelativeLeft()	const	{ return mRelativeLeft;		}
+	inline const UIAnchor& GetRelativeRight()	const	{ return mRelativeRight;	}
+	inline const UIAnchor& GetRelativeTop()		const	{ return mRelativeTop;		}
+	inline const UIAnchor& GetRelativeBottom()	const	{ return mRelativeBottom;	}
 
 	// Used in animation
 	inline float GetParentAlpha()	 const	{ return mParentAlpha;	 }
@@ -111,7 +111,7 @@ public:
 
 private:
 
-	friend class Area;
+	friend class UIArea;
 
 	// Serialization
 	bool Load (const String& tag, const Variable& value);
@@ -124,5 +124,5 @@ public:
 
 	// Updates the region's position and size based on the provided parent's values
 	// Returns 'true' if the region has changed
-	bool Update (const Region& parent, bool forceUpdate = false);
+	bool Update (const UIRegion& parent, bool forceUpdate = false);
 };

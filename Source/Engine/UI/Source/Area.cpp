@@ -5,9 +5,9 @@ using namespace R5;
 // Find an area by position that will respond to events
 //============================================================================================================
 
-Area* Area::_FindChild (const Vector2i& pos)
+UIArea* UIArea::_FindChild (const Vector2i& pos)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	if ( mReceivesEvents && mRegion.Contains(pos) && mRegion.IsVisible() )
 	{
 		mChildren.Lock();
@@ -28,9 +28,9 @@ Area* Area::_FindChild (const Vector2i& pos)
 // Simple search
 //============================================================================================================
 
-Area* Area::_FindChild (const String& name, bool recursive)
+UIArea* UIArea::_FindChild (const String& name, bool recursive)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	mChildren.Lock();
 	{
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
@@ -61,9 +61,9 @@ Area* Area::_FindChild (const String& name, bool recursive)
 // Adds a unique named child, or returns an existing area if it is already present
 //============================================================================================================
 
-Area* Area::_AddChild (const String& type, const String& name, bool unique)
+UIArea* UIArea::_AddChild (const String& type, const String& name, bool unique)
 {
-	Area* ptr (0);
+	UIArea* ptr (0);
 	mChildren.Lock();
 	{
 		if (unique)
@@ -95,7 +95,7 @@ Area* Area::_AddChild (const String& type, const String& name, bool unique)
 // Layer manipulation
 //============================================================================================================
 
-void Area::SetLayer (int layer, bool setDirty)
+void UIArea::SetLayer (int layer, bool setDirty)
 {
 	if (mLayer != layer)
 	{
@@ -113,7 +113,7 @@ void Area::SetLayer (int layer, bool setDirty)
 // Deletes all child areas
 //============================================================================================================
 
-void Area::DeleteAllChildren()
+void UIArea::DeleteAllChildren()
 {
 	if (mChildren.IsValid())
 	{
@@ -123,7 +123,7 @@ void Area::DeleteAllChildren()
 		{
 			for (uint i = 0; i < mChildren.GetSize(); ++i)
 			{
-				Area* area = mChildren[i];
+				UIArea* area = mChildren[i];
 
 				if (area != 0)
 				{
@@ -141,7 +141,7 @@ void Area::DeleteAllChildren()
 // Brings the area to the foreground
 //============================================================================================================
 
-void Area::BringToFront (Area* child)
+void UIArea::BringToFront (UIArea* child)
 {
 	if (child != 0)
 	{
@@ -164,7 +164,7 @@ void Area::BringToFront (Area* child)
 // Gives this area undivided attention
 //============================================================================================================
 
-void Area::SetFocus (bool focus)
+void UIArea::SetFocus (bool focus)
 {
 	if (focus)
 	{
@@ -175,9 +175,9 @@ void Area::SetFocus (bool focus)
 	}
 	else
 	{
-		const Area* focus = mRoot->GetEventArea();
-		const Area* input = mRoot->GetFocusArea();
-		const Area* hover = mRoot->GetHoverArea();
+		const UIArea* focus = mRoot->GetEventArea();
+		const UIArea* input = mRoot->GetFocusArea();
+		const UIArea* hover = mRoot->GetHoverArea();
 
 		if (focus != 0 && focus->IsChildOf(this)) mRoot->_SetEventArea(0);
 		if (input != 0 && input->IsChildOf(this)) mRoot->_SetFocusArea(0);
@@ -189,7 +189,7 @@ void Area::SetFocus (bool focus)
 // Gives this area keyboard focus
 //============================================================================================================
 
-void Area::SetKeyboardFocus()
+void UIArea::SetKeyboardFocus()
 {
 	if (mRoot) mRoot->_SetFocusArea(this);
 }
@@ -198,7 +198,7 @@ void Area::SetKeyboardFocus()
 // Calls OnTextureChanged() and recurses through children
 //============================================================================================================
 
-void Area::_TextureChanged (const ITexture* ptr)
+void UIArea::_TextureChanged (const ITexture* ptr)
 {
 	OnTextureChanged (ptr);
 	mChildren.Lock();
@@ -214,7 +214,7 @@ void Area::_TextureChanged (const ITexture* ptr)
 // Updates the region's dimensions and recurses through children
 //============================================================================================================
 
-bool Area::Update (const Vector2i& size, bool forceUpdate)
+bool UIArea::Update (const Vector2i& size, bool forceUpdate)
 {
 	bool childrenChanged (false);
 	bool areaChanged (mRegion.Update(size, forceUpdate));
@@ -226,7 +226,7 @@ bool Area::Update (const Vector2i& size, bool forceUpdate)
 
 	mChildren.Lock();
 	{
-		const Region& region ( GetSubRegion() );
+		const UIRegion& region ( GetSubRegion() );
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
 		{
 			if (mChildren[i])
@@ -243,7 +243,7 @@ bool Area::Update (const Vector2i& size, bool forceUpdate)
 // Updates the region's dimensions and recurses through children
 //============================================================================================================
 
-bool Area::Update (const Region& parent, bool forceUpdate)
+bool UIArea::Update (const UIRegion& parent, bool forceUpdate)
 {
 	bool childrenChanged (false);
 	bool areaChanged (mRegion.Update(parent, forceUpdate));
@@ -255,7 +255,7 @@ bool Area::Update (const Region& parent, bool forceUpdate)
 
 	mChildren.Lock();
 	{
-		const Region& region ( GetSubRegion() );
+		const UIRegion& region ( GetSubRegion() );
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
 		{
 			if (mChildren[i])
@@ -272,7 +272,7 @@ bool Area::Update (const Region& parent, bool forceUpdate)
 // Serialization -- Load
 //============================================================================================================
 
-bool Area::SerializeFrom (const TreeNode& root)
+bool UIArea::SerializeFrom (const TreeNode& root)
 {
 	int layer (mLayer);
 
@@ -303,7 +303,7 @@ bool Area::SerializeFrom (const TreeNode& root)
 			else if (!CustomSerializeFrom(node))
 			{
 				// Try to find or add a child node
-				Area* child = _AddChild( tag, value.IsString() ? value.AsString() : value.GetString() );
+				UIArea* child = _AddChild( tag, value.IsString() ? value.AsString() : value.GetString() );
 				if (child) child->SerializeFrom(node);
 			}
 		}
@@ -317,7 +317,7 @@ bool Area::SerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-bool Area::SerializeTo (TreeNode& root) const
+bool UIArea::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
@@ -349,7 +349,7 @@ bool Area::SerializeTo (TreeNode& root) const
 // Calls the virtual Area::OnRender() and recurses through children
 //============================================================================================================
 
-uint Area::Render()
+uint UIArea::Render()
 {
 	// OnRender() is overwritten by Frame class to actually render the queues
 	uint val = OnRender();
@@ -372,7 +372,7 @@ uint Area::Render()
 // Recurses through children after calling OnFill() on self
 //============================================================================================================
 
-void Area::Fill (Queue* queue)
+void UIArea::Fill (UIQueue* queue)
 {
 	if (mRegion.IsVisible())
 	{

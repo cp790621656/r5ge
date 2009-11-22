@@ -7,18 +7,18 @@
 // Event container class for triggered callbacks
 //============================================================================================================
 
-class Root;
-class Area;
+class UIRoot;
+class UIArea;
 
-class EventHandler
+class UIEventHandler
 {
 protected:
-	typedef FastDelegate<bool (Area*, bool)>								OnMouseOverDelegate;
-	typedef FastDelegate<bool (Area*, const Vector2i&, const Vector2i&)>	OnMouseMoveDelegate;
-	typedef FastDelegate<bool (Area*, const Vector2i&, byte, bool)>			OnKeyDelegate;
-	typedef FastDelegate<bool (Area*, const Vector2i&, float)>				OnScrollDelegate;
-	typedef FastDelegate<bool (Area*, bool)>								OnFocusDelegate;
-	typedef FastDelegate<bool (Area*)>										OnChangeDelegate;
+	typedef FastDelegate<bool (UIArea*, bool)>								OnMouseOverDelegate;
+	typedef FastDelegate<bool (UIArea*, const Vector2i&, const Vector2i&)>	OnMouseMoveDelegate;
+	typedef FastDelegate<bool (UIArea*, const Vector2i&, byte, bool)>		OnKeyDelegate;
+	typedef FastDelegate<bool (UIArea*, const Vector2i&, float)>			OnScrollDelegate;
+	typedef FastDelegate<bool (UIArea*, bool)>								OnFocusDelegate;
+	typedef FastDelegate<bool (UIArea*)>									OnChangeDelegate;
 
 	OnMouseOverDelegate		mOnMouseOver;
 	OnMouseMoveDelegate		mOnMouseMove;
@@ -48,9 +48,9 @@ public:
 
 private:
 
-	friend class Root;
+	friend class UIRoot;
 
-	void CopyEvents (const EventHandler& entry)
+	void CopyEvents (const UIEventHandler& entry)
 	{
 		if (entry.mOnMouseOver)		mOnMouseOver	= entry.mOnMouseOver;
 		if (entry.mOnMouseMove)		mOnMouseMove	= entry.mOnMouseMove;

@@ -7,7 +7,7 @@
 // Slider that smoothly animated to its set value
 //============================================================================================================
 
-class AnimatedSlider : public Slider
+class UIAnimatedSlider : public UISlider
 {
 protected:
 
@@ -18,7 +18,7 @@ protected:
 
 public:
 
-	AnimatedSlider() : mStartVal(0.0f), mTargetVal(0.0f), mStartTime(0), mAnimTime(0.0f) {}
+	UIAnimatedSlider() : mStartVal(0.0f), mTargetVal(0.0f), mStartTime(0), mAnimTime(0.0f) {}
 
 	float GetAnimationTime() const		{ return mAnimTime; }
 	void  SetAnimationTime(float val)	{ mAnimTime = val;  }
@@ -32,7 +32,7 @@ public:
 public:
 
 	// Area creation
-	static Area* _CreateNew() { return new AnimatedSlider(); }
+	static UIArea* _CreateNew() { return new UIAnimatedSlider(); }
 
 	// Updates the slider's value
 	virtual bool OnUpdate (bool dimensionsChanged);

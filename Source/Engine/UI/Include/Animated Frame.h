@@ -7,7 +7,7 @@
 // Frame that smoothly fades in and out when alpha changes
 //============================================================================================================
 
-class AnimatedFrame : public Frame
+class UIAnimatedFrame : public UIFrame
 {
 protected:
 
@@ -18,7 +18,7 @@ protected:
 
 public:
 
-	AnimatedFrame();
+	UIAnimatedFrame();
 
 	virtual float GetAlpha() const	{ return mRegion.GetParentAlpha() * mRegion.GetRelativeAlpha(); }
 	virtual void  SetAlpha (float val, float animTime = 0.0f);
@@ -26,7 +26,7 @@ public:
 public:
 
 	// Area creation
-	static Area* _CreateNew() { return new AnimatedFrame(); }
+	static UIArea* _CreateNew() { return new UIAnimatedFrame(); }
 
 	// Called before OnUpdate(); can be used to override the area's alpha or dimensions
 	virtual bool OnPreUpdate (bool dimensionsChanged);

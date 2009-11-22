@@ -9,7 +9,7 @@
 
 class GLGraphics;
 
-class FBO : public IRenderTarget
+class GLFBO : public IRenderTarget
 {
 	struct TextureEntry
 	{
@@ -38,13 +38,13 @@ private:
 
 	// Only the R5::GLGraphics class should be able to create FBOs
 	friend class R5::GLGraphics;
-	FBO(IGraphics* graphics);
+	GLFBO(IGraphics* graphics);
 
 	void _InternalRelease(bool delayExecution);
 
 public:
 
-	virtual ~FBO() { _InternalRelease(false); }
+	virtual ~GLFBO() { _InternalRelease(false); }
 
 public:
 

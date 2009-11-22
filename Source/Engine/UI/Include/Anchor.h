@@ -7,13 +7,13 @@
 // Simple struct that combines relative and absolute coordinates
 //============================================================================================================
 
-struct Anchor
+struct UIAnchor
 {
 	float mRelative;
 	float mAbsolute;
 
-	Anchor()								: mRelative(0.0f), mAbsolute(0.0f) {}
-	Anchor(float absolute)					: mRelative(0.0f), mAbsolute(absolute) {}
-	Anchor(float relative, float absolute)	: mRelative(relative), mAbsolute(absolute) {}
-	void Set(float relative, float absolute) { mRelative = relative; mAbsolute = absolute; }
+	UIAnchor()									: mRelative(0.0f), mAbsolute(0.0f) {}
+	UIAnchor(float absolute)					: mRelative(0.0f), mAbsolute(absolute) {}
+	UIAnchor(float relative, float absolute)	: mRelative(relative), mAbsolute(absolute) {}
+	void Set(float relative, float absolute)	{ mRelative = relative; mAbsolute = absolute; }
 };

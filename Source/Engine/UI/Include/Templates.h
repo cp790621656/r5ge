@@ -10,18 +10,18 @@
 //============================================================================================================
 
 template <typename Type>
-Type* FindWidget (Area* root, const String& name, bool recursive = true)
+Type* FindWidget (UIArea* root, const String& name, bool recursive = true)
 {
-	Area* obj = root->_FindChild(name, recursive);
+	UIArea* obj = root->_FindChild(name, recursive);
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 }
 
 //============================================================================================================
 
 template <typename Type>
-Type* FindWidget (Root* root, const String& name, bool recursive = true)
+Type* FindWidget (UIRoot* root, const String& name, bool recursive = true)
 {
-	Area* obj = root->_FindChild(name, recursive);
+	UIArea* obj = root->_FindChild(name, recursive);
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 }
 
@@ -30,18 +30,18 @@ Type* FindWidget (Root* root, const String& name, bool recursive = true)
 //============================================================================================================
 
 template <typename Type>
-Type* FindWidget (Area* root, const Vector2i& pos)
+Type* FindWidget (UIArea* root, const Vector2i& pos)
 {
-	Area* obj = root->_FindChild(pos);
+	UIArea* obj = root->_FindChild(pos);
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 }
 
 //============================================================================================================
 
 template <typename Type>
-Type* FindWidget (Root* root, const Vector2i& pos)
+Type* FindWidget (UIRoot* root, const Vector2i& pos)
 {
-	Area* obj = root->_FindChild(pos);
+	UIArea* obj = root->_FindChild(pos);
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 }
 
@@ -50,18 +50,18 @@ Type* FindWidget (Root* root, const Vector2i& pos)
 //============================================================================================================
 
 template <typename Type>
-Type* AddWidget (Area* root, const String& name)
+Type* AddWidget (UIArea* root, const String& name)
 {
-	Area* obj = root->_AddChild(Type::ClassID(), name);
+	UIArea* obj = root->_AddChild(Type::ClassID(), name);
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 }
 
 //============================================================================================================
 
 template <typename Type>
-Type* AddWidget (Root* root, const String& name)
+Type* AddWidget (UIRoot* root, const String& name)
 {
-	Area* obj = root->_AddChild(Type::ClassID(), name);
+	UIArea* obj = root->_AddChild(Type::ClassID(), name);
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 }
 
@@ -70,7 +70,7 @@ Type* AddWidget (Root* root, const String& name)
 //============================================================================================================
 
 template <typename Type>
-void RegisterWidget (Root* root)
+void RegisterWidget (UIRoot* root)
 {
 	root->_RegisterWidget( Type::ClassID(), &Type::_CreateNew );
 }

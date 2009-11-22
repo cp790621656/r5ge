@@ -42,7 +42,7 @@ typedef int (WINAPI *PFNWGLSWAPINTERVALEXTPROC) (int interval);
 
 //#define GL_GLEXT_PROTOTYPES
 #include <gl\glu.h>
-#include "glext.h"
+#include "_glext.h"
 
 //============================================================================================================
 // Basic functions

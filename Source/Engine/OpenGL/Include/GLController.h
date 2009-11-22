@@ -11,7 +11,7 @@ class GLController : public IGraphics
 {
 	struct TextureUnit
 	{
-		uint	mType;
+		uint			mType;
 		const ITexture*	mTex;
 
 		TextureUnit() : mType(0), mTex(0) {}

@@ -5,7 +5,7 @@ using namespace R5;
 // Hides the frame
 //============================================================================================================
 
-void Frame::Hide (float animTime)
+void UIFrame::Hide (float animTime)
 {
 	SetFocus(false);
 	SetAlpha(0.0f, animTime);
@@ -15,15 +15,15 @@ void Frame::Hide (float animTime)
 // Marks a rendering queue associated with this texture as being dirty
 //============================================================================================================
 
-void Frame::OnDirty (const ITexture* tex, int layer, const Area* area)
+void UIFrame::OnDirty (const ITexture* tex, int layer, const UIArea* area)
 {
 	mQs.Lock();
 	{
-		Queue* ptr (0);
+		UIQueue* ptr (0);
 
 		for (uint i = 0; i < mQs.GetSize(); ++i)
 		{
-			Queue* queue (mQs[i]);
+			UIQueue* queue (mQs[i]);
 
 			if (queue			!= 0 &&
 				queue->mTex		== tex &&
@@ -55,7 +55,7 @@ void Frame::OnDirty (const ITexture* tex, int layer, const Area* area)
 // Marks all rendering queues as needing to be rebuilt
 //============================================================================================================
 
-void Frame::SetDirty()
+void UIFrame::SetDirty()
 {
 	mQs.Lock();
 	{
@@ -76,7 +76,7 @@ void Frame::SetDirty()
 // Updates the rendering queues as necessary, then draws them to the screen
 //============================================================================================================
 
-uint Frame::OnRender()
+uint UIFrame::OnRender()
 {
 	uint triangles = 0;
 
@@ -89,7 +89,7 @@ uint Frame::OnRender()
 		// Update the queues
 		for (uint i = 0; i < size; ++i)
 		{
-			Queue* queue (mQs[i]);
+			UIQueue* queue (mQs[i]);
 
 			if (queue != 0 && queue->mIsDirty)
 			{
@@ -148,7 +148,7 @@ uint Frame::OnRender()
 		// Cleanup
 		for (uint i = size; i > 1; )
 		{
-			Queue* queue (mQs[--i]);
+			UIQueue* queue (mQs[--i]);
 
 			if (queue == 0 || !queue->IsValid())
 			{
@@ -160,7 +160,7 @@ uint Frame::OnRender()
 		// Rendering
 		for (uint i = 0; i < size; ++i)
 		{
-			Queue* queue (mQs[i]);
+			UIQueue* queue (mQs[i]);
 
 			if (queue != 0)
 			{

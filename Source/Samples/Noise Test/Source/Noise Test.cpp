@@ -35,8 +35,8 @@ TestApp::~TestApp()
 
 void TestApp::InitUI()
 {
-	Window* parent	= FindWidget<Window>(mUI, "Options");
-	Skin*	skin	= mUI->GetSkin("Default");
+	UIWindow* parent	= FindWidget<UIWindow>(mUI, "Options");
+	UISkin*	skin	= mUI->GetSkin("Default");
 	IFont*	font	= mUI->GetFont("Arial");
 
 	if (parent != 0)
@@ -51,12 +51,12 @@ void TestApp::InitUI()
 			String listName  ("Filter ");
 			String inputName ("Input " );
 
-			List*  list  = AddWidget<List> (parent, listName  << i);
-			Input* input = AddWidget<Input>(parent, inputName << i);
+			UIList*  list  = AddWidget<UIList> (parent, listName  << i);
+			UIInput* input = AddWidget<UIInput>(parent, inputName << i);
 
 			if (list != 0)
 			{
-				Region& r = list->GetRegion();
+				UIRegion& r = list->GetRegion();
 				r.SetLeft	(0.0f,  padding);
 				r.SetRight	(0.5f, -padding);
 				r.SetTop	(0.0f,  padding + i * 20);
@@ -76,7 +76,7 @@ void TestApp::InitUI()
 
 			if (input != 0)
 			{
-				Region& r = input->GetRegion();
+				UIRegion& r = input->GetRegion();
 				r.SetLeft	(0.5f,  padding);
 				r.SetRight	(1.0f, -padding);
 				r.SetTop	(0.0f,  padding + i * 20);
@@ -147,9 +147,9 @@ void TestApp::Regenerate()
 	static ITexture* noiseTex	= mGraphics->GetTexture("Noise");
 	static ITexture* nmapTex	= mGraphics->GetTexture("Normal Map");
 
-	static Label*	seedLabel	= FindWidget<Label> (mUI, "Seed");
-	static Label*	timeLabel	= FindWidget<Label> (mUI, "Time");
-	static Window*	window		= FindWidget<Window>(mUI, "Texture Window");
+	static UILabel*	seedLabel	= FindWidget<UILabel> (mUI, "Seed");
+	static UILabel*	timeLabel	= FindWidget<UILabel> (mUI, "Time");
+	static UIWindow*	window		= FindWidget<UIWindow>(mUI, "Texture Window");
 
 	if (mNoise.GetWidth() > 0 && mNoise.GetHeight() > 0)
 	{
@@ -197,7 +197,7 @@ void TestApp::Regenerate()
 		{
 			Vector2i size = window->GetSizeForContent((float)mNoise.GetWidth(), mNoise.GetHeight()*2.0f);
 
-			Region& rgn = window->GetRegion();
+			UIRegion& rgn = window->GetRegion();
 			rgn.SetLeft		(1.0f, -(float)size.x);
 			rgn.SetRight	(1.0f, 0.0f);
 			rgn.SetTop		(0.0f, 0.0f);
@@ -213,14 +213,14 @@ void TestApp::Regenerate()
 // Triggered when "Generate" button is clicked in the UI
 //============================================================================================================
 
-bool TestApp::Generate (Area* area, const Vector2i& pos, byte key, bool isDown)
+bool TestApp::Generate (UIArea* area, const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown && key == Key::MouseLeft)
 	{
-		static Window* parent = FindWidget<Window>(mUI, "Options");
+		static UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
 
 		ushort dimension (256);
-		Button* btn = R5_CAST(Button, area);
+		UIButton* btn = R5_CAST(UIButton, area);
 		if (btn != 0) btn->GetText() >> dimension;
 
 		if (parent != 0)
@@ -234,8 +234,8 @@ bool TestApp::Generate (Area* area, const Vector2i& pos, byte key, bool isDown)
 				String listName  ("Filter ");
 				String inputName ("Input " );
 
-				List*  list  = FindWidget<List> (parent, listName  << i, false);
-				Input* input = FindWidget<Input>(parent, inputName << i, false);
+				UIList*  list  = FindWidget<UIList> (parent, listName  << i, false);
+				UIInput* input = FindWidget<UIInput>(parent, inputName << i, false);
 
 				if (list != 0 && input != 0)
 				{
@@ -258,9 +258,9 @@ bool TestApp::Generate (Area* area, const Vector2i& pos, byte key, bool isDown)
 // Triggered when filters change
 //============================================================================================================
 
-bool TestApp::UpdateTooltips (Area* area)
+bool TestApp::UpdateTooltips (UIArea* area)
 {
-	static Window* parent = FindWidget<Window>(mUI, "Options");
+	static UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
 	ASSERT(parent != NULL, "Missing parameter window");
 
 	// Retrieve the current filters and fill the noise
@@ -269,8 +269,8 @@ bool TestApp::UpdateTooltips (Area* area)
 		String listName  ("Filter ");
 		String inputName ("Input " );
 
-		List*  list  = FindWidget<List> (parent, listName  << i, false);
-		Input* input = FindWidget<Input>(parent, inputName << i, false);
+		UIList*  list  = FindWidget<UIList> (parent, listName  << i, false);
+		UIInput* input = FindWidget<UIInput>(parent, inputName << i, false);
 
 		if (list != 0 && input != 0)
 		{

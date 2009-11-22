@@ -22,8 +22,8 @@ class TestApp
 	ModelInstance*	mInst0;
 	ModelInstance*	mInst1;
 	Camera*			mCam;
-	Label*			mStatus;
-	Label*			mMode;
+	UILabel*			mStatus;
+	UILabel*			mMode;
 	ITechnique*		mTech;
 
 public:

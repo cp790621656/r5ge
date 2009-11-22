@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-AnimatedFrame::AnimatedFrame() :
+UIAnimatedFrame::UIAnimatedFrame() :
 	mStartAlpha		(0.0f),
 	mCurrentAlpha	(0.0f),
 	mStartTime		(0.0f),
@@ -13,7 +13,7 @@ AnimatedFrame::AnimatedFrame() :
 // Changes the alpha
 //============================================================================================================
 
-void AnimatedFrame::SetAlpha (float val, float animTime)
+void UIAnimatedFrame::SetAlpha (float val, float animTime)
 {
 	if (mRegion.GetRelativeAlpha() != val)
 	{
@@ -29,7 +29,7 @@ void AnimatedFrame::SetAlpha (float val, float animTime)
 // Called before OnUpdate(); can be used to override the area's alpha or dimensions
 //============================================================================================================
 
-bool AnimatedFrame::OnPreUpdate (bool dimensionsChanged)
+bool UIAnimatedFrame::OnPreUpdate (bool dimensionsChanged)
 {
 	// Target alpha is always the region's relative alpha
 	float targetAlpha = mRegion.GetRelativeAlpha();

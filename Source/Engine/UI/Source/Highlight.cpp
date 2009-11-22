@@ -5,7 +5,7 @@ using namespace R5;
 // Called when a queue is being rebuilt
 //============================================================================================================
 
-void Highlight::OnFill (Queue* queue)
+void UIHighlight::OnFill (UIQueue* queue)
 {
 	if (queue->mTex		== 0 &&
 		queue->mLayer	== mLayer &&
@@ -32,7 +32,7 @@ void Highlight::OnFill (Queue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool Highlight::CustomSerializeFrom(const TreeNode& root)
+bool UIHighlight::CustomSerializeFrom(const TreeNode& root)
 {
 	if (root.mTag == "Color")
 	{
@@ -51,7 +51,7 @@ bool Highlight::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void Highlight::CustomSerializeTo(TreeNode& root) const
+void UIHighlight::CustomSerializeTo(TreeNode& root) const
 {
 	root.AddChild("Color", mColor);
 }

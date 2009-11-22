@@ -54,8 +54,8 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static Label*	fps		= FindWidget<Label>(mUI, "FPS");
-	static Label*	tri		= FindWidget<Label>(mUI, "Triangles");
+	static UILabel*	fps		= FindWidget<UILabel>(mUI, "FPS");
+	static UILabel*	tri		= FindWidget<UILabel>(mUI, "Triangles");
 	static Object*	place	= FindObject<Object>(mCore->GetScene(), "Stage");
 
 	mCore->BeginFrame();

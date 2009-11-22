@@ -3,13 +3,13 @@ using namespace R5;
 
 //============================================================================================================
 
-Context::Context() :	mSkin		(0),
-						mFont		(0),
-						mColor		(1.0f),
-						mShadow		(true),
-						mAlignment	(Label::Alignment::Left),
-						mIsDirty	(false),
-						mMinWidth	(0.0f)
+UIContext::UIContext() :	mSkin		(0),
+							mFont		(0),
+							mColor		(1.0f),
+							mShadow		(true),
+							mAlignment	(UILabel::Alignment::Left),
+							mIsDirty	(false),
+							mMinWidth	(0.0f)
 {
 	mSerializable = false;
 	mRegion.SetAlpha(0.0f);
@@ -19,7 +19,7 @@ Context::Context() :	mSkin		(0),
 // Clear all entries
 //============================================================================================================
 
-void Context::ClearAllEntries()
+void UIContext::ClearAllEntries()
 {
 	mLast.Clear();
 	mEntries.Lock();
@@ -32,7 +32,7 @@ void Context::ClearAllEntries()
 // Add a new entry to the selection
 //============================================================================================================
 
-void Context::AddEntry (const String& entry)
+void UIContext::AddEntry (const String& entry)
 {
 	mEntries.Lock();
 	mEntries.Expand() = entry;
@@ -44,7 +44,7 @@ void Context::AddEntry (const String& entry)
 // Rebuilds the entire area
 //============================================================================================================
 
-void Context::_Rebuild()
+void UIContext::_Rebuild()
 {
 	if (mFont == 0 || mSkin == 0) return;
 
@@ -58,11 +58,10 @@ void Context::_Rebuild()
 	DeleteAllChildren();
 
 	// Figure out the border sizes
-	const Face* background	= mSkin->GetFace(mFace);
-	const Face* highlight	= mSkin->GetFace("Generic Highlight");
-
-	short backgroundBorder	= background->GetBorder();
-	short highlightBorder	= -highlight->GetBorder();
+	const UIFace* background	= mSkin->GetFace(mFace);
+	const UIFace* highlight		= mSkin->GetFace("Generic Highlight");
+	short backgroundBorder		= background->GetBorder();
+	short highlightBorder		= -highlight->GetBorder();
 
 	// Limit the border to positive range
 	if (backgroundBorder < 0) backgroundBorder = 0;
@@ -99,7 +98,7 @@ void Context::_Rebuild()
 		if (subWidth > 0.0f)
 		{
 			// Add the background SubPicture
-			SubPicture* img = AddWidget<SubPicture>(this, "_Background_");
+			UISubPicture* img = AddWidget<UISubPicture>(this, "_Background_");
 
 			if (img != 0)
 			{
@@ -108,7 +107,7 @@ void Context::_Rebuild()
 				// Run through all entries and add them to the frame
 				for (uint i = 0; i < mEntries.GetSize(); ++i)
 				{
-					Label* lbl = AddWidget<Label>(img, mEntries[i]);
+					UILabel* lbl = AddWidget<UILabel>(img, mEntries[i]);
 
 					if (lbl != 0)
 					{
@@ -117,10 +116,10 @@ void Context::_Rebuild()
 						lbl->SetShadow		( mShadow		);
 						lbl->SetAlignment	( mAlignment	);
 						lbl->SetColor		( mColor		);
-						lbl->SetFont		( mFont		);
+						lbl->SetFont		( mFont			);
 						lbl->SetText		( mEntries[i]	);
-						lbl->SetOnMouseOver	( bind(&Context::_OnMouseOverItem,	this) );
-						lbl->SetOnFocus		( bind(&Context::_OnItemFocus,		this) );
+						lbl->SetOnMouseOver	( bind(&UIContext::_OnMouseOverItem,	this) );
+						lbl->SetOnFocus		( bind(&UIContext::_OnItemFocus,		this) );
 					}
 
 					// Advance the offset by the selection border + the text's height
@@ -136,20 +135,20 @@ void Context::_Rebuild()
 // Event callback for a visual highlight
 //============================================================================================================
 
-bool Context::_OnMouseOverItem (Area* area, bool inside)
+bool UIContext::_OnMouseOverItem (UIArea* area, bool inside)
 {
 	if (inside)
 	{
-		SubPicture* parent = R5_CAST(SubPicture, area->GetParent());
+		UISubPicture* parent = R5_CAST(UISubPicture, area->GetParent());
 
 		if (parent != 0 && parent->GetSkin() != 0)
 		{
-			SubPicture* img = AddWidget<SubPicture>(parent, "_Highlight_");
+			UISubPicture* img = AddWidget<UISubPicture>(parent, "_Highlight_");
 
 			if (img != 0)
 			{
-				const Region& areaRegion (area->GetSubRegion());
-				const Region& parentRegion (parent->GetSubRegion());
+				const UIRegion& areaRegion (area->GetSubRegion());
+				const UIRegion& parentRegion (parent->GetSubRegion());
 				float top = areaRegion.GetTop() - parentRegion.GetTop();
 
 				img->SetSkin(parent->GetSkin());
@@ -167,11 +166,11 @@ bool Context::_OnMouseOverItem (Area* area, bool inside)
 // Triggered when an item is selected from the list
 //============================================================================================================
 
-bool Context::_OnItemFocus (Area* area, bool hasFocus)
+bool UIContext::_OnItemFocus (UIArea* area, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		Label* lbl = R5_CAST(Label, area);
+		UILabel* lbl = R5_CAST(UILabel, area);
 
 		if (lbl != 0)
 		{
@@ -190,7 +189,7 @@ bool Context::_OnItemFocus (Area* area, bool hasFocus)
 // If alpha is set to '1', rebuild the entry list
 //============================================================================================================
 
-void Context::SetAlpha (float val, float animTime)
+void UIContext::SetAlpha (float val, float animTime)
 {
 	float alpha = GetAlpha();
 
@@ -226,19 +225,19 @@ void Context::SetAlpha (float val, float animTime)
 	{
 		SetFocus(false);
 	}
-	AnimatedFrame::SetAlpha(val, animTime);
+	UIAnimatedFrame::SetAlpha(val, animTime);
 }
 
 //============================================================================================================
 // OnFocus callback should take menu items into account
 //============================================================================================================
 
-bool Context::OnFocus (bool hasFocus)
+bool UIContext::OnFocus (bool hasFocus)
 {
 	if (!hasFocus)
 	{
-		const Area* focus = mRoot->GetFocusArea();
+		const UIArea* focus = mRoot->GetFocusArea();
 		hasFocus = (focus != 0 && focus->IsChildOf(this));
 	}
-	return AnimatedFrame::OnFocus(hasFocus);
+	return UIAnimatedFrame::OnFocus(hasFocus);
 }

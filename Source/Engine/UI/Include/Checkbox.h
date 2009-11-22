@@ -7,7 +7,7 @@
 // Checkbox (Slightly modified sticky button)
 //============================================================================================================
 
-class Checkbox : public Button
+class UICheckbox : public UIButton
 {
 public:
 
@@ -24,14 +24,14 @@ public:
 public:
 
 	// Checkbox is essentially a sticky button
-	Checkbox() { SetSticky(true); SetAlignment(Label::Alignment::Left); }
+	UICheckbox() { SetSticky(true); SetAlignment(UILabel::Alignment::Left); }
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Checkbox", Checkbox, Button, Area);
+	R5_DECLARE_INHERITED_CLASS("Checkbox", UICheckbox, UIButton, UIArea);
 
 	// Area functions
 	virtual bool OnUpdate (bool dimensionsChanged);
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 protected:
 

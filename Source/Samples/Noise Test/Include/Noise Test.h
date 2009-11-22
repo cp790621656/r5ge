@@ -36,7 +36,7 @@ public:
 	uint DrawScene();
 	void Regenerate();
 
-	bool Generate (Area* area, const Vector2i& pos, byte key, bool isDown);
-	bool UpdateTooltips (Area* area);
+	bool Generate (UIArea* area, const Vector2i& pos, byte key, bool isDown);
+	bool UpdateTooltips (UIArea* area);
 };
 };

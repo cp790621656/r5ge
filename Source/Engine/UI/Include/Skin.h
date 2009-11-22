@@ -7,20 +7,22 @@
 // Skin is a collection of faces associated with a texture
 //============================================================================================================
 
-class Root;
-class Skin
+class UIRoot;
+class UISkin
 {
 protected:
 
-	Root*				mUI;
-	String				mName;
-	bool				mSerializable;
-	const ITexture*		mTex;
-	PointerArray<Face>	mFaces;
+	typedef PointerArray<UIFace> Faces;
+
+	UIRoot*			mUI;
+	String			mName;
+	bool			mSerializable;
+	const ITexture*	mTex;
+	Faces			mFaces;
 
 public:
 
-	Skin (Root* ui, const String& name) : mUI(ui), mName(name), mSerializable(true), mTex(0) {}
+	UISkin (UIRoot* ui, const String& name) : mUI(ui), mName(name), mSerializable(true), mTex(0) {}
 
 	const String&	GetName()	 const	{ return mName; }
 	const ITexture* GetTexture() const	{ return mTex;  }
@@ -29,8 +31,8 @@ public:
 	void SetTexture (const ITexture* tex);
 
 	// Retrieves or creates a face with the specified name
-	const Face* GetFace(const String& name) const;
-	Face* GetFace(const String& name, bool create = true);
+	const UIFace* GetFace(const String& name) const;
+	UIFace* GetFace(const String& name, bool create = true);
 	
 	// Serialization
 	bool IsSerializable() const { return mSerializable; }

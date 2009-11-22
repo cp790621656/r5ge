@@ -12,9 +12,9 @@ UI::UI (IGraphics* graphics) : mGraphics(graphics)
 // Updates the buffer associated with the rendering queue
 //============================================================================================================
 
-void UI::UpdateBuffer (Queue* queue)
+void UI::UpdateBuffer (UIQueue* queue)
 {
-	R5Queue* q = (R5Queue*)queue;
+	CustomQueue* q = (CustomQueue*)queue;
 
 	if (q)
 	{
@@ -40,10 +40,10 @@ void UI::UpdateBuffer (Queue* queue)
 // Renders a single queue, returning the number of triangles drawn
 //============================================================================================================
 
-uint UI::RenderQueue (Queue* queue)
+uint UI::RenderQueue (UIQueue* queue)
 {
 	// Quick and dirty reinterpret cast... dynamic is too slow
-	R5Queue* q = reinterpret_cast<R5Queue*>(queue);
+	CustomQueue* q = reinterpret_cast<CustomQueue*>(queue);
 	uint tri (0);
 
 	if (q != 0 && q->mVertexCount)

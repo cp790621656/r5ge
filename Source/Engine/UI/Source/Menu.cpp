@@ -5,7 +5,7 @@ using namespace R5;
 // Clear all entries
 //============================================================================================================
 
-void Menu::ClearAllEntries()
+void UIMenu::ClearAllEntries()
 {
 	mEntries.Lock();
 	mEntries.Clear();
@@ -16,7 +16,7 @@ void Menu::ClearAllEntries()
 // Add an entry to the list
 //============================================================================================================
 
-void Menu::AddEntry (const String& entry)
+void UIMenu::AddEntry (const String& entry)
 {
 	mEntries.Lock();
 	{
@@ -37,7 +37,7 @@ void Menu::AddEntry (const String& entry)
 // Set the list of entries by specifying the whole array
 //============================================================================================================
 
-void Menu::SetEntries (const Entries& entries)
+void UIMenu::SetEntries (const Entries& entries)
 {
 	mEntries.Lock();
 	{
@@ -55,14 +55,14 @@ void Menu::SetEntries (const Entries& entries)
 // Shows the popup menu
 //============================================================================================================
 
-Context* Menu::_ShowMenu()
+UIContext* UIMenu::_ShowMenu()
 {
-	Context* menu = mRoot->GetContextMenu(true);
+	UIContext* menu = mRoot->GetContextMenu(true);
 
 	if (menu != 0)
 	{
-		menu->SetOnFocus		( bind(&Menu::_OnContextFocus, this) );
-		menu->SetOnValueChange	( bind(&Menu::_OnContextValue, this) );
+		menu->SetOnFocus		( bind(&UIMenu::_OnContextFocus, this) );
+		menu->SetOnValueChange	( bind(&UIMenu::_OnContextValue, this) );
 		menu->ClearAllEntries();
 
 		mEntries.Lock();
@@ -89,9 +89,9 @@ Context* Menu::_ShowMenu()
 // Hides the popup menu
 //============================================================================================================
 
-Context* Menu::_HideMenu()
+UIContext* UIMenu::_HideMenu()
 {
-	Context* menu = mRoot->GetContextMenu();
+	UIContext* menu = mRoot->GetContextMenu();
 
 	if (menu != 0)
 	{
@@ -106,7 +106,7 @@ Context* Menu::_HideMenu()
 // Delegate functions triggered by the context menu
 //============================================================================================================
 
-bool Menu::_OnContextFocus (Area* area, bool hasFocus)
+bool UIMenu::_OnContextFocus (UIArea* area, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -123,9 +123,9 @@ bool Menu::_OnContextFocus (Area* area, bool hasFocus)
 
 //============================================================================================================
 
-bool Menu::_OnContextValue (Area* area)
+bool UIMenu::_OnContextValue (UIArea* area)
 {
-	Context* context = _HideMenu();
+	UIContext* context = _HideMenu();
 
 	if (context != 0)
 	{
@@ -151,7 +151,7 @@ bool Menu::_OnContextValue (Area* area)
 // Changes the state of the button
 //============================================================================================================
 
-bool Menu::SetState (uint state, bool val)
+bool UIMenu::SetState (uint state, bool val)
 {
 	bool wasPressed = ((GetState() & State::Pressed) != 0);
 	bool retVal		= BaseClass::SetState(state, val);
@@ -175,7 +175,7 @@ bool Menu::SetState (uint state, bool val)
 // Serialization -- Load
 //============================================================================================================
 
-bool Menu::CustomSerializeFrom (const TreeNode& root)
+bool UIMenu::CustomSerializeFrom (const TreeNode& root)
 {
 	if (BaseClass::CustomSerializeFrom(root))
 	{
@@ -207,7 +207,7 @@ bool Menu::CustomSerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void Menu::CustomSerializeTo (TreeNode& root) const
+void UIMenu::CustomSerializeTo (TreeNode& root) const
 {
 	BaseClass::CustomSerializeTo(root);
 	root.AddChild("Menu", mMenuFace);

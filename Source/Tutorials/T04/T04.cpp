@@ -23,7 +23,7 @@ class TestApp
 	Core*			mCore;
 	UI*				mUI;
 	DebugCamera*	mCam;
-	Label*			mLabel;
+	UILabel*			mLabel;
 
 public:
 
@@ -31,7 +31,7 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	bool OnSliderChange(Area* area);
+	bool OnSliderChange(UIArea* area);
 };
 
 //============================================================================================================
@@ -70,7 +70,7 @@ void TestApp::Run()
 	if ((*mCore << "Config/T04.txt") && (*mCore << "Config/Default UI Skin.txt"))
 	{
 		// Find the UI widget defined inside the "T04" resource file
-		mLabel = FindWidget<Label>(mUI, "Slider Value");
+		mLabel = FindWidget<UILabel>(mUI, "Slider Value");
 
 		mCam = FindObject<DebugCamera>(mCore->GetScene(), "Default Camera");
 
@@ -103,9 +103,9 @@ void TestApp::OnDraw()
 // The callback is identical to the one in the previous tutorial
 //============================================================================================================
 
-bool TestApp::OnSliderChange (Area* area)
+bool TestApp::OnSliderChange (UIArea* area)
 {
-	Slider* sld = R5_CAST(Slider, area);
+	UISlider* sld = R5_CAST(UISlider, area);
 	if (sld != 0 && mLabel != 0) mLabel->SetText( String("Value: %.2f", sld->GetValue()) );
 	return true;
 }

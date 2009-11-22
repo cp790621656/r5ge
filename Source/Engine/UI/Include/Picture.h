@@ -7,7 +7,7 @@
 // Simple textured quad
 //============================================================================================================
 
-class Picture : public Area
+class UIPicture : public UIArea
 {
 protected:
 
@@ -16,7 +16,7 @@ protected:
 
 public:
 
-	Picture() : mTex(0), mIgnoreAlpha(false) {}
+	UIPicture() : mTex(0), mIgnoreAlpha(false) {}
 
 	const ITexture* GetTexture() const { return mTex; }
 	void SetTexture (const ITexture* tex);
@@ -26,7 +26,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Picture", Picture, Area, Area);
+	R5_DECLARE_INHERITED_CLASS("Picture", UIPicture, UIArea, UIArea);
 
 protected:
 
@@ -34,7 +34,7 @@ protected:
 	virtual void SetDirty() { if (mTex) OnDirty(mTex); }
 
 	// Called when a queue is being rebuilt
-	virtual void OnFill (Queue* queue);
+	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root);

@@ -5,7 +5,7 @@ using namespace R5;
 // Changes the associated texture
 //==============================================================================================
 
-void Skin::SetTexture (const ITexture* tex)
+void UISkin::SetTexture (const ITexture* tex)
 {
 	if (mTex != tex)
 	{
@@ -19,9 +19,9 @@ void Skin::SetTexture (const ITexture* tex)
 // Retrieves a face with the specified name
 //==============================================================================================
 
-const Face* Skin::GetFace (const String& name) const
+const UIFace* UISkin::GetFace (const String& name) const
 {
-	const Face* face(0);
+	const UIFace* face(0);
 
 	if (name.IsValid())
 	{
@@ -46,9 +46,9 @@ const Face* Skin::GetFace (const String& name) const
 // Retrieves or creates a face with the specified name
 //==============================================================================================
 
-Face* Skin::GetFace(const String& name, bool create)
+UIFace* UISkin::GetFace(const String& name, bool create)
 {
-	Face* face(0);
+	UIFace* face(0);
 	mFaces.Lock();
 
 	// Try to find the requested face
@@ -64,7 +64,7 @@ Face* Skin::GetFace(const String& name, bool create)
 	// If not found, create and add it
 	if (create && face == 0)
 	{
-		face = new Face();
+		face = new UIFace();
 		face->mName = name;
 		mFaces.Expand() = face;
 	}
@@ -77,7 +77,7 @@ Face* Skin::GetFace(const String& name, bool create)
 // Serialization -- Load
 //==============================================================================================
 
-bool Skin::SerializeFrom (const TreeNode& root)
+bool UISkin::SerializeFrom (const TreeNode& root)
 {
 	mSerializable = true;
 	bool skinChanged (false);
@@ -123,7 +123,7 @@ bool Skin::SerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //==============================================================================================
 
-bool Skin::SerializeTo (TreeNode& root) const
+bool UISkin::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
