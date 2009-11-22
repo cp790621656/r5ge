@@ -1,0 +1,370 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Model Viewer"
+		Position = 100 103
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Fog Range = 50.000000 150.000000
+
+		Texture = "LDR Skybox 0"
+		{
+			Positive X = "Textures/Skyboxes/spires_px.jpg"
+			Negative X = "Textures/Skyboxes/spires_nx.jpg"
+			Positive Y = "Textures/Skyboxes/spires_py.jpg"
+			Negative Y = "Textures/Skyboxes/spires_ny.jpg"
+			Positive Z = "Textures/Skyboxes/spires_pz.jpg"
+			Negative Z = "Textures/Skyboxes/spires_nz.jpg"
+			Format = "DXT1"
+			Filtering = "Anisotropic"
+			Wrap Mode = "Clamp to Edge"
+		}
+
+		Texture = "LDR Skybox 1"
+		{
+			Positive X = "Textures/Skyboxes/thunder_px.jpg"
+			Negative X = "Textures/Skyboxes/thunder_nx.jpg"
+			Positive Y = "Textures/Skyboxes/thunder_py.jpg"
+			Negative Y = "Textures/Skyboxes/thunder_ny.jpg"
+			Positive Z = "Textures/Skyboxes/thunder_pz.jpg"
+			Negative Z = "Textures/Skyboxes/thunder_nz.jpg"
+			Format = "DXT1"
+			Filtering = "Anisotropic"
+			Wrap Mode = "Clamp to Edge"
+		}
+
+		Texture = "Test Skybox"
+		{
+			Positive X = "Textures/Skyboxes/test_px.jpg"
+			Negative X = "Textures/Skyboxes/test_nx.jpg"
+			Positive Y = "Textures/Skyboxes/test_py.jpg"
+			Negative Y = "Textures/Skyboxes/test_ny.jpg"
+			Positive Z = "Textures/Skyboxes/test_pz.jpg"
+			Negative Z = "Textures/Skyboxes/test_nz.jpg"
+			Format = "DXT1"
+			Filtering = "Anisotropic"
+			Wrap Mode = "Clamp to Edge"
+		}
+
+		Material = "Peasant"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Skinned_D"
+				Texture 0 = "Textures/peasant.jpg"
+			}
+
+			Technique = "Opaque"
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Frame = "Options Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 0.000000 344.000000
+				Top = 0.000000 24.000000
+				Bottom = 0.000000 101.000000
+				Alpha = 0.000000
+				Receives Events = true
+				Layer = 0
+
+				SubPicture = "Options Background"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Receives Events = true
+					Layer = 0
+
+					Label = "Rendering Method Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 0.400000 -3.000000
+						Top = 0.000000 6.000000
+						Bottom = 0.000000 23.000000
+						Alpha = 1.000000
+						Color = 1.000000 0.818000 0.430000
+						Font = "Arial 15"
+						Text = "Rendering Method:"
+						Shadow = true
+						Alignment = "Right"
+						Receives Events = false
+						Layer = 1
+					}
+
+					Label = "Background Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 0.400000 -3.000000
+						Top = 0.000000 28.000000
+						Bottom = 0.000000 45.000000
+						Alpha = 1.000000
+						Color = 1.000000 0.818000 0.430000
+						Font = "Arial 15"
+						Text = "Background:"
+						Shadow = true
+						Alignment = "Right"
+						Receives Events = false
+						Layer = 1
+					}
+
+					Label = "Bloom Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 0.400000 -3.000000
+						Top = 0.000000 49.000000
+						Bottom = 0.000000 66.000000
+						Alpha = 1.000000
+						Color = 1.000000 0.818000 0.430000
+						Font = "Arial 15"
+						Text = "Bloom:"
+						Shadow = true
+						Alignment = "Right"
+						Receives Events = false
+						Layer = 1
+					}
+
+					List = "Background"
+					{
+						Left = 0.400000 3.000000
+						Right = 1.000000 -3.000000
+						Top = 0.000000 26.000000
+						Bottom = 0.000000 46.000000
+						Alpha = 1.000000
+						Skin = "Default"
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Grey Color"
+						Shadow = true
+						Alignment = "Left"
+						State = "Enabled"
+						Sticky = false
+						Animation Time = 0.150000
+						Menu
+
+						Entries = String[]
+						{
+							"Black Color"
+							"Grey Color"
+							"White Color"
+							"Test Skybox"
+							"LDR Skybox 0"
+							"LDR Skybox 1"
+						}
+
+						Receives Events = true
+						Layer = 0
+					}
+
+					Slider = "Bloom Slider"
+					{
+						Left = 0.400000 24.000000
+						Right = 1.000000 -5.000000
+						Top = 0.000000 50.000000
+						Bottom = 0.000000 66.000000
+						Alpha = 1.000000
+						Skin = "Default"
+						Value = 1.000000
+						Color = 0.550000 0.550000 0.550000
+						Animation Time = 0.000000
+						Receives Events = true
+						Layer = 0
+					}
+
+					List = "Rendering Method"
+					{
+						Left = 0.400000 3.000000
+						Right = 1.000000 -3.000000
+						Top = 0.000000 4.000000
+						Bottom = 0.000000 24.000000
+						Alpha = 1.000000
+						Skin = "Default"
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Low Quality SSAO"
+						Shadow = true
+						Alignment = "Left"
+						State = "Enabled"
+						Sticky = false
+						Animation Time = 0.150000
+						Menu
+
+						Entries = String[]
+						{
+							"Deferred"
+							"Low Quality SSAO"
+							"High Quality SSAO"
+						}
+
+						Receives Events = true
+						Layer = 0
+					}
+
+					Checkbox = "Bloom Checkbox"
+					{
+						Left = 0.400000 5.000000
+						Right = 0.400000 19.000000
+						Top = 0.000000 51.000000
+						Bottom = 0.000000 65.000000
+						Alpha = 1.000000
+						Skin = "Default"
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text
+						Shadow = true
+						Alignment = "Left"
+						State = "Checked"
+						Animation Time = 0.150000
+						Receives Events = true
+						Tooltip = "Turning this on will make bright areas glow"
+						Layer = 0
+					}
+				}
+			}
+
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "436"
+					Shadow = true
+					Alignment = "Right"
+					Receives Events = false
+					Layer = 1
+				}
+
+				Highlight = "Status Highlight"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 0.850000
+					Color = 0.000000 0.000000 0.000000 1.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Status Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "R5 Model Viewer v.1.3.5. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+			}
+		}
+	}
+
+	Core
+	{
+		Execute = "Config/Leo UI Skin.txt"
+
+		Model = "Default Model"
+		{
+			Source = "Models/peasant.r5a"
+			Layer = 0
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = 0.032215 0.184958 6.250441
+			Rotation = -0.044412 0.261333 -0.950597 0.161550
+			Scale = 1.000000
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 20.725739 50.000000
+
+			Directional Light = "Default Light"
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Ambient = 0.300000 0.300000 0.300000
+				Diffuse = 1.000000 1.000000 1.000000
+				Specular = 1.000000 1.000000 1.000000
+				Brightness = 1.250000
+			}
+		}
+
+		Object = "Stage"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+
+			Model Instance = "Default Instance"
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Model = "Default Model"
+			}
+		}
+	}
+
+	File History = String[]
+	{
+		"Models/toyota black.r5b"
+		"Models/toyota white.r5b"
+		"Models/steambo.r5b"
+		"Models/copcar.r5b"
+		"Models/peasant.r5a"
+		"Models/peasant.r5b"
+		"Models/mill.r5b"
+		"Models/teapot.r5b"
+		"Models/teapot.r5a"
+		"Models/fern.r5b"
+	}
+}

@@ -1,0 +1,26 @@
+#pragma once
+
+//============================================================================================================
+//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                                  Contact: arenmook@gmail.com
+//============================================================================================================
+// Expanded text line, adding start and end boundaries
+//============================================================================================================
+
+class BasicLabel : public TextLine
+{
+protected:
+
+	uint mStart;
+	uint mEnd;
+
+public:
+
+	BasicLabel() : mStart(0), mEnd(0) {}
+
+	// Area creation
+	R5_DECLARE_INHERITED_CLASS("Basic Label", BasicLabel, TextLine, Area);
+
+	// Called when a queue is being rebuilt
+	virtual void OnFill (Queue* queue);
+};

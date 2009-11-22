@@ -1,0 +1,17 @@
+Noise
+{
+	Seed = 5123
+	Dimensions = 512 512
+
+	Filters
+	{
+		Perlin = 6
+		Blur
+		Normalize
+		Mirror = 0.500000 1.000000
+		Normalize
+		Sqrt
+		Sqrt
+		Sqrt
+	}
+}

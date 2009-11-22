@@ -1,0 +1,327 @@
+//R5A
+
+Root
+{
+	UI
+	{
+        Serializable = false
+		Default Skin = Default
+		Default Font = Arial 15
+		Tooltip Delay = 1.000
+	
+		Layout
+		{
+			Window = Debug
+			{
+				Left = 0.000 0 // 0
+				Right = 1.000 0 // 900
+				Top = 0.000 0 // 0
+				Bottom = 0.000 85 // 94
+				Alpha = 1.000 // 1.000
+				Skin = Default
+				Titlebar Height = 18
+				Color = 1.000 1.000 1.000
+				Font = Arial 15
+				Text = Light Properties
+				Shadow = true
+				Alignment = Center
+				Receives Events = true
+				Layer = 0
+	
+				Slider = Power
+				{
+					Left = 0.000 50 // 54
+					Right = 1.000 -8 // 891
+					Top = 0.000 24 // 46
+					Bottom = 0.000 41 // 63
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Value = 0.000000
+					Color = 1.000 1.000 1.000
+					Animation Time = 0.000
+					Receives Events = true
+					Layer = 0
+	
+					Label = Power Text
+					{
+						Left = 0.000 -45 // 9
+						Right = 1.000 0 // 891
+						Top = 0.000 0 // 46
+						Bottom = 1.000 0 // 63
+						Alpha = 1.000 // 1.000
+						Font = Arial 15
+						Text = Power
+						Alignment = Left
+						Receives Events = false
+						Layer = 1
+					}
+	
+					Label = Power Value
+					{
+						Left = 0.000 1 // 55
+						Right = 1.000 -1 // 890
+						Top = 0.000 1 // 47
+						Bottom = 1.000 -1 // 62
+						Alpha = 1.000 // 1.000
+						Color = 1.000 1.000 1.000
+						Font = Arial 15
+						Text = 1.000
+						Shadow = true
+						Alignment = Center
+						Receives Events = false
+						Layer = 1
+					}
+				}
+	
+				Slider = Range
+				{
+					Left = 0.000 50 // 54
+					Right = 1.000 -8 // 891
+					Top = 0.000 5 // 27
+					Bottom = 0.000 22 // 44
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Value = 0.746714
+					Color = 1.000 1.000 1.000
+					Animation Time = 0.000
+					Receives Events = true
+					Layer = 0
+	
+					Label = Range Text
+					{
+						Left = 0.000 -45 // 9
+						Right = 1.000 0 // 891
+						Top = 0.000 0 // 27
+						Bottom = 1.000 0 // 44
+						Alpha = 1.000 // 1.000
+						Font = Arial 15
+						Text = Range
+						Alignment = Left
+						Receives Events = false
+						Layer = 1
+					}
+	
+					Label = Range Value
+					{
+						Left = 0.000 1 // 55
+						Right = 1.000 -1 // 890
+						Top = 0.000 1 // 28
+						Bottom = 1.000 -1 // 43
+						Alpha = 1.000 // 1.000
+						Color = 1.000 1.000 1.000
+						Font = Arial 15
+						Text = 29.87
+						Shadow = true
+						Alignment = Center
+						Receives Events = false
+						Layer = 1
+					}
+				}
+	
+				Slider = Brightness
+				{
+					Left = 0.000 50 // 54
+					Right = 1.000 -8 // 891
+					Top = 0.000 43 // 65
+					Bottom = 0.000 60 // 82
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Value = 0.455197
+					Color = 1.000 1.000 1.000
+					Animation Time = 0.000
+					Receives Events = true
+					Layer = 0
+	
+					Label = Brightness Text
+					{
+						Left = 0.000 -45 // 9
+						Right = 1.000 0 // 891
+						Top = 0.000 0 // 65
+						Bottom = 1.000 0 // 82
+						Alpha = 1.000 // 1.000
+						Font = Arial 15
+						Text = Brtns
+						Alignment = Left
+						Receives Events = false
+						Layer = 1
+					}
+	
+					Label = Brightness Value
+					{
+						Left = 0.000 1 // 55
+						Right = 1.000 -1 // 890
+						Top = 0.000 1 // 66
+						Bottom = 1.000 -1 // 81
+						Alpha = 1.000 // 1.000
+						Color = 1.000 1.000 1.000
+						Font = Arial 15
+						Text = 1.821
+						Shadow = true
+						Alignment = Center
+						Receives Events = false
+						Layer = 1
+					}
+				}
+			}
+	
+	 Window = First Window
+			{
+				Left = 0.000 5 // 5
+				Right = 0.000 328 // 328
+				Top = 0.000 365 // 365
+				Bottom = 0.000 580 // 591
+				Alpha = 1.000 // 1.000
+				Skin = Default
+				Titlebar Height = 18
+				Color = 1.000 1.000 1.000
+				Font = Arial 15
+				Text = First Window
+				Shadow = true
+				Alignment = Center
+				Receives Events = true
+				Layer = 0
+	
+				Slider = First Slider
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 5 // 392
+					Bottom = 0.000 21 // 408
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Value = 0.780328
+					Color = 0.439 1.000 0.150
+					Animation Time = 0.000
+					Receives Events = true
+					Tooltip = Feel free to drag it around!
+					Layer = 0
+				}
+	
+				Button = Third Button
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 170 // 557
+					Bottom = 0.000 192 // 579
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Color = 1.000 1.000 1.000
+					Font = Arial 15
+					Text = Enabled - 13.642000
+					Shadow = true
+					Alignment = Center
+					State = Enabled
+					Sticky = true
+					Animation Time = 0.150
+					Receives Events = true
+					Layer = 0
+				}
+	
+				Input = First Input
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 53 // 442
+					Bottom = 0.000 75 // 460
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Face = Dark Area
+					Color = 1.000 1.000 1.000
+					Font = Arial 15
+					Text = Testing my typing skills! One, two, three, four, five... And it's now off-screen.
+					Tooltip = Try typing here
+					Shadow = true
+					Selection Color = 1.000 0.667 0.161 0.500
+					Receives Events = true
+					Layer = 0
+				}
+	
+				Checkbox = First Checkbox
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 25 // 412
+					Bottom = 0.000 43 // 430
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Font = Arial 15
+					Text = Checkbox Test
+					Alignment = Left
+					State = Checked
+					Animation Time = 0.150
+					Receives Events = true
+					Layer = 0
+				}
+	
+				Button = Second Button
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 145 // 532
+					Bottom = 0.000 167 // 554
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Color = 1.000 1.000 1.000
+					Font = Arial 15
+					Text = Enabled - 13.642000
+					Shadow = true
+					Alignment = Center
+					State = Enabled
+					Sticky = true
+					Animation Time = 0.150
+					Receives Events = true
+					Layer = 0
+				}
+	
+				Button = First Button
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 120 // 507
+					Bottom = 0.000 142 // 529
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Color = 1.000 1.000 1.000
+					Font = Arial 15
+					Text = Enabled - 0.258000
+					Shadow = true
+					Alignment = Center
+					State = Enabled
+					Sticky = true
+					Animation Time = 0.150
+					Receives Events = true
+					Tooltip = You can click it, you know...
+					Layer = 0
+				}
+	
+				List = First List
+				{
+					Left = 0.000 8 // 14
+					Right = 1.000 -8 // 319
+					Top = 0.000 95 // 484
+					Bottom = 0.000 117 // 502
+					Alpha = 1.000 // 1.000
+					Skin = Default
+					Face = Grey Area
+					Color = 1.000 1.000 1.000
+					Font = Arial 15
+					Text = Four is the charm
+					Shadow = true
+					Alignment = Right
+	
+					Entries
+					{
+						Testing 123
+						Second Test
+						Third
+						Four is the charm
+						Five is alright
+					}
+	
+					Receives Events = true
+					Layer = 0
+				}
+			}
+		}
+	}
+}

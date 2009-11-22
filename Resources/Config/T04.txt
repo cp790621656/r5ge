@@ -1,0 +1,92 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "Tutorial 4: User Interface (Part 2)"
+		Position = 100 100
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 0
+		Background Color = 0.000000 0.000000 0.000000 0.000000
+		Fog Range = 30.000000 75.000000
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Window = "First Window"
+			{
+				Left = 0.000000 100.000000
+				Right = 0.000000 400.000000
+				Top = 0.000000 100.000000
+				Bottom = 0.000000 300.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 22
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial 15"
+				Text = "Hello World!"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Tooltip = "Tutorial 4 window says [FFAA33]Hello!"
+				Layer = 0
+
+				Slider = "First Slider"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 5.000000
+					Bottom = 0.000000 25.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Value = 0.250000
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Slider Value"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Value: 0.25"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+			}
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = -0.236091 0.104306 -0.390428 0.883712
+			Scale = 1.000000
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 10.000000 20.000000
+		}
+	}
+}

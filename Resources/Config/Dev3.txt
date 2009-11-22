@@ -1,0 +1,306 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev3 (Deferred Lighting)"
+		Position = 98 55
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.000000 0.000000 0.000000 1.000000
+		Fog Range = 100.000000 200.000000
+
+		Material = "Teapot"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 0.990000
+			Glow = 0.000000
+			ADT = 0.003922
+			Technique = "Opaque Depth"
+
+			Technique = "Opaque"
+			{
+				Shader = "Forward/D_N_S"
+				Texture 0 = "Textures/stone_df.jpg"
+				Texture 1 = "Textures/stone_nm.png"
+				Texture 2 = "Textures/stone_maps.jpg"
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_N_S"
+				Texture 0 = "Textures/stone_df.jpg"
+				Texture 1 = "Textures/stone_nm.png"
+				Texture 2 = "Textures/stone_maps.jpg"
+			}
+		}
+
+		Material = "Test Material"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 0.990000
+			Glow = 0.000000
+			ADT = 0.003922
+			Technique = "Opaque Depth"
+
+			Technique = "Opaque"
+			{
+				Shader = "Forward/D_N"
+				Texture 0 = "Textures/jelly_df1.jpg"
+				Texture 1 = "Textures/jelly_nm.png"
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_N"
+				Texture 0 = "Textures/jelly_df1.jpg"
+				Texture 1 = "Textures/jelly_nm.png"
+			}
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 5.000000
+				Right = 0.000000 200.000000
+				Top = 0.000000 5.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "Triangles"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 0.000000 15.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "TRI: 11654"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "FPS"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 20.000000
+					Bottom = 0.000000 35.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "FPS: 788"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Visible"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 40.000000
+					Bottom = 0.000000 55.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "VIS: 69"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Rendered"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 60.000000
+					Bottom = 0.000000 75.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "REN: 69"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Debug"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 80.000000
+					Bottom = 0.000000 95.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "Deferred (64 lights)"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+			}
+
+			Window = "Specular Xray Window"
+			{
+				Left = 0.000000 10.000000
+				Right = 0.000000 310.000000
+				Top = 0.000000 385.000000
+				Bottom = 0.000000 585.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 22
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial"
+				Text = "Light Specular X-Ray"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Shaded Area = "Specular Xray"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Shader = "Xray"
+					Texture 0 = "[Generated] Specular Light"
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
+			Window = "Diffuse Xray Window"
+			{
+				Left = 0.000000 592.000000
+				Right = 0.000000 892.000000
+				Top = 0.000000 390.000000
+				Bottom = 0.000000 590.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 22
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial"
+				Text = "Light Diffuse X-Ray"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Shaded Area = "Diffuse Xray"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Shader = "Xray"
+					Texture 0 = "[Generated] Diffuse Light"
+					Receives Events = false
+					Layer = 1
+				}
+			}
+		}
+	}
+
+	Core
+	{
+		Execute = "Config/Default UI Skin.txt"
+
+		Model = "Teapot"
+		{
+			Source = "Models/teapot.r5b"
+			Layer = 0
+
+			Limb = "Teapot"
+			{
+				Mesh = "Teapot"
+				Material = "Teapot"
+			}
+		}
+
+		Model = "Plane"
+		{
+			Source = "Models/rect.r5a"
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = 0 0 0
+			Rotation = -0.303034 -0.196358 0.507058 0.782627
+			Scale = 1.0
+			Range = 1 200 90
+			Dolly = 0 28 50
+		}
+
+		Model Instance = "Teapot 7"
+		{
+			Position = 0.000000 10.000000 -2.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = "Teapot"
+		}
+
+		Model Instance = "Teapot 14"
+		{
+			Position = 0.000000 20.000000 -2.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = "Teapot"
+		}
+
+		Model Instance = "Teapot 21"
+		{
+			Position = 0.000000 -10.000000 -2.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = "Teapot"
+		}
+
+		Model Instance = "Teapot 28"
+		{
+			Position = 0.000000 -20.000000 -2.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = "Teapot"
+		}
+
+		Model Instance = "Plane"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 30.000000
+			Model = "Plane"
+		}
+	}
+}

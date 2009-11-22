@@ -1,0 +1,301 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev6 (Skeletal Animation)"
+		Position = 100 100
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Fog Range = 30.000000 75.000000
+
+  		Material = "Peasant"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "CPU"
+			{
+				Shader = "Forward/D"
+				Texture 0 = "Textures/peasant.jpg"
+			}
+
+			Technique = "GPU"
+			{
+				Shader = "Forward/Skinned_D"
+				Texture 0 = "Textures/peasant.jpg"
+			}
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "Help 0"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "'[FF5555]1[FFFFFF]' - Plays a long animation"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Help 1"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 20.000000
+					Bottom = 0.000000 35.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "'[FF5555]2[FFFFFF]' - Plays a short animation"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Help 2"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 37.000000
+					Bottom = 0.000000 52.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "'[FF5555]T[FFFFFF]' - Toggle technique"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Help 3"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 54.000000
+					Bottom = 0.000000 69.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "'[FF5555]F5[FFFFFF]' - Toggle fullscreen"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Technique"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 71.000000
+					Bottom = 0.000000 86.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "[55FF55]Skinning on GPU"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "FPS"
+				{
+					Left = 0.000000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 2.000000
+					Bottom = 0.000000 17.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "1224"
+					Shadow = true
+					Alignment = "Right"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Triangles"
+				{
+					Left = 0.000000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 18.000000
+					Bottom = 0.000000 33.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "12906"
+					Shadow = true
+					Alignment = "Right"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Status"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "(28.349) Animation 'Long' ends in 0.000 seconds"
+					Shadow = true
+					Alignment = "Center"
+					Receives Events = true
+					Layer = 0
+				}
+			}
+		}
+	}
+
+	Core
+	{
+		Execute = "Config/Leo UI Skin.txt"
+		Execute = "Models/human skeleton.r5a"
+
+		Model = "First Model"
+		{
+			Source = "Models/peasant.r5a"
+			Layer = 0
+		}
+
+		Model = "Second Model"
+		{
+			Source = "Models/peasant.r5a"
+			Layer = 0
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = 0.000000 0.000000 2.000000
+			Rotation = -0.218756 0.028878 -0.129805 0.966676
+			Scale = 1.0
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 14.000076 50.000000
+			
+			Directional Light = "First Light"
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0
+				Ambient = 0.150000 0.150000 0.150000 1.000000
+				Diffuse = 1.000000 1.000000 1.000000 1.000000
+				Specular = 1.000000 1.000000 1.000000 1.000000
+				Brightness = 1.250000
+			}
+		}
+
+		Model Instance = "Instance 0"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "First Model"
+		}
+
+		Model Instance = "Instance 1"
+		{
+			Position = 3.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "Second Model"
+		}
+
+		Model Instance = "Instance 2"
+		{
+			Position = -3.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "Second Model"
+		}
+
+		Model Instance = "Instance 3"
+		{
+			Position = 3.000000 3.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "First Model"
+		}
+
+		Model Instance = "Instance 4"
+		{
+			Position = -3.000000 3.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "First Model"
+		}
+
+		Model Instance = "Instance 5"
+		{
+			Position = 3.000000 -3.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "First Model"
+		}
+
+		Model Instance = "Instance 6"
+		{
+			Position = -3.000000 -3.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "First Model"
+		}
+
+		Model Instance = "Instance 7"
+		{
+			Position = 0.000000 3.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "Second Model"
+		}
+
+		Model Instance = "Instance 8"
+		{
+			Position = 0.000000 -3.000000 0.000000
+			Rotation = 0.000000 0.000000 -1.000000 -0.000000
+			Scale = 0.5
+			Model = "Second Model"
+		}
+	}
+}

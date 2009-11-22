@@ -1,0 +1,72 @@
+//R5A
+
+Root
+{
+	Core
+	{
+		Serializable = false
+	
+		Model = Teapot
+		{
+			Source = Models/teapot.r5b
+			Layer = 0
+	
+			Limb = Teapot
+			{
+				Mesh = Teapot
+				Material = Teapot
+			}
+		}
+	
+		Model = Plane
+		{
+			Source = Models/rect.r5a
+			Layer = 0
+		}
+	}
+	
+	Scene
+	{
+		Serializable = false
+
+	    Model Instance = Teapot 7
+		{
+			Position = 0.000000 10.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 2.000000
+			Model = Teapot
+		}
+
+		Model Instance = Teapot 14
+		{
+			Position = 0.000000 20.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 2.000000
+			Model = Teapot
+		}
+
+		Model Instance = Teapot 21
+		{
+			Position = 0.000000 30.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 2.000000
+			Model = Teapot
+		}
+
+		Model Instance = Teapot 28
+		{
+			Position = 0.000000 40.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 2.000000
+			Model = Teapot
+		}
+
+		Model Instance = Plane
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 30.000000
+			Model = Plane
+		}
+	}
+}

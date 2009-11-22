@@ -1,0 +1,904 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Noise Test"
+		Position = 71 108
+		Size = 1321 532
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Fog Range = 100.000000 200.000000
+
+		Material = "Noise"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.001000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Opaque"
+			{
+				Shader = "Forward/N"
+				Texture 0 = "Normal Map"
+			}
+		}
+
+		Material = "Test Material"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.200000
+			Glow = 0.000000
+			ADT = 0.003922
+			Technique = "Opaque Depth"
+			Technique = "Opaque"
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Frame = "Top Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "Time"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 0.000000 16.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "Time: 305"
+					Shadow = true
+					Alignment = "Center"
+					Receives Events = false
+					Layer = 0
+				}
+			}
+
+			Window = "Options"
+			{
+				Left = 0.000000 -1.000000
+				Right = 0.000000 263.000000
+				Top = 0.000000 0.000000
+				Bottom = 0.000000 248.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 22
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial 15"
+				Text = "Options"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				List = "Filter 4"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 82.000000
+					Bottom = 0.000000 100.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 4"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 82.000000
+					Bottom = 0.000000 100.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 5"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 102.000000
+					Bottom = 0.000000 120.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 5"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 102.000000
+					Bottom = 0.000000 120.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 6"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 122.000000
+					Bottom = 0.000000 140.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 6"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 122.000000
+					Bottom = 0.000000 140.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 7"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 142.000000
+					Bottom = 0.000000 160.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 7"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 142.000000
+					Bottom = 0.000000 160.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 8"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 162.000000
+					Bottom = 0.000000 180.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 8"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 162.000000
+					Bottom = 0.000000 180.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 9"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 182.000000
+					Bottom = 0.000000 200.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 3"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 62.000000
+					Bottom = 0.000000 80.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 2"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 42.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 3"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 62.000000
+					Bottom = 0.000000 80.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 2"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 42.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 9"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 182.000000
+					Bottom = 0.000000 200.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Input = "Input 1"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 22.000000
+					Bottom = 0.000000 40.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				Button = "512"
+				{
+					Left = 0.500000 2.000000
+					Right = 0.750000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "512"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+
+				List = "Filter 1"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 22.000000
+					Bottom = 0.000000 40.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				List = "Filter 0"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 2.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "Fractal"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+					}
+
+					Receives Events = true
+					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
+					Layer = 0
+				}
+
+				Button = "128"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.250000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "128"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+
+				Button = "256"
+				{
+					Left = 0.250000 2.000000
+					Right = 0.500000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "256"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+
+				Input = "Input 0"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 2.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Face = "Grey Area"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial"
+					Text = "1"
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
+					Layer = 0
+				}
+
+				Button = "1024"
+				{
+					Left = 0.750000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "1024"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+			}
+
+			Window = "Texture Window"
+			{
+				Left = 1.000000 -1017.000000
+				Right = 1.000000 7.000000
+				Top = 0.000000 213.000000
+				Bottom = 0.000000 2261.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 0
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial 15"
+				Text = "Noise Texture"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Normal Map"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.500000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Normal Map"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+
+				Picture = "Noise"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 0.500000 0.000000
+					Alpha = 1.000000
+					Texture = "Noise"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+			}
+		}
+	}
+
+	Core
+	{
+		Execute = "Config/Leo UI Skin.txt"
+
+		Model = "Teapot"
+		{
+			Source = "Models/Teapot.r5b"
+			Layer = 0
+
+			Limb = "Teapot"
+			{
+				Mesh = "Teapot"
+				Material = "Noise"
+			}
+		}
+
+		Model = "Plane"
+		{
+			Source = "Models/square.r5a"
+			Layer = 0
+
+			Limb = "Simple Rectangle"
+			{
+				Mesh = "Simple Rectangle"
+				Material = "Noise"
+			}
+		}
+	}
+
+	Scene
+	{
+		Directional Light = "Directional Light"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = -0.453398 0.187803 -0.333431 0.804975
+			Scale = 1.004070
+			Ambient = 0.100000 0.100000 0.100000
+			Diffuse = 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000
+			Brightness = 1.000000
+
+			Glow
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Type = "Directional"
+				Color = 1.000000 1.000000 1.000000 1.000000
+				Magnification = 6.000000
+				Background = "Textures/light.jpg"
+				Foreground = "Textures/glare_rgb.jpg"
+			}
+		}
+
+		Debug Camera = "Default Camera"
+		{
+			Position = 0.000000 0.000000 3.000000
+			Rotation = 0.137991 -0.238564 0.832144 -0.481229
+			Scale = 1.000000
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 25.000910 50.000000
+		}
+
+		Model Instance = "Teapot"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.500000
+			Model = "Teapot"
+		}
+
+		Model Instance = "Plane"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 50.000000
+			Model = "Plane"
+		}
+	}
+}

@@ -1,0 +1,33 @@
+#pragma once
+
+//============================================================================================================
+//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                                  Contact: arenmook@gmail.com
+//============================================================================================================
+// Frame that smoothly fades in and out when alpha changes
+//============================================================================================================
+
+class AnimatedFrame : public Frame
+{
+protected:
+
+	float	mStartAlpha;	// Starting alpha, for animation
+	float	mCurrentAlpha;	// Current relative alpha. Stored here, because Region's alpha is the target alpha
+	float	mStartTime;		// Time at which the animation started
+	float	mAnimTime;		// Time it takes to animate from starting alpha to target alpha
+
+public:
+
+	AnimatedFrame();
+
+	virtual float GetAlpha() const	{ return mRegion.GetParentAlpha() * mRegion.GetRelativeAlpha(); }
+	virtual void  SetAlpha (float val, float animTime = 0.0f);
+
+public:
+
+	// Area creation
+	static Area* _CreateNew() { return new AnimatedFrame(); }
+
+	// Called before OnUpdate(); can be used to override the area's alpha or dimensions
+	virtual bool OnPreUpdate (bool dimensionsChanged);
+};

@@ -1,0 +1,164 @@
+//R5A
+
+Root
+{
+	UI
+	{
+	    Serializable = false
+		Default Skin = Default
+		Default Font = Arial 15
+		Tooltip Delay = 1.000
+	
+		Skin = Default
+		{
+		    Texture = Textures/slick.png
+	
+			Face = Window: Background
+			{
+				Position = 65 78
+				Size = 30 30
+				Border = 4
+			}
+	
+			Face = Window: Titlebar
+			{
+				Position = 23 97
+				Size = 22 22
+				Border = 4
+			}
+	
+			Face = Slider: Full
+			{
+				Position = 137 1
+				Size = 0 32
+			}
+	
+			Face = Slider: Empty
+			{
+				Position = 143 1
+				Size = 0 32
+			}
+	
+			Face = Button: Enabled
+			{
+				Position = 1 51
+				Size = 20 20
+				Border = 3
+			}
+	
+			Face = Button: Highlighted
+			{
+				Position = 1 71
+				Size = 20 20
+				Border = 3
+			}
+	
+			Face = Button: Pressed
+			{
+				Position = 1 91
+				Size = 20 20
+				Border = 3
+			}
+	
+			Face = Button: Disabled
+			{
+				Position = 1 111
+				Size = 20 20
+				Border = 3
+			}
+	
+			Face = Scrollbar: Enabled
+			{
+				Position = 147 2
+				Size = 18 1
+			}
+	
+			Face = Scrollbar: Highlighted
+			{
+				Position = 148 12
+				Size = 16 0
+			}
+	
+			Face = Scrollbar: Knob
+			{
+				Position = 24 77
+				Size = 19 19
+			}
+	
+			Face = Checkbox: Unchecked
+			{
+				Position = 109 52
+				Size = 17 17
+				Border = 4
+			}
+	
+			Face = Checkbox: Highlighted
+			{
+				Position = 127 52
+				Size = 17 17
+				Border = 4
+			}
+	
+			Face = Checkbox: Disabled
+			{
+				Position = 145 52
+				Size = 17 17
+				Border = 4
+			}
+	
+			Face = Checkbox: Checked
+			{
+				Position = 98 81
+				Size = 26 26
+			}
+	
+			Face = Grey Area
+			{
+				Position = 24 52
+				Size = 19 22
+				Border = 2
+			}
+	
+			Face = White Area
+			{
+				Position = 45 52
+				Size = 19 22
+				Border = 2
+			}
+	
+			Face = Black Area
+			{
+				Position = 55 146
+				Size = 19 22
+				Border = 2
+			}
+	
+			Face = Generic Highlight
+			{
+				Position = 51 101
+				Size = 9 9
+				Border = -2
+			}
+	
+			Face = Menu
+			{
+				Position = 51 116
+				Size = 9 9
+				Border = -2
+			}
+	
+			Face = Down Arrow
+			{
+				Position = 127 74
+				Size = 19 14
+			}
+	
+			Face = Tooltip
+			{
+				Position = 29 126
+				Size = 7 7
+				Border = -6
+			}
+		}
+	}
+}

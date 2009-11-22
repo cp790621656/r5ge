@@ -1,0 +1,90 @@
+//R5A
+
+Root
+{
+	Core
+	{
+		Skeleton = Human
+		{
+			Animation = "Test: T-Pose"
+			{
+				Frames = 0 0
+				Duration = 0.25 1.0 0.25
+				Looping = false
+				Layer = 10
+			}
+
+			Animation = "Test: Twist"
+			{
+				Frames = 1 1
+				Duration = 0.25 1.0 0.25
+				Looping = false
+				Layer = 10
+			}
+
+			Animation = "Idle: Normal"
+			{
+				Frames = 2 5
+				Duration = 0.25 3.5 0.25
+				Looping = true
+				Layer = 0
+			}
+
+			Animation = "Idle: Fiddle"
+			{
+				Frames = 6 9
+				Duration = 0.75 5.0 0.75
+				Looping = false
+				Layer = 1
+			}
+
+			Animation = "Idle: Yawn"
+			{
+				Frames = 10 11
+				Duration = 1.0 4.0 1.0
+				Looping = false
+				Layer = 1
+			}
+
+			Animation = "Idle: Look Right"
+			{
+				Frames = 12 12
+				Duration = 2.0 4.0 2.0
+				Looping = false
+				Layer = 1
+			}
+
+			Animation = "Idle: Look Left"
+			{
+				Frames = 13 13
+				Duration = 2.0 4.0 2.0
+				Looping = false
+				Layer = 1
+			}
+
+			Animation = "Idle: Stretch"
+			{
+				Frames = 14 15
+				Duration = 2.0 4.0 1.0
+				Looping = false
+				Layer = 1
+			}
+
+			Animation = "Walk"
+			{
+				Frames = 16 19
+				Duration = 0.5 1.0 0.0
+				Looping = true
+				Layer = 2
+			}
+
+			Animation = "Run"
+			{
+				Frames = 20 23
+				Duration = 0.7 0.7 0.0
+				Looping = true
+				Layer = 2
+			}
+		}
+	}
+}

@@ -1,0 +1,38 @@
+#pragma once
+
+//============================================================================================================
+//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                                  Contact: arenmook@gmail.com
+//============================================================================================================
+// Simple invisible frame that holds rendering queues for all its children
+//============================================================================================================
+
+class Frame : public Area
+{
+private:
+
+	PointerArray<Queue>	mQs;
+
+public:
+
+	// Shows/hides the frame
+	void Show (float animTime = 0.15f)	{ SetAlpha(1.0f, animTime); }
+	void Hide (float animTime = 0.15f);
+
+public:
+
+	// Area creation
+	R5_DECLARE_INHERITED_CLASS("Frame", Frame, Area, Area);
+
+	// Marks a rendering queue associated with this texture as being dirty
+	virtual void OnDirty (const ITexture* tex, int layer, const Area* area);
+
+	// Marks all rendering queues as needing to be rebuilt
+	virtual void SetDirty();
+
+	// Called by parent, so do nothing. Frame::OnRender() takes care of all the children.
+	virtual void Fill (Queue* queue) {}
+
+	// Updates the rendering queues as necessary, then draws them to the screen
+	virtual uint OnRender();
+};

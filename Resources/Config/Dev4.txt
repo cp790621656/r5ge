@@ -1,0 +1,162 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev4 (SSAO)"
+		Position = 165 143
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 1.000000 1.000000 1.000000 1.000000
+		Fog Range = 100.000000 100.000000
+
+		Technique = "Deferred"
+		{
+			Fog = false
+			Depth Write = true
+			Depth Test = true
+			Color Write = true
+			Alpha Test = true
+			Wireframe = false
+			Lighting = "None"
+			Blending = "None"
+			Culling = "Back"
+			Sorting = "None"
+		}
+
+		Technique = "Post Process"
+		{
+			Fog = false
+			Depth Write = false
+			Depth Test = false
+			Color Write = true
+			Alpha Test = false
+			Wireframe = false
+			Lighting = "None"
+			Blending = "None"
+			Culling = "Back"
+			Sorting = "None"
+		}
+
+		Material = "White"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.990000
+			Glow = 0.000000
+			ADT = 0.003922
+			Technique = "Opaque Depth"
+			Technique = "Opaque"
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Material"
+			}
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 5.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 5.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "Triangles"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 200.000000
+					Top = 0.000000 5.000000
+					Bottom = 0.000000 15.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "TRI: 4746"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "FPS"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 200.000000
+					Top = 0.000000 25.000000
+					Bottom = 0.000000 40.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "FPS: 192"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+
+				Label = "Info"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 -5.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "SSAO: High Quality (S)"
+					Shadow = true
+					Alignment = "Center"
+					Receives Events = true
+					Layer = 0
+				}
+			}
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = -0.901637 -0.396084 3.309464
+			Rotation = -0.250021 0.144458 -0.478978 0.828976
+			Scale = 1.000000
+			Range = 1.000000 100.000000 90.000000
+			Dolly = 0.000000 16.752741 50.000000
+		}
+
+		Directional Light = "First Light"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = -0.388141 0.160773 -0.347273 0.838391
+			Scale = 1.000000
+			Ambient = 1.0 1.0 1.0 1.0
+			Diffuse = 0.0 0.0 0.0 1.0
+			Specular = 1.0 1.0 1.0 1.0
+			Brightness = 1.000000
+		}
+
+		Model Instance = "Test Scene"
+		{
+			Position = 0.000000 0.000000 2.500000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = "Models/test scene.r5b"
+		}
+	}
+}

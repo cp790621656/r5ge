@@ -1,0 +1,48 @@
+uniform sampler2D   R5_texture0; // Diffuse (RGBA)
+uniform sampler2D   R5_texture1; // Normal map (RGB)
+uniform sampler2D   R5_texture2; // Shininess (R) + Reflectivity (G)
+uniform samplerCube R5_texture3; // Environment map (RGB)
+
+uniform mat3 R5_inverseViewRotationMatrix;
+
+varying vec2 _texCoord;
+varying vec3 _normal;
+varying vec3 _tangent;
+varying vec3 _eyeDir;
+
+void main()
+{
+    const float fresnelBias  = 0.1;   // Minimum reflectivity
+    const float fresnelScale = 2.5;   // 1.00 - 20.0, the higher the more reflection there is
+    const float fresnelPower = 3.5;   // 1.00 - 5.00, the higher the less reflection there is
+
+    // Diffuse map
+    vec4 diffuse   = gl_FrontMaterial.diffuse * texture2D(R5_texture0, _texCoord);
+    vec4 normalMap = texture2D(R5_texture1, _texCoord);
+
+    // Normal map
+    vec3 tangent = normalize(_tangent);
+    vec3 normal  = normalize(_normal);
+    mat3 TBN     = mat3(tangent, cross(normal, tangent), normal);
+    normal       = TBN * normalize(normalMap.xyz * 2.0 - 1.0);
+
+    // Specular map
+    vec4 texmap = vec4(texture2D(R5_texture2, _texCoord));
+
+    // Reflect the directional vector then transform the result into world space
+    vec3 eyeDir         = normalize(_eyeDir);
+    vec3 incident       = R5_inverseViewRotationMatrix * reflect(eyeDir, normal);
+    vec3 reflectedColor = textureCube(R5_texture3, incident).rgb;
+
+    // Appoximation of the fresnel equation, affected by the reflectiveness channel (green)
+    float dotProduct    = max(0.0, 1.0 + dot(eyeDir, normal));
+    float fresnelFactor = texmap.g * min( fresnelBias + fresnelScale * pow(dotProduct, fresnelPower), 1.0 );
+
+    // Mix the current diffuse with the reflected color using the fresnel factor
+    diffuse.rgb = mix(diffuse.rgb, reflectedColor, fresnelFactor);
+
+    // Encode the values
+    gl_FragData[0] = diffuse;
+    gl_FragData[1] = vec4(gl_FrontMaterial.specular.rgb * texmap.r, gl_FrontMaterial.emission.a);
+    gl_FragData[2] = vec4(normalize(normal) * 0.5 + 0.5, min(fresnelFactor + gl_FrontMaterial.specular.a, 1.0));
+}

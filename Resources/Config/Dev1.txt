@@ -1,0 +1,100 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev1 (Threading)"
+		Position = 98 55
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.000000 0.000000 0.000000 1.000000
+		Fog Range = 50.000000 100.000000
+
+		Material = "Test Material"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.002000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Opaque"
+			{
+				Shader = "Forward/D"
+				Texture 0 = "Textures/Terrain/sand_beach.jpg"
+			}
+		}
+
+		Material = "Teapot"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 0.990000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Opaque"
+			{
+				Shader = "Forward/D_N"
+				Texture 0 = "Textures/jelly_df.jpg"
+				Texture 1 = "Textures/jelly_nm.png"
+			}
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+		Layout
+	}
+
+	Core
+	{
+		Execute = "Config/Leo UI Skin.txt"
+		Execute = "Config/Dev1 UI Layout.txt"
+		Execute = "Config/Dev1 Scene.txt"
+	}
+
+	Scene
+	{
+		Point Light = "First Light"
+		{
+			Position = 0.000000 0.000000 4.000000
+			Rotation = -0.279848 0.115917 -0.364705 0.880476
+			Scale = 1.000000
+			Ambient = 0.100000 0.100000 0.100000
+			Diffuse = 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000
+			Brightness = 1.820788
+			Range = 29.868561
+			Power = 1.000000
+
+			Glow
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Type = "Directional"
+				Color = 1.000000 1.000000 1.000000 1.000000
+				Magnification = 6.000000
+				Background = "Textures/light.jpg"
+				Foreground = "Textures/glare_rgb.jpg"
+			}
+		}
+
+		Debug Camera = "Default Camera"
+		{
+			Position = 0.000000 0.000000 2.000000
+			Rotation = -0.229169 0.061167 -0.251474 0.938350
+			Scale = 1.000000
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 40.897137 50.000000
+		}
+	}
+}
