@@ -272,7 +272,7 @@ void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 			mChildren.Unlock();
 		}
 
-		// Clal the post-update function
+		// Call the post-update function
 		if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
 
 		// The absolute values have now been set
@@ -323,7 +323,7 @@ void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& radius)
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
-		if (mFlags.Get(Flag::Visible) && !mIgnore.Get(Ignore::Select))
+		if (mFlags.Get(Flag::Visible) && mFlags.Get(Flag::Selectable) && !mIgnore.Get(Ignore::Select))
 		{
 			OnSelect(pos, ptr, radius);
 		}
@@ -400,7 +400,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 }
 
 //============================================================================================================
-// Called prior to object's Update function -- should modify relative orientation here
+// Called prior to object's Update function
 //============================================================================================================
 
 void Object::OnPreUpdate()
@@ -409,7 +409,7 @@ void Object::OnPreUpdate()
 }
 
 //============================================================================================================
-// Called when the object is being updated
+// Called after the object's absolute coordinates have been calculated
 //============================================================================================================
 
 void Object::OnUpdate()
@@ -418,7 +418,7 @@ void Object::OnUpdate()
 }
 
 //============================================================================================================
-// Called after the object's and all of its children's Update functions
+// Called after the object has updated all of its children
 //============================================================================================================
 
 void Object::OnPostUpdate()

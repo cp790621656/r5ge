@@ -11,7 +11,7 @@ class Core : public IEventReceiver, public EventDispatcher
 {
 public:
 
-	typedef ResourceArray<Script>			Scripts;
+	typedef ResourceArray<Resource>			Resources;
 	typedef ResourceArray<Mesh>				Meshes;
 	typedef ResourceArray<Skeleton>			Skeletons;
 	typedef ResourceArray<ModelTemplate>	ModelTemplates;
@@ -27,12 +27,12 @@ protected:
 	Vector2i		mMousePos;			// Saved current mouse position
 	Vector2i		mUpdatedSize;		// If the window size gets updated, appropriate components must be notified
 	Frustum			mFrustum;			// Viewing frustum for visibility culling
-	Scripts			mScripts;			// Managed array of scripts
+	Resources		mResources;			// Managed array of resources
 	Meshes			mMeshes;			// Managed array of meshes
 	Skeletons		mSkeletons;			// Managed array of skeletons
 	ModelTemplates	mModelTemplates;	// Managed array of model templates that can be used to create models
 	Models			mModels;			// Managed array of instantiable models
-	Array<String>	mExecuted;			// Executed scripts, for serialization purposes
+	Array<String>	mExecuted;			// Executed resources, for serialization purposes
 
 public:
 
@@ -82,14 +82,14 @@ public:
 	Scene*			GetScene()				{ return mScene;			}
 	Meshes&			GetAllMeshes()			{ return mMeshes;			}
 	Models&			GetAllModels()			{ return mModels;			}
-	Scripts&		GetAllScripts()			{ return mScripts;			}
+	Resources&		GetAllResources()		{ return mResources;		}
 	Skeletons&		GetAllSkeletons()		{ return mSkeletons;		}
 	ModelTemplates&	GetAllModelTemplates()	{ return mModelTemplates;	}
 
 	// Resource retrieval and creation
 	Mesh*			GetMesh			(const String& name, bool createIfMissing = true);
 	Model*			GetModel		(const String& name, bool createIfMissing = true);
-	Script*			GetScript		(const String& name, bool createIfMissing = true);
+	Resource*		GetResource		(const String& name, bool createIfMissing = true);
 	Skeleton*		GetSkeleton		(const String& name, bool createIfMissing = true);
 	ModelTemplate*	GetModelTemplate(const String& name, bool createIfMissing = true);
 
@@ -110,8 +110,8 @@ public:
 
 private:
 
-	// Serialization for scripts
-	void ParseScripts(const TreeNode& root);
+	// Serialization for resources
+	void ParseResources (const TreeNode& root);
 
 public:
 
@@ -119,6 +119,6 @@ public:
 	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
 	bool SerializeTo (TreeNode& root) const;
 
-	// Executes an existing (loaded) script in a different thread
-	void SerializeFrom (Script* ptr);
+	// Executes an existing (loaded) resource in a different thread
+	void SerializeFrom (Resource* ptr);
 };

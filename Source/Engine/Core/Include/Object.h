@@ -15,8 +15,9 @@ public:
 	{
 		enum
 		{
-			Enabled	= 1 << 1,
-			Visible	= 1 << 2,
+			Enabled		= 1 << 1,
+			Visible		= 1 << 2,
+			Selectable	= 1 << 3,
 		};
 	};
 
@@ -203,10 +204,10 @@ protected:
 	// Called prior to object's Update function
 	virtual void OnPreUpdate();
 
-	// Called when the object is being updated
+	// Called after the object's absolute coordinates have been calculated
 	virtual void OnUpdate();
 
-	// Called after the object's and all of its children's Update functions
+	// Called after the object has updated all of its children
 	virtual void OnPostUpdate();
 
 	// Called when the object is being culled -- should return whether the object is visible

@@ -13,7 +13,7 @@
 namespace R5
 {
 	#include "Mesh.h"				// Complete drawable mesh
-	#include "Script.h"				// Basic script
+	#include "Resource.h"			// TreeNode-based resource
 
 	class Core;
 

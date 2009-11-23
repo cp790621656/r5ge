@@ -3,20 +3,20 @@
 using namespace R5;
 
 //============================================================================================================
-// Constructor tries to load the script if it can
+// Constructor tries to load the resource if it can
 //============================================================================================================
 
-Script::Script(const String& name) : mName(name), mSerializable(false)
+Resource::Resource(const String& name) : mName(name), mSerializable(false)
 {
-	// If the script loads from the simple filename, no need to serialize it
+	// If the resource loads from the simple filename, no need to serialize it
 	if (Load(name)) mSerializable = false;
 }
 
 //============================================================================================================
-// Loads a script from source
+// Loads a resource from source
 //============================================================================================================
 
-bool Script::Load (const char* source)
+bool Resource::Load (const char* source)
 {
 	mContents.Release();
 
@@ -33,7 +33,7 @@ bool Script::Load (const char* source)
 // Serialization -- Load
 //============================================================================================================
 
-bool Script::SerializeFrom (const TreeNode& root, bool forceUpdate)
+bool Resource::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -57,11 +57,11 @@ bool Script::SerializeFrom (const TreeNode& root, bool forceUpdate)
 // Serialization -- Save
 //============================================================================================================
 
-bool Script::SerializeTo (TreeNode& root) const
+bool Resource::SerializeTo (TreeNode& root) const
 {
 	if (IsSerializable())
 	{
-		TreeNode& node = root.AddChild("Script", mName);
+		TreeNode& node = root.AddChild(Resource::ClassID(), mName);
 		node.AddChild("Source", mSource);
 	}
 	return true;

@@ -9,7 +9,7 @@ Core*			g_core			= 0;
 Thread::ValType	g_threadCount	= 0;
 
 //============================================================================================================
-// Script executioner thread callback
+// Resource executioner thread callback
 //============================================================================================================
 
 R5_THREAD_FUNCTION(WorkerThread, ptr)
@@ -17,23 +17,23 @@ R5_THREAD_FUNCTION(WorkerThread, ptr)
 	if (g_core)
 	{
 		Thread::Increment( g_threadCount );
-		Script* script = reinterpret_cast<Script*>(ptr);
+		Resource* resource = reinterpret_cast<Resource*>(ptr);
 
 #ifdef _DEBUG
 		long threadId = g_threadCount;
 		ulong timestamp = Time::GetMilliseconds();
-		System::Log("[THREAD]  Executing '%s' [ID: %u]", script->GetName().GetBuffer(), threadId);
+		System::Log("[THREAD]  Executing '%s' [ID: %u]", resource->GetName().GetBuffer(), threadId);
 #endif
 
-		script->Lock();
-		g_core->SerializeFrom( script->GetRoot() );
-		script->Unlock();
+		resource->Lock();
+		g_core->SerializeFrom( resource->GetRoot() );
+		resource->Unlock();
 
 		Thread::Decrement( g_threadCount );
 
 #ifdef _DEBUG
 		System::Log("[THREAD]  Finished executing '%s' in %u ms [ID: %u]",
-			script->GetName().GetBuffer(), Time::GetMilliseconds() - timestamp, threadId);
+			resource->GetName().GetBuffer(), Time::GetMilliseconds() - timestamp, threadId);
 #endif
 	}
 	return 0;
@@ -327,13 +327,13 @@ Model* Core::GetModel (const String& name, bool createIfMissing)
 }
 
 //============================================================================================================
-// Retrieves a script with the specified name
+// Retrieves a resource with the specified name
 //============================================================================================================
 
-Script* Core::GetScript (const String& name, bool createIfMissing)
+Resource* Core::GetResource (const String& name, bool createIfMissing)
 {
 	if (name.IsEmpty()) return 0;
-	return (createIfMissing ? mScripts.AddUnique(name)	: mScripts.Find(name));
+	return (createIfMissing ? mResources.AddUnique(name)	: mResources.Find(name));
 }
 
 //============================================================================================================
@@ -475,18 +475,18 @@ void Core::OnResize(const Vector2i& size)
 }
 
 //============================================================================================================
-// Loads the scripts node
+// Loads the resources node
 //============================================================================================================
 
-void Core::ParseScripts(const TreeNode& root)
+void Core::ParseResources(const TreeNode& root)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
 		const TreeNode& node  = root.mChildren[i];
 		const String&	tag   = node.mTag;
 
-		Script* script = GetScript(tag);
-		script->SerializeFrom(node);
+		Resource* resource = GetResource(tag);
+		resource->SerializeFrom(node);
 	}
 }
 
@@ -541,14 +541,14 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			Skeleton* skel = GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true);
 			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
 		}
-		else if ( tag == Script::ClassID() )
+		else if ( tag == Resource::ClassID() )
 		{
-			Script* script = GetScript(value.IsString() ? value.AsString() : value.GetString(), true);
+			Resource* res = GetResource(value.IsString() ? value.AsString() : value.GetString(), true);
 
-			if (script != 0)
+			if (res != 0)
 			{
-				script->SerializeFrom(node, forceUpdate);
-				if (!serializable) script->SetSerializable(false);
+				res->SerializeFrom(node, forceUpdate);
+				if (!serializable) res->SetSerializable(false);
 			}
 		}
 		else if ( tag == ModelTemplate::ClassID() )
@@ -582,17 +582,17 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == "Execute" )
 		{
-			// Find the script
+			// Find the resource
 			String name (value.IsString() ? value.AsString() : value.GetString());
-			Script* script = GetScript(name);
+			Resource* res = GetResource(name);
 
-			// If the script is valid, create a worker thread for it
-			if (script->IsValid())
+			// If the resource is valid, create a worker thread for it
+			if (res->IsValid())
 			{
 #ifndef R5_MEMORY_TEST
-				Thread::Create( WorkerThread, script );
+				Thread::Create( WorkerThread, res );
 #else
-				SerializeFrom( script->GetRoot() );
+				SerializeFrom( res->GetRoot() );
 #endif
 				if (serializable)
 				{
@@ -623,17 +623,17 @@ bool Core::SerializeTo (TreeNode& root) const
 	// User interface comes next
 	if (mUI) mUI->SerializeTo(root);
 
-	// Save all scripts and models
-	if (mScripts.IsValid() || mExecuted.IsValid() || mModels.IsValid())
+	// Save all resources and models
+	if (mResources.IsValid() || mExecuted.IsValid() || mModels.IsValid())
 	{
 		TreeNode& node = root.AddChild( Core::ClassID() );
 
-		mScripts.Lock();
+		mResources.Lock();
 		{
-			for (uint i = 0; i < mScripts.GetSize(); ++i)
-				mScripts[i]->SerializeTo(node);
+			for (uint i = 0; i < mResources.GetSize(); ++i)
+				mResources[i]->SerializeTo(node);
 		}
-		mScripts.Unlock();
+		mResources.Unlock();
 
 		mExecuted.Lock();
 		{
@@ -680,17 +680,17 @@ bool Core::SerializeTo (TreeNode& root) const
 }
 
 //============================================================================================================
-// Executes an existing (loaded) script in a different thread
+// Executes an existing (loaded) resource in a different thread
 //============================================================================================================
 
-void Core::SerializeFrom (Script* script)
+void Core::SerializeFrom (Resource* resource)
 {
-	if (script != 0 && script->IsValid())
+	if (resource != 0 && resource->IsValid())
 	{
 #ifndef R5_MEMORY_TEST
-		Thread::Create( WorkerThread, script );
+		Thread::Create( WorkerThread, resource );
 #else
-		SerializeFrom( script->GetRoot() );
+		SerializeFrom( resource->GetRoot() );
 #endif
 	}
 }

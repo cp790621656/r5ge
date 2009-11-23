@@ -4,10 +4,10 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
-// Basic script -- name, source, and the script data itself
+// Basic resource -- name, source, and the resource data itself
 //============================================================================================================
 
-class Script
+class Resource
 {
 protected:
 
@@ -19,9 +19,9 @@ protected:
 
 public:
 
-	Script(const String& name);
+	Resource(const String& name);
 
-	R5_DECLARE_SOLO_CLASS("Script");
+	R5_DECLARE_SOLO_CLASS("Resource");
 
 	void Lock()		const	{ mLock.Lock();	}
 	void Unlock()	const	{ mLock.Unlock();	}
