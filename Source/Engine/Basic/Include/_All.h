@@ -29,9 +29,9 @@ using fastdelegate::bind;
 #include "R5_Defines.h"				// Basic system-dependent preprocessor declarations
 #include "R5_Assert.h"				// Assertion functionality for debugging
 
-//#if defined(_LINUX)
-//#include <pthread.h>
-//#endif
+#if defined(__linux__)
+#include <pthread.h>
+#endif
 
 // Fluid Studios memory manager to test for possible memory leaks -- see the header file for more information
 #ifdef R5_MEMORY_TEST
