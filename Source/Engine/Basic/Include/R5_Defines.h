@@ -36,7 +36,7 @@
 		#ifndef _MACOS
 		#define _MACOS
 		#endif
-	#else
+	#elif __linux__
 		#ifndef _LINUX
 		#define _LINUX
 		#endif

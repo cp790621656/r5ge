@@ -29,7 +29,7 @@ using fastdelegate::bind;
 #include "R5_Defines.h"				// Basic system-dependent preprocessor declarations
 #include "R5_Assert.h"				// Assertion functionality for debugging
 
-#if defined(__linux__)
+#if defined(_LINUX)
 #include <pthread.h>
 #endif
 

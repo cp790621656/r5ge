@@ -32,23 +32,22 @@ namespace Thread
 
 	IDType	GetID();
 
-// PThread-using implementation, for reference:
-//#ifdef _LINUX
-//	
-//	class Lockable
-//	{
-//	protected:
-//		mutable pthread_mutex_t	mLock;
-//		
-//	public:
-//		Lockable() { pthread_mutex_init(&mLock, 0); }
-//		
-//	public:
-//		inline void Lock()		const	{ pthread_mutex_lock(&mLock); }
-//		inline void Unlock()	const	{ pthread_mutex_unlock(&mLock); }
-//	};
-//
-//#else
+#ifdef _LINUX
+	
+	class Lockable
+	{
+	protected:
+		mutable pthread_mutex_t	mLock;
+		
+	public:
+		Lockable() { pthread_mutex_init(&mLock, 0); }
+		
+	public:
+		inline void Lock()		const	{ pthread_mutex_lock(&mLock); }
+		inline void Unlock()	const	{ pthread_mutex_unlock(&mLock); }
+	};
+
+#else
 
 	class Lockable
 	{
@@ -63,5 +62,5 @@ namespace Thread
 		inline void Unlock()	const	{ mLock = 0; }
 	};
 
-//#endif
+#endif
 };
