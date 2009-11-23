@@ -4,12 +4,15 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
-// Most basic scene object -- can be positioned somewhere in the scene and can contain children.
+// Most basic game object -- can be positioned somewhere in the scene and can contain children.
 //============================================================================================================
 
 class Object
 {
 public:
+
+	// Script creation delegate type
+	typedef FastDelegate<Script* (void)>	CreateDelegate;
 
 	struct Flag
 	{
@@ -41,8 +44,11 @@ public:
 	};
 
 	// Types used by this class
-	typedef Object*				ObjectPtr;
-	typedef Array<Renderable>	Renderables;
+	typedef Object*					ObjectPtr;
+	typedef Array<Renderable>		Renderables;
+	typedef PointerArray<Object>	Children;
+	typedef PointerArray<Script>	Scripts;
+	typedef Thread::Lockable		Lockable;
 
 protected:
 
@@ -75,8 +81,9 @@ protected:
 	bool		mIsDirty;		// Whether the object's absolute coordinates should be recalculated
 	bool		mSerializable;	// Whether the object will be serialized out
 
-	Thread::Lockable		mLock;
-	PointerArray<Object>	mChildren;
+	Lockable	mLock;
+	Children	mChildren;
+	Scripts		mScripts;
 
 private:
 
@@ -100,16 +107,6 @@ private:
 
 	mutable Flags mIgnore;
 
-private:
-
-	friend class Scene;
-
-	// Internal functions
-	void _Add		(Object* ptr);
-    void _Remove	(Object* ptr);
-	void _SetParent (Object* ptr) { mParent = ptr; }
-	void _SetCore   (Core*	 ptr) { mCore   = ptr; }
-
 protected:
 
 	// Objects should never be created manually. Use AddObject<> template instead.
@@ -122,9 +119,34 @@ public:
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
 
+	// Registers a new script type that can be created by the object -- shared across all objects
+	static void _RegisterScript (const String& type, const CreateDelegate& callback);
+
+private:
+
+	friend class Scene;
+	friend class Script;
+
+	// Internal functions
+	void _Add			(Object* ptr);
+	void _Remove		(Object* ptr);
+	void _SetParent		(Object* ptr)	 { mParent = ptr; }
+	void _SetCore		(Core*	 ptr)	 { mCore   = ptr; }
+
+public:
+
 	// These functions are meant to be accessed only through templates such as AddObject<> and FindObject<>
 	Object*	_AddObject	(const String& type, const String& name);
     Object*	_FindObject	(const String& name, bool recursive = true);
+	Script* _GetScript	(const char* type);
+	Script* _AddScript	(const char* type);
+
+private:
+
+	// Adds a new script of specified type -- should only be used internally
+	Script* _AddScript (const String& type);
+
+public:
 
 	// Release all resources associated with this object
 	void Release();

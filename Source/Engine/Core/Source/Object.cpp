@@ -2,6 +2,14 @@
 using namespace R5;
 
 //============================================================================================================
+// All registered script types that can be created are stored here
+//============================================================================================================
+
+Hash<Object::CreateDelegate> gScriptTypes;
+
+//============================================================================================================
+// Each object is enabled by default
+//============================================================================================================
 
 Object::Object() :
 	mParent			(0),
@@ -12,6 +20,17 @@ Object::Object() :
 	mSerializable	(true)
 {
 	mFlags.Set(Flag::Enabled);
+}
+
+//============================================================================================================
+// INTERNAL: Registers a new script type that can be created by the object -- shared across all objects
+//============================================================================================================
+
+void Object::_RegisterScript (const String& type, const CreateDelegate& callback)
+{
+	gScriptTypes.Lock();
+	gScriptTypes[type] = callback;
+	gScriptTypes.Unlock();
 }
 
 //============================================================================================================
@@ -30,9 +49,7 @@ void Object::_Add (Object* obj)
 		obj->mRelativeRot	= Interpolation::GetDifference(mAbsoluteRot, obj->mAbsoluteRot);
 		obj->mRelativeScale	= obj->mAbsoluteScale / mAbsoluteScale;
 
-		mChildren.Lock();
 		mChildren.Expand() = obj;
-		mChildren.Unlock();
 	}
 }
 
@@ -44,9 +61,7 @@ void Object::_Remove (Object* obj)
 {
 	if (obj != 0)
 	{
-		mChildren.Lock();
 		mChildren.Remove(obj);
-		mChildren.Unlock();
 
 		obj->mRelativePos	= obj->mAbsolutePos;
 		obj->mRelativeRot	= obj->mAbsoluteRot;
@@ -62,32 +77,28 @@ Object* Object::_AddObject (const String& type, const String& name)
 {
 	Object* ptr (0);
 
-	mChildren.Lock();
+	for (uint i = mChildren.GetSize(); i > 0; )
 	{
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
+		Object* obj = mChildren[--i];
+
+		if ( obj != 0 && name == obj->GetName() )
 		{
-			Object* obj = mChildren[i];
-
-			if ( obj != 0 && name == obj->GetName() )
-			{
-				ptr = obj;
-				break;
-			}
-		}
-
-		if (ptr == 0)
-		{
-			ptr = mCore->GetScene()->_CreateNode(type);
-
-			if (ptr)
-			{
-				ptr->SetName(name);
-				ptr->_SetParent(this);
-				mChildren.Expand() = ptr;
-			}
+			ptr = obj;
+			break;
 		}
 	}
-	mChildren.Unlock();
+
+	if (ptr == 0)
+	{
+		ptr = mCore->GetScene()->_CreateNode(type);
+
+		if (ptr != 0)
+		{
+			ptr->SetName(name);
+			ptr->_SetParent(this);
+			mChildren.Expand() = ptr;
+		}
+	}
 	return ptr;
 }
 
@@ -101,27 +112,119 @@ Object* Object::_FindObject (const String& name, bool recursive)
 
 	if (mChildren.IsValid())
 	{
-		mChildren.Lock();
+		for (uint i = mChildren.GetSize(); i > 0; )
 		{
-			for (uint i = 0; i < mChildren.GetSize(); ++i)
+			if ( name == mChildren[--i]->GetName() )
 			{
-				if ( name == mChildren[i]->GetName() )
-				{
-					node = mChildren[i];
-					break;
-				}
-			}
-
-			if ( node == 0 && recursive )
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					if ( node = mChildren[i]->_FindObject(name, recursive) )
-						break;
+				node = mChildren[i];
+				break;
 			}
 		}
-		mChildren.Unlock();
+
+		if ( node == 0 && recursive )
+		{
+			for (uint i = 0; i < mChildren.GetSize(); ++i)
+				if ( node = mChildren[i]->_FindObject(name, recursive) )
+					break;
+		}
 	}
 	return node;
+}
+
+//============================================================================================================
+// INTERNAL: Retrieves a script of specified type
+//============================================================================================================
+
+Script* Object::_GetScript (const char* type)
+{
+	Script* ptr (0);
+
+	for (uint i = mScripts.GetSize(); i > 0; )
+	{
+		Script* script = mScripts[i];
+
+		if ( script != 0 && type == script->GetClassID() )
+		{
+			ptr = script;
+			break;
+		}
+	}
+	return ptr;
+}
+
+//============================================================================================================
+// INTERNAL: Adds a script of specified type (or returns an existing one)
+//============================================================================================================
+
+Script* Object::_AddScript (const char* type)
+{
+	Script* ptr (0);
+
+	for (uint i = mScripts.GetSize(); i > 0; )
+	{
+		Script* script = mScripts[i];
+
+		if ( script != 0 && type == script->GetClassID() )
+		{
+			ptr = script;
+			break;
+		}
+	}
+
+	if (ptr == 0)
+	{
+		gScriptTypes.Lock();
+		{
+			const CreateDelegate* callback = gScriptTypes.GetIfExists(type);
+			
+			if (callback != 0)
+			{
+				ptr = (*callback)();
+				ptr->mObject = this;
+				mScripts.Expand() = ptr;
+			}
+		}
+		gScriptTypes.Unlock();
+	}
+	return ptr;
+}
+
+//============================================================================================================
+// INTERNAL: Adds a script of specified type (or returns an existing one). While it's visually identical
+// to the function above, the type differs, which in turn changes the code's behavior.
+//============================================================================================================
+
+Script* Object::_AddScript (const String& type)
+{
+	Script* ptr (0);
+
+	for (uint i = mScripts.GetSize(); i > 0; )
+	{
+		Script* script = mScripts[i];
+
+		if ( script != 0 && type == script->GetClassID() )
+		{
+			ptr = script;
+			break;
+		}
+	}
+
+	if (ptr == 0)
+	{
+		gScriptTypes.Lock();
+		{
+			const CreateDelegate* callback = gScriptTypes.GetIfExists(type);
+			
+			if (callback != 0)
+			{
+				ptr = (*callback)();
+				ptr->mObject = this;
+				mScripts.Expand() = ptr;
+			}
+		}
+		gScriptTypes.Unlock();
+	}
+	return ptr;
 }
 
 //============================================================================================================
@@ -130,24 +233,47 @@ Object* Object::_FindObject (const String& name, bool recursive)
 
 void Object::Release()
 {
-	if (mParent != 0)
+	Lock();
 	{
-		mParent->_Remove(this);
-		mParent = 0;
-	}
-
-	mChildren.Lock();
-	{
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
+		if (mParent != 0)
 		{
-			if (mChildren[i] != 0)
-			{
-				mChildren[i]->_SetParent(0);
-			}
+			mParent->_Remove(this);
+			mParent = 0;
 		}
-		mChildren.Release();
+
+		if (mScripts.IsValid())
+		{
+			// Run through all scripts
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				// Remove the reference to this object
+				if (mScripts[--i] != 0)
+				{
+					mScripts[i]->mObject = 0;
+				}
+			}
+			
+			// Release all scripts
+			mScripts.Release();
+		}
+
+		if (mChildren.IsValid())
+		{
+			// Run through all children
+			for (uint i = mChildren.GetSize(); i > 0; )
+			{
+				// Remove all references to this object
+				if (mChildren[--i] != 0)
+				{
+					mChildren[i]->_SetParent(0);
+				}
+			}
+
+			// Release all children
+			mChildren.Release();
+		}
 	}
-	mChildren.Unlock();
+	Unlock();
 }
 
 //============================================================================================================
@@ -237,27 +363,51 @@ void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
-		// If the parent has moved then we need to recalculate the absolute values
-		if (parentMoved) mIsDirty = true;
-
-		// Call the pre-update function
-		if (!mIgnore.Get(Ignore::PreUpdate)) OnPreUpdate();
-
-		// If something has changed, update the absolute values
-		if (mIsDirty)
+		Lock();
 		{
-			mAbsolutePos = (mRelativePos * scale) * rot + pos;
-			mAbsoluteScale = mRelativeScale * scale;
-			mAbsoluteRot.Combine(rot, mRelativeRot);
-		}
+			// If the parent has moved then we need to recalculate the absolute values
+			if (parentMoved) mIsDirty = true;
 
-		// Call the update function
-		if (!mIgnore.Get(Ignore::Update)) OnUpdate();
+			// Call the pre-update function
+			if (!mIgnore.Get(Ignore::PreUpdate)) OnPreUpdate();
 
-		// Update all children
-		if (mChildren.IsValid())
-		{
-			mChildren.Lock();
+			// Run through all scripts and notify them
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+
+				// If the script is listening to pre-update events
+				if (!script->mIgnore.Get(Script::Ignore::PreUpdate))
+				{
+					script->OnPreUpdate();
+				}
+			}
+
+			// If something has changed, update the absolute values
+			if (mIsDirty)
+			{
+				mAbsolutePos = (mRelativePos * scale) * rot + pos;
+				mAbsoluteScale = mRelativeScale * scale;
+				mAbsoluteRot.Combine(rot, mRelativeRot);
+			}
+
+			// Call the update function
+			if (!mIgnore.Get(Ignore::Update)) OnUpdate();
+
+			// Run through all scripts and notify them
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+
+				// If the script is listening to pre-update events
+				if (!script->mIgnore.Get(Script::Ignore::Update))
+				{
+					script->OnUpdate();
+				}
+			}
+
+			// Update all children
+			if (mChildren.IsValid())
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
 				{
@@ -269,14 +419,26 @@ void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 					}
 				}
 			}
-			mChildren.Unlock();
+
+			// Call the post-update function
+			if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
+
+			// Run through all scripts and notify them
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+
+				// If the script is listening to pre-update events
+				if (!script->mIgnore.Get(Script::Ignore::PostUpdate))
+				{
+					script->OnPostUpdate();
+				}
+			}
+
+			// The absolute values have now been set
+			mIsDirty = false;
 		}
-
-		// Call the post-update function
-		if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
-
-		// The absolute values have now been set
-		mIsDirty = false;
+		Unlock();
 	}
 }
 
@@ -288,30 +450,30 @@ void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
-		if (!mIgnore.Get(Ignore::Cull))
+		Lock();
 		{
-			// Note that by default parent's visibility doesn't affect children, and OnCull will be
-			// called regardless of whether the parent was visible or not. This was done to ensure that
-			// such cases like an in-game character carrying a light source would work properly. An obvious
-			// optimization would be to never cull children if this object is not visible. This optimization
-			// should be used where the object will never move past its parent's bounds (ex.: terrain).
+			if (!mIgnore.Get(Ignore::Cull))
+			{
+				// Note that by default parent's visibility doesn't affect children, and OnCull will be
+				// called regardless of whether the parent was visible or not. This was done to ensure that
+				// such cases like an in-game character carrying a light source would work properly. An obvious
+				// optimization would be to never cull children if this object is not visible. This optimization
+				// should be used where the object will never move past its parent's bounds (ex.: terrain).
 
-			isParentVisible = OnCull(params, isParentVisible, render);
-			mFlags.Set(Flag::Visible, isParentVisible);
-		}
+				isParentVisible = OnCull(params, isParentVisible, render);
+				mFlags.Set(Flag::Visible, isParentVisible);
+			}
 
-		// Inform all children that they're being culled and let them decide themselves whether they
-		// should do anything about it or not depending on whether this object is visible.
+			// Inform all children that they're being culled and let them decide themselves whether they
+			// should do anything about it or not depending on whether this object is visible.
 
-		if (mChildren.IsValid())
-		{
-			mChildren.Lock();
+			if (mChildren.IsValid())
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
 					mChildren[i]->_Cull(params, isParentVisible, render);
 			}
-			mChildren.Unlock();
 		}
+		Unlock();
 	}
 }
 
@@ -323,22 +485,22 @@ void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& radius)
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
-		if (mFlags.Get(Flag::Visible) && mFlags.Get(Flag::Selectable) && !mIgnore.Get(Ignore::Select))
+		Lock();
 		{
-			OnSelect(pos, ptr, radius);
-		}
+			if (mFlags.Get(Flag::Visible) && mFlags.Get(Flag::Selectable) && !mIgnore.Get(Ignore::Select))
+			{
+				OnSelect(pos, ptr, radius);
+			}
 
-		if (mChildren.IsValid())
-		{
-			mChildren.Lock();
+			if (mChildren.IsValid())
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
 				{
 					mChildren[i]->_Select(pos, ptr, radius);
 				}
 			}
-			mChildren.Unlock();
 		}
+		Unlock();
 	}
 }
 
@@ -350,25 +512,35 @@ bool Object::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
-		TreeNode& node = root.AddChild( GetClassID(), mName );
-		node.AddChild("Position", mRelativePos);
-		node.AddChild("Rotation", mRelativeRot);
-		node.AddChild("Scale", mRelativeScale);
-
-		if (!mIgnore.Get(Ignore::SerializeTo))
+		Lock();
 		{
-			OnSerializeTo(node);
-		}
+			TreeNode& node = root.AddChild( GetClassID(), mName );
+			node.AddChild("Position", mRelativePos);
+			node.AddChild("Rotation", mRelativeRot);
+			node.AddChild("Scale", mRelativeScale);
 
-		if (mChildren.IsValid())
-		{
-			mChildren.Lock();
+			if (!mIgnore.Get(Ignore::SerializeTo))
+			{
+				OnSerializeTo(node);
+			}
+
+			if (mScripts.IsValid())
+			{
+				for (uint i = 0; i < mScripts.GetSize(); ++i)
+				{
+					const Script* script = mScripts[i];
+					TreeNode& child = node.AddChild(Script::ClassID(), script->GetClassID());
+					script->SerializeTo(child);
+				}
+			}
+
+			if (mChildren.IsValid())
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
 					mChildren[i]->SerializeTo(node);
 			}
-			mChildren.Unlock();
 		}
+		Unlock();
 		return true;
 	}
 	return false;
@@ -380,22 +552,31 @@ bool Object::SerializeTo (TreeNode& root) const
 
 bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
-	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
+	Lock();
 	{
-		const TreeNode& node  = root.mChildren[i];
-		const String&	tag   = node.mTag;
-		const Variable&	value = node.mValue;
-
-		if		(tag == "Serializable")		  value >> mSerializable;
-		else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
-		else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
-		else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
-		else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
+		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 		{
-			Object* ptr = _AddObject(tag, value.IsString() ? value.AsString() : value.GetString());
-			if (ptr != 0) ptr->SerializeFrom(node, forceUpdate);
+			const TreeNode& node  = root.mChildren[i];
+			const String&	tag   = node.mTag;
+			const Variable&	value = node.mValue;
+
+			if		(tag == "Serializable")		  value >> mSerializable;
+			else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
+			else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
+			else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
+			else if (tag == Script::ClassID())
+			{
+				Script* ptr = _AddScript(value.IsString() ? value.AsString() : value.GetString());
+				if (ptr != 0) ptr->SerializeFrom(node);
+			}
+			else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
+			{
+				Object* ptr = _AddObject(tag, value.IsString() ? value.AsString() : value.GetString());
+				if (ptr != 0) ptr->SerializeFrom(node, forceUpdate);
+			}
 		}
 	}
+	Unlock();
 	return true;
 }
 

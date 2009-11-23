@@ -254,11 +254,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Resource.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Scene.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Resource.cpp"
+				RelativePath=".\Source\Script.cpp"
 				>
 			</File>
 			<File
@@ -372,11 +376,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\Resource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\Scene.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Resource.h"
+				RelativePath=".\Include\Script.h"
 				>
 			</File>
 			<File

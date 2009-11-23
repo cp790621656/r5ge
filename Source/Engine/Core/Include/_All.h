@@ -17,7 +17,8 @@ namespace R5
 
 	class Core;
 
-	#include "Object.h"				// Scenegraph object implementation
+	#include "Script.h"				// Scripts can be attached to game objects
+	#include "Object.h"				// Most basic game object
 	#include "Animatable.h"			// Animatable placeable
 	#include "QuadTree.h"			// Quad-tree split scene object, can be extended to create terrains
 	#include "Bone.h"				// Single bone for skeletal animation

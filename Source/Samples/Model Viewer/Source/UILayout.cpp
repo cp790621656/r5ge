@@ -604,7 +604,7 @@ bool ModelViewer::CreateUI()
 		_texFormat->AddEntry( ITexture::FormatToString( ITexture::Format::DXT5 ) );
 		_texFormat->SetTooltip("DXT3 is the all-around best choice. RGB is for normal maps, RGBA is for UI textures.");
 
-		_texImage = AddWidget<R5::Picture>(_texFrame, "Texture Image");
+		_texImage = AddWidget<UIPicture>(_texFrame, "Texture Image");
 		_texImage->SetOnKey( &OnIgnoreKey );
 		_texImage->SetOnMouseMove( &OnIgnoreMouse );
 		UIRegion& tr = _texImage->GetRegion();

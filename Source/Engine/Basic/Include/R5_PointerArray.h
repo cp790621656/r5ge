@@ -107,24 +107,34 @@ public:
 	}
 
 	// Deletes the specified entry from the array
-	void Delete (Type* ptr)
+	bool Delete (Type* ptr)
 	{
 		if (ptr != 0)
 		{
-			Remove(ptr);
-			delete ptr;
+			if (Remove(ptr))
+			{
+				delete ptr;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	// Deletes an entry at the specified index
-	void DeleteAt (uint index)
+	bool DeleteAt (uint index)
 	{
 		if ( BASE::mSize != 0 && index < BASE::mSize )
 		{
 			Type* ptr = BASE::mArray[index];
 			BASE::RemoveAt(index);
-			if (ptr != 0) delete ptr;
+
+			if (ptr != 0)
+			{
+				delete ptr;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	// Basic sorting algorithm for values referenced via pointers

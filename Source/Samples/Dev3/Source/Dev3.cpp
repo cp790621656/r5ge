@@ -2,6 +2,33 @@
 using namespace R5;
 
 //============================================================================================================
+// Script that will rotate and scale the platforms
+//============================================================================================================
+
+class SpinScript : public Script
+{
+	Vector3f	mAxis;
+	float		mFactor;
+
+public:
+
+	R5_DECLARE_INHERITED_CLASS("SpinScript", SpinScript, Script, Script);
+
+	void Set (float x, float y, float z, float factor)
+	{
+		mAxis = Normalize( Vector3f(x, y, z) );
+		mFactor = factor;
+	}
+
+	virtual void OnPreUpdate()
+	{
+		float factor = Time::GetTime() * mFactor;
+		mObject->SetRelativeRotation( Quaternion(mAxis, factor) );
+		mObject->SetRelativeScale( 0.75f * (1.0f + 0.5f * Float::Cos(factor)) );
+	}
+};
+
+//============================================================================================================
 // Constructor and destructor
 //============================================================================================================
 
@@ -13,6 +40,9 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mScene(0), mCam(0)
 	mUI			= new UI(mGraphics);
 	mCore		= new Core(mWin, mGraphics, mUI);
 	mScene		= mCore->GetScene();
+
+	// Register a new script type that can be created via AddScript<> template
+	RegisterScript<SpinScript>();
 }
 
 //============================================================================================================
@@ -31,22 +61,32 @@ TestApp::~TestApp()
 
 void TestApp::Init()
 {
-	Random rnd (625462456);
+	Object* obj[4];
 
-	mSet[0] = AddObject<Object>(mScene, "Lights 0");
-	mSet[1] = AddObject<Object>(mScene, "Lights 1");
-	mSet[2] = AddObject<Object>(mScene, "Lights 2");
-	mSet[3] = AddObject<Object>(mScene, "Lights 3");
+	obj[0] = AddObject<Object>(mScene, "Lights 0");
+	obj[0]->SetSerializable(false);
+	AddScript<SpinScript>(obj[0])->Set(0.0f, 0.01f, 1.0f, 0.93f);
 
-	// The sets are generated here so they shouldn't be saved out
-	for (uint i = 0; i < 4; ++i) mSet[i]->SetSerializable(false);
+	obj[1] = AddObject<Object>(mScene, "Lights 1");
+	obj[1]->SetSerializable(false);
+	AddScript<SpinScript>(obj[1])->Set(0.01f, 0.0f, 1.0f, -0.68f);
+
+	obj[2] = AddObject<Object>(mScene, "Lights 2");
+	obj[2]->SetSerializable(false);
+	AddScript<SpinScript>(obj[2])->Set(0.01f, -0.01f, 1.0f, 0.47f);
+
+	obj[3] = AddObject<Object>(mScene, "Lights 3");
+	obj[3]->SetSerializable(false);
+	AddScript<SpinScript>(obj[3])->Set(-0.005f, 0.015f, 1.0f, -1.8f);
 
 	const ITexture* glowTex = mGraphics->GetTexture("light.jpg");
 	//const ITexture* glareTex = mGraphics->GetTexture("glare_rgb.jpg");
 
+	Random rnd (625462456);
+
 	for (uint i = 0; i < 64; ++i)
 	{
-		PointLight* light = AddObject<PointLight>(mSet[i%4], String("Light %u", i));
+		PointLight* light = AddObject<PointLight>(obj[i%4], String("Light %u", i));
 
 		if (light != 0)
 		{
@@ -102,65 +142,10 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
+	mTriangles = 0;
 	mCore->BeginFrame();
-
-	Animate();
-
 	mCore->CullScene(mCam);
 
-	mTriangles	= DrawScene();
-	mVisible	= mScene->GetVisibleObjects().GetSize();
-
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(0);
-}
-
-//============================================================================================================
-// Animate the lights
-//============================================================================================================
-
-void TestApp::Animate()
-{
-	float factor = Time::GetTime();
-
-	Vector3f axis0 (0.0f, 0.01f, 1.0f);
-	Vector3f axis1 (0.01f, 0.0f, 1.0f);
-	Vector3f axis2 (0.01f, -0.01f, 1.0f);
-	Vector3f axis3 (-0.005f, 0.015f, 1.0f);
-
-	float factor0 =  factor * 0.93f;
-	float factor1 = -factor * 0.68f;
-	float factor2 =  factor * 0.47f;
-	float factor3 = -factor * 1.8f;
-
-	axis0.Normalize();
-	axis1.Normalize();
-	axis2.Normalize();
-	axis3.Normalize();
-
-	Quaternion a (axis0, factor0);
-	Quaternion b (axis1, factor1);
-	Quaternion c (axis2, factor2);
-	Quaternion d (axis2, factor3);
-
-	mSet[0]->SetRelativeRotation(a);
-	mSet[1]->SetRelativeRotation(b);
-	mSet[2]->SetRelativeRotation(c);
-	mSet[3]->SetRelativeRotation(d);
-
-	mSet[0]->SetRelativeScale( 0.75f * (1.0f + 0.5f * Float::Cos(factor0)) );
-	mSet[1]->SetRelativeScale( 0.75f * (1.0f + 0.5f * Float::Cos(factor1)) );
-	mSet[2]->SetRelativeScale( 0.75f * (1.0f + 0.5f * Float::Cos(factor2)) );
-	mSet[3]->SetRelativeScale( 0.75f * (1.0f + 0.5f * Float::Cos(factor3)) );
-}
-
-//============================================================================================================
-// Render the scene
-//============================================================================================================
-
-uint TestApp::DrawScene()
-{
 	static ITechnique*	opaque		= mGraphics->GetTechnique("Opaque");
 	static ITechnique*	trans		= mGraphics->GetTechnique("Transparent");
 	static ITechnique*	glow		= mGraphics->GetTechnique("Glow");
@@ -169,19 +154,18 @@ uint TestApp::DrawScene()
 	// Number of lights
 	const ILight::List& lights = mScene->GetVisibleLights();
 	uint lightCount = lights.GetSize();
-	uint triangles = 0;
 
 	if (mDeferred)
 	{
 		// Draw the scene using the deferred approach, filling color and depth buffers
 		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Core::DrawScene, mCore));
-		triangles = result.mTriangles;
+		mTriangles = result.mTriangles;
 
 		// Add transparent objects via forward rendering
 		{
 			mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-			triangles += mCore->DrawScene(glow);
-			triangles += mCore->DrawScene(glare);
+			mTriangles += mCore->DrawScene(glow);
+			mTriangles += mCore->DrawScene(glare);
 		}
 
 		// Draw the result onto the screen
@@ -203,14 +187,19 @@ uint TestApp::DrawScene()
 		mScene->GetVisibleLights( mCam->GetAbsolutePosition() );
 
 		// Draw the scene
-		triangles += mCore->DrawScene(opaque);
-		triangles += mCore->DrawScene(trans);
-		triangles += mCore->DrawScene(glow);
-		triangles += mCore->DrawScene(glare);
+		mTriangles += mCore->DrawScene(opaque);
+		mTriangles += mCore->DrawScene(trans);
+		mTriangles += mCore->DrawScene(glow);
+		mTriangles += mCore->DrawScene(glare);
 
 		mDebug.Set("Forward (%u lights)", lightCount > 8 ? 8 : lightCount);
 	}
-	return triangles;
+
+	mVisible = mScene->GetVisibleObjects().GetSize();
+
+	mCore->DrawUI();
+	mCore->EndFrame();
+	Thread::Sleep(0);
 }
 
 //============================================================================================================

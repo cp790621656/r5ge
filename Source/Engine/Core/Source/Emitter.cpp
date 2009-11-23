@@ -38,77 +38,73 @@ void Emitter::OnUpdate()
 	// Only consider updating particles if the delta is not zero
 	if (delta == 0) return;
 
-	Lock();
+	// Recalculate the number of active particles
+	mActiveParts = 0;
+	mUpdated = true;
+	mBounds.Reset();
+
+	// Update our accumulated spawn time
+	mAccumulated += delta;
+
+	// Update the active time if we can
+	if (mActiveTime != -1)
 	{
-		// Recalculate the number of active particles
-		mActiveParts = 0;
-		mUpdated = true;
-		mBounds.Reset();
+		mActiveTime = (mActiveTime > delta) ? mActiveTime - delta : 0;
+	}
 
-		// Update our accumulated spawn time
-		mAccumulated += delta;
+	// Update the particle and the bounding volume
+	for (uint i = mParticles.GetSize(); i > 0; )
+	{
+		Particle& particle = mParticles[--i];
 
-		// Update the active time if we can
-		if (mActiveTime != -1)
+		// Update the particle's time
+		particle.mRemaining = (particle.mRemaining > delta) ? particle.mRemaining - delta : 0;
+
+		// If this is an inactive particle, see if we can reactivate it
+		if ( particle.mRemaining == 0 && mActiveTime != 0 && mActiveParts < mMaxParticles )
 		{
-			mActiveTime = (mActiveTime > delta) ? mActiveTime - delta : 0;
+			// If it's time to spawn a new particle, let's do that now
+			if (mAccumulated >= mFrequency)
+			{
+				mAccumulated -= mFrequency;
+				particle.mRemaining = (mLifetime > mAccumulated) ? mLifetime - mAccumulated : 0;
+				InitParticle(particle);
+			}
 		}
 
-		// Update the particle and the bounding volume
-		for (uint i = mParticles.GetSize(); i > 0; )
+		// If the particle has some time remaining, update it and include it in the bounds
+		if (particle.mRemaining != 0)
 		{
-			Particle& particle = mParticles[--i];
+			UpdateParticle(particle);
 
-			// Update the particle's time
-			particle.mRemaining = (particle.mRemaining > delta) ? particle.mRemaining - delta : 0;
-
-			// If this is an inactive particle, see if we can reactivate it
-			if ( particle.mRemaining == 0 && mActiveTime != 0 && mActiveParts < mMaxParticles )
-			{
-				// If it's time to spawn a new particle, let's do that now
-				if (mAccumulated >= mFrequency)
-				{
-					mAccumulated -= mFrequency;
-					particle.mRemaining = (mLifetime > mAccumulated) ? mLifetime - mAccumulated : 0;
-					InitParticle(particle);
-				}
-			}
-
-			// If the particle has some time remaining, update it and include it in the bounds
+			// One final check, as UpdateParticle might set the particle's remaining time to be 0 as well
 			if (particle.mRemaining != 0)
 			{
-				UpdateParticle(particle);
-
-				// One final check, as UpdateParticle might set the particle's remaining time to be 0 as well
-				if (particle.mRemaining != 0)
-				{
-					++mActiveParts;
-					mBounds.Include(particle.mPos, particle.mRadius);
-				}
+				++mActiveParts;
+				mBounds.Include(particle.mPos, particle.mRadius);
 			}
 		}
-
-		// If the number of particles hasn't reached maximum yet, see if we can add new ones
-		for ( ; (mParticles.GetSize() < mMaxParticles) && (mAccumulated >= mFrequency); ++mActiveParts )
-		{
-			mAccumulated -= mFrequency;
-			Particle& particle = mParticles.Expand();
-			particle.mRemaining = (mLifetime > mAccumulated) ? mLifetime - mAccumulated : 0;
-
-			InitParticle(particle);
-			UpdateParticle(particle);
-			mBounds.Include(particle.mPos, particle.mRadius);
-		}
-
-		// Automatically shrink the trailing particles that are no longer used
-		while (mParticles.IsValid() && mParticles.Back().mRemaining == 0)
-			mParticles.Shrink();
-
-		// The accumulated amount should never carry over more than a frequency's worth
-		if (mAccumulated > mFrequency)
-			mAccumulated = mFrequency;
 	}
-	Unlock();
+
+	// If the number of particles hasn't reached maximum yet, see if we can add new ones
+	for ( ; (mParticles.GetSize() < mMaxParticles) && (mAccumulated >= mFrequency); ++mActiveParts )
+	{
+		mAccumulated -= mFrequency;
+		Particle& particle = mParticles.Expand();
+		particle.mRemaining = (mLifetime > mAccumulated) ? mLifetime - mAccumulated : 0;
+
+		InitParticle(particle);
+		UpdateParticle(particle);
+		mBounds.Include(particle.mPos, particle.mRadius);
+	}
+
+	// Automatically shrink the trailing particles that are no longer used
+	while (mParticles.IsValid() && mParticles.Back().mRemaining == 0)
+		mParticles.Shrink();
+
+	// The accumulated amount should never carry over more than a frequency's worth
+	if (mAccumulated > mFrequency)
+		mAccumulated = mFrequency;
 }
 
 //============================================================================================================
@@ -176,77 +172,73 @@ uint Emitter::OnRender (IGraphics* graphics, const ITechnique* tech, bool inside
 			// UV coordinates can be randomly flipped in order to add non-uniformness to the particle textures
 			float left, right, top, bottom, last = 0.0f;
 
-			Lock();
+			// Time to re-fill the vertex information
+			mPositions.Clear();
+			mTexCoords.Clear();
+			mColors.Clear();
+
+			// Run through all particles and update them one at a time
+			for (uint i = mParticles.GetSize(); i > 0; )
 			{
-				// Time to re-fill the vertex information
-				mPositions.Clear();
-				mTexCoords.Clear();
-				mColors.Clear();
+				Particle& particle = mParticles[--i];
+				if (particle.mRemaining == 0) continue;
 
-				// Run through all particles and update them one at a time
-				for (uint i = mParticles.GetSize(); i > 0; )
+				// Add non-uniformness by flipping the texture coordinates, if allowed
+				if ( (i & flipU) == 1 )	{ left   = 1.0f;  right	= 0.0f; }
+				else					{ left   = 0.0f;  right	= 1.0f; }
+				if ( (i & flipV) == 2 )	{ bottom = 1.0f;  top	= 0.0f; }
+				else					{ bottom = 0.0f;  top	= 1.0f; }
+
+				// Colors are identical across all 4 vertices
+				mColors.Expand() = particle.mColor;
+				mColors.Expand() = particle.mColor;
+				mColors.Expand() = particle.mColor;
+				mColors.Expand() = particle.mColor;
+
+				// Texture coordinates are also simple
+				mTexCoords.Expand().Set(left, top);
+				mTexCoords.Expand().Set(left, bottom);
+				mTexCoords.Expand().Set(right, bottom);
+				mTexCoords.Expand().Set(right, top);
+
+				// Rotate the particle if the rotation has changed
+				if (last != particle.mRotation)
 				{
-					Particle& particle = mParticles[--i];
-					if (particle.mRemaining == 0) continue;
+					last = particle.mRotation;
 
-					// Add non-uniformness by flipping the texture coordinates, if allowed
-					if ( (i & flipU) == 1 )	{ left   = 1.0f;  right	= 0.0f; }
-					else					{ left   = 0.0f;  right	= 1.0f; }
-					if ( (i & flipV) == 2 )	{ bottom = 1.0f;  top	= 0.0f; }
-					else					{ bottom = 0.0f;  top	= 1.0f; }
+					float z =  Float::Sin(last);
+					float w = -Float::Cos(last);
 
-					// Colors are identical across all 4 vertices
-					mColors.Expand() = particle.mColor;
-					mColors.Expand() = particle.mColor;
-					mColors.Expand() = particle.mColor;
-					mColors.Expand() = particle.mColor;
+					float zw = z * w;
+					float zz = z * z;
 
-					// Texture coordinates are also simple
-					mTexCoords.Expand().Set(left, top);
-					mTexCoords.Expand().Set(left, bottom);
-					mTexCoords.Expand().Set(right, bottom);
-					mTexCoords.Expand().Set(right, top);
+					// Optimized rotation of the 4 points based on the starting values above
+					// rotated by the quaternion created using the rotation around the Z axis.
 
-					// Rotate the particle if the rotation has changed
-					if (last != particle.mRotation)
-					{
-						last = particle.mRotation;
+					v3.Set(1.0f - (zw + zz) * 2.0f, 1.0f + (zw - zz) * 2.0f, 0.5f);
+					v0.Set(-v3.y,  v3.x, 0.5f);
+					v1.Set(-v3.x, -v3.y, 0.5f);
+					v2.Set( v3.y, -v3.x, 0.5f);
 
-						float z =  Float::Sin(last);
-						float w = -Float::Cos(last);
-
-						float zw = z * w;
-						float zz = z * z;
-
-						// Optimized rotation of the 4 points based on the starting values above
-						// rotated by the quaternion created using the rotation around the Z axis.
-
-						v3.Set(1.0f - (zw + zz) * 2.0f, 1.0f + (zw - zz) * 2.0f, 0.5f);
-						v0.Set(-v3.y,  v3.x, 0.5f);
-						v1.Set(-v3.x, -v3.y, 0.5f);
-						v2.Set( v3.y, -v3.x, 0.5f);
-
-						transform = true;
-					}
-
-					// Transform the vertices by the inverse view matrix if needed
-					if (transform)
-					{
-						transform = false;
-						v0 %= invView;
-						v1 %= invView;
-						v2 %= invView;
-						v3 %= invView;
-					}
-
-					// Vertex positions are based on the offset particle position
-					mPositions.Expand() = particle.mPos + v0 * particle.mRadius;
-					mPositions.Expand() = particle.mPos + v1 * particle.mRadius;
-					mPositions.Expand() = particle.mPos + v2 * particle.mRadius;
-					mPositions.Expand() = particle.mPos + v3 * particle.mRadius;
+					transform = true;
 				}
+
+				// Transform the vertices by the inverse view matrix if needed
+				if (transform)
+				{
+					transform = false;
+					v0 %= invView;
+					v1 %= invView;
+					v2 %= invView;
+					v3 %= invView;
+				}
+
+				// Vertex positions are based on the offset particle position
+				mPositions.Expand() = particle.mPos + v0 * particle.mRadius;
+				mPositions.Expand() = particle.mPos + v1 * particle.mRadius;
+				mPositions.Expand() = particle.mPos + v2 * particle.mRadius;
+				mPositions.Expand() = particle.mPos + v3 * particle.mRadius;
 			}
-			Unlock();
 		}
 
 		if ( mPositions.IsValid() )

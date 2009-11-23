@@ -22,7 +22,6 @@ class TestApp
 	Core*		mCore;
 	Scene*		mScene;
 	Camera*		mCam;
-	Object*		mSet[4];
 	bool		mFlag;
 	bool		mDeferred;
 	String		mDebug;
@@ -38,8 +37,6 @@ public:
 	void  Init();
 	void  Run();
 	void  OnDraw();
-	void  Animate();
-	uint  DrawScene();
 	float UpdateStats();
 	bool  OnKey (const Vector2i& pos, byte key, bool isDown);
 };

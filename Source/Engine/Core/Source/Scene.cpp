@@ -158,7 +158,7 @@ uint Scene::Render (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 // Registers a new object creator
 //============================================================================================================
 
-void Scene::_RegisterObject ( const String& type, const CreateDelegate& callback )
+void Scene::_RegisterObject (const String& type, const CreateDelegate& callback)
 {
 	mEntries.Lock();
 	mEntries[type] = callback;
