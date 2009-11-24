@@ -21,6 +21,7 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
+	Scene			mScene;
 	DebugCamera*	mCam;
 
 public:
@@ -37,7 +38,7 @@ TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0);
+	mCore		= new Core(mWin, mGraphics, 0, mScene);
 }
 
 //============================================================================================================
@@ -88,7 +89,7 @@ void TestApp::Run()
 		method->SetTexture(0, mGraphics->GetTexture("Skybox"));
 
 		// The rest of this function hasn't changed
-		mCam = FindObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -104,11 +105,11 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
+	// Cull the scene like before, building the lists of visible objects and lights
+	mScene.Cull(mCam);
 
 	// Deferred shading will need to know about all active lights in the scene (although we only have 1)
-	const ILight::List& lights = mCore->GetScene()->GetVisibleLights();
+	const Scene::Lights& lights = mScene.GetVisibleLights();
 
 	// Draw the scene using the deferred approach. This function (part of the Render library) does
 	// a fair bit behind the scenes. In addition to all the setup and the actual deferred rendering
@@ -116,31 +117,24 @@ void TestApp::OnDraw()
 	// is why the return type is not the 'uint' you've seen in the previous tutorials, but a struct
 	// that also contains the color, depth and the eye-space normal textures.
 
-	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Core::DrawScene, mCore));
+	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene));
 
 	// After the deferred draw function is done the result is stored in 3 off-screen textures.
-	// The off-screen render target is still active, and we are free to draw some more. This would
-	// be a perfect place to add some lens flares, transparent objects and particles. For simplicity's
-	// sake though, let's just draw the result of the deferred drawing operation to the screen.
+	// This might need more explanation. Up to this point we haven't changed the default render target, so
+	// it remained being the screen. Deferred rendering changes the target in order to draw into off-screen
+	// textures. You can always set your own render target via IGraphics::SetActiveRenderTarget() function.
+	// if you specify '0' all following calls will go straight to the screen. But in any case, since
+	// the deferred drawing render target is still active after the function call above, this would be
+	// the perfect place to add some lens flares, transparent objects and particles that should go on top
+	// of solid, lit objects. For simplicity's sake though, let's just draw the result of the deferred
+	// drawing operation to the screen.
 
-	// As you may recall, specifying '0' for the render target means we want to draw to the screen.
-	// This also deactivates our off-screen buffers, allowing us to use the textures created above.
-	mGraphics->SetActiveRenderTarget(0);
-
-	// Activate the orthographic projection, deactivating the camera and preparing to draw in 2D.
-	mGraphics->SetActiveProjection(IGraphics::Projection::Orthographic);
-
-	// Just for the fun of it, let's add a bloom effect as we draw to the screen.
-	// You might remember that in the previous tutorial we've loaded an HDR skybox with brightness
-	// exceeding 1. Let's take advantage of that here, blooming values above 1. This will add a nice
-	// glow effect to all bright areas as it draws our texture to the screen. Feel free to explore
-	// the PostProcess namespace for additional effects.
+	// We can use the PostProcess namespace functionality to do just that (PostProcess::None), or
+	// we can take advantage of the HDR skybox we've loaded in the previous tutorial with brightness
+	// values exceeding 1 and actually add some HDR bloom. The call to do so is simple. Feel free to
+	// explore the PostProcess namespace for additional effects or even add your own.
 
 	PostProcess::Bloom(mGraphics, result.mColor, 1.0f);
-
-	// That's it! The rest of the application hasn't changed.
-	mCore->EndFrame();
-	Thread::Sleep(1);
 }
 
 //============================================================================================================

@@ -22,9 +22,14 @@ private:
 	};
 
 	Network mNet;
+	bool mNewData;
 
 	PointerArray<InBuffer> mUsed;
 	PointerArray<InBuffer> mUnused;
+
+public:
+
+	TestApp() : mNewData(false) {}
 
 private:
 
@@ -44,6 +49,8 @@ private:
 				  VoidPtr&					userData,
 				  const char*				buffer);
 
+	void Process();
+
 	void Process (const byte* buffer, uint size);
 
 public:
@@ -59,7 +66,19 @@ public:
 		mNet.Listen(5112);
 		mNet.SpawnWorkerThread();
 
-		for (;;) Thread::Sleep(10);
+		for (;;)
+		{
+			if (mNewData)
+			{
+				mNewData = false;
+				Process();
+				Thread::Sleep(0);
+			}
+			else
+			{
+				Thread::Sleep(1);
+			}
+		}
 	}
 };
 
@@ -76,7 +95,12 @@ void TestApp::OnConnect (const Network::Address& a, uint id, VoidPtr& userData, 
 		InBuffer* ib = mUnused.IsValid() ? mUnused.Shrink(false) : new InBuffer();
 		mUsed.Expand() = ib;
 		userData = ib;
-		printf("Changed user data to: 0x%x\n", userData);
+
+		String str ("Hi there!");
+		uint length = str.GetLength();
+
+		mNet.Send(&length, 4, id, a);
+		mNet.Send(str.GetBuffer(), length, id, a);
 	}
 	mUsed.Unlock();
 }
@@ -96,48 +120,12 @@ void TestApp::OnReceive (const Network::Address&	a,
 
 	if (userData != 0)
 	{
+		mNewData = true;
+
 		InBuffer* ib = (InBuffer*)userData;
 
 		ib->Lock();
-		{
-			// Append the newly arrived data to the buffer
-			ib->Append(buffer, bufferSize);
-
-			// Get the current memory buffer
-			uint packetLength;
-			Memory& mem = ib->mMem;
-			const byte* buffer = mem.GetBuffer();
-			const byte* nextPacket = buffer;
-			uint size = mem.GetSize();
-
-			// Extract the packet length
-			while (Memory::Extract(buffer, size, packetLength))
-			{
-				if (packetLength > size)
-				{
-					printf("Expecting %u bytes of %u available\n", packetLength, size);
-					break;
-				}
-				else
-				{
-					// Process the data we just received
-					Process(buffer, packetLength);
-
-					// Skip past this packet
-					buffer += packetLength;
-					size   -= packetLength;
-
-					// This is now the starting position for the next packet
-					nextPacket = buffer;
-				}
-			}
-
-			// If we've processed some data, remove it from memory
-			if (nextPacket > mem.GetBuffer())
-			{
-				mem.Remove(nextPacket - mem.GetBuffer());
-			}
-		}
+		ib->Append(buffer, bufferSize);
 		ib->Unlock();
 	}
 }
@@ -188,6 +176,58 @@ void TestApp::OnError ( const Network::Address&	a,
 }
 
 //============================================================================================================
+// Process all waiting data
+//============================================================================================================
+
+void TestApp::Process()
+{
+	mUsed.Lock();
+	{
+		for (uint i = mUsed.GetSize(); i > 0; )
+		{
+			InBuffer* ib = mUsed[--i];
+			if (!ib->mNewData) continue;
+
+			// Get the current memory buffer
+			uint packetLength;
+			Memory& mem = ib->mMem;
+			const byte* buffer = mem.GetBuffer();
+			const byte* nextPacket = buffer;
+			uint size = mem.GetSize();
+
+			// Extract the packet length
+			while (Memory::Extract(buffer, size, packetLength))
+			{
+				if (packetLength > size)
+				{
+					printf("Expecting %u bytes of %u available\n", packetLength, size);
+					break;
+				}
+				else
+				{
+					// Process the data we just received
+					Process(buffer, packetLength);
+
+					// Skip past this packet
+					buffer += packetLength;
+					size   -= packetLength;
+
+					// This is now the starting position for the next packet
+					nextPacket = buffer;
+				}
+			}
+
+			// If we've processed some data, remove it from memory
+			if (nextPacket > mem.GetBuffer())
+			{
+				mem.Remove(nextPacket - mem.GetBuffer());
+			}
+		}
+	}
+	mUsed.Unlock();
+}
+
+//============================================================================================================
 // Processes the specified chunk of data
 //============================================================================================================
 
@@ -200,6 +240,12 @@ void TestApp::Process (const byte* buffer, uint size)
 		String s;
 		tree.SerializeTo(s, 1);
 		printf("[%u] Received:\n%s\n", Thread::GetID(), s.GetBuffer());
+
+		String str ("Received OK");
+		uint length = str.GetLength();
+
+		mNet.Send(&length, 4);
+		mNet.Send(str.GetBuffer(), length);
 	}
 	else
 	{

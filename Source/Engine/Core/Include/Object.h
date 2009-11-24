@@ -9,11 +9,17 @@
 
 class Object
 {
+	friend class Core;		// Core needs access to _Update()
+	friend class Scene;		// Scene needs access to _Cull()
+	friend class Script;	// Script needs access to 'mScripts' so it can remove itself
+
 public:
 
-	// Script creation delegate type
-	typedef FastDelegate<Script* (void)>	CreateDelegate;
+	// Object and script creation delegates
+	typedef FastDelegate<Object* (void)> ObjectDelegate;
+	typedef FastDelegate<Script* (void)> ScriptDelegate;
 
+	// Flags used by the Object
 	struct Flag
 	{
 		enum
@@ -59,11 +65,11 @@ protected:
 		const Vector3f&	 mCamPos;		// Current camera position, used to sort objects
 		const Vector3f&	 mCamDir;		// Current camera direction
 
-		Renderables&	 mRenderables;	// Sorted list of visible objects
+		Renderables&	 mObjects;	// Sorted list of visible objects
 		ILight::List&	 mLights;		// List of visible lights
 
 		CullParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Renderables& o, ILight::List& l)
-			: mFrustum(f), mCamPos(pos), mCamDir(dir), mRenderables(o), mLights(l) {}
+			: mFrustum(f), mCamPos(pos), mCamDir(dir), mObjects(o), mLights(l) {}
 	};
 
 protected:
@@ -119,21 +125,11 @@ public:
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
 
-	// Registers a new script type that can be created by the object -- shared across all objects
-	static void _RegisterScript (const String& type, const CreateDelegate& callback);
+	// Registers a new creatable object
+	static void _RegisterObject (const String& type, const ObjectDelegate& callback);
 
-private:
-
-	friend class Scene;
-	friend class Script;
-
-	// Internal functions
-	void _Add			(Object* ptr);
-	void _Remove		(Object* ptr);
-	void _SetParent		(Object* ptr)	 { mParent = ptr; }
-	void _SetCore		(Core*	 ptr)	 { mCore   = ptr; }
-
-public:
+	// Registers a new creatable script
+	static void _RegisterScript (const String& type, const ScriptDelegate& callback);
 
 	// These functions are meant to be accessed only through templates such as AddObject<> and FindObject<>
 	Object*	_AddObject	(const String& type, const String& name);
@@ -146,6 +142,10 @@ private:
 	// Adds a new script of specified type -- should only be used internally
 	Script* _AddScript (const String& type);
 
+	// Internal functions
+	void _Add	(Object* ptr);
+	void _Remove(Object* ptr);
+
 public:
 
 	// Release all resources associated with this object
@@ -155,13 +155,13 @@ public:
 	void Lock()		const	{ mLock.Lock(); }
 	void Unlock()	const	{ mLock.Unlock(); }
 
-public:
-
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}
 	const Flags&		GetFlags()				const	{ return mFlags;			}
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
 	bool				IsSerializable()		const	{ return mSerializable;		}
+	const Children&		GetChildren()			const	{ return mChildren;			}
+	const Scripts&		GetScripts()			const	{ return mScripts;			}
 
 	// Retrieves relative (local space) position / rotation
 	const Vector3f&		GetRelativePosition()	const	{ return mRelativePos;		}

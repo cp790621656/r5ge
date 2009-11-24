@@ -23,7 +23,8 @@ class TestApp
 	Core*			mCore;
 	UI*				mUI;
 	DebugCamera*	mCam;
-	UILabel*			mLabel;
+	Scene			mScene;
+	UILabel*		mLabel;
 
 public:
 
@@ -42,7 +43,7 @@ TestApp::TestApp() : mCam(0), mLabel(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 }
 
 //============================================================================================================
@@ -67,7 +68,7 @@ void TestApp::Run()
 		// Create a simple UI window via code
 		CreateWindow();
 
-		mCam = FindObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -80,18 +81,14 @@ void TestApp::Run()
 }
 
 //============================================================================================================
-// We add an additional call here: Core::DrawUI().
+// The OnDraw function hasn't changed
 //============================================================================================================
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
+	mScene.Cull(mCam);
+	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mCore->DrawUI(); // <-- NEW!
-	mCore->EndFrame();
-	Thread::Sleep(1);
 }
 
 //============================================================================================================
@@ -101,8 +98,8 @@ void TestApp::OnDraw()
 void TestApp::CreateWindow()
 {
 	// Default skin and font are defined in the UI config file we loaded above
-	UISkin*  skin = mUI->GetDefaultSkin();
-	IFont* font = mUI->GetDefaultFont();
+	UISkin* skin = mUI->GetDefaultSkin();
+	IFont*  font = mUI->GetDefaultFont();
 
 	// Add a new UI widget: a simple window. Note that simply adding any widget to the UI root will NOT
 	// make it draw itself. R5::UI is optimized to "collect" all widgets into as few draw calls as possible.

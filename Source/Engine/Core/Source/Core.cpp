@@ -40,18 +40,22 @@ R5_THREAD_FUNCTION(WorkerThread, ptr)
 }
 
 //============================================================================================================
-// Core constructor and destructor
+// Default initialization function
 //============================================================================================================
 
-Core::Core(	IWindow*		window,
-			IGraphics*		graphics,
-			IUI*			gui) :	mWin(window),
-									mGraphics(graphics),
-									mUI(gui),
-									mScene(0)
+void Core::Init()
 {
+	ASSERT(g_core == 0, "Only one instance of R5::Core is possible per application at this time");
 	g_core = this;
-	mScene = new Scene(this);
+
+#ifdef _DEBUG
+	mSleepDelay = 1;
+#else
+	mSleepDelay = 0;
+#endif
+
+	// Root of the scene needs to know who owns it
+	mRoot.mCore = this;
 
 	// All keys start as inactive
 	memset(mIsKeyDown, 0, sizeof(bool) * 256);
@@ -67,15 +71,38 @@ Core::Core(	IWindow*		window,
 }
 
 //============================================================================================================
+// Core constructor and destructor
+//============================================================================================================
+
+Core::Core (IWindow* window, IGraphics* graphics, IUI* gui) :
+	mWin(window), mGraphics(graphics), mUI(gui)
+{
+	Init();
+}
+
+//============================================================================================================
+
+Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene) :
+	mWin(window), mGraphics(graphics), mUI(gui)
+{
+	Init();
+	scene.SetRoot(&mRoot);
+}
+
+//============================================================================================================
 
 Core::~Core()
 {
 	// Ensure that the core won't be deleted until all worker threads finish
 	while (g_threadCount > 0) Thread::Sleep(1);
 	if (mWin != 0) mWin->SetGraphics(0);
-	if (mScene != 0) delete mScene;
 	g_core = 0;
+
+	// We no longer need the improved timer frequency
 	Thread::ImproveTimerFrequency(false);
+
+	// Root has to be released explicitly as it has to be cleared before meshes
+	mRoot.Release();
 }
 
 //============================================================================================================
@@ -84,23 +111,24 @@ Core::~Core()
 
 void Core::Release()
 {
-	mMeshes.Lock();
-	{
-		if (mScene != 0) mScene->Release();
-		mMeshes.Release();
+	mRoot.Lock();
+	mRoot.Release();
+	mRoot.Unlock();
 
-		mSkeletons.Lock();
-		mSkeletons.Release();
-		mSkeletons.Unlock();
-	}
+	mMeshes.Lock();
+	mMeshes.Release();
 	mMeshes.Unlock();
+
+	mSkeletons.Lock();
+	mSkeletons.Release();
+	mSkeletons.Unlock();
 }
 
 //============================================================================================================
 // Starting a new frame
 //============================================================================================================
 
-bool Core::Update ()
+bool Core::Update()
 {
 	Time::Update();
 	Time::IncrementFPS();
@@ -139,8 +167,11 @@ bool Core::Update ()
 			// Pre-update callbacks
 			mPre.Execute();
 
-			// Update the scenegraph
-			if (mScene != 0) mScene->Update();
+			// Update the entire scene
+			if (mRoot.GetFlag(Object::Flag::Enabled))
+			{
+				mRoot._Update(Vector3f(), Quaternion(), 1.0f, false);
+			}
 
 			// Post-update callbacks
 			mPost.Execute();
@@ -153,9 +184,28 @@ bool Core::Update ()
 		}
 
 		// If we have an OnDraw listener, call it
-		if (mOnDraw && !minimized) mOnDraw();
+		if (mOnDraw && !minimized)
+		{
+			// Start the drawing process
+			mWin->BeginFrame();
+			if (mGraphics != 0)	mGraphics->BeginFrame();
+
+			// Draw the scene
+			mOnDraw();
+
+			// Draw the UI
+			if (mUI != 0) mUI->Render();
+
+			// Finish the drawing process
+			if (mGraphics != 0)	mGraphics->EndFrame();
+			mWin->EndFrame();
+		}
+
+		// Sleep the thread, letting others run in the background
+		Thread::Sleep(mSleepDelay);
+		return true;
 	}
-	return true;
+	return false;
 }
 
 //============================================================================================================
@@ -165,138 +215,6 @@ bool Core::Update ()
 void Core::Shutdown()
 {
 	if (mWin != 0) mWin->Close();
-}
-
-//============================================================================================================
-// Begins the rendering process, locking all the necessary resources
-//============================================================================================================
-
-void Core::BeginFrame()
-{
-	if (mWin		!= 0)	mWin->BeginFrame();
-	if (mGraphics	!= 0)	mGraphics->BeginFrame();
-}
-
-//============================================================================================================
-// Prepares the scene for rendering onto the specified target
-//============================================================================================================
-
-void Core::PrepareScene (IRenderTarget* target)
-{
-	if ( mWin != 0 && !mWin->IsMinimized() )
-	{
-		// Activate the render target
-		mGraphics->SetActiveRenderTarget(target);
-
-		// Clear the screen
-		mGraphics->Clear();
-	}
-}
-
-//============================================================================================================
-// Culls the scene's objects, given the specified camera's perspective
-//============================================================================================================
-
-void Core::CullScene (const Vector3f& pos, const Quaternion& rot, const Vector3f& range)
-{
-	if (mWin != 0 && !mWin->IsMinimized())
-	{
-		mGraphics->SetCameraRange(range);
-		mGraphics->SetCameraOrientation( pos, rot.GetDirection(), rot.GetUp() );
-		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-
-		// Update the frustum
-		mFrustum.Update( mGraphics->GetViewProjMatrix() ); // If world matrix is used: (world * ViewProj)
-
-		// Cull the scene
-		mScene->Cull(mFrustum);
-	}
-}
-
-//============================================================================================================
-// Convenience function
-//============================================================================================================
-
-void Core::CullScene (const Camera* cam)
-{
-	if (cam != 0)
-	{
-		CullScene(	cam->GetAbsolutePosition(),
-					cam->GetAbsoluteRotation(),
-					cam->GetAbsoluteRange() );
-	}
-}
-
-//============================================================================================================
-// Convenience function
-//============================================================================================================
-
-void Core::CullScene (const CameraController& cam)
-{
-	CullScene(	cam.GetPosition(),
-				cam.GetRotation(),
-				cam.GetRange() );
-}
-
-//============================================================================================================
-// Draw the entire scene
-//============================================================================================================
-
-uint Core::DrawScene (const ITechnique* tech, bool insideOut)
-{
-	uint count (0);
-
-	if ( mWin != 0 && !mWin->IsMinimized() && mGraphics != 0 )
-	{
-		if (tech != 0)
-		{
-			// Draw all objects from the specified technique
-			count += mScene->Render(mGraphics, tech, insideOut);
-		}
-		else
-		{
-			// Draw the scene using all default forward rendering techniques
-			ITechnique* opaque = mGraphics->GetTechnique("Opaque");
-			ITechnique* trans  = mGraphics->GetTechnique("Transparent");
-			ITechnique* part   = mGraphics->GetTechnique("Particle");
-			ITechnique* glow   = mGraphics->GetTechnique("Glow");
-			ITechnique* glare  = mGraphics->GetTechnique("Glare");
-
-			count += mScene->Render(mGraphics, opaque, insideOut);
-			count += mScene->Render(mGraphics, trans,  insideOut);
-			count += mScene->Render(mGraphics, part,   insideOut);
-			count += mScene->Render(mGraphics, glow,   insideOut);
-			count += mScene->Render(mGraphics, glare,  insideOut);
-		}
-
-		// Restore the potentially changed properties
-		mGraphics->ResetWorldMatrix();
-		mGraphics->SetNormalize(false);
-	}
-	return count;
-}
-
-//============================================================================================================
-// Draw the user interface
-//============================================================================================================
-
-uint Core::DrawUI()
-{
-	if (mWin != 0 && !mWin->IsMinimized() && mUI != 0)
-	{
-		return mUI->Render();
-	}
-	return 0;
-}
-
-//============================================================================================================
-// Finish drawing, refreshing the screen
-//============================================================================================================
-
-void Core::EndFrame()
-{
-	if (mGraphics	!= 0)	mGraphics->EndFrame();
-	if (mWin		!= 0)	mWin->EndFrame();
 }
 
 //============================================================================================================
@@ -320,7 +238,7 @@ Model* Core::GetModel (const String& name, bool createIfMissing)
 	if (createIfMissing)
 	{
 		Model* model = mModels.AddUnique(name);
-		model->_SetCore(this);
+		model->mCore = this;
 		return model;
 	}
 	return mModels.Find(name);
@@ -333,7 +251,7 @@ Model* Core::GetModel (const String& name, bool createIfMissing)
 Resource* Core::GetResource (const String& name, bool createIfMissing)
 {
 	if (name.IsEmpty()) return 0;
-	return (createIfMissing ? mResources.AddUnique(name)	: mResources.Find(name));
+	return (createIfMissing ? mResources.AddUnique(name) : mResources.Find(name));
 }
 
 //============================================================================================================
@@ -361,7 +279,7 @@ ModelTemplate* Core::GetModelTemplate (const String& name, bool createIfMissing)
 		// If it's a brand-new model, try to load it
 		if (temp->GetCore() == 0)
 		{
-			temp->_SetCore(this);
+			temp->mCore = this;
 
 			if ( !temp->IsValid() )
 			{
@@ -529,7 +447,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == Scene::ClassID() )
 		{
-			mScene->SerializeFrom(node, forceUpdate);
+			mRoot.SerializeFrom(node, forceUpdate);
 		}
 		else if ( tag == Mesh::ClassID() )
 		{
@@ -671,8 +589,24 @@ bool Core::SerializeTo (TreeNode& root) const
 		mModels.Unlock();
 	}
 
-	// Scenegraph is loaded second last
-	mScene->SerializeTo(root);
+	// Save out the scenegraph only if there is something to save
+	mRoot.Lock();
+	{
+		const Object::Children& children = mRoot.GetChildren();
+		const Object::Scripts&  scripts  = mRoot.GetScripts();
+
+		if (children.IsValid() || scripts.IsValid())
+		{
+			TreeNode& node = root.AddChild(Scene::ClassID());
+
+			for (uint i = 0; i < scripts.GetSize(); ++i)
+				scripts[i]->SerializeTo(node);
+
+			for (uint i = 0; i < children.GetSize(); ++i)
+				children[i]->SerializeTo(node);
+		}
+	}
+	mRoot.Unlock();
 
 	// Registered serialization callback
 	if (mOnTo) mOnTo(root);

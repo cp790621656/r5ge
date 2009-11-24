@@ -166,10 +166,11 @@ void PostProcess::None (IGraphics* graphics, const ITexture* color)
 {
 	static const ITechnique* technique = graphics->GetTechnique("Post Process");
 
+	graphics->SetActiveRenderTarget(0);
+	graphics->SetActiveProjection(IGraphics::Projection::Orthographic);
 	graphics->SetActiveTechnique(technique);
 	graphics->SetActiveMaterial(0);
 	graphics->SetActiveTexture(0, color);
-
 	graphics->Draw( IGraphics::Drawable::InvertedQuad );
 }
 

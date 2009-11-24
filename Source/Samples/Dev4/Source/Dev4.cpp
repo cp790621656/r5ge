@@ -10,7 +10,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 }
 
 //============================================================================================================
@@ -29,7 +29,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev4.txt")
 	{
-		mCam = FindObject<Camera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<Camera>(mScene, "Default Camera");
 
 		if (mCam != 0)
 		{
@@ -56,20 +56,16 @@ void TestApp::OnDraw()
 	static ITechnique*	opaque	 = mGraphics->GetTechnique("Opaque");
 	static ITechnique*	deferred = mGraphics->GetTechnique("Deferred");
 
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
+	mScene.Cull(mCam);
 
 	uint triangles (0);
 
 	if (g_ssao > 0)
 	{
-		const ILight::List& lights = mCore->GetScene()->GetVisibleLights();
-		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Core::DrawScene, mCore),
+		const Scene::Lights& lights = mScene.GetVisibleLights();
+		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene),
 			((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
 
-		mGraphics->SetActiveRenderTarget(0);
-		mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
 		PostProcess::None(mGraphics, result.mColor);
 		triangles = result.mTriangles;
 	}
@@ -79,17 +75,13 @@ void TestApp::OnDraw()
 		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 		mGraphics->Clear();
 	
-		triangles += mCore->DrawScene(opaque);
+		triangles += mScene.Draw(opaque);
 	}
 
 	if (tri) tri->SetText( String("TRI: %u", triangles) );
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );
 	if (inf) inf->SetText( String(g_ssao == 0 ? "No SSAO (S)" : (g_ssao == 1 ?
 		"SSAO: Low Quality (S)" : "SSAO: High Quality (S)")) );
-
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(0);
 }
 
 //============================================================================================================

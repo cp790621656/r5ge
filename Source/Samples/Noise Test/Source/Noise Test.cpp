@@ -10,8 +10,9 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mCore(0), mCam(0), mUI(0), mRegenera
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
-	mScene		= mCore->GetScene();
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+
+	mCore->SetSleepDelay(5);
 
 	mUI->SetOnKey("128",  bind(&TestApp::Generate, this));
 	mUI->SetOnKey("256",  bind(&TestApp::Generate, this));
@@ -35,9 +36,9 @@ TestApp::~TestApp()
 
 void TestApp::InitUI()
 {
-	UIWindow* parent	= FindWidget<UIWindow>(mUI, "Options");
-	UISkin*	skin	= mUI->GetSkin("Default");
-	IFont*	font	= mUI->GetFont("Arial");
+	UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
+	UISkin*	skin	 = mUI->GetSkin("Default");
+	IFont*	font	 = mUI->GetFont("Arial");
 
 	if (parent != 0)
 	{
@@ -128,13 +129,9 @@ void TestApp::OnDraw()
 {
 	if (mRegenerate) Regenerate();
 
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
-	mCore->DrawScene();
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(5);
+	mGraphics->Clear();
+	mScene.Cull(mCam);
+	mScene.Draw();
 }
 
 //============================================================================================================
@@ -144,11 +141,11 @@ void TestApp::OnDraw()
 void TestApp::Regenerate()
 {
 	// Get the noise texture
-	static ITexture* noiseTex	= mGraphics->GetTexture("Noise");
-	static ITexture* nmapTex	= mGraphics->GetTexture("Normal Map");
+	static ITexture*	noiseTex	= mGraphics->GetTexture("Noise");
+	static ITexture*	nmapTex		= mGraphics->GetTexture("Normal Map");
 
-	static UILabel*	seedLabel	= FindWidget<UILabel> (mUI, "Seed");
-	static UILabel*	timeLabel	= FindWidget<UILabel> (mUI, "Time");
+	static UILabel*		seedLabel	= FindWidget<UILabel> (mUI, "Seed");
+	static UILabel*		timeLabel	= FindWidget<UILabel> (mUI, "Time");
 	static UIWindow*	window		= FindWidget<UIWindow>(mUI, "Texture Window");
 
 	if (mNoise.GetWidth() > 0 && mNoise.GetHeight() > 0)

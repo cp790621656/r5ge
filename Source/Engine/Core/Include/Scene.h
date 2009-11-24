@@ -7,65 +7,51 @@
 // The root of the scenegraph hierarchy
 //============================================================================================================
 
-class Scene : public Object
+class Scene
 {
-	typedef FastDelegate<Object* (void)>	CreateDelegate;
+public:
 
-	struct RenderGroup
-	{
-		const ITechnique*	mTechnique;
-		Array<Object*>		mList;
+	typedef Object::Renderables Renderables;
+	typedef ILight::List		Lights;
 
-		RenderGroup() : mTechnique(0) {}
-	};
+private:
 
-protected:
-
-	Hash<CreateDelegate>	mEntries;		// List of registered creatable scene objects
-	Renderables				mRenderables;	// List of visible objects
-	ILight::List			mLights;		// List of visible lights
+	Object*		mRoot;		// Scene's root
+	Frustum		mFrustum;	// Viewing frustum used for culling
+	Renderables	mObjects;	// List of visible objects
+	Lights		mLights;	// List of visible lights
 
 public:
 
-	Scene (Core* ptr);
+	R5_DECLARE_SOLO_CLASS("Scene");
 
-	// Object creation
-	R5_DECLARE_ABSTRACT_CLASS("Scene", Object);
+	Scene (Object* root = 0) : mRoot(root) {}
 
-	// Allow direct access to visible lights and objects
-	Renderables&		GetVisibleObjects()			{ return mRenderables; }
-	ILight::List&		GetVisibleLights()			{ return mLights;  }
-	const Renderables&	GetVisibleObjects() const	{ return mRenderables; }
-	const ILight::List&	GetVisibleLights()  const	{ return mLights;  }
+	// It should be possible to change the root of the scene if desired
+	Object* GetRoot() { return mRoot; }
+	void SetRoot (Object* root) { mRoot = root; }
+
+	// These functions are valid after Cull() has been called
+	const Frustum&		GetFrustum()		const { return mFrustum; }
+	const Renderables&	GetVisibleObjects()	const { return mObjects; }
+	const Lights&		GetVisibleLights()	const { return mLights;  }
 
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
-	const ILight::List& GetVisibleLights(const Vector3f& pos);
+	const Lights& GetVisibleLights (const Vector3f& pos);
 
-	// Updates the entire scene
-	void Update();
+	// Changes the camera's perspective to the specified values. All objects get culled.
+	void Cull (const Camera* cam);
+	void Cull (const CameraController& cam);
+	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
+
+	// Draws the scene using the specified technique
+	uint Draw (const ITechnique* tech = 0, bool insideOut = false);
+
+private:
 
 	// Culls the scene
-	void Cull (const Frustum& frustum);
+	void _Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir);
 
-	// Renders all queues
-	uint Render (IGraphics* graphics, const ITechnique* tech, bool insideOut);
-
-	// Deletion is straightforward
-	void DeleteObject (Object* ptr) { delete ptr; }
-
-public:
-
-	// Registers a new object type
-	void _RegisterObject (const String& type, const CreateDelegate& callback);
-
-	// Serialization is slightly different
-	bool SerializeTo (TreeNode& root) const;
-	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
-
-protected:
-
-	friend class Object;
-
-	// Creates a new node of specified type
-	Object* _CreateNode (const String& type);
+	// Renders the objects collected in the 'mObjects' queue using the specified technique
+	uint _Render (const ITechnique* tech, bool insideOut);
 };

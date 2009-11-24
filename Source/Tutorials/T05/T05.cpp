@@ -20,6 +20,7 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
+	Scene			mScene;
 	DebugCamera*	mCam;
 
 public:
@@ -36,7 +37,7 @@ TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0);
+	mCore		= new Core(mWin, mGraphics, 0, mScene);
 }
 
 //============================================================================================================
@@ -59,7 +60,7 @@ void TestApp::Run()
 
 	// Add and position the camera -- future tutorials will be setting
 	// this up in the resource files, so I hope you understand what's going on!
-	mCam = AddObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+	mCam = AddObject<DebugCamera>(mScene, "Default Camera");
 	mCam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
 	mCam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
 	mCam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
@@ -91,10 +92,10 @@ void TestApp::Run()
 	model->PlayAnimation("Run");
 
 	// Now comes the instancing part. We want to create an instance of this model inside our world.
-	// In order to keep it simple, we just add it to the scene as-is, and won't even bother changing
-	// the default orientation.
+	// In order to keep it simple we just add it to the scene as-is, and won't even bother changing
+	// its default orientation.
 
-	ModelInstance* instance = AddObject<ModelInstance>(mCore->GetScene(), "First Instance");
+	ModelInstance* instance = AddObject<ModelInstance>(mScene, "First Instance");
 	instance->SetModel(model);
 
 	// And that's all there is to it! You can play additional animations by using the Model::PlayAnimation
@@ -111,19 +112,15 @@ void TestApp::Run()
 }
 
 //============================================================================================================
-// We add a new function call here: Core::DrawScene()
+// We add a new function call here: Scene::Draw()
 //============================================================================================================
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
+	mScene.Cull(mCam);
+	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mCore->DrawScene();	// <-- NEW! Draw the scene using all normal forward rendering techniques.
-	//mCore->DrawUI();	// <-- NEW! In order to simplify the code, we won't be using the UI in this tutorial.
-	mCore->EndFrame();
-	Thread::Sleep(1);
+	mScene.Draw();	// <-- NEW! Draw the scene using all normal forward rendering techniques.
 }
 
 //============================================================================================================

@@ -12,11 +12,13 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+
+	mCore->SetSleepDelay(0);
 
 	// Register the new fire and smoke emitters
-	RegisterObject<FireEmitter> (mCore->GetScene());
-	RegisterObject<SmokeEmitter>(mCore->GetScene());
+	RegisterObject<FireEmitter>();
+	RegisterObject<SmokeEmitter>();
 }
 
 //============================================================================================================
@@ -35,7 +37,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev7.txt")
 	{
-		mCam = FindObject<Camera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<Camera>(mScene, "Default Camera");
 
 		if (mCam != 0)
 		{
@@ -56,21 +58,17 @@ void TestApp::OnDraw()
 {
 	static UILabel*	fps		= FindWidget<UILabel>(mUI, "FPS");
 	static UILabel*	tri		= FindWidget<UILabel>(mUI, "Triangles");
-	static Object*	place	= FindObject<Object>(mCore->GetScene(), "Stage");
+	static Object*	place	= FindObject<Object>(mScene, "Stage");
 
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
-	{
-		mGraphics->Draw( IGraphics::Drawable::Grid );
-		uint triangles = mCore->DrawScene();
+	mScene.Cull(mCam);
 
-		if (fps) fps->SetText( String("%u", Time::GetFPS()) );
-		if (tri) tri->SetText( String("%u", triangles) );
-	}
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(0);
+	mGraphics->Clear();
+	mGraphics->Draw( IGraphics::Drawable::Grid );
+
+	uint triangles = mScene.Draw();
+
+	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
+	if (tri) tri->SetText( String("%u", triangles) );
 
 	if (place != 0)
 	{

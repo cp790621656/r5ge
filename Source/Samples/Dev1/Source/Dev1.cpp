@@ -8,7 +8,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	mUI->SetOnValueChange ("First Slider",	bind(&TestApp::OnChangeDelegate,	this));
 	mUI->SetOnValueChange ("Range",			bind(&TestApp::OnRangeChange,		this));
@@ -33,7 +33,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev1.txt")
 	{
-		mCam = FindObject<Camera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<Camera>(mScene, "Default Camera");
 
 		if (mCam != 0)
 		{
@@ -53,13 +53,9 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
-	mCore->DrawScene();
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(1);
+	mScene.Cull(mCam);
+	mGraphics->Clear();
+	mScene.Draw();
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -121,7 +117,7 @@ bool TestApp::OnBrightnessChange (UIArea* area)
 		UITextLine* txt = FindWidget<UITextLine>(slider, slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
-		PointLight* light = FindObject<PointLight>(mCore->GetScene(), "First Light");
+		PointLight* light = FindObject<PointLight>(mScene, "First Light");
 		if (light) light->SetBrightness(val);
 	}
 	return true;
@@ -140,7 +136,7 @@ bool TestApp::OnRangeChange (UIArea* area)
 		UITextLine* txt = FindWidget<UITextLine>(slider, slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.2f", val) );
 
-		PointLight* light = FindObject<PointLight>(mCore->GetScene(), "First Light");
+		PointLight* light = FindObject<PointLight>(mScene, "First Light");
 		if (light) light->SetRange(val);
 	}
 	return true;
@@ -159,7 +155,7 @@ bool TestApp::OnPowerChange (UIArea* area)
 		UITextLine* txt = FindWidget<UITextLine>(slider, slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
-		PointLight* light = FindObject<PointLight>(mCore->GetScene(), "First Light");
+		PointLight* light = FindObject<PointLight>(mScene, "First Light");
 		if (light) light->SetPower(val);
 	}
 	return true;

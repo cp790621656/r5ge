@@ -3,12 +3,15 @@ using namespace R5;
 
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mInst0(0), mInst1(0), mCam(0), mStatus(0), mMode(0), mTech(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mInst0(0),
+	mInst1(0), mCam(0), mStatus(0), mMode(0), mTech(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+
+	mCore->SetSleepDelay(0);
 }
 
 //============================================================================================================
@@ -27,7 +30,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev6.txt")
 	{
-		mCam = FindObject<Camera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<Camera>(mScene, "Default Camera");
 
 		if (mCam != 0)
 		{
@@ -36,10 +39,10 @@ void TestApp::Run()
 			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
 			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 
-			mInst0		= FindObject<ModelInstance>(mCore->GetScene(), "Instance 0");
-			mInst1		= FindObject<ModelInstance>(mCore->GetScene(), "Instance 1");
-			mStatus		= FindWidget<UILabel>(mUI, "Status");
-			mMode		= FindWidget<UILabel>(mUI, "Technique");
+			mInst0	= FindObject<ModelInstance>(mScene, "Instance 0");
+			mInst1	= FindObject<ModelInstance>(mScene, "Instance 1");
+			mStatus	= FindWidget<UILabel>(mUI, "Status");
+			mMode	= FindWidget<UILabel>(mUI, "Technique");
 
 			ToggleTechnique();
 			PlayAnimation(GetModel0(), "Walk");
@@ -61,18 +64,14 @@ void TestApp::OnDraw()
 	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
 	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
 
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
-	{
-		mGraphics->Draw( IGraphics::Drawable::Grid );
-		uint triangles = mCore->DrawScene(mTech);
-		if (fps) fps->SetText( String("%u", Time::GetFPS()) );
-		if (tri) tri->SetText( String("%u", triangles) );
-	}
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(0);
+	mScene.Cull(mCam);
+	mGraphics->Clear();
+	mGraphics->Draw( IGraphics::Drawable::Grid );
+
+	uint triangles = mScene.Draw(mTech);
+	
+	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
+	if (tri) tri->SetText( String("%u", triangles) );
 }
 
 //============================================================================================================

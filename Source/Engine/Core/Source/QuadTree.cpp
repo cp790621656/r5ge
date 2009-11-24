@@ -34,7 +34,7 @@ QuadTree::~QuadTree()
 
 void QuadTree::_Set (const String&	 name,
 					 Core*			 core,
-					 Scene*			 root,
+					 Scene			 root,
 					 Object*		 parent,
 					 QuadTree*		 top,
 					 const Vector2f& offset,

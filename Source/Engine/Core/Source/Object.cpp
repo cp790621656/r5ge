@@ -2,12 +2,6 @@
 using namespace R5;
 
 //============================================================================================================
-// All registered script types that can be created are stored here
-//============================================================================================================
-
-Hash<Object::CreateDelegate> gScriptTypes;
-
-//============================================================================================================
 // Each object is enabled by default
 //============================================================================================================
 
@@ -23,50 +17,32 @@ Object::Object() :
 }
 
 //============================================================================================================
-// INTERNAL: Registers a new script type that can be created by the object -- shared across all objects
+// List of registered object and script types
 //============================================================================================================
 
-void Object::_RegisterScript (const String& type, const CreateDelegate& callback)
+Hash<Object::ObjectDelegate>	gObjectTypes;
+Hash<Object::ScriptDelegate>	gScriptTypes;
+
+//============================================================================================================
+// INTERNAL: Registers a new creatable object
+//============================================================================================================
+
+void Object::_RegisterObject (const String& type, const ObjectDelegate& callback)
+{
+	gObjectTypes.Lock();
+	gObjectTypes[type] = callback;
+	gObjectTypes.Unlock();
+}
+
+//============================================================================================================
+// INTERNAL: Registers a new creatable script
+//============================================================================================================
+
+void Object::_RegisterScript (const String& type, const ScriptDelegate& callback)
 {
 	gScriptTypes.Lock();
 	gScriptTypes[type] = callback;
 	gScriptTypes.Unlock();
-}
-
-//============================================================================================================
-// INTERNAL: Adds a child object
-//============================================================================================================
-
-void Object::_Add (Object* obj)
-{
-	if (obj != 0)
-	{
-		obj->mAbsolutePos	= obj->mRelativePos;
-		obj->mAbsoluteRot	= obj->mRelativeRot;
-		obj->mAbsoluteScale	= obj->mRelativeScale;
-
-		obj->mRelativePos	= Interpolation::GetDifference(mAbsolutePos, obj->mAbsolutePos) / mAbsoluteScale;
-		obj->mRelativeRot	= Interpolation::GetDifference(mAbsoluteRot, obj->mAbsoluteRot);
-		obj->mRelativeScale	= obj->mAbsoluteScale / mAbsoluteScale;
-
-		mChildren.Expand() = obj;
-	}
-}
-
-//============================================================================================================
-// INTERNAL: Removes a child object
-//============================================================================================================
-
-void Object::_Remove (Object* obj)
-{
-	if (obj != 0)
-	{
-		mChildren.Remove(obj);
-
-		obj->mRelativePos	= obj->mAbsolutePos;
-		obj->mRelativeRot	= obj->mAbsoluteRot;
-		obj->mRelativeScale	= obj->mAbsoluteScale;
-	}
 }
 
 //============================================================================================================
@@ -75,13 +51,32 @@ void Object::_Remove (Object* obj)
 
 Object* Object::_AddObject (const String& type, const String& name)
 {
+	// Register default object types
+	{
+		static bool doOnce = true;
+
+		if (doOnce)
+		{
+			doOnce = false;
+
+			RegisterObject<Object>();
+			RegisterObject<Camera>();
+			RegisterObject<DebugCamera>();
+			RegisterObject<AnimatedCamera>();
+			RegisterObject<ModelInstance>();
+			RegisterObject<DirectionalLight>();
+			RegisterObject<PointLight>();
+			RegisterObject<Glow>();
+		}
+	}
+
 	Object* ptr (0);
 
 	for (uint i = mChildren.GetSize(); i > 0; )
 	{
 		Object* obj = mChildren[--i];
 
-		if ( obj != 0 && name == obj->GetName() )
+		if ( obj != 0 && name == obj->GetName() && type == obj->GetClassID() )
 		{
 			ptr = obj;
 			break;
@@ -90,12 +85,22 @@ Object* Object::_AddObject (const String& type, const String& name)
 
 	if (ptr == 0)
 	{
-		ptr = mCore->GetScene()->_CreateNode(type);
+		gObjectTypes.Lock();
+		{
+			const ObjectDelegate* callback = gObjectTypes.GetIfExists(type);
+
+			if (callback != 0)
+			{
+				ptr = (*callback)();
+				ptr->mCore = mCore;
+			}
+		}
+		gObjectTypes.Unlock();
 
 		if (ptr != 0)
 		{
 			ptr->SetName(name);
-			ptr->_SetParent(this);
+			ptr->mParent = this;
 			mChildren.Expand() = ptr;
 		}
 	}
@@ -175,7 +180,7 @@ Script* Object::_AddScript (const char* type)
 	{
 		gScriptTypes.Lock();
 		{
-			const CreateDelegate* callback = gScriptTypes.GetIfExists(type);
+			const ScriptDelegate* callback = gScriptTypes.GetIfExists(type);
 			
 			if (callback != 0)
 			{
@@ -213,7 +218,7 @@ Script* Object::_AddScript (const String& type)
 	{
 		gScriptTypes.Lock();
 		{
-			const CreateDelegate* callback = gScriptTypes.GetIfExists(type);
+			const ScriptDelegate* callback = gScriptTypes.GetIfExists(type);
 			
 			if (callback != 0)
 			{
@@ -225,6 +230,42 @@ Script* Object::_AddScript (const String& type)
 		gScriptTypes.Unlock();
 	}
 	return ptr;
+}
+
+//============================================================================================================
+// INTERNAL: Adds a child object
+//============================================================================================================
+
+void Object::_Add (Object* obj)
+{
+	if (obj != 0)
+	{
+		obj->mAbsolutePos	= obj->mRelativePos;
+		obj->mAbsoluteRot	= obj->mRelativeRot;
+		obj->mAbsoluteScale	= obj->mRelativeScale;
+
+		obj->mRelativePos	= Interpolation::GetDifference(mAbsolutePos, obj->mAbsolutePos) / mAbsoluteScale;
+		obj->mRelativeRot	= Interpolation::GetDifference(mAbsoluteRot, obj->mAbsoluteRot);
+		obj->mRelativeScale	= obj->mAbsoluteScale / mAbsoluteScale;
+
+		mChildren.Expand() = obj;
+	}
+}
+
+//============================================================================================================
+// INTERNAL: Removes a child object
+//============================================================================================================
+
+void Object::_Remove (Object* obj)
+{
+	if (obj != 0)
+	{
+		mChildren.Remove(obj);
+
+		obj->mRelativePos	= obj->mAbsolutePos;
+		obj->mRelativeRot	= obj->mAbsoluteRot;
+		obj->mRelativeScale	= obj->mAbsoluteScale;
+	}
 }
 
 //============================================================================================================
@@ -265,7 +306,7 @@ void Object::Release()
 				// Remove all references to this object
 				if (mChildren[--i] != 0)
 				{
-					mChildren[i]->_SetParent(0);
+					mChildren[i]->mParent = 0;
 				}
 			}
 
@@ -520,25 +561,13 @@ bool Object::SerializeTo (TreeNode& root) const
 			node.AddChild("Scale", mRelativeScale);
 
 			if (!mIgnore.Get(Ignore::SerializeTo))
-			{
 				OnSerializeTo(node);
-			}
 
-			if (mScripts.IsValid())
-			{
-				for (uint i = 0; i < mScripts.GetSize(); ++i)
-				{
-					const Script* script = mScripts[i];
-					TreeNode& child = node.AddChild(Script::ClassID(), script->GetClassID());
-					script->SerializeTo(child);
-				}
-			}
+			for (uint i = 0; i < mScripts.GetSize(); ++i)
+				mScripts[i]->SerializeTo(node);
 
-			if (mChildren.IsValid())
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					mChildren[i]->SerializeTo(node);
-			}
+			for (uint i = 0; i < mChildren.GetSize(); ++i)
+				mChildren[i]->SerializeTo(node);
 		}
 		Unlock();
 		return true;

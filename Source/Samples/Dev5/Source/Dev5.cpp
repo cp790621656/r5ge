@@ -334,14 +334,8 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-   while ( mCore->Update() )
-	{
-		mCore->BeginFrame();
-		mCore->PrepareScene();
-		mCore->DrawUI();
-		mCore->EndFrame();
-		Thread::Sleep(5);
-	}
+	mCore->SetListener( bind(&TestApp::OnDraw, this) );
+	while ( mCore->Update() );
 }
 
 //============================================================================================================
@@ -391,6 +385,15 @@ void TestApp::Update()
 		if (closest != mEnd) closest->mHlt->SetColor( FINAL );
 		closest = closest->mParent;
 	}
+}
+
+//============================================================================================================
+// Since the UI is drawn automatically, all we need to do is clear the screen.
+//============================================================================================================
+
+void TestApp::OnDraw()
+{
+	mGraphics->Clear();
 }
 
 //============================================================================================================

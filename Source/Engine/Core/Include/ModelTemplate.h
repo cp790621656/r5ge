@@ -9,6 +9,8 @@
 
 class ModelTemplate
 {
+	friend class Core; // Allow Core to set 'mCore'
+
 public:
 
 	// Codec functions accept the input data buffer, its size, optional file's extension,
@@ -107,10 +109,4 @@ public:
 	// file or R5 tree (regular serialization only references meshes and materials)
 	bool Save (const String& file) const;
 	bool Save (TreeNode& root) const;
-
-private:
-
-	// Allow Core class to set this value
-	friend class Core;
-	void _SetCore (Core* ptr) { mCore = ptr; }
 };

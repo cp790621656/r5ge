@@ -55,8 +55,8 @@ protected:
 	IGraphics*		mGraphics;
 	UIRoot*			mUI;
 	Core*			mCore;
-	UIFrame*			mRoot;
-	UILabel*			mStatus;
+	UIFrame*		mRoot;
+	UILabel*		mStatus;
 
 	Array<Node>		mNodes;		// Pathfinding nodes
 	Node*			mStart;		// Pointer to the starting node
@@ -75,7 +75,7 @@ public:
 
 	void Run();
 	void Update();
-
+	void OnDraw();
 	bool OnHighlightKey  (UIArea* ptr, const Vector2i& pos, byte key, bool isDown);
 	bool OnHighlightMove (UIArea* ptr, const Vector2i& pos, const Vector2i& delta);
 	bool OnKey (const Vector2i& pos, byte key, bool isDown);

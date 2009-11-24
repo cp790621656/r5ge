@@ -22,22 +22,35 @@ protected:
 	IWindow*		mWin;				// Pointer to the window created by the application
 	IGraphics*		mGraphics;			// Graphics manager and controller
 	IUI*			mUI;				// User interface, if available
-	Scene*			mScene;				// Scene root
+	Object			mRoot;				// Root of the entire scene
 	bool			mIsKeyDown[256];	// Provides a quick way of checking whether some key is held down
 	Vector2i		mMousePos;			// Saved current mouse position
 	Vector2i		mUpdatedSize;		// If the window size gets updated, appropriate components must be notified
-	Frustum			mFrustum;			// Viewing frustum for visibility culling
 	Resources		mResources;			// Managed array of resources
 	Meshes			mMeshes;			// Managed array of meshes
 	Skeletons		mSkeletons;			// Managed array of skeletons
 	ModelTemplates	mModelTemplates;	// Managed array of model templates that can be used to create models
 	Models			mModels;			// Managed array of instantiable models
 	Array<String>	mExecuted;			// Executed resources, for serialization purposes
+	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
+
+private:
+
+	// Default initialization function used by the constructors
+	void Init();
 
 public:
 
+	// Default constructor
 	Core (IWindow* window, IGraphics* graphics, IUI* gui);
+
+	// Convenience constructor -- sets the scene's root to the root of the game object tree
+	Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene);
+
+	// Destructor will wait for all threads to finish before exiting
 	~Core();
+
+public:
 
 	R5_DECLARE_SOLO_CLASS("Core");
 
@@ -54,32 +67,8 @@ public:
 	bool Update();		// Updates all components
 	void Shutdown();	// Shuts down the app
 
-	// Begins the rendering process, locking all the necessary resources
-	void BeginFrame();
-
-	// Prepares the scene for rendering onto the specified target
-	void PrepareScene (IRenderTarget* target = 0);
-
-	// Culls the scene's objects, given the specified camera's perspective
-	void CullScene (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
-
-	// Convenience function
-	void CullScene (const Camera* cam);
-
-	// Convenience function
-	void CullScene (const CameraController& cam);
-
-	// Draw the entire scene with the specified technique
-	uint DrawScene (const ITechnique* tech = 0, bool insideOut = false);
-
-	// Draw the user interface
-	uint DrawUI();
-
-	// Finish drawing, refreshing the screen
-	void EndFrame();
-
 	// Useful to have direct access to these components
-	Scene*			GetScene()				{ return mScene;			}
+	Object*			GetRoot()				{ return &mRoot;			}
 	Meshes&			GetAllMeshes()			{ return mMeshes;			}
 	Models&			GetAllModels()			{ return mModels;			}
 	Resources&		GetAllResources()		{ return mResources;		}
@@ -98,6 +87,10 @@ public:
 
 	// It's also very useful to know the current mouse position
 	const Vector2i&	GetMousePos() const	{ return mMousePos; }
+
+	// Sleep delay is used to put the graphics thread to sleep after drawing the frame
+	uint GetSleepDelay() const		{ return mSleepDelay; }
+	void SetSleepDelay (uint delay) { mSleepDelay = delay; }
 
 public:
 

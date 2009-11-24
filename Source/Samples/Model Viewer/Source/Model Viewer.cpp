@@ -8,8 +8,7 @@ ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbL
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
-	mScene		= mCore->GetScene();
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	// Event listeners
 	mCore->SetListener( bind(&ModelViewer::OnDraw,			this) );
@@ -43,8 +42,8 @@ void ModelViewer::Run()
 		mLight			= FindObject<DirectionalLight>	(mScene, "Default Light");
 		mStage			= FindObject<Object>			(mScene, "Stage");
 		mInst			= FindObject<ModelInstance>		(mScene, "Default Instance");
-		mSbHighlight	= FindWidget<UIHighlight>			(mUI,	 "Status Highlight");
-		mSbLabel		= FindWidget<UILabel>				(mUI,	 "Status Label");
+		mSbHighlight	= FindWidget<UIHighlight>		(mUI,	 "Status Highlight");
+		mSbLabel		= FindWidget<UILabel>			(mUI,	 "Status Label");
 
 		// Model viewer deals with only one model
 		mModel = mCore->GetModel("Default Model");
@@ -96,8 +95,7 @@ void ModelViewer::OnDraw()
 	}
 
 	// Prepare to draw the scene
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
+	mScene.Cull(mCam);
 
 	// If there was a request to reset the viewpoint, now should be a good time as we know what's visible
 	if (mResetCamera)
@@ -141,7 +139,7 @@ void ModelViewer::OnDraw()
 		else if (mParams.mSsao == 1) ao.bind(&SSAO::Low);
 
 		// Get all visible lights
-		const ILight::List& lights = mCore->GetScene()->GetVisibleLights();
+		const Scene::Lights& lights = mScene.GetVisibleLights();
 
 		// Draw the scene using the deferred approach
 		result = Deferred::DrawScene(mGraphics, lights,
@@ -149,28 +147,17 @@ void ModelViewer::OnDraw()
 	}
 
 	// Post-processing part
+	if (mParams.mBloom)
 	{
-		mGraphics->SetStencilTest(false);
-		mGraphics->SetActiveRenderTarget(0);
-		mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
-
-		if (mParams.mBloom)
-		{
-			// Apply a post-processing effect
-			PostProcess::Bloom(mGraphics, result.mColor, mParams.mThreshold);
-			//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 15.0f, 5.0f, 15.0f);
-		}
-		else
-		{
-			// Don't apply any effects -- simply draw this texture directly to the screen
-			PostProcess::None(mGraphics, result.mColor);
-		}
+		// Apply a post-processing effect
+		PostProcess::Bloom(mGraphics, result.mColor, mParams.mThreshold);
+		//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 15.0f, 5.0f, 15.0f);
 	}
-
-	// Draw the user interface and end the frame
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(0);
+	else
+	{
+		// Don't apply any effects -- simply draw this texture directly to the screen
+		PostProcess::None(mGraphics, result.mColor);
+	}
 }
 
 //============================================================================================================
@@ -186,8 +173,8 @@ uint ModelViewer::OnDeferredDraw (const ITechnique* tech, bool insideOut)
 
 	uint triangles = mGraphics->Draw( IGraphics::Drawable::Grid );
 
-	triangles += mCore->DrawScene(deferred,  insideOut);
-	triangles += mCore->DrawScene(wireframe, insideOut);
+	triangles += mScene.Draw(deferred,  insideOut);
+	triangles += mScene.Draw(wireframe, insideOut);
 
 	return triangles;
 }

@@ -91,7 +91,7 @@ bool ModelInstance::OnCull (CullParams& params, bool isParentVisible, bool rende
 	{
 		if (render)
 		{
-			Renderable& obj	 = params.mRenderables.Expand();
+			Renderable& obj	 = params.mObjects.Expand();
 			obj.mObject		 = this;
 			obj.mLayer		 = mModel->GetLayer();
 			obj.mGroup		 = mModel;

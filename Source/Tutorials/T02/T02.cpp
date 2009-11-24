@@ -24,6 +24,7 @@ class TestApp
 	IGraphics*		mGraphics;
 	Core*			mCore;
 	DebugCamera*	mCam;
+	Scene			mScene;
 
 public:
 
@@ -39,7 +40,7 @@ TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0);
+	mCore		= new Core(mWin, mGraphics, 0, mScene);
 }
 
 //============================================================================================================
@@ -64,7 +65,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T02.txt")
 	{
 		// At this point our window has been created. Our camera has also been loaded, so now we just find it:
-		mCam = FindObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		// Register our listeners and enter the message processing loop, same as in the previous tutorial
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
@@ -85,12 +86,9 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
+	mScene.Cull(mCam);
+	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mCore->EndFrame();
-	Thread::Sleep(1);
 }
 
 //============================================================================================================

@@ -20,6 +20,7 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
+	Scene			mScene;
 	DebugCamera*	mCam;
 
 public:
@@ -36,7 +37,7 @@ TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0);
+	mCore		= new Core(mWin, mGraphics, 0, mScene);
 }
 
 //============================================================================================================
@@ -134,7 +135,7 @@ void TestApp::Run()
 		// I recommend adding animation code to all the shaders that will be used by animated models.
 
 		// The rest of the tutorial is identical to the previous
-		mCam = FindObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -150,13 +151,10 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
+	mScene.Cull(mCam);
+	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mCore->DrawScene();
-	mCore->EndFrame();
-	Thread::Sleep(1);
+	mScene.Draw();
 }
 
 //============================================================================================================

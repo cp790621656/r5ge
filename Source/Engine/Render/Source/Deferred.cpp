@@ -300,7 +300,7 @@ Deferred::DrawResult Deferred::DrawScene (
 	}
 
 	// Setting size only changes it if it's different
-	Vector2i size (graphics->GetViewport());
+	Vector2i size (graphics->GetActiveViewport());
 	target0->SetSize( size );
 	target1->SetSize( size );
 	target2->SetSize( size );

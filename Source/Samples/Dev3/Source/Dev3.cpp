@@ -32,14 +32,13 @@ public:
 // Constructor and destructor
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mScene(0), mCam(0), mDeferred(true),
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mDeferred(true),
 	mTriangles(0), mVisible(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
-	mScene		= mCore->GetScene();
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	// Register a new script type that can be created via AddScript<> template
 	RegisterScript<SpinScript>();
@@ -118,7 +117,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev3.txt")
 	{
-		mCam = FindObject<Camera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<Camera>(mScene, "Default Camera");
 
 		if (mCam != 0)
 		{
@@ -142,38 +141,32 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mTriangles = 0;
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
+	mScene.Cull(mCam);
 
-	static ITechnique*	opaque		= mGraphics->GetTechnique("Opaque");
-	static ITechnique*	trans		= mGraphics->GetTechnique("Transparent");
-	static ITechnique*	glow		= mGraphics->GetTechnique("Glow");
-	static ITechnique*	glare		= mGraphics->GetTechnique("Glare");
+	static ITechnique*	opaque	= mGraphics->GetTechnique("Opaque");
+	static ITechnique*	trans	= mGraphics->GetTechnique("Transparent");
+	static ITechnique*	glow	= mGraphics->GetTechnique("Glow");
+	static ITechnique*	glare	= mGraphics->GetTechnique("Glare");
 
 	// Number of lights
-	const ILight::List& lights = mScene->GetVisibleLights();
+	const Scene::Lights& lights = mScene.GetVisibleLights();
 	uint lightCount = lights.GetSize();
 
 	if (mDeferred)
 	{
 		// Draw the scene using the deferred approach, filling color and depth buffers
-		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Core::DrawScene, mCore));
+		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene));
 		mTriangles = result.mTriangles;
 
 		// Add transparent objects via forward rendering
 		{
 			mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-			mTriangles += mCore->DrawScene(glow);
-			mTriangles += mCore->DrawScene(glare);
+			mTriangles += mScene.Draw(glow);
+			mTriangles += mScene.Draw(glare);
 		}
 
 		// Draw the result onto the screen
-		{
-			mGraphics->SetActiveRenderTarget(0);
-			mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
-			PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
-		}
+		PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
 
 		mDebug.Set("Deferred (%u lights)", lightCount);
 	}
@@ -184,22 +177,18 @@ void TestApp::OnDraw()
 		mGraphics->Clear();
 
 		// Sort the lights so that closest lights are first
-		mScene->GetVisibleLights( mCam->GetAbsolutePosition() );
+		mScene.GetVisibleLights( mCam->GetAbsolutePosition() );
 
 		// Draw the scene
-		mTriangles += mCore->DrawScene(opaque);
-		mTriangles += mCore->DrawScene(trans);
-		mTriangles += mCore->DrawScene(glow);
-		mTriangles += mCore->DrawScene(glare);
+		mTriangles  = mScene.Draw(opaque);
+		mTriangles += mScene.Draw(trans);
+		mTriangles += mScene.Draw(glow);
+		mTriangles += mScene.Draw(glare);
 
 		mDebug.Set("Forward (%u lights)", lightCount > 8 ? 8 : lightCount);
 	}
 
-	mVisible = mScene->GetVisibleObjects().GetSize();
-
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(0);
+	mVisible = mScene.GetVisibleObjects().GetSize();
 }
 
 //============================================================================================================

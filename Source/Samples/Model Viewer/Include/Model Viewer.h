@@ -28,7 +28,7 @@ public:
 	IGraphics*		mGraphics;
 	UIRoot*			mUI;
 	Core*			mCore;
-	Scene*			mScene;
+	Scene			mScene;
 	DebugCamera*	mCam;
 	Light*			mLight;
 	Object*			mStage;

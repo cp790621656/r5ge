@@ -22,6 +22,7 @@ class TestApp
 	IGraphics*		mGraphics;
 	Core*			mCore;
 	DebugCamera*	mCam;
+	Scene			mScene;
 
 public:
 
@@ -35,9 +36,15 @@ public:
 
 TestApp::TestApp() : mCam(0)
 {
+	// Note that the constructor we're currently using for the Core is a convenience constructor. The last
+	// parameter (scene) is optional. All it does inside is sets the scene's root to be the root of the
+	// object hierarchy tree residing inside the Core. R5 allows you to have more than one scene using
+	// different (or the same!) parts of the object tree, making it possible to create efficient animated
+	// character thumbnails, object preview windows, and much more.
+
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0);
+	mCore		= new Core(mWin, mGraphics, 0, mScene);
 }
 
 //============================================================================================================
@@ -49,7 +56,6 @@ TestApp::~TestApp()
 	if (mWin)		delete mWin;
 }
 
-
 //============================================================================================================
 // Create the window, set up the camera, bind listener callbacks and enter the message processing loop
 //============================================================================================================
@@ -60,7 +66,7 @@ void TestApp::Run()
 	mWin->Create("Tutorial 1: Window Creation", 100, 100, 900, 600);
 
 	// Add a new camera to the scene: it's added at (0, 0, 0)
-	mCam = AddObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+	mCam = AddObject<DebugCamera>(mScene, "Default Camera");
 
 	// Set the rotation to have an isometric look
 	mCam->SetRelativeRotation(Vector3f(1, 1, -1));
@@ -85,23 +91,14 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	// Begin the drawing process
-	mCore->BeginFrame();
+	// Cull the scene from our camera's perspective
+	mScene.Cull(mCam);
 
-	// Cull the scene using our camera's perspective
-	mCore->CullScene(mCam);
-
-	// Prepare to draw to the screen (when no target is specified it means we want the screen)
-	mCore->PrepareScene();
+	// Clear the screen
+	mGraphics->Clear();
 
 	// Draw a simple 20x20 grid centered at (0, 0, 0)
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-
-	// Finish the drawing process
-	mCore->EndFrame();
-
-	// Sleep for a short while, letting other threads run
-	Thread::Sleep(1);
 }
 
 //============================================================================================================

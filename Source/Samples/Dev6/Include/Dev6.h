@@ -22,9 +22,10 @@ class TestApp
 	ModelInstance*	mInst0;
 	ModelInstance*	mInst1;
 	Camera*			mCam;
-	UILabel*			mStatus;
-	UILabel*			mMode;
+	UILabel*		mStatus;
+	UILabel*		mMode;
 	ITechnique*		mTech;
+	Scene			mScene;
 
 public:
 

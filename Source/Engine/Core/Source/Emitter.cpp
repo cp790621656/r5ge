@@ -124,7 +124,7 @@ bool Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
 
 		if (render)
 		{
-			Renderable& obj		= params.mRenderables.Expand();
+			Renderable& obj		= params.mObjects.Expand();
 			obj.mObject			= this;
 			obj.mLayer			= 0;
 			obj.mGroup			= 0;

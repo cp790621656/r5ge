@@ -14,6 +14,7 @@ class TestApp
 	UI*			mUI;
 	Core*		mCore;
 	Camera*		mCam;
+	Scene		mScene;
 
 public:
 

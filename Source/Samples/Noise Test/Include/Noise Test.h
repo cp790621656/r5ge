@@ -19,7 +19,7 @@ class TestApp
 	IWindow*	mWin;
 	IGraphics*	mGraphics;
 	Core*		mCore;
-	Scene*		mScene;
+	Scene		mScene;
 	Camera*		mCam;
 	UI*			mUI;
 	Noise		mNoise;

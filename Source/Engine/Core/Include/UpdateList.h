@@ -5,6 +5,7 @@
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Container for registered update callbacks
+// TODO: Is it now obsolete with the addition of scripts?
 //============================================================================================================
 
 class UpdateList

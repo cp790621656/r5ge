@@ -4,16 +4,17 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
+// Various templated convenience functions
+//============================================================================================================
 
 //============================================================================================================
-// Registers a new class type with the scene manager
-// TODO: Consider getting rid of 'Scene' parameter
+// Registers a new class type that can be created in the scene
 //============================================================================================================
 
 template <typename Type>
-void RegisterObject (Scene* scene)
+void RegisterObject()
 {
-	scene->_RegisterObject( Type::ClassID(), &Type::_CreateNew );
+	Object::_RegisterObject( Type::ClassID(), &Type::_CreateNew );
 }
 
 //============================================================================================================
@@ -40,6 +41,14 @@ Type* FindObject (Object* root, const String& name, bool recursive = true)
 }
 
 //============================================================================================================
+
+template <typename Type>
+Type* FindObject (Scene& scene, const String& name, bool recursive = true)
+{
+	return FindObject<Type>(scene.GetRoot(), name, recursive);
+}
+
+//============================================================================================================
 // Creates a new child of specified type and name
 //============================================================================================================
 
@@ -50,6 +59,14 @@ Type* AddObject (Object* root, const String& name)
 	Object* obj = root->_AddObject(Type::ClassID(), name);
 	root->Unlock();
 	return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+}
+
+//============================================================================================================
+
+template <typename Type>
+Type* AddObject (Scene& scene, const String& name)
+{
+	return AddObject<Type>(scene.GetRoot(), name);
 }
 
 //============================================================================================================

@@ -20,7 +20,7 @@ class TestApp
 	IGraphics*	mGraphics;
 	UI*			mUI;
 	Core*		mCore;
-	Scene*		mScene;
+	Scene		mScene;
 	Camera*		mCam;
 	bool		mFlag;
 	bool		mDeferred;

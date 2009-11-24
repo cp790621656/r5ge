@@ -2,26 +2,6 @@
 using namespace R5;
 
 //============================================================================================================
-// Register known node types
-//============================================================================================================
-
-Scene::Scene (Core* ptr)
-{
-	ASSERT(ptr != 0, "Core pointer must not be empty!");
-
-	_SetCore(ptr);
-
-	RegisterObject<Object>			(this);
-	RegisterObject<Camera>			(this);
-	RegisterObject<DebugCamera>		(this);
-	RegisterObject<AnimatedCamera>	(this);
-	RegisterObject<ModelInstance>	(this);
-	RegisterObject<DirectionalLight>(this);
-	RegisterObject<PointLight>		(this);
-	RegisterObject<Glow>			(this);
-}
-
-//============================================================================================================
 // Retrieves active lights, sorting them front-to-back based on distance to the specified position
 //============================================================================================================
 
@@ -53,55 +33,125 @@ const ILight::List& Scene::GetVisibleLights (const Vector3f& pos)
 }
 
 //============================================================================================================
-// Updates the entire scene
+// Convenience function
 //============================================================================================================
 
-void Scene::Update()
+void Scene::Cull (const Camera* cam)
 {
-	if (GetFlag(Flag::Enabled))
+	if (cam != 0)
 	{
-		Object::_Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, false);
+		Cull(
+			cam->GetAbsolutePosition(),
+			cam->GetAbsoluteRotation(),
+			cam->GetAbsoluteRange() );
 	}
 }
 
 //============================================================================================================
-// Culls the scene
+// Convenience function
 //============================================================================================================
 
-void Scene::Cull (const Frustum& frustum)
+void Scene::Cull (const CameraController& cam)
 {
-	mRenderables = 0;
+	Cull(cam.GetPosition(), cam.GetRotation(), cam.GetRange());
+}
 
+//============================================================================================================
+// Culls the scene's objects, given the specified camera's perspective
+//============================================================================================================
+
+void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range)
+{
+	if (mRoot != 0)
+	{
+		Core* core (mRoot->mCore);
+		IGraphics* graphics (core->GetGraphics());
+		Vector3f dir (rot.GetDirection());
+
+		graphics->SetCameraRange(range);
+		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
+		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
+
+		// Update the frustum
+		mFrustum.Update( graphics->GetViewProjMatrix() ); // If world matrix is used: (world * ViewProj)
+
+		// Cull the scene
+		_Cull(mFrustum, pos, dir);
+	}
+}
+
+//============================================================================================================
+// Draw the specified scene
+//============================================================================================================
+
+uint Scene::Draw (const ITechnique* tech, bool insideOut)
+{
+	uint count (0);
+
+	if (mRoot != 0)
+	{
+		IGraphics* graphics = mRoot->mCore->GetGraphics();
+
+		if (tech != 0)
+		{
+			// Draw all objects from the specified technique
+			count += _Render(tech, insideOut);
+		}
+		else
+		{
+			// Draw the scene using all default forward rendering techniques
+			ITechnique* opaque = graphics->GetTechnique("Opaque");
+			ITechnique* trans  = graphics->GetTechnique("Transparent");
+			ITechnique* part   = graphics->GetTechnique("Particle");
+			ITechnique* glow   = graphics->GetTechnique("Glow");
+			ITechnique* glare  = graphics->GetTechnique("Glare");
+
+			count += _Render(opaque, insideOut);
+			count += _Render(trans,  insideOut);
+			count += _Render(part,   insideOut);
+			count += _Render(glow,   insideOut);
+			count += _Render(glare,  insideOut);
+		}
+
+		// Restore the potentially changed properties
+		graphics->ResetWorldMatrix();
+		graphics->SetNormalize(false);
+	}
+	return count;
+}
+
+
+//============================================================================================================
+// Culls the scene using the specified frustum
+//============================================================================================================
+
+void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
+{
 	// Clear all visible objects and lights
-	mRenderables.Clear();
+	mObjects.Clear();
 	mLights.Clear();
 
-	IGraphics* graphics = mCore->GetGraphics();
-
 	// Culling parameters for this run
-	CullParams params ( frustum,
-						graphics->GetCameraPosition(),
-						graphics->GetCameraDirection(),
-						mRenderables,
-						mLights );
+	Object::CullParams params (frustum, pos, dir, mObjects, mLights);
 
 	// Cull the entire scene, filling the arrays in the process
-	Object::_Cull(params, true, true);
+	mRoot->_Cull(params, true, true);
 
 	// Sort all objects by layer, group, and distance to the camera
-	mRenderables.Sort();
+	mObjects.Sort();
 }
 
 //============================================================================================================
 // Renders all queues
 //============================================================================================================
 
-uint Scene::Render (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint Scene::_Render (const ITechnique* tech, bool insideOut)
 {
 	uint triangles (0);
+	IGraphics* graphics = mRoot->mCore->GetGraphics();
 
 	// Only proceed if there is something to render with
-	if (mRenderables.IsValid() && tech != 0)
+	if (mObjects.IsValid() && tech != 0)
 	{
 		// Activate the rendering technique
 		graphics->SetActiveTechnique(tech, insideOut);
@@ -124,18 +174,18 @@ uint Scene::Render (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 			// Objects are automatically sorted front to back in order to minimize overdraw,
 			// but if we are here then we want to render them back-to-front instead. This is
 			// the best rendering method for transparent objects, but it has the most overdraw.
-			for (uint i = 0, imax = mRenderables.GetSize(); i < imax; )
+			for (uint i = 0, imax = mObjects.GetSize(); i < imax; )
 			{
-				int layer = mRenderables[i].mLayer;
+				int layer = mObjects[i].mLayer;
 				uint last = i;
 
 				// Keep going until we stumble upon either the end or a different layer
-				while (++last < imax && mRenderables[last].mLayer == layer);
+				while (++last < imax && mObjects[last].mLayer == layer);
 
 				// Run through all renderables on this layer, rendering them back to front
 				for (uint b = last; b > i; )
 				{
-					triangles += mRenderables[--b].mObject->OnRender(graphics, tech, insideOut);
+					triangles += mObjects[--b].mObject->OnRender(graphics, tech, insideOut);
 				}
 
 				// Continue from the next layer
@@ -145,104 +195,11 @@ uint Scene::Render (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 		else
 		{
 			// Run through all objects, rendering them front-to-back
-			for (uint i = 0, imax = mRenderables.GetSize(); i < imax; ++i)
+			for (uint i = 0, imax = mObjects.GetSize(); i < imax; ++i)
 			{
-				triangles += mRenderables[i].mObject->OnRender(graphics, tech, insideOut);
+				triangles += mObjects[i].mObject->OnRender(graphics, tech, insideOut);
 			}
 		}
 	}
 	return triangles;
-}
-
-//============================================================================================================
-// Registers a new object creator
-//============================================================================================================
-
-void Scene::_RegisterObject (const String& type, const CreateDelegate& callback)
-{
-	mEntries.Lock();
-	mEntries[type] = callback;
-	mEntries.Unlock();
-}
-
-//============================================================================================================
-// Serialization -- Save
-//============================================================================================================
-
-bool Scene::SerializeTo (TreeNode& root) const
-{
-	if (mSerializable)
-	{
-		TreeNode& node = root.AddChild( GetClassID() );
-
-		if (mChildren.IsValid())
-		{
-			mChildren.Lock();
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					mChildren[i]->SerializeTo(node);
-			}
-			mChildren.Unlock();
-		}
-		return true;
-	}
-	return false;
-}
-
-//============================================================================================================
-// Serialization -- Load
-//============================================================================================================
-
-bool Scene::SerializeFrom ( const TreeNode& root, bool forceUpdate )
-{
-	bool serializable = mSerializable;
-
-	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
-	{
-		const TreeNode& node  = root.mChildren[i];
-		const String&	tag   = node.mTag;
-		const Variable&	value = node.mValue;
-
-		if ( tag == "Serializable" )
-		{
-			// Only possible use for "Serializable" flag inside resource files at Scene level is to set
-			// "Serializable" flag to 'false' on all children that follow. Scene itself cannot be set to not
-			// be serializable via resource files -- only children can be. The reason behind this is simple:
-			// if something is not serializable, it will never be saved to resource files to begin with.
-
-			if (serializable) value >> serializable;
-		}
-		else
-		{
-			Object* ptr = _AddObject(tag, value.IsString() ? value.AsString() : value.GetString());
-			
-			if (ptr != 0)
-			{
-				ptr->SerializeFrom(node, forceUpdate);
-				if (!serializable) ptr->SetSerializable(false);
-			}
-		}
-	}
-	return true;
-}
-
-//============================================================================================================
-// Creates a new node of specified type
-//============================================================================================================
-
-Object* Scene::_CreateNode (const String& type)
-{
-	Object* node (0);
-	mEntries.Lock();
-	{
-		const CreateDelegate* callback = mEntries.GetIfExists(type);
-
-		if (callback != 0)
-		{
-			node = (*callback)();
-			node->mCore = mCore;
-		}
-	}
-	mEntries.Unlock();
-	return node;
 }

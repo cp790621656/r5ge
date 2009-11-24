@@ -23,7 +23,8 @@ class TestApp
 	Core*			mCore;
 	UI*				mUI;
 	DebugCamera*	mCam;
-	UILabel*			mLabel;
+	Scene			mScene;
+	UILabel*		mLabel;
 
 public:
 
@@ -41,7 +42,7 @@ TestApp::TestApp() : mCam(0), mLabel(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 }
 
 //============================================================================================================
@@ -72,7 +73,7 @@ void TestApp::Run()
 		// Find the UI widget defined inside the "T04" resource file
 		mLabel = FindWidget<UILabel>(mUI, "Slider Value");
 
-		mCam = FindObject<DebugCamera>(mCore->GetScene(), "Default Camera");
+		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -85,18 +86,14 @@ void TestApp::Run()
 }
 
 //============================================================================================================
-// The draw function is identical to the one in the previous tutorial
+// The OnDraw function hasn't changed
 //============================================================================================================
 
 void TestApp::OnDraw()
 {
-	mCore->BeginFrame();
-	mCore->CullScene(mCam);
-	mCore->PrepareScene();
+	mScene.Cull(mCam);
+	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mCore->DrawUI();
-	mCore->EndFrame();
-	Thread::Sleep(1);
 }
 
 //============================================================================================================

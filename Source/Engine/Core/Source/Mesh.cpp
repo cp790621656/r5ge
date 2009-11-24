@@ -503,13 +503,17 @@ bool Mesh::ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transfor
 
 		Lock();
 		{
-			// NOTE: NVidia driver seems to be optimized to the point where it starts at around
-			// 45% of VA performance, then goes up to 75% a few seconds later, then 125% a few
-			// seconds after that. So it seems using VBOs will always be faster on NVidia?
+			// NOTE: On WinXP NVidia driver seems to be optimized to the point where it starts at
+			// around 45% of VA performance, then goes up to 75% a few seconds later, then 125% a
+			// few seconds after that. So it seems using VBOs will always be faster on NVidia/XP?
+			// On the other hand Win7 seems to have a major issue with streaming into VBOs:
+			// 2200 FPS using VAs compared to only 630 using VBOs. Changing VBO type to
+			// 'stream' had no effect. And this is with 9 instances of 2 different models in the
+			// scene! Makes no sense... I'm leaving this code as using VAs for now.
 
 			// If the model is referenced only once, we don't need to cache the result in a VBO.
 			// However if the VBO has already been created, we might as well reuse it.
-			if ( graphics != 0 && (mTbo != 0 || instances > 1) )
+			/*if ( graphics != 0 && (mTbo != 0 || instances > 1) )
 			{
 				// Try to transform directly into the VBO
 				if ( _TransformToVBO(graphics, transforms) )
@@ -525,7 +529,7 @@ bool Mesh::ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transfor
 					_TransformToVAs(transforms);
 				}
 			}
-			else
+			else*/
 			{
 				// If there is only one instance, it's faster to use Vertex Arrays
 				_TransformToVAs(transforms);
