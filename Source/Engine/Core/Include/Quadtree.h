@@ -16,7 +16,7 @@ public:
 		enum
 		{
 			Visible		= 1 << 2,	// The object is inside the viewing volume
-			Renderable	= 1 << 3,	// The object is inside the viewing volume and can be rendered
+			Drawable	= 1 << 3,	// The object is inside the viewing volume and can be rendered
 		};
 	};
 
@@ -109,7 +109,7 @@ protected:
 	virtual void _Cull (CullParams& params, bool isParentVisible, bool render);
 
 	// Inherited from Object
-	virtual uint _Render (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint _Draw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
 
 public:
 
@@ -126,5 +126,5 @@ public:
 	virtual bool OnCull (CullParams& params)=0;
 
 	// MUST OVERRIDE: Called when the tree is being rendered -- should render all geometry belonging to the specified group
-	virtual uint OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut)=0;
+	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)=0;
 };*/

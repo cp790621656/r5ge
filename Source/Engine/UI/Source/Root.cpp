@@ -755,30 +755,30 @@ bool UIRoot::SerializeTo (TreeNode& root) const
 }
 
 //============================================================================================================
-// Render everything
+// Draw everything
 //============================================================================================================
 
-uint UIRoot::Render()
+uint UIRoot::Draw()
 {
 	mIsDirty = false;
 	uint triangles (0);
 
 	if (mChildren.IsValid())
 	{
-		OnPreRender();
+		OnPreDraw();
 		{
-			// Render all children
+			// Draw all children
 			mChildren.Lock();
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					triangles += mChildren[i]->Render();
+					triangles += mChildren[i]->Draw();
 			}
 			mChildren.Unlock();
 
-			// Render the tooltip
-			triangles += mTooltip.Render();
+			// Draw the tooltip
+			triangles += mTooltip.Draw();
 		}
-		OnPostRender();
+		OnPostDraw();
 	}
 	return triangles;
 }

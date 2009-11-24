@@ -222,7 +222,7 @@ void QuadTree::_CreateTree (void* ptr)
 void QuadTree::_CullTree (CullParams& params, bool isParentVisible, bool render, bool wasParentRendered)
 {
 	// By default this partition is not renderable
-	mFlags.Set( Flag::Renderable, false );
+	mFlags.Set( Flag::Drawable, false );
 
 	// Skip all the advanced rendering checks if the tree is not visible
 	if ( isParentVisible &= params.mFrustum.IsVisible(mBounds) )
@@ -231,7 +231,7 @@ void QuadTree::_CullTree (CullParams& params, bool isParentVisible, bool render,
 		if ( render && !wasParentRendered && OnCull(params) )
 		{
 			// 'OnCull' function added this object to the rendering queue
-			mFlags.Set( Flag::Renderable, true );
+			mFlags.Set( Flag::Drawable, true );
 			wasParentRendered = true;
 		}
 	}
@@ -331,18 +331,18 @@ void QuadTree::_Cull (CullParams& params, bool isParentVisible, bool render)
 }
 
 //============================================================================================================
-// Render the object, called by the rendering queue this object was added to
+// Draw the object, called by the rendering queue this object was added to
 //============================================================================================================
-// NOTE: Note the usage of _GetTopLevel() and locking that level instead of current. That's because _Render()
+// NOTE: Note the usage of _GetTopLevel() and locking that level instead of current. That's because _Draw()
 // is the only function that can be called directly on a sub-tree, without going through the root.
 //============================================================================================================
 
-uint QuadTree::_Render (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint QuadTree::_Draw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
 	uint count (0);
 	QuadTree* top = _GetTopLevel();
 	top->Lock();
-	count += OnRender (graphics, tech, insideOut);
+	count += OnDraw (graphics, tech, insideOut);
 	top->Unlock();
 	return count;
 }*/

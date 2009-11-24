@@ -143,7 +143,7 @@ void BlurDownsample (IGraphics*			graphics,
 	BlurCommon(graphics, target10, target11, texture01, texture10, blurH, blurV);
 	BlurCommon(graphics, target20, target21, texture11, texture20, blurH, blurV);
 
-	// Render to screen
+	// Draw to screen
 	graphics->SetActiveRenderTarget(0);
 	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
 

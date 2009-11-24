@@ -45,7 +45,7 @@ void UIShadedArea::OnFill (UIQueue* queue)
 // Activate the shader and bind the textures
 //============================================================================================================
 
-void UIShadedArea::OnPreRender (IGraphics* graphics) const
+void UIShadedArea::OnPreDraw (IGraphics* graphics) const
 {
 	for (uint i = 0; i < mTex.GetSize(); ++i)
 		graphics->SetActiveTexture(i, mTex[i]);
@@ -57,7 +57,7 @@ void UIShadedArea::OnPreRender (IGraphics* graphics) const
 // Disable the shader and deactivate all textures
 //============================================================================================================
 
-void UIShadedArea::OnPostRender (IGraphics* graphics) const
+void UIShadedArea::OnPostDraw (IGraphics* graphics) const
 {
 	graphics->SetActiveShader(0);
 

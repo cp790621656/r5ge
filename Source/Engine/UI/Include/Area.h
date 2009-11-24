@@ -97,8 +97,8 @@ public:
 	bool Update  (const Vector2i& size, bool forceUpdate = false);
 	bool Update  (const UIRegion& parent, bool forceUpdate = false);
 
-	// Calls the virtual Area::OnRender() and recurses through children
-	uint Render();
+	// Calls the virtual Area::OnDraw() and recurses through children
+	uint Draw();
 
 	// Serialization
 	bool SerializeFrom	(const TreeNode& root);
@@ -112,7 +112,7 @@ protected:
 	// Functions overwritten by Frame class
 	virtual void OnDirty (const ITexture* tex, int layer, const UIArea* area = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, area); }
 	virtual void Fill (UIQueue* queue);
-	virtual uint OnRender() { return 0; }
+	virtual uint OnDraw() { return 0; }
 
 public:
 
@@ -151,8 +151,8 @@ public:
 	virtual void OnFill (UIQueue* queue) {}
 
 	// Called before and after rendering the queue, respectively
-	virtual void OnPreRender (IGraphics* graphics) const {}
-	virtual void OnPostRender(IGraphics* graphics) const {}
+	virtual void OnPreDraw (IGraphics* graphics) const {}
+	virtual void OnPostDraw(IGraphics* graphics) const {}
 
 	// Serialization
 	virtual bool CustomSerializeFrom(const TreeNode& root) { return false; }

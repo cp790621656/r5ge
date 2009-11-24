@@ -11,14 +11,14 @@ class Scene
 {
 public:
 
-	typedef Object::Renderables Renderables;
+	typedef Object::Drawables	Drawables;
 	typedef ILight::List		Lights;
 
 private:
 
 	Object*		mRoot;		// Scene's root
 	Frustum		mFrustum;	// Viewing frustum used for culling
-	Renderables	mObjects;	// List of visible objects
+	Drawables	mObjects;	// List of visible objects
 	Lights		mLights;	// List of visible lights
 
 public:
@@ -33,7 +33,7 @@ public:
 
 	// These functions are valid after Cull() has been called
 	const Frustum&		GetFrustum()		const { return mFrustum; }
-	const Renderables&	GetVisibleObjects()	const { return mObjects; }
+	const Drawables&	GetVisibleObjects()	const { return mObjects; }
 	const Lights&		GetVisibleLights()	const { return mLights;  }
 
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
@@ -52,6 +52,6 @@ private:
 	// Culls the scene
 	void _Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir);
 
-	// Renders the objects collected in the 'mObjects' queue using the specified technique
-	uint _Render (const ITechnique* tech, bool insideOut);
+	// Draws the objects collected in the 'mObjects' queue using the specified technique
+	uint _Draw (const ITechnique* tech, bool insideOut);
 };

@@ -35,7 +35,7 @@ struct IUI : public IEventReceiver
 	};
 
 	virtual bool Update()=0;
-	virtual uint Render()=0;
+	virtual uint Draw()=0;
 
 	// Serialization
 	virtual bool IsSerializable() const=0;

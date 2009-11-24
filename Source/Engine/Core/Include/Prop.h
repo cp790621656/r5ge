@@ -41,8 +41,8 @@ public:
 
 protected:
 
-	// Render the object using the specified technique
-	virtual uint _Render (IGraphics* graphics, const ITechnique* tech);
+	// Draw the object using the specified technique
+	virtual uint _Draw (IGraphics* graphics, const ITechnique* tech);
 
 	// Draw any special outline of the object
 	virtual uint _DrawOutline (IGraphics* graphics, const ITechnique* tech) { return 0; }

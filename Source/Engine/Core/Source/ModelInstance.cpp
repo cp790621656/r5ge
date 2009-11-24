@@ -91,7 +91,7 @@ bool ModelInstance::OnCull (CullParams& params, bool isParentVisible, bool rende
 	{
 		if (render)
 		{
-			Renderable& obj	 = params.mObjects.Expand();
+			Drawable& obj	 = params.mObjects.Expand();
 			obj.mObject		 = this;
 			obj.mLayer		 = mModel->GetLayer();
 			obj.mGroup		 = mModel;
@@ -103,10 +103,10 @@ bool ModelInstance::OnCull (CullParams& params, bool isParentVisible, bool rende
 }
 
 //============================================================================================================
-// Render the object using the specified technique
+// Draw the object using the specified technique
 //============================================================================================================
 
-uint ModelInstance::OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint ModelInstance::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
 	uint triangleCount(0);
 	uint mask = tech->GetMask();
@@ -122,7 +122,7 @@ uint ModelInstance::OnRender (IGraphics* graphics, const ITechnique* tech, bool 
 		if (mModel != 0)
 		{
 			// Draw the model
-			triangleCount += mModel->_Render(graphics, tech);
+			triangleCount += mModel->_Draw(graphics, tech);
 
 			if (mShowOutline)
 			{

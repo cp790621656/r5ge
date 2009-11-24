@@ -124,7 +124,7 @@ bool Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
 
 		if (render)
 		{
-			Renderable& obj		= params.mObjects.Expand();
+			Drawable& obj		= params.mObjects.Expand();
 			obj.mObject			= this;
 			obj.mLayer			= 0;
 			obj.mGroup			= 0;
@@ -145,7 +145,7 @@ bool Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
 // Draws all particles
 //============================================================================================================
 
-uint Emitter::OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint Emitter::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
 	if (mTech == tech && mFlags.Get(Flag::Enabled))
 	{

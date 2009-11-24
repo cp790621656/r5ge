@@ -104,10 +104,10 @@ void TestApp::Run()
 		// Not specifying an extension here will load both fragment (.frag) as well as vertex shaders (.vert)
 		IShader* shader = mGraphics->GetShader("Forward/chromatic");
 
-		// Think of the RenderingMethod like this: when rendering this material with the specified
-		// technique, what shader and textures should we use? RenderingMethod allows us to specify them.
+		// Think of the DrawMethod like this: when rendering this material with the specified
+		// technique, what shader and textures should we use? DrawMethod allows us to specify them.
 
-		IMaterial::RenderingMethod* method = mat->GetRenderingMethod(tech);
+		IMaterial::DrawMethod* method = mat->GetDrawMethod(tech);
 
 		// We want to replace whatever shader was there with our chromatic shader loaded above.
 		method->SetShader(shader);

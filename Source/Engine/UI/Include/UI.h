@@ -39,7 +39,7 @@ protected:
 
 	virtual UIQueue*	CreateQueue()					{ return new CustomQueue(mGraphics); }
 	virtual void		UpdateBuffer(UIQueue* queue);	// Updates the buffer associated with the rendering queue
-	virtual void		OnPreRender() const;			// Prepares to render
-	virtual uint		RenderQueue(UIQueue* queue);	// Renders a single queue, returning the number of triangles drawn
-	virtual void		OnPostRender() const;			// Post-render cleanup
+	virtual void		OnPreDraw() const;				// Prepares to render
+	virtual uint		DrawQueue(UIQueue* queue);		// Draws a single queue, returning the number of triangles drawn
+	virtual void		OnPostDraw() const;				// Post-render cleanup
 };

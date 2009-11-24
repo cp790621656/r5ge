@@ -24,9 +24,9 @@ void GLMaterial::Release()
 // Material rendering parameters differ for every technique
 //============================================================================================================
 
-IMaterial::RenderingMethod*  GLMaterial::GetRenderingMethod (const ITechnique* t, bool createIfMissing)
+IMaterial::DrawMethod*  GLMaterial::GetDrawMethod (const ITechnique* t, bool createIfMissing)
 {
-	RenderingMethod* ptr (0);
+	DrawMethod* ptr (0);
 
 	if (t != 0)
 	{
@@ -75,18 +75,18 @@ IMaterial::RenderingMethod*  GLMaterial::GetRenderingMethod (const ITechnique* t
 // Returns a rendering method associated with the technique, but only if it's actually visible
 //============================================================================================================
 
-const IMaterial::RenderingMethod* GLMaterial::GetVisibleMethod (const ITechnique* t) const
+const IMaterial::DrawMethod* GLMaterial::GetVisibleMethod (const ITechnique* t) const
 {
 	if (mDiffuse.GetColor4ub().a == 0) return 0;
 	GLMaterial* ptr = const_cast<GLMaterial*>(this);
-	return ptr->GetRenderingMethod(t, false);
+	return ptr->GetDrawMethod(t, false);
 }
 
 //============================================================================================================
 // Deletes a technique parameter entry
 //============================================================================================================
 
-void GLMaterial::DeleteRenderingMethod (const ITechnique* t)
+void GLMaterial::DeleteDrawMethod (const ITechnique* t)
 {
 	if (t != 0)
 	{
@@ -95,7 +95,7 @@ void GLMaterial::DeleteRenderingMethod (const ITechnique* t)
 			// Go through all material option entries
 			for (uint i = 0; i < mMethods.GetSize(); ++i)
 			{
-				RenderingMethod& ren = mMethods[i];
+				DrawMethod& ren = mMethods[i];
 
 				if (ren.GetTechnique() == t)
 				{
@@ -113,7 +113,7 @@ void GLMaterial::DeleteRenderingMethod (const ITechnique* t)
 // Clears all current rendering methods
 //============================================================================================================
 
-void GLMaterial::ClearAllRenderingMethods()
+void GLMaterial::ClearAllDrawMethods()
 {
 	if (mMethods.IsValid())
 	{
@@ -128,7 +128,7 @@ void GLMaterial::ClearAllRenderingMethods()
 // Serialization -- Load
 //============================================================================================================
 
-bool SerializeMethodFrom (IMaterial::RenderingMethod& m, const TreeNode& root, IGraphics* graphics)
+bool SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraphics* graphics)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -158,7 +158,7 @@ bool SerializeMethodFrom (IMaterial::RenderingMethod& m, const TreeNode& root, I
 // Serialization -- Save
 //============================================================================================================
 
-bool SerializeMethodTo (const IMaterial::RenderingMethod& m, TreeNode& root)
+bool SerializeMethodTo (const IMaterial::DrawMethod& m, TreeNode& root)
 {
 	const ITechnique* tech = m.GetTechnique();
 	if (tech == 0) return false;
@@ -224,7 +224,7 @@ bool GLMaterial::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		else if ( tag == ITechnique::ClassID() )
 		{
 			const ITechnique* tech = mGraphics->GetTechnique(value.IsString() ? value.AsString() : value.GetString());
-			RenderingMethod* ren = GetRenderingMethod(tech, true);
+			DrawMethod* ren = GetDrawMethod(tech, true);
 			SerializeMethodFrom(*ren, node, mGraphics);
 		}
 	}

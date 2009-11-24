@@ -62,7 +62,7 @@ bool Prop::IsUsingTexture (const ITexture* ptr) const
 
 			if (limb != 0 && limb->mMat != 0)
 			{
-				const IMaterial::RenderingMethods& methods = limb->mMat->GetAllRenderingMethods();
+				const IMaterial::DrawMethods& methods = limb->mMat->GetAllDrawMethods();
 
 				methods.Lock();
 				{
@@ -120,10 +120,10 @@ void Prop::Update()
 }
 
 //============================================================================================================
-// Render the object, called by the rendering queue this object was added to
+// Draw the object, called by the rendering queue this object was added to
 //============================================================================================================
 
-uint Prop::_Render (IGraphics* graphics, const ITechnique* tech)
+uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
 {
 	uint triangleCount(0);
 	uint mask = tech->GetMask();
@@ -140,7 +140,7 @@ uint Prop::_Render (IGraphics* graphics, const ITechnique* tech)
 			{
 				if ( graphics->SetActiveMaterial(limb->mMat) )
 				{
-					triangleCount += limb->mMesh->Render(graphics);
+					triangleCount += limb->mMesh->Draw(graphics);
 				}
 			}
 		}

@@ -109,10 +109,10 @@ public:
 	// Sets event handlers for the specified area
 	void SetOnMouseOver		(const String& areaName, const UIEventHandler::OnMouseOverDelegate&	fnct);
 	void SetOnMouseMove		(const String& areaName, const UIEventHandler::OnMouseMoveDelegate&	fnct);
-	void SetOnKey			(const String& areaName, const UIEventHandler::OnKeyDelegate&			fnct);
-	void SetSetOnScroll		(const String& areaName, const UIEventHandler::OnScrollDelegate&		fnct);
-	void SetOnStateChange	(const String& areaName, const UIEventHandler::OnChangeDelegate&		fnct);
-	void SetOnValueChange	(const String& areaName, const UIEventHandler::OnChangeDelegate&		fnct);
+	void SetOnKey			(const String& areaName, const UIEventHandler::OnKeyDelegate&		fnct);
+	void SetSetOnScroll		(const String& areaName, const UIEventHandler::OnScrollDelegate&	fnct);
+	void SetOnStateChange	(const String& areaName, const UIEventHandler::OnChangeDelegate&	fnct);
+	void SetOnValueChange	(const String& areaName, const UIEventHandler::OnChangeDelegate&	fnct);
 	void SetOnTooltip		(const OnTooltipDelegate& fnct) { mTtDelegate = fnct; }
 
 public:
@@ -147,7 +147,7 @@ private:
 protected:
 
 	friend class UIArea;	// Allow Area class to create areas
-	friend class UIFrame;	// Allow Frame class to Update and Render queues
+	friend class UIFrame;	// Allow Frame class to Update and Draw queues
 
 	// Create a widget of specified type
 	UIArea* _CreateArea (const String& type, const String& name, UIArea* parent);
@@ -169,7 +169,7 @@ public:
 
 	// IUI Functions
 	virtual bool Update();
-	virtual uint Render();
+	virtual uint Draw();
 
 public:
 
@@ -183,7 +183,7 @@ protected:
 
 	virtual UIQueue*	CreateQueue ()=0;				// Create a single rendering queue
 	virtual void		UpdateBuffer(UIQueue* queue)=0;	// Updates the buffer associated with the rendering queue
-	virtual void		OnPreRender () const=0;			// Prepares to render
-	virtual uint		RenderQueue (UIQueue* queue)=0;	// Renders a single queue, returning the number of triangles drawn
-	virtual void		OnPostRender() const=0;			// Post-render cleanup
+	virtual void		OnPreDraw () const=0;			// Prepares to render
+	virtual uint		DrawQueue (UIQueue* queue)=0;	// Draws a single queue, returning the number of triangles drawn
+	virtual void		OnPostDraw() const=0;			// Post-render cleanup
 };

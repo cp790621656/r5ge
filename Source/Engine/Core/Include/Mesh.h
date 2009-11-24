@@ -169,7 +169,7 @@ public:
 	// Returns the number bone weights used by this mesh
 	uint GetNumberOfWeights() const	{ return (mBw.IsValid() && (mBw.GetSize() == mBi.GetSize())) ? mBones : 0; }
 
-	// Returns the number of triangles that would be rendered if Render() was called
+	// Returns the number of triangles that would be rendered if Draw() was called
 	uint GetNumberOfTriangles() const;
 
 	// Software skinning on the CPU -- recalculates transformed vertices, normals, and tangents
@@ -178,8 +178,8 @@ public:
 	// Discards all current transformed arrays, returning to default values
 	void DiscardTransforms() { Lock(); mTv.Clear(); mTn.Clear(); mTt.Clear(); mTboSize = 0; Unlock(); }
 
-	// Renders the mesh
-	uint Render (IGraphics* graphics);
+	// Draws the mesh
+	uint Draw (IGraphics* graphics);
 
 	// Serialization
 	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);

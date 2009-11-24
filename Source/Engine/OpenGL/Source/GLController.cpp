@@ -736,7 +736,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 		static uint maxIU = _CountImageUnits();
 
 		// If the material is invisible under the curent technique, consider options to be invalid
-		const IMaterial::RenderingMethod* ren = ( (ptr != 0 && mTechnique != 0) ?
+		const IMaterial::DrawMethod* ren = ( (ptr != 0 && mTechnique != 0) ?
 			ptr->GetVisibleMethod(mTechnique) : 0 );
 
 		if (ren == 0)
@@ -1224,7 +1224,7 @@ void GLController::SetActiveVertexAttribute( uint	attribute,
 }
 
 //============================================================================================================
-// Render the active buffers using an index buffer
+// Draw the active buffers using an index buffer
 //============================================================================================================
 
 uint GLController::DrawVertices(uint primitive, uint vertexCount)
@@ -1236,7 +1236,7 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 	{
 #if (defined(_DEBUG) && defined(_WINDOWS))
 		try { glDrawArrays( glPrimitive, 0, vertexCount ); }
-		catch (...) { ASSERT(false, "GLGraphics::Render() -- failed!"); }
+		catch (...) { ASSERT(false, "GLGraphics::Draw() -- failed!"); }
 		CHECK_GL_ERROR;
 #else
 		glDrawArrays( glPrimitive, 0, vertexCount );
@@ -1269,7 +1269,7 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 
 #if (defined(_DEBUG) && defined(_WINDOWS))
 		try { glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr ); }
-		catch (...) { ASSERT(false, "GLGraphics::Render() -- failed!"); }
+		catch (...) { ASSERT(false, "GLGraphics::Draw() -- failed!"); }
 		CHECK_GL_ERROR;
 #else
 		glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr );

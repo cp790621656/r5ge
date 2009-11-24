@@ -66,8 +66,8 @@ protected:
 	// Culls objects based on the viewing frustum, and in this case -- activates lights
 	virtual bool OnCull (CullParams& params, bool isParentVisible, bool render);
 
-	// Renders the light on-screen if it's visible
-	virtual uint OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	// Draws the light on-screen if it's visible
+	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
 
 protected:
 

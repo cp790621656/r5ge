@@ -10,7 +10,7 @@
 class ModelViewer
 {
 	typedef DirectionalLight Light;
-	typedef IMaterial::RenderingMethod RenderingMethod;
+	typedef IMaterial::DrawMethod DrawMethod;
 
 	struct DrawParams
 	{
@@ -84,7 +84,7 @@ public: // All of the functions below this line can be found in UILayout.cpp
 	void UpdateMatPanel			(const IMaterial* mat);
 	void UpdateTexPanel			(const ITexture* tex);
 	void UpdateAnimPanel		(const Animation* anim);
-	void UpdateTechPanel		(const RenderingMethod* method);
+	void UpdateTechPanel		(const DrawMethod* method);
 
 protected: // Functions that facilitate widget creation with common properties already set up
 
@@ -124,7 +124,7 @@ private: // Numerous callback functions triggered by the UI elements
 	bool OnTexMenuSelection		(UIArea* area);
 	bool OnAnimMenuSelection	(UIArea* area);
 
-	bool OnRenderMode			(UIArea* area);
+	bool OnDrawMode			(UIArea* area);
 	bool OnBackground			(UIArea* area);
 	bool OnBloomToggle			(UIArea* area);
 	bool OnBloomChange			(UIArea* area);
@@ -171,7 +171,7 @@ private: // Numerous callback functions triggered by the UI elements
 private:
 
 	// Returns a pointer to the current rendering method
-	RenderingMethod* _GetCurrentMethod();
+	DrawMethod* _GetCurrentMethod();
 
 	// Changes the current material's values
 	void _SetMatShader  (const String& name);

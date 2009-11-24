@@ -77,7 +77,7 @@ void TestApp::Run()
 		ITechnique* deferred = mGraphics->GetTechnique("Deferred");
 
 		// Add a new rendering method to our material that will be used with the deferred technique
-		IMaterial::RenderingMethod* method = mat->GetRenderingMethod(deferred);
+		IMaterial::DrawMethod* method = mat->GetDrawMethod(deferred);
 
 		// Deferred approach can't use forward rendering shaders. Let's find its deferred equivalent.
 		IShader* shader = mGraphics->GetShader("Deferred/chromatic");
@@ -100,7 +100,7 @@ void TestApp::Run()
 }
 
 //============================================================================================================
-// The drawing process changes a fair bit. We will be going through the Render library now.
+// The drawing process changes a fair bit. We will be going through the Draw library now.
 //============================================================================================================
 
 void TestApp::OnDraw()
@@ -111,7 +111,7 @@ void TestApp::OnDraw()
 	// Deferred shading will need to know about all active lights in the scene (although we only have 1)
 	const Scene::Lights& lights = mScene.GetVisibleLights();
 
-	// Draw the scene using the deferred approach. This function (part of the Render library) does
+	// Draw the scene using the deferred approach. This function (part of the Draw library) does
 	// a fair bit behind the scenes. In addition to all the setup and the actual deferred rendering
 	// process it saves the final result into textures you can use for post-processing effects. This
 	// is why the return type is not the 'uint' you've seen in the previous tutorials, but a struct

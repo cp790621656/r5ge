@@ -194,7 +194,7 @@ bool Core::Update()
 			mOnDraw();
 
 			// Draw the UI
-			if (mUI != 0) mUI->Render();
+			if (mUI != 0) mUI->Draw();
 
 			// Finish the drawing process
 			if (mGraphics != 0)	mGraphics->EndFrame();

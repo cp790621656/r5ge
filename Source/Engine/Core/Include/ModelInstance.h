@@ -45,8 +45,8 @@ protected:
 	// Cull the object based on the viewing frustum
 	virtual bool OnCull (CullParams& params, bool isParentVisible, bool render);
 
-	// Render the object using the specified technique
-	virtual uint OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	// Draw the object using the specified technique
+	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
 
 	// Selects the closest object to the given position if the position is within the object's bounds
 	virtual void OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);

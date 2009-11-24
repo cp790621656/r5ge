@@ -90,7 +90,7 @@ struct Box
 					Vector3f(	0,			0,			1		) );
 	}
 
-	void Render (IGraphics* graphics)
+	void Draw (IGraphics* graphics)
 	{
 		graphics->SetWorldMatrix(mPos);
 		graphics->SetActiveTexture(0, mTex);
@@ -250,10 +250,10 @@ public:
 			mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	texCoords	);
 			mGraphics->DrawIndices(&indices[0], IGraphicsManager::Primitive::Quad,	indices.GetSize());
 
-			boxTest1.Render( mGraphics );
-			boxTest2.Render( mGraphics );
-			boxTest3.Render( mGraphics );
-			boxTest4.Render( mGraphics );
+			boxTest1.Draw( mGraphics );
+			boxTest2.Draw( mGraphics );
+			boxTest3.Draw( mGraphics );
+			boxTest4.Draw( mGraphics );
 
 			mGraphics->EndFrame();
 			mWindow->EndFrame();

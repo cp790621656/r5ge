@@ -68,7 +68,7 @@ bool Glow::OnCull (CullParams& params, bool isParentVisible, bool render)
 		{
 			if (render)
 			{
-				Renderable& obj		= params.mObjects.Expand();
+				Drawable& obj		= params.mObjects.Expand();
 				obj.mObject			= this;
 				obj.mLayer			= 0;
 				obj.mGroup			= (mBackground == 0 ? mForeground : mBackground);
@@ -84,10 +84,10 @@ bool Glow::OnCull (CullParams& params, bool isParentVisible, bool render)
 }
 
 //============================================================================================================
-// Renders visible objects in the scene graph
+// Draws visible objects in the scene graph
 //============================================================================================================
 
-uint Glow::OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint Glow::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
 	static ITechnique* glow  = graphics->GetTechnique("Glow");
 	static ITechnique* glare = graphics->GetTechnique("Glare");

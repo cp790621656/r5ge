@@ -34,8 +34,8 @@ public:
 	virtual void OnFill (UIQueue* queue);
 
 	// Called before and after rendering the queue, respectively
-	virtual void OnPreRender (IGraphics* graphics) const;
-	virtual void OnPostRender(IGraphics* graphics) const;
+	virtual void OnPreDraw (IGraphics* graphics) const;
+	virtual void OnPostDraw(IGraphics* graphics) const;
 
 	// Serialization
 	virtual bool CustomSerializeFrom (const TreeNode& root);

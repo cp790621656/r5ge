@@ -25,7 +25,7 @@ namespace R5
 	#include "Uniform.h"				// Uniform is a constant value in the shader that is set by the program
 	#include "IShader.h"				// Unified shader interface
 	#include "IMaterial.h"				// Base class for the material
-	#include "IRenderTarget.h"			// Render target can be the screen, PBuffer, or a Frame Buffer Object, for example
+	#include "IRenderTarget.h"			// Draw target can be the screen, PBuffer, or a Frame Buffer Object, for example
 
 	#include "IGraphicsController.h"	// Low level graphics card controller interface
 	#include "IGraphicsManager.h"		// Higher level graphics resource manager interface

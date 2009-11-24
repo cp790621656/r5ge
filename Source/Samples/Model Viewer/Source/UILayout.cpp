@@ -326,8 +326,8 @@ bool ModelViewer::CreateUI()
 
 			if (ren != 0)
 			{
-				ren->SetOnStateChange( bind(&ModelViewer::OnRenderMode, this) );
-				OnRenderMode(ren);
+				ren->SetOnStateChange( bind(&ModelViewer::OnDrawMode, this) );
+				OnDrawMode(ren);
 			}
 
 			if (bgd != 0)
@@ -1017,7 +1017,7 @@ void ModelViewer::UpdateAnimPanel (const Animation* anim)
 // Updates the technique section of the material panel
 //============================================================================================================
 
-void ModelViewer::UpdateTechPanel (const RenderingMethod* method)
+void ModelViewer::UpdateTechPanel (const DrawMethod* method)
 {
 	if (method != 0)
 	{
@@ -1759,9 +1759,9 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 					}
 
 					// Figure out which rendering method this material is currently using
-					IMaterial::RenderingMethod* method0 = mat->GetRenderingMethod(_deferred0, false);
-					IMaterial::RenderingMethod* method1 = mat->GetRenderingMethod(_deferred1, false);
-					IMaterial::RenderingMethod* method2 = mat->GetRenderingMethod(_wireframe, false);
+					IMaterial::DrawMethod* method0 = mat->GetDrawMethod(_deferred0, false);
+					IMaterial::DrawMethod* method1 = mat->GetDrawMethod(_deferred1, false);
+					IMaterial::DrawMethod* method2 = mat->GetDrawMethod(_wireframe, false);
 
 					// Ensure that we have at least one deferred rendering method available with this material
 					if (method0 != 0)
@@ -1782,7 +1782,7 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 					else
 					{
 						// Looks like no deferred approach is available, so create a new one.
-						method0 = mat->GetRenderingMethod(_deferred0, true);
+						method0 = mat->GetDrawMethod(_deferred0, true);
 
 						// Basic deferred rendering shader using only material color
 						method0->SetShader( mGraphics->GetShader("Deferred/Material") );
@@ -1911,7 +1911,7 @@ bool ModelViewer::OnAnimMenuSelection (UIArea* area)
 // Program options panel callbacks
 //============================================================================================================
 
-bool ModelViewer::OnRenderMode (UIArea* area)
+bool ModelViewer::OnDrawMode (UIArea* area)
 {
 	UIList* list = (UIList*)area;
 	const String& value (list->GetLastSelection());
@@ -2214,11 +2214,11 @@ bool ModelViewer::OnMatTech (UIArea* area)
 
 			if (mat != 0)
 			{
-				if (tech != _deferred0) mat->DeleteRenderingMethod(_deferred0);
-				if (tech != _deferred1) mat->DeleteRenderingMethod(_deferred1);
-				if (tech != _wireframe) mat->DeleteRenderingMethod(_wireframe);
+				if (tech != _deferred0) mat->DeleteDrawMethod(_deferred0);
+				if (tech != _deferred1) mat->DeleteDrawMethod(_deferred1);
+				if (tech != _wireframe) mat->DeleteDrawMethod(_wireframe);
 
-				IMaterial::RenderingMethod* method = mat->GetRenderingMethod(tech, true);
+				IMaterial::DrawMethod* method = mat->GetDrawMethod(tech, true);
 
 				method->SetShader( mGraphics->GetShader(_matShaderList->GetLastSelection(), false) );
 
@@ -2763,7 +2763,7 @@ bool ModelViewer::OnShaderListFocus (UIArea* area, bool hasFocus)
 // Returns a pointer to the current rendering method
 //============================================================================================================
 
-ModelViewer::RenderingMethod* ModelViewer::_GetCurrentMethod()
+ModelViewer::DrawMethod* ModelViewer::_GetCurrentMethod()
 {
 	IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
 	if (mat == 0) return 0;
@@ -2771,7 +2771,7 @@ ModelViewer::RenderingMethod* ModelViewer::_GetCurrentMethod()
 	ITechnique* tech = mGraphics->GetTechnique(_currentTech, false);
 	if (tech == 0) return 0;
 
-	return mat->GetRenderingMethod(tech, false);
+	return mat->GetDrawMethod(tech, false);
 }
 
 //============================================================================================================
@@ -2780,7 +2780,7 @@ ModelViewer::RenderingMethod* ModelViewer::_GetCurrentMethod()
 
 void ModelViewer::_SetMatShader (const String& name)
 {
-	RenderingMethod* method = _GetCurrentMethod();
+	DrawMethod* method = _GetCurrentMethod();
 
 	if (method != 0)
 	{
@@ -2804,7 +2804,7 @@ void ModelViewer::_SetMatShader (const String& name)
 
 void ModelViewer::_SetMatTexture (uint index, const String& name)
 {
-	RenderingMethod* method = _GetCurrentMethod();
+	DrawMethod* method = _GetCurrentMethod();
 
 	if (method != 0)
 	{

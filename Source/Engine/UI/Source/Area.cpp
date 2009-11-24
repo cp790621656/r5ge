@@ -346,13 +346,13 @@ bool UIArea::SerializeTo (TreeNode& root) const
 }
 
 //============================================================================================================
-// Calls the virtual Area::OnRender() and recurses through children
+// Calls the virtual Area::OnDraw() and recurses through children
 //============================================================================================================
 
-uint UIArea::Render()
+uint UIArea::Draw()
 {
-	// OnRender() is overwritten by Frame class to actually render the queues
-	uint val = OnRender();
+	// OnDraw() is overwritten by Frame class to actually render the queues
+	uint val = OnDraw();
 
 	mChildren.Lock();
 	{
@@ -360,7 +360,7 @@ uint UIArea::Render()
 		{
 			if (mChildren[i])
 			{
-				val += mChildren[i]->Render();
+				val += mChildren[i]->Draw();
 			}
 		}
 	}

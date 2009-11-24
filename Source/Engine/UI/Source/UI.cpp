@@ -37,10 +37,10 @@ void UI::UpdateBuffer (UIQueue* queue)
 }
 
 //============================================================================================================
-// Renders a single queue, returning the number of triangles drawn
+// Draws a single queue, returning the number of triangles drawn
 //============================================================================================================
 
-uint UI::RenderQueue (UIQueue* queue)
+uint UI::DrawQueue (UIQueue* queue)
 {
 	// Quick and dirty reinterpret cast... dynamic is too slow
 	CustomQueue* q = reinterpret_cast<CustomQueue*>(queue);
@@ -62,19 +62,19 @@ uint UI::RenderQueue (UIQueue* queue)
 		}
 		else
 		{
-			q->mArea->OnPreRender(mGraphics);
+			q->mArea->OnPreDraw(mGraphics);
 			tri = mGraphics->DrawVertices( IGraphicsManager::Primitive::Quad, q->mVertexCount );
-			q->mArea->OnPostRender(mGraphics);
+			q->mArea->OnPostDraw(mGraphics);
 		}
 	}
 	return tri;
 }
 
 //============================================================================================================
-// Render the entire User Interface
+// Draw the entire User Interface
 //============================================================================================================
 
-void UI::OnPreRender() const
+void UI::OnPreDraw() const
 {
 	mGraphics->SetFog					( false );
 	mGraphics->SetDepthTest				( false );
@@ -98,7 +98,7 @@ void UI::OnPreRender() const
 // Cleanup
 //============================================================================================================
 
-void UI::OnPostRender() const
+void UI::OnPostDraw() const
 {
 	mGraphics->SetActiveTexture			( 0, 0 );
 	mGraphics->SetActiveShader			( 0 );

@@ -95,7 +95,7 @@ uint Scene::Draw (const ITechnique* tech, bool insideOut)
 		if (tech != 0)
 		{
 			// Draw all objects from the specified technique
-			count += _Render(tech, insideOut);
+			count += _Draw(tech, insideOut);
 		}
 		else
 		{
@@ -106,11 +106,11 @@ uint Scene::Draw (const ITechnique* tech, bool insideOut)
 			ITechnique* glow   = graphics->GetTechnique("Glow");
 			ITechnique* glare  = graphics->GetTechnique("Glare");
 
-			count += _Render(opaque, insideOut);
-			count += _Render(trans,  insideOut);
-			count += _Render(part,   insideOut);
-			count += _Render(glow,   insideOut);
-			count += _Render(glare,  insideOut);
+			count += _Draw(opaque, insideOut);
+			count += _Draw(trans,  insideOut);
+			count += _Draw(part,   insideOut);
+			count += _Draw(glow,   insideOut);
+			count += _Draw(glare,  insideOut);
 		}
 
 		// Restore the potentially changed properties
@@ -142,10 +142,10 @@ void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& 
 }
 
 //============================================================================================================
-// Renders all queues
+// Draws all queues
 //============================================================================================================
 
-uint Scene::_Render (const ITechnique* tech, bool insideOut)
+uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 {
 	uint triangles (0);
 	IGraphics* graphics = mRoot->mCore->GetGraphics();
@@ -185,7 +185,7 @@ uint Scene::_Render (const ITechnique* tech, bool insideOut)
 				// Run through all renderables on this layer, rendering them back to front
 				for (uint b = last; b > i; )
 				{
-					triangles += mObjects[--b].mObject->OnRender(graphics, tech, insideOut);
+					triangles += mObjects[--b].mObject->OnDraw(graphics, tech, insideOut);
 				}
 
 				// Continue from the next layer
@@ -197,7 +197,7 @@ uint Scene::_Render (const ITechnique* tech, bool insideOut)
 			// Run through all objects, rendering them front-to-back
 			for (uint i = 0, imax = mObjects.GetSize(); i < imax; ++i)
 			{
-				triangles += mObjects[i].mObject->OnRender(graphics, tech, insideOut);
+				triangles += mObjects[i].mObject->OnDraw(graphics, tech, insideOut);
 			}
 		}
 	}

@@ -76,7 +76,7 @@ void UIFrame::SetDirty()
 // Updates the rendering queues as necessary, then draws them to the screen
 //============================================================================================================
 
-uint UIFrame::OnRender()
+uint UIFrame::OnDraw()
 {
 	uint triangles = 0;
 
@@ -168,8 +168,8 @@ uint UIFrame::OnRender()
 
 				if (tex == 0 || tex->IsValid())
 				{
-					// Render the queue
-					triangles += mRoot->RenderQueue( queue );
+					// Draw the queue
+					triangles += mRoot->DrawQueue( queue );
 				}
 			}
 		}

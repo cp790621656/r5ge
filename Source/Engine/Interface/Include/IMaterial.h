@@ -16,7 +16,7 @@ struct IMaterial
 public:
 
 	// Material options differ for every rendering technique
-	class RenderingMethod
+	class DrawMethod
 	{
 	protected:
 
@@ -26,7 +26,7 @@ public:
 
 	public:
 
-		RenderingMethod() : mTechnique(0), mShader(0) {}
+		DrawMethod() : mTechnique(0), mShader(0) {}
 
 		void Clear() { mTechnique = 0; mShader = 0; for (uint i = 0; i < mTextures.GetSize(); ++i) mTextures[i] = 0; }
 
@@ -43,7 +43,7 @@ public:
 
 public:
 
-	typedef Array<RenderingMethod> RenderingMethods;
+	typedef Array<DrawMethod> DrawMethods;
 
 	virtual ~IMaterial() {};
 
@@ -62,13 +62,13 @@ public:
 	virtual void SetADT			(float val)=0;
 
 	// Returns a mask of available techniques, based on (1 << ITechnique::GetID)
-	virtual uint					GetTechniqueMask()		 const=0;
-	virtual const RenderingMethods&	GetAllRenderingMethods() const=0;
-	virtual		  RenderingMethod*	GetRenderingMethod		(const ITechnique* t, bool createIfMissing = true)=0;
-	virtual const RenderingMethod*	GetVisibleMethod		(const ITechnique* t) const=0;
-	virtual		  RenderingMethod*	GetVisibleMethod		(const ITechnique* t)=0;
-	virtual void					DeleteRenderingMethod	(const ITechnique* t)=0;
-	virtual void					ClearAllRenderingMethods()=0;
+	virtual uint				GetTechniqueMask()	 const=0;
+	virtual const DrawMethods&	GetAllDrawMethods()  const=0;
+	virtual		  DrawMethod*	GetDrawMethod		(const ITechnique* t, bool createIfMissing = true)=0;
+	virtual const DrawMethod*	GetVisibleMethod	(const ITechnique* t) const=0;
+	virtual		  DrawMethod*	GetVisibleMethod	(const ITechnique* t)=0;
+	virtual void				DeleteDrawMethod	(const ITechnique* t)=0;
+	virtual void				ClearAllDrawMethods()=0;
 
 	// Serialization
 	virtual bool IsSerializable() const=0;

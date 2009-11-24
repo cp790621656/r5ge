@@ -119,7 +119,7 @@ Mesh::Mesh (const String& name) :
 	mGraphics			(0) {}
 
 //============================================================================================================
-// VBOs should be released when the class is destroyed, as they are created in Render()
+// VBOs should be released when the class is destroyed, as they are created in Draw()
 //============================================================================================================
 
 Mesh::~Mesh()
@@ -477,7 +477,7 @@ uint Mesh::GetSizeInMemory() const
 }
 
 //============================================================================================================
-// Returns the number of triangles that would be rendered if Render() was called
+// Returns the number of triangles that would be rendered if Draw() was called
 //============================================================================================================
 
 uint Mesh::GetNumberOfTriangles() const
@@ -936,10 +936,10 @@ uint Mesh::GetNumberOfVertices() const
 }
 
 //============================================================================================================
-// Renders the mesh, sending the data to the graphics controller
+// Draws the mesh, sending the data to the graphics controller
 //============================================================================================================
 
-uint Mesh::Render (IGraphics* graphics)
+uint Mesh::Draw (IGraphics* graphics)
 {
 	if (graphics == 0) return 0;
 	uint triangleCount(0);

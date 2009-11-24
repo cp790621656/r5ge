@@ -18,7 +18,7 @@ protected:
 	float				mGlow;			// Percentage of Color unaffected by diminishing light
 	float				mAdt;			// Alpha discard threshold for alpha testing
 	uint				mMask;			// Mask of available techniques, based on (1 << ITechnique::GetID())
-	RenderingMethods	mMethods;		// Array of options for various rendering methods
+	DrawMethods	mMethods;		// Array of options for various rendering methods
 	bool				mSerializable;	// Whether the material is serializable (some may not be)
 
 public:
@@ -49,13 +49,13 @@ public:
 	virtual void SetADT			(float val)				{ mSerializable = true;  mAdt		= val; }
 
 	// Material options differ for every technique
-	virtual uint						GetTechniqueMask()		 const { return mMask; }
-	virtual const RenderingMethods&		GetAllRenderingMethods() const { return mMethods; }
-	virtual		  RenderingMethod*		GetRenderingMethod		(const ITechnique* t, bool createIfMissing = true);
-	virtual const RenderingMethod*		GetVisibleMethod		(const ITechnique* t) const;
-	virtual		  RenderingMethod*		GetVisibleMethod		(const ITechnique* t) { return (mDiffuse.GetColor4ub().a == 0) ? 0 : GetRenderingMethod(t, false); }
-	virtual void						DeleteRenderingMethod	(const ITechnique* t);
-	virtual void						ClearAllRenderingMethods();
+	virtual uint				GetTechniqueMask()	 const { return mMask; }
+	virtual const DrawMethods&	GetAllDrawMethods()  const { return mMethods; }
+	virtual		  DrawMethod*	GetDrawMethod		(const ITechnique* t, bool createIfMissing = true);
+	virtual const DrawMethod*	GetVisibleMethod	(const ITechnique* t) const;
+	virtual		  DrawMethod*	GetVisibleMethod	(const ITechnique* t) { return (mDiffuse.GetColor4ub().a == 0) ? 0 : GetDrawMethod(t, false); }
+	virtual void				DeleteDrawMethod	(const ITechnique* t);
+	virtual void				ClearAllDrawMethods();
 
 	// Whether the material will be serialized out on save
 	// (many materials come from model files, so saving isn't necessary)

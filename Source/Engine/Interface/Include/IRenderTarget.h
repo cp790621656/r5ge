@@ -4,7 +4,7 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
-// Render target can be the screen, PBuffer, or a Frame Buffer Object, for example
+// Draw target can be the screen, PBuffer, or a Frame Buffer Object, for example
 //============================================================================================================
 
 struct IRenderTarget

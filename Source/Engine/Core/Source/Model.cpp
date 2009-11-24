@@ -201,15 +201,15 @@ void Model::Update()
 }
 
 //============================================================================================================
-// Render the object using the specified technique
+// Draw the object using the specified technique
 //============================================================================================================
 
-uint Model::_Render (IGraphics* graphics, const ITechnique* tech)
+uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 {
 	if ( mSkeleton == 0 || mMatrices.IsEmpty() )
 	{
 		// If this model has no skeleton, just render it as a static prop
-		return Prop::_Render(graphics, tech);
+		return Prop::_Draw(graphics, tech);
 	}
 
 	// Last rendered model
@@ -238,7 +238,7 @@ uint Model::_Render (IGraphics* graphics, const ITechnique* tech)
 				Mesh*		mesh	= limb->GetMesh();
 				IMaterial*	mat		= limb->GetMaterial();
 
-				IMaterial::RenderingMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
+				IMaterial::DrawMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
 
 				if (method != 0)
 				{
@@ -293,8 +293,8 @@ uint Model::_Render (IGraphics* graphics, const ITechnique* tech)
 							}
 						}
 
-						// Render the mesh
-						triangleCount += mesh->Render(graphics);
+						// Draw the mesh
+						triangleCount += mesh->Draw(graphics);
 					}
 				}
 			}

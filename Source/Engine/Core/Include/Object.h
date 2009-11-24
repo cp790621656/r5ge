@@ -30,8 +30,8 @@ public:
 		};
 	};
 
-	// Renderable object entry -- used to gather a list of renderable objects when culling the scene
-	struct Renderable
+	// Drawable object entry -- used to gather a list of drawable objects when culling the scene
+	struct Drawable
 	{
 		Object*		mObject;		// Pointer to the object that will be rendered
 		int			mLayer;			// Object's layer -- lower layers are drawn first
@@ -39,7 +39,7 @@ public:
 		float		mDistSquared;	// Squared distance to the camera, used to sort objects
 
 		// Comparison operator for sorting -- groups objects by layer, pointer, and lastly -- distance
-		bool operator < (const Renderable& obj) const
+		bool operator < (const Drawable& obj) const
 		{
 			if (mLayer < obj.mLayer) return true;
 			if (mLayer > obj.mLayer) return false;
@@ -51,7 +51,7 @@ public:
 
 	// Types used by this class
 	typedef Object*					ObjectPtr;
-	typedef Array<Renderable>		Renderables;
+	typedef Array<Drawable>			Drawables;
 	typedef PointerArray<Object>	Children;
 	typedef PointerArray<Script>	Scripts;
 	typedef Thread::Lockable		Lockable;
@@ -61,14 +61,14 @@ protected:
 	// Culling parameters passed from one object to the next during the culling stage
 	struct CullParams
 	{
-		const Frustum&	 mFrustum;		// Frustum used to cull the scene
-		const Vector3f&	 mCamPos;		// Current camera position, used to sort objects
-		const Vector3f&	 mCamDir;		// Current camera direction
+		const Frustum&	 mFrustum;	// Frustum used to cull the scene
+		const Vector3f&	 mCamPos;	// Current camera position, used to sort objects
+		const Vector3f&	 mCamDir;	// Current camera direction
 
-		Renderables&	 mObjects;	// Sorted list of visible objects
-		ILight::List&	 mLights;		// List of visible lights
+		Drawables&		 mObjects;	// Sorted list of visible objects
+		ILight::List&	 mLights;	// List of visible lights
 
-		CullParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Renderables& o, ILight::List& l)
+		CullParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Drawables& o, ILight::List& l)
 			: mFrustum(f), mCamPos(pos), mCamDir(dir), mObjects(o), mLights(l) {}
 	};
 
@@ -235,10 +235,10 @@ protected:
 	// Called when the object is being culled -- should return whether the object is visible
 	virtual bool OnCull (CullParams& params, bool isParentVisible, bool render);
 
-	// Render the object using the specified technique. This function will only be
-	// called if this object has been added to the list of renderable objects in
+	// Draw the object using the specified technique. This function will only be
+	// called if this object has been added to the list of drawable objects in
 	// OnCull. It should return the number of triangles rendered.
-	virtual uint OnRender (IGraphics* graphics, const ITechnique* tech, bool insideOut) { return 0; }
+	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut) { return 0; }
 
 	// Called when the object is being selected -- may update the referenced values
 	virtual void OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);
