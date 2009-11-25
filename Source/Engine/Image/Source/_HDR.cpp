@@ -149,7 +149,7 @@ bool ReadCompressed (const byte*	buffer,
 R5_IMAGE_CODEC(HDR)
 {
 	// Ensure that the header is what's expected
-	uint header = *(reinterpret_cast<const uint*>(buff));
+	uint header = *(const uint*)buff;
 
 	if (header == 0x41523F23)
 	{
@@ -191,7 +191,7 @@ R5_IMAGE_CODEC(HDR)
 		if (size > 1)
 		{
 			// Allocate a new buff -- 3 floats per pixel (RGB)
-			float* ptr = reinterpret_cast<float*>(out.mBytes.Reserve(width * height * 3 * sizeof(float)));
+			float* ptr = (float*)out.mBytes.Resize(width * height * 3 * sizeof(float));
 
 			// Read and decode the Radiance file
 			if (ReadCompressed(buff, size, ptr, width, height)) return true;

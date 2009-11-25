@@ -148,46 +148,6 @@ void GLVBO::Set (const void* data, uint size, uint type, bool dynamic)
 }
 
 //============================================================================================================
-// Reserves the specified size chunk of memory on the videocard and returns a pointer to the editable data
-//============================================================================================================
-
-void* GLVBO::Reserve (uint size, uint type, bool dynamic)
-{
-	// Don't allow more than one VBO operation per lock/unlock session
-	if (mData != 0) return 0;
-
-	// Activate the VBO
-	_ActivateAs(type);
-
-	// If data was specified or the requested size was increased, update the buffer
-	if ( size > mSize )
-	{
-		g_caps.DecreaseBufferMemory(mSize);
-		glBufferData( mGlType, mSize = size, 0, dynamic ? GL_STREAM_DRAW : GL_STATIC_DRAW );
-		CHECK_GL_ERROR;
-		g_caps.IncreaseBufferMemory(mSize);
-	}
-
-	// HACK: On Windows 7, GL_WRITE_ONLY suffers a horrible slowdown for an unknown reason.
-	// 600 FPS instead of 2000 FPS kind of slowdown. No idea why. I tried a variety of NVidia
-	// drivers ranging from 185 to 195 to no avail. Vista and XP don't suffer from this issue.
-	// It's also worth mentioning that using Vertex Arrays achieves better performance on Win7.
-	// If this messed up issue is ever resolved by Microsoft / NVidia, remove this hack.
-
-	if (g_caps.mOS == DeviceInfo::OS::Windows7)
-	{
-		mData = glMapBuffer(mGlType, GL_READ_WRITE);
-	}
-	else
-	{
-		mData = glMapBuffer(mGlType, GL_WRITE_ONLY);
-	}
-
-	ASSERT( mData != 0, glGetErrorString() );
-	return mData;
-}
-
-//============================================================================================================
 // Submits the data to the videocard
 //============================================================================================================
 

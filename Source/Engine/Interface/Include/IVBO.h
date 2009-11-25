@@ -27,14 +27,13 @@ struct IVBO
 	virtual bool	IsValid()	const=0;
 	virtual void	Release()=0;
 	virtual void	Lock()=0;
-	virtual void	Get			(VoidPtr& data,		uint& size, uint& type)=0;
-	virtual void	Set			(const void* data,	uint  size, uint  type = Type::Vertex, bool dynamic = false)=0;
-	virtual void*	Reserve		(					uint  size, uint  type = Type::Vertex, bool dynamic = false)=0;
+	virtual void	Get	(VoidPtr& data, uint& size, uint& type)=0;
+	virtual void	Set	(const void* data, uint size, uint type = Type::Vertex, bool dynamic = false)=0;
 	virtual void	Unlock()=0;
 
 	template <typename T>
 	void Set(const Array<T>& arr, uint type = Type::Vertex, bool dynamic = false)
 	{
-		Set(&arr[0], arr.GetSize() * sizeof(T), type, dynamic);
+		Set(&arr[0], arr.GetSizeInMemory(), type, dynamic);
 	}
 };

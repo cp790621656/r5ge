@@ -42,8 +42,7 @@ void UI::UpdateBuffer (UIQueue* queue)
 
 uint UI::DrawQueue (UIQueue* queue)
 {
-	// Quick and dirty reinterpret cast... dynamic is too slow
-	CustomQueue* q = reinterpret_cast<CustomQueue*>(queue);
+	CustomQueue* q = (CustomQueue*)queue;
 	uint tri (0);
 
 	if (q != 0 && q->mVertexCount)

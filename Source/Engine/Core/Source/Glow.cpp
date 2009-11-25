@@ -110,12 +110,12 @@ uint Glow::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 		// Light's color is automatically inherited from the parent light, if the parent is indeed a light
 		if (parentType == PointLight::ClassID())
 		{
-			color = (reinterpret_cast<PointLight*>(mParent))->GetDiffuse();
+			color = ((PointLight*)mParent)->GetDiffuse();
 			color.Normalize();
 		}
 		else if (parentType == DirectionalLight::ClassID())
 		{
-			color = (reinterpret_cast<DirectionalLight*>(mParent))->GetDiffuse();
+			color = ((DirectionalLight*)mParent)->GetDiffuse();
 			color.Normalize();
 		}
 

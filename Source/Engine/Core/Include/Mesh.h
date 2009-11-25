@@ -78,6 +78,7 @@ private:
 	
 	IGraphics*			mGraphics;			// Pointer to the graphics controller managing the VBOs
 	Bounds				mBounds;			// Bounding box and sphere
+	Memory				mMem;				// Temporary allocated memory, used to upload data to the GPU
 
 public:
 

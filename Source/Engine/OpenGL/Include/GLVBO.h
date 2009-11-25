@@ -43,7 +43,6 @@ public:
 	virtual void	Lock()		{ mLock.Lock(); }
 	virtual void	Get			(VoidPtr& data,		uint& size, uint& type);
 	virtual void	Set			(const void* data,	uint  size, uint  type = Type::Vertex, bool dynamic = false);
-	virtual void*	Reserve		(					uint  size, uint  type = Type::Vertex, bool dynamic = false);
 	virtual void	Unlock();
 
 private:

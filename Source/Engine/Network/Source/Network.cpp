@@ -105,8 +105,7 @@ bool CreateSocket (Socket& s, uint type)
 
 R5_THREAD_FUNCTION(Connect_Thread, ptr)
 {
-	Network* eng = reinterpret_cast<Network*>(ptr);
-	if (eng) eng->_Connect();
+	((Network*)ptr)->_Connect();
 	return 0;
 }
 
@@ -116,8 +115,7 @@ R5_THREAD_FUNCTION(Connect_Thread, ptr)
 
 R5_THREAD_FUNCTION(Update_Thread, ptr)
 {
-	Network* eng = reinterpret_cast<Network*>(ptr);
-	if (eng) eng->_Update();
+	((Network*)ptr)->_Update();
 	return 0;
 }
 } // namespace R5
@@ -249,7 +247,7 @@ void Network::_Connect()
 		AddressToSockaddr(ip, addr);
 
 		// Connect to the requested address -- (0) is the return value on success
-		result = ::connect(cd.mSocket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+		result = ::connect(cd.mSocket, (sockaddr*)&addr, sizeof(addr));
 	}
 
 	// Try to connect to the destination (EINPROGRESS means the result will be known later)
@@ -307,8 +305,8 @@ bool Network::_Send (const void* data, uint length, const Socket& s, const Addre
 	while (sent < length)
 	{
 		// According to documentation, address portion is ignored for TCP sockets. It's only used for UDP sockets.
-		uint current = ::sendto(s.mSocket, reinterpret_cast<const char*>(data) + sent, length - sent, 0,
-			reinterpret_cast<sockaddr*>(&addr), sizeof(sockaddr_in));
+		uint current = ::sendto(s.mSocket, ((const char*)data) + sent, length - sent, 0,
+			(sockaddr*)&addr, sizeof(sockaddr_in));
 
 		// Return value of '-1' means an error has occured
 		if (current == -1)
@@ -367,8 +365,7 @@ void Network::_Accept (const Socket& s)
 		acceptedSocket.mType	  =  Socket::Type::TCP;
 		acceptedSocket.mUserData  = s.mUserData;
 		acceptedSocket.mRecvStamp = Time::GetMilliseconds();
-		acceptedSocket.mSocket	  = (Socket::Identifier)::accept(s.mSocket,
-			reinterpret_cast<sockaddr*>(&addr), &len);
+		acceptedSocket.mSocket	  = (Socket::Identifier)::accept(s.mSocket, (sockaddr*)&addr, &len);
 
 		// Remember the remote address
 		SockaddrToAddress(acceptedSocket.mAddress, addr);
@@ -424,7 +421,7 @@ void Network::_Receive (const Socket& s, byte* buffer, uint bufferSize, Thread::
 	memset(&addr, 0, len);
 
 	// Receive the data
-	int bytes = ::recvfrom(s.mSocket, reinterpret_cast<char*>(buffer), bufferSize, 0, reinterpret_cast<sockaddr*>(&addr), &len);
+	int bytes = ::recvfrom(s.mSocket, (char*)buffer, bufferSize, 0, (sockaddr*)&addr, &len);
 
 	// UDP sockets update the address above, TCP sockets do not
 	Address remote;
@@ -717,7 +714,7 @@ uint Network::Listen (ushort port, uint packetType, VoidPtr userData, int backlo
 	AddressToSockaddr(s.mAddress, addr);
 
 	// Bind the socket to the specified address/port
-	if ( ::bind(s.mSocket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0 )
+	if ( ::bind(s.mSocket, (sockaddr*)&addr, sizeof(addr)) != 0 )
 	{
 		// If ::bind() call fails, it means the port is already in use -- just return zero
 		::CloseSocket(s);
@@ -949,7 +946,7 @@ Network::Address Network::Resolve (const String& addr)
 
 				if (ip != 0)
 				{
-					int result = *(reinterpret_cast<uint*>(ip));
+					int result = *(uint*)ip;
 
 					// Invalid IP results in ADDR_INVALID, which is (-1). Check to make sure it didn't happen.
 					if (result != -1)

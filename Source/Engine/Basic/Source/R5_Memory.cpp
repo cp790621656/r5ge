@@ -74,7 +74,6 @@ byte* Memory::Reserve (uint size)
 			mBuffer = new byte[mAllocated];
 		}
 	}
-	mSize = size;
 	return mBuffer;
 }
 
@@ -85,7 +84,7 @@ byte* Memory::Reserve (uint size)
 byte* Memory::Expand (uint bytes)
 {
 	uint offset = mSize;
-	Reserve(mSize + bytes);
+	Resize(mSize + bytes);
 	return mBuffer + offset;
 }
 
@@ -240,7 +239,7 @@ bool Memory::Load (const char* filename)
 
 	fseek(fp, 0, SEEK_END);
 	uint size = (uint)ftell(fp);
-	byte* buffer = Reserve(size);
+	byte* buffer = Resize(size);
 
 	if (size > 0)
 	{

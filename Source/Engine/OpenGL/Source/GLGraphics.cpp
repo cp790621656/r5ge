@@ -519,10 +519,8 @@ uint GLGraphics::Draw (uint drawable)
 
 		if ( mSkyboxVBO == 0 )
 		{
-			mSkyboxVBO = CreateVBO();
-
-			mSkyboxVBO->Lock();
-			Vector3f* ptr = (Vector3f*)mSkyboxVBO->Reserve(8 * sizeof(Vector3f), IVBO::Type::Vertex);
+			Memory mem;
+			Vector3f* ptr = (Vector3f*)mem.Resize(8 * sizeof(Vector3f));
 
 			ptr->Set( 10.0f,  10.0f,  10.0f); ++ptr;
 			ptr->Set( 10.0f,  10.0f, -10.0f); ++ptr;
@@ -533,6 +531,9 @@ uint GLGraphics::Draw (uint drawable)
 			ptr->Set(-10.0f, -10.0f,  10.0f); ++ptr;
 			ptr->Set(-10.0f, -10.0f, -10.0f); ++ptr;
 
+			mSkyboxVBO = CreateVBO();
+			mSkyboxVBO->Lock();
+			mSkyboxVBO->Set(mem.GetBuffer(), mem.GetSize(), IVBO::Type::Vertex);
 			mSkyboxVBO->Unlock();
 		}
 

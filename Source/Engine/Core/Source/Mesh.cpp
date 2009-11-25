@@ -605,7 +605,7 @@ bool Mesh::_TransformToVBO (const Array<Matrix43> &transforms)
 	mTbo->Lock();
 	{
 		// Reserve the required amount of space in the buffer
-		byte* ptr = (byte*)mTbo->Reserve(mTboSize, IVBO::Type::Vertex, false);
+		byte* ptr = mMem.Resize(mTboSize);
 
 		IF_TANGENT_AND_NORMAL
 		{
@@ -732,6 +732,9 @@ bool Mesh::_TransformToVBO (const Array<Matrix43> &transforms)
 				}
 			}
 		}
+
+		// Copy the local memory buffer to the VBO
+		mTbo->Set(mMem.GetBuffer(), mMem.GetSize(), IVBO::Type::Vertex);
 	}
 	mTbo->Unlock();
 	return true;
@@ -954,53 +957,50 @@ uint Mesh::Draw (IGraphics* graphics)
 			ASSERT(mBi.IsEmpty() || mBi.GetSize() == vertices, "Size mismatch!");
 			ASSERT(mBw.IsEmpty() || mBw.GetSize() == vertices, "Size mismatch!");
 #endif
-			if (mVbo == 0)
-			{
-				// If the VBO hasn't been created yet, create it
-				mVbo = graphics->CreateVBO();
-			}
-
 			// Update the size of the VBO
 			mVboSize = mFormat.mFullSize * vertices;
+			ASSERT(mVboSize > 0, "Invalid VBO size");
 
-			if (mVbo != 0)
+			// If the VBO hasn't been created yet, create it
+			if (mVbo == 0) mVbo = graphics->CreateVBO();
+
+			if (mVbo != 0 && mVboSize > 0)
 			{
-				// Update the vertex buffer object by filling it as a single interleaved array
-				mVbo->Lock();
+				// Remember whether the buffer already had something in it or not
+				bool clear = !mMem.IsValid();
+
+				// Resize the buffer to fit our VBO's contents
+				byte* ptr = mMem.Resize(mVboSize);
+
+				// Fill in all the vertex information
+				for (uint i = vertices; i > 0; )
 				{
-					ASSERT(mVboSize > 0, "Invalid VBO size");
+					--i;
+					byte* current = (ptr + mFormat.mFullSize * i);
 
-					if (mVboSize > 0)
-					{
-						byte* ptr = (byte*)mVbo->Reserve(mVboSize, IVBO::Type::Vertex, false);
-
-						for (uint i = vertices; i > 0; )
-						{
-							--i;
-							byte* current = (ptr + mFormat.mFullSize * i);
-
-							IF_VERTEX		CURRENT_VERTEX		= mV[i];
-							IF_NORMAL		CURRENT_NORMAL		= mN[i];
-							IF_TANGENT		CURRENT_TANGENT		= mT[i];
-							IF_TEXCOORD		CURRENT_TEXCOORD	= mTc[i];
-							IF_BONEINDEX	CURRENT_BONEINDEX	= mBi[i];
-							IF_BONEWEIGHT	CURRENT_BONEWEIGHT	= mBw[i];
-						}
-					}
+					IF_VERTEX		CURRENT_VERTEX		= mV[i];
+					IF_NORMAL		CURRENT_NORMAL		= mN[i];
+					IF_TANGENT		CURRENT_TANGENT		= mT[i];
+					IF_TEXCOORD		CURRENT_TEXCOORD	= mTc[i];
+					IF_BONEINDEX	CURRENT_BONEINDEX	= mBi[i];
+					IF_BONEWEIGHT	CURRENT_BONEWEIGHT	= mBw[i];
 				}
+
+				mVbo->Lock();
+				mVbo->Set(mMem.GetBuffer(), mMem.GetSize(), IVBO::Type::Vertex);
 				mVbo->Unlock();
+
+				// If the memory was not used before, clear it
+				if (clear) mMem.Release();
 			}
 		}
 
 		// Index buffer
 		if ( mIboSize == 0 && mIndices.IsValid() )
 		{
-			if (mIbo == 0)
-			{
-				mIbo = graphics->CreateVBO();
-			}
-
 			mIboSize = mIndices.GetSize();
+
+			if (mIbo == 0) mIbo = graphics->CreateVBO();
 
 			if (mIbo != 0)
 			{

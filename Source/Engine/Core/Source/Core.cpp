@@ -17,7 +17,7 @@ R5_THREAD_FUNCTION(WorkerThread, ptr)
 	if (g_core)
 	{
 		Thread::Increment( g_threadCount );
-		Resource* resource = reinterpret_cast<Resource*>(ptr);
+		Resource* resource = (Resource*)ptr;
 
 #ifdef _DEBUG
 		long threadId = g_threadCount;

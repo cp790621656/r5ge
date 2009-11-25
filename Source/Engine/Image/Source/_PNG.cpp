@@ -48,7 +48,7 @@ static void OnError (png_structp png_ptr, png_const_charp message)
 
 static void OnRead (png_structp pngStruct, png_bytep data, png_size_t length)
 {
-	IOBuffer* buffer = reinterpret_cast<IOBuffer*>(pngStruct->io_ptr);
+	IOBuffer* buffer = (IOBuffer*)pngStruct->io_ptr;
 	ASSERT(buffer != 0, "io_ptr is empty");
 
 	if (length > buffer->mSize) length = buffer->mSize;
@@ -65,7 +65,7 @@ static void OnRead (png_structp pngStruct, png_bytep data, png_size_t length)
 R5_IMAGE_CODEC(PNG)
 {
 	// Ensure that the header is what's expected
-	uint header = *(reinterpret_cast<const uint*>(buff));
+	uint header = *(const uint*)buff;
 
 	if (header == 0x474E5089)
 	{
@@ -140,7 +140,7 @@ R5_IMAGE_CODEC(PNG)
 
 		// Figure out the number of bytes per line and reserve the memory for the image
 		uint bytesPerLine = width * channels;
-		byte* buffer = out.mBytes.Reserve(bytesPerLine * height);
+		byte* buffer = out.mBytes.Resize(bytesPerLine * height);
 
 		// PNG library's read function needs an array of pointers to individual lines
 		png_bytepp rows = new png_bytep[height * sizeof(png_bytep)];

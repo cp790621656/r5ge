@@ -70,7 +70,7 @@ static void OnCloseSource (j_decompress_ptr cinfo)
 static void OnError (j_common_ptr info)
 {
 	jpeg_destroy(info);
-	CustomData* data = reinterpret_cast<CustomData*>(info->client_data);
+	CustomData* data = (CustomData*)info->client_data;
 	data->mError = true;
 	longjmp(data->mJump, 1);
 }
@@ -91,7 +91,7 @@ R5_IMAGE_CODEC(JPG)
 {
 	// Ensure that the header is what's expected
 	bool result = false;
-	uint header = *(reinterpret_cast<const uint*>(buff));
+	uint header = *(const uint*)buff;
 
 	if (header == 0xE0FFD8FF)
 	{
@@ -150,7 +150,7 @@ R5_IMAGE_CODEC(JPG)
 			out.mDepth  = 1;
 
 			// Reserve the memory buffer
-			byte* full = out.mBytes.Reserve(rowLength * out.mHeight);
+			byte* full = out.mBytes.Resize(rowLength * out.mHeight);
 
 			// Flip the image right away by starting at the top and moving down
 			byte* line = full + rowLength * (out.mHeight - 1);

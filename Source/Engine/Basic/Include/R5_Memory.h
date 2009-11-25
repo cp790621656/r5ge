@@ -19,7 +19,7 @@ protected:
 public:
 
 	Memory() : mBuffer(0), mAllocated(0), mSize(0) {}
-	Memory(uint size) : mBuffer(0), mAllocated(0), mSize(0) { Reserve(size); mSize = 0; }
+	Memory(uint size) : mBuffer(0), mAllocated(0), mSize(0) { Resize(size); mSize = 0; }
 	~Memory() { if (mBuffer != 0) delete [] mBuffer; }
 
 public:
@@ -30,12 +30,14 @@ public:
 
 public:
 
-	void		Lock()		const		{ mLock.Lock();		}
-	void		Unlock()	const		{ mLock.Unlock();	}
-	byte*		GetBuffer()				{ return mBuffer;	}
-	const byte*	GetBuffer() const		{ return mBuffer;	}
-	uint		GetSize()	const		{ return mSize;		}
-	void		Clear()					{ mSize = 0;		}
+	void		Lock()			const	{ mLock.Lock();			}
+	void		Unlock()		const	{ mLock.Unlock();		}
+	byte*		GetBuffer()				{ return mBuffer;		}
+	const byte*	GetBuffer()		const	{ return mBuffer;		}
+	bool		IsValid()		const	{ return mSize != 0;	}
+	uint		GetSize()		const	{ return mSize;			}
+	uint		GetAllocated()	const	{ return mAllocated;	}
+	void		Clear()					{ mSize = 0;			}
 
 	// Always useful to have
 	void MemSet (int val) const { if (mBuffer != 0) memset(mBuffer, val, mAllocated); }
@@ -43,10 +45,13 @@ public:
 	// Release the memory buffer
 	void Release();
 
-	// Reserve the specified amount of memory, keeping the data in place
+	// Reserve the specified amount of memory
 	byte* Reserve (uint size);
 
-	// Expand the buffer by the specified maount of bytes and return a pointer to that location
+	// Resizes the buffer to the specified size, keeping the data in place if possible
+	byte* Resize (uint size) { Reserve(size); mSize = size; return mBuffer; }
+
+	// Expand the buffer by the specified amount of bytes and return a pointer to that location
 	byte* Expand (uint bytes);
 
 	// Remove the specified number of bytes from the front of the buffer

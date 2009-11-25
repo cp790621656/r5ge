@@ -162,8 +162,7 @@ bool Font::Load (const void* buffer, uint bufferSize, byte fontSize)
 		ASSERT(mWidth <= 2048, "Requested font is excessively large");
 
 		// Allocate a new buffer to hold all pixel information
-		void* ptr = mBuffer.Reserve(mWidth * mWidth * 2);
-		ushort* buffer = reinterpret_cast<ushort*>(ptr);
+		ushort* buffer = (ushort*)mBuffer.Resize(mWidth * mWidth * 2);
 		mBuffer.MemSet(0);
 
 		if (buffer == 0)

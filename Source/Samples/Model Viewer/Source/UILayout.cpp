@@ -1927,7 +1927,7 @@ bool ModelViewer::OnDrawMode (UIArea* area)
 
 bool ModelViewer::OnBackground (UIArea* area)
 {
-	UIList* list = reinterpret_cast<UIList*>(area);
+	UIList* list = (UIList*)area;
 	const String& value (list->GetLastSelection());
 
 	if (value == "Black Color")

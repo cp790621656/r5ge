@@ -222,7 +222,7 @@ void* Image::Reserve (uint width, uint height, uint depth, uint format)
 	mBuffer.mHeight = height;
 	mBuffer.mFormat = format;
 
-	void* ptr = mBuffer.mBytes.Reserve((uint)size);
+	void* ptr = mBuffer.mBytes.Resize((uint)size);
 	memset(ptr, 0, size);
 
 #ifdef _DEBUG
@@ -307,7 +307,7 @@ bool Image::Load (const void* buffer, uint size)
 		_RegisterAll();
 
 		String extension (System::GetExtensionFromFilename(mLoadingFN));
-		const byte* ptr = reinterpret_cast<const byte*>(buffer);
+		const byte* ptr = (const byte*)buffer;
 
 		// Run through all codecs
 		for (uint i = 0; i < g_allCodecs.GetSize(); ++i)
@@ -354,6 +354,6 @@ bool Image::Load (const void* buffer, uint size)
 	}
 
 	// Header ID might be useful to know
-	System::Log("          - Header: 0x%x", *(reinterpret_cast<const uint*>(buffer)));
+	System::Log("          - Header: 0x%x", *(const uint*)buffer);
 	return false;
 }

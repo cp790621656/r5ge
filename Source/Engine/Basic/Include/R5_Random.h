@@ -43,7 +43,7 @@ public:
 	inline float GenerateRangeFloat()
 	{
 		uint val = GenerateUint();
-		return 0.00000000046566128741615948f * (*reinterpret_cast<int*>(&val));
+		return 0.00000000046566128741615948f * (*(int*)&val);
 	}
 
 	// Random double precision floating point value ranging from 0.0 to 1.0
@@ -56,7 +56,7 @@ public:
 	inline double GenerateRangeDouble()
 	{
 		uint val = GenerateUint();
-		return 0.00000000046566128741615948 * (*reinterpret_cast<int*>(&val));
+		return 0.00000000046566128741615948 * (*(int*)&val);
 	}
 
 	// Resets the random seed to the specified value
