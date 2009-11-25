@@ -168,7 +168,21 @@ void* GLVBO::Reserve (uint size, uint type, bool dynamic)
 		g_caps.IncreaseBufferMemory(mSize);
 	}
 
-	mData = glMapBuffer( mGlType, GL_WRITE_ONLY);
+	// HACK: On Windows 7, GL_WRITE_ONLY suffers a horrible slowdown for an unknown reason.
+	// 600 FPS instead of 2000 FPS kind of slowdown. No idea why. I tried a variety of NVidia
+	// drivers ranging from 185 to 195 to no avail. Vista and XP don't suffer from this issue.
+	// It's also worth mentioning that using Vertex Arrays achieves better performance on Win7.
+	// If this messed up issue is ever resolved by Microsoft / NVidia, remove this hack.
+
+	if (g_caps.mOS == DeviceInfo::OS::Windows7)
+	{
+		mData = glMapBuffer(mGlType, GL_READ_WRITE);
+	}
+	else
+	{
+		mData = glMapBuffer(mGlType, GL_WRITE_ONLY);
+	}
+
 	ASSERT( mData != 0, glGetErrorString() );
 	return mData;
 }

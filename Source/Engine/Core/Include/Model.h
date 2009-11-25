@@ -152,4 +152,12 @@ public:
 
 	// Returns the amount of time that's left on the specified animation's playback
 	float GetTimeToAnimationEnd (const Animation* anim);
+
+public:
+
+	// Special: will either enable or disable skinning on the GPU using shaders
+	static void EnableSkinningOnGPU(bool val);
+
+	// Special: will either enable or disable using VBOs for skinning
+	static void EnableSkinningToVBO(bool val);
 };

@@ -43,7 +43,21 @@ uint glGetInteger(uint id);
 
 struct DeviceInfo
 {
+	struct OS
+	{
+		enum
+		{
+			Unknown			= 0x00,
+			Windows			= 0x01,
+			MacOS			= 0x02,
+			Linux			= 0x04,
+			WindowsVista	= 0x11,
+			Windows7		= 0x21,
+		};
+	};
+
 	bool	mInitialized;				// Whether the device has been initialized
+	byte	mOS;						// Operating system type
 	float	mVersion;					// Detected OpenGL version
 	bool	mFloat16Format;				// Support for 16-bit floating point textures (half precision)
 	bool	mFloat32Format;				// Support for 32-bit floating point textures (full precision)

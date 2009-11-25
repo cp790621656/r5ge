@@ -147,7 +147,7 @@ public: // These functions should only be used after the mesh has been locked
 private:
 
 	void _AssertIfUnlocked() const { ASSERT(mIsLocked, "You must lock the mesh first!"); }
-	bool _TransformToVBO (IGraphics* graphics, const Array<Matrix43>& transforms);
+	bool _TransformToVBO (const Array<Matrix43>& transforms);
 	void _TransformToVAs (const Array<Matrix43>& transforms);
 
 public:
@@ -173,7 +173,7 @@ public:
 	uint GetNumberOfTriangles() const;
 
 	// Software skinning on the CPU -- recalculates transformed vertices, normals, and tangents
-	bool ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transforms, uint instances);
+	bool ApplyTransforms (const Array<Matrix43>& transforms, uint instances);
 
 	// Discards all current transformed arrays, returning to default values
 	void DiscardTransforms() { Lock(); mTv.Clear(); mTn.Clear(); mTt.Clear(); mTboSize = 0; Unlock(); }

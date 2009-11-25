@@ -130,6 +130,16 @@ PROC glGetFunction(bool& flag, const char* name)
 
 bool _BindFunctionPointers()
 {
+	Vector2i version = ::GetVersion();
+	byte minor = (version.x >> 8) & 0xF;
+	byte major =  version.x & 0xF;
+
+	if (major == 6)
+	{
+		// Vista and Windows7 get their own device entry
+		g_caps.mOS = (minor == 0) ? DeviceInfo::OS::WindowsVista : DeviceInfo::OS::Windows7;
+	}
+
 	bool essential (true), secondary (true);
 
 	glActiveTexture				= (PFNGLACTIVETEXTUREARBPROC)			glGetFunction(essential, "glActiveTextureARB");

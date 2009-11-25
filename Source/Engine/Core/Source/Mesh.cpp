@@ -1,6 +1,9 @@
 #include "../Include/_All.h"
 using namespace R5;
 
+// Defined in Model.cpp
+extern bool g_skinToVBO;
+
 //============================================================================================================
 // Helpful macros that shorten the code below
 //============================================================================================================
@@ -489,7 +492,7 @@ uint Mesh::GetNumberOfTriangles() const
 // Software skinning on the CPU
 //============================================================================================================
 
-bool Mesh::ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transforms, uint instances)
+bool Mesh::ApplyTransforms (const Array<Matrix43>& transforms, uint instances)
 {
 	if (mV.IsEmpty() || mFormat.mTransSize == 0) return false;
 
@@ -497,26 +500,14 @@ bool Mesh::ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transfor
 
 	if (maxWeights > 0)
 	{
-#ifdef _DEBUG
-		if (mGraphics != 0) ASSERT(mGraphics == graphics, "Graphics controller doesn't match!");
-#endif
-
 		Lock();
 		{
-			// NOTE: On WinXP NVidia driver seems to be optimized to the point where it starts at
-			// around 45% of VA performance, then goes up to 75% a few seconds later, then 125% a
-			// few seconds after that. So it seems using VBOs will always be faster on NVidia/XP?
-			// On the other hand Win7 seems to have a major issue with streaming into VBOs:
-			// 2200 FPS using VAs compared to only 630 using VBOs. Changing VBO type to
-			// 'stream' had no effect. And this is with 9 instances of 2 different models in the
-			// scene! Makes no sense... I'm leaving this code as using VAs for now.
-
 			// If the model is referenced only once, we don't need to cache the result in a VBO.
 			// However if the VBO has already been created, we might as well reuse it.
-			/*if ( graphics != 0 && (mTbo != 0 || instances > 1) )
+			if ( g_skinToVBO && (mGraphics != 0) && (mTbo != 0 || instances > 1) )
 			{
 				// Try to transform directly into the VBO
-				if ( _TransformToVBO(graphics, transforms) )
+				if ( _TransformToVBO(transforms) )
 				{
 					// From here on all transforms will be using VBOs, so let's release the VAs
 					mTv.Release();
@@ -529,7 +520,7 @@ bool Mesh::ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transfor
 					_TransformToVAs(transforms);
 				}
 			}
-			else*/
+			else
 			{
 				// If there is only one instance, it's faster to use Vertex Arrays
 				_TransformToVAs(transforms);
@@ -594,14 +585,10 @@ bool Mesh::ApplyTransforms (IGraphics* graphics, const Array<Matrix43>& transfor
 // NOTE: This code was designed for speed over size, so it has a fair bit of duplication.
 //============================================================================================================
 
-bool Mesh::_TransformToVBO (IGraphics *graphics, const Array<Matrix43> &transforms)
+bool Mesh::_TransformToVBO (const Array<Matrix43> &transforms)
 {
-	if (mTbo == 0)
-	{
-		// Try to create a VBO
-		mTbo = graphics->CreateVBO();
-		mGraphics = graphics;
-	}
+	// Try to create a VBO
+	if (mTbo == 0) mTbo = mGraphics->CreateVBO();
 
 	// If VBO couldn't be created, nothing we can do
 	if (mTbo == 0) return false;

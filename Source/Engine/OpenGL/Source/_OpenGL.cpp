@@ -14,6 +14,7 @@ DeviceInfo	g_caps;
 
 DeviceInfo::DeviceInfo() :
 	mInitialized			(false),
+	mOS						(OS::Unknown),
 	mVersion				(1.0f),
 	mFloat16Format			(false),
 	mFloat32Format			(false),
@@ -34,7 +35,17 @@ DeviceInfo::DeviceInfo() :
 	mBufferMemory			(0),
 	mMaxTextureMemory		(0),
 	mMaxBufferMemory		(0),
-	mMaxMemory				(0) {}
+	mMaxMemory				(0)
+{
+	// Windows OS is subdivided into different versions and is set in "_Windows_OpenGL.cpp"
+#ifdef _WINDOWS
+	mOS = OS::Windows;
+#elif _MACOS
+	mOS = OS::MacOS;
+#elif _LINUX
+	mOS = OS::Linux;
+#endif
+}
 
 //===============================================================================================================
 

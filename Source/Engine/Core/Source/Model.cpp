@@ -13,18 +13,22 @@ struct Notification
 };
 
 //============================================================================================================
-// Called when it's time to set the bone transforms for GPU skinning
+// Globally defined variables
 //============================================================================================================
 
-bool	g_gpuSkinning	= false;
-void*	g_matrices		= 0;
-uint	g_elements		= 0;
+bool	g_skinningShaderActive = false;
+void*	g_matrices	= 0;
+uint	g_elements	= 0;
+bool	g_skinOnGPU	= true;
+bool	g_skinToVBO	= true;
 
+//============================================================================================================
+// Skinning callback, triggered when the material's shader gets activated if it supports GPU skinning
 //============================================================================================================
 
 void OnUpdateBoneTransforms (const String& name, Uniform& uniform)
 {
-	g_gpuSkinning		= true;
+	g_skinningShaderActive	= true;
 	uniform.mType		= Uniform::Type::ArrayFloat16;
 	uniform.mPtr		= g_matrices;
 	uniform.mElements	= g_elements;
@@ -40,9 +44,7 @@ Model::Model (const String& name) :
 	mAnimationSpeed	(1.0f),
 	mUpdateInterval (1),
 	mLastUpdate		(0),
-	mAnimUpdated	(false)
-{
-}
+	mAnimUpdated	(false) {}
 
 //============================================================================================================
 // Update the world matrix, advance the animation
@@ -242,26 +244,27 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 
 				if (method != 0)
 				{
-					g_gpuSkinning = false;
+					// Reset the switch -- it will get flipped to 'true' when the skinning shader kicks in
+					g_skinningShaderActive = false;
 
 					// Set the active material, possibly updating the shader in the process
 					if ( graphics->SetActiveMaterial(mat) )
 					{
-						if ( updateSkin )
+						if (updateSkin)
 						{
-							if ( !g_gpuSkinning )
+							if (g_skinOnGPU && !g_skinningShaderActive)
 							{
 								// If the material's shader hasn't updated the skinning flag, check why
 								IShader* shader = method->GetShader();
 
-								if ( shader != 0 )
+								if (shader != 0)
 								{
 									Flags& flags = shader->GetFlags();
 
 									if ( (lastModel == this) && flags.Get( IShader::Flag::Processed ) )
 									{
 										// If the shader has already been processed, reuse 'skinned' flag
-										g_gpuSkinning = flags.Get( IShader::Flag::Skinned );
+										g_skinningShaderActive = flags.Get( IShader::Flag::Skinned );
 									}
 									else
 									{
@@ -276,12 +279,12 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 										}
 
 										// Remember whether this shader supports skinning
-										flags.Set( IShader::Flag::Skinned, g_gpuSkinning );
+										flags.Set( IShader::Flag::Skinned, g_skinningShaderActive );
 									}
 								}
 							}
 
-							if (g_gpuSkinning)
+							if (g_skinningShaderActive)
 							{
 								// If we're skinning on the GPU, we don't need transformed vertices
 								mesh->DiscardTransforms();
@@ -289,7 +292,7 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 							else
 							{
 								// If we're skinning on the CPU however, we need to apply the transforms
-								mesh->ApplyTransforms( graphics, mMatrices, GetNumberOfReferences() );
+								mesh->ApplyTransforms( mMatrices, GetNumberOfReferences() );
 							}
 						}
 
@@ -835,4 +838,22 @@ float Model::GetTimeToAnimationEnd (const Animation* anim)
 		Unlock();
 	}
 	return time;
+}
+
+//============================================================================================================
+// Special: will either enable or disable skinning on the GPU using shaders
+//============================================================================================================
+
+void Model::EnableSkinningOnGPU (bool val)
+{
+	g_skinOnGPU = val;
+}
+
+//============================================================================================================
+// Special: will either enable or disable using VBOs for skinning
+//============================================================================================================
+
+void Model::EnableSkinningToVBO (bool val)
+{
+	g_skinToVBO = val;
 }
