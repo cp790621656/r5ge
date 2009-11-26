@@ -8,8 +8,20 @@ class TestApp
 {
 private:
 
+	struct PacketID
+	{
+		enum
+		{
+			ServerMessage	= 0,
+			ZoneSwitch		= 1,
+			EntityUpdate	= 2,
+			Pathfinding		= 3,
+		};
+	};
+
 	struct InBuffer
 	{
+		uint	mId;
 		Memory	mMem;
 		bool	mNewData;
 
@@ -33,6 +45,8 @@ public:
 
 private:
 
+	void SendMessage (const String& msg, const Network::Address& a, uint id);
+
 	void OnConnect (const Network::Address& a, uint id, VoidPtr& userData, const String& original);
 
 	void OnReceive (const Network::Address& a,
@@ -51,7 +65,7 @@ private:
 
 	void Process();
 
-	void Process (const byte* buffer, uint size);
+	void Process (InBuffer* ib, const byte* buffer, uint size);
 
 public:
 
@@ -83,6 +97,24 @@ public:
 };
 
 //============================================================================================================
+// Sends a server message to the specified client
+//============================================================================================================
+
+void TestApp::SendMessage (const String& msg, const Network::Address& a, uint id)
+{
+	Memory mem;
+	mem.Append(0);
+	mem.Append(PacketID::ServerMessage);
+	mem.Append(msg);
+	
+	// Update the size of the buffer
+	*(uint32*)mem.GetBuffer() = (uint32)mem.GetSize() - 4;
+
+	// Send the complete packet
+	mNet.Send(mem.GetBuffer(), mem.GetSize(), id, a);
+}
+
+//============================================================================================================
 // New connection has been established -- Create a new memory buffer for it
 //============================================================================================================
 
@@ -93,16 +125,13 @@ void TestApp::OnConnect (const Network::Address& a, uint id, VoidPtr& userData, 
 	mUsed.Lock();
 	{
 		InBuffer* ib = mUnused.IsValid() ? mUnused.Shrink(false) : new InBuffer();
+		ib->mId = id;
 		mUsed.Expand() = ib;
 		userData = ib;
-
-		String str ("Hi there!");
-		uint length = str.GetLength();
-
-		mNet.Send(&length, 4, id, a);
-		mNet.Send(str.GetBuffer(), length, id, a);
 	}
 	mUsed.Unlock();
+
+	SendMessage("Hello from the server!", a, id);
 }
 
 //============================================================================================================
@@ -206,7 +235,7 @@ void TestApp::Process()
 				else
 				{
 					// Process the data we just received
-					Process(buffer, packetLength);
+					Process(ib, buffer, packetLength);
 
 					// Skip past this packet
 					buffer += packetLength;
@@ -231,25 +260,58 @@ void TestApp::Process()
 // Processes the specified chunk of data
 //============================================================================================================
 
-void TestApp::Process (const byte* buffer, uint size)
+void TestApp::Process (InBuffer* ib, const byte* buffer, uint size)
 {
-	TreeNode tree;
-					
-	if (tree.SerializeFrom(buffer, size))
-	{
-		String s;
-		tree.SerializeTo(s, 1);
-		printf("[%u] Received:\n%s\n", Thread::GetID(), s.GetBuffer());
+	uint32 packetId;
+	const byte* originalBuffer = buffer;
+	uint32 originalSize = (uint32)size;
 
-		String str ("Received OK");
-		uint length = str.GetLength();
-
-		mNet.Send(&length, 4);
-		mNet.Send(str.GetBuffer(), length);
-	}
-	else
+	if (Memory::Extract(buffer, size, packetId))
 	{
-		printf("[%u] ERROR: SerializeFrom failed\n", Thread::GetID());
+		if (packetId == PacketID::EntityUpdate)
+		{
+			String name;
+			//String parent;
+			//Vector3f pos;
+			//Quaternion rot;
+
+			Memory::Extract(buffer, size, name);
+			//Memory::Extract(buffer, size, pos);
+			//Memory::Extract(buffer, size, rot);
+			//Memory::Extract(buffer, size, parent);
+
+			//printf("Received entity update (%d bytes)\n", originalSize);
+			//printf("- Name: %s\n", name.GetBuffer());
+			//printf("- Pos: %.3f %.3f %.3f\n", pos.x, pos.y, pos.z);
+			//printf("- Rot: %.3f %.3f %.3f %.3f\n", rot.x, rot.y, rot.z, rot.w);
+			//printf("- Parent: %s\n", parent.GetBuffer());
+
+			// Forward the packet to everyone
+			mNet.Send(&originalSize, 4);
+			mNet.Send(originalBuffer, originalSize);
+
+			printf("User %d sent an entity update: %s\n", ib->mId, name.GetBuffer());
+		}
+		else if (packetId == PacketID::ZoneSwitch)
+		{
+			String zone;
+			Memory::Extract(buffer, size, zone);
+			printf("User %d switched zones: %s\n", ib->mId, zone.GetBuffer());
+		}
+		else if (packetId == PacketID::Pathfinding)
+		{
+			mNet.Send(&originalSize, 4);
+			mNet.Send(originalBuffer, originalSize);
+			printf("User %d sent a pathfinding update\n", ib->mId);
+		}
+		else
+		{
+			printf("Received unknown ID: %d (%x %x %x %x)\n", packetId,
+				(packetId >> 24) & 0xFF,
+				(packetId >> 16) & 0xFF,
+				(packetId >> 8) & 0xFF,
+				 packetId & 0xFF);
+		}
 	}
 }
 

@@ -385,18 +385,6 @@ void Object::SetAbsoluteScale (float scale)
 }
 
 //============================================================================================================
-// Returns the object closest to the given position
-//============================================================================================================
-
-Object* Object::Select (const Vector3f& pos)
-{
-	float radius = 65535.0f;
-	Object* ptr = 0;
-	_Select(pos, ptr, radius);
-	return ptr;
-}
-
-//============================================================================================================
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
@@ -491,27 +479,42 @@ void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
+		// The object starts off invisible
+		mFlags.Set(Flag::Visible, false);
+
 		Lock();
 		{
+			CullResult result (isParentVisible);
+
 			if (!mIgnore.Get(Ignore::Cull))
 			{
 				// Note that by default parent's visibility doesn't affect children, and OnCull will be
-				// called regardless of whether the parent was visible or not. This was done to ensure that
-				// such cases like an in-game character carrying a light source would work properly. An obvious
-				// optimization would be to never cull children if this object is not visible. This optimization
-				// should be used where the object will never move past its parent's bounds (ex.: terrain).
+				// called regardless of whether the parent was visible or not as long as the parent
+				// leaves the CullResult::mCullChildren at its default value (true). An obvious optimization
+				// would be to change that to 'false' in cases where OnCull function does its own selective
+				// culling (terrain, for example).
 
-				isParentVisible = OnCull(params, isParentVisible, render);
-				mFlags.Set(Flag::Visible, isParentVisible);
+				result = OnCull(params, isParentVisible, render);
+
+				// Remember whether this object is currently visible
+				mFlags.Set(Flag::Visible, result.mIsVisible);
 			}
 
 			// Inform all children that they're being culled and let them decide themselves whether they
 			// should do anything about it or not depending on whether this object is visible.
 
-			if (mChildren.IsValid())
+			if (mChildren.IsValid() && result.mCullChildren)
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					mChildren[i]->_Cull(params, isParentVisible, render);
+				{
+					mChildren[i]->_Cull(params, result.mIsVisible, render);
+
+					// If the child is visible, this object should be as well
+					if (mChildren[i]->GetFlag(Flag::Visible))
+					{
+						mFlags.Set(Flag::Visible, true);
+					}
+				}
 			}
 		}
 		Unlock();
@@ -524,23 +527,10 @@ void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 
 void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& radius)
 {
-	if (mFlags.Get(Flag::Enabled))
+	if (mFlags.Get(Flag::Selectable) && !mIgnore.Get(Ignore::Select))
 	{
 		Lock();
-		{
-			if (mFlags.Get(Flag::Visible) && mFlags.Get(Flag::Selectable) && !mIgnore.Get(Ignore::Select))
-			{
-				OnSelect(pos, ptr, radius);
-			}
-
-			if (mChildren.IsValid())
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
-				{
-					mChildren[i]->_Select(pos, ptr, radius);
-				}
-			}
-		}
+		OnSelect(pos, ptr, radius);
 		Unlock();
 	}
 }
@@ -640,7 +630,7 @@ void Object::OnPostUpdate()
 // Called when the object is being culled
 //============================================================================================================
 
-bool Object::OnCull (CullParams& params, bool isParentVisible, bool render)
+Object::CullResult Object::OnCull (CullParams& params, bool isParentVisible, bool render)
 {
 	mIgnore.Set(Ignore::Cull, true);
 	return false;
@@ -650,9 +640,10 @@ bool Object::OnCull (CullParams& params, bool isParentVisible, bool render)
 // Called when the object is being selected -- may update the referenced values
 //============================================================================================================
 
-void Object::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
+bool Object::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
 {
 	mIgnore.Set(Ignore::Select, true);
+	return true;
 }
 
 //============================================================================================================

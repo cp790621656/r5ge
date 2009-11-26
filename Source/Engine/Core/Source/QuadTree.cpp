@@ -2,347 +2,121 @@
 using namespace R5;
 
 //============================================================================================================
-// QuadTree can be created by the scene manager (empty constructor) as well as itself (overloaded constructor)
+// Counts the number of partitions necessary to achieve the desired dimension
 //============================================================================================================
 
-/*QuadTree::QuadTree() : mTop(0), mOffset(0.0f, 0.0f), mSize(1.0f, 1.0f), mLevel(-1)
+/*uint CountPartitions (uint desired, uint starting)
 {
-	mPart[0] = 0;
-	mPart[1] = 0;
-	mPart[2] = 0;
-	mPart[3] = 0;
+	uint part = 1;
+	for ( ; starting > desired; starting >>= 1 ) part <<= 1;
+	return part;
 }
 
 //============================================================================================================
-// QuadTree's destructor has to release all of the partitions
+// Splits the quadtree down until the subdivisions reach the specified desired dimensions
 //============================================================================================================
 
-QuadTree::~QuadTree()
+void QuadTree::PartitionToSize (uint desiredX, uint desiredY, uint currentX, uint currentY)
 {
-	// Ensure to delete all partitions
-	for (uint i = 0; i < 4; ++i)
-		if (mPart[i] != 0) delete mPart[i];
-
-	// Unless this is a top level node, skip the Object's destructor's Parent->RemoveChild
-	// calls since this node has never been added as a child of anything.
-	if (mTop != 0) mParent = 0;
+	PartitionInto( CountPartitions(desiredX, currentX), CountPartitions(desiredY, currentY) );
 }
 
 //============================================================================================================
-// INTERNAL: Used for tree subdivisioning
+// Split the tree into the specified number of parts
 //============================================================================================================
 
-void QuadTree::_Set (const String&	 name,
-					 Core*			 core,
-					 Scene			 root,
-					 Object*		 parent,
-					 QuadTree*		 top,
-					 const Vector2f& offset,
-					 const Vector2f& size)
+void QuadTree::PartitionInto (uint horizontal, uint vertical)
 {
-	mName	= name;
-	mCore   = core;
-	mScene  = root;
-	mParent = parent;
-	mTop	= top;
-	mOffset = offset;
-	mSize	= size;
-}
-
-//============================================================================================================
-// INTERNAL: Release all resourced used by the tree
-//============================================================================================================
-
-void QuadTree::_Release()
-{
-	mLevel = -1;
-	for (uint i = 0; i < 4; ++i)
+	if (mOnCreate)
 	{
-		if (mPart[i] != 0)
-		{
-			delete mPart[i];
-			mPart[i] = 0;
-		}
-	}
-	OnRelease();
-}
+		if (mRootNode != 0) delete mRootNode;
 
-//============================================================================================================
-// INTERNAL: Figures out what level of detail the tree belongs to
-//============================================================================================================
+		mRootNode = mOnCreate();
+		mRootNode->mTree = this;
+		mRootNode->mSize.Set(1.0f, 1.0f);
+		mRootNode->mOffset.Set(0.0f, 0.0f);
+		mRootNode->mLevel = 0;
 
-uint QuadTree::_GetLevel()
-{
-	if (mLevel == -1)
-	{
-		mLevel = 0;
-
-		for (uint i = 0; i < 4; ++i)
-		{
-			if (mPart[i] != 0)
-			{
-				uint child = mPart[i]->_GetLevel() + 1;
-				if (child > mLevel) mLevel = child;
-			}
-		}
-	}
-	return mLevel;
-}
-
-//============================================================================================================
-// Helper function used in QuadTree::_Partition below
-//============================================================================================================
-
-void GetLeftRight (float& left, float& right, const float width, const float desired)
-{
-	if (width > desired)
-	{
-		left = desired;
-
-		// Keep doubling the desired value while it's less than the tile's width
-		for (; left < width; left *= 2.0f) {}
-
-		left *= 0.5f;
-
-		// Right hand side is whatever is remaining
-		right = width - left;
-		if (right < 0.00001f) right = 0.0f;
-	}
-	else
-	{
-		left = width;
-		right = 0.0f;
-	}
-}
-
-//============================================================================================================
-// INTERNAL: Partitions the tree
-//============================================================================================================
-// 2 | 3
-// --+--
-// 0 | 1
-//============================================================================================================
-
-void QuadTree::_Partition (float horizontal, float vertical)
-{
-	// Only continue if the tree can be partitioned
-	if (mSize.x > horizontal || mSize.y > vertical)
-	{
-		float w0, w1, h0, h1;
-
-		GetLeftRight(w0, w1, mSize.x, horizontal);
-		GetLeftRight(h0, h1, mSize.y, vertical);
-
-		float x0 = mOffset.x;
-		float x1 = mOffset.x + w0;
-		float y0 = mOffset.y;
-		float y1 = mOffset.y + h0;
-
-		// Top-level parent is always the top tree node
-		QuadTree* top = _GetTopLevel();
-
-		// Bottom-left
-		mPart[0] = OnNew();
-		mPart[0]->_Set(mName + "_0", mCore, mScene, this, top, Vector2f(x0, y0), Vector2f(w0, h0));
-		mPart[0]->_Partition(horizontal, vertical);
-
-		if (w1 > 0.0f)
-		{
-			// Bottom-right
-			mPart[1] = OnNew();
-			mPart[1]->_Set(mName + "_1", mCore, mScene, this, top, Vector2f(x1, y0), Vector2f(w1, h0));
-			mPart[1]->_Partition(horizontal, vertical);
-
-			if (h1 > 0.0f)
-			{
-				// Top-right
-				mPart[3] = OnNew();
-				mPart[3]->_Set(mName + "_3", mCore, mScene, this, top, Vector2f(x1, y1), Vector2f(w1, h1));
-				mPart[3]->_Partition(horizontal, vertical);
-			}
-		}
-
-		if (h1 > 0.0f)
-		{
-			// Top-left
-			mPart[2] = OnNew();
-			mPart[2]->_Set(mName + "_2", mCore, mScene, this, top, Vector2f(x0, y1), Vector2f(w0, h1));
-			mPart[2]->_Partition(horizontal, vertical);
-		}
-	}
-
-	// Update the tree's level
-	_GetLevel();
-}
-
-//============================================================================================================
-// Count bottom-level tree partitions
-//============================================================================================================
-
-uint QuadTree::_CountPartitions (bool onlyVisible) const
-{
-	uint count ( mFlags.Get(Flag::Visible) ? 1 : 0 );
-
-	if ( !onlyVisible || count != 0 )
-	{
-		for (uint i = 0; i < 4; ++i)
-		{
-			if (mPart[i] != 0)
-			{
-				count += mPart[i]->CountPartitions(onlyVisible);
-			}
-		}
-	}
-	return count;
-}
-
-//============================================================================================================
-// Set the tree's topology via a heightmap
-//============================================================================================================
-
-void QuadTree::_CreateTree (void* ptr)
-{
-	// Reset the bounds
-	mBounds.Reset();
-
-	// Trigger the custom tree creation function
-	OnCreate(ptr);
-
-	// Fill the children partitions
-	if (mPart[0] != 0) { mPart[0]->_CreateTree(ptr);	mBounds.Include(mPart[0]->GetBounds()); }
-	if (mPart[1] != 0)	{ mPart[1]->_CreateTree(ptr);	mBounds.Include(mPart[1]->GetBounds()); }
-	if (mPart[2] != 0)	{ mPart[2]->_CreateTree(ptr);	mBounds.Include(mPart[2]->GetBounds()); }
-	if (mPart[3] != 0)	{ mPart[3]->_CreateTree(ptr);	mBounds.Include(mPart[3]->GetBounds()); }
-}
-
-//============================================================================================================
-// QuadTree's culling function needs to pass an additional parameter
-//============================================================================================================
-
-void QuadTree::_CullTree (CullParams& params, bool isParentVisible, bool render, bool wasParentRendered)
-{
-	// By default this partition is not renderable
-	mFlags.Set( Flag::Drawable, false );
-
-	// Skip all the advanced rendering checks if the tree is not visible
-	if ( isParentVisible &= params.mFrustum.IsVisible(mBounds) )
-	{
-		// The tree is renderable only if the parent hasn't been rendered
-		if ( render && !wasParentRendered && OnCull(params) )
-		{
-			// 'OnCull' function added this object to the rendering queue
-			mFlags.Set( Flag::Drawable, true );
-			wasParentRendered = true;
-		}
-	}
-
-	// Regardless of whether the tree is visible or not, fall through to children
-	if (mPart[0] != 0) mPart[0]->_CullTree(params, isParentVisible, render, wasParentRendered);
-	if (mPart[1] != 0) mPart[1]->_CullTree(params, isParentVisible, render, wasParentRendered);
-	if (mPart[2] != 0) mPart[2]->_CullTree(params, isParentVisible, render, wasParentRendered);
-	if (mPart[3] != 0) mPart[3]->_CullTree(params, isParentVisible, render, wasParentRendered);
-
-	// Cull all attached objects
-	mFlags.Set( Flag::Visible, isParentVisible );
-
-	// Cull all children
-	Object::_Cull( params, isParentVisible, render );
-}
-
-//============================================================================================================
-// Partitions the tree into specified number of parts
-//============================================================================================================
-
-void QuadTree::Partition (uint horizontal, uint vertical)
-{
-	Lock();
-	{
 		if (horizontal == 0) horizontal = 1;
 		if (vertical   == 0) vertical   = 1;
 
-		_Release();
-		_Partition(1.0f / horizontal, 1.0f / vertical);
+		mRootNode->_Partition(mOnCreate, 1.0f / horizontal, 1.0f / vertical);
 	}
-	Unlock();
 }
 
 //============================================================================================================
-// Count bottom-level tree partitions
+// Fills the bottom-most layer of the quadtree (subdivisions with no children)
 //============================================================================================================
 
-uint QuadTree::CountPartitions (bool onlyVisible) const
+void QuadTree::Fill (void* ptr)
 {
-	uint count (0);
-	Lock();
-	count = _CountPartitions(onlyVisible);
-	Unlock();
-	return count;
-}
-
-//============================================================================================================
-// Object selection
-//============================================================================================================
-
-void QuadTree::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
-{
-	for (uint i = 0; i < 4; ++i)
+	if (mRootNode != 0)
 	{
-		QuadTree* child = mPart[i];
-		
-		if (child != 0 && child->GetFlag(Flag::Enabled))
+		mRootNode->_Fill(ptr);
+	}
+}
+
+//============================================================================================================
+// QuadTree needs to mark objects that moved as such
+//============================================================================================================
+
+void QuadTree::OnUpdate()
+{
+	for (uint i = mChildren.GetSize(); i > 0; )
+	{
+		Object* child = mChildren[--i];
+		child->SetFlag(Flag::HasMoved, child->IsDirty());
+	}
+}
+
+//============================================================================================================
+// Objects that moved need to be re-added to a potentially different location in the tree
+//============================================================================================================
+
+void QuadTree::OnPostUpdate()
+{
+	for (uint i = mChildren.GetSize(); i > 0; )
+	{
+		Object* child = mChildren[--i];
+
+		if (child->GetFlag(Flag::HasMoved))
 		{
-			child->OnSelect(pos, ptr, radius);
+			mRootNode->_Remove(child);
+			mRootNode->_Add(child);
 		}
 	}
-	Object::_Select(pos, ptr, radius);
 }
 
 //============================================================================================================
-// Calls _PostUpdate() and recurses through children
+// Called when the object is being culled -- should return whether the object is visible
 //============================================================================================================
 
-void QuadTree::_Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
+Object::CullResult QuadTree::OnCull (CullParams& params, bool isParentVisible, bool render)
 {
-	for (uint i = 0; i < 4; ++i)
+	// Clear the list of renderable objects
+	mRenderable.Clear();
+
+	// Save the stamp to see if it changes
+	uint size = params.GetArraySize();
+
+	// Cull the hierarchy, filling the list with renderable objects
+	if (mRootNode != 0) mRootNode->_Cull(mRenderable, params, render);
+
+	// Don't cull the children as they should already be culled by the subdivided nodes
+	return Object::CullResult(size != params.GetArraySize(), false);
+}
+
+//============================================================================================================
+// Run through all renderable nodes and draw them
+//============================================================================================================
+
+uint QuadTree::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+{
+	uint triangles (0);
+
+	for (uint i = 0, imax = mRenderable.GetSize(); i < imax; ++i)
 	{
-		QuadTree* child = mPart[i];
-		
-		if (child != 0 && child->GetFlag(Flag::Enabled))
-		{
-			child->_Update(pos, rot, scale, parentMoved);
-		}
+		triangles += mRenderable[i]->OnDraw(graphics, tech, insideOut);
 	}
-	Object::_Update(pos, rot, scale, parentMoved);
-}
-
-//============================================================================================================
-// Inherited from Object
-//============================================================================================================
-
-void QuadTree::_Cull (CullParams& params, bool isParentVisible, bool render)
-{
-	if (!mFlags.Get(Flag::Enabled)) return;
-
-	Lock();
-	{
-		_CullTree(params, isParentVisible, render, false);
-	}
-	Unlock();
-}
-
-//============================================================================================================
-// Draw the object, called by the rendering queue this object was added to
-//============================================================================================================
-// NOTE: Note the usage of _GetTopLevel() and locking that level instead of current. That's because _Draw()
-// is the only function that can be called directly on a sub-tree, without going through the root.
-//============================================================================================================
-
-uint QuadTree::_Draw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
-{
-	uint count (0);
-	QuadTree* top = _GetTopLevel();
-	top->Lock();
-	count += OnDraw (graphics, tech, insideOut);
-	top->Unlock();
-	return count;
+	return triangles;
 }*/

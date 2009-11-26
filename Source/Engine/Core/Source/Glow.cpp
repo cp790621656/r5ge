@@ -44,7 +44,7 @@ void Glow::OnUpdate()
 // Culls objects based on the viewing frustum
 //============================================================================================================
 
-bool Glow::OnCull (CullParams& params, bool isParentVisible, bool render)
+Object::CullResult Glow::OnCull (CullParams& params, bool isParentVisible, bool render)
 {
 	if (isParentVisible)
 	{

@@ -47,6 +47,9 @@ public:
 	// Draws the scene using the specified technique
 	uint Draw (const ITechnique* tech = 0, bool insideOut = false);
 
+	// Selects the closest visible object to the specified position
+	Object* Select (const Vector3f& pos);
+
 private:
 
 	// Culls the scene

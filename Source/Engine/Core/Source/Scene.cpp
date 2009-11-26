@@ -120,6 +120,21 @@ uint Scene::Draw (const ITechnique* tech, bool insideOut)
 	return count;
 }
 
+//============================================================================================================
+// Selects the closest visible object to the specified position
+//============================================================================================================
+
+Object* Scene::Select (const Vector3f& pos)
+{
+	Object* ptr = 0;
+	float radius = 65535.0f;
+
+	for (uint i = mObjects.GetSize(); i > 0; )
+	{
+		mObjects[--i].mObject->_Select(pos, ptr, radius);
+	}
+	return ptr;
+}
 
 //============================================================================================================
 // Culls the scene using the specified frustum

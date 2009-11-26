@@ -84,7 +84,7 @@ protected:
 	virtual void OnUpdate();
 
 	// Cull the object based on the viewing frustum
-	virtual bool OnCull (CullParams& params, bool isParentVisible, bool render);
+	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
 
 	// Draw the object using the specified technique
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);

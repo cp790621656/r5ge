@@ -84,7 +84,7 @@ void ModelInstance::OnUpdate()
 // Culls the object based on the viewing frustum
 //============================================================================================================
 
-bool ModelInstance::OnCull (CullParams& params, bool isParentVisible, bool render)
+Object::CullResult ModelInstance::OnCull (CullParams& params, bool isParentVisible, bool render)
 {
 	// Only draw the model if the parent is visible and if the bounds are within the frustum
 	if (isParentVisible && (mModel != 0 && params.mFrustum.IsVisible(mBounds)) )
@@ -144,7 +144,7 @@ uint ModelInstance::OnDraw (IGraphics* graphics, const ITechnique* tech, bool in
 // Selects the closest object to the given position if the position is within the object's bounds
 //============================================================================================================
 
-void ModelInstance::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
+bool ModelInstance::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
 {
 	if (mBounds.Contains(pos))
 	{
@@ -157,6 +157,7 @@ void ModelInstance::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius
 			ptr = this;
 		}
 	}
+	return true;
 }
 
 //============================================================================================================

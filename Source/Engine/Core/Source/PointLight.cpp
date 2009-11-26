@@ -91,7 +91,7 @@ void PointLight::OnUpdate()
 // Cull the object based on the viewing frustum
 //============================================================================================================
 
-bool PointLight::OnCull (CullParams& params, bool isParentVisible, bool render)
+Object::CullResult PointLight::OnCull (CullParams& params, bool isParentVisible, bool render)
 {
 	float range = mRange * mAbsoluteScale;
 

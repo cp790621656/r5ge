@@ -9,9 +9,9 @@
 
 class Object
 {
-	friend class Core;		// Core needs access to _Update()
-	friend class Scene;		// Scene needs access to _Cull()
 	friend class Script;	// Script needs access to 'mScripts' so it can remove itself
+	friend class Scene;		// Scene needs to be able to use 'mCore'
+	friend class Core;		// Core needs to be able to set 'mCore'
 
 public:
 
@@ -24,9 +24,9 @@ public:
 	{
 		enum
 		{
-			Enabled		= 1 << 1,
-			Visible		= 1 << 2,
-			Selectable	= 1 << 3,
+			Enabled			= 1 << 1,
+			Visible			= 1 << 2,
+			Selectable		= 1 << 3,
 		};
 	};
 
@@ -35,7 +35,7 @@ public:
 	{
 		Object*		mObject;		// Pointer to the object that will be rendered
 		int			mLayer;			// Object's layer -- lower layers are drawn first
-		const void*	mGroup;			// Groups allow grouping of similar objects in order to avoid state switches
+		const void*	mGroup;			// Allow grouping of similar objects in order to avoid state switches
 		float		mDistSquared;	// Squared distance to the camera, used to sort objects
 
 		// Comparison operator for sorting -- groups objects by layer, pointer, and lastly -- distance
@@ -49,14 +49,21 @@ public:
 		}
 	};
 
+	// Result returned by the Cull function
+	struct CullResult
+	{
+		bool mIsVisible;	// Whether this object is visible
+		bool mCullChildren;	// Whether to continue culling the children
+
+		CullResult (bool visible, bool cullChildren = true) : mIsVisible(visible), mCullChildren(cullChildren) {}
+	};
+
 	// Types used by this class
 	typedef Object*					ObjectPtr;
 	typedef Array<Drawable>			Drawables;
 	typedef PointerArray<Object>	Children;
 	typedef PointerArray<Script>	Scripts;
 	typedef Thread::Lockable		Lockable;
-
-protected:
 
 	// Culling parameters passed from one object to the next during the culling stage
 	struct CullParams
@@ -70,6 +77,9 @@ protected:
 
 		CullParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Drawables& o, ILight::List& l)
 			: mFrustum(f), mCamPos(pos), mCamDir(dir), mObjects(o), mLights(l) {}
+
+		// Can be used to see if the lists get any new additions
+		uint GetArraySize() const { return mObjects.GetSize() + mLights.GetSize(); }
 	};
 
 protected:
@@ -160,6 +170,7 @@ public:
 	const Flags&		GetFlags()				const	{ return mFlags;			}
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
 	bool				IsSerializable()		const	{ return mSerializable;		}
+	bool				IsDirty()				const	{ return mIsDirty;			}
 	const Children&		GetChildren()			const	{ return mChildren;			}
 	const Scripts&		GetScripts()			const	{ return mScripts;			}
 
@@ -200,10 +211,7 @@ public:
 	void SetAbsoluteRotation ( const Quaternion& rot );
 	void SetAbsoluteScale	 ( float scale );
 
-	// Selects the object closest to this position
-	Object*	Select (const Vector3f& pos);
-
-protected:
+public:
 
 	// Updates the object, calling appropriate virtual functions
 	void _Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved);
@@ -233,15 +241,15 @@ protected:
 	virtual void OnPostUpdate();
 
 	// Called when the object is being culled -- should return whether the object is visible
-	virtual bool OnCull (CullParams& params, bool isParentVisible, bool render);
+	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
 
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in
 	// OnCull. It should return the number of triangles rendered.
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut) { return 0; }
 
-	// Called when the object is being selected -- may update the referenced values
-	virtual void OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);
+	// Called when the object is being selected -- should return 'true' to consider children as well
+	virtual bool OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);
 
 	// Called when the object is being saved
 	virtual void OnSerializeTo (TreeNode& root) const;

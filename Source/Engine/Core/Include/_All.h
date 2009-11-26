@@ -20,7 +20,8 @@ namespace R5
 	#include "Script.h"				// Scripts can be attached to game objects
 	#include "Object.h"				// Most basic game object
 	#include "Animatable.h"			// Animatable placeable
-	#include "QuadTree.h"			// Quad-tree split scene object, can be extended to create terrains
+	#include "QuadNode.h"			// Quad-tree subdivided node, can be extended to create terrains
+	#include "QuadTree.h"			// Quad-tree subdivisioned scene object
 	#include "Bone.h"				// Single bone for skeletal animation
 	#include "Animation.h"			// Keyframed animation
 	#include "Skeleton.h"			// Skeleton structure for skeletal animation

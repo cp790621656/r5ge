@@ -39,7 +39,7 @@ void DirectionalLight::OnUpdate()
 // Cull the object based on the viewing frustum
 //============================================================================================================
 
-bool DirectionalLight::OnCull (CullParams& params, bool isParentVisible, bool render)
+Object::CullResult DirectionalLight::OnCull (CullParams& params, bool isParentVisible, bool render)
 {
 	if ( mParams.IsVisible() )
 	{

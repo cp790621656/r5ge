@@ -111,7 +111,7 @@ void Emitter::OnUpdate()
 // Culls the particle emitter based on whether it's visible
 //============================================================================================================
 
-bool Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
+Object::CullResult Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
 {
 	if (mTex == 0 || mParticles.IsEmpty())
 	{
