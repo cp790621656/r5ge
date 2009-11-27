@@ -13,19 +13,27 @@ private:
 		enum
 		{
 			ServerMessage	= 0,
-			ZoneSwitch		= 1,
-			EntityUpdate	= 2,
-			Pathfinding		= 3,
+			EntityUpdate	= 1,
+			Pathfinding		= 2,
+			PlayerEnter		= 3,
+			PlayerExit		= 4,
+			PlayerMove		= 5,
+			PlayerRun		= 6,
 		};
 	};
 
-	struct InBuffer
+	struct Player
 	{
-		uint	mId;
-		Memory	mMem;
-		bool	mNewData;
+		uint		mId;
+		uint		mZoneID;
+		String		mName;
+		String		mZone;
+		Vector3f	mPos;
+		Quaternion	mRot;
+		Memory		mMem;
+		bool		mNewData;
 
-		InBuffer() : mNewData(false) {}
+		Player() : mId(0), mZoneID(0), mNewData(false) {}
 
 		inline void Lock()   const { mMem.Lock();   }
 		inline void Unlock() const { mMem.Unlock(); }
@@ -36,16 +44,14 @@ private:
 	Network mNet;
 	bool mNewData;
 
-	PointerArray<InBuffer> mUsed;
-	PointerArray<InBuffer> mUnused;
+	PointerArray<Player> mUsed;
+	PointerArray<Player> mUnused;
 
 public:
 
 	TestApp() : mNewData(false) {}
 
 private:
-
-	void SendMessage (const String& msg, const Network::Address& a, uint id);
 
 	void OnConnect (const Network::Address& a, uint id, VoidPtr& userData, const String& original);
 
@@ -63,9 +69,17 @@ private:
 				  VoidPtr&					userData,
 				  const char*				buffer);
 
+private:
+
+	void SendMessage (const String& msg, const Network::Address& a, uint id);
+
+	void SendRaw (uint zoneID, const byte* buffer, uint size, Player* exclude = 0);
+
+	void Send (uint zoneID, const Memory& mem, Player* exclude = 0);
+
 	void Process();
 
-	void Process (InBuffer* ib, const byte* buffer, uint size);
+	void Process (Player* player, const byte* buffer, uint size);
 
 public:
 
@@ -97,24 +111,6 @@ public:
 };
 
 //============================================================================================================
-// Sends a server message to the specified client
-//============================================================================================================
-
-void TestApp::SendMessage (const String& msg, const Network::Address& a, uint id)
-{
-	Memory mem;
-	mem.Append(0);
-	mem.Append(PacketID::ServerMessage);
-	mem.Append(msg);
-	
-	// Update the size of the buffer
-	*(uint32*)mem.GetBuffer() = (uint32)mem.GetSize() - 4;
-
-	// Send the complete packet
-	mNet.Send(mem.GetBuffer(), mem.GetSize(), id, a);
-}
-
-//============================================================================================================
 // New connection has been established -- Create a new memory buffer for it
 //============================================================================================================
 
@@ -124,10 +120,10 @@ void TestApp::OnConnect (const Network::Address& a, uint id, VoidPtr& userData, 
 
 	mUsed.Lock();
 	{
-		InBuffer* ib = mUnused.IsValid() ? mUnused.Shrink(false) : new InBuffer();
-		ib->mId = id;
-		mUsed.Expand() = ib;
-		userData = ib;
+		Player* player = mUnused.IsValid() ? mUnused.Shrink(false) : new Player();
+		player->mId = id;
+		mUsed.Expand() = player;
+		userData = player;
 	}
 	mUsed.Unlock();
 
@@ -145,17 +141,17 @@ void TestApp::OnReceive (const Network::Address&	a,
 						 uint						bufferSize,
 						 Thread::IDType				threadId)
 {
-	printf("[%u] Received %u bytes from %s\n", Thread::GetID(), bufferSize, a.ToString().GetBuffer());
+	//printf("[%u] Received %u bytes from %s\n", Thread::GetID(), bufferSize, a.ToString().GetBuffer());
 
 	if (userData != 0)
 	{
 		mNewData = true;
 
-		InBuffer* ib = (InBuffer*)userData;
+		Player* player = (Player*)userData;
 
-		ib->Lock();
-		ib->Append(buffer, bufferSize);
-		ib->Unlock();
+		player->Lock();
+		player->Append(buffer, bufferSize);
+		player->Unlock();
 	}
 }
 
@@ -176,16 +172,24 @@ void TestApp::OnClose (const Network::Address& a, uint id, VoidPtr& userData)
 
 	if (userData != 0)
 	{
-		InBuffer* ib = (InBuffer*)userData;
+		Player* player = (Player*)userData;
 
-		ib->Lock();
-		ib->Clear();
-		ib->Unlock();
+		player->Lock();
+		{
+			// Player exit notification
+			Memory mem;
+			mem.Append(PacketID::PlayerExit);
+			mem.Append(player->mId);
+			Send(player->mZoneID, mem, player);
+
+			player->Clear();
+		}
+		player->Unlock();
 
 		mUsed.Lock();
 		{
-			mUsed.Remove(ib);
-			mUnused.Expand() = ib;
+			mUsed.Remove(player);
+			mUnused.Expand() = player;
 		}
 		mUsed.Unlock();
 	}
@@ -205,6 +209,61 @@ void TestApp::OnError ( const Network::Address&	a,
 }
 
 //============================================================================================================
+// Sends a server message to the specified client
+//============================================================================================================
+
+void TestApp::SendMessage (const String& msg, const Network::Address& a, uint id)
+{
+	Memory mem;
+	mem.Append(0);
+	mem.Append(PacketID::ServerMessage);
+	mem.Append(msg);
+	
+	// Update the size of the buffer
+	*(uint32*)mem.GetBuffer() = (uint32)mem.GetSize() - 4;
+
+	// Send the complete packet
+	mNet.Send(mem.GetBuffer(), mem.GetSize(), id, a);
+}
+
+//============================================================================================================
+// Send the specified data to everyone in the same area, excluding the target
+//============================================================================================================
+
+void TestApp::SendRaw (uint zoneID, const byte* buffer, uint size, Player* exclude)
+{
+	for (uint i = mUsed.GetSize(); i > 0; )
+	{
+		const Player* player = mUsed[--i];
+
+		if (player != exclude && player->mZoneID == zoneID)
+		{
+			mNet.Send(buffer, size, player->mId);
+		}
+	}
+}
+
+//============================================================================================================
+// Send the specified data to everyone in the same area, excluding the target
+//============================================================================================================
+
+void TestApp::Send (uint zoneID, const Memory& mem, Player* exclude)
+{
+	uint size = mem.GetSize();
+
+	for (uint i = mUsed.GetSize(); i > 0; )
+	{
+		const Player* player = mUsed[--i];
+
+		if (player != exclude && player->mZoneID == zoneID)
+		{
+			mNet.Send(&size, 4, player->mId);
+			mNet.Send(mem.GetBuffer(), size, player->mId);
+		}
+	}
+}
+
+//============================================================================================================
 // Process all waiting data
 //============================================================================================================
 
@@ -214,12 +273,12 @@ void TestApp::Process()
 	{
 		for (uint i = mUsed.GetSize(); i > 0; )
 		{
-			InBuffer* ib = mUsed[--i];
-			if (!ib->mNewData) continue;
+			Player* player = mUsed[--i];
+			if (!player->mNewData) continue;
 
 			// Get the current memory buffer
 			uint packetLength;
-			Memory& mem = ib->mMem;
+			Memory& mem = player->mMem;
 			const byte* buffer = mem.GetBuffer();
 			const byte* nextPacket = buffer;
 			uint size = mem.GetSize();
@@ -235,7 +294,7 @@ void TestApp::Process()
 				else
 				{
 					// Process the data we just received
-					Process(ib, buffer, packetLength);
+					Process(player, buffer, packetLength);
 
 					// Skip past this packet
 					buffer += packetLength;
@@ -260,7 +319,7 @@ void TestApp::Process()
 // Processes the specified chunk of data
 //============================================================================================================
 
-void TestApp::Process (InBuffer* ib, const byte* buffer, uint size)
+void TestApp::Process (Player* player, const byte* buffer, uint size)
 {
 	uint32 packetId;
 	const byte* originalBuffer = buffer;
@@ -286,27 +345,88 @@ void TestApp::Process (InBuffer* ib, const byte* buffer, uint size)
 			//printf("- Rot: %.3f %.3f %.3f %.3f\n", rot.x, rot.y, rot.z, rot.w);
 			//printf("- Parent: %s\n", parent.GetBuffer());
 
-			// Forward the packet to everyone
-			mNet.Send(&originalSize, 4);
-			mNet.Send(originalBuffer, originalSize);
+			printf("- %s sent an entity update: %s\n", player->mName.GetBuffer(), name.GetBuffer());
 
-			printf("User %d sent an entity update: %s\n", ib->mId, name.GetBuffer());
+			// Forward the packet to everyone in the same area
+			SendRaw(player->mZoneID, originalBuffer - 4, originalSize + 4, player);
 		}
-		else if (packetId == PacketID::ZoneSwitch)
+		else if (packetId == PacketID::PlayerExit)
 		{
 			String zone;
 			Memory::Extract(buffer, size, zone);
-			printf("User %d switched zones: %s\n", ib->mId, zone.GetBuffer());
+			printf("- %s has left %s heading to %s\n", player->mName.GetBuffer(),
+				player->mZone.GetBuffer(), zone.GetBuffer());
+
+			// Player exit notification
+			Memory mem;
+			mem.Append(PacketID::PlayerExit);
+			mem.Append(player->mId);
+			Send(player->mZoneID, mem, player);
+
+			// The player is now in the void
+			player->mZoneID = 0;
+		}
+		else if (packetId == PacketID::PlayerEnter)
+		{
+			Memory::Extract(buffer, size, player->mName);
+			Memory::Extract(buffer, size, player->mPos);
+			Memory::Extract(buffer, size, player->mRot);
+			Memory::Extract(buffer, size, player->mZone);
+
+			printf("- %s has entered %s\n", player->mName.GetBuffer(), player->mZone.GetBuffer());
+
+			// Update the local values
+			player->mZoneID = HashKey(player->mZone);
+
+			// Send out a similar notification to others
+			Memory mem;
+			mem.Append(PacketID::PlayerEnter);
+			mem.Append(player->mId);
+			mem.Append(player->mName);
+			mem.Append(player->mPos);
+			mem.Append(player->mRot);
+			Send(player->mZoneID, mem, player);
 		}
 		else if (packetId == PacketID::Pathfinding)
 		{
-			mNet.Send(&originalSize, 4);
-			mNet.Send(originalBuffer, originalSize);
-			printf("User %d sent a pathfinding update\n", ib->mId);
+			// Forward the packet to everyone in the same area
+			SendRaw(player->mZoneID, originalBuffer - 4, originalSize + 4, player);
+
+			printf("- %s sent a pathfinding update\n", player->mName.GetBuffer());
+		}
+		else if (packetId == PacketID::PlayerMove)
+		{
+			Vector3f pos;
+			Memory::Extract(buffer, size, pos);
+
+			Memory mem;
+			mem.Append(PacketID::PlayerMove);
+			mem.Append(player->mId);
+			mem.Append(pos);
+
+			// Forward the packet to everyone in the same area
+			Send(player->mZoneID, mem, player);
+			
+			printf("- %s is now moving to (%f %f %f)\n", player->mName.GetBuffer(), pos.x, pos.y, pos.z);
+		}
+		else if (packetId == PacketID::PlayerRun)
+		{
+			bool val;
+			Memory::Extract(buffer, size, val);
+
+			Memory mem;
+			mem.Append(PacketID::PlayerMove);
+			mem.Append(player->mId);
+			mem.Append(val);
+
+			// Forward the packet to everyone in the same area
+			Send(player->mZoneID, mem, player);
+			
+			printf("- %s is now %s\n", player->mName.GetBuffer(), val ? "running" : "walking");
 		}
 		else
 		{
-			printf("Received unknown ID: %d (%x %x %x %x)\n", packetId,
+			printf("- Received unknown ID: %d (%x %x %x %x)\n", packetId,
 				(packetId >> 24) & 0xFF,
 				(packetId >> 16) & 0xFF,
 				(packetId >> 8) & 0xFF,
