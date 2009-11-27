@@ -7,7 +7,7 @@
 // Quad-tree split scene object, can be extended to create terrains
 //============================================================================================================
 
-/*class QuadTree : public Object
+class QuadTree : public Object
 {
 public:
 
@@ -22,22 +22,22 @@ public:
 		};
 	};
 
-private:
+protected:
 
-	OnCreateCallback	mOnCreate;		// Function to call when creating new nodes
 	QuadNode*			mRootNode;		// Root of the tree
 	Array<QuadNode*>	mRenderable;	// Temporary list of renderable nodes
+	uint				mMaxNodes;
 
 public:
 
 	QuadTree() : mRootNode(0) {}
 	virtual ~QuadTree() { if (mRootNode != 0) delete mRootNode; }
 
-	// Returns the number of renderable partitions
-	uint GetRenderableSize() const { return mRenderable.GetSize(); }
+	// QuadTree is an abstract class, so mark it as such
+	R5_DECLARE_ABSTRACT_CLASS("QuadTree", Object);
 
-	// Changes the callback that's used to create subdivision nodes
-	void SetCreateNodeCallback (const OnCreateCallback& callback) { mOnCreate = callback; }
+	// Percentage of how much of the terrain is currently visible
+	float GetVisibility() const { return mRenderable.GetSize() / (float)mMaxNodes; }
 
 	// Splits the quadtree down until the subdivisions reach the specified desired dimensions
 	void PartitionToSize (uint desiredX, uint desiredY, uint currentX, uint currentY);
@@ -50,6 +50,9 @@ public:
 
 protected:
 
+	// Derived classes must override this function
+	virtual QuadNode* _CreateNode()=0;
+
 	// QuadTree often needs to reposition the child objects in its hierarchy
 	virtual void OnUpdate();
 	virtual void OnPostUpdate();
@@ -59,4 +62,4 @@ protected:
 
 	// Run through all renderable nodes and draw them
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
-};*/
+};

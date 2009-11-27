@@ -7,6 +7,7 @@
 // Most basic game object -- can be positioned somewhere in the scene and can contain children.
 //============================================================================================================
 
+class Core;
 class Object
 {
 	friend class Script;	// Script needs access to 'mScripts' so it can remove itself
@@ -164,6 +165,9 @@ public:
 	// Thread-safe locking functionality
 	void Lock()		const	{ mLock.Lock(); }
 	void Unlock()	const	{ mLock.Unlock(); }
+
+	// Retrieves the Core that was ultimately owns this object
+	Core* GetCore() { return mCore; }
 
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}

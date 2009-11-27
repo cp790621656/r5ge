@@ -2,10 +2,10 @@
 using namespace R5;
 
 //============================================================================================================
-// Helper function used in QuadTree::_Partition below
+// Helper function used in QuadNode::_Partition below
 //============================================================================================================
 
-/*void GetLeftRight (float& left, float& right, const float width, const float desired)
+void GetLeftRight (float& left, float& right, const float width, const float desired)
 {
 	if (width > desired)
 	{
@@ -152,7 +152,7 @@ bool QuadNode::_Add (Object* obj, const Vector3f& pos)
 }
 
 //============================================================================================================
-// INTERNAL: Partitions the tree
+// INTERNAL: Partitions the node, subdividing it into smaller children
 //============================================================================================================
 // 2 | 3
 // --+--
@@ -182,8 +182,8 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 
 		// Bottom-left
 		QuadNode* node = (mPart[0] = onCreate());
-		node->mTree	   = mTree;
-		node->mLevel   = mLevel + 1;
+		node->mTree = mTree;
+		node->mLevel = mLevel + 1;
 		node->mSize.Set(w0, h0);
 		node->mOffset.Set(x0, y0);
 		node->_Partition(onCreate, horizontal, vertical);
@@ -191,9 +191,9 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 		if (w1 > 0.0f)
 		{
 			// Bottom-right
-			node		  = (mPart[1] = onCreate());
-			node->mTree	  = mTree;
-			node->mLevel  = mLevel + 1;
+			node = (mPart[1] = onCreate());
+			node->mTree	= mTree;
+			node->mLevel = mLevel + 1;
 			node->mSize.Set(w1, h0);
 			node->mOffset.Set(x1, y0);
 			node->_Partition(onCreate, horizontal, vertical);
@@ -201,9 +201,9 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 			if (h1 > 0.0f)
 			{
 				// Top-right
-				node		  = (mPart[3] = onCreate());
-				node->mTree	  = mTree;
-				node->mLevel  = mLevel + 1;
+				node = (mPart[3] = onCreate());
+				node->mTree	= mTree;
+				node->mLevel = mLevel + 1;
 				node->mSize.Set(w1, h1);
 				node->mOffset.Set(x1, y1);
 				node->_Partition(onCreate, horizontal, vertical);
@@ -213,9 +213,9 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 		if (h1 > 0.0f)
 		{
 			// Top-left
-			node		  = (mPart[2] = onCreate());
-			node->mTree	  = mTree;
-			node->mLevel  = mLevel + 1;
+			node = (mPart[2] = onCreate());
+			node->mTree	= mTree;
+			node->mLevel = mLevel + 1;
 			node->mSize.Set(w0, h1);
 			node->mOffset.Set(x0, y1);
 			node->_Partition(onCreate, horizontal, vertical);
@@ -246,7 +246,7 @@ void QuadNode::_Fill (void* ptr)
 // Called when the object is being culled -- should return whether the object is visible
 //============================================================================================================
 
-void QuadNode::_Cull (Array<QuadNode*>& renderList, Object::CullParams& params, bool render)
+void QuadNode::_Cull (Array<QuadNode*>& tiles, Object::CullParams& params, bool render)
 {
 	// Root level is always considered to be visible for the sake of object culling
 	bool visible = (mLevel == 0);
@@ -260,15 +260,15 @@ void QuadNode::_Cull (Array<QuadNode*>& renderList, Object::CullParams& params, 
 		{
 			if (render)
 			{
-				renderList.Expand() = this;
+				tiles.Expand() = this;
 			}
 		}
 		else
 		{
-			if (mPart[0] != 0) mPart[0]->_Cull(renderList, params, render);
-			if (mPart[1] != 0) mPart[1]->_Cull(renderList, params, render);
-			if (mPart[2] != 0) mPart[2]->_Cull(renderList, params, render);
-			if (mPart[3] != 0) mPart[3]->_Cull(renderList, params, render);
+			if (mPart[0] != 0) mPart[0]->_Cull(tiles, params, render);
+			if (mPart[1] != 0) mPart[1]->_Cull(tiles, params, render);
+			if (mPart[2] != 0) mPart[2]->_Cull(tiles, params, render);
+			if (mPart[3] != 0) mPart[3]->_Cull(tiles, params, render);
 		}
 	}
 
@@ -281,4 +281,4 @@ void QuadNode::_Cull (Array<QuadNode*>& renderList, Object::CullParams& params, 
 			if (obj != 0) obj->_Cull(params, true, render);
 		}
 	}
-}*/
+}

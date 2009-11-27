@@ -67,6 +67,7 @@ Object* Object::_AddObject (const String& type, const String& name)
 			RegisterObject<DirectionalLight>();
 			RegisterObject<PointLight>();
 			RegisterObject<Glow>();
+			RegisterObject<Terrain>();
 		}
 	}
 

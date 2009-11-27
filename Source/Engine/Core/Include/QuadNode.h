@@ -7,7 +7,7 @@
 // Subdivisioned child of the QuadTree hierarchy
 //============================================================================================================
 
-/*class QuadTree;
+class QuadTree;
 class QuadNode
 {
 public:
@@ -20,7 +20,7 @@ public:
 protected:
 
 	QuadTree*	mTree;		// Pointer back to the tree that owns this node
-	QuadNode*	mPart[4];	// Quadtree is always made up of up to 4 subdivisions
+	QuadNode*	mPart[4];	// Each QuadNode is always made up of up to 4 subdivisions
 	Bounds		mBounds;	// Bounding volume for this node
 	Vector2f	mOffset;	// Relative XY offset of this node (0 to <1 range)
 	Vector2f	mSize;		// Relative size of this node (0 to 1 range)
@@ -64,4 +64,4 @@ protected:
 
 	// Draw the object using the specified technique
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)=0;
-};*/
+};

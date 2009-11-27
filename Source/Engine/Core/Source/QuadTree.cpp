@@ -5,7 +5,7 @@ using namespace R5;
 // Counts the number of partitions necessary to achieve the desired dimension
 //============================================================================================================
 
-/*uint CountPartitions (uint desired, uint starting)
+uint CountPartitions (uint desired, uint starting)
 {
 	uint part = 1;
 	for ( ; starting > desired; starting >>= 1 ) part <<= 1;
@@ -27,21 +27,20 @@ void QuadTree::PartitionToSize (uint desiredX, uint desiredY, uint currentX, uin
 
 void QuadTree::PartitionInto (uint horizontal, uint vertical)
 {
-	if (mOnCreate)
-	{
-		if (mRootNode != 0) delete mRootNode;
+	if (mRootNode != 0) delete mRootNode;
 
-		mRootNode = mOnCreate();
-		mRootNode->mTree = this;
-		mRootNode->mSize.Set(1.0f, 1.0f);
-		mRootNode->mOffset.Set(0.0f, 0.0f);
-		mRootNode->mLevel = 0;
+	mRootNode = _CreateNode();
+	mRootNode->mTree = this;
+	mRootNode->mSize.Set(1.0f, 1.0f);
+	mRootNode->mOffset.Set(0.0f, 0.0f);
+	mRootNode->mLevel = 0;
 
-		if (horizontal == 0) horizontal = 1;
-		if (vertical   == 0) vertical   = 1;
+	if (horizontal == 0) horizontal = 1;
+	if (vertical   == 0) vertical   = 1;
 
-		mRootNode->_Partition(mOnCreate, 1.0f / horizontal, 1.0f / vertical);
-	}
+	mMaxNodes = horizontal * vertical;
+
+	mRootNode->_Partition(bind(&QuadTree::_CreateNode, this), 1.0f / horizontal, 1.0f / vertical);
 }
 
 //============================================================================================================
@@ -50,7 +49,7 @@ void QuadTree::PartitionInto (uint horizontal, uint vertical)
 
 void QuadTree::Fill (void* ptr)
 {
-	if (mRootNode != 0)
+	if (mRootNode != 0 && ptr != 0)
 	{
 		mRootNode->_Fill(ptr);
 	}
@@ -100,7 +99,21 @@ Object::CullResult QuadTree::OnCull (CullParams& params, bool isParentVisible, b
 	uint size = params.GetArraySize();
 
 	// Cull the hierarchy, filling the list with renderable objects
-	if (mRootNode != 0) mRootNode->_Cull(mRenderable, params, render);
+	if (mRootNode != 0)
+	{
+		mRootNode->_Cull(mRenderable, params, render);
+
+		// If the list now contains valid nodes, then we must draw the terrain
+		if (mRenderable.IsValid())
+		{
+			// Layer is [-2] is because terrain should be rendered before everything else
+			Object::Drawable& drawable = params.mObjects.Expand();
+			drawable.mObject		= this;
+			drawable.mGroup			= 0;
+			drawable.mLayer			= -2;
+			drawable.mDistSquared	= 0.0f;
+		}
+	}
 
 	// Don't cull the children as they should already be culled by the subdivided nodes
 	return Object::CullResult(size != params.GetArraySize(), false);
@@ -119,4 +132,4 @@ uint QuadTree::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideO
 		triangles += mRenderable[i]->OnDraw(graphics, tech, insideOut);
 	}
 	return triangles;
-}*/
+}

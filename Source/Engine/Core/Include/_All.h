@@ -12,20 +12,10 @@
 
 namespace R5
 {
-	#include "Mesh.h"				// Complete drawable mesh
 	#include "Resource.h"			// TreeNode-based resource
-
-	class Core;
-
 	#include "Script.h"				// Scripts can be attached to game objects
 	#include "Object.h"				// Most basic game object
-	#include "Animatable.h"			// Animatable placeable
-	#include "QuadNode.h"			// Quad-tree subdivided node, can be extended to create terrains
-	#include "QuadTree.h"			// Quad-tree subdivisioned scene object
-	#include "Bone.h"				// Single bone for skeletal animation
-	#include "Animation.h"			// Keyframed animation
-	#include "Skeleton.h"			// Skeleton structure for skeletal animation
-	
+
 	#include "Camera.h"				// Base camera class
 	#include "DebugCamera.h"		// Free movement camera, useful for debugging
 	#include "AnimatedCamera.h"		// Extended camera class supporting spline-based animation
@@ -36,6 +26,11 @@ namespace R5
 	#include "PointLight.h"			// Point light
 	#include "Emitter.h"			// Particle emitter system template
 
+	#include "Mesh.h"				// Complete drawable mesh
+	#include "Animatable.h"			// Animatable placeable
+	#include "Bone.h"				// Single bone for skeletal animation
+	#include "Animation.h"			// Keyframed animation
+	#include "Skeleton.h"			// Skeleton structure for skeletal animation
 	#include "Limb.h"				// Limb class is a mesh+material pair association, used by the Prop class
 	#include "BoneTransform.h"		// Skeletal bone transform with relative, absolute, and inverse bind values
 	#include "ActiveAnimation.h"	// Currently active animation
@@ -43,6 +38,11 @@ namespace R5
 	#include "Prop.h"				// Placeable static (non-animated) model
 	#include "Model.h"				// Model created from the template, contains its own animations
 	#include "ModelInstance.h"		// Instantiated model that can be placed into the scenegraph
+
+	#include "QuadNode.h"			// Quad-tree subdivided node, can be extended to create terrains
+	#include "QuadTree.h"			// Quad-tree subdivisioned scene object
+	#include "TerrainNode.h"		// Subdivisioned child of the Terrain class
+	#include "Terrain.h"			// Simple terrain implementation using QuadTree
 
 	#include "Scene.h"				// Scene root
 	#include "Templates.h"			// Templated FindWidget<> and AddWidget<> functions
