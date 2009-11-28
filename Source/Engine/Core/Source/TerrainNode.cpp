@@ -22,23 +22,6 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 		const Vector3f& terrainScale	= hm->mTerrainScale;
 		const Vector3f& terrainOffset	= hm->mTerrainOffset;
 
-		// Tile's offset and size in index space
-		Vector2f indexOffset (mOffset.x * bufferWidth, mOffset.y * bufferHeight);
-		Vector2f indexSize   (mSize.x   * bufferWidth, mSize.y   * bufferHeight);
-
-		uint defaultX = Float::RoundToUInt(indexSize.x);
-		uint defaultY = Float::RoundToUInt(indexSize.y);
-
-		// Tile's first and last indices
-		uint firstX = Float::RoundToUInt(indexOffset.x);
-		uint firstY = Float::RoundToUInt(indexOffset.y);
-		uint lastX  = Float::RoundToUInt(indexOffset.x + indexSize.x);
-		uint lastY  = Float::RoundToUInt(indexOffset.y + indexSize.y);
-
-		// Don't allow the indices to exceed the limits
-		if (lastX >= bufferWidth)  lastX = bufferWidth  - 1;
-		if (lastY >= bufferHeight) lastY = bufferHeight - 1;
-
 		// Actual number of vertices is always one higher
 		uint vertsX = meshWidth  + 1;
 		uint vertsY = meshHeight + 1;
@@ -47,25 +30,8 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 
 		// Generate all the vertices
 		{
-			// Offset in world space
-			Vector2f worldOffset (
-				mOffset.x * terrainScale.x + terrainOffset.x,
-				mOffset.y * terrainScale.y + terrainOffset.y );
-
-			// Each quad's size in world space
-			Vector2f worldSize(
-				(1.0f / bufferWidth ) * terrainScale.x,
-				(1.0f / bufferHeight) * terrainScale.y );
-
-			// Ratio of actual size to desired size
-			Vector2f ratio ((float)(lastX - firstX) / meshWidth,
-							(float)(lastY - firstY) / meshHeight);
-
-			// Scaled value that will convert vertex iterators below into size in world space
-			Vector2f scaledWorld (ratio.x * worldSize.x, ratio.y * worldSize.y);
-
-			// Scaled value that will convert vertex iterators below into 0-1 relative offset space
-			Vector2f scaledRelative (mSize.x / meshWidth, mSize.y / meshHeight);
+			// Scaled value that will convert vertex iterators below into 0-1 range node's size
+			Vector2f iterToRelative (mSize.x / meshWidth, mSize.y / meshHeight);
 
 			// Create a temporary buffer
 			Vector3f* v = (Vector3f*)mem.Resize(vertsX * vertsY * 12);
@@ -75,13 +41,13 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 			// Fill the buffer with vertices
 			for (unsigned int y = 0; y < vertsY; ++y)
 			{
-				wy = worldOffset.y + scaledWorld.y * y;
-				fy = mOffset.y + scaledRelative.y * y;
+				fy = mOffset.y + iterToRelative.y * y;
+				wy = terrainOffset.y + fy * terrainScale.y;
 
 				for (unsigned int x = 0; x < vertsX; ++x, ++v)
 				{
-					wx = worldOffset.x + scaledWorld.x * x;
-					fx = mOffset.x + scaledRelative.x * x;
+					fx = mOffset.x + iterToRelative.x * x;
+					wx = terrainOffset.x + fx * terrainScale.x;
 
 					// Sample the buffer using bilinear filtering
 					wz = Interpolation::BicubicClamp(buffer, bufferWidth, bufferHeight, fx, fy);
