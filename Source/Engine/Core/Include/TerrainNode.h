@@ -15,12 +15,17 @@ protected:
 	IVBO*	mIBO;
 	uint	mIndices;
 
-public:
+private:
+
+	// Only the Terrain class can create new TerrainNodes
+	friend class Terrain;
 
 	TerrainNode() : mVBO(0), mIBO(0), mIndices(0) {}
 
+public:
+
 	// Should create the node's topology and update 'mBounds'
-	virtual void OnFill (void* ptr);
+	virtual void OnFill (void* ptr, float bboxPadding);
 
 	// Draw the object using the specified technique
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);

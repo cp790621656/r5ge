@@ -115,8 +115,16 @@ void TestApp::Run()
 		// By default the terrain starts at (0, 0, 0). Let's somwhat-center it instead.
 		hm.mTerrainOffset.Set(-10.0f, -10.0f, -3.0f);
 
-		// There. All done. Now let's fill the terrain's geometry.
-		mTerrain->Fill(&hm);
+		// Time to fill the actual geometry. One last important thing to note is the optional bounding
+		// box padding parameter that QuadTree::Fill function accepts. This parameter is used to extrude
+		// the height of the bounding box vertically in both directions so that child objects can
+		// fit easier. Objects that "fit" into the bounding box of the terrain's subdivisioned
+		// nodes will get culled faster, speeding up your game. I recommend setting this property to
+		// the height of the tallest building or tree you expect to place on your map. In this
+		// example we don't have any objects placed as children of the terrain, but it's worth
+		// noting nonetheless.
+
+		mTerrain->Fill(&hm, 0.0f);
 
 		// And now... we need to be able to see the terrain we've just created.
 		// The best way to visualize a terrain without any textures on it is to display it in wireframe.

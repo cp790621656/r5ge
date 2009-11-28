@@ -44,14 +44,14 @@ void QuadTree::PartitionInto (uint horizontal, uint vertical)
 }
 
 //============================================================================================================
-// Fills the bottom-most layer of the quadtree (subdivisions with no children)
+// Fills the bottom-most layer of the QuadTree (subdivisions with no children)
 //============================================================================================================
 
-void QuadTree::Fill (void* ptr)
+void QuadTree::Fill (void* ptr, float bboxPadding)
 {
 	if (mRootNode != 0 && ptr != 0)
 	{
-		mRootNode->_Fill(ptr);
+		mRootNode->_Fill(ptr, bboxPadding);
 	}
 }
 

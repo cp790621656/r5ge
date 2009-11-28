@@ -49,7 +49,7 @@ private:
 	void _Partition (const OnCreateCallback& onCreate, float horizontal, float vertical);
 
 	// Calls 'OnCreate' on appropriate nodes
-	void _Fill (void* ptr);
+	void _Fill (void* ptr, float bboxPadding);
 
 	// Called when the object is being culled, returns whether this node is visible
 	void _Cull (Array<QuadNode*>& renderList, Object::CullParams& params, bool render);
@@ -60,7 +60,7 @@ private:
 protected:
 
 	// Should create the node's topology and update 'mBounds'
-	virtual void OnFill (void* ptr)=0;
+	virtual void OnFill (void* ptr, float bboxPadding)=0;
 
 	// Draw the object using the specified technique
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)=0;

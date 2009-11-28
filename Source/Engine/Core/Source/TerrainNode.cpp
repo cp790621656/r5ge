@@ -5,10 +5,8 @@ using namespace R5;
 // Should create the node's topology and update 'mBounds'
 //============================================================================================================
 
-void TerrainNode::OnFill (void* ptr)
+void TerrainNode::OnFill (void* ptr, float bboxPadding)
 {
-	ASSERT( mTree->IsOfClass( Terrain::ClassID() ), "That's unexpected..." );
-
 	Terrain* terrain = (Terrain*)mTree;
 	IGraphics* graphics = mTree->GetCore()->GetGraphics();
 
@@ -96,6 +94,19 @@ void TerrainNode::OnFill (void* ptr)
 				}
 			}
 
+			// Take padding into consideration
+			if (bboxPadding > 0.0f)
+			{
+				Vector3f min (mBounds.GetMin());
+				Vector3f max (mBounds.GetMax());
+
+				min.y -= bboxPadding;
+				max.y += bboxPadding;
+
+				mBounds.Include(min);
+				mBounds.Include(max);
+			}
+
 			if (mVBO == 0) mVBO = graphics->CreateVBO();
 			
 			// Fill the VBO
@@ -139,27 +150,8 @@ void TerrainNode::OnFill (void* ptr)
 
 uint TerrainNode::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
-	ASSERT( mTree->IsOfClass( Terrain::ClassID() ), "That's unexpected..." );
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+		mVBO, 0, IGraphics::DataType::Float, 3, 12 );
 
-	const Terrain* terrain = (const Terrain*)mTree;
-	const IMaterial* mat = terrain->GetMaterial();
-
-	if ( (mat->GetTechniqueMask() & tech->GetMask()) != 0 )
-	{
-		ASSERT( mVBO != 0 && mIBO != 0 && mIndices != 0, "Terrain is missing its mesh?" );
-
-		graphics->SetActiveMaterial(mat);
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Color,		0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Tangent,	0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord0,	0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord1,	0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
-		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Position,
-			mVBO, 0, IGraphics::DataType::Float, 3, 12 );
-
-		return graphics->DrawIndices(mIBO, IGraphics::Primitive::Quad, mIndices);
-	}
-	return 0;
+	return graphics->DrawIndices(mIBO, IGraphics::Primitive::Quad, mIndices);
 }

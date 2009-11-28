@@ -45,8 +45,9 @@ public:
 	// Split the tree into the specified number of parts
 	void PartitionInto (uint horizontal, uint vertical);
 
-	// Fill the terrain's topology after partitioning the QuadTree
-	void Fill (void* ptr);
+	// Fill the terrain's topology after partitioning the QuadTree.
+	// Height padding extends the height of the bounding box by this amount so child objects can fit easier.
+	void Fill (void* ptr, float bboxPadding = 0.0f);
 
 protected:
 

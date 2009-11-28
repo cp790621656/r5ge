@@ -227,19 +227,19 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 // Calls 'OnFill' on appropriate nodes
 //============================================================================================================
 
-void QuadNode::_Fill (void* ptr)
+void QuadNode::_Fill (void* ptr, float padding)
 {
 	mBounds.Reset();
 
 	mLeaf = true;
 
-	if (mPart[0] != 0) { mPart[0]->_Fill(ptr); mBounds.Include(mPart[0]->mBounds); mLeaf = false; }
-	if (mPart[1] != 0) { mPart[1]->_Fill(ptr); mBounds.Include(mPart[1]->mBounds); mLeaf = false; }
-	if (mPart[2] != 0) { mPart[2]->_Fill(ptr); mBounds.Include(mPart[2]->mBounds); mLeaf = false; }
-	if (mPart[3] != 0) { mPart[3]->_Fill(ptr); mBounds.Include(mPart[3]->mBounds); mLeaf = false; }
+	if (mPart[0] != 0) { mPart[0]->_Fill(ptr, padding); mBounds.Include(mPart[0]->mBounds); mLeaf = false; }
+	if (mPart[1] != 0) { mPart[1]->_Fill(ptr, padding); mBounds.Include(mPart[1]->mBounds); mLeaf = false; }
+	if (mPart[2] != 0) { mPart[2]->_Fill(ptr, padding); mBounds.Include(mPart[2]->mBounds); mLeaf = false; }
+	if (mPart[3] != 0) { mPart[3]->_Fill(ptr, padding); mBounds.Include(mPart[3]->mBounds); mLeaf = false; }
 
 	// Only call 'OnFill' on the bottom-most node
-	if (mLeaf) OnFill(ptr);
+	if (mLeaf) OnFill(ptr, padding);
 }
 
 //============================================================================================================

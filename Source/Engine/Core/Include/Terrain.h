@@ -30,7 +30,6 @@ public:
 
 protected:
 
-	// Material used by the terrain
 	const IMaterial* mMat;
 
 public:
@@ -45,4 +44,7 @@ protected:
 
 	// Derived classes must override this function
 	virtual QuadNode* _CreateNode() { return new TerrainNode(); }
+
+	// Set up all render states and activate the material before moving down to QuadTree's OnDraw
+	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
 };
