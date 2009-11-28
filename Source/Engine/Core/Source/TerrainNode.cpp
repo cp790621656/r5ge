@@ -15,36 +15,37 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 		// Passed parameters used to generate the terrain
 		const Terrain::Heightmap* hm	= (const Terrain::Heightmap*)ptr;
 		const float*	buffer			= hm->mBufferData;
-		const uint		bufferWidth		= hm->mBufferSize.x;
-		const uint		bufferHeight	= hm->mBufferSize.y;
-		const uint		meshWidth		= hm->mMeshSize.x;
-		const uint		meshHeight		= hm->mMeshSize.y;
+		const uint		bufferWidth		= hm->mBufferWidth;
+		const uint		bufferHeight	= hm->mBufferHeight;
+		const uint		meshWidth		= hm->mMeshSize.x < 2 ? 2 : hm->mMeshSize.x;
+		const uint		meshHeight		= hm->mMeshSize.y < 2 ? 2 : hm->mMeshSize.y;
 		const Vector3f& terrainScale	= hm->mTerrainScale;
 		const Vector3f& terrainOffset	= hm->mTerrainOffset;
 
-		// Actual number of vertices is always one higher
-		uint vertsX = meshWidth  + 1;
-		uint vertsY = meshHeight + 1;
+		// The number of indices is always one less than the number of vertices
+		uint indexX = meshWidth  - 1;
+		uint indexY = meshHeight - 1;
 
 		Memory mem;
 
 		// Generate all the vertices
 		{
-			// Scaled value that will convert vertex iterators below into 0-1 range node's size
-			Vector2f iterToRelative (mSize.x / meshWidth, mSize.y / meshHeight);
+			// Scaled value that will convert vertex iterators below into
+			// 0-1 range relative to the size of the terrain
+			Vector2f iterToRelative (mSize.x / indexX, mSize.y / indexY);
 
 			// Create a temporary buffer
-			Vector3f* v = (Vector3f*)mem.Resize(vertsX * vertsY * 12);
+			Vector3f* v = (Vector3f*)mem.Resize(meshWidth * meshHeight * sizeof(Vector3f));
 
 			float fx, fy, wx, wy, wz;
 
 			// Fill the buffer with vertices
-			for (unsigned int y = 0; y < vertsY; ++y)
+			for (unsigned int y = 0; y < meshHeight; ++y)
 			{
 				fy = mOffset.y + iterToRelative.y * y;
 				wy = terrainOffset.y + fy * terrainScale.y;
 
-				for (unsigned int x = 0; x < vertsX; ++x, ++v)
+				for (unsigned int x = 0; x < meshWidth; ++x, ++v)
 				{
 					fx = mOffset.x + iterToRelative.x * x;
 					wx = terrainOffset.x + fx * terrainScale.x;
@@ -83,16 +84,16 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 
 		// Generate the indices
 		{
-			mIndices = meshWidth * meshHeight * 4;
-			ushort* index = (ushort*)mem.Resize(mIndices * 2);
+			mIndices = indexX * indexY * 4;
+			ushort* index = (ushort*)mem.Resize(mIndices * sizeof(short));
 
 			// Fill the index array using quad primitives
-			for (unsigned int y = 0; y < meshHeight; ++y)
+			for (unsigned int y = 0; y < indexY; ++y)
 			{
-				unsigned int y0 = vertsX * y;
-				unsigned int y1 = vertsX * (y + 1);
+				unsigned int y0 = meshWidth * y;
+				unsigned int y1 = meshWidth * (y + 1);
 
-				for (unsigned int x = 0; x < meshWidth; ++x)
+				for (unsigned int x = 0; x < indexX; ++x)
 				{
 					*index = y1 + x;		++index;
 					*index = y0 + x;		++index;
@@ -117,7 +118,8 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 uint TerrainNode::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
-		mVBO, 0, IGraphics::DataType::Float, 3, 12 );
+		mVBO, 0, IGraphics::DataType::Float, 3, 0 );
 
 	return graphics->DrawIndices(mIBO, IGraphics::Primitive::Quad, mIndices);
+	//return graphics->DrawVertices(IGraphics::Primitive::Point, 16);
 }

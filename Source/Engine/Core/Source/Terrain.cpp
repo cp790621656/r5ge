@@ -7,7 +7,7 @@ using namespace R5;
 
 uint Terrain::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
-	if ( (mMat->GetTechniqueMask() & tech->GetMask()) != 0 )
+	if ( mMat != 0 && (mMat->GetTechniqueMask() & tech->GetMask()) != 0 )
 	{
 		graphics->SetActiveMaterial(mMat);
 		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );
@@ -21,4 +21,33 @@ uint Terrain::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOu
 		return QuadTree::OnDraw(graphics, tech, insideOut);
 	}
 	return 0;
+}
+
+//============================================================================================================
+// Called when the object is being saved
+//============================================================================================================
+
+void Terrain::OnSerializeTo (TreeNode& root) const
+{
+	if (mMat != 0) root.AddChild(IMaterial::ClassID(), mMat->GetName());
+}
+
+//============================================================================================================
+// Called when the object is being loaded
+//============================================================================================================
+
+bool Terrain::OnSerializeFrom (const TreeNode& root)
+{
+	if (root.mTag == IMaterial::ClassID())
+	{
+		IGraphics* graphics = mCore->GetGraphics();
+
+		if (graphics != 0)
+		{
+			mMat = graphics->GetMaterial( root.mValue.IsString() ?
+				root.mValue.AsString() : root.mValue.GetString() );
+		}
+		return true;
+	}
+	return false;
 }

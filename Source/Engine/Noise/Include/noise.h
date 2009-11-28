@@ -67,11 +67,11 @@ public:
 	// Release the allocated buffers
 	void Release (bool clearFilters = true);
 
-	uint GetSeed()				const	{ return mSeed; }
-	uint GetWidth()				const	{ return (uint)mSize.x; }
-	uint GetHeight()			const	{ return (uint)mSize.y; }
-	bool IsSeamless()			const	{ return mSeamless; }
-	const Vector2i& GetSize()	const	{ return mSize; }
+	uint GetSeed()		const	{ return mSeed; }
+	uint GetWidth()		const	{ return (uint)mSize.x; }
+	uint GetHeight()	const	{ return (uint)mSize.y; }
+	uint GetSize()		const	{ return (uint)mSize.x * (uint)mSize.y; }
+	bool IsSeamless()	const	{ return mSeamless; }
 
 	void SetSeed(uint seed)				{ if (mSeed != seed) { mSeed = seed; mIsDirty = true; } }
 	void SetSeamless (bool val)			{ mSeamless = val; }

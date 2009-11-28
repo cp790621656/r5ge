@@ -134,9 +134,9 @@ void GenerateFractal (Random& r, float* out, uint width, uint height, float thre
 				min =  1024.0f;
 				max = -1024.0f;
 
-				if (x > half)			INCLUDE(temp[index - half]);
+				if (x >= half)			INCLUDE(temp[index - half]);
 				if (x + half < size)	INCLUDE(temp[index + half]);
-				if (y > half)			INCLUDE(temp[index - halfSize]);
+				if (y >= half)			INCLUDE(temp[index - halfSize]);
 				if (y + half < size)	INCLUDE(temp[index + halfSize]);
 
 				FINALIZE(temp[index], diamondVariance);

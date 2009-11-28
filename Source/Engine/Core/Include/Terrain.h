@@ -14,23 +14,23 @@ public:
 	struct Heightmap
 	{
 		const float*	mBufferData;	// Pointer to the heightmap's buffer
-		Vector2i		mBufferSize;	// Width and height of the buffer
+		uint			mBufferWidth;	// Width of the buffer
+		uint			mBufferHeight;	// Height of the buffer
 		Vector2i		mMeshSize;		// Dimensions of each individual node's generated mesh
 		Vector3f		mTerrainScale;	// Scale to apply to the entire terrain (starts at 1,1,1)
 		Vector3f		mTerrainOffset;	// Offset to apply to the entire terrain (starts at 0,0,0)
 
-		Heightmap() : mBufferData(0), mTerrainScale(1.0f) {}
+		Heightmap() : mBufferData(0), mBufferWidth(0), mBufferHeight(0), mTerrainScale(1.0f) {}
 
-		Heightmap(const float* buffer, const Vector2i& size) : mTerrainScale(1.0f)
-		{
-			mBufferData = buffer;
-			mBufferSize = size;
-		}
+		Heightmap(const float* buffer, uint width, uint height) :
+			mBufferData(buffer), mBufferWidth(width), mBufferHeight(height), mTerrainScale(1.0f) {}
 	};
 
 protected:
 
 	const IMaterial* mMat;
+
+	Terrain() : mMat(0) {}
 
 public:
 
@@ -47,4 +47,10 @@ protected:
 
 	// Set up all render states and activate the material before moving down to QuadTree's OnDraw
 	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+
+	// Called when the object is being saved
+	virtual void OnSerializeTo (TreeNode& root) const;
+
+	// Called when the object is being loaded
+	virtual bool OnSerializeFrom (const TreeNode& root);
 };

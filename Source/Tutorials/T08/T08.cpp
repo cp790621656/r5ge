@@ -6,10 +6,9 @@
 //------------------------------------------------------------------------------------------------------------
 // Eighth tutorial in the series shows how to generate a quad-tree partitioned terrain.
 //------------------------------------------------------------------------------------------------------------
-// Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, UI, Render, Noise
+// Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, UI, Noise
 //============================================================================================================
 
-#include "../../Engine/Render/Include/_All.h"
 #include "../../Engine/OpenGL/Include/_All.h"
 #include "../../Engine/Noise/Include/_All.h"
 #include "../../Engine/Core/Include/_All.h"
@@ -98,7 +97,7 @@ void TestApp::Run()
 		// Terrain::Heightmap struct exists for just this purpose.
 
 		// Provide the heightmap itself
-		Terrain::Heightmap hm (noise.GetBuffer(), noise.GetSize());
+		Terrain::Heightmap hm (noise.GetBuffer(), noise.GetWidth(), noise.GetHeight());
 
 		// We want each subdivided mesh to be 32 by 32 quads. As you might recall there are 64 subdivisions
 		// in total, and now each of those 64 will contain (32 x 32) = 1024 quads, or 2048 triangles.
