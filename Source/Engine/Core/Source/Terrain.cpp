@@ -7,7 +7,7 @@ using namespace R5;
 
 uint Terrain::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 {
-	if ( mMat != 0 && (mMat->GetTechniqueMask() & tech->GetMask()) != 0 )
+	if ( mMat != 0 && mMat->IsVisibleWith(tech) )
 	{
 		graphics->SetActiveMaterial(mMat);
 		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );

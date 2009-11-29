@@ -75,4 +75,10 @@ public:
 	virtual void SetSerializable(bool val)=0;
 	virtual bool SerializeFrom (const TreeNode& root, bool forceUpdate = false)=0;
 	virtual bool SerializeTo (TreeNode& root) const=0;
+
+	// Helper function that can be used to determine whether the material can be drawn with this technique
+	inline bool IsVisibleWith (const ITechnique* tech) const
+	{
+		return (GetDiffuse().GetColor4ub().a != 0) && ((GetTechniqueMask() & tech->GetMask()) != 0);
+	}
 };

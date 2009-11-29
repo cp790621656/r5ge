@@ -1,14 +1,11 @@
 #version 110
 
-uniform sampler2D   R5_texture0;
-uniform sampler2D   R5_texture1;
-uniform sampler2D   R5_texture2;
-uniform sampler2D   R5_texture3;
-uniform sampler2D   R5_texture4;
-uniform sampler2D   R5_texture5;
-
-uniform vec3 g_offset;
-uniform vec3 g_scale;
+uniform sampler2D   R5_texture0; // Sand
+uniform sampler2D   R5_texture1; // Field moss
+uniform sampler2D   R5_texture2; // Mountain moss
+uniform sampler2D   R5_texture3; // Rocks
+uniform sampler2D   R5_texture4; // Snow
+uniform sampler2D   R5_texture5; // Normal map (RGB) and height (A)
 
 varying float _fogFactor;
 varying vec2 _texCoord, _mapCoord;
@@ -20,50 +17,56 @@ varying vec2 _texCoord, _mapCoord;
 void main()
 {
     // Normal map contains the encoded XYZ normal along with the height value (alpha)
-    vec4  map         = texture2D(R5_texture5, _mapCoord);
-    float height      = (map.a + g_offset.z) * g_scale.z - pow(0.5, 3.0) * g_scale.z;
-    vec3  normal      = normalize(map.xyz * 2.0 - 1.0);
-    vec3  transNormal = normalize(gl_NormalMatrix * normal);
-
-    const float heightCap = 20.0;
-
-    // Starting color is black, using the material's alpha
-    vec4 color = vec4(0.0, 0.0, 0.0, gl_FrontMaterial.diffuse.a);
+    vec4  normalMap = texture2D(R5_texture5, _mapCoord);
+    vec3  normal    = normalize(normalMap.xyz * 2.0 - 1.0);
+    vec3  eyeNormal = normalize(gl_NormalMatrix * normal);
+    float height 	= normalMap.a;
 
     // Directional light
-    float diffuseFactor = max( 0.0, dot(transNormal, normalize(gl_LightSource[0].position.xyz)) );
-    color.rgb  += gl_FrontLightProduct[0].ambient.rgb;
-    color.rgb  += gl_FrontLightProduct[0].diffuse.rgb * diffuseFactor;
+    float diffuseFactor = max( 0.0, dot(eyeNormal, normalize(gl_LightSource[0].position.xyz)) );
+
+	// Starting color should be the lit material color
+    vec4 color = vec4(
+		gl_FrontLightProduct[0].ambient.rgb +
+		gl_FrontLightProduct[0].diffuse.rgb * diffuseFactor,
+		gl_FrontMaterial.diffuse.a);
 
     // Textures
-    vec4 stone    = texture2D(R5_texture0, _texCoord);
-    vec4 sand     = texture2D(R5_texture1, _texCoord);
-    vec4 grass    = texture2D(R5_texture2, _texCoord);
-    vec4 mountain = texture2D(R5_texture3, _texCoord);
-    vec4 snow     = texture2D(R5_texture4, _texCoord);
+    vec4 sand  = texture2D(R5_texture0, _texCoord);
+    vec4 grass = texture2D(R5_texture1, _texCoord);
+    vec4 moss  = texture2D(R5_texture2, _texCoord);
+    vec4 rock  = texture2D(R5_texture3, _texCoord);
+    vec4 snow  = texture2D(R5_texture4, _texCoord);
 
-    // Slope is based on the normal
-    float nDot = pow(dot(normal, vec3(0.0, 0.0, 1.0)) + 0.2, 20.0);
+    // Where various textures should appear
+    float rockToSnow  = smoothstep(0.65,  1.0,  height);
+    float grassToRock = smoothstep(0.35,  0.65, height);
+    float grassToMoss = smoothstep(0.15,  0.3,  height);
+    float sandToGrass = smoothstep(0.075, 0.15, height);
 
-    // Grass and mountain textures are mixed based on the slope
-    float snowFactor = smoothstep(19.0 / 35.0 * heightCap, 27.0 / 35.0 * heightCap, height);
-    float mountainFactor = max(1.0 - nDot, smoothstep(8.0 / 35.0 * heightCap,  19.0 / 35.0 * heightCap, height));
+    // Slope is based on the normal -- the more bent the normal, the rockier this pixel should be
+    float slope = pow(dot(normal, vec3(0.0, 0.0, 1.0)), 50.0);
 
-    snowFactor = min(snowFactor + snowFactor * nDot, 1.0);
+    // Snow should appear only on really high or on flat surfaces
+    rockToSnow = min(rockToSnow + rockToSnow * slope, 1.0);
 
-    vec4 snowMountain  = mix(mountain, snow, snowFactor);
-    vec4 grassMountain = mix(grass, snowMountain, mountainFactor);
+	// Rocks appear where the slope is steep
+    grassToRock = max(1.0 - slope, grassToRock);
 
-    // Stone and sand
-    //vec4 mixer = mix(stone, sand, smoothstep(-3.5, -1.0, height));
+	// Mixing snow with rock textures
+    vec4 snowRock = mix(rock, snow, rockToSnow);
 
-    // Previous and grass/mountain
-    float heightFactor = smoothstep(0.5, 4.0, height);
-    //mixer = mix(mixer, grassMountain, heightFactor);
+	// Mixing previous result with the moss texture
+    vec4 grassRock = mix(moss, snowRock, grassToRock);
+
+    // Mixing sand with grass textures
+    vec4 mixer = mix(sand, grass, sandToGrass);
+
+    // Finally mix the two sets of textures together
+    mixer = mix(mixer, grassRock, grassToMoss);
 
     // Add a moving shadow to the terrain
-    color       *= grassMountain;
-    if (height < 0.0) color = vec4(0.0, 0.5, 1.0, 1.0);
+    color       *= mixer;
     color.rgb    = mix(color.rgb, gl_Fog.color.rgb, _fogFactor);
     color.a      = min(color.a, 1.0);
     gl_FragColor = color;
