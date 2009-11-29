@@ -99,7 +99,7 @@ inline float GetAngle (const Vector3f& v0, const Vector3f& v1)
 
 inline float GetAngle (const Quaternion& q0, const Quaternion& q1)
 {
-	return Float::Acos( q0.GetDirection().Dot(q1.GetDirection()) );
+	return Float::Acos( q0.GetForward().Dot(q1.GetForward()) );
 }
 
 //============================================================================================================

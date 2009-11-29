@@ -87,7 +87,7 @@ protected:
 	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
 
 	// Draw the object using the specified technique
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
 	// Serialization to and from the scenegraph tree
 	virtual void OnSerializeTo	 (TreeNode& root) const;

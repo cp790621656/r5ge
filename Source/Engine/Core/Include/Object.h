@@ -215,6 +215,9 @@ public:
 	void SetAbsoluteRotation ( const Quaternion& rot );
 	void SetAbsoluteScale	 ( float scale );
 
+	// Force-draws this object, bypassing all culling logic
+	uint Draw (const ITechnique* tech, bool insideOut = false);
+
 public:
 
 	// Updates the object, calling appropriate virtual functions
@@ -250,7 +253,7 @@ protected:
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in
 	// OnCull. It should return the number of triangles rendered.
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut) { return 0; }
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut) { return 0; }
 
 	// Called when the object is being selected -- should return 'true' to consider children as well
 	virtual bool OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);

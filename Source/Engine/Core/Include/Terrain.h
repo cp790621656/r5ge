@@ -46,7 +46,7 @@ protected:
 	virtual QuadNode* _CreateNode() { return new TerrainNode(); }
 
 	// Set up all render states and activate the material before moving down to QuadTree's OnDraw
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
 	// Called when the object is being saved
 	virtual void OnSerializeTo (TreeNode& root) const;

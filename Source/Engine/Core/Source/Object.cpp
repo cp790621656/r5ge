@@ -191,6 +191,8 @@ Script* Object::_AddScript (const char* type)
 			}
 		}
 		gScriptTypes.Unlock();
+
+		if (ptr != 0) ptr->Init();
 	}
 	return ptr;
 }
@@ -229,6 +231,8 @@ Script* Object::_AddScript (const String& type)
 			}
 		}
 		gScriptTypes.Unlock();
+
+		if (ptr != 0) ptr->Init();
 	}
 	return ptr;
 }
@@ -383,6 +387,17 @@ void Object::SetAbsoluteScale (float scale)
 		mRelativeScale = mAbsoluteScale / mParent->GetAbsoluteScale();
 	}
 	else mRelativeScale = mAbsoluteScale;
+}
+
+//============================================================================================================
+// Force-draws this object, bypassing all culling logic
+//============================================================================================================
+
+uint Object::Draw (const ITechnique* tech, bool insideOut)
+{
+	IGraphics* graphics = mCore->GetGraphics();
+	graphics->SetActiveTechnique(tech);
+	return OnDraw(tech, insideOut);
 }
 
 //============================================================================================================

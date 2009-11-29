@@ -895,6 +895,13 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetBlending(IGraphics::Blending::None);
 					tech->SetWireframe(true);
 				}
+				else if (name == "Decal")
+				{
+					tech->SetFog(false);
+					tech->SetDepthWrite(false);
+					tech->SetLighting(IGraphics::Lighting::None);
+					tech->SetBlending(IGraphics::Blending::None);
+				}
 
 				// Newly created techniques should not be saveable until something changes
 				tech->SetSerializable(false);

@@ -59,7 +59,7 @@ Object::CullResult Glow::OnCull (CullParams& params, bool isParentVisible, bool 
 		else
 		{
 			// Directional and spot lights are checked against the camera's directional vector
-			isParentVisible = params.mCamDir.Dot(mAbsoluteRot.GetDirection()) < 0.0f;
+			isParentVisible = params.mCamDir.Dot(mAbsoluteRot.GetForward()) < 0.0f;
 		}
 
 		// Besides the ovbious visibility check, there must be something visible to render to begin with
@@ -87,8 +87,10 @@ Object::CullResult Glow::OnCull (CullParams& params, bool isParentVisible, bool 
 // Draws visible objects in the scene graph
 //============================================================================================================
 
-uint Glow::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint Glow::OnDraw (const ITechnique* tech, bool insideOut)
 {
+	IGraphics* graphics = mCore->GetGraphics();
+
 	static ITechnique* glow  = graphics->GetTechnique("Glow");
 	static ITechnique* glare = graphics->GetTechnique("Glare");
 
@@ -130,7 +132,7 @@ uint Glow::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 				// Directional object's position should be always relative to the camera's position,
 				// while the positional orientation is more straightforward since it's in world space
 				Vector3f offset = (mType == Type::Directional) ?
-					camPos - mAbsoluteRot.GetDirection() * range.y :
+					camPos - mAbsoluteRot.GetForward() * range.y :
 					mAbsolutePos;
 
 				// Get the modelview matrix and remove the top-left 3x3 component, eliminating rotation and scaling
@@ -156,7 +158,7 @@ uint Glow::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
 			{
 				// IGraphics::IsVisible() check is affected by the modelview matrix
 				graphics->ResetViewMatrix();
-				Vector3f point ( camPos - mAbsoluteRot.GetDirection() * (range.y * 0.99f) );
+				Vector3f point ( camPos - mAbsoluteRot.GetForward() * (range.y * 0.99f) );
 				_SetTargetAlpha( graphics->IsPointVisible(point) );
 			}
 			else if (mType == Type::Point)

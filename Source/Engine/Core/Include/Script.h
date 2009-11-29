@@ -47,6 +47,9 @@ public:
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();
 
+	// Initialization function is called once the script has been created
+	virtual void Init() {}
+
 	// Called prior to object's Update function
 	virtual void OnPreUpdate() { mIgnore.Set(Ignore::PreUpdate, true); }
 

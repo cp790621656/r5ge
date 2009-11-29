@@ -62,5 +62,5 @@ protected:
 	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
 
 	// Run through all renderable nodes and draw them
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 };

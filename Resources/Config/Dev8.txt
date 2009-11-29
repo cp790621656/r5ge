@@ -1,0 +1,137 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev8 (Projected Textures)"
+		Position = 165 143
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 1.000000 1.000000 1.000000 1.000000
+		Fog Range = 100.000000 100.000000
+
+  		Material = "Box"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.200000
+			Glow = 0.000000
+			ADT = 0.003922
+			Technique = "Opaque"
+
+			Technique = "Decal"
+			{
+				Shader = "Deferred/Decal"
+				Texture 0 = "[Generated] Diffuse Material"
+				Texture 1 = "[Generated] Specular Material"
+				Texture 2 = "[Generated] Normal"
+				Texture 3 = "[Generated] Depth"
+				Texture 4 = "Textures/stone_df.jpg"
+				Texture 5 = "Textures/stone_nm.png"
+			}
+		}
+	}
+	
+	Execute = "Config/Default UI Skin.txt"
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 5.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 5.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 200.000000
+					Top = 0.000000 5.000000
+					Bottom = 0.000000 15.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "FPS: 192"
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = true
+					Layer = 0
+				}
+			}
+			
+			Window = "X-Ray Window"
+			{
+				Left = 0 20
+				Right = 0 320
+				Top = 0 20
+				Bottom = 0 220
+				Skin = "Default"
+				Font = "Arial 15"
+				Titlebar Height = 22
+				Text = "Screen Space Normal X-Ray"
+				
+				Shaded Area = "X-Ray Area"
+				{
+					Shader = "Xray"
+					Texture 0 = "[Generated] Normal"
+					Receives Events = false
+				}
+			}
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = -0.901637 -0.396084 3.309464
+			Rotation = -0.250021 0.144458 -0.478978 0.828976
+			Scale = 1.000000
+			Range = 1.000000 100.000000 90.000000
+			Dolly = 0.000000 16.752741 50.000000
+		}
+
+		Directional Light = "First Light"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = -0.388141 0.160773 -0.347273 0.838391
+			Scale = 1.000000
+			Ambient = 0.15 0.15 0.15 0.0
+			Diffuse = 1.0 1.0 1.0 1.0
+			Specular = 1.0 1.0 1.0 1.0
+			Brightness = 1.000000
+			Script = "Slight Rotation"
+		}
+
+		Model Instance = "Test Scene"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = "Models/test scene.r5b"
+		}
+		
+		Model Instance = "Projected Box"
+		{
+			Position = 0 0 3
+			Rotation = -0.388141 0.160773 -0.347273 0.838391
+			Scale = 8.0
+			Model = "Models/box.r5a"
+		}
+	}
+}

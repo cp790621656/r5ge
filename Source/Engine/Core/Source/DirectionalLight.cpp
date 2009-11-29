@@ -32,7 +32,7 @@ void DirectionalLight::_UpdateColors()
 void DirectionalLight::OnUpdate()
 {
 	mParams.mPos = mAbsolutePos;
-	mParams.mDir = mAbsoluteRot.GetDirection();
+	mParams.mDir = mAbsoluteRot.GetForward();
 }
 
 //============================================================================================================

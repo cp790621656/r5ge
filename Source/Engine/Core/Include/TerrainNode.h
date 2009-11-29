@@ -28,5 +28,5 @@ public:
 	virtual void OnFill (void* ptr, float bboxPadding);
 
 	// Draw the object using the specified technique
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 };

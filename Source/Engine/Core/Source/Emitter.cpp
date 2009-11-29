@@ -145,10 +145,12 @@ Object::CullResult Emitter::OnCull (CullParams &params, bool isParentVisible, bo
 // Draws all particles
 //============================================================================================================
 
-uint Emitter::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint Emitter::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	if (mTech == tech && mFlags.Get(Flag::Enabled))
 	{
+		IGraphics* graphics = mCore->GetGraphics();
+
 		// If we need to update the vertex array, let's do that now
 		if (mUpdated)
 		{

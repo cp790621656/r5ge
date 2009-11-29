@@ -125,7 +125,7 @@ struct Quaternion
 public:
 
 	// Vector3f(0, 1, 0) * (*this)
-	Vector3f GetDirection() const
+	Vector3f GetForward() const
 	{
 		return Vector3f(		2.0f * (x * y - z * w),
 						 1.0f - 2.0f * (x * x + z * z),
@@ -133,7 +133,7 @@ public:
 	}
 
 	// Vector3f(1, 0, 0) * (*this)
-	Vector3f GetCross() const
+	Vector3f GetRight() const
 	{
 		return Vector3f( 1.0f - 2.0f * (y * y + z * z),
 								2.0f * (x * y + z * w),
@@ -149,7 +149,7 @@ public:
 	}
 
 	// Two-dimensional forward vector
-	Vector2f GetForward() const
+	Vector2f GetFlatForward() const
 	{
 		Vector2f v (		2.0f * (x * y - z * w),
 					 1.0f - 2.0f * (x * x + z * z) );
@@ -162,8 +162,8 @@ public:
 // Convenience functions
 //============================================================================================================
 
-inline			Vector3f::Vector3f	 (const Quaternion& q)		{ *this = q.GetDirection(); }
-inline void		Vector3f::operator  =(const Quaternion& q)		{ *this = q.GetDirection(); }
+inline			Vector3f::Vector3f	 (const Quaternion& q)		{ *this = q.GetForward(); }
+inline void		Vector3f::operator  =(const Quaternion& q)		{ *this = q.GetForward(); }
 
 //============================================================================================================
 // Convenience type, likely good canditate for future refactoring

@@ -42,7 +42,7 @@ void DebugCamera::AnimateTo (const Vector3f& pos, const Quaternion& rot, float d
 	{
 		float time = Time::GetTime();
 		mSplineV.AddKey(time, mRelativePos);
-		mSplineQ.AddKey(time, mRelativeRot.GetDirection());
+		mSplineQ.AddKey(time, mRelativeRot.GetForward());
 		mSplineF.AddKey(time, mDolly.y);
 	}
 	mSplineV.AddKey(mSplineV.EndTime() + delay, pos);
@@ -108,7 +108,7 @@ Vector3f DebugCamera::_UpdateOffsetPosition()
 		if ( Float::IsNotZero(rot.y) )
 		{
 			mHasMovement = true;
-			Quaternion rotQuat ( mRelativeRot.GetCross(), rot.y );
+			Quaternion rotQuat ( mRelativeRot.GetRight(), rot.y );
 			mRelativeRot = rotQuat * mRelativeRot;
 			mRelativeRot.Normalize();
 		}
@@ -129,7 +129,7 @@ Vector3f DebugCamera::_UpdateOffsetPosition()
 		if (mHasMovement) mIsDirty = true;
 	}
 	// Return the offset position
-	return mRelativePos - mRelativeRot.GetDirection() * mDolly.y;
+	return mRelativePos - mRelativeRot.GetForward() * mDolly.y;
 }
 
 //============================================================================================================

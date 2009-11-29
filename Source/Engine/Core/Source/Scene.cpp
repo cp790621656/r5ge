@@ -66,7 +66,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 	{
 		Core* core (mRoot->mCore);
 		IGraphics* graphics (core->GetGraphics());
-		Vector3f dir (rot.GetDirection());
+		Vector3f dir (rot.GetForward());
 
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
@@ -200,7 +200,7 @@ uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 				// Run through all renderables on this layer, rendering them back to front
 				for (uint b = last; b > i; )
 				{
-					triangles += mObjects[--b].mObject->OnDraw(graphics, tech, insideOut);
+					triangles += mObjects[--b].mObject->OnDraw(tech, insideOut);
 				}
 
 				// Continue from the next layer
@@ -212,7 +212,7 @@ uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 			// Run through all objects, rendering them front-to-back
 			for (uint i = 0, imax = mObjects.GetSize(); i < imax; ++i)
 			{
-				triangles += mObjects[i].mObject->OnDraw(graphics, tech, insideOut);
+				triangles += mObjects[i].mObject->OnDraw(tech, insideOut);
 			}
 		}
 	}

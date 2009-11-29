@@ -17,6 +17,9 @@ namespace Deferred
 		const ITexture* depth,
 		const ITexture* normal)> AOCallback;
 
+	// Optional Decal callback
+	typedef FastDelegate<void (IGraphics* graphics, const ITexture* depth)> DecalCallback;
+
 	// Deferred::DrawScene should return more than just the number of triangles drawn
 	struct DrawResult
 	{
@@ -37,5 +40,6 @@ namespace Deferred
 							const ILight::List&	 lights,		// List of all visible lights
 							const DrawCallback&	 drawCallback,	// Actual scene drawing callback
 							const AOCallback&	 aoCallback		= 0,
+							const DecalCallback& decalCallback	= 0,
 							bool				 insideOut		= false);
 };

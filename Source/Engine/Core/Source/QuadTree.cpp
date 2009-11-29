@@ -123,13 +123,13 @@ Object::CullResult QuadTree::OnCull (CullParams& params, bool isParentVisible, b
 // Run through all renderable nodes and draw them
 //============================================================================================================
 
-uint QuadTree::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint QuadTree::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	uint triangles (0);
 
 	for (uint i = 0, imax = mRenderable.GetSize(); i < imax; ++i)
 	{
-		triangles += mRenderable[i]->OnDraw(graphics, tech, insideOut);
+		triangles += mRenderable[i]->OnDraw(tech, insideOut);
 	}
 	return triangles;
 }

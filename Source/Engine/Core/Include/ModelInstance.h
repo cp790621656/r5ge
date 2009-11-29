@@ -46,7 +46,7 @@ protected:
 	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
 
 	// Draw the object using the specified technique
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
 	// Selects the closest object to the given position if the position is within the object's bounds
 	virtual bool OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);

@@ -106,13 +106,15 @@ Object::CullResult ModelInstance::OnCull (CullParams& params, bool isParentVisib
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint ModelInstance::OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut)
+uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	uint triangleCount(0);
 	uint mask = tech->GetMask();
 
 	if (mModel->GetMask() & mask)
 	{
+		IGraphics* graphics = mCore->GetGraphics();
+
 		// Automatically normalize normals if the scale is not 1.0
 		graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
 

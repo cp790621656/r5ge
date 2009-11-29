@@ -253,6 +253,7 @@ Deferred::DrawResult Deferred::DrawScene (
 	const ILight::List&		lights,
 	const DrawCallback&		drawCallback,
 	const AOCallback&		aoCallback,
+	const DecalCallback&	decalCallback,
 	bool					insideOut)
 {
 	static bool				firstTime	= true;
@@ -282,7 +283,7 @@ Deferred::DrawResult Deferred::DrawScene (
 		target0->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
 		target0->AttachColorTexture( 2, normal,  ITexture::Format::RGB30A2 );
 		target0->UseSkybox(true);
-		
+
 		// Scene Light contribution target
 		target1->AttachDepthTexture( depth );
 		target1->AttachStencilTexture( depth );
@@ -326,6 +327,25 @@ Deferred::DrawResult Deferred::DrawScene (
 
 		// Draw the scene using the deferred approach
 		triangles += drawCallback(deferred, insideOut);
+	}
+
+	// Decal pass
+	if (decalCallback)
+	{
+		// Switching the render targets back and forth effectively force-finishes all draw operations
+		graphics->SetActiveRenderTarget( 0 );
+		graphics->SetActiveRenderTarget( target0 );
+
+		// Affect only pixels we wrote to and don't write to depth
+		graphics->SetStencilTest(true);
+		graphics->SetDepthWrite(false);
+		graphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
+		graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
+											 IGraphics::Operation::Keep,
+											 IGraphics::Operation::Keep );
+
+		// Trigger the decal callback
+		decalCallback(graphics, depth);
 	}
 
 	// Screen-space ambient occlusion pass

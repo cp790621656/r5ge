@@ -82,7 +82,7 @@ void PointLight::SetPower (float val)
 void PointLight::OnUpdate()
 {
 	mParams.mPos = mAbsolutePos;
-	mParams.mDir = mAbsoluteRot.GetDirection();
+	mParams.mDir = mAbsoluteRot.GetForward();
 	_UpdateAtten();
 	_UpdateColors();
 }

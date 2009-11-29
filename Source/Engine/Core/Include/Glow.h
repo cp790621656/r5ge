@@ -67,7 +67,7 @@ protected:
 	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
 
 	// Draws the light on-screen if it's visible
-	virtual uint OnDraw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
 protected:
 
