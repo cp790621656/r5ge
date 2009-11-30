@@ -58,11 +58,11 @@ public:
 	void Remove (uint size);
 
 	// Append types that can't be templated
-	void Append (int val)						{ *(int32*)Expand(4)  = (int32)val; }
-	void Append (uint val)						{ *(uint32*)Expand(4) = (uint32)val; }
-	void Append (const char* s);
-	void Append (const String& s);
-	void Append (const void* buffer, uint size) { if (size > 0) { memcpy(Expand(size), buffer, size); } }
+	int32*	Append (int val)			{ int32*  ptr = (int32*) Expand(4); *ptr = (int32) val; return ptr; }
+	uint32*	Append (uint val)			{ uint32* ptr = (uint32*)Expand(4); *ptr = (uint32)val; return ptr; }
+	void	Append (const char* s);
+	void	Append (const String& s);
+	void*	Append (const void* buffer, uint size);
 
 	// Appends an integer as either 1 or 5 bytes, depending on its own size
 	void AppendSize (uint val);
@@ -77,7 +77,12 @@ public:
 	static bool ExtractSize (ConstBytePtr& buffer, uint& size, uint& val);
 
 	// Templated Append function for all other types not covered by the functions above
-	template <typename Type> void Append (const Type& v) { *(Type*)Expand(sizeof(Type)) = v; }
+	template <typename Type> Type* Append (const Type& v)
+	{
+		Type* ptr = (Type*)Expand(sizeof(Type));
+		*ptr = v;
+		return ptr;
+	}
 
 	// Templated function to do the reverse of the Append operation above
 	template <typename Type> static bool Extract (ConstBytePtr& buffer, uint& size, Type& val)

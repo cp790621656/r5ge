@@ -130,6 +130,21 @@ void Memory::Append (const String& s)
 }
 
 //============================================================================================================
+// Appends the specified chunk of memory to the end of this one
+//============================================================================================================
+
+void* Memory::Append (const void* buffer, uint size)
+{
+	if (size > 0)
+	{
+		void* ptr = Expand(size);
+		memcpy(ptr, buffer, size);
+		return ptr;
+	}
+	return 0;
+}
+
+//============================================================================================================
 // Appends an integer as either 1 or 5 bytes, depending on its own size
 //============================================================================================================
 
