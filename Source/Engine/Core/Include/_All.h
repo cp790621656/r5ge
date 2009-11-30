@@ -21,6 +21,7 @@ namespace R5
 	#include "AnimatedCamera.h"		// Extended camera class supporting spline-based animation
 	#include "CameraController.h"	// Camera Controller provides a way to blend together different cameras
 	
+	#include "Decal.h"				// Projected texture object
 	#include "Glow.h"				// Screen-aligned billboard
 	#include "DirectionalLight.h"	// Directional light
 	#include "PointLight.h"			// Point light

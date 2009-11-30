@@ -64,7 +64,7 @@ void TestApp::OnDraw()
 	{
 		const Scene::Lights& lights = mScene.GetVisibleLights();
 		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene),
-			((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
+			0, ((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
 
 		PostProcess::None(mGraphics, result.mColor);
 		triangles = result.mTriangles;

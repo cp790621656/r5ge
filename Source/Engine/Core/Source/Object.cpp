@@ -68,6 +68,7 @@ Object* Object::_AddObject (const String& type, const String& name)
 			RegisterObject<PointLight>();
 			RegisterObject<Glow>();
 			RegisterObject<Terrain>();
+			RegisterObject<Decal>();
 		}
 	}
 
@@ -491,8 +492,10 @@ void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 // INTERNAL: Culls the object based on the viewing frustum
 //============================================================================================================
 
-void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
+uint Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 {
+	uint mask = 0;
+
 	if (mFlags.Get(Flag::Enabled))
 	{
 		// The object starts off invisible
@@ -512,6 +515,9 @@ void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 
 				result = OnCull(params, isParentVisible, render);
 
+				// Include this mask
+				mask |= result.mMask;
+
 				// Remember whether this object is currently visible
 				mFlags.Set(Flag::Visible, result.mIsVisible);
 			}
@@ -523,7 +529,7 @@ void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 			{
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
 				{
-					mChildren[i]->_Cull(params, result.mIsVisible, render);
+					mask |= mChildren[i]->_Cull(params, result.mIsVisible, render);
 
 					// If the child is visible, this object should be as well
 					if (mChildren[i]->GetFlag(Flag::Visible))
@@ -535,6 +541,7 @@ void Object::_Cull (CullParams& params, bool isParentVisible, bool render)
 		}
 		Unlock();
 	}
+	return mask;
 }
 
 //============================================================================================================

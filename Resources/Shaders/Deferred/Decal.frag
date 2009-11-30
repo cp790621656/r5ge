@@ -8,8 +8,7 @@ uniform sampler2D   R5_texture5;	// Projected normal texture
 uniform mat4 R5_inverseProjMatrix;	// Inverse projection matrix
 uniform vec2 R5_pixelSize;          // 0-1 factor size of the pixel
 
-uniform vec3  g_pos;				// Decal's position in view space
-uniform float g_scale;				// Decal's scale
+uniform vec4  g_pos;				// Decal's position in view space (XYZ) and scale (W)
 uniform vec3  g_forward;			// Decal's forward vector in view space
 uniform vec3  g_right;				// Decal's right vector in view space
 uniform vec3  g_up;					// Decal's up vector in view space
@@ -30,7 +29,7 @@ void main()
 	vec2 texCoord = gl_FragCoord.xy * R5_pixelSize;
 
 	// This pixel's relative-to-center position
-    vec3 pos = (GetViewPos(texCoord) - g_pos) / g_scale;
+    vec3 pos = (GetViewPos(texCoord) - g_pos.xyz) / g_pos.w;
 
 	// Alpha should fade out as the projected texture gets closer to the edges
 	float alpha = 1.0 - pow(length(pos), 5.0);

@@ -13,6 +13,22 @@ using namespace R5;
 
 //============================================================================================================
 
+class SlowTwirl : public Script
+{
+public:
+
+	R5_DECLARE_INHERITED_CLASS("Slow Twirl", SlowTwirl, Script, Script);
+
+	virtual void OnPreUpdate()
+	{
+		Quaternion rot = mObject->GetRelativeRotation();
+		rot.Rotate( Vector3f(0.0f, 1.0f, 0.0f), Time::GetDelta() * 0.0002f );
+		mObject->SetRelativeRotation(rot);
+	}
+};
+
+//============================================================================================================
+
 class SlightRotation : public Script
 {
 private:
@@ -44,7 +60,6 @@ class TestApp
 	Core*			mCore;
 	Scene			mScene;
 	DebugCamera*	mCam;
-	Object*			mProj;
 
 public:
 
@@ -52,18 +67,11 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	void DrawDecals(IGraphics* graphics, const ITexture* depth);
-
-	void OnSetPos		(const String& name, Uniform& uni) { if (mProj != 0) uni = mProj->GetAbsolutePosition() * mGraphics->GetViewMatrix(); }
-	void OnSetScale		(const String& name, Uniform& uni) { if (mProj != 0) uni = mProj->GetAbsoluteScale() * 0.5f; }
-	void OnSetForward	(const String& name, Uniform& uni) { if (mProj != 0) uni = mProj->GetAbsoluteRotation().GetForward() % mGraphics->GetViewMatrix(); }
-	void OnSetRight		(const String& name, Uniform& uni) { if (mProj != 0) uni = mProj->GetAbsoluteRotation().GetRight() % mGraphics->GetViewMatrix(); }
-	void OnSetUp		(const String& name, Uniform& uni) { if (mProj != 0) uni = mProj->GetAbsoluteRotation().GetUp() % mGraphics->GetViewMatrix(); }
 };
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mProj(0)
+TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -71,6 +79,8 @@ TestApp::TestApp() : mCam(0), mProj(0)
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	RegisterScript<SlightRotation>();
+	RegisterScript<SlowTwirl>();
+
 	mCore->SetSleepDelay(0);
 }
 
@@ -90,15 +100,6 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/Dev8.txt")
 	{
-		mProj = FindObject<Object>(mScene, "Projected Box");
-
-		IShader* shader = mGraphics->GetShader("Deferred/decal");
-		shader->RegisterUniform("g_pos",	 bind(&TestApp::OnSetPos, this));
-		shader->RegisterUniform("g_scale",	 bind(&TestApp::OnSetScale, this));
-		shader->RegisterUniform("g_forward", bind(&TestApp::OnSetForward, this));
-		shader->RegisterUniform("g_right",	 bind(&TestApp::OnSetRight, this));
-		shader->RegisterUniform("g_up",		 bind(&TestApp::OnSetUp, this));
-
 		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
@@ -117,21 +118,16 @@ void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
 	const Scene::Lights& lights = mScene.GetVisibleLights();
+
 	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights,
-		bind(&Scene::Draw, &mScene), SSAO::High,
-		bind(&TestApp::DrawDecals, this));
+		bind(&Scene::Draw, &mScene),
+		bind(&Scene::Draw, &mScene),
+		SSAO::Low);
+
 	PostProcess::None(mGraphics, result.mColor);
 
 	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );
-}
-
-//============================================================================================================
-
-void TestApp::DrawDecals(IGraphics* graphics, const ITexture* depth)
-{
-	static ITechnique* decal = graphics->GetTechnique("Decal");
-	mProj->Draw(decal);
 }
 
 //============================================================================================================

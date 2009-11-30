@@ -73,7 +73,7 @@ uint AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 
 			Array<Vector3f> vertices;
 			Array<ushort> indices;
-			Shape::Icosahedron(1, vertices, indices);
+			Shape::Icosahedron(vertices, indices, 1);
 			indexCount = indices.GetSize();
 
 			vbo->Set(vertices, IVBO::Type::Vertex);
@@ -111,7 +111,7 @@ uint AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 			float range (entry.mLight->GetAttenParams()->x * 1.065f);
 			const Vector3f& lightPos (entry.mLight->GetPosition());
 
-			if (lightPos.GetDistanceTo(camPos) > (range + nearClip * 2))
+			if (lightPos.GetDistanceTo(camPos) > (range + nearClip * 2.0f))
 			{
 				// The camera is outside the sphere -- regular rendering approach
 				graphics->SetCulling( IGraphics::Culling::Back );
@@ -166,6 +166,8 @@ uint DrawLights (	IGraphics*			graphics,
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
 
 	// We are using 3 textures -- depth, view space normal (with shininess in alpha), and the ao lightmap
 	graphics->SetActiveTexture( 0, depth );
@@ -252,12 +254,13 @@ Deferred::DrawResult Deferred::DrawScene (
 	IGraphics*				graphics,
 	const ILight::List&		lights,
 	const DrawCallback&		drawCallback,
+	const DrawCallback&		decalCallback,
 	const AOCallback&		aoCallback,
-	const DecalCallback&	decalCallback,
 	bool					insideOut)
 {
 	static bool				firstTime	= true;
 	static ITechnique*		deferred	= graphics->GetTechnique("Deferred");
+	static ITechnique*		decal		= graphics->GetTechnique("Decal");
 	static IRenderTarget*	target0		= graphics->CreateRenderTarget();
 	static IRenderTarget*	target1		= graphics->CreateRenderTarget();
 	static IRenderTarget*	target2		= graphics->CreateRenderTarget();
@@ -312,7 +315,11 @@ Deferred::DrawResult Deferred::DrawScene (
 	target0->SetBackgroundColor(color);
 
 	// Deferred rendering -- encoding pass
+	if (drawCallback)
 	{
+		graphics->SetCulling( IGraphics::Culling::Back );
+		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+
 		graphics->SetStencilTest(false);
 		graphics->SetActiveRenderTarget( target0 );
 		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
@@ -345,7 +352,7 @@ Deferred::DrawResult Deferred::DrawScene (
 											 IGraphics::Operation::Keep );
 
 		// Trigger the decal callback
-		decalCallback(graphics, depth);
+		triangles += decalCallback(decal, insideOut);
 	}
 
 	// Screen-space ambient occlusion pass

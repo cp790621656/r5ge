@@ -166,7 +166,8 @@ void TestApp::OnDraw()
 		}
 
 		// Draw the result onto the screen
-		PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
+		//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
+		PostProcess::None(mGraphics, result.mColor);
 
 		mDebug.Set("Deferred (%u lights)", lightCount);
 	}

@@ -52,7 +52,7 @@ private:
 	void _Fill (void* ptr, float bboxPadding);
 
 	// Called when the object is being culled, returns whether this node is visible
-	void _Cull (Array<QuadNode*>& renderList, Object::CullParams& params, bool render);
+	uint _Cull (Array<QuadNode*>& renderList, Object::CullParams& params, bool render);
 
 	// Navigate down to the leaves and render them as necessary
 	uint _Draw (IGraphics* graphics, const ITechnique* tech, bool insideOut);

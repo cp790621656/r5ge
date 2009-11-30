@@ -40,25 +40,12 @@ protected:
 	float		mBrightness;	// Light's brighness
 	Params		mParams;		// Outgoing parameters
 
-public:
-
 	DirectionalLight();
+
+public:
 
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Directional Light", DirectionalLight, Object, Object);
-
-protected:
-
-	// Update the 'mParams' light colors
-	void _UpdateColors();
-
-	// Update the light parameters
-	virtual void OnUpdate();
-
-	// Cull the object based on the viewing frustum
-	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
-
-public:
 
 	const Color3f&	GetAmbient()	const { return mAmbient;	 }
 	const Color3f&	GetDiffuse()	const { return mDiffuse;	 }
@@ -72,7 +59,18 @@ public:
 
 protected:
 
+	// Update the 'mParams' light colors
+	void _UpdateColors();
+
+	// Update the light parameters
+	virtual void OnUpdate();
+
+	// Cull the object based on the viewing frustum
+	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
+
+protected:
+
 	// Serialization
-	virtual void OnSerializeTo	 ( TreeNode& root ) const;
-	virtual bool OnSerializeFrom ( const TreeNode& root );
+	virtual void OnSerializeTo	  (TreeNode& root) const;
+	virtual bool OnSerializeFrom  (const TreeNode& root);
 };

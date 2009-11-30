@@ -85,7 +85,7 @@ public:
 
 	// Serialization
 	virtual bool SerializeFrom	( const TreeNode& root, bool forceUpdate );
-	virtual void SerializeTo	( TreeNode& root ) const;
+	virtual void SerializeTo	 (TreeNode& root) const;
 
 protected:
 

@@ -246,10 +246,11 @@ void QuadNode::_Fill (void* ptr, float padding)
 // Called when the object is being culled -- should return whether the object is visible
 //============================================================================================================
 
-void QuadNode::_Cull (Array<QuadNode*>& tiles, Object::CullParams& params, bool render)
+uint QuadNode::_Cull (Array<QuadNode*>& tiles, Object::CullParams& params, bool render)
 {
 	// Root level is always considered to be visible for the sake of object culling
 	bool visible = (mLevel == 0);
+	uint mask = 0;
 
 	// If the node is visible, either render it or cull its subdivisions
 	if (params.mFrustum.IsVisible(mBounds))
@@ -278,7 +279,8 @@ void QuadNode::_Cull (Array<QuadNode*>& tiles, Object::CullParams& params, bool 
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
 		{
 			Object* obj = mChildren[i];
-			if (obj != 0) obj->_Cull(params, true, render);
+			if (obj != 0) mask |= obj->_Cull(params, true, render);
 		}
 	}
+	return mask;
 }

@@ -113,10 +113,9 @@ void Emitter::OnUpdate()
 
 Object::CullResult Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
 {
-	if (mTex == 0 || mParticles.IsEmpty())
+	if (mTex == 0 || mParticles.IsEmpty() || !mFlags.Get(Flag::Enabled))
 	{
 		mLastVisible = Time::GetMilliseconds();
-		return false;
 	}
 	else if ( params.mFrustum.IsVisible(mBounds) )
 	{
@@ -124,21 +123,24 @@ Object::CullResult Emitter::OnCull (CullParams &params, bool isParentVisible, bo
 
 		if (render)
 		{
-			Drawable& obj		= params.mObjects.Expand();
-			obj.mObject			= this;
-			obj.mLayer			= 0;
-			obj.mGroup			= 0;
-			obj.mDistSquared	= (params.mCamPos - mBounds.GetCenter()).Dot();
-
 			if (mTech == 0)
 			{
 				// If no special technique was specified, assume the default value
 				mTech = mCore->GetGraphics()->GetTechnique("Particle", true);
 			}
+
+			Drawable& obj		= params.mObjects.Expand();
+			obj.mObject			= this;
+			obj.mMask			= mTech->GetMask();
+			obj.mLayer			= 0;
+			obj.mGroup			= 0;
+			obj.mDistSquared	= (params.mCamPos - mBounds.GetCenter()).Dot();
+
+			return CullResult(true, true, obj.mMask);
 		}
 		return true;
 	}
-	return true;
+	return false;
 }
 
 //============================================================================================================
@@ -147,133 +149,130 @@ Object::CullResult Emitter::OnCull (CullParams &params, bool isParentVisible, bo
 
 uint Emitter::OnDraw (const ITechnique* tech, bool insideOut)
 {
-	if (mTech == tech && mFlags.Get(Flag::Enabled))
+	IGraphics* graphics = mCore->GetGraphics();
+
+	// If we need to update the vertex array, let's do that now
+	if (mUpdated)
 	{
-		IGraphics* graphics = mCore->GetGraphics();
+		mUpdated = false;
 
-		// If we need to update the vertex array, let's do that now
-		if (mUpdated)
+		uint flipU = mFlags.Get(Flag::FlipU) ? 1 : 0;
+		uint flipV = mFlags.Get(Flag::FlipV) ? 2 : 0;
+
+		// Rotate the 4 corners using the inverse projection matrix
+		const Matrix43& invView = graphics->GetInverseViewMatrix();
+
+		// 4 corners of the particle
+		Vector3f v0 (-1.0f,  1.0f, 0.5f);
+		Vector3f v1 (-1.0f, -1.0f, 0.5f);
+		Vector3f v2 ( 1.0f, -1.0f, 0.5f);
+		Vector3f v3 ( 1.0f,  1.0f, 0.5f);
+
+		// Whether we need to transform the corners by the inverse view matrix
+		bool transform = true;
+
+		// UV coordinates can be randomly flipped in order to add non-uniformness to the particle textures
+		float left, right, top, bottom, last = 0.0f;
+
+		// Time to re-fill the vertex information
+		mPositions.Clear();
+		mTexCoords.Clear();
+		mColors.Clear();
+
+		// Run through all particles and update them one at a time
+		for (uint i = mParticles.GetSize(); i > 0; )
 		{
-			mUpdated = false;
+			Particle& particle = mParticles[--i];
+			if (particle.mRemaining == 0) continue;
 
-			uint flipU = mFlags.Get(Flag::FlipU) ? 1 : 0;
-			uint flipV = mFlags.Get(Flag::FlipV) ? 2 : 0;
+			// Add non-uniformness by flipping the texture coordinates, if allowed
+			if ( (i & flipU) == 1 )	{ left   = 1.0f;  right	= 0.0f; }
+			else					{ left   = 0.0f;  right	= 1.0f; }
+			if ( (i & flipV) == 2 )	{ bottom = 1.0f;  top	= 0.0f; }
+			else					{ bottom = 0.0f;  top	= 1.0f; }
 
-			// Rotate the 4 corners using the inverse projection matrix
-			const Matrix43& invView = graphics->GetInverseViewMatrix();
+			// Colors are identical across all 4 vertices
+			mColors.Expand() = particle.mColor;
+			mColors.Expand() = particle.mColor;
+			mColors.Expand() = particle.mColor;
+			mColors.Expand() = particle.mColor;
 
-			// 4 corners of the particle
-			Vector3f v0 (-1.0f,  1.0f, 0.5f);
-			Vector3f v1 (-1.0f, -1.0f, 0.5f);
-			Vector3f v2 ( 1.0f, -1.0f, 0.5f);
-			Vector3f v3 ( 1.0f,  1.0f, 0.5f);
+			// Texture coordinates are also simple
+			mTexCoords.Expand().Set(left, top);
+			mTexCoords.Expand().Set(left, bottom);
+			mTexCoords.Expand().Set(right, bottom);
+			mTexCoords.Expand().Set(right, top);
 
-			// Whether we need to transform the corners by the inverse view matrix
-			bool transform = true;
-
-			// UV coordinates can be randomly flipped in order to add non-uniformness to the particle textures
-			float left, right, top, bottom, last = 0.0f;
-
-			// Time to re-fill the vertex information
-			mPositions.Clear();
-			mTexCoords.Clear();
-			mColors.Clear();
-
-			// Run through all particles and update them one at a time
-			for (uint i = mParticles.GetSize(); i > 0; )
+			// Rotate the particle if the rotation has changed
+			if (last != particle.mRotation)
 			{
-				Particle& particle = mParticles[--i];
-				if (particle.mRemaining == 0) continue;
+				last = particle.mRotation;
 
-				// Add non-uniformness by flipping the texture coordinates, if allowed
-				if ( (i & flipU) == 1 )	{ left   = 1.0f;  right	= 0.0f; }
-				else					{ left   = 0.0f;  right	= 1.0f; }
-				if ( (i & flipV) == 2 )	{ bottom = 1.0f;  top	= 0.0f; }
-				else					{ bottom = 0.0f;  top	= 1.0f; }
+				float z =  Float::Sin(last);
+				float w = -Float::Cos(last);
 
-				// Colors are identical across all 4 vertices
-				mColors.Expand() = particle.mColor;
-				mColors.Expand() = particle.mColor;
-				mColors.Expand() = particle.mColor;
-				mColors.Expand() = particle.mColor;
+				float zw = z * w;
+				float zz = z * z;
 
-				// Texture coordinates are also simple
-				mTexCoords.Expand().Set(left, top);
-				mTexCoords.Expand().Set(left, bottom);
-				mTexCoords.Expand().Set(right, bottom);
-				mTexCoords.Expand().Set(right, top);
+				// Optimized rotation of the 4 points based on the starting values above
+				// rotated by the quaternion created using the rotation around the Z axis.
 
-				// Rotate the particle if the rotation has changed
-				if (last != particle.mRotation)
-				{
-					last = particle.mRotation;
+				v3.Set(1.0f - (zw + zz) * 2.0f, 1.0f + (zw - zz) * 2.0f, 0.5f);
+				v0.Set(-v3.y,  v3.x, 0.5f);
+				v1.Set(-v3.x, -v3.y, 0.5f);
+				v2.Set( v3.y, -v3.x, 0.5f);
 
-					float z =  Float::Sin(last);
-					float w = -Float::Cos(last);
-
-					float zw = z * w;
-					float zz = z * z;
-
-					// Optimized rotation of the 4 points based on the starting values above
-					// rotated by the quaternion created using the rotation around the Z axis.
-
-					v3.Set(1.0f - (zw + zz) * 2.0f, 1.0f + (zw - zz) * 2.0f, 0.5f);
-					v0.Set(-v3.y,  v3.x, 0.5f);
-					v1.Set(-v3.x, -v3.y, 0.5f);
-					v2.Set( v3.y, -v3.x, 0.5f);
-
-					transform = true;
-				}
-
-				// Transform the vertices by the inverse view matrix if needed
-				if (transform)
-				{
-					transform = false;
-					v0 %= invView;
-					v1 %= invView;
-					v2 %= invView;
-					v3 %= invView;
-				}
-
-				// Vertex positions are based on the offset particle position
-				mPositions.Expand() = particle.mPos + v0 * particle.mRadius;
-				mPositions.Expand() = particle.mPos + v1 * particle.mRadius;
-				mPositions.Expand() = particle.mPos + v2 * particle.mRadius;
-				mPositions.Expand() = particle.mPos + v3 * particle.mRadius;
+				transform = true;
 			}
+
+			// Transform the vertices by the inverse view matrix if needed
+			if (transform)
+			{
+				transform = false;
+				v0 %= invView;
+				v1 %= invView;
+				v2 %= invView;
+				v3 %= invView;
+			}
+
+			// Vertex positions are based on the offset particle position
+			mPositions.Expand() = particle.mPos + v0 * particle.mRadius;
+			mPositions.Expand() = particle.mPos + v1 * particle.mRadius;
+			mPositions.Expand() = particle.mPos + v2 * particle.mRadius;
+			mPositions.Expand() = particle.mPos + v3 * particle.mRadius;
 		}
+	}
 
-		if ( mPositions.IsValid() )
-		{
-			// Set up initial drawing states
-			graphics->ResetViewMatrix();
-			graphics->SetActiveShader(0);
-			graphics->SetADT(0.003921568627451f);
-			graphics->SetActiveMaterial(mTex);
+	if ( mPositions.IsValid() )
+	{
+		// Set up initial drawing states
+		graphics->ResetViewMatrix();
+		graphics->SetActiveShader(0);
+		graphics->SetADT(0.003921568627451f);
+		graphics->SetActiveMaterial(mTex);
 
-			// Trigger the custom functionality
-			SetRenderStates(graphics);
+		// Trigger the custom functionality
+		SetRenderStates(graphics);
 
-			// Particles don't use normals, tangents, or secondary texture coordinates
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,	 0 );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,	 0 );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1, 0 );
+		// Particles don't use normals, tangents, or secondary texture coordinates
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,	 0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,	 0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1, 0 );
 
-			// Texture coordinate array
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,
-				&mTexCoords[0], IGraphics::DataType::Float, 2, sizeof(Vector2f) );
+		// Texture coordinate array
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,
+			&mTexCoords[0], IGraphics::DataType::Float, 2, sizeof(Vector2f) );
 
-			// Color array
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,
-				&mColors[0], IGraphics::DataType::Byte, 4, sizeof(Color4ub) );
+		// Color array
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,
+			&mColors[0], IGraphics::DataType::Byte, 4, sizeof(Color4ub) );
 
-			// Position array
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
-				&mPositions[0], IGraphics::DataType::Float, 3, sizeof(Vector3f) );
+		// Position array
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+			&mPositions[0], IGraphics::DataType::Float, 3, sizeof(Vector3f) );
 
-			// Draw the particles
-			return graphics->DrawVertices (IGraphics::Primitive::Quad, mPositions.GetSize());
-		}
+		// Draw the particles
+		return graphics->DrawVertices (IGraphics::Primitive::Quad, mPositions.GetSize());
 	}
 	return 0;
 }

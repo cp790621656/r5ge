@@ -35,6 +35,7 @@ public:
 	struct Drawable
 	{
 		Object*		mObject;		// Pointer to the object that will be rendered
+		uint		mMask;			// Technique mask that can be used to quickly eliminate objects
 		int			mLayer;			// Object's layer -- lower layers are drawn first
 		const void*	mGroup;			// Allow grouping of similar objects in order to avoid state switches
 		float		mDistSquared;	// Squared distance to the camera, used to sort objects
@@ -55,8 +56,10 @@ public:
 	{
 		bool mIsVisible;	// Whether this object is visible
 		bool mCullChildren;	// Whether to continue culling the children
+		uint mMask;
 
-		CullResult (bool visible, bool cullChildren = true) : mIsVisible(visible), mCullChildren(cullChildren) {}
+		CullResult (bool visible, bool cullChildren = true, uint mask = 0) :
+			mIsVisible(visible), mCullChildren(cullChildren), mMask(mask) {}
 	};
 
 	// Types used by this class
@@ -167,7 +170,7 @@ public:
 	void Unlock()	const	{ mLock.Unlock(); }
 
 	// Retrieves the Core that was ultimately owns this object
-	Core* GetCore() { return mCore; }
+	inline Core* GetCore() { return mCore; }
 
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}
@@ -225,7 +228,7 @@ public:
 
 	// Culls the object based on the viewing frustum.
 	// The last parameter specifies whether to actually place this object into the rendering queue.
-	void _Cull (CullParams& params, bool isParentVisible, bool render);
+	uint _Cull (CullParams& params, bool isParentVisible, bool render);
 
 	// Recursive Object::OnSelect caller
 	void _Select (const Vector3f& pos, ObjectPtr& ptr, float& radius);

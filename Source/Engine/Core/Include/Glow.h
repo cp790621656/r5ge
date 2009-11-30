@@ -69,8 +69,6 @@ protected:
 	// Draws the light on-screen if it's visible
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
-protected:
-
 	// Serialization
 	virtual void OnSerializeTo	 (TreeNode& root) const;
 	virtual bool OnSerializeFrom (const TreeNode& root);

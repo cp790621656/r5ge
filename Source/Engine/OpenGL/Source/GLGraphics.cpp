@@ -517,47 +517,21 @@ uint GLGraphics::Draw (uint drawable)
 	{
 		if (mSkybox == 0) return 0;
 
-		if ( mSkyboxVBO == 0 )
+		if (mSkyboxVBO == 0)
 		{
-			Memory mem;
-			Vector3f* ptr = (Vector3f*)mem.Resize(8 * sizeof(Vector3f));
+			Array<Vector3f> vertices;
+			Array<ushort> indices;
 
-			ptr->Set( 10.0f,  10.0f,  10.0f); ++ptr;
-			ptr->Set( 10.0f,  10.0f, -10.0f); ++ptr;
-			ptr->Set( 10.0f, -10.0f,  10.0f); ++ptr;
-			ptr->Set( 10.0f, -10.0f, -10.0f); ++ptr;
-			ptr->Set(-10.0f,  10.0f,  10.0f); ++ptr;
-			ptr->Set(-10.0f,  10.0f, -10.0f); ++ptr;
-			ptr->Set(-10.0f, -10.0f,  10.0f); ++ptr;
-			ptr->Set(-10.0f, -10.0f, -10.0f); ++ptr;
+			Shape::Box(vertices, indices, 20.0f, true);
 
 			mSkyboxVBO = CreateVBO();
 			mSkyboxVBO->Lock();
-			mSkyboxVBO->Set(mem.GetBuffer(), mem.GetSize(), IVBO::Type::Vertex);
+			mSkyboxVBO->Set(vertices, IVBO::Type::Vertex);
 			mSkyboxVBO->Unlock();
-		}
 
-		if ( mSkyboxIBO == 0 )
-		{
 			mSkyboxIBO = CreateVBO();
-
-			ushort indices[] =
-			{
-				0, 1, 3,
-				0, 3, 2,
-				4, 7, 5,
-				4, 6, 7,
-				0, 2, 6,
-				0, 6, 4,
-				1, 7, 3,
-				1, 5, 7,
-				0, 5, 1,
-				0, 4, 5,
-				2, 3, 7,
-				2, 7, 6
-			};
 			mSkyboxIBO->Lock();
-			mSkyboxIBO->Set(indices, 36 * sizeof(ushort), IVBO::Type::Index);
+			mSkyboxIBO->Set(indices, IVBO::Type::Index);
 			mSkyboxIBO->Unlock();
 		}
 
@@ -903,7 +877,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetBlending(IGraphics::Blending::None);
 				}
 
-				// Newly created techniques should not be saveable until something changes
+				// Newly created techniques should not be serializable until something changes
 				tech->SetSerializable(false);
 				mTechs.Expand() = tech;
 			}

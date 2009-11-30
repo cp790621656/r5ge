@@ -143,7 +143,7 @@ void ModelViewer::OnDraw()
 
 		// Draw the scene using the deferred approach
 		result = Deferred::DrawScene(mGraphics, lights,
-			bind(&ModelViewer::OnDeferredDraw, this), ao);
+			bind(&ModelViewer::OnDeferredDraw, this), 0, ao);
 	}
 
 	// Post-processing part

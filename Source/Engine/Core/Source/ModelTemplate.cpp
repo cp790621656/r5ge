@@ -294,7 +294,7 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 // Serialization - Save
 //============================================================================================================
 
-void ModelTemplate::SerializeTo	( TreeNode& root ) const
+void ModelTemplate::SerializeTo	 (TreeNode& root) const
 {
 	if (!mSerializable) return;
 

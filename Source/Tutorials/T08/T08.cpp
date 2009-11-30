@@ -137,6 +137,9 @@ void TestApp::Run()
 		// We'll be using a custom material to draw our terrain. Let's just give it the same name.
 		IMaterial* mat = mGraphics->GetMaterial("Terrain");
 
+		// Se need to change the material's color as all newly created materials start invisible (alpha of 0)
+		mat->SetDiffuse( Color4ub(255, 255, 255, 255) );
+
 		// Add this technique to the material
 		mat->GetDrawMethod(mWireframe, true);
 

@@ -45,6 +45,9 @@ protected:
 	// Derived classes must override this function
 	virtual QuadNode* _CreateNode() { return new TerrainNode(); }
 
+	// Should retrieve the technique mask that the terrain can be rendered with (should not include children)
+	virtual uint GetMask() const { return mMat != 0 ? mMat->GetTechniqueMask() : 0; }
+
 	// Set up all render states and activate the material before moving down to QuadTree's OnDraw
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 

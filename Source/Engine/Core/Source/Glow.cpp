@@ -62,25 +62,37 @@ Object::CullResult Glow::OnCull (CullParams& params, bool isParentVisible, bool 
 			isParentVisible = params.mCamDir.Dot(mAbsoluteRot.GetForward()) < 0.0f;
 		}
 
-		// Besides the ovbious visibility check, there must be something visible to render to begin with
-		if ( isParentVisible &= ((mBackground != 0 && mAbsoluteScale > 0.0f) ||
-								 (mForeground != 0 && radius > 0.0f)) )
+		uint mask = 0;
+		IGraphics* graphics = mCore->GetGraphics();
+
+		if (isParentVisible && graphics != 0)
+		{
+			static uint glowMask  = graphics->GetTechnique("Glow")->GetMask();
+			static uint glareMask = graphics->GetTechnique("Glare")->GetMask();
+
+			if (mBackground != 0 && mAbsoluteScale > 0.0f)	mask |= glowMask;
+			if (mForeground != 0 && radius > 0.0f)			mask |= glareMask;
+		}
+
+		if (mask != 0)
 		{
 			if (render)
 			{
 				Drawable& obj		= params.mObjects.Expand();
 				obj.mObject			= this;
+				obj.mMask			= mask;
 				obj.mLayer			= 0;
 				obj.mGroup			= (mBackground == 0 ? mForeground : mBackground);
 				obj.mDistSquared	= (mType == Type::Directional) ? 0.0f : (mAbsolutePos - params.mCamPos).Dot();
 			}
+			return true;
 		}
 		else
 		{
 			_SetTargetAlpha(0.0f);
 		}
 	}
-	return isParentVisible;
+	return false;
 }
 
 //============================================================================================================
@@ -94,116 +106,115 @@ uint Glow::OnDraw (const ITechnique* tech, bool insideOut)
 	static ITechnique* glow  = graphics->GetTechnique("Glow");
 	static ITechnique* glare = graphics->GetTechnique("Glare");
 
-	if ( (tech == glow && mBackground != 0) || (tech == glare && mForeground != 0) )
+	float radius (0.0f);
+	const Vector2f& range  (graphics->GetCameraRange());
+	const Vector3f& camPos (graphics->GetCameraPosition());
+
+	// Disable any active shader
+	graphics->SetActiveShader(0);
+	graphics->SetADT(0.003921568627451f);
+
+	// Use the assigned color by default, unless modified below
+	Color4f color (mColor);
+
+	const char* parentType = mParent->GetClassID();
+
+	// Light's color is automatically inherited from the parent light, if the parent is indeed a light
+	if (parentType == PointLight::ClassID())
 	{
-		float radius (0.0f);
-		const Vector2f& range (graphics->GetCameraRange());
-		const Vector3f& camPos (graphics->GetCameraPosition());
+		color = ((PointLight*)mParent)->GetDiffuse();
+		color.Normalize();
+	}
+	else if (parentType == DirectionalLight::ClassID())
+	{
+		color = ((DirectionalLight*)mParent)->GetDiffuse();
+		color.Normalize();
+	}
 
-		// Disable any active shader
-		graphics->SetActiveShader(0);
-		graphics->SetADT(0.003921568627451f);
-
-		// Use the assigned color by default, unless modified below
-		Color4f color (mColor);
-
-		const char* parentType = mParent->GetClassID();
-
-		// Light's color is automatically inherited from the parent light, if the parent is indeed a light
-		if (parentType == PointLight::ClassID())
-		{
-			color = ((PointLight*)mParent)->GetDiffuse();
-			color.Normalize();
-		}
-		else if (parentType == DirectionalLight::ClassID())
-		{
-			color = ((DirectionalLight*)mParent)->GetDiffuse();
-			color.Normalize();
-		}
-
-		// Transparent tech is always drawn first -- calculate the matrices
-		if (tech == glow)
-		{
-			// Radius matches the absolute scale
-			radius = mAbsoluteScale;
-
-			if (radius > 0.0f)
-			{
-				// Directional object's position should be always relative to the camera's position,
-				// while the positional orientation is more straightforward since it's in world space
-				Vector3f offset = (mType == Type::Directional) ?
-					camPos - mAbsoluteRot.GetForward() * range.y :
-					mAbsolutePos;
-
-				// Get the modelview matrix and remove the top-left 3x3 component, eliminating rotation and scaling
-				mMat = graphics->GetViewMatrix();
-				mMat.PreTranslate(offset);
-				mMat.ClearRotationAndScaling();
-
-				// Scale the matrix so the directional glow is of appropriate size
-				if (mType == Type::Directional)
-				{
-					mMat.PreScale(range.y / 10.0f);
-				}
-
-				// Set transparent states
-				graphics->SetActiveColor(color);
-				graphics->SetActiveMaterial(mBackground);
-			}
-		}
-		// Overlay pass is drawn second -- figure out if the lens flare should be visible based on occlusion
-		else if (tech == glare)
-		{
-			if (mType == Type::Directional)
-			{
-				// IGraphics::IsVisible() check is affected by the modelview matrix
-				graphics->ResetViewMatrix();
-				Vector3f point ( camPos - mAbsoluteRot.GetForward() * (range.y * 0.99f) );
-				_SetTargetAlpha( graphics->IsPointVisible(point) );
-			}
-			else if (mType == Type::Point)
-			{
-				_SetTargetAlpha( graphics->IsPointVisible(mAbsolutePos) );
-			}
-
-			// Radius is scaled by intensity and magnitude
-			radius = (mIntensity.y > 0.0f) ? mAbsoluteScale * mMag * mIntensity.y : 0.0f;
-
-			if (radius > 0.0f)
-			{
-				// Set overlay states
-				color.a *= mIntensity.y;
-				graphics->SetActiveColor(color);
-				graphics->SetActiveMaterial(mForeground);
-			}
-		}
+	// Transparent tech is always drawn first -- calculate the matrices
+	if (tech == glow)
+	{
+		// Radius matches the absolute scale
+		radius = mAbsoluteScale;
 
 		if (radius > 0.0f)
 		{
-			// Set the active modelview matrix
-			graphics->SetViewMatrix(mMat);
+			// Directional object's position should be always relative to the camera's position,
+			// while the positional orientation is more straightforward since it's in world space
+			Vector3f offset = (mType == Type::Directional) ?
+				camPos - mAbsoluteRot.GetForward() * range.y :
+				mAbsolutePos;
 
-			float vertices[] = { -radius,  radius,
-								 -radius, -radius,
-								  radius, -radius,
-								  radius,  radius };
+			// Get the modelview matrix and remove the top-left 3x3 component, eliminating rotation and scaling
+			mMat = graphics->GetViewMatrix();
+			mMat.PreTranslate(offset);
+			mMat.ClearRotationAndScaling();
 
-			float texcoords[] = { 0.0f, 0.0f,
-								  0.0f, 1.0f,
-								  1.0f, 1.0f,
-								  1.0f, 0.0f };
+			// Scale the matrix so the directional glow is of appropriate size
+			if (mType == Type::Directional)
+			{
+				mMat.PreScale(range.y / 10.0f);
+			}
 
-			// Set the buffers
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,	 0 );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,	 0 );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,	 0 );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1, 0 );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, (Vector2f*)texcoords );
-			graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,	 (Vector2f*)vertices );
-
-			// Draw the glow
-			return graphics->DrawVertices (IGraphics::Primitive::Quad, 4);
+			// Set transparent states
+			graphics->SetActiveColor(color);
+			graphics->SetActiveMaterial(mBackground);
 		}
+	}
+	// Overlay pass is drawn second -- figure out if the lens flare should be visible based on occlusion
+	else if (tech == glare)
+	{
+		if (mType == Type::Directional)
+		{
+			// IGraphics::IsVisible() check is affected by the modelview matrix
+			graphics->ResetViewMatrix();
+			Vector3f point ( camPos - mAbsoluteRot.GetForward() * (range.y * 0.99f) );
+			_SetTargetAlpha( graphics->IsPointVisible(point) );
+		}
+		else if (mType == Type::Point)
+		{
+			_SetTargetAlpha( graphics->IsPointVisible(mAbsolutePos) );
+		}
+
+		// Radius is scaled by intensity and magnitude
+		radius = (mIntensity.y > 0.0f) ? mAbsoluteScale * mMag * mIntensity.y : 0.0f;
+
+		if (radius > 0.0f)
+		{
+			// Set overlay states
+			color.a *= mIntensity.y;
+			graphics->SetActiveColor(color);
+			graphics->SetActiveMaterial(mForeground);
+		}
+	}
+
+	if (radius > 0.0f)
+	{
+		// Set the active modelview matrix
+		graphics->SetViewMatrix(mMat);
+
+		float vertices[] = { -radius,  radius,
+							 -radius, -radius,
+							  radius, -radius,
+							  radius,  radius };
+
+		float texcoords[] = { 0.0f, 0.0f,
+							  0.0f, 1.0f,
+							  1.0f, 1.0f,
+							  1.0f, 0.0f };
+
+		// Set the buffers
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,	  0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,	  0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,	  0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,  0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight, 0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,  0 );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, (Vector2f*)texcoords );
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,	 (Vector2f*)vertices );
+
+		// Draw the glow
+		return graphics->DrawVertices (IGraphics::Primitive::Quad, 4);
 	}
 	return 0;
 }
@@ -212,7 +223,7 @@ uint Glow::OnDraw (const ITechnique* tech, bool insideOut)
 // Serialization -- Save
 //============================================================================================================
 
-void Glow::OnSerializeTo ( TreeNode& root ) const
+void Glow::OnSerializeTo  (TreeNode& root) const
 {
 	root.AddChild("Type", (mType == Type::Directional) ? "Directional" : "Point");
 	root.AddChild("Color", mColor);

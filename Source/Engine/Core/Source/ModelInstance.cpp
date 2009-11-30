@@ -93,6 +93,7 @@ Object::CullResult ModelInstance::OnCull (CullParams& params, bool isParentVisib
 		{
 			Drawable& obj	 = params.mObjects.Expand();
 			obj.mObject		 = this;
+			obj.mMask		 = mModel->GetMask();
 			obj.mLayer		 = mModel->GetLayer();
 			obj.mGroup		 = mModel;
 			obj.mDistSquared = (mAbsolutePos - params.mCamPos).Dot();
@@ -109,35 +110,30 @@ Object::CullResult ModelInstance::OnCull (CullParams& params, bool isParentVisib
 uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	uint triangleCount(0);
-	uint mask = tech->GetMask();
+	IGraphics* graphics = mCore->GetGraphics();
 
-	if (mModel->GetMask() & mask)
+	// Automatically normalize normals if the scale is not 1.0
+	graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
+
+	// Set the model's world matrix so the rendered objects show up in the proper place
+	graphics->SetWorldMatrix(mMatrix);
+
+	if (mModel != 0)
 	{
-		IGraphics* graphics = mCore->GetGraphics();
+		// Draw the model
+		triangleCount += mModel->_Draw(graphics, tech);
 
-		// Automatically normalize normals if the scale is not 1.0
-		graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
-
-		// Set the model's world matrix so the rendered objects show up in the proper place
-		graphics->SetWorldMatrix(mMatrix);
-
-		if (mModel != 0)
+		if (mShowOutline)
 		{
-			// Draw the model
-			triangleCount += mModel->_Draw(graphics, tech);
-
-			if (mShowOutline)
-			{
-				// Draw the outline if requested
-				triangleCount += mModel->_DrawOutline(graphics, tech);
-				triangleCount += _DrawOutline(graphics, tech);
-			}
-		}
-		else if (mShowOutline)
-		{
-			// Draw only the outline
+			// Draw the outline if requested
+			triangleCount += mModel->_DrawOutline(graphics, tech);
 			triangleCount += _DrawOutline(graphics, tech);
 		}
+	}
+	else if (mShowOutline)
+	{
+		// Draw only the outline
+		triangleCount += _DrawOutline(graphics, tech);
 	}
 	return triangleCount;
 }

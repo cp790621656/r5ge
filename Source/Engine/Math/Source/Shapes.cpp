@@ -138,7 +138,7 @@ public:
 // Main function that generates the icosahedron
 //============================================================================================================
 
-void Shape::Icosahedron (uint iterations, Array<Vector3f>& vertices, Array<ushort>& indices)
+void Shape::Icosahedron (Array<Vector3f>& vertices, Array<ushort>& indices, uint iterations)
 {
 	double pi = 3.141592653589793238462643383279;
 	double horizontal = (pi / 5.0);	// 5 horizontal slices per 180 degrees
@@ -191,3 +191,46 @@ void Shape::Icosahedron (uint iterations, Array<Vector3f>& vertices, Array<ushor
 	for (uint i = 0; i < triangles.GetSize(); ++i)
 		triangles[i].Fill(edges, indices);
 };
+
+//============================================================================================================
+// Generates a box
+//============================================================================================================
+
+void Shape::Box (Array<Vector3f>& vertices, Array<ushort>& indices, float size, bool inverted)
+{
+	vertices.Clear();
+	vertices.Expand().Set( 1.0f,  1.0f,  1.0f);
+	vertices.Expand().Set( 1.0f,  1.0f, -1.0f);
+	vertices.Expand().Set( 1.0f, -1.0f,  1.0f);
+	vertices.Expand().Set( 1.0f, -1.0f, -1.0f);
+	vertices.Expand().Set(-1.0f,  1.0f,  1.0f);
+	vertices.Expand().Set(-1.0f,  1.0f, -1.0f);
+	vertices.Expand().Set(-1.0f, -1.0f,  1.0f);
+	vertices.Expand().Set(-1.0f, -1.0f, -1.0f);
+
+	if (size != 1.0f)
+	{
+		for (uint i = vertices.GetSize(); i > 0; ) vertices[--i] *= size;
+	}
+
+	if (inverted)
+	{
+		ushort idx[] = 
+		{
+			0, 1, 3, 0, 3, 2, 4, 7, 5, 4, 6, 7, 0, 2, 6, 0, 6, 4,
+			1, 7, 3, 1, 5, 7, 0, 5, 1, 0, 4, 5, 2, 3, 7, 2, 7, 6
+		};
+		indices.Reserve(36);
+		for (uint i = 0; i < 36; ++i) indices.Expand() = idx[i];
+	}
+	else
+	{
+		ushort idx[] = 
+		{
+			1, 0, 3, 3, 0, 2, 7, 4, 5, 6, 4, 7, 2, 0, 6, 6, 0, 4,
+			7, 1, 3, 5, 1, 7, 5, 0, 1, 4, 0, 5, 3, 2, 7, 7, 2, 6
+		};
+		indices.Reserve(36);
+		for (uint i = 0; i < 36; ++i) indices.Expand() = idx[i];
+	}
+}

@@ -101,22 +101,25 @@ Object::CullResult QuadTree::OnCull (CullParams& params, bool isParentVisible, b
 	// Cull the hierarchy, filling the list with renderable objects
 	if (mRootNode != 0)
 	{
-		mRootNode->_Cull(mRenderable, params, render);
+		uint mask = mRootNode->_Cull(mRenderable, params, render);
 
-		// If the list now contains valid nodes, then we must draw the terrain
 		if (mRenderable.IsValid())
 		{
+			mask |= GetMask();
+
 			// Layer is [-2] is because terrain should be rendered before everything else
 			Object::Drawable& drawable = params.mObjects.Expand();
 			drawable.mObject		= this;
+			drawable.mMask			= mask;
 			drawable.mGroup			= 0;
 			drawable.mLayer			= -2;
 			drawable.mDistSquared	= 0.0f;
 		}
+		return CullResult(mask != 0, false, mask);
 	}
 
 	// Don't cull the children as they should already be culled by the subdivided nodes
-	return Object::CullResult(size != params.GetArraySize(), false);
+	return Object::CullResult(false, false, 0);
 }
 
 //============================================================================================================

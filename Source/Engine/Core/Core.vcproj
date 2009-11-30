@@ -305,6 +305,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\Decal.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\Emitter.h"
 					>
 				</File>
@@ -368,6 +372,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\Core.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Decal.cpp"
 					>
 				</File>
 				<File

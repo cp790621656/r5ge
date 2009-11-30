@@ -64,8 +64,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 {
 	if (mRoot != 0)
 	{
-		Core* core (mRoot->mCore);
-		IGraphics* graphics (core->GetGraphics());
+		IGraphics* graphics (mRoot->mCore->GetGraphics());
 		Vector3f dir (rot.GetForward());
 
 		graphics->SetCameraRange(range);
@@ -168,6 +167,8 @@ uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 	// Only proceed if there is something to render with
 	if (mObjects.IsValid() && tech != 0)
 	{
+		uint mask = tech->GetMask();
+
 		// Activate the rendering technique
 		graphics->SetActiveTechnique(tech, insideOut);
 
@@ -200,7 +201,13 @@ uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 				// Run through all renderables on this layer, rendering them back to front
 				for (uint b = last; b > i; )
 				{
-					triangles += mObjects[--b].mObject->OnDraw(tech, insideOut);
+					Object::Drawable& drawable = mObjects[--b];
+
+					// Ensure it can be drawn with this technique before continuing
+					if ((drawable.mMask & mask) != 0)
+					{
+						triangles += drawable.mObject->OnDraw(tech, insideOut);
+					}
 				}
 
 				// Continue from the next layer
@@ -212,7 +219,12 @@ uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 			// Run through all objects, rendering them front-to-back
 			for (uint i = 0, imax = mObjects.GetSize(); i < imax; ++i)
 			{
-				triangles += mObjects[i].mObject->OnDraw(tech, insideOut);
+				Object::Drawable& drawable = mObjects[i];
+
+				if ((drawable.mMask & mask) != 0)
+				{
+					triangles += drawable.mObject->OnDraw(tech, insideOut);
+				}
 			}
 		}
 	}
