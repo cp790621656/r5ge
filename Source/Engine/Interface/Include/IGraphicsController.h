@@ -89,6 +89,9 @@ struct IGraphicsController
 
 public:
 
+	// Should finish all drawing operations
+	virtual void Flush()=0;
+
 	// Property control
 	virtual void SetFog				(bool val)=0;
 	virtual void SetDepthWrite		(bool val)=0;

@@ -339,10 +339,6 @@ Deferred::DrawResult Deferred::DrawScene (
 	// Decal pass
 	if (decalCallback)
 	{
-		// Switching the render targets back and forth effectively force-finishes all draw operations
-		graphics->SetActiveRenderTarget( 0 );
-		graphics->SetActiveRenderTarget( target0 );
-
 		// Affect only pixels we wrote to and don't write to depth
 		graphics->SetStencilTest(true);
 		graphics->SetDepthWrite(false);

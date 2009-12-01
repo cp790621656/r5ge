@@ -44,7 +44,7 @@ void Decal::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale * 1.065f );
+		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
 	}
 }
 
@@ -57,7 +57,7 @@ Object::CullResult Decal::OnCull (CullParams& params, bool isParentVisible, bool
 	// Save the mask as it doesn't change
 	static uint mask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
 
-	if (mShader != 0 && params.mFrustum.IsVisible(mAbsolutePos, mAbsoluteScale))
+	if (mShader != 0 && params.mFrustum.IsVisible(mAbsolutePos, mAbsoluteScale * 1.415f))
 	{
 		if (render)
 		{
@@ -101,7 +101,7 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 
 		Array<Vector3f> vertices;
 		Array<ushort> indices;
-		Shape::Icosahedron(vertices, indices, 1);
+		Shape::Box(vertices, indices);
 		indexCount = indices.GetSize();
 
 		vbo->Set(vertices, IVBO::Type::Vertex);
@@ -116,6 +116,9 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 	g_right		= mAbsoluteRot.GetRight() % mat;
 	g_up		= mAbsoluteRot.GetUp() % mat;
 
+	// Finish all draw operations
+	graphics->Flush();
+
 	// Set the color and world matrix
 	graphics->SetActiveColor(mColor);
 	graphics->SetNormalize(false);
@@ -128,10 +131,10 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 	for (uint i = 0; i < mTextures.GetSize(); ++i)
 		graphics->SetActiveTexture(i, mTextures[i]);
 
-	float nearClip = graphics->GetCameraRange().x;
-	float range (mAbsoluteScale * 1.065f);
+	// Distance from the center to the farthest corner of the box before it starts getting clipped
+	float range = mAbsoluteScale * 1.415f + graphics->GetCameraRange().x * 2.0f;
 
-	if ( mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) > (range + nearClip * 2.0f) )
+	if ( mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) > range )
 	{
 		// If the camera is outside of the sphere, use normal culling and depth testing
 		graphics->SetCulling( IGraphics::Culling::Back );
@@ -152,8 +155,8 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, vbo, 0,
-		IGraphics::DataType::Float, 3, 12 );
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+		vbo, 0, IGraphics::DataType::Float, 3, 12 );
 
 	// Draw the decal
 	return graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);

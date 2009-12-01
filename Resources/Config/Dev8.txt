@@ -128,20 +128,38 @@ Root
 
 		Decal = "First Decal"
 		{
-			Position = 0 0 3
+			Position = 2 0 3
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
 			Scale = 4.0
 			Script = "Slow Twirl"
-			Shader = "Deferred/Decal"
+			Shader = "Deferred/Decal/Fade_D_N"
 
 			Textures = String[]
 			{
+				"[Generated] Depth"
+				"[Generated] Normal"
 				"[Generated] Diffuse Material"
 				"[Generated] Specular Material"
-				"[Generated] Normal"
+				"Textures/jelly_df.jpg"
+				"Textures/jelly_nm.png"
+			}
+		}
+
+		Decal = "Second Decal"
+		{
+			Position = -2 0 3
+			Rotation = -0.388141 0.160773 -0.347273 0.838391
+			Scale = 4.0
+			Script = "Slow Twirl"
+			Shader = "Deferred/Decal/Project_D"
+
+			Textures = String[]
+			{
 				"[Generated] Depth"
-				"Textures/stone_df.jpg"
-				"Textures/stone_nm.png"
+				"[Generated] Normal"
+				"[Generated] Diffuse Material"
+				"[Generated] Specular Material"
+				"Textures/tree_leaves.png"
 			}
 		}
 	}

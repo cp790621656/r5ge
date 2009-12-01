@@ -9,16 +9,19 @@
 
 class Decal : public Object
 {
+public:
+
+
 protected:
 
-	Matrix43		mMatrix;
-	IShader*		mShader;
-	Color4ub		mColor;
+	Matrix43	mMatrix;
+	IShader*	mShader;
+	Color4ub	mColor;
 
 	Array<const ITexture*> mTextures;
 
 	// Decal objects should be drawn right after the terrain and before everything else
-	Decal() : mShader(0) { mColor = 0xFFFFFFFF; }
+	Decal() : mShader(0), mColor(0xFFFFFFFF) {}
 
 public:
 

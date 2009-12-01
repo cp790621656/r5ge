@@ -100,6 +100,9 @@ protected:
 
 public:
 
+	// Finish all draw operations
+	virtual void Flush();
+
 	// State control functions
 	virtual void SetFog				(bool val);
 	virtual void SetDepthWrite		(bool val);
