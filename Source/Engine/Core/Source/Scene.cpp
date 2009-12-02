@@ -146,10 +146,13 @@ void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& 
 	mLights.Clear();
 
 	// Culling parameters for this run
-	Object::CullParams params (frustum, pos, dir, mObjects, mLights);
+	Object::FillParams params (frustum, pos, dir, mObjects, mLights);
 
 	// Cull the entire scene, filling the arrays in the process
-	mRoot->_Cull(params, true, true);
+	mRoot->_Fill(params);
+
+	// Remember the mask
+	mMask = params.mMask;
 
 	// Sort all objects by layer, group, and distance to the camera
 	mObjects.Sort();
@@ -168,6 +171,9 @@ uint Scene::_Draw (const ITechnique* tech, bool insideOut)
 	if (mObjects.IsValid() && tech != 0)
 	{
 		uint mask = tech->GetMask();
+
+		// Ensure that this technique is even used first
+		if ((mask & mMask) == 0) return triangles;
 
 		// Activate the rendering technique
 		graphics->SetActiveTechnique(tech, insideOut);

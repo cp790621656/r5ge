@@ -101,7 +101,7 @@ void ModelViewer::OnDraw()
 	if (mResetCamera)
 	{
 		mResetCamera = false;
-		const Bounds& bounds = mInst->GetBounds();
+		const Bounds& bounds = mInst->GetAbsoluteBounds();
 
 		if (bounds.IsValid())
 		{

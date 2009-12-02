@@ -51,17 +51,6 @@ public:
 		}
 	};
 
-	// Result returned by the Cull function
-	struct CullResult
-	{
-		bool mIsVisible;	// Whether this object is visible
-		bool mCullChildren;	// Whether to continue culling the children
-		uint mMask;
-
-		CullResult (bool visible, bool cullChildren = true, uint mask = 0) :
-			mIsVisible(visible), mCullChildren(cullChildren), mMask(mask) {}
-	};
-
 	// Types used by this class
 	typedef Object*					ObjectPtr;
 	typedef Array<Drawable>			Drawables;
@@ -70,7 +59,7 @@ public:
 	typedef Thread::Lockable		Lockable;
 
 	// Culling parameters passed from one object to the next during the culling stage
-	struct CullParams
+	struct FillParams
 	{
 		const Frustum&	 mFrustum;	// Frustum used to cull the scene
 		const Vector3f&	 mCamPos;	// Current camera position, used to sort objects
@@ -78,9 +67,10 @@ public:
 
 		Drawables&		 mObjects;	// Sorted list of visible objects
 		ILight::List&	 mLights;	// List of visible lights
+		uint			 mMask;		// Final culling mask
 
-		CullParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Drawables& o, ILight::List& l)
-			: mFrustum(f), mCamPos(pos), mCamDir(dir), mObjects(o), mLights(l) {}
+		FillParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Drawables& o, ILight::List& l)
+			: mFrustum(f), mCamPos(pos), mCamDir(dir), mObjects(o), mLights(l), mMask(0) {}
 
 		// Can be used to see if the lists get any new additions
 		uint GetArraySize() const { return mObjects.GetSize() + mLights.GetSize(); }
@@ -88,18 +78,24 @@ public:
 
 protected:
 
-	String		mName;			// Name of this object
-	Flags		mFlags;			// Internal flags associated with this object
-	Object*		mParent;		// Object's parent
-	Core*		mCore;			// Engine's core that the object was created with
-	Vector3f	mRelativePos;	// Local space position
-	Quaternion	mRelativeRot;	// Local space rotation
-	float		mRelativeScale;	// Local space scale
-	Vector3f	mAbsolutePos;	// World space position, calculated every Update()
-	Quaternion	mAbsoluteRot;	// World space rotation
-	float		mAbsoluteScale;	// World space scale
-	bool		mIsDirty;		// Whether the object's absolute coordinates should be recalculated
-	bool		mSerializable;	// Whether the object will be serialized out
+	String		mName;				// Name of this object
+	Flags		mFlags;				// Internal flags associated with this object
+	Object*		mParent;			// Object's parent
+	Core*		mCore;				// Engine's core that the object was created with
+	Vector3f	mRelativePos;		// Local space position
+	Quaternion	mRelativeRot;		// Local space rotation
+	float		mRelativeScale;		// Local space scale
+	Vector3f	mAbsolutePos;		// World space position, calculated every Update()
+	Quaternion	mAbsoluteRot;		// World space rotation
+	float		mAbsoluteScale;		// World space scale
+	
+	Bounds		mRelativeBounds;	// Local bounds
+	Bounds		mAbsoluteBounds;	// Calculated bounds that include only this object
+	Bounds		mCompleteBounds;	// Calculated bounds that include the bounds of all children
+	bool		mCalcAbsBounds;		// Whether absolute bounds will be auto-calculated ('true' in most cases)
+
+	bool		mIsDirty;			// Whether the object's absolute coordinates should be recalculated
+	bool		mSerializable;		// Whether the object will be serialized out
 
 	Lockable	mLock;
 	Children	mChildren;
@@ -115,7 +111,7 @@ private:
 	{
 		enum
 		{
-			Cull			= 1 << 1,
+			Fill			= 1 << 1,
 			PreUpdate		= 1 << 2,
 			Update			= 1 << 3,
 			PostUpdate		= 1 << 4,
@@ -172,6 +168,9 @@ public:
 	// Retrieves the Core that was ultimately owns this object
 	inline Core* GetCore() { return mCore; }
 
+	// Returns whether the object is currently visible
+	bool IsVisible() const { return mFlags.Get(Flag::Visible) && (mParent == 0 && mParent->IsVisible()); }
+
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}
 	const Flags&		GetFlags()				const	{ return mFlags;			}
@@ -191,6 +190,11 @@ public:
 	const Quaternion&	GetAbsoluteRotation()	const	{ return mAbsoluteRot;		}
 	float				GetAbsoluteScale()		const	{ return mAbsoluteScale;	}
 
+	// Retrieves object bounds
+	const Bounds&		GetRelativeBounds()		const	{ return mRelativeBounds;	}
+	const Bounds&		GetAbsoluteBounds()		const	{ return mAbsoluteBounds;	}
+	const Bounds&		GetCompleteBounds()		const	{ return mCompleteBounds;	}
+
 public:
 
 	// Every object has a name that can be changed
@@ -209,9 +213,9 @@ public:
 	void SetSerializable (bool val) { mSerializable = val; }
 
 	// Sets all relative values
-	void SetRelativePosition ( const Vector3f& pos )	{ mRelativePos	 = pos;		mIsDirty = true; }
-	void SetRelativeRotation ( const Quaternion& rot )	{ mRelativeRot	 = rot;		mIsDirty = true; }
-	void SetRelativeScale	 ( float scale )			{ mRelativeScale = scale;	mIsDirty = true; }
+	void SetRelativePosition ( const Vector3f& pos )	{ mRelativePos	  = pos;	mIsDirty = true; }
+	void SetRelativeRotation ( const Quaternion& rot )	{ mRelativeRot	  = rot;	mIsDirty = true; }
+	void SetRelativeScale	 ( float scale )			{ mRelativeScale  = scale;	mIsDirty = true; }
 
 	// Sets both relative and absolute values using provided absolute values
 	void SetAbsolutePosition ( const Vector3f& pos );
@@ -224,11 +228,10 @@ public:
 public:
 
 	// Updates the object, calling appropriate virtual functions
-	void _Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved);
+	bool _Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved);
 
-	// Culls the object based on the viewing frustum.
-	// The last parameter specifies whether to actually place this object into the rendering queue.
-	uint _Cull (CullParams& params, bool isParentVisible, bool render);
+	// Fills the render queues and updates the visibility mask
+	void _Fill (FillParams& params);
 
 	// Recursive Object::OnSelect caller
 	void _Select (const Vector3f& pos, ObjectPtr& ptr, float& radius);
@@ -241,17 +244,22 @@ public:
 
 protected:
 
-	// Called prior to object's Update function
+	// NOTE: Don't forget to set 'mIsDirty' to 'true' if you modify relative coordinates
+	// in your virtual functions, or absolute coordinates won't be recalculated!
+
+	// Called prior to object's Update function, before absolute coordinates are calculated
 	virtual void OnPreUpdate();
 
 	// Called after the object's absolute coordinates have been calculated
+	// but before all children and absolute bounds have been updated.
 	virtual void OnUpdate();
 
-	// Called after the object has updated all of its children
+	// Called after the object has updated all of its children and absolute bounds
 	virtual void OnPostUpdate();
 
-	// Called when the object is being culled -- should return whether the object is visible
-	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
+	// Called when the scene is being culled. Should update the 'mask' parameter.
+	// Return 'true' if the Object should recurse through children, 'false' if the function already did.
+	virtual bool OnFill (FillParams& params);
 
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in

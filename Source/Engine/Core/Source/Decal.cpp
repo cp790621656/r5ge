@@ -44,42 +44,42 @@ void Decal::OnUpdate()
 {
 	if (mIsDirty)
 	{
+		mRelativeBounds.Reset();
+		mRelativeBounds.Include( Vector3f(), 1.0f );
 		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
 	}
 }
 
 //============================================================================================================
-// Cull the object based on the viewing frustum
+// Fill the renderable object and visible light lists
 //============================================================================================================
 
-Object::CullResult Decal::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool Decal::OnFill (FillParams& params)
 {
 	// Save the mask as it doesn't change
-	static uint mask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
+	static uint myMask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
 
-	if (mShader != 0 && params.mFrustum.IsVisible(mAbsolutePos, mAbsoluteScale * 1.415f))
+	if (mShader != 0)
 	{
-		if (render)
-		{
-			// Add a new drawable entry
-			Drawable& obj = params.mObjects.Expand();
-			obj.mObject = this;
-			obj.mMask = mask;
+		// Add a new drawable entry
+		Drawable& obj = params.mObjects.Expand();
+		obj.mObject = this;
+		obj.mMask = myMask;
 
-			// Layer -2 is for terrains, '-1' is for decals.
-			obj.mLayer = -1;
+		// Layer -2 is for terrains, '-1' is for decals.
+		obj.mLayer = -1;
 
-			// Group by the last texture. Shaders are more likely to be shared.
-			obj.mGroup = mTextures.IsValid() ? mTextures.Back() : 0;
+		// Group by the last texture. Shaders are more likely to be shared.
+		obj.mGroup = mTextures.IsValid() ? mTextures.Back() : 0;
 
-			// Distance is not used so that decals don't pop in and out of each other as the camera
-			// is moving. It's best if they stay in the same exact draw order for better or for worse.
-			obj.mDistSquared = 0.0f;
-			return CullResult(true, true, mask);
-		}
-		return true;
+		// Distance is not used so that decals don't pop in and out of each other as the camera
+		// is moving. It's best if they stay in the same exact draw order for better or for worse.
+		obj.mDistSquared = 0.0f;
+
+		// Update the complete mask
+		params.mMask |= myMask;
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================

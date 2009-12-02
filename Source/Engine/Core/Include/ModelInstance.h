@@ -13,7 +13,6 @@ protected:
 
 	Model*		mModel;			// Pointer to the model that was instanced
 	Bounds		mCullBounds;	// Custom minimum bounds used for culling, set in local space
-	Bounds		mBounds;		// Calculated world-space bounding volume
 	Matrix43	mMatrix;		// Calculated world transformation matrix
 	bool		mShowOutline;	// Whether to show the bounding outline -- useful for debugging
 
@@ -28,7 +27,6 @@ public:
 public:
 
 	Model*			GetModel()					{ return mModel;		}
-	const Bounds&	GetBounds()			const	{ return mBounds;		}
 	const Bounds&	GetCullBounds()		const	{ return mCullBounds;	}
 	const Matrix43&	GetMatrix()			const	{ return mMatrix;		}
 	bool			IsShowingOutline()	const	{ return mShowOutline;  }
@@ -42,14 +40,11 @@ protected:
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 
-	// Cull the object based on the viewing frustum
-	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
+	// Fill the renderable object and visible light lists
+	virtual bool OnFill (FillParams& params);
 
 	// Draw the object using the specified technique
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
-
-	// Selects the closest object to the given position if the position is within the object's bounds
-	virtual bool OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);
 
 private:
 

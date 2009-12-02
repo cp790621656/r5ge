@@ -69,38 +69,34 @@ void ModelInstance::OnUpdate()
 	{
 		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
 
-		mBounds = mCullBounds;
+		mRelativeBounds = mCullBounds;
 
 		if (mModel != 0)
 		{
-			mBounds.Include( mModel->GetBounds() );
+			mRelativeBounds.Include( mModel->GetBounds() );
 		}
-
-		mBounds.Transform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
 	}
 }
 
 //============================================================================================================
-// Culls the object based on the viewing frustum
+// Fills the render queues
 //============================================================================================================
 
-Object::CullResult ModelInstance::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool ModelInstance::OnFill (FillParams& params)
 {
 	// Only draw the model if the parent is visible and if the bounds are within the frustum
-	if (isParentVisible && (mModel != 0 && params.mFrustum.IsVisible(mBounds)) )
+	if (mModel != 0)
 	{
-		if (render)
-		{
-			Drawable& obj	 = params.mObjects.Expand();
-			obj.mObject		 = this;
-			obj.mMask		 = mModel->GetMask();
-			obj.mLayer		 = mModel->GetLayer();
-			obj.mGroup		 = mModel;
-			obj.mDistSquared = (mAbsolutePos - params.mCamPos).Dot();
-		}
-		return true;
+		Drawable& obj	 = params.mObjects.Expand();
+		obj.mObject		 = this;
+		obj.mMask		 = mModel->GetMask();
+		obj.mLayer		 = mModel->GetLayer();
+		obj.mGroup		 = mModel;
+		obj.mDistSquared = (mAbsolutePos - params.mCamPos).Dot();
+
+		params.mMask |= obj.mMask;
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -139,26 +135,6 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 }
 
 //============================================================================================================
-// Selects the closest object to the given position if the position is within the object's bounds
-//============================================================================================================
-
-bool ModelInstance::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
-{
-	if (mBounds.Contains(pos))
-	{
-		const Vector3f& center = mBounds.GetCenter();
-		float distance = (center - pos).Dot();
-
-		if (distance < radius)
-		{
-			radius = distance;
-			ptr = this;
-		}
-	}
-	return true;
-}
-
-//============================================================================================================
 // Draws the outline of the bounding box
 //============================================================================================================
 
@@ -172,7 +148,8 @@ uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 		graphics->ResetWorldMatrix();
 
 		Array<Vector3f> v;
-		GetBoundingBoxLines(v, mBounds.GetMin(), mBounds.GetMax());
+		const Bounds& complete = GetCompleteBounds();
+		GetBoundingBoxLines(v, complete.GetMin(), complete.GetMax());
 
 		float factor = Float::Abs(Float::Cos(4.0f * Time::GetTime()));
 		bool stencil = graphics->GetStencilTest();
@@ -195,7 +172,7 @@ uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 
 		// Restore the active technique
 		graphics->SetStencilTest(stencil);
-		graphics->SetActiveColor( Color4f(1, 1, 1, 1) );
+		graphics->SetActiveColor( Color4f(1.0f) );
 		graphics->SetActiveTechnique(tech);
 	}
 	return triangleCount;

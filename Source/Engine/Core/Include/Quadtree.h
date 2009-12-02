@@ -13,15 +13,6 @@ public:
 
 	typedef QuadNode::OnCreateCallback OnCreateCallback;
 
-	// QuadTree needs to position children
-	struct Flag : Object::Flag
-	{
-		enum
-		{
-			HasMoved = 1 << 31,
-		};
-	};
-
 protected:
 
 	QuadNode*			mRootNode;		// Root of the tree
@@ -39,7 +30,7 @@ public:
 	// Percentage of how much of the terrain is currently visible
 	float GetVisibility() const { return mRenderable.GetSize() / (float)mMaxNodes; }
 
-	// Splits the quadtree down until the subdivisions reach the specified desired dimensions
+	// Splits the QuadTree down until the subdivisions reach the specified desired dimensions
 	void PartitionToSize (uint desiredX, uint desiredY, uint currentX, uint currentY);
 
 	// Split the tree into the specified number of parts
@@ -47,7 +38,7 @@ public:
 
 	// Fill the terrain's topology after partitioning the QuadTree.
 	// Height padding extends the height of the bounding box by this amount so child objects can fit easier.
-	void Fill (void* ptr, float bboxPadding = 0.0f);
+	void FillGeometry (void* ptr, float bboxPadding = 0.0f);
 
 protected:
 
@@ -58,11 +49,10 @@ protected:
 	virtual uint GetMask() const=0;
 
 	// QuadTree often needs to reposition the child objects in its hierarchy
-	virtual void OnUpdate();
 	virtual void OnPostUpdate();
 
 	// Called when the object is being culled
-	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
+	virtual bool OnFill (FillParams& params);
 
 	// Run through all renderable nodes and draw them
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);

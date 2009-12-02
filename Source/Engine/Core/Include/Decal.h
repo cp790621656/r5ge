@@ -41,8 +41,8 @@ protected:
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 
-	// Cull the object based on the viewing frustum
-	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
+	// Fill the renderable object and visible light lists
+	virtual bool OnFill (FillParams& params);
 
 	// Draws the light on-screen if it's visible
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);

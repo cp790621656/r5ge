@@ -98,7 +98,7 @@ void TestApp::Run()
 			// 32 by 32 vertices?" The answer is yes. Yes it will.
 
 			terrain->PartitionInto(1, 1);
-			terrain->Fill(&hm, 0.0f);
+			terrain->FillGeometry(&hm, 0.0f);
 
 			// R5's terrain is extremely bare bone -- it only has vertices. No texture coordinates, no
 			// normals, nothing else. The good news is that it doesn't need any of them. Texture coordinates

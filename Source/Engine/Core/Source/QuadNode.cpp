@@ -76,31 +76,8 @@ bool QuadNode::_Remove (Object* obj)
 
 bool QuadNode::_Add (Object* obj)
 {
-	// Directional lights affect everything so they should be added to the highest level possible
-	if ( obj->IsOfClass(DirectionalLight::ClassID()) )
-	{
-		mChildren.Expand() = obj;
-		return true;
-	}
-
-	// Point lights have a range we can use to calculate their bounds
-	if ( obj->IsOfClass(PointLight::ClassID()) )
-	{
-		PointLight* light = (PointLight*)obj;
-		Bounds bounds;
-		bounds.Include(light->GetAbsolutePosition(), light->GetRange());
-		return _Add(obj, bounds);
-	}
-
-	// If this is a model, then it already has bounds we can use
-	if ( obj->IsOfClass(ModelInstance::ClassID()) )
-	{
-		ModelInstance* model = (ModelInstance*)obj;
-		return _Add(obj, model->GetBounds());
-	}
-
-	// Otherwise simply use the world position
-	return _Add(obj, obj->GetAbsolutePosition());
+	const Bounds& bounds = obj->GetCompleteBounds();
+	return bounds.IsValid() ? _Add(obj, bounds) : _Add(obj, obj->GetAbsolutePosition());
 }
 
 //============================================================================================================
@@ -227,60 +204,48 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 // Calls 'OnFill' on appropriate nodes
 //============================================================================================================
 
-void QuadNode::_Fill (void* ptr, float padding)
+void QuadNode::_FillGeometry (void* ptr, float padding)
 {
 	mBounds.Reset();
 
 	mLeaf = true;
 
-	if (mPart[0] != 0) { mPart[0]->_Fill(ptr, padding); mBounds.Include(mPart[0]->mBounds); mLeaf = false; }
-	if (mPart[1] != 0) { mPart[1]->_Fill(ptr, padding); mBounds.Include(mPart[1]->mBounds); mLeaf = false; }
-	if (mPart[2] != 0) { mPart[2]->_Fill(ptr, padding); mBounds.Include(mPart[2]->mBounds); mLeaf = false; }
-	if (mPart[3] != 0) { mPart[3]->_Fill(ptr, padding); mBounds.Include(mPart[3]->mBounds); mLeaf = false; }
+	if (mPart[0] != 0) { mPart[0]->_FillGeometry(ptr, padding); mBounds.Include(mPart[0]->mBounds); mLeaf = false; }
+	if (mPart[1] != 0) { mPart[1]->_FillGeometry(ptr, padding); mBounds.Include(mPart[1]->mBounds); mLeaf = false; }
+	if (mPart[2] != 0) { mPart[2]->_FillGeometry(ptr, padding); mBounds.Include(mPart[2]->mBounds); mLeaf = false; }
+	if (mPart[3] != 0) { mPart[3]->_FillGeometry(ptr, padding); mBounds.Include(mPart[3]->mBounds); mLeaf = false; }
 
 	// Only call 'OnFill' on the bottom-most node
 	if (mLeaf) OnFill(ptr, padding);
 }
 
 //============================================================================================================
-// Called when the object is being culled -- should return whether the object is visible
+// Called when the object is being considered for rendering
 //============================================================================================================
 
-uint QuadNode::_Cull (Array<QuadNode*>& tiles, Object::CullParams& params, bool render)
+void QuadNode::_Fill (Array<QuadNode*>& tiles, Object::FillParams& params)
 {
-	// Root level is always considered to be visible for the sake of object culling
-	bool visible = (mLevel == 0);
-	uint mask = 0;
-
-	// If the node is visible, either render it or cull its subdivisions
-	if (params.mFrustum.IsVisible(mBounds))
+	// Root level is always considered to be visible for the sake of object culling.
+	// If the node is visible, either render it or cull its subdivisions.
+	if ((mLevel == 0) || params.mFrustum.IsVisible(mBounds))
 	{
-		visible = true;
-
 		if (mLeaf)
 		{
-			if (render)
-			{
-				tiles.Expand() = this;
-			}
+			tiles.Expand() = this;
 		}
 		else
 		{
-			if (mPart[0] != 0) mPart[0]->_Cull(tiles, params, render);
-			if (mPart[1] != 0) mPart[1]->_Cull(tiles, params, render);
-			if (mPart[2] != 0) mPart[2]->_Cull(tiles, params, render);
-			if (mPart[3] != 0) mPart[3]->_Cull(tiles, params, render);
+			if (mPart[0] != 0) mPart[0]->_Fill(tiles, params);
+			if (mPart[1] != 0) mPart[1]->_Fill(tiles, params);
+			if (mPart[2] != 0) mPart[2]->_Fill(tiles, params);
+			if (mPart[3] != 0) mPart[3]->_Fill(tiles, params);
 		}
-	}
 
-	if (visible)
-	{
 		// Run through all children and cull them in turn
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
 		{
 			Object* obj = mChildren[i];
-			if (obj != 0) mask |= obj->_Cull(params, true, render);
+			if (obj != 0) obj->_Fill(params);
 		}
 	}
-	return mask;
 }

@@ -40,7 +40,6 @@ protected:
 	const ITechnique*	mTech;		// Technique used to draw this emitter
 
 	Particles		mParticles;		// Array of active particles
-	Bounds			mBounds;		// Calculated world-space bounding volume
 	uint			mLifetime;		// Lifetime of individual particles
 	uint			mActiveParts;	// Current number of active particles
 	uint			mMaxParticles;	// Maximum number of particles allowed to be active at any given time
@@ -64,7 +63,6 @@ public:
 
 	const ITexture*		GetTexture()	const	{ return mTex;		}
 	const ITechnique*	GetTechnique()	const	{ return mTech;		}
-	const Bounds&		GetBounds()		const	{ return mBounds;	}
 	
 	bool IsActive()				const	{ return mActiveTime != 0;	}
 	uint GetParticleLifetime()	const	{ return mLifetime;			}
@@ -83,8 +81,8 @@ protected:
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 
-	// Cull the object based on the viewing frustum
-	virtual CullResult OnCull (CullParams& params, bool isParentVisible, bool render);
+	// Adds the emitter to the list of renderable objects
+	virtual bool OnFill (FillParams& params);
 
 	// Draw the object using the specified technique
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);

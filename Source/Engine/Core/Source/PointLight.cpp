@@ -81,27 +81,32 @@ void PointLight::SetPower (float val)
 
 void PointLight::OnUpdate()
 {
-	mParams.mPos = mAbsolutePos;
-	mParams.mDir = mAbsoluteRot.GetForward();
-	_UpdateAtten();
-	_UpdateColors();
+	if (mIsDirty)
+	{
+		mRelativeBounds.Reset();
+		mRelativeBounds.Include(Vector3f(), mRange);
+
+		mParams.mPos = mAbsolutePos;
+		mParams.mDir = mAbsoluteRot.GetForward();
+
+		_UpdateAtten();
+		_UpdateColors();
+	}
 }
 
 //============================================================================================================
-// Cull the object based on the viewing frustum
+// Fill the renderable object and visible light lists
 //============================================================================================================
 
-Object::CullResult PointLight::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool PointLight::OnFill (FillParams& params)
 {
 	float range = mRange * mAbsoluteScale;
 
-	if ( isParentVisible && (mParams.IsVisible() && range > 0.0001f) &&
-		 params.mFrustum.IsVisible(mAbsolutePos, range) )
+	if ( mParams.IsVisible() && range > 0.0001f )
 	{
 		params.mLights.Expand() = &mParams;
-		return true;
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================

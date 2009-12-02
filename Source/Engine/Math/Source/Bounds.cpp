@@ -11,19 +11,22 @@ void Bounds::Include (const Vector3f& v)
 {
 	if (!mIsValid)
 	{
+		mMin = v;
+		mMax = v;
+
 		mIsDirty = true;
 		mIsValid = true;
-		mMin	  = v;
-		mMax	  = v;
 	}
+	else
+	{
+		if (mMin.x > v.x) { mMin.x = v.x; mIsDirty = true; }
+		if (mMin.y > v.y) { mMin.y = v.y; mIsDirty = true; }
+		if (mMin.z > v.z) { mMin.z = v.z; mIsDirty = true; }
 
-	if (mMin.x > v.x) { mMin.x = v.x; mIsDirty = true; }
-	if (mMin.y > v.y) { mMin.y = v.y; mIsDirty = true; }
-	if (mMin.z > v.z) { mMin.z = v.z; mIsDirty = true; }
-
-	if (mMax.x < v.x) { mMax.x = v.x; mIsDirty = true; }
-	if (mMax.y < v.y) { mMax.y = v.y; mIsDirty = true; }
-	if (mMax.z < v.z) { mMax.z = v.z; mIsDirty = true; }
+		if (mMax.x < v.x) { mMax.x = v.x; mIsDirty = true; }
+		if (mMax.y < v.y) { mMax.y = v.y; mIsDirty = true; }
+		if (mMax.z < v.z) { mMax.z = v.z; mIsDirty = true; }
+	}
 }
 
 //============================================================================================================

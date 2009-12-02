@@ -20,12 +20,13 @@ private:
 	Frustum		mFrustum;	// Viewing frustum used for culling
 	Drawables	mObjects;	// List of visible objects
 	Lights		mLights;	// List of visible lights
+	uint		mMask;		// Culling mask created on Scene::Cull
 
 public:
 
 	R5_DECLARE_SOLO_CLASS("Scene");
 
-	Scene (Object* root = 0) : mRoot(root) {}
+	Scene (Object* root = 0) : mRoot(root), mMask(0) {}
 
 	// It should be possible to change the root of the scene if desired
 	Object* GetRoot() { return mRoot; }

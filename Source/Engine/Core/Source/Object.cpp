@@ -10,6 +10,7 @@ Object::Object() :
 	mCore			(0),
 	mRelativeScale	(1.0f),
 	mAbsoluteScale	(1.0f),
+	mCalcAbsBounds	(true),
 	mIsDirty		(false),
 	mSerializable	(true)
 {
@@ -255,6 +256,7 @@ void Object::_Add (Object* obj)
 		obj->mRelativeScale	= obj->mAbsoluteScale / mAbsoluteScale;
 
 		mChildren.Expand() = obj;
+		mIsDirty = true;
 	}
 }
 
@@ -268,9 +270,12 @@ void Object::_Remove (Object* obj)
 	{
 		mChildren.Remove(obj);
 
+		obj->mIsDirty		= true;
 		obj->mRelativePos	= obj->mAbsolutePos;
 		obj->mRelativeRot	= obj->mAbsoluteRot;
 		obj->mRelativeScale	= obj->mAbsoluteScale;
+
+		mIsDirty = true;
 	}
 }
 
@@ -282,6 +287,9 @@ void Object::Release()
 {
 	Lock();
 	{
+		mRelativeBounds.Reset();
+		mCompleteBounds.Reset();
+
 		if (mParent != 0)
 		{
 			mParent->_Remove(this);
@@ -405,8 +413,10 @@ uint Object::Draw (const ITechnique* tech, bool insideOut)
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
-void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
+bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
 {
+	bool retVal (false);
+
 	if (mFlags.Get(Flag::Enabled))
 	{
 		Lock();
@@ -455,13 +465,49 @@ void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 			// Update all children
 			if (mChildren.IsValid())
 			{
+				parentMoved = mIsDirty;
+
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
 				{
 					Object* obj = mChildren[i];
 
 					if (obj != 0 && obj->GetFlag(Flag::Enabled))
 					{
-						mChildren[i]->_Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, mIsDirty);
+						mIsDirty |= obj->_Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved);
+					}
+				}
+			}
+
+			if (mIsDirty)
+			{
+				// Remember that there was a change
+				retVal = true;
+
+				// Recalculate absolute bounds
+				if (mCalcAbsBounds)
+				{
+					if (mRelativeBounds.IsValid())
+					{
+						mAbsoluteBounds = mRelativeBounds;
+						mAbsoluteBounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
+					}
+					else
+					{
+						mAbsoluteBounds.Reset();
+					}
+				}
+				
+				// Start with absolute bounds
+				mCompleteBounds = mAbsoluteBounds;
+
+				// Run through all children and include their bounds as well
+				for (uint i = 0; i < mChildren.GetSize(); ++i)
+				{
+					Object* obj = mChildren[i];
+
+					if (obj != 0 && obj->GetFlag(Flag::Enabled))
+					{
+						mCompleteBounds.Include(obj->GetCompleteBounds());
 					}
 				}
 			}
@@ -481,79 +527,84 @@ void Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 				}
 			}
 
-			// The absolute values have now been set
+			// All absolute values have now been calculated
 			mIsDirty = false;
 		}
 		Unlock();
 	}
+	return retVal;
 }
 
 //============================================================================================================
-// INTERNAL: Culls the object based on the viewing frustum
+// INTERNAL: Fills the render queues
 //============================================================================================================
 
-uint Object::_Cull (CullParams& params, bool isParentVisible, bool render)
+void Object::_Fill (FillParams& params)
 {
-	uint mask = 0;
-
 	if (mFlags.Get(Flag::Enabled))
 	{
-		// The object starts off invisible
-		mFlags.Set(Flag::Visible, false);
+		// Cull the bounding volume if it's available. Note that we check the absolute bounds but actually
+		// use the complete bounds. This is because complete bounds can be valid even if absolute aren't.
+		bool isVisible = mAbsoluteBounds.IsValid() ? params.mFrustum.IsVisible(mCompleteBounds) : true;
 
-		Lock();
+		mFlags.Set(Flag::Visible, isVisible);
+
+		if (isVisible)
 		{
-			CullResult result (isParentVisible);
-
-			if (!mIgnore.Get(Ignore::Cull))
+			Lock();
 			{
-				// Note that by default parent's visibility doesn't affect children, and OnCull will be
-				// called regardless of whether the parent was visible or not as long as the parent
-				// leaves the CullResult::mCullChildren at its default value (true). An obvious optimization
-				// would be to change that to 'false' in cases where OnCull function does its own selective
-				// culling (terrain, for example).
+				// Trigger the virtual function if it's available
+				bool considerChildren = mIgnore.Get(Ignore::Fill) ? true : OnFill(params);
 
-				result = OnCull(params, isParentVisible, render);
-
-				// Include this mask
-				mask |= result.mMask;
-
-				// Remember whether this object is currently visible
-				mFlags.Set(Flag::Visible, result.mIsVisible);
-			}
-
-			// Inform all children that they're being culled and let them decide themselves whether they
-			// should do anything about it or not depending on whether this object is visible.
-
-			if (mChildren.IsValid() && result.mCullChildren)
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
+				if (considerChildren)
 				{
-					mask |= mChildren[i]->_Cull(params, result.mIsVisible, render);
-
-					// If the child is visible, this object should be as well
-					if (mChildren[i]->GetFlag(Flag::Visible))
+					// Recurse through all children
+					for (uint i = 0; i < mChildren.GetSize(); ++i)
 					{
-						mFlags.Set(Flag::Visible, true);
+						mChildren[i]->_Fill(params);
 					}
 				}
 			}
+			Unlock();
 		}
-		Unlock();
 	}
-	return mask;
 }
 
 //============================================================================================================
 // INTERNAL: Recursive Object::OnSelect caller
 //============================================================================================================
 
-void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& radius)
+void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& distance)
 {
-	if (mFlags.Get(Flag::Selectable) && !mIgnore.Get(Ignore::Select))
+	if (mFlags.Get(Flag::Visible) && mCompleteBounds.Contains(pos))
 	{
 		Lock();
-		OnSelect(pos, ptr, radius);
+		{
+			// If this object is marked as 'selectable', try to select it
+			if (mFlags.Get(Flag::Selectable))
+			{
+				float current = mAbsolutePos.GetDistanceTo(pos);
+
+				if (current < distance)
+				{
+					distance = current;
+					ptr = this;
+				}
+			}
+
+			bool considerChildren = true;
+
+			if (!mIgnore.Get(Ignore::Select))
+			{
+				considerChildren = OnSelect(pos, ptr, distance);
+			}
+
+			if (considerChildren)
+			{
+				for (uint i = mChildren.GetSize(); i > 0; )
+					mChildren[--i]->_Select(pos, ptr, distance);
+			}
+		}
 		Unlock();
 	}
 }
@@ -650,13 +701,13 @@ void Object::OnPostUpdate()
 }
 
 //============================================================================================================
-// Called when the object is being culled
+// Called when the scene is being culled. Should update the 'mask' parameter.
 //============================================================================================================
 
-Object::CullResult Object::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool Object::OnFill (FillParams& params)
 {
-	mIgnore.Set(Ignore::Cull, true);
-	return false;
+	mIgnore.Set(Ignore::Fill, true);
+	return true;
 }
 
 //============================================================================================================

@@ -31,22 +31,24 @@ void DirectionalLight::_UpdateColors()
 
 void DirectionalLight::OnUpdate()
 {
-	mParams.mPos = mAbsolutePos;
-	mParams.mDir = mAbsoluteRot.GetForward();
+	if (mIsDirty)
+	{
+		mParams.mPos = mAbsolutePos;
+		mParams.mDir = mAbsoluteRot.GetForward();
+	}
 }
 
 //============================================================================================================
-// Cull the object based on the viewing frustum
+// Fill the renderable object and visible light lists
 //============================================================================================================
 
-Object::CullResult DirectionalLight::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool DirectionalLight::OnFill (FillParams& params)
 {
-	if ( mParams.IsVisible() )
+	if (mParams.IsVisible())
 	{
-		if (render) params.mLights.Expand() = &mParams;
-		return true;
+		params.mLights.Expand() = &mParams;
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================

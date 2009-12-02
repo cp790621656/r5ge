@@ -49,10 +49,10 @@ private:
 	void _Partition (const OnCreateCallback& onCreate, float horizontal, float vertical);
 
 	// Calls 'OnCreate' on appropriate nodes
-	void _Fill (void* ptr, float bboxPadding);
+	void _FillGeometry (void* ptr, float bboxPadding);
 
-	// Called when the object is being culled, returns whether this node is visible
-	uint _Cull (Array<QuadNode*>& renderList, Object::CullParams& params, bool render);
+	// Called when the object is being considered for rendering
+	void _Fill (Array<QuadNode*>& renderList, Object::FillParams& params);
 
 	// Navigate down to the leaves and render them as necessary
 	uint _Draw (IGraphics* graphics, const ITechnique* tech, bool insideOut);

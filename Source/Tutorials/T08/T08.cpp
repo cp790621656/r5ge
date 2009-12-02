@@ -123,7 +123,7 @@ void TestApp::Run()
 		// example we don't have any objects placed as children of the terrain, but it's worth
 		// noting nonetheless.
 
-		mTerrain->Fill(&hm, 0.0f);
+		mTerrain->FillGeometry(&hm, 0.0f);
 
 		// And now... we need to be able to see the terrain we've just created.
 		// The best way to visualize a terrain without any textures on it is to display it in wireframe.

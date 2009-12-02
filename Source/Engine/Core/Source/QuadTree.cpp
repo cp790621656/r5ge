@@ -47,24 +47,11 @@ void QuadTree::PartitionInto (uint horizontal, uint vertical)
 // Fills the bottom-most layer of the QuadTree (subdivisions with no children)
 //============================================================================================================
 
-void QuadTree::Fill (void* ptr, float bboxPadding)
+void QuadTree::FillGeometry (void* ptr, float bboxPadding)
 {
 	if (mRootNode != 0 && ptr != 0)
 	{
-		mRootNode->_Fill(ptr, bboxPadding);
-	}
-}
-
-//============================================================================================================
-// QuadTree needs to mark objects that moved as such
-//============================================================================================================
-
-void QuadTree::OnUpdate()
-{
-	for (uint i = mChildren.GetSize(); i > 0; )
-	{
-		Object* child = mChildren[--i];
-		child->SetFlag(Flag::HasMoved, child->IsDirty());
+		mRootNode->_FillGeometry(ptr, bboxPadding);
 	}
 }
 
@@ -78,7 +65,7 @@ void QuadTree::OnPostUpdate()
 	{
 		Object* child = mChildren[--i];
 
-		if (child->GetFlag(Flag::HasMoved))
+		if (child->IsDirty())
 		{
 			mRootNode->_Remove(child);
 			mRootNode->_Add(child);
@@ -90,7 +77,7 @@ void QuadTree::OnPostUpdate()
 // Called when the object is being culled -- should return whether the object is visible
 //============================================================================================================
 
-Object::CullResult QuadTree::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool QuadTree::OnFill (FillParams& params)
 {
 	// Clear the list of renderable objects
 	mRenderable.Clear();
@@ -101,25 +88,24 @@ Object::CullResult QuadTree::OnCull (CullParams& params, bool isParentVisible, b
 	// Cull the hierarchy, filling the list with renderable objects
 	if (mRootNode != 0)
 	{
-		uint mask = mRootNode->_Cull(mRenderable, params, render);
+		mRootNode->_Fill(mRenderable, params);
 
 		if (mRenderable.IsValid())
 		{
-			mask |= GetMask();
-
 			// Layer is [-2] is because terrain should be rendered before everything else
 			Object::Drawable& drawable = params.mObjects.Expand();
 			drawable.mObject		= this;
-			drawable.mMask			= mask;
+			drawable.mMask			= GetMask();
 			drawable.mGroup			= 0;
 			drawable.mLayer			= -2;
 			drawable.mDistSquared	= 0.0f;
+
+			params.mMask |= drawable.mMask;
 		}
-		return CullResult(mask != 0, false, mask);
 	}
 
 	// Don't cull the children as they should already be culled by the subdivided nodes
-	return Object::CullResult(false, false, 0);
+	return false;
 }
 
 //============================================================================================================

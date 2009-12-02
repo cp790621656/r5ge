@@ -17,6 +17,8 @@ Emitter::Emitter() :
 	mLastVisible	(0),
 	mUpdated		(false)
 {
+	// Particle emitter uses absolute bounds and ignores relative
+	mCalcAbsBounds = false;
 	mFlags.Set(Flag::FlipU | Flag::FlipV, true);
 }
 
@@ -35,13 +37,12 @@ void Emitter::OnUpdate()
 	// Delay since last frame
 	ulong delta = Time::GetDelta();
 
-	// Only consider updating particles if the delta is not zero
-	if (delta == 0) return;
-
 	// Recalculate the number of active particles
 	mActiveParts = 0;
 	mUpdated = true;
-	mBounds.Reset();
+
+	// Reset the bounds as we'll recalculate them
+	mAbsoluteBounds.Reset();
 
 	// Update our accumulated spawn time
 	mAccumulated += delta;
@@ -81,7 +82,7 @@ void Emitter::OnUpdate()
 			if (particle.mRemaining != 0)
 			{
 				++mActiveParts;
-				mBounds.Include(particle.mPos, particle.mRadius);
+				mAbsoluteBounds.Include(particle.mPos, particle.mRadius);
 			}
 		}
 	}
@@ -95,7 +96,7 @@ void Emitter::OnUpdate()
 
 		InitParticle(particle);
 		UpdateParticle(particle);
-		mBounds.Include(particle.mPos, particle.mRadius);
+		mAbsoluteBounds.Include(particle.mPos, particle.mRadius);
 	}
 
 	// Automatically shrink the trailing particles that are no longer used
@@ -105,42 +106,34 @@ void Emitter::OnUpdate()
 	// The accumulated amount should never carry over more than a frequency's worth
 	if (mAccumulated > mFrequency)
 		mAccumulated = mFrequency;
+
+	// Particles moved, bounds changed
+	mIsDirty = true;
 }
 
 //============================================================================================================
-// Culls the particle emitter based on whether it's visible
+// Adds the emitter to the list of renderable objects
 //============================================================================================================
 
-Object::CullResult Emitter::OnCull (CullParams &params, bool isParentVisible, bool render)
+bool Emitter::OnFill (FillParams& params)
 {
-	if (mTex == 0 || mParticles.IsEmpty() || !mFlags.Get(Flag::Enabled))
+	mLastVisible = Time::GetMilliseconds();
+
+	if (mTex != 0 && mParticles.IsValid())
 	{
-		mLastVisible = Time::GetMilliseconds();
+		// If no special technique was specified, assume the default value
+		if (mTech == 0) mTech = mCore->GetGraphics()->GetTechnique("Particle", true);
+
+		Drawable& obj		= params.mObjects.Expand();
+		obj.mObject			= this;
+		obj.mMask			= mTech->GetMask();
+		obj.mLayer			= 0;
+		obj.mGroup			= 0;
+		obj.mDistSquared	= (params.mCamPos - mRelativeBounds.GetCenter()).Dot();
+
+		params.mMask |= obj.mMask;
 	}
-	else if ( params.mFrustum.IsVisible(mBounds) )
-	{
-		mLastVisible = Time::GetMilliseconds();
-
-		if (render)
-		{
-			if (mTech == 0)
-			{
-				// If no special technique was specified, assume the default value
-				mTech = mCore->GetGraphics()->GetTechnique("Particle", true);
-			}
-
-			Drawable& obj		= params.mObjects.Expand();
-			obj.mObject			= this;
-			obj.mMask			= mTech->GetMask();
-			obj.mLayer			= 0;
-			obj.mGroup			= 0;
-			obj.mDistSquared	= (params.mCamPos - mBounds.GetCenter()).Dot();
-
-			return CullResult(true, true, obj.mMask);
-		}
-		return true;
-	}
-	return false;
+	return true;
 }
 
 //============================================================================================================

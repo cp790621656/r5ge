@@ -41,58 +41,58 @@ void Glow::OnUpdate()
 }
 
 //============================================================================================================
-// Culls objects based on the viewing frustum
+// Fills the render queues
 //============================================================================================================
 
-Object::CullResult Glow::OnCull (CullParams& params, bool isParentVisible, bool render)
+bool Glow::OnFill (FillParams& params)
 {
-	if (isParentVisible)
+	float radius = mAbsoluteScale * mMag;
+	float maxRadius = mAbsoluteScale > radius ? mAbsoluteScale : radius;
+
+	bool isVisible (false);
+
+	if (mType == Type::Point)
 	{
-		float radius = mAbsoluteScale * mMag;
-		float maxRadius = mAbsoluteScale > radius ? mAbsoluteScale : radius;
+		// Point lights are checked against the frustum as a sphere
+		isVisible = params.mFrustum.IsVisible(mAbsolutePos, maxRadius);
+	}
+	else
+	{
+		// Directional and spot lights are checked against the camera's directional vector
+		isVisible = params.mCamDir.Dot(mAbsoluteRot.GetForward()) < 0.0f;
+	}
 
-		if (mType == Type::Point)
-		{
-			// Point lights are checked against the frustum as a sphere
-			isParentVisible = params.mFrustum.IsVisible(mAbsolutePos, maxRadius);
-		}
-		else
-		{
-			// Directional and spot lights are checked against the camera's directional vector
-			isParentVisible = params.mCamDir.Dot(mAbsoluteRot.GetForward()) < 0.0f;
-		}
-
-		uint mask = 0;
+	if (isVisible)
+	{
+		uint myMask = 0;
 		IGraphics* graphics = mCore->GetGraphics();
 
-		if (isParentVisible && graphics != 0)
+		if (graphics != 0)
 		{
 			static uint glowMask  = graphics->GetTechnique("Glow")->GetMask();
 			static uint glareMask = graphics->GetTechnique("Glare")->GetMask();
 
-			if (mBackground != 0 && mAbsoluteScale > 0.0f)	mask |= glowMask;
-			if (mForeground != 0 && radius > 0.0f)			mask |= glareMask;
+			if (mBackground != 0 && mAbsoluteScale > 0.0f)	myMask |= glowMask;
+			if (mForeground != 0 && radius > 0.0f)			myMask |= glareMask;
 		}
 
-		if (mask != 0)
+		if (myMask != 0)
 		{
-			if (render)
-			{
-				Drawable& obj		= params.mObjects.Expand();
-				obj.mObject			= this;
-				obj.mMask			= mask;
-				obj.mLayer			= 0;
-				obj.mGroup			= (mBackground == 0 ? mForeground : mBackground);
-				obj.mDistSquared	= (mType == Type::Directional) ? 0.0f : (mAbsolutePos - params.mCamPos).Dot();
-			}
-			return true;
+			Drawable& obj		= params.mObjects.Expand();
+			obj.mObject			= this;
+			obj.mMask			= myMask;
+			obj.mLayer			= 0;
+			obj.mGroup			= (mBackground == 0 ? mForeground : mBackground);
+			obj.mDistSquared	= (mType == Type::Directional) ? 0.0f : (mAbsolutePos - params.mCamPos).Dot();
+
+			params.mMask |= myMask;
 		}
 		else
 		{
 			_SetTargetAlpha(0.0f);
 		}
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================
