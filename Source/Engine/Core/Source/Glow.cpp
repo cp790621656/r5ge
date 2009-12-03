@@ -164,10 +164,11 @@ uint Glow::OnDraw (const ITechnique* tech, bool insideOut)
 	// Overlay pass is drawn second -- figure out if the lens flare should be visible based on occlusion
 	else if (tech == glare)
 	{
+		// IGraphics::IsVisible() check is affected by the modelview matrix
+		graphics->ResetViewMatrix();
+
 		if (mType == Type::Directional)
 		{
-			// IGraphics::IsVisible() check is affected by the modelview matrix
-			graphics->ResetViewMatrix();
 			Vector3f point ( camPos - mAbsoluteRot.GetForward() * (range.y * 0.99f) );
 			_SetTargetAlpha( graphics->IsPointVisible(point) );
 		}
