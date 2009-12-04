@@ -42,7 +42,13 @@ public:
 
 	// Bone creation and retrieval
 	Bone* GetBone (uint index, bool createIfMissing = false);
-	Bone* GetBone (const String& name);
+	Bone* GetBone (const String& name, bool createIfMissing = false);
+
+	// Read-only bone access
+	const Bone* GetBone(const String& name) const;
+
+	// Retrieves the bone's index by its name
+	uint GetBoneIndex(const String& name) const;
 
 	// Animation creation and retrieval
 	Animation* GetAnimation (uint animID);

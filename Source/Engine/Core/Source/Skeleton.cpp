@@ -18,12 +18,64 @@ Bone* Skeleton::GetBone (uint index, bool createIfMissing)
 // Finds a bone by its name
 //============================================================================================================
 
-Bone* Skeleton::GetBone (const String& name)
+Bone* Skeleton::GetBone (const String& name, bool createIfMissing)
 {
 	mBones.Lock();
-	Bone* bone = _GetBone(name, false);
+	Bone* bone = _GetBone(name, createIfMissing);
 	mBones.Unlock();
 	return bone;
+}
+
+//============================================================================================================
+// Read-only bone access
+//============================================================================================================
+
+const Bone* Skeleton::GetBone (const String& name) const
+{
+	const Bone* bone = 0;
+
+	if (mBones.IsValid())
+	{
+		mBones.Lock();
+		{
+			for (uint i = mBones.GetSize(); i > 0; )
+			{
+				if (mBones[--i] != 0 && mBones[i]->GetName() == name)
+				{
+					bone = mBones[i];
+					break;
+				}
+			}
+		}
+		mBones.Unlock();
+	}
+	return bone;
+}
+
+//============================================================================================================
+// Retrieves the bone's index by its name
+//============================================================================================================
+
+uint Skeleton::GetBoneIndex (const String& name) const
+{
+	uint index = -1;
+
+	if (mBones.IsValid())
+	{
+		mBones.Lock();
+		{
+			for (uint i = mBones.GetSize(); i > 0; )
+			{
+				if (mBones[--i] != 0 && mBones[i]->GetName() == name)
+				{
+					index = i;
+					break;
+				}
+			}
+		}
+		mBones.Unlock();
+	}
+	return index;
 }
 
 //============================================================================================================
