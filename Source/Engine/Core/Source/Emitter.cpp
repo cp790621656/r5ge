@@ -129,7 +129,7 @@ bool Emitter::OnFill (FillParams& params)
 		obj.mMask			= mTech->GetMask();
 		obj.mLayer			= 0;
 		obj.mGroup			= 0;
-		obj.mDistSquared	= (params.mCamPos - mRelativeBounds.GetCenter()).Dot();
+		obj.mDistSquared	= (params.mCamPos - mAbsoluteBounds.GetCenter()).Dot();
 
 		params.mMask |= obj.mMask;
 	}
