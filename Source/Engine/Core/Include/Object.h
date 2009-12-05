@@ -144,13 +144,10 @@ public:
 	// These functions are meant to be accessed only through templates such as AddObject<> and FindObject<>
 	Object*	_AddObject	(const String& type, const String& name);
     Object*	_FindObject	(const String& name, bool recursive = true);
-	Script* _GetScript	(const char* type);
-	Script* _AddScript	(const char* type);
+	Script* _AddScript	(const String& type);
+	Script* _GetScript	(const String& type);
 
 private:
-
-	// Adds a new script of specified type -- should only be used internally
-	Script* _AddScript (const String& type);
 
 	// Internal functions
 	void _Add	(Object* ptr);
@@ -173,6 +170,7 @@ public:
 
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}
+	const Object*		GetParent()				const	{ return mParent;			}
 	const Flags&		GetFlags()				const	{ return mFlags;			}
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
 	bool				IsSerializable()		const	{ return mSerializable;		}
@@ -221,6 +219,11 @@ public:
 	void SetAbsolutePosition ( const Vector3f& pos );
 	void SetAbsoluteRotation ( const Quaternion& rot );
 	void SetAbsoluteScale	 ( float scale );
+
+	// It should be possible to temporarily override the absolute values
+	void OverrideAbsolutePosition (const Vector3f&   pos)	{ mAbsolutePos	 = pos;		}
+	void OverrideAbsoluteRotation (const Quaternion& rot)	{ mAbsoluteRot	 = rot;		}
+	void OverrideAbsoluteScale	  (float scale)				{ mAbsoluteScale = scale;	}
 
 	// Force-draws this object, bypassing all culling logic
 	uint Draw (const ITechnique* tech, bool insideOut = false);

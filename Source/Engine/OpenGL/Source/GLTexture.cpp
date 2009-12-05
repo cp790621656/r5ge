@@ -857,6 +857,41 @@ bool GLTexture::Set (const void*	buffer,
 }
 
 //============================================================================================================
+// Serialization -- saving
+//============================================================================================================
+
+bool GLTexture::SerializeTo (TreeNode& root) const
+{
+	if (mFormat == ITexture::Format::Invalid || mName.IsEmpty() || mTex[0].GetSource().IsEmpty() || !mSerializable)
+		return false;
+
+	mLock.Lock();
+	{
+		TreeNode& node = root.AddChild(ITexture::ClassID(), mName);
+
+		if (mType == Type::EnvironmentCubeMap)
+		{
+			node.AddChild("Positive X", mTex[0].GetSource());
+			node.AddChild("Negative X", mTex[1].GetSource());
+			node.AddChild("Positive Y", mTex[2].GetSource());
+			node.AddChild("Negative Y", mTex[3].GetSource());
+			node.AddChild("Positive Z", mTex[4].GetSource());
+			node.AddChild("Negative Z", mTex[5].GetSource());
+		}
+		else
+		{
+			node.AddChild("Source", mTex[0].GetSource());
+		}
+
+		node.AddChild("Format", ITexture::FormatToString(mRequestedFormat));
+		node.AddChild("Filtering", ITexture::FilterToString(mFilter));
+		node.AddChild("Wrap Mode", ITexture::WrapModeToString(mWrapMode));
+	}
+	mLock.Unlock();
+	return true;
+}
+
+//============================================================================================================
 // Serialization -- loading
 //============================================================================================================
 
@@ -958,39 +993,4 @@ bool GLTexture::SerializeFrom (const TreeNode& root, bool forceUpdate)
 	}
 	mLock.Unlock();
 	return (mFormat != Format::Invalid);
-}
-
-//============================================================================================================
-// Serialization -- saving
-//============================================================================================================
-
-bool GLTexture::SerializeTo (TreeNode& root) const
-{
-	if (mFormat == ITexture::Format::Invalid || mName.IsEmpty() || mTex[0].GetSource().IsEmpty() || !mSerializable)
-		return false;
-
-	mLock.Lock();
-	{
-		TreeNode& node = root.AddChild("Texture", mName);
-
-		if (mType == Type::EnvironmentCubeMap)
-		{
-			node.AddChild("Positive X", mTex[0].GetSource());
-			node.AddChild("Negative X", mTex[1].GetSource());
-			node.AddChild("Positive Y", mTex[2].GetSource());
-			node.AddChild("Negative Y", mTex[3].GetSource());
-			node.AddChild("Positive Z", mTex[4].GetSource());
-			node.AddChild("Negative Z", mTex[5].GetSource());
-		}
-		else
-		{
-			node.AddChild("Source", mTex[0].GetSource());
-		}
-
-		node.AddChild("Format", ITexture::FormatToString(mRequestedFormat));
-		node.AddChild("Filtering", ITexture::FilterToString(mFilter));
-		node.AddChild("Wrap Mode", ITexture::WrapModeToString(mWrapMode));
-	}
-	mLock.Unlock();
-	return true;
 }

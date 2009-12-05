@@ -60,6 +60,6 @@ public:
 	virtual void OnPostUpdate() { mIgnore.Set(Ignore::PostUpdate, true); }
 
 	// Serialization
-	virtual bool SerializeTo (TreeNode& root) const { return false; }
-	virtual bool SerializeFrom (const TreeNode& root) { return false; }
+	virtual bool SerializeTo	(TreeNode& root) const { return false; }
+	virtual bool SerializeFrom	(const TreeNode& root) { return false; }
 };

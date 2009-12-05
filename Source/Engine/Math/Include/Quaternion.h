@@ -20,6 +20,7 @@ struct Quaternion
 	Quaternion(const Vector3f& axis, float radAngle)			{ SetFromAxisAngle(axis, radAngle);						}
 	Quaternion(float radX, float radY, float radZ)				{ SetFromEuler(Vector3f(radX, radY, radZ));				}
 	Quaternion(const Quaternion& v)								{ x = v.x;			y = v.y;	z = v.z;	w = v.w;	}
+	Quaternion(const Quaternion& q0, const Quaternion& q1)		{ Combine(q0, q1);										}
 	Quaternion(const Quaternion* v)								{ x = v->x;			y = v->y;	z = v->z;	w = v->w;	}
 	Quaternion(const float *f)									{ x = f[0];			y = f[1];	z = f[2];	w = f[3];	}
 	Quaternion(const Matrix43& mat)								{ *this = mat;											}

@@ -596,7 +596,23 @@ bool Model::IsAnimated() const
 }
 
 //============================================================================================================
-// Retrieves the calculated bone transform/matrix using the bone's name
+// Retrieves the calculated bone transform
+//============================================================================================================
+
+const BoneTransform* Model::GetBoneTransform (uint index) const
+{
+	if (mSkeleton != 0)
+	{
+		if (index < mTransforms.GetSize())
+		{
+			return &mTransforms[index];
+		}
+	}
+	return 0;
+}
+
+//============================================================================================================
+// Retrieves the calculated bone transform
 //============================================================================================================
 
 const BoneTransform* Model::GetBoneTransform (const String& name) const
@@ -608,24 +624,6 @@ const BoneTransform* Model::GetBoneTransform (const String& name) const
 		if (index < mTransforms.GetSize())
 		{
 			return &mTransforms[index];
-		}
-	}
-	return 0;
-}
-
-//============================================================================================================
-// Retrieves the calculated bone transform/matrix using the bone's name
-//============================================================================================================
-
-const Matrix43* Model::GetBoneMatrix (const String& name) const
-{
-	if (mSkeleton != 0)
-	{
-		uint index = mSkeleton->GetBoneIndex(name);
-
-		if (index < mTransforms.GetSize())
-		{
-			return &mMatrices[index];
 		}
 	}
 	return 0;

@@ -113,6 +113,6 @@ public:
 	// Serialization
 	virtual bool IsSerializable() const { return (mSerializable && mTex[0].GetSource().IsValid()); }
 	virtual void SetSerializable(bool val) { mSerializable = val; }
-	virtual bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
 	virtual bool SerializeTo (TreeNode& root) const;
+	virtual bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
 };

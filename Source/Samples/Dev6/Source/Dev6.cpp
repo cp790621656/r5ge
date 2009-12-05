@@ -50,7 +50,7 @@ void TestApp::Run()
 
 			while (mCore->Update());
 
-			//*mCore >> "Config/Dev6.txt";
+			//*mCore >> "Config/Dev6 - out.txt";
 		}
 	}
 }
@@ -68,7 +68,7 @@ void TestApp::OnDraw()
 	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 
-	uint triangles = mScene.Draw(mTech);
+	uint triangles = mScene.Draw(mTech) + mScene.Draw();
 	
 	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
 	if (tri) tri->SetText( String("%u", triangles) );

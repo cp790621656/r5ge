@@ -45,6 +45,8 @@ namespace R5
 	#include "TerrainNode.h"		// Subdivisioned child of the Terrain class
 	#include "Terrain.h"			// Simple terrain implementation using QuadTree
 
+	#include "BoneAttachment.h"		// Script that binds its owner to the specified bone of the owner's parent
+
 	#include "Scene.h"				// Scene root
 	#include "Templates.h"			// Templated FindWidget<> and AddWidget<> functions
 	#include "UpdateList.h"			// Container for registered update callbacks

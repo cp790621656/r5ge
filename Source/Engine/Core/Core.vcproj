@@ -484,6 +484,26 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="Scripts"
+			>
+			<Filter
+				Name="Include"
+				>
+				<File
+					RelativePath=".\Include\BoneAttachment.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source"
+				>
+				<File
+					RelativePath=".\Source\BoneAttachment.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

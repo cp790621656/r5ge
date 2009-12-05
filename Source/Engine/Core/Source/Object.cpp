@@ -25,7 +25,7 @@ Hash<Object::ObjectDelegate>	gObjectTypes;
 Hash<Object::ScriptDelegate>	gScriptTypes;
 
 //============================================================================================================
-// INTERNAL: Registers a new creatable object
+// INTERNAL: Registers a new object
 //============================================================================================================
 
 void Object::_RegisterObject (const String& type, const ObjectDelegate& callback)
@@ -36,7 +36,7 @@ void Object::_RegisterObject (const String& type, const ObjectDelegate& callback
 }
 
 //============================================================================================================
-// INTERNAL: Registers a new creatable script
+// INTERNAL: Registers a new script
 //============================================================================================================
 
 void Object::_RegisterScript (const String& type, const ScriptDelegate& callback)
@@ -47,31 +47,39 @@ void Object::_RegisterScript (const String& type, const ScriptDelegate& callback
 }
 
 //============================================================================================================
+// Register default object types
+//============================================================================================================
+
+void RegisterDefaultObjects()
+{
+	RegisterObject<Object>();
+	RegisterObject<Camera>();
+	RegisterObject<DebugCamera>();
+	RegisterObject<AnimatedCamera>();
+	RegisterObject<ModelInstance>();
+	RegisterObject<DirectionalLight>();
+	RegisterObject<PointLight>();
+	RegisterObject<Glow>();
+	RegisterObject<Terrain>();
+	RegisterObject<Decal>();
+}
+
+//============================================================================================================
+// Registers all default scripts
+//============================================================================================================
+
+void RegisterDefaultScripts()
+{
+	RegisterScript<BoneAttachment>();
+}
+
+//============================================================================================================
 // INTERNAL: Adds a child object of specified type (or returns an existing one)
 //============================================================================================================
 
 Object* Object::_AddObject (const String& type, const String& name)
 {
-	// Register default object types
-	{
-		static bool doOnce = true;
-
-		if (doOnce)
-		{
-			doOnce = false;
-
-			RegisterObject<Object>();
-			RegisterObject<Camera>();
-			RegisterObject<DebugCamera>();
-			RegisterObject<AnimatedCamera>();
-			RegisterObject<ModelInstance>();
-			RegisterObject<DirectionalLight>();
-			RegisterObject<PointLight>();
-			RegisterObject<Glow>();
-			RegisterObject<Terrain>();
-			RegisterObject<Decal>();
-		}
-	}
+	if (!gObjectTypes.IsValid()) RegisterDefaultObjects();
 
 	Object* ptr (0);
 
@@ -140,72 +148,14 @@ Object* Object::_FindObject (const String& name, bool recursive)
 }
 
 //============================================================================================================
-// INTERNAL: Retrieves a script of specified type
-//============================================================================================================
-
-Script* Object::_GetScript (const char* type)
-{
-	Script* ptr (0);
-
-	for (uint i = mScripts.GetSize(); i > 0; )
-	{
-		Script* script = mScripts[i];
-
-		if ( script != 0 && type == script->GetClassID() )
-		{
-			ptr = script;
-			break;
-		}
-	}
-	return ptr;
-}
-
-//============================================================================================================
-// INTERNAL: Adds a script of specified type (or returns an existing one)
-//============================================================================================================
-
-Script* Object::_AddScript (const char* type)
-{
-	Script* ptr (0);
-
-	for (uint i = mScripts.GetSize(); i > 0; )
-	{
-		Script* script = mScripts[i];
-
-		if ( script != 0 && type == script->GetClassID() )
-		{
-			ptr = script;
-			break;
-		}
-	}
-
-	if (ptr == 0)
-	{
-		gScriptTypes.Lock();
-		{
-			const ScriptDelegate* callback = gScriptTypes.GetIfExists(type);
-			
-			if (callback != 0)
-			{
-				ptr = (*callback)();
-				ptr->mObject = this;
-				mScripts.Expand() = ptr;
-			}
-		}
-		gScriptTypes.Unlock();
-
-		if (ptr != 0) ptr->Init();
-	}
-	return ptr;
-}
-
-//============================================================================================================
-// INTERNAL: Adds a script of specified type (or returns an existing one). While it's visually identical
-// to the function above, the type differs, which in turn changes the code's behavior.
+// INTERNAL: Adds a script of specified type (or returns an existing one).
 //============================================================================================================
 
 Script* Object::_AddScript (const String& type)
 {
+	// Register default scripts
+	if (!gScriptTypes.IsValid()) RegisterDefaultScripts();
+
 	Script* ptr (0);
 
 	for (uint i = mScripts.GetSize(); i > 0; )
@@ -224,7 +174,7 @@ Script* Object::_AddScript (const String& type)
 		gScriptTypes.Lock();
 		{
 			const ScriptDelegate* callback = gScriptTypes.GetIfExists(type);
-			
+
 			if (callback != 0)
 			{
 				ptr = (*callback)();
@@ -235,6 +185,27 @@ Script* Object::_AddScript (const String& type)
 		gScriptTypes.Unlock();
 
 		if (ptr != 0) ptr->Init();
+	}
+	return ptr;
+}
+
+//============================================================================================================
+// INTERNAL: Retrieves a script of specified type
+//============================================================================================================
+
+Script* Object::_GetScript (const String& type)
+{
+	Script* ptr (0);
+
+	for (uint i = mScripts.GetSize(); i > 0; )
+	{
+		Script* script = mScripts[i];
+
+		if ( script != 0 && type == script->GetClassID() )
+		{
+			ptr = script;
+			break;
+		}
 	}
 	return ptr;
 }
@@ -424,9 +395,6 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 			// If the parent has moved then we need to recalculate the absolute values
 			if (parentMoved) mIsDirty = true;
 
-			// Call the pre-update function
-			if (!mIgnore.Get(Ignore::PreUpdate)) OnPreUpdate();
-
 			// Run through all scripts and notify them
 			for (uint i = mScripts.GetSize(); i > 0; )
 			{
@@ -439,6 +407,9 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 				}
 			}
 
+			// Call the pre-update function
+			if (!mIgnore.Get(Ignore::PreUpdate)) OnPreUpdate();
+
 			// If something has changed, update the absolute values
 			if (mIsDirty)
 			{
@@ -446,9 +417,6 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 				mAbsoluteScale = mRelativeScale * scale;
 				mAbsoluteRot.Combine(rot, mRelativeRot);
 			}
-
-			// Call the update function
-			if (!mIgnore.Get(Ignore::Update)) OnUpdate();
 
 			// Run through all scripts and notify them
 			for (uint i = mScripts.GetSize(); i > 0; )
@@ -461,6 +429,9 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 					script->OnUpdate();
 				}
 			}
+
+			// Call the update function
+			if (!mIgnore.Get(Ignore::Update)) OnUpdate();
 
 			// Update all children
 			if (mChildren.IsValid())
@@ -512,9 +483,6 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 				}
 			}
 
-			// Call the post-update function
-			if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
-
 			// Run through all scripts and notify them
 			for (uint i = mScripts.GetSize(); i > 0; )
 			{
@@ -526,6 +494,9 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 					script->OnPostUpdate();
 				}
 			}
+
+			// Call the post-update function
+			if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
 
 			// All absolute values have now been calculated
 			mIsDirty = false;

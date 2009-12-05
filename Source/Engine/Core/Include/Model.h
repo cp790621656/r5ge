@@ -126,9 +126,12 @@ public:
 	BoneTransforms&			GetAllBoneTransforms()			{ return mTransforms; }
 	Matrices&				GetAllBoneMatrices()			{ return mMatrices;	  }
 
-	// Retrieves the calculated bone transform/matrix using the bone's name
-	const BoneTransform*	GetBoneTransform (const String& name) const;
-	const Matrix43*			GetBoneMatrix	 (const String& name) const;
+	// Convenience function: retrieves the index of the specified bone
+	uint GetBoneIndex (const String& name) const { return (mSkeleton != 0) ? mSkeleton->GetBoneIndex(name) : 0; }
+
+	// Retrieves the calculated bone transform
+	const BoneTransform* GetBoneTransform (uint index) const;
+	const BoneTransform* GetBoneTransform (const String& name) const;
 
 	// Access to animation speed used to advance the animation
 	void SetAnimationSpeed (float val) { mAnimationSpeed = val; }

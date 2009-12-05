@@ -27,6 +27,7 @@ public:
 public:
 
 	Model*			GetModel()					{ return mModel;		}
+	const Model*	GetModel()			const	{ return mModel;		}
 	const Bounds&	GetCullBounds()		const	{ return mCullBounds;	}
 	const Matrix43&	GetMatrix()			const	{ return mMatrix;		}
 	bool			IsShowingOutline()	const	{ return mShowOutline;  }
