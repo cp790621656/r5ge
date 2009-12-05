@@ -79,7 +79,13 @@ void RegisterDefaultScripts()
 
 Object* Object::_AddObject (const String& type, const String& name)
 {
-	if (!gObjectTypes.IsValid()) RegisterDefaultObjects();
+	static bool doOnce = true;
+
+	if (doOnce)
+	{
+		doOnce = false;
+		RegisterDefaultObjects();
+	}
 
 	Object* ptr (0);
 
@@ -153,8 +159,13 @@ Object* Object::_FindObject (const String& name, bool recursive)
 
 Script* Object::_AddScript (const String& type)
 {
-	// Register default scripts
-	if (!gScriptTypes.IsValid()) RegisterDefaultScripts();
+	static bool doOnce = true;
+
+	if (doOnce)
+	{
+		doOnce = false;
+		RegisterDefaultScripts();
+	}
 
 	Script* ptr (0);
 

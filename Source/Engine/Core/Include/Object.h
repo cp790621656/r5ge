@@ -135,13 +135,17 @@ public:
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
 
-	// Registers a new creatable object
+public:
+
+	// NOTE: The functions below are not meant to be used directly. Instead consider using
+	// templates such as AddObject<>, AddScript<>, RegisterObject<>, etc.
+
+	// Registers a new object
 	static void _RegisterObject (const String& type, const ObjectDelegate& callback);
 
-	// Registers a new creatable script
+	// Registers a new script
 	static void _RegisterScript (const String& type, const ScriptDelegate& callback);
 
-	// These functions are meant to be accessed only through templates such as AddObject<> and FindObject<>
 	Object*	_AddObject	(const String& type, const String& name);
     Object*	_FindObject	(const String& name, bool recursive = true);
 	Script* _AddScript	(const String& type);
