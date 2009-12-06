@@ -29,7 +29,8 @@ namespace R5
 	#include "CameraController.h"	// Camera Controller provides a way to blend together different cameras
 	
 	#include "Decal.h"				// Projected texture object
-	#include "Glow.h"				// Screen-aligned billboard
+	#include "Billboard.h"			// Screen-aligned billboard
+	#include "Glow.h"				// Will be removed
 	#include "DirectionalLight.h"	// Directional light
 	#include "PointLight.h"			// Point light
 	#include "Emitter.h"			// Particle emitter system template

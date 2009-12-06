@@ -113,7 +113,7 @@ public:
 	void Transpose();
 	void FlipTranslation()										{ x = -x;  y = -y;  z = -z; }
 	void ClearTranslation()										{ x = 0.0f; y = 0.0f; z = 0.0f; }
-	void ClearRotationAndScaling();
+	void ReplaceScaling (float scale = 1.0f);
 };
 
 //============================================================================================================

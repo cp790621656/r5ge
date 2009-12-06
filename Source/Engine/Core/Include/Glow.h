@@ -60,13 +60,8 @@ protected:
 	// Changes the alpha value that the light animates to
 	void _SetTargetAlpha (float target);
 
-	// Updates the light's alpha
 	virtual void OnUpdate();
-
-	// Fills the render queues, and in this case -- activates lights
 	virtual bool OnFill (FillParams& params);
-
-	// Draws the light on-screen if it's visible
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
 	// Serialization

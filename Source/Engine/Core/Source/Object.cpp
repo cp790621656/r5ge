@@ -63,6 +63,7 @@ void RegisterDefaultObjects()
 	RegisterObject<Glow>();
 	RegisterObject<Terrain>();
 	RegisterObject<Decal>();
+	RegisterObject<Billboard>();
 }
 
 //============================================================================================================

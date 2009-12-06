@@ -48,6 +48,8 @@ public:
 
 		FillParams (DrawQueue& q, const Frustum& f, const Vector3f& pos, const Vector3f& dir)
 			: mDrawQueue(q), mFrustum(f), mCamPos(pos), mCamDir(dir) {}
+
+		inline float GetDist(const Vector3f& pos) const { return (mCamPos - pos).Dot(); }
 	};
 
 protected:

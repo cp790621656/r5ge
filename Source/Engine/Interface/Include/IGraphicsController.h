@@ -127,7 +127,7 @@ public:
 	virtual void SetLighting		(uint val)=0;
 	virtual void SetBlending		(uint val)=0;
 	virtual void SetCulling			(uint val)=0;
-	virtual void SetADT				(float val)=0;
+	virtual void SetADT				(float val = 0.003921568627451f)=0;
 	virtual void SetThickness		(float val)=0;
 	virtual void SetNormalize		(bool val)=0;
 	virtual void SetDepthOffset		(bool val)=0;

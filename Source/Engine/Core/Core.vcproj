@@ -301,6 +301,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\Billboard.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\Core.h"
 					>
 				</File>
@@ -369,6 +373,10 @@
 							UsePrecompiledHeader="1"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Source\Billboard.cpp"
+					>
 				</File>
 				<File
 					RelativePath=".\Source\Core.cpp"

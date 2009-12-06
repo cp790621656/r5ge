@@ -82,6 +82,8 @@ void TestApp::Init()
 	const ITexture* glowTex = mGraphics->GetTexture("light.jpg");
 	//const ITexture* glareTex = mGraphics->GetTexture("glare_rgb.jpg");
 
+	const ITechnique* glow = mGraphics->GetTechnique("Glow");
+
 	Random rnd (625462456);
 
 	for (uint i = 0; i < 64; ++i)
@@ -90,10 +92,6 @@ void TestApp::Init()
 
 		if (light != 0)
 		{
-			Glow* glow = AddObject<Glow>(light, String("Glow %u", i));
-			glow->SetBackgroundTexture(glowTex);
-			//glow->SetForegroundTexture(glareTex);
-
 			Vector3f pos (rnd.GenerateFloat() * 70 - 35,
 						  rnd.GenerateFloat() * 70 - 35,
 						  rnd.GenerateFloat() * 4.0f  + 1.0f);
@@ -106,13 +104,17 @@ void TestApp::Init()
 			light->SetAbsolutePosition(pos);
 			light->SetDiffuse(clr);
 			light->SetSpecular(clr);
+
+			Billboard* bb = AddObject<Billboard>(light, String("Glow %u", i));
+			bb->SetColor(clr);
+			bb->SetTexture(glowTex);
+			bb->SetTechnique(glow);
 		}
 	}
 
 	// Techniques we'll be using
 	mDeferred.Expand() = mGraphics->GetTechnique("Deferred");
-	mForward.Expand()  = mGraphics->GetTechnique("Glow");
-	mForward.Expand()  = mGraphics->GetTechnique("Glare");
+	mForward.Expand()  = glow;
 }
 
 //============================================================================================================

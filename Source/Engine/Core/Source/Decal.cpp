@@ -19,6 +19,7 @@ void Decal::SetDefaultLayer (byte layer)
 Decal::Decal() : mShader(0), mColor(0xFFFFFFFF)
 {
 	mLayer = g_decalLayer;
+	mCalcAbsBounds = false;
 }
 
 //============================================================================================================
@@ -64,9 +65,14 @@ void Decal::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mRelativeBounds.Reset();
-		mRelativeBounds.Include( Vector3f(), 1.0f );
-		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
+		// Recalculate absolute bounds directly as it's faster than having to transform relative bounds.
+		// 1.415 multiplication is here because we draw a cube, but its corners are sqrt(2) farther away
+		// than the sides. In order to cull it properly we treat it as a maximum range sphere instead.
+		mAbsoluteBounds.Reset();
+		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.415f);
+
+		// Transform matrix uses calculates absolute values
+		mMatrix.SetToTransform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
 	}
 }
 

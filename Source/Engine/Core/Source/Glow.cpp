@@ -143,7 +143,7 @@ uint Glow::OnDraw (const ITechnique* tech, bool insideOut)
 			// Get the modelview matrix and remove the top-left 3x3 component, eliminating rotation and scaling
 			mMat = graphics->GetViewMatrix();
 			mMat.PreTranslate(offset);
-			mMat.ClearRotationAndScaling();
+			mMat.ReplaceScaling();
 
 			// Scale the matrix so the directional glow is of appropriate size
 			if (mType == Type::Directional)

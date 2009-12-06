@@ -30,7 +30,7 @@ struct Color4ub
 																  b = Float::ToRangeByte(c.b);
 																  a = Float::ToRangeByte(c.a);	}
 
-	Color4ub(const Color3f& c, float alpha)						{ r = Float::ToRangeByte(c.r);
+	Color4ub(const Color3f& c, float alpha = 1.0f)				{ r = Float::ToRangeByte(c.r);
 																  g = Float::ToRangeByte(c.g);
 																  b = Float::ToRangeByte(c.b);
 																  a = Float::ToRangeByte(alpha); }
@@ -54,7 +54,11 @@ struct Color4ub
 	void operator = (const Vector3f& v);						// Inlined in Vector3f.h
 	void operator = (int val)									{ mVal = (uint)val; }
 	void operator = (uint val)									{ mVal = val;	}
-	void operator = (const Color4ub& c)							{ mVal = c.mVal;	}
+	void operator = (const Color3f& c)							{ r = Float::ToRangeByte(c.r);
+																  g = Float::ToRangeByte(c.g);
+																  b = Float::ToRangeByte(c.b);
+																  a = 255; }
+	void operator = (const Color4ub& c)							{ mVal = c.mVal; }
 	void operator = (const Color4f& c)							{ r = Float::ToRangeByte(c.r);
 																  g = Float::ToRangeByte(c.g);
 																  b = Float::ToRangeByte(c.b);

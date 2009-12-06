@@ -626,18 +626,18 @@ void Matrix43::Transpose()
 }
 
 //============================================================================================================
-// Eliminates the rotational and scaling components of the matrix
+// Eliminates the rotational and scaling components of the matrix, replacing it with the specified scaling
 //============================================================================================================
 
-void Matrix43::ClearRotationAndScaling()
+void Matrix43::ReplaceScaling (float scale)
 {
-	mF[ 0] = 1.0f;
+	mF[ 0] = scale;
 	mF[ 1] = 0.0f;
 	mF[ 2] = 0.0f;
 	mF[ 4] = 0.0f;
-	mF[ 5] = 1.0f;
+	mF[ 5] = scale;
 	mF[ 6] = 0.0f;
 	mF[ 8] = 0.0f;
 	mF[ 9] = 0.0f;
-	mF[10] = 1.0f;
+	mF[10] = scale;
 }
