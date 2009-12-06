@@ -78,14 +78,9 @@ bool Glow::OnFill (FillParams& params)
 
 		if (myMask != 0)
 		{
-			Drawable& obj		= params.mObjects.Expand();
-			obj.mObject			= this;
-			obj.mMask			= myMask;
-			obj.mLayer			= 0;
-			obj.mGroup			= (mBackground == 0 ? mForeground : mBackground);
-			obj.mDistSquared	= (mType == Type::Directional) ? 0.0f : (mAbsolutePos - params.mCamPos).Dot();
-
-			params.mMask |= myMask;
+			float dist = (mType == Type::Directional) ? 0.0f : (mAbsolutePos - params.mCamPos).Dot();
+			const void* group = (mBackground == 0 ? mForeground : mBackground);
+			params.mDrawQueue.Add(mLayer, this, myMask, group, dist);
 		}
 		else
 		{
@@ -215,7 +210,8 @@ uint Glow::OnDraw (const ITechnique* tech, bool insideOut)
 		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,	 (Vector2f*)vertices );
 
 		// Draw the glow
-		return graphics->DrawVertices (IGraphics::Primitive::Quad, 4);
+		graphics->DrawVertices (IGraphics::Primitive::Quad, 4);
+		return 1;
 	}
 	return 0;
 }

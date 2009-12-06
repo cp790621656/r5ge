@@ -21,11 +21,14 @@ protected:
 
 public:
 
-	QuadTree() : mRootNode(0) {}
+	QuadTree();
 	virtual ~QuadTree() { if (mRootNode != 0) delete mRootNode; }
 
 	// QuadTree is an abstract class, so mark it as such
 	R5_DECLARE_ABSTRACT_CLASS("QuadTree", Object);
+
+	// Changes the default drawing layer that will be used by all QuadTrees
+	static void SetDefaultLayer(byte layer);
 
 	// Percentage of how much of the terrain is currently visible
 	float GetVisibility() const { return mRenderable.GetSize() / (float)mMaxNodes; }

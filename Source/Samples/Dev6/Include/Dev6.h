@@ -22,8 +22,7 @@ class TestApp
 	ModelInstance*	mInst0;
 	ModelInstance*	mInst1;
 	Camera*			mCam;
-	UILabel*		mStatus;
-	UILabel*		mMode;
+	UILabel*		mDebug[6];
 	ITechnique*		mTech;
 	Scene			mScene;
 
@@ -39,11 +38,7 @@ public:
 	Model* GetModel1()		{ return (mInst1 != 0 ? mInst1->GetModel() : 0); }
 	Model* GetRandomModel() { return (Time::GetMilliseconds() % 2 == 1) ? GetModel0() : GetModel1(); }
 
-	void ToggleTechnique();
+	bool OnTechnique		(UIArea* area);
 	void PlayAnimation		(Model* model, const String& name, float speed = 1.0f);
-	void StopAnimation		(Model* model);
-	void OnAnimationStatus	(Model* model, const Animation* anim, float timeToEnd);
-
-	bool OnKey (const Vector2i& pos, byte key, bool isDown);
 };
 }

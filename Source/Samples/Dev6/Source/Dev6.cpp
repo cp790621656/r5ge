@@ -4,7 +4,7 @@ using namespace R5;
 //============================================================================================================
 
 TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mInst0(0),
-	mInst1(0), mCam(0), mStatus(0), mMode(0), mTech(0)
+	mInst1(0), mCam(0), mTech(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -28,6 +28,8 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
+	mUI->SetOnStateChange("Technique", bind(&TestApp::OnTechnique, this));
+
     if (*mCore << "Config/Dev6.txt")
 	{
 		mCam = FindObject<Camera>(mScene, "Default Camera");
@@ -35,16 +37,14 @@ void TestApp::Run()
 		if (mCam != 0)
 		{
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&TestApp::OnKey, this) );
 			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
 			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 
 			mInst0	= FindObject<ModelInstance>(mScene, "Instance 0");
 			mInst1	= FindObject<ModelInstance>(mScene, "Instance 1");
-			mStatus	= FindWidget<UILabel>(mUI, "Status");
-			mMode	= FindWidget<UILabel>(mUI, "Technique");
 
-			ToggleTechnique();
+			for (uint i = 0; i < 6; ++i) mDebug[i] = FindWidget<UILabel>(mUI, String("Debug %u", i));
+
 			PlayAnimation(GetModel0(), "Walk");
 			PlayAnimation(GetModel1(), "Run");
 
@@ -68,28 +68,70 @@ void TestApp::OnDraw()
 	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 
-	uint triangles = mScene.Draw(mTech) + mScene.Draw();
+	Array<const ITechnique*> techs;
+	techs.Expand() = mTech;
+
+	mScene.Draw(techs);
+	mScene.DrawAllForward();
 	
-	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
-	if (tri) tri->SetText( String("%u", triangles) );
+	if (fps != 0) fps->SetText( String("%u", Time::GetFPS()) );
+	if (tri != 0) tri->SetText( String("%u", mGraphics->GetFrameStats().mTriangles) );
+
+	const IGraphics::FrameStats& stats = mGraphics->GetFrameStats();
+
+	if (mDebug[0] != 0)
+	{
+		mDebug[0]->SetText( String("[FF5555]%u[FFFFFF] draw calls", stats.mDrawCalls) );
+	}
+
+	if (mDebug[1] != 0)
+	{
+		mDebug[1]->SetText( String("[FF5555]%u[FFFFFF] buffer binds", stats.mBufferBinds) );
+	}
+
+	if (mDebug[2] != 0)
+	{
+		mDebug[2]->SetText( String("[FF5555]%u[FFFFFF] texture switches", stats.mTexSwitches) );
+	}
+
+	if (mDebug[3] != 0)
+	{
+		mDebug[3]->SetText( String("[FF5555]%u[FFFFFF] shader switches", stats.mShaderSwitches) );
+	}
+
+	if (mDebug[4] != 0)
+	{
+		mDebug[4]->SetText( String("[FF5555]%u[FFFFFF] technique switches", stats.mTechSwitches) );
+	}
+
+	if (mDebug[5] != 0)
+	{
+		mDebug[5]->SetText( String("[FF5555]%u[FFFFFF] light switches", stats.mLightSwitches) );
+	}
 }
 
 //============================================================================================================
 // Toggles the current technique from GPU to CPU and vice versa
 //============================================================================================================
 
-void TestApp::ToggleTechnique()
+bool TestApp::OnTechnique (UIArea* area)
 {
-	if (mTech != 0 && mTech->GetName() == "GPU")
+	UICheckbox* chk = R5_CAST(UICheckbox, area);
+
+	if (chk != 0)
 	{
-		mTech = mGraphics->GetTechnique("CPU");
-		if (mMode != 0) mMode->SetText("[FFFF55]Skinning on CPU");
+		if ((chk->GetState() & UICheckbox::State::Checked) != 0)
+		{
+			mTech = mGraphics->GetTechnique("GPU");
+			chk->SetText(" Skinning on [55FF55]GPU");
+		}
+		else
+		{
+			mTech = mGraphics->GetTechnique("CPU");
+			chk->SetText(" Skinning on [FFFF55]CPU");
+		}
 	}
-	else
-	{
-		mTech = mGraphics->GetTechnique("GPU");
-		if (mMode != 0) mMode->SetText("[55FF55]Skinning on GPU");
-	}
+	return true;
 }
 
 //============================================================================================================
@@ -105,80 +147,9 @@ void TestApp::PlayAnimation (Model* model, const String& name, float speed)
 		if (anim != 0)
 		{
 			model->SetAnimationSpeed(speed);
-			model->PlayAnimation(anim, bind(&TestApp::OnAnimationStatus, this) );
+			model->PlayAnimation(anim);
 		}
 	}
-}
-
-//============================================================================================================
-// Stops the playing animation
-//============================================================================================================
-
-void TestApp::StopAnimation (Model* model)
-{
-	if (model != 0)
-	{
-		Animation* anim = model->GetAnimation("Idle: Fiddle");
-		if (anim != 0) model->StopAnimation(anim, 0.5f, bind(&TestApp::OnAnimationStatus, this));
-	}
-}
-
-//============================================================================================================
-// Delegate triggered when some animation is coming to an end -- it's a manually set callback
-//============================================================================================================
-
-void TestApp::OnAnimationStatus (Model* model, const Animation* anim, float timeToEnd)
-{
-	if (mStatus != 0)
-	{
-		mStatus->SetText( String("(%.3f) Animation '%s' ends in %.3f seconds", Time::GetTime(),
-			anim->GetName().GetBuffer(), timeToEnd) );
-	}
-}
-
-//============================================================================================================
-// Function that responds to key events
-//============================================================================================================
-
-bool TestApp::OnKey(const Vector2i& pos, byte key, bool isDown)
-{
-	if (!isDown)
-	{
-		if ( key == Key::Escape )
-		{
-			mCore->Shutdown();
-		}
-		else if ( key == Key::W )
-		{
-			if (mInst0 != 0)
-			{
-				mInst0->SetShowOutline( !mInst0->IsShowingOutline() );
-			}
-		}
-		else if ( key == Key::T )
-		{
-			ToggleTechnique();
-		}
-		else if ( key == Key::One )
-		{
-			PlayAnimation( GetRandomModel(), ((Time::GetMilliseconds() & 0x1) == 0) ? "Idle: Fiddle" : "Idle: Yawn" );
-		}
-		else if ( key == Key::Two )
-		{
-			PlayAnimation( GetRandomModel(), ((Time::GetMilliseconds() & 0x1) == 0) ? "Idle: Look Left" : "Idle: Look Right" );
-		}
-		else if ( key == Key::S )
-		{
-			StopAnimation( GetModel0() );
-			StopAnimation( GetModel1() );
-		}
-		else if ( key == Key::F5 )
-		{
-			mWin->SetStyle( (mWin->GetStyle() & IWindow::Style::FullScreen) == 0 ?
-							IWindow::Style::FullScreen : IWindow::Style::Normal );
-		}
-	}
-	return true;
 }
 
 //============================================================================================================

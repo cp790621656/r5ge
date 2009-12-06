@@ -13,7 +13,27 @@ uint CountPartitions (uint desired, uint starting)
 }
 
 //============================================================================================================
-// Splits the quadtree down until the subdivisions reach the specified desired dimensions
+// Changes the default drawing layer that will be used by the QuadTree
+//============================================================================================================
+
+byte g_quadLayer = 0;
+
+void QuadTree::SetDefaultLayer (byte layer)
+{
+	g_quadLayer = layer & 31;
+}
+
+//============================================================================================================
+// Assume the default layer when first created
+//============================================================================================================
+
+QuadTree::QuadTree() : mRootNode(0)
+{
+	mLayer = g_quadLayer;
+}
+
+//============================================================================================================
+// Splits the QuadTree down until the subdivisions reach the specified desired dimensions
 //============================================================================================================
 
 void QuadTree::PartitionToSize (uint desiredX, uint desiredY, uint currentX, uint currentY)
@@ -82,9 +102,6 @@ bool QuadTree::OnFill (FillParams& params)
 	// Clear the list of renderable objects
 	mRenderable.Clear();
 
-	// Save the stamp to see if it changes
-	uint size = params.GetArraySize();
-
 	// Cull the hierarchy, filling the list with renderable objects
 	if (mRootNode != 0)
 	{
@@ -92,18 +109,9 @@ bool QuadTree::OnFill (FillParams& params)
 
 		if (mRenderable.IsValid())
 		{
-			// Layer is [-2] is because terrain should be rendered before everything else
-			Object::Drawable& drawable = params.mObjects.Expand();
-			drawable.mObject		= this;
-			drawable.mMask			= GetMask();
-			drawable.mGroup			= 0;
-			drawable.mLayer			= -2;
-			drawable.mDistSquared	= 0.0f;
-
-			params.mMask |= drawable.mMask;
+			params.mDrawQueue.Add(mLayer, this, GetMask(), 0, 0.0f);
 		}
 	}
-
 	// Don't cull the children as they should already be culled by the subdivided nodes
 	return false;
 }
@@ -114,11 +122,9 @@ bool QuadTree::OnFill (FillParams& params)
 
 uint QuadTree::OnDraw (const ITechnique* tech, bool insideOut)
 {
-	uint triangles (0);
-
 	for (uint i = 0, imax = mRenderable.GetSize(); i < imax; ++i)
 	{
-		triangles += mRenderable[i]->OnDraw(tech, insideOut);
+		mRenderable[i]->OnDraw(tech, insideOut);
 	}
-	return triangles;
+	return mRenderable.GetSize();
 }

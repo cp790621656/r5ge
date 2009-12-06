@@ -504,6 +504,46 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="Draw Process"
+			>
+			<Filter
+				Name="Include"
+				>
+				<File
+					RelativePath=".\Include\DrawEntry.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\DrawLayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\DrawList.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\DrawQueue.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source"
+				>
+				<File
+					RelativePath=".\Source\DrawLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\DrawList.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\DrawQueue.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

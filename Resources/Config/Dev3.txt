@@ -83,7 +83,7 @@ Root
 				Receives Events = false
 				Layer = 0
 
-				Label = "Triangles"
+				Label = "FPS"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -92,14 +92,14 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = "TRI: 11654"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = true
 					Layer = 0
 				}
 
-				Label = "FPS"
+				Label = "Triangles"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -115,7 +115,7 @@ Root
 					Layer = 0
 				}
 
-				Label = "Visible"
+				Label = "Objects"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -124,14 +124,14 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = "VIS: 69"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = true
 					Layer = 0
 				}
-
-				Label = "Rendered"
+				
+				Label = "Debug 0"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -140,14 +140,14 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = "REN: 69"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = true
 					Layer = 0
 				}
-
-				Label = "Debug"
+				
+				Label = "Debug 1"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -156,7 +156,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = "Deferred (64 lights)"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = true

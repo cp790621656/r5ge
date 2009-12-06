@@ -120,7 +120,7 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mScene.Draw();	// <-- NEW! Draw the scene using all normal forward rendering techniques.
+	mScene.DrawAllForward();	// <-- NEW! Draw the scene using all normal forward rendering techniques.
 }
 
 //============================================================================================================

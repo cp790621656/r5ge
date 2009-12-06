@@ -59,9 +59,6 @@ void Model::Update()
 	// No point in updating models that are not referenced
 	if (mCounter != 0)
 	{
-		// Update the prop first, recalculating the bounds and the material mask
-		Prop::Update();
-
 		// If the mesh is animated we need to update the animations
 		if ( IsAnimated() )
 		{
@@ -216,11 +213,10 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 
 	// Last rendered model
 	static Model* lastModel = 0;
-	uint triangleCount(0);
 	uint mask = tech->GetMask();
 
-	// If the model was updated, changed, or the technique mask is different, we need to update the skin
-	bool updateSkin = (mAnimUpdated || mMask != mask || lastModel != this);
+	// If the model has changed or the animation has been updated
+	bool updateSkin = (mAnimUpdated || lastModel != this);
 
 	// Go through every limb and render it
 	Lock();
@@ -297,7 +293,7 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 						}
 
 						// Draw the mesh
-						triangleCount += mesh->Draw(graphics);
+						mesh->Draw(graphics);
 					}
 				}
 			}
@@ -305,11 +301,10 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 
 		// Remember the current values
 		mAnimUpdated	= false;
-		mMask			= mask;
 		lastModel		= this;
 	}
 	Unlock();
-	return triangleCount;
+	return 1;
 }
 
 //============================================================================================================
@@ -318,8 +313,6 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 
 uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 {
-	uint triangleCount (0);
-
 	if ( tech->GetColorWrite() && IsAnimated() )
 	{
 		Array<Vector3f> points;
@@ -358,7 +351,7 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 			graphics->SetWorldMatrix( mat * world );
 
 			// Draw the axes
-			triangleCount += graphics->Draw( IGraphics::Drawable::Axis );
+			graphics->Draw( IGraphics::Drawable::Axis );
 		}
 
 		// Draw lines connecting the bones
@@ -374,16 +367,16 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Position,	points );
-
-			triangleCount += graphics->DrawVertices( IGraphics::Primitive::Line, points.GetSize() );
+			graphics->DrawVertices				( IGraphics::Primitive::Line, points.GetSize() );
 		}
 
 		// Restore the active technique
 		graphics->SetStencilTest	( stencil );
 		graphics->SetActiveColor	( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 		graphics->SetActiveTechnique( tech );
+		return 1;
 	}
-	return triangleCount;
+	return 0;
 }
 
 //============================================================================================================

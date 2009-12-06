@@ -92,40 +92,11 @@ bool Prop::IsUsingTexture (const ITexture* ptr) const
 }
 
 //============================================================================================================
-// Any once-per-frame updates if necessary (animation would go here)
-//============================================================================================================
-
-void Prop::Update()
-{
-	mMask = 0;
-	mBounds.Reset();
-
-	if (mLimbs.IsValid())
-	{
-		Lock();
-		{
-			for (uint i = mLimbs.GetSize(); i > 0; )
-			{
-				Limb* limb = mLimbs[--i];
-
-				if (limb != 0 && limb->IsValid())
-				{
-					mMask |= limb->mMat->GetTechniqueMask();
-					mBounds.Include( limb->mMesh->GetBounds() );
-				}
-			}
-		}
-		Unlock();
-	}
-}
-
-//============================================================================================================
 // Draw the object, called by the rendering queue this object was added to
 //============================================================================================================
 
 uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
 {
-	uint triangleCount(0);
 	uint mask = tech->GetMask();
 
 	// Go through every limb and render it
@@ -140,11 +111,11 @@ uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
 			{
 				if ( graphics->SetActiveMaterial(limb->mMat) )
 				{
-					triangleCount += limb->mMesh->Draw(graphics);
+					limb->mMesh->Draw(graphics);
 				}
 			}
 		}
 	}
 	Unlock();
-	return triangleCount;
+	return 1;
 }

@@ -28,6 +28,8 @@ class GLController : public IGraphics
 
 protected:
 
+	FrameStats	mStats;				// Current frame statistics
+
 	bool		mFog;				// Whether fog is on
 	bool		mDepthWrite;		// Whether writing to depth buffer happens
 	bool		mDepthTest;			// Whether depth test is on
@@ -130,11 +132,8 @@ protected:
 
 public:
 
-	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
-	virtual void SetCameraOrientation	( const Vector3f& eye, const Vector3f& dir, const Vector3f& up );
-	virtual void SetCameraRange			( const Vector3f& range );
-
-	// State retrieval
+	// Statistics about the current frame
+	virtual const FrameStats&	GetFrameStats()			const	{ return mStats;		}
 	virtual bool				GetFog()				const	{ return mFog;			}
 	virtual bool				GetDepthWrite()			const	{ return mDepthWrite;	}
 	virtual bool				GetDepthTest()			const	{ return mDepthTest;	}
@@ -179,6 +178,10 @@ public:
 	// View matrix manipulation
 	virtual void SetViewMatrix( const Matrix43& mat );
 	virtual void ResetViewMatrix();
+
+	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
+	virtual void SetCameraOrientation	( const Vector3f& eye, const Vector3f& dir, const Vector3f& up );
+	virtual void SetCameraRange			( const Vector3f& range );
 
 	// Active object control
 	virtual void SetActiveRenderTarget		( const IRenderTarget* tar );

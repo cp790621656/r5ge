@@ -25,8 +25,11 @@ class TestApp
 	Core*			mCore;
 	Scene			mScene;
 	DebugCamera*	mCam;
+
+	Array<const ITechnique*> mTechniques;
+
+	// NEW! We want to store the terrain as well as a UI label to display some text with
 	Terrain*		mTerrain;
-	ITechnique*		mWireframe;
 	UILabel*		mLabel;
 
 public:
@@ -39,7 +42,7 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mTerrain(0), mWireframe(0), mLabel(0)
+TestApp::TestApp() : mCam(0), mTerrain(0), mLabel(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -132,7 +135,10 @@ void TestApp::Run()
 		// your wireframe object will show up in your scene. In this case it will be used for our terrain.
 
 		// Wireframe is an R5-recognized technique so we don't need to set up any states.
-		mWireframe = mGraphics->GetTechnique("Wireframe");
+		ITechnique* wireframe = mGraphics->GetTechnique("Wireframe");
+
+		// Save it for our Draw function
+		mTechniques.Expand() = wireframe;
 
 		// We'll be using a custom material to draw our terrain. Let's just give it the same name.
 		IMaterial* mat = mGraphics->GetMaterial("Terrain");
@@ -141,7 +147,7 @@ void TestApp::Run()
 		mat->SetDiffuse( Color4ub(255, 255, 255, 255) );
 
 		// Add this technique to the material
-		mat->GetDrawMethod(mWireframe, true);
+		mat->GetDrawMethod(wireframe, true);
 
 		// Tell the terrain to use this material
 		mTerrain->SetMaterial(mat);
@@ -175,7 +181,7 @@ void TestApp::OnDraw()
 	mGraphics->Clear();
 
 	// Rather than drawing the scene with all default techniques, let's only use ours
-	mScene.Draw(mWireframe);
+	mScene.Draw(mTechniques);
 
 	// Since we have an on-screen label to play with, let's show how much of the terrain is currently visible
 	if (mLabel != 0) mLabel->SetText( String("%.0f%%", mTerrain->GetVisibility() * 100.0f) );

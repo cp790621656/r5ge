@@ -12,7 +12,6 @@ class GLTechnique : public ITechnique
 protected:
 
 	String	mName;
-	uint	mMask;
 	bool	mFog;
 	bool	mDepthWrite;
 	bool	mDepthTest;
@@ -31,7 +30,6 @@ public:
 	virtual ~GLTechnique() {}
 
 	virtual const String& GetName()	const	{ return mName;			}
-	virtual uint GetMask()			const	{ return mMask;			}
 	virtual bool GetFog()			const	{ return mFog;			}
 	virtual bool GetDepthWrite()	const	{ return mDepthWrite;	}
 	virtual bool GetDepthTest()		const	{ return mDepthTest;	}

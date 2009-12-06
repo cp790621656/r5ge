@@ -32,8 +32,7 @@ public:
 // Constructor and destructor
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mDeferred(true),
-	mTriangles(0), mVisible(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mObjects(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -42,6 +41,8 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mDeferred
 
 	// Register a new script type that can be created via AddScript<> template
 	RegisterScript<SpinScript>();
+
+	mCore->SetSleepDelay(0);
 }
 
 //============================================================================================================
@@ -107,6 +108,11 @@ void TestApp::Init()
 			light->SetSpecular(clr);
 		}
 	}
+
+	// Techniques we'll be using
+	mDeferred.Expand() = mGraphics->GetTechnique("Deferred");
+	mForward.Expand()  = mGraphics->GetTechnique("Glow");
+	mForward.Expand()  = mGraphics->GetTechnique("Glare");
 }
 
 //============================================================================================================
@@ -124,7 +130,6 @@ void TestApp::Run()
 			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
 			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&TestApp::OnKey, this) );
 			mCore->AddOnPostUpdate( bind(&TestApp::UpdateStats, this) );
 
 			Init();
@@ -142,54 +147,22 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
+	const ILight::List& lights = mScene.GetVisibleLights();
 
-	static ITechnique*	opaque	= mGraphics->GetTechnique("Opaque");
-	static ITechnique*	trans	= mGraphics->GetTechnique("Transparent");
-	static ITechnique*	glow	= mGraphics->GetTechnique("Glow");
-	static ITechnique*	glare	= mGraphics->GetTechnique("Glare");
+	// Draw the scene using the deferred approach, filling color and depth buffers
+	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, mDeferred, bind(&Scene::Draw, &mScene));
 
-	// Number of lights
-	const Scene::Lights& lights = mScene.GetVisibleLights();
-	uint lightCount = lights.GetSize();
+	// Add transparent objects via forward rendering
+	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
+	mObjects += mScene.Draw(mForward);
 
-	if (mDeferred)
-	{
-		// Draw the scene using the deferred approach, filling color and depth buffers
-		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene));
-		mTriangles = result.mTriangles;
+	// Draw the result onto the screen
+	//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
+	PostProcess::None(mGraphics, result.mColor);
 
-		// Add transparent objects via forward rendering
-		{
-			mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-			mTriangles += mScene.Draw(glow);
-			mTriangles += mScene.Draw(glare);
-		}
-
-		// Draw the result onto the screen
-		//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
-		PostProcess::None(mGraphics, result.mColor);
-
-		mDebug.Set("Deferred (%u lights)", lightCount);
-	}
-	else
-	{
-		mGraphics->SetActiveRenderTarget(0);
-		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-		mGraphics->Clear();
-
-		// Sort the lights so that closest lights are first
-		mScene.GetVisibleLights( mCam->GetAbsolutePosition() );
-
-		// Draw the scene
-		mTriangles  = mScene.Draw(opaque);
-		mTriangles += mScene.Draw(trans);
-		mTriangles += mScene.Draw(glow);
-		mTriangles += mScene.Draw(glare);
-
-		mDebug.Set("Forward (%u lights)", lightCount > 8 ? 8 : lightCount);
-	}
-
-	mVisible = mScene.GetVisibleObjects().GetSize();
+	// Save statistics
+	mObjects = result.mObjects;
+	mStats	 = mGraphics->GetFrameStats();
 }
 
 //============================================================================================================
@@ -198,47 +171,21 @@ void TestApp::OnDraw()
 
 float TestApp::UpdateStats()
 {
-	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
 	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
-	static UILabel* vis = FindWidget<UILabel>(mUI, "Visible");
-	static UILabel* deb = FindWidget<UILabel>(mUI, "Debug");
+	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
+	static UILabel* obj = FindWidget<UILabel>(mUI, "Objects");
+	static UILabel* db0 = FindWidget<UILabel>(mUI, "Debug 0");
+	static UILabel* db1 = FindWidget<UILabel>(mUI, "Debug 1");
 
-	if (tri) tri->SetText( String("TRI: %u", mTriangles) );
+	if (tri) tri->SetText( String("TRI: %u", mStats.mTriangles) );
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );
-	if (vis) vis->SetText( String("VIS: %u", mVisible) );
-	if (deb) deb->SetText( mDebug );
+	if (obj) obj->SetText( String("%u objects", mObjects) );
+	if (db0) db0->SetText( String("DC[[FF5555]%u[FFFFFF]] BB[[FF5555]%u[FFFFFF]] TX[[FF5555]%u[FFFFFF]]",
+		mStats.mDrawCalls, mStats.mBufferBinds, mStats.mTexSwitches) );
+	if (db1) db1->SetText( String("SH[[FF5555]%u[FFFFFF]] TC[[FF5555]%u[FFFFFF]] LS[[FF5555]%u[FFFFFF]]",
+		mStats.mShaderSwitches, mStats.mTechSwitches, mStats.mLightSwitches) );
 
 	return 0.25f;
-}
-
-//============================================================================================================
-// Triggered on keyboard and mouse button events
-//============================================================================================================
-
-bool TestApp::OnKey(const Vector2i& pos, byte key, bool isDown)
-{
-	if (!isDown)
-	{
-		if ( key == Key::Escape )
-		{
-			mCore->Shutdown();
-		}
-		else if ( key == Key::F5 )
-		{
-			mWin->SetStyle( mWin->GetStyle() == IWindow::Style::FullScreen ?
-				IWindow::Style::Normal : IWindow::Style::FullScreen);
-		}
-		else if ( key == Key::F6 )
-		{
-			mWin->SetSize( Vector2i(900, 600) );
-			mWin->SetStyle(IWindow::Style::Normal);
-		}
-		else if ( key == Key::D )
-		{
-			mDeferred = !mDeferred;
-		}
-	}
-	return true;
 }
 
 //============================================================================================================

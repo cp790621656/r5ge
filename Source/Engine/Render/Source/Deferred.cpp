@@ -5,10 +5,8 @@ using namespace R5;
 // Add all directional light contribution
 //============================================================================================================
 
-uint AddDirectionalLights (IGraphics* graphics, const ILight::List& lights, const IShader* shader)
+void AddDirectionalLights (IGraphics* graphics, const ILight::List& lights, const IShader* shader)
 {
-	uint triangles (0);
-
 	if (lights.IsValid())
 	{
 		uint maxLights = 8;
@@ -41,22 +39,19 @@ uint AddDirectionalLights (IGraphics* graphics, const ILight::List& lights, cons
 				i -= count - maxLights;
 
 				// Draw a full screen quad, effectively rendering the lights using the active shader
-				triangles += graphics->Draw( IGraphics::Drawable::InvertedQuad );
+				graphics->Draw( IGraphics::Drawable::InvertedQuad );
 				count = 0;
 			}
 		}
 	}
-	return triangles;
 }
 
 //============================================================================================================
 // Add all point light contribution
 //============================================================================================================
 
-uint AddPointLights (IGraphics* graphics, const ILight::List& lights, const IShader* shader)
+void AddPointLights (IGraphics* graphics, const ILight::List& lights, const IShader* shader)
 {
-	uint triangles (0);
-
 	if (lights.IsValid())
 	{
 		float nearClip = graphics->GetCameraRange().x;
@@ -128,7 +123,7 @@ uint AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 
 			// Draw the light's sphere
 			graphics->SetWorldMatrix( Matrix43 (lightPos, range) );
-			triangles += graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
+			graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
 		}
 
 		// Restore important states
@@ -136,18 +131,18 @@ uint AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 		graphics->SetCulling(IGraphics::Culling::Back);
 		graphics->ResetWorldMatrix();
 	}
-	return triangles;
 }
 
 //============================================================================================================
 // Draw all lights using depth, normal, and lightmap textures
 //============================================================================================================
 
-uint DrawLights (	IGraphics*			graphics,
-					const ITexture*		depth,
-					const ITexture*		normal,
-					const ITexture*		lightmap,
-					const ILight::List&	lights )
+void DrawLights (
+	IGraphics*			graphics,
+	const ITexture*		depth,
+	const ITexture*		normal,
+	const ITexture*		lightmap,
+	const ILight::List&	lights )
 {
 	// Set up appropriate states
 	graphics->SetFog(false);
@@ -212,20 +207,20 @@ uint DrawLights (	IGraphics*			graphics,
 	static IShader* dirShader1	 = graphics->GetShader("SSAO/Light/Directional");
 	static IShader* pointShader1 = graphics->GetShader("SSAO/Light/Point");
 
-	// Draw actual light contribution
-	return	AddDirectionalLights(graphics, directional, (lightmap != 0) ? dirShader1   : dirShader0  ) + 
-			AddPointLights		(graphics, point,		(lightmap != 0) ? pointShader1 : pointShader0);
+	AddDirectionalLights(graphics, directional, (lightmap != 0) ? dirShader1   : dirShader0  ); 
+	AddPointLights		(graphics, point,		(lightmap != 0) ? pointShader1 : pointShader0);
 }
 
 //============================================================================================================
 // Final deferred approach function -- combine everything together
 //============================================================================================================
 
-uint Combine (	IGraphics*		graphics,
-				const ITexture*	matDiff,
-				const ITexture*	matSpec,
-				const ITexture*	lightDiff,
-				const ITexture*	lightSpec )
+void Combine (
+	IGraphics*		graphics,
+	const ITexture*	matDiff,
+	const ITexture*	matSpec,
+	const ITexture*	lightDiff,
+	const ITexture*	lightSpec )
 {
 	static IShader* shader = graphics->GetShader("Deferred/Process/Combine");
 
@@ -242,8 +237,7 @@ uint Combine (	IGraphics*		graphics,
 	graphics->SetActiveTexture( 1, matSpec );
 	graphics->SetActiveTexture( 2, lightDiff );
 	graphics->SetActiveTexture( 3, lightSpec );
-	
-	return graphics->Draw( IGraphics::Drawable::InvertedQuad );
+	graphics->Draw( IGraphics::Drawable::InvertedQuad );
 }
 
 //============================================================================================================
@@ -253,14 +247,12 @@ uint Combine (	IGraphics*		graphics,
 Deferred::DrawResult Deferred::DrawScene (
 	IGraphics*				graphics,
 	const ILight::List&		lights,
+	const TechniqueList&	techniques,
 	const DrawCallback&		drawCallback,
-	const DrawCallback&		decalCallback,
 	const AOCallback&		aoCallback,
 	bool					insideOut)
 {
 	static bool				firstTime	= true;
-	static ITechnique*		deferred	= graphics->GetTechnique("Deferred");
-	static ITechnique*		decal		= graphics->GetTechnique("Decal");
 	static IRenderTarget*	target0		= graphics->CreateRenderTarget();
 	static IRenderTarget*	target1		= graphics->CreateRenderTarget();
 	static IRenderTarget*	target2		= graphics->CreateRenderTarget();
@@ -272,8 +264,8 @@ Deferred::DrawResult Deferred::DrawScene (
 	static ITexture*		lightSpec	= graphics->GetTexture("[Generated] Specular Light");
 	static ITexture*		final		= graphics->GetTexture("[Generated] Final");
 
-	uint triangles (0);
 	const ITexture* lightmap (0);
+	DrawResult result;
 
 	if (firstTime)
 	{
@@ -333,22 +325,7 @@ Deferred::DrawResult Deferred::DrawScene (
 											 IGraphics::Operation::Replace );
 
 		// Draw the scene using the deferred approach
-		triangles += drawCallback(deferred, insideOut);
-	}
-
-	// Decal pass
-	if (decalCallback)
-	{
-		// Affect only pixels we wrote to and don't write to depth
-		graphics->SetStencilTest(true);
-		graphics->SetDepthWrite(false);
-		graphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
-		graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
-											 IGraphics::Operation::Keep,
-											 IGraphics::Operation::Keep );
-
-		// Trigger the decal callback
-		triangles += decalCallback(decal, insideOut);
+		result.mObjects += drawCallback(techniques, insideOut);
 	}
 
 	// Screen-space ambient occlusion pass
@@ -368,18 +345,17 @@ Deferred::DrawResult Deferred::DrawScene (
 	{
 		graphics->SetActiveRenderTarget( target1 );
 		graphics->Clear(true, false, false);
-		triangles += DrawLights(graphics, depth, normal, lightmap, lights);
+		DrawLights(graphics, depth, normal, lightmap, lights);
+		result.mObjects += lights.GetSize();
 	}
 
 	// Combine the light contribution with material
 	{
 		graphics->SetActiveRenderTarget( target2 );
-		triangles += Combine(graphics, matDiff, matSpec, lightDiff, lightSpec);
+		Combine(graphics, matDiff, matSpec, lightDiff, lightSpec);
 	}
 
 	// Return some useful information
-	DrawResult result;
-	result.mTriangles	= triangles;
 	result.mColor		= final;
 	result.mDepth		= depth;
 	result.mNormal		= normal;

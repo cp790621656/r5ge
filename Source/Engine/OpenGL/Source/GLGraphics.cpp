@@ -483,6 +483,8 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 
 void GLGraphics::BeginFrame()
 {
+	mStats.Clear();
+
 	if (mDelegates.IsValid())
 	{
 		mDelegates.Lock();
@@ -513,9 +515,11 @@ void GLGraphics::EndFrame()
 
 uint GLGraphics::Draw (uint drawable)
 {
+	uint result (0);
+
 	if (drawable == Drawable::Skybox)
 	{
-		if (mSkybox == 0) return 0;
+		if (mSkybox == 0) return result;
 
 		if (mSkyboxVBO == 0)
 		{
@@ -558,7 +562,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetActiveVertexAttribute( Attribute::TexCoord0, mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 		SetActiveVertexAttribute( Attribute::Position,	mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 
-		DrawIndices( mSkyboxIBO, Primitive::Triangle, 36 );
+		result = DrawIndices( mSkyboxIBO, Primitive::Triangle, 36 );
 		ResetWorldMatrix();
 
 		return 12;
@@ -583,7 +587,7 @@ uint GLGraphics::Draw (uint drawable)
 		}
 		glEnd();
 
-		return 2;
+		result = 2;
 	}
 	else if (drawable == Drawable::InvertedQuad)
 	{
@@ -605,7 +609,7 @@ uint GLGraphics::Draw (uint drawable)
 		}
 		glEnd();
 
-		return 2;
+		result = 2;
 	}
 	else if (drawable == Drawable::Plane)
 	{
@@ -627,7 +631,7 @@ uint GLGraphics::Draw (uint drawable)
 		}
 		glEnd();
 
-		return 2;
+		result = 2;
 	}
 	else if (drawable == Drawable::Grid)
 	{
@@ -674,7 +678,7 @@ uint GLGraphics::Draw (uint drawable)
 		glEnd();
 
 		if (light) SetLighting(light);
-		return 42;
+		result = 42;
 	}
 	else if (drawable == Drawable::Axis )
 	{
@@ -708,10 +712,10 @@ uint GLGraphics::Draw (uint drawable)
 		glEnd();
 
 		if (light) SetLighting(light);
-		return 3;
+		result = 3;
 	}
 	// Nothing is drawn -- no triangles
-	return 0;
+	return result;
 };
 
 //============================================================================================================

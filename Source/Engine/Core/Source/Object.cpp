@@ -8,6 +8,7 @@ using namespace R5;
 Object::Object() :
 	mParent			(0),
 	mCore			(0),
+	mLayer			(10),
 	mRelativeScale	(1.0f),
 	mAbsoluteScale	(1.0f),
 	mCalcAbsBounds	(true),
@@ -381,17 +382,6 @@ void Object::SetAbsoluteScale (float scale)
 }
 
 //============================================================================================================
-// Force-draws this object, bypassing all culling logic
-//============================================================================================================
-
-uint Object::Draw (const ITechnique* tech, bool insideOut)
-{
-	IGraphics* graphics = mCore->GetGraphics();
-	graphics->SetActiveTechnique(tech);
-	return OnDraw(tech, insideOut);
-}
-
-//============================================================================================================
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
@@ -605,6 +595,7 @@ bool Object::SerializeTo (TreeNode& root) const
 			node.AddChild("Position", mRelativePos);
 			node.AddChild("Rotation", mRelativeRot);
 			node.AddChild("Scale", mRelativeScale);
+			node.AddChild("Layer", mLayer);
 
 			if (!mIgnore.Get(Ignore::SerializeTo))
 				OnSerializeTo(node);
@@ -639,6 +630,11 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
 			else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
 			else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
+			else if (tag == "Layer")
+			{
+				uint temp;
+				if (value >> temp) mLayer = (byte)(temp & 31);
+			}
 			else if (tag == Script::ClassID())
 			{
 				Script* ptr = _AddScript(value.IsString() ? value.AsString() : value.GetString());

@@ -61,7 +61,7 @@ public:
 	virtual void SetGlow		(float val)=0;
 	virtual void SetADT			(float val)=0;
 
-	// Returns a mask of available techniques, based on (1 << ITechnique::GetID)
+	// Returns a mask of available techniques
 	virtual uint				GetTechniqueMask()	 const=0;
 	virtual const DrawMethods&	GetAllDrawMethods()  const=0;
 	virtual		  DrawMethod*	GetDrawMethod		(const ITechnique* t, bool createIfMissing = true)=0;

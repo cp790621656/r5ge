@@ -8,10 +8,17 @@
 #ifndef _CORE_INCLUDE_H
 #define _CORE_INCLUDE_H
 
-#include "../../Interface/Include/_All.h"
+#include "../../Render/Include/_All.h"
 
 namespace R5
 {
+	class Object;
+
+	#include "DrawEntry.h"			// Draw entry struct is used to sort drawable objects
+	#include "DrawList.h"			// All drawable objects are separated by techniques into different lists
+	#include "DrawLayer.h"			// Drawable objects can be placed on different layers
+	#include "DrawQueue.h"			// Draw queue contains all 32 possible draw layers
+
 	#include "Resource.h"			// TreeNode-based resource
 	#include "Script.h"				// Scripts can be attached to game objects
 	#include "Object.h"				// Most basic game object

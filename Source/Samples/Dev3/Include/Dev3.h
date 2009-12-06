@@ -7,7 +7,6 @@
 // Development Testing Application
 //============================================================================================================
 
-#include "../../../Engine/Render/Include/_All.h"
 #include "../../../Engine/OpenGL/Include/_All.h"
 #include "../../../Engine/Core/Include/_All.h"
 #include "../../../Engine/UI/Include/_All.h"
@@ -23,11 +22,12 @@ class TestApp
 	Scene		mScene;
 	Camera*		mCam;
 	bool		mFlag;
-	bool		mDeferred;
 	String		mDebug;
-	uint		mTriangles;
-	uint		mVisible;
-	uint		mRendered;
+	uint		mObjects;
+
+	IGraphics::FrameStats mStats;
+	Scene::Techniques mDeferred;
+	Scene::Techniques mForward;
 
 public:
 
@@ -38,6 +38,5 @@ public:
 	void  Run();
 	void  OnDraw();
 	float UpdateStats();
-	bool  OnKey (const Vector2i& pos, byte key, bool isDown);
 };
 }

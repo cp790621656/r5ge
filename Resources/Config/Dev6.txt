@@ -52,10 +52,10 @@ Root
 				Top = 0.000000 0.000000
 				Bottom = 1.000000 0.000000
 				Alpha = 1.000000
-				Receives Events = false
+				Receives Events = true
 				Layer = 0
-
-				Label = "Help 0"
+				
+				Checkbox = "Technique"
 				{
 					Left = 0.000000 3.000000
 					Right = 1.000000 -3.000000
@@ -64,74 +64,107 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "'[FF5555]1[FFFFFF]' - Plays a long animation"
+					State = "Checked"
+					Skin = "Default"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = true
 					Layer = 0
 				}
 
-				Label = "Help 1"
+				Label = "Debug 0"
 				{
 					Left = 0.000000 3.000000
 					Right = 1.000000 -3.000000
-					Top = 0.000000 20.000000
-					Bottom = 0.000000 35.000000
+					Top = 0.000000 24.000000
+					Bottom = 0.000000 39.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "'[FF5555]2[FFFFFF]' - Plays a short animation"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Receives Events = false
 					Layer = 0
 				}
 
-				Label = "Help 2"
+				Label = "Debug 1"
 				{
 					Left = 0.000000 3.000000
 					Right = 1.000000 -3.000000
-					Top = 0.000000 37.000000
-					Bottom = 0.000000 52.000000
+					Top = 0.000000 41.000000
+					Bottom = 0.000000 56.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "'[FF5555]T[FFFFFF]' - Toggle technique"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Receives Events = false
 					Layer = 0
 				}
-
-				Label = "Help 3"
+				
+				Label = "Debug 2"
 				{
 					Left = 0.000000 3.000000
 					Right = 1.000000 -3.000000
-					Top = 0.000000 54.000000
-					Bottom = 0.000000 69.000000
+					Top = 0.000000 58.000000
+					Bottom = 0.000000 73.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "'[FF5555]F5[FFFFFF]' - Toggle fullscreen"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Receives Events = false
 					Layer = 0
 				}
-
-				Label = "Technique"
+				
+				Label = "Debug 3"
 				{
 					Left = 0.000000 3.000000
 					Right = 1.000000 -3.000000
-					Top = 0.000000 71.000000
-					Bottom = 0.000000 86.000000
+					Top = 0.000000 75.000000
+					Bottom = 0.000000 90.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "[55FF55]Skinning on GPU"
+					Text = ""
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Receives Events = false
+					Layer = 0
+				}
+				
+				Label = "Debug 4"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 92.000000
+					Bottom = 0.000000 107.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = ""
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = false
+					Layer = 0
+				}
+				
+				Label = "Debug 5"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 109.000000
+					Bottom = 0.000000 124.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = ""
+					Shadow = true
+					Alignment = "Left"
+					Receives Events = false
 					Layer = 0
 				}
 
@@ -147,7 +180,7 @@ Root
 					Text = "1224"
 					Shadow = true
 					Alignment = "Right"
-					Receives Events = true
+					Receives Events = false
 					Layer = 0
 				}
 
@@ -163,23 +196,7 @@ Root
 					Text = "12906"
 					Shadow = true
 					Alignment = "Right"
-					Receives Events = true
-					Layer = 0
-				}
-
-				Label = "Status"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "(28.349) Animation 'Long' ends in 0.000 seconds"
-					Shadow = true
-					Alignment = "Center"
-					Receives Events = true
+					Receives Events = false
 					Layer = 0
 				}
 			}

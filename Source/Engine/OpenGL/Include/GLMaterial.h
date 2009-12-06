@@ -4,22 +4,22 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
-// GLMaterial management
+// OpenGL Material implementation
 //============================================================================================================
 
 class GLMaterial : public IMaterial
 {
 protected:
 
-	IGraphics*			mGraphics;		// Materials need to know what graphics manager created them
-	String				mName;			// Name of the material
-	Color				mDiffuse;		// Diffuse color
-	Color				mSpecular;		// Specular color
-	float				mGlow;			// Percentage of Color unaffected by diminishing light
-	float				mAdt;			// Alpha discard threshold for alpha testing
-	uint				mMask;			// Mask of available techniques, based on (1 << ITechnique::GetID())
+	IGraphics*	mGraphics;		// Materials need to know what graphics manager created them
+	String		mName;			// Name of the material
+	Color		mDiffuse;		// Diffuse color
+	Color		mSpecular;		// Specular color
+	float		mGlow;			// Percentage of Color unaffected by diminishing light
+	float		mAdt;			// Alpha discard threshold for alpha testing
+	uint		mMask;			// Mask of available techniques
 	DrawMethods	mMethods;		// Array of options for various rendering methods
-	bool				mSerializable;	// Whether the material is serializable (some may not be)
+	bool		mSerializable;	// Whether the material is serializable (some may not be)
 
 public:
 

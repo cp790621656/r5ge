@@ -84,17 +84,10 @@ void ModelInstance::OnUpdate()
 
 bool ModelInstance::OnFill (FillParams& params)
 {
-	// Only draw the model if the parent is visible and if the bounds are within the frustum
 	if (mModel != 0)
 	{
-		Drawable& obj	 = params.mObjects.Expand();
-		obj.mObject		 = this;
-		obj.mMask		 = mModel->GetMask();
-		obj.mLayer		 = mModel->GetLayer();
-		obj.mGroup		 = mModel;
-		obj.mDistSquared = (mAbsolutePos - params.mCamPos).Dot();
-
-		params.mMask |= obj.mMask;
+		float dist = (mAbsolutePos - params.mCamPos).Dot();
+		params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel, dist);
 	}
 	return true;
 }
@@ -105,7 +98,7 @@ bool ModelInstance::OnFill (FillParams& params)
 
 uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 {
-	uint triangleCount(0);
+	uint result(0);
 	IGraphics* graphics = mCore->GetGraphics();
 
 	// Automatically normalize normals if the scale is not 1.0
@@ -117,21 +110,21 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 	if (mModel != 0)
 	{
 		// Draw the model
-		triangleCount += mModel->_Draw(graphics, tech);
+		result += mModel->_Draw(graphics, tech);
 
 		if (mShowOutline)
 		{
 			// Draw the outline if requested
-			triangleCount += mModel->_DrawOutline(graphics, tech);
-			triangleCount += _DrawOutline(graphics, tech);
+			result += mModel->_DrawOutline(graphics, tech);
+			result += _DrawOutline(graphics, tech);
 		}
 	}
 	else if (mShowOutline)
 	{
 		// Draw only the outline
-		triangleCount += _DrawOutline(graphics, tech);
+		result += _DrawOutline(graphics, tech);
 	}
-	return triangleCount;
+	return result;
 }
 
 //============================================================================================================
@@ -140,7 +133,7 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 
 uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 {
-	uint triangleCount (0);
+	uint result(0);
 
 	// If the model's outline is requested, draw it now
 	if (tech->GetColorWrite())
@@ -168,14 +161,14 @@ uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord1,	0);
 		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,	v);
 
-		triangleCount += graphics->DrawVertices( IGraphics::Primitive::Line, v.GetSize() );
+		result += graphics->DrawVertices( IGraphics::Primitive::Line, v.GetSize() );
 
 		// Restore the active technique
 		graphics->SetStencilTest(stencil);
 		graphics->SetActiveColor( Color4f(1.0f) );
 		graphics->SetActiveTechnique(tech);
 	}
-	return triangleCount;
+	return result;
 }
 
 //============================================================================================================

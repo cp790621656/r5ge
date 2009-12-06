@@ -115,13 +115,12 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint TerrainNode::OnDraw (const ITechnique* tech, bool insideOut)
+void TerrainNode::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mTree->GetCore()->GetGraphics();
 
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
 		mVBO, 0, IGraphics::DataType::Float, 3, 0 );
 
-	return graphics->DrawIndices(mIBO, IGraphics::Primitive::Quad, mIndices);
-	//return graphics->DrawVertices(IGraphics::Primitive::Point, 16);
+	graphics->DrawIndices(mIBO, IGraphics::Primitive::Quad, mIndices);
 }

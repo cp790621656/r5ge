@@ -139,11 +139,22 @@ void ModelViewer::OnDraw()
 		else if (mParams.mSsao == 1) ao.bind(&SSAO::Low);
 
 		// Get all visible lights
-		const Scene::Lights& lights = mScene.GetVisibleLights();
+		const ILight::List& lights = mScene.GetVisibleLights();
+
+		static ITechnique*	deferred	= mGraphics->GetTechnique("Deferred");
+		static ITechnique*	wireframe	= mGraphics->GetTechnique("Wireframe");
+
+		static Deferred::TechniqueList techs;
+
+		if (techs.IsEmpty())
+		{
+			techs.Expand() = deferred;
+			techs.Expand() = wireframe;
+		}
 
 		// Draw the scene using the deferred approach
-		result = Deferred::DrawScene(mGraphics, lights,
-			bind(&ModelViewer::OnDeferredDraw, this), 0, ao);
+		result = Deferred::DrawScene(mGraphics, lights, techs,
+			bind(&ModelViewer::OnDeferredDraw, this), ao);
 	}
 
 	// Post-processing part
@@ -164,19 +175,11 @@ void ModelViewer::OnDraw()
 // Callback triggered from inside the deferred DrawScene function
 //============================================================================================================
 
-uint ModelViewer::OnDeferredDraw (const ITechnique* tech, bool insideOut)
+uint ModelViewer::OnDeferredDraw (const Deferred::TechniqueList& techs, bool insideOut)
 {
-	static ITechnique*	deferred	= mGraphics->GetTechnique("Deferred");
-	static ITechnique*	wireframe	= mGraphics->GetTechnique("Wireframe");
-
-	mGraphics->SetActiveTechnique(deferred);
-
-	uint triangles = mGraphics->Draw( IGraphics::Drawable::Grid );
-
-	triangles += mScene.Draw(deferred,  insideOut);
-	triangles += mScene.Draw(wireframe, insideOut);
-
-	return triangles;
+	mGraphics->SetActiveTechnique(techs[0]);
+	mGraphics->Draw( IGraphics::Drawable::Grid );
+	return mScene.Draw(techs, insideOut);
 }
 
 //============================================================================================================

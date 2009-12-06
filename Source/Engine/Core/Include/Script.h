@@ -7,11 +7,8 @@
 // Scripts can be attached to game objects and are the ideal way of inserting code into the scene.
 //============================================================================================================
 
-class Object;
 class Script
 {
-private:
-
 	struct Ignore
 	{
 		enum

@@ -46,7 +46,7 @@ bool DirectionalLight::OnFill (FillParams& params)
 {
 	if (mParams.IsVisible())
 	{
-		params.mLights.Expand() = &mParams;
+		params.mDrawQueue.Add(&mParams);
 	}
 	return true;
 }

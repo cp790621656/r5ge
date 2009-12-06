@@ -35,9 +35,40 @@ Root
 				Texture 5 = "Textures/stone_nm.png"
 			}
 		}
+		
+		Material = "Teapot"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 0.990000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_N_S"
+				Texture 0 = "Textures/stone_df.jpg"
+				Texture 1 = "Textures/stone_nm.png"
+				Texture 2 = "Textures/stone_maps.jpg"
+			}
+		}
 	}
 	
 	Execute = "Config/Default UI Skin.txt"
+	
+	Core
+	{
+		Model = "Teapot"
+		{
+			Source = "Models/teapot.r5b"
+			Layer = 0
+
+			Limb = "Teapot"
+			{
+				Mesh = "Teapot"
+				Material = "Teapot"
+			}
+		}
+	}
 
 	UI
 	{
@@ -123,7 +154,16 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Layer = 0
 			Model = "Models/test scene.r5b"
+		}
+
+		Model Instance = "Teapot"
+		{
+			Position = 0 0 0
+			Rotation = 0 0 0 1
+			Scale = 0.5
+			Model = "Teapot"
 		}
 
 		Decal = "First Decal"

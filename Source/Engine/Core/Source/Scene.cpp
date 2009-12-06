@@ -7,14 +7,14 @@ using namespace R5;
 
 const ILight::List& Scene::GetVisibleLights (const Vector3f& pos)
 {
-	uint size = mLights.GetSize();
+	uint size = mQueue.mLights.GetSize();
 
 	if (size > 1)
 	{
 		// Run through all lights and calculate their distance to the position
 		for (uint i = 0; i < size; ++i)
 		{
-			ILight::Entry& entry (mLights[i]);
+			ILight::Entry& entry (mQueue.mLights[i]);
 
 			if (entry.mLight->GetAttenParams() == 0)
 			{
@@ -27,9 +27,9 @@ const ILight::List& Scene::GetVisibleLights (const Vector3f& pos)
 				entry.mDistance = (entry.mLight->GetPosition() - pos).Dot();
 			}
 		}
-		mLights.Sort();
+		mQueue.mLights.Sort();
 	}
-	return mLights;
+	return mQueue.mLights;
 }
 
 //============================================================================================================
@@ -80,43 +80,78 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 }
 
 //============================================================================================================
-// Draw the specified scene
+// Convenience function: Draws the scene using default forward rendering techniques
 //============================================================================================================
 
-uint Scene::Draw (const ITechnique* tech, bool insideOut)
+uint Scene::DrawAllForward()
 {
-	uint count (0);
+	if (mRoot != 0)
+	{
+		if (mForward.IsEmpty())
+		{
+			IGraphics* graphics = mRoot->mCore->GetGraphics();
 
+			mForward.Expand() = graphics->GetTechnique("Opaque");
+			mForward.Expand() = graphics->GetTechnique("Transparent");
+			mForward.Expand() = graphics->GetTechnique("Particle");
+			mForward.Expand() = graphics->GetTechnique("Glow");
+			mForward.Expand() = graphics->GetTechnique("Glare");
+		}
+		return Draw(mForward);
+	}
+	return 0;
+}
+
+//============================================================================================================
+// Convenience function: draws the scene using default deferred rendering techniques
+//============================================================================================================
+
+uint Scene::DrawAllDeferred (bool ssao, bool bloom)
+{
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
-		if (tech != 0)
+		if (mDeferred.IsEmpty())
 		{
-			// Draw all objects from the specified technique
-			count += _Draw(tech, insideOut);
+			mDeferred.Expand() = graphics->GetTechnique("Deferred");
+			mDeferred.Expand() = graphics->GetTechnique("Decal");
+		}
+
+		Deferred::DrawResult result = Deferred::DrawScene(graphics, mQueue.mLights, mDeferred,
+			bind(&Scene::Draw, this), (ssao ? &SSAO::Low : 0));
+
+		if (bloom)
+		{
+			PostProcess::Bloom(graphics, result.mColor, 1.0f);
 		}
 		else
 		{
-			// Draw the scene using all default forward rendering techniques
-			ITechnique* opaque = graphics->GetTechnique("Opaque");
-			ITechnique* trans  = graphics->GetTechnique("Transparent");
-			ITechnique* part   = graphics->GetTechnique("Particle");
-			ITechnique* glow   = graphics->GetTechnique("Glow");
-			ITechnique* glare  = graphics->GetTechnique("Glare");
-
-			count += _Draw(opaque, insideOut);
-			count += _Draw(trans,  insideOut);
-			count += _Draw(part,   insideOut);
-			count += _Draw(glow,   insideOut);
-			count += _Draw(glare,  insideOut);
+			PostProcess::None(graphics, result.mColor);
 		}
+		return result.mObjects;
+	}
+	return 0;
+}
+
+//============================================================================================================
+// Draw the specified scene
+//============================================================================================================
+
+uint Scene::Draw (const Techniques& techniques, bool insideOut)
+{
+	uint result(0);
+
+	if (mRoot != 0)
+	{
+		IGraphics* graphics = mRoot->mCore->GetGraphics();
+		result += mQueue.Draw(graphics, techniques, insideOut);
 
 		// Restore the potentially changed properties
 		graphics->ResetWorldMatrix();
 		graphics->SetNormalize(false);
 	}
-	return count;
+	return result;
 }
 
 //============================================================================================================
@@ -128,10 +163,10 @@ Object* Scene::Select (const Vector3f& pos)
 	Object* ptr = 0;
 	float radius = 65535.0f;
 
-	for (uint i = mObjects.GetSize(); i > 0; )
-	{
-		mObjects[--i].mObject->_Select(pos, ptr, radius);
-	}
+	//for (uint i = mObjects.GetSize(); i > 0; )
+	//{
+	//	mObjects[--i].mObject->_Select(pos, ptr, radius);
+	//}
 	return ptr;
 }
 
@@ -141,98 +176,7 @@ Object* Scene::Select (const Vector3f& pos)
 
 void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
 {
-	// Clear all visible objects and lights
-	mObjects.Clear();
-	mLights.Clear();
-
-	// Culling parameters for this run
-	Object::FillParams params (frustum, pos, dir, mObjects, mLights);
-
-	// Cull the entire scene, filling the arrays in the process
-	mRoot->_Fill(params);
-
-	// Remember the mask
-	mMask = params.mMask;
-
-	// Sort all objects by layer, group, and distance to the camera
-	mObjects.Sort();
-}
-
-//============================================================================================================
-// Draws all queues
-//============================================================================================================
-
-uint Scene::_Draw (const ITechnique* tech, bool insideOut)
-{
-	uint triangles (0);
-	IGraphics* graphics = mRoot->mCore->GetGraphics();
-
-	// Only proceed if there is something to render with
-	if (mObjects.IsValid() && tech != 0)
-	{
-		uint mask = tech->GetMask();
-
-		// Ensure that this technique is even used first
-		if ((mask & mMask) == 0) return triangles;
-
-		// Activate the rendering technique
-		graphics->SetActiveTechnique(tech, insideOut);
-
-		// Activate lights if the technique supports lighting
-		if (tech->GetLighting() != IGraphics::Lighting::None)
-		{
-			const ILight::List& lights = GetVisibleLights();
-			uint last = lights.GetSize();
-
-			for (uint i = 0; i < last; ++i)
-				graphics->SetActiveLight( i, lights[i].mLight );
-
-			for (uint i = last; i < 8; ++i)
-				graphics->SetActiveLight( i, 0 );
-		}
-
-		if (tech->GetSorting() == ITechnique::Sorting::BackToFront)
-		{
-			// Objects are automatically sorted front to back in order to minimize overdraw,
-			// but if we are here then we want to render them back-to-front instead. This is
-			// the best rendering method for transparent objects, but it has the most overdraw.
-			for (uint i = 0, imax = mObjects.GetSize(); i < imax; )
-			{
-				int layer = mObjects[i].mLayer;
-				uint last = i;
-
-				// Keep going until we stumble upon either the end or a different layer
-				while (++last < imax && mObjects[last].mLayer == layer);
-
-				// Run through all renderables on this layer, rendering them back to front
-				for (uint b = last; b > i; )
-				{
-					Object::Drawable& drawable = mObjects[--b];
-
-					// Ensure it can be drawn with this technique before continuing
-					if ((drawable.mMask & mask) != 0)
-					{
-						triangles += drawable.mObject->OnDraw(tech, insideOut);
-					}
-				}
-
-				// Continue from the next layer
-				i = last;
-			}
-		}
-		else
-		{
-			// Run through all objects, rendering them front-to-back
-			for (uint i = 0, imax = mObjects.GetSize(); i < imax; ++i)
-			{
-				Object::Drawable& drawable = mObjects[i];
-
-				if ((drawable.mMask & mask) != 0)
-				{
-					triangles += drawable.mObject->OnDraw(tech, insideOut);
-				}
-			}
-		}
-	}
-	return triangles;
+	mQueue.Clear();
+	mRoot->_Fill( Object::FillParams(mQueue, frustum, pos, dir) );
+	mQueue.Sort();
 }

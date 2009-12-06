@@ -68,7 +68,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "Time: 305"
+					Text = "Time: 306"
 					Shadow = true
 					Alignment = "Center"
 					Receives Events = false
@@ -777,10 +777,10 @@ Root
 
 			Window = "Texture Window"
 			{
-				Left = 1.000000 -1017.000000
-				Right = 1.000000 7.000000
-				Top = 0.000000 213.000000
-				Bottom = 0.000000 2261.000000
+				Left = 1.000000 -994.000000
+				Right = 1.000000 30.000000
+				Top = 0.000000 93.000000
+				Bottom = 0.000000 2141.000000
 				Alpha = 1.000000
 				Skin = "Default"
 				Titlebar Height = 0
@@ -829,7 +829,6 @@ Root
 		Model = "Teapot"
 		{
 			Source = "Models/Teapot.r5b"
-			Layer = 0
 
 			Limb = "Teapot"
 			{
@@ -841,7 +840,6 @@ Root
 		Model = "Plane"
 		{
 			Source = "Models/square.r5a"
-			Layer = 0
 
 			Limb = "Simple Rectangle"
 			{
@@ -858,6 +856,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.453398 0.187803 -0.333431 0.804975
 			Scale = 1.004070
+			Layer = 10
 			Ambient = 0.100000 0.100000 0.100000
 			Diffuse = 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000
@@ -868,6 +867,7 @@ Root
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
+				Layer = 10
 				Type = "Directional"
 				Color = 1.000000 1.000000 1.000000 1.000000
 				Magnification = 6.000000
@@ -881,6 +881,7 @@ Root
 			Position = 0.000000 0.000000 3.000000
 			Rotation = 0.137991 -0.238564 0.832144 -0.481229
 			Scale = 1.000000
+			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 25.000910 50.000000
 		}
@@ -890,6 +891,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.500000
+			Layer = 10
 			Model = "Teapot"
 		}
 
@@ -898,6 +900,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 50.000000
+			Layer = 10
 			Model = "Plane"
 		}
 	}

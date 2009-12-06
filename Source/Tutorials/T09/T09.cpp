@@ -160,7 +160,7 @@ void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
 	mGraphics->Clear();
-	mScene.Draw();
+	mScene.DrawAllForward();
 }
 
 //============================================================================================================

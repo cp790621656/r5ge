@@ -2,6 +2,26 @@
 using namespace R5;
 
 //============================================================================================================
+// Changes the default drawing layer that will be used by decals
+//============================================================================================================
+
+byte g_decalLayer = 5;
+
+void Decal::SetDefaultLayer (byte layer)
+{
+	g_decalLayer = layer & 31;
+}
+
+//============================================================================================================
+// Use the default decal layer by default
+//============================================================================================================
+
+Decal::Decal() : mShader(0), mColor(0xFFFFFFFF)
+{
+	mLayer = g_decalLayer;
+}
+
+//============================================================================================================
 // Global values needed by the shader
 //============================================================================================================
 
@@ -61,23 +81,8 @@ bool Decal::OnFill (FillParams& params)
 
 	if (mShader != 0)
 	{
-		// Add a new drawable entry
-		Drawable& obj = params.mObjects.Expand();
-		obj.mObject = this;
-		obj.mMask = myMask;
-
-		// Layer -2 is for terrains, '-1' is for decals.
-		obj.mLayer = -1;
-
-		// Group by the last texture. Shaders are more likely to be shared.
-		obj.mGroup = mTextures.IsValid() ? mTextures.Back() : 0;
-
-		// Distance is not used so that decals don't pop in and out of each other as the camera
-		// is moving. It's best if they stay in the same exact draw order for better or for worse.
-		obj.mDistSquared = 0.0f;
-
-		// Update the complete mask
-		params.mMask |= myMask;
+		const void* group = mTextures.IsValid() ? mTextures.Back() : 0;
+		params.mDrawQueue.Add(mLayer, this, myMask, group, 0.0f);
 	}
 	return true;
 }
@@ -134,17 +139,20 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 	// Distance from the center to the farthest corner of the box before it starts getting clipped
 	float range = mAbsoluteScale * 1.415f + graphics->GetCameraRange().x * 2.0f;
 
-	if ( mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) > range )
+	// Invert the depth testing and culling if the camera is inside the box
+	bool invert = mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) < range;
+
+	if (invert)
 	{
-		// If the camera is outside of the sphere, use normal culling and depth testing
-		graphics->SetCulling( IGraphics::Culling::Back );
-		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+		// If the camera is inside the sphere, switch to reverse culling and depth testing
+		graphics->SetCulling( insideOut ? IGraphics::Culling::Back : IGraphics::Culling::Front );
+		graphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
 	}
 	else
 	{
-		// If the camera is inside the sphere, switch to reverse culling and depth testing
-		graphics->SetCulling( IGraphics::Culling::Front );
-		graphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
+		// If the camera is outside of the sphere, use normal culling and depth testing
+		graphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
+		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 	}
 
 	// Disable all unused buffers, bind the position
@@ -159,7 +167,11 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 		vbo, 0, IGraphics::DataType::Float, 3, 12 );
 
 	// Draw the decal
-	return graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
+	graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
+
+	// Restore the depth function
+	if (invert) graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+	return 1;
 }
 
 //============================================================================================================

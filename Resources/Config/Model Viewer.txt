@@ -251,7 +251,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "428"
+					Text = "424"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -264,7 +264,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
+					Alpha = 0.347225
 					Color = 0.000000 0.000000 0.000000 1.000000
 					Receives Events = true
 					Layer = 0
@@ -278,7 +278,7 @@ Root
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
-						Text = "R5 Model Viewer v.1.3.6. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
+						Text = "Loaded 'Models/peasant.r5a'"
 						Shadow = true
 						Alignment = "Center"
 						Receives Events = false
@@ -296,7 +296,6 @@ Root
 		Model = "Default Model"
 		{
 			Source = "Models/peasant.r5a"
-			Layer = 0
 		}
 	}
 
@@ -305,16 +304,18 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.032215 0.184958 6.250441
-			Rotation = -0.045129 0.188449 -0.954071 0.228470
+			Rotation = -0.014623 0.110412 -0.985176 0.130478
 			Scale = 1.000000
+			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 17.725687 50.000000
+			Dolly = 0.000000 18.725775 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
+				Layer = 10
 				Ambient = 0.300000 0.300000 0.300000
 				Diffuse = 1.000000 1.000000 1.000000
 				Specular = 1.000000 1.000000 1.000000
@@ -327,12 +328,14 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Layer = 10
 
 			Model Instance = "Default Instance"
 			{
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
+				Layer = 10
 				Model = "Default Model"
 			}
 		}

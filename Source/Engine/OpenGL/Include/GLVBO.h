@@ -47,7 +47,8 @@ public:
 
 private:
 
+	friend class GLController;
+
 	static void Activate(uint id, uint type);
 	void _ActivateAs(uint type);
-	friend class GLController;
 };

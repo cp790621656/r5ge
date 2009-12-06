@@ -65,10 +65,10 @@ void TestApp::OnDraw()
 	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 
-	uint triangles = mScene.Draw();
+	mScene.DrawAllForward();
 
 	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
-	if (tri) tri->SetText( String("%u", triangles) );
+	if (tri) tri->SetText( String("%u", mGraphics->GetFrameStats().mTriangles) );
 
 	if (place != 0)
 	{

@@ -486,53 +486,6 @@ void GLController::SetSimpleMaterial (bool val)
 }
 
 //============================================================================================================
-// Changes the modelview matrix
-//============================================================================================================
-
-void GLController::SetCameraOrientation(const Vector3f& eye, const Vector3f& dir, const Vector3f& up)
-{
-	if ( mEye	!= eye	||
-		 mDir	!= dir	||
-		 mUp	!= up )
-	{
-		mEye	= eye;
-		mDir	= dir;
-		mUp	= up;
-		mViewIsDirty = true;
-	}
-}
-
-//============================================================================================================
-// Changes the far clipping plane
-//============================================================================================================
-
-void GLController::SetCameraRange (const Vector3f& range)
-{
-	// Ignore stupid values
-	if (range.y > 1.0f)
-	{
-		// Minimum allowed precision is 10000:1
-		Vector2f copy (range);
-		float minNear = copy.y * 0.0001f;
-		if (copy.x < minNear) copy.x = minNear;
-
-		if ( mClipRange != copy )
-		{
-			mClipRange = copy;
-			mProjIsDirty = true;
-		}
-	}
-
-	float deg = Float::Clamp(range.z, 1.0f, 180.0f);
-
-	if ( Float::IsNotZero(mFov - deg) )
-	{
-		mFov = deg;
-		mProjIsDirty = true;
-	}
-}
-
-//============================================================================================================
 // Retrieves (and updates if necessary) the view*projection matrix used for frustum culling
 //============================================================================================================
 
@@ -643,6 +596,53 @@ void GLController::ResetViewMatrix()
 }
 
 //============================================================================================================
+// Changes the modelview matrix
+//============================================================================================================
+
+void GLController::SetCameraOrientation(const Vector3f& eye, const Vector3f& dir, const Vector3f& up)
+{
+	if ( mEye	!= eye	||
+		mDir	!= dir	||
+		mUp	!= up )
+	{
+		mEye	= eye;
+		mDir	= dir;
+		mUp	= up;
+		mViewIsDirty = true;
+	}
+}
+
+//============================================================================================================
+// Changes the far clipping plane
+//============================================================================================================
+
+void GLController::SetCameraRange (const Vector3f& range)
+{
+	// Ignore stupid values
+	if (range.y > 1.0f)
+	{
+		// Minimum allowed precision is 10000:1
+		Vector2f copy (range);
+		float minNear = copy.y * 0.0001f;
+		if (copy.x < minNear) copy.x = minNear;
+
+		if ( mClipRange != copy )
+		{
+			mClipRange = copy;
+			mProjIsDirty = true;
+		}
+	}
+
+	float deg = Float::Clamp(range.z, 1.0f, 180.0f);
+
+	if ( Float::IsNotZero(mFov - deg) )
+	{
+		mFov = deg;
+		mProjIsDirty = true;
+	}
+}
+
+//============================================================================================================
 // Sets the active camera properties
 //============================================================================================================
 
@@ -729,6 +729,7 @@ void GLController::SetActiveTechnique (const ITechnique* ptr, bool insideOut)
 
 			// Invalidate any active material
 			mMaterial = (const IMaterial*)(-1);
+			++mStats.mTechSwitches;
 		}
 	}
 	mTechnique = ptr;
@@ -857,7 +858,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 // Activates this texture on Texture Unit 0, and disables all other texture units
 //============================================================================================================
 
-bool GLController::SetActiveMaterial ( const ITexture* ptr )
+bool GLController::SetActiveMaterial (const ITexture* ptr)
 {
 	static uint count = _CountImageUnits();
 
@@ -873,9 +874,9 @@ bool GLController::SetActiveMaterial ( const ITexture* ptr )
 // Changes the currently active shader
 //============================================================================================================
 
-uint GLController::SetActiveShader( const IShader* ptr, bool forceUpdateUniforms )
+uint GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms)
 {
-	uint retVal (0);
+	IShader::ActivationResult result;
 
 	// Which shader is currently active is kept inside the Shader.cpp file,
 	// so we don't check for inequality here.
@@ -883,8 +884,9 @@ uint GLController::SetActiveShader( const IShader* ptr, bool forceUpdateUniforms
 	{
 		mMaterial = (const IMaterial*)(-1);
 		mShader = ptr;
-		retVal = mShader->Activate(mActiveLightCount, forceUpdateUniforms);
+		result = mShader->Activate(mActiveLightCount, forceUpdateUniforms);
 		CHECK_GL_ERROR;
+		if (!result.mReused) ++mStats.mShaderSwitches;
 	}
 	else if (mShader != 0)
 	{
@@ -892,7 +894,7 @@ uint GLController::SetActiveShader( const IShader* ptr, bool forceUpdateUniforms
 		mShader = 0;
 		mMaterial = (const IMaterial*)(-1);
 	}
-	return retVal;
+	return result.mCount;
 }
 
 //============================================================================================================
@@ -935,8 +937,14 @@ void GLController::SetActiveProjection (uint projection)
 
 void GLController::SetActiveVBO (const IVBO* ptr, uint type)
 {
-	if (ptr != 0) GLVBO::Activate( ptr->GetID(), ptr->GetType() );
-	else		  GLVBO::Activate( 0, type );
+	if (ptr != 0)
+	{
+		GLVBO::Activate( ptr->GetID(), ptr->GetType() );
+	}
+	else
+	{
+		GLVBO::Activate(0, type);
+	}
 }
 
 //============================================================================================================
@@ -986,6 +994,7 @@ void GLController::SetActiveTexture ( uint textureUnit, const ITexture* tex )
 						glEnable( glType );
 						glBindTexture( tu.mType, tex->GetTextureID() );
 						CHECK_GL_ERROR;
+						++mStats.mTexSwitches;
 					}
 				}
 				else if ( textureUnit < 8 )
@@ -1007,6 +1016,7 @@ void GLController::SetActiveTexture ( uint textureUnit, const ITexture* tex )
 				tu.mTex = tex;
 				glBindTexture( tu.mType, tex->GetTextureID() );
 				CHECK_GL_ERROR;
+				++mStats.mTexSwitches;
 			}
 		}
 	}
@@ -1099,6 +1109,8 @@ void GLController::SetActiveLight ( uint index, const ILight* ptr )
 			glLightfv(index, GL_AMBIENT,  ptr->GetAmbient());
 			glLightfv(index, GL_DIFFUSE,  ptr->GetDiffuse());
 			glLightfv(index, GL_SPECULAR, ptr->GetSpecular());
+
+			++mStats.mLightSwitches;
 		}
 	}
 	CHECK_GL_ERROR;
@@ -1159,12 +1171,13 @@ void GLController::SetActiveStencilOperation (uint testFail, uint depthFail, uin
 // are used instead of attribute arrays whenever possible.
 //============================================================================================================
 
-void GLController::SetActiveVertexAttribute( uint	attribute,
-										 const IVBO*	vbo,
-										 const void*	ptr,
-										 uint	dataType,
-										 uint	elements,
-										 uint	stride )
+void GLController::SetActiveVertexAttribute(
+	uint		attribute,
+	const IVBO*	vbo,
+	const void*	ptr,
+	uint		dataType,
+	uint		elements,
+	uint		stride )
 {
 	ASSERT(attribute < 16, "Invalid attribute");
 	BufferEntry& buffer = mBuffers[attribute];
@@ -1196,14 +1209,14 @@ void GLController::SetActiveVertexAttribute( uint	attribute,
 		}
 		else
 		{
-			changed = (buffer.mVbo != vbo) ||
-					  (buffer.mPtr	!= ptr);
+			changed = (buffer.mVbo != vbo) || (buffer.mPtr != ptr);
 		}
 
-		if ( changed )
+		if (changed)
 		{
 			buffer.mEnabled = true;
 			SetActiveVBO( buffer.mVbo = vbo, IVBO::Type::Vertex );
+			++mStats.mBufferBinds;
 
 			switch (attribute)
 			{
@@ -1241,7 +1254,7 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 	uint glPrimitive(0), triangleCount(0);
 	GetGLPrimitive(primitive, vertexCount, glPrimitive, triangleCount);
 
-	if ( triangleCount > 0 )
+	if (triangleCount > 0)
 	{
 #if (defined(_DEBUG) && defined(_WINDOWS))
 		try { glDrawArrays( glPrimitive, 0, vertexCount ); }
@@ -1250,6 +1263,8 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 #else
 		glDrawArrays( glPrimitive, 0, vertexCount );
 #endif
+		mStats.mTriangles += triangleCount;
+		++mStats.mDrawCalls;
 	}
 	return triangleCount;
 }
@@ -1263,7 +1278,7 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 	uint glPrimitive(0), triangleCount(0);
 	GetGLPrimitive(primitive, indexCount, glPrimitive, triangleCount);
 
-	if ( triangleCount > 0 )
+	if (triangleCount > 0)
 	{
 #ifdef _DEBUG
 		if (vbo)
@@ -1283,6 +1298,8 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 #else
 		glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr );
 #endif
+		mStats.mTriangles += triangleCount;
+		++mStats.mDrawCalls;
 	}
 	return triangleCount;
 }

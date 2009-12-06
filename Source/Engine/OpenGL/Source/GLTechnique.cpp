@@ -8,7 +8,6 @@ using namespace R5;
 
 GLTechnique::GLTechnique (const String& name) :
 		mName			(name),
-		mMask			(0),
 		mFog			(true),
 		mDepthWrite		(true),
 		mDepthTest		(true),
@@ -22,11 +21,12 @@ GLTechnique::GLTechnique (const String& name) :
 		mSerializable	(false)
 {
 	static uint counter = 0;
-	mMask = 1 << counter++;
+	mIndex = counter++;
 
 	if (counter > 32)
 	{
-		WARNING("Number of techniques exceeded implementation limits! (32)");
+		mIndex = 0;
+		WARNING("Number of unique techniques exceeded implementation limits! (32)");
 	}
 }
 

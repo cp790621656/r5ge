@@ -9,7 +9,6 @@
 // Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, Render
 //============================================================================================================
 
-#include "../../Engine/Render/Include/_All.h"
 #include "../../Engine/OpenGL/Include/_All.h"
 #include "../../Engine/Core/Include/_All.h"
 using namespace R5;
@@ -108,33 +107,14 @@ void TestApp::OnDraw()
 	// Cull the scene like before, building the lists of visible objects and lights
 	mScene.Cull(mCam);
 
-	// Deferred shading will need to know about all active lights in the scene (although we only have 1)
-	const Scene::Lights& lights = mScene.GetVisibleLights();
+	// Draw our scene using all default deferred rendering techniques, which includes our "Deferred"
+	// technique used by the model. As a bonus we can also add a bloom post-processing effect.
+	mScene.DrawAllDeferred(false, true);
 
-	// Draw the scene using the deferred approach. This function (part of the Draw library) does
-	// a fair bit behind the scenes. In addition to all the setup and the actual deferred rendering
-	// process it saves the final result into textures you can use for post-processing effects. This
-	// is why the return type is not the 'uint' you've seen in the previous tutorials, but a struct
-	// that also contains the color, depth and the eye-space normal textures.
-
-	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene));
-
-	// After the deferred draw function is done the result is stored in 3 off-screen textures.
-	// This might need more explanation. Up to this point we haven't changed the default render target, so
-	// it remained being the screen. Deferred rendering changes the target in order to draw into off-screen
-	// textures. You can always set your own render target via IGraphics::SetActiveRenderTarget() function.
-	// if you specify '0' all following calls will go straight to the screen. But in any case, since
-	// the deferred drawing render target is still active after the function call above, this would be
-	// the perfect place to add some lens flares, transparent objects and particles that should go on top
-	// of solid, lit objects. For simplicity's sake though, let's just draw the result of the deferred
-	// drawing operation to the screen.
-
-	// We can use the PostProcess namespace functionality to do just that (PostProcess::None), or
-	// we can take advantage of the HDR skybox we've loaded in the previous tutorial with brightness
-	// values exceeding 1 and actually add some HDR bloom. The call to do so is simple. Feel free to
-	// explore the PostProcess namespace for additional effects or even add your own.
-
-	PostProcess::Bloom(mGraphics, result.mColor, 1.0f);
+	// Note that the function above is a convenience function, just like 'DrawAllForward' function we used
+	// before. As such, its functionality, while perfect for small demos, can also be limiting. You are
+	// more than welcome to take a look at what's happening inside it and bypass it altogether if desired.
+	// In doing so you can also add additional post-processing effects, such as depth-of-field.
 }
 
 //============================================================================================================

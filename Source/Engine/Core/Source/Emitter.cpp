@@ -123,15 +123,8 @@ bool Emitter::OnFill (FillParams& params)
 	{
 		// If no special technique was specified, assume the default value
 		if (mTech == 0) mTech = mCore->GetGraphics()->GetTechnique("Particle", true);
-
-		Drawable& obj		= params.mObjects.Expand();
-		obj.mObject			= this;
-		obj.mMask			= mTech->GetMask();
-		obj.mLayer			= 0;
-		obj.mGroup			= 0;
-		obj.mDistSquared	= (params.mCamPos - mAbsoluteBounds.GetCenter()).Dot();
-
-		params.mMask |= obj.mMask;
+		float dist = (params.mCamPos - mAbsoluteBounds.GetCenter()).Dot();
+		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), 0, dist);
 	}
 	return true;
 }
@@ -236,7 +229,7 @@ uint Emitter::OnDraw (const ITechnique* tech, bool insideOut)
 		}
 	}
 
-	if ( mPositions.IsValid() )
+	if (mPositions.IsValid())
 	{
 		// Set up initial drawing states
 		graphics->ResetViewMatrix();
@@ -265,7 +258,8 @@ uint Emitter::OnDraw (const ITechnique* tech, bool insideOut)
 			&mPositions[0], IGraphics::DataType::Float, 3, sizeof(Vector3f) );
 
 		// Draw the particles
-		return graphics->DrawVertices (IGraphics::Primitive::Quad, mPositions.GetSize());
+		graphics->DrawVertices (IGraphics::Primitive::Quad, mPositions.GetSize());
+		return 1;
 	}
 	return 0;
 }

@@ -31,6 +31,15 @@ struct IShader
 		};
 	};
 
+	// Struct returned by Activate()
+	struct ActivationResult
+	{
+		uint mCount;	// How many lights the shader was activated for
+		bool mReused;	// Whether the shader was reused or newly activated
+
+		ActivationResult() : mCount(-1), mReused(true) {}
+	};
+
 	// Function used to set the uniform variable's data when activating the shader
 	typedef FastDelegate<void (const String& name, Uniform& data)>	SetUniformDelegate;
 
@@ -60,8 +69,7 @@ public:
 public: // The following functions are meant to be called only from the graphics thread
 
 	// Activates the shader compiled for the specified number of lights
-	// (Returns how many lights it was actually activated for)
-	virtual uint Activate (uint activeLightCount, bool forceUpdateUniforms = false) const=0;
+	virtual ActivationResult Activate (uint activeLightCount, bool forceUpdateUniforms = false) const=0;
 
 	// Deactivates the active shader
 	virtual void Deactivate() const=0;

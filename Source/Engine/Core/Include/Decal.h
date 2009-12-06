@@ -9,9 +9,6 @@
 
 class Decal : public Object
 {
-public:
-
-
 protected:
 
 	Matrix43	mMatrix;
@@ -20,13 +17,15 @@ protected:
 
 	Array<const ITexture*> mTextures;
 
-	// Decal objects should be drawn right after the terrain and before everything else
-	Decal() : mShader(0), mColor(0xFFFFFFFF) {}
+	Decal();
 
 public:
 
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Decal", Decal, Object, Object);
+
+	// Changes the default drawing layer that will be used by decals
+	static void SetDefaultLayer(byte layer);
 
 	const IShader*	GetShader()	const { return mShader;	}
 	const Color4ub&	GetColor()	const { return mColor;	}

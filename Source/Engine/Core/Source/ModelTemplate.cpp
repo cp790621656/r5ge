@@ -121,6 +121,37 @@ void ModelTemplate::GetRegisteredCodecs (Array<String>& list)
 }
 
 //============================================================================================================
+// Updates the technique mask and the bounding volume
+//============================================================================================================
+
+void ModelTemplate::_Update()
+{
+	mIsDirty = false;
+	mMask = 0;
+	mBounds.Reset();
+
+	if (mLimbs.IsValid())
+	{
+		Lock();
+		{
+			for (uint i = mLimbs.GetSize(); i > 0; )
+			{
+				const Limb* limb = mLimbs[--i];
+				const Mesh* mesh = limb->GetMesh();
+				const IMaterial* mat = limb->GetMaterial();
+
+				if (mesh != 0 && mat != 0)
+				{
+					mBounds.Include(mesh->GetBounds());
+					mMask |= mat->GetTechniqueMask();
+				}
+			}
+		}
+		Unlock();
+	}
+}
+
+//============================================================================================================
 // Constructor registers the default codecs
 //============================================================================================================
 
@@ -128,9 +159,9 @@ ModelTemplate::ModelTemplate (const String& name) :
 	mName			(name),
 	mTemplate		(0),
 	mSkeleton		(0),
-	mSerializable	(false),
 	mCore			(0),
-	mLayer			(0)
+	mSerializable	(false),
+	mIsDirty		(false)
 {
 	static bool doOnce = true;
 	
@@ -158,6 +189,7 @@ void ModelTemplate::SetSource (ModelTemplate* temp, bool forceUpdate)
 
 			mSkeleton = 0;
 			mTemplate = temp;
+			mIsDirty = true;
 
 			// If we were given a valid template, we need to copy limb information over
 			if ( mSerializable = (mTemplate != 0) )
@@ -183,7 +215,6 @@ void ModelTemplate::SetSource (ModelTemplate* temp, bool forceUpdate)
 					// Copy over other parameters
 					mSkeleton	= temp->GetSkeleton();
 					mFilename	= temp->GetFilename();
-					mLayer		= temp->GetLayer();
 
 					// Update the skeletal information
 					_OnSkeletonChanged();
@@ -252,7 +283,8 @@ void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 
 		mSkeleton	= 0;
 		mTemplate	= 0;
-		mLayer		= 0;
+		mIsDirty	= false;
+		mBounds.Reset();
 	}
 	Unlock();
 }
@@ -282,10 +314,6 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 			ModelTemplate* temp = mCore->GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
 			SetSource( temp, forceUpdate );
 		}
-		else if ( tag == "Layer" )
-		{
-			value >> mLayer;
-		}
 	}
 	return true;
 }
@@ -312,9 +340,6 @@ void ModelTemplate::SerializeTo	 (TreeNode& root) const
 			node.AddChild("Source", mFilename);
 		}
 
-		// Add the drawing layer the template belongs to
-		node.AddChild("Layer", mLayer);
-
 		// Save the limbs
 		_SaveLimbs(node, false);
 	}
@@ -324,7 +349,7 @@ void ModelTemplate::SerializeTo	 (TreeNode& root) const
 // Loads a single limb
 //============================================================================================================
 
-bool ModelTemplate::_LoadLimb ( const TreeNode& root, bool forceUpdate )
+bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 	if (graphics == 0) return false;
@@ -382,12 +407,14 @@ bool ModelTemplate::_LoadLimb ( const TreeNode& root, bool forceUpdate )
 				// Update the limb's name, mesh, and material
 				limb->SetName(name);
 				limb->Set(mesh, mat);
+				mIsDirty = true;
 			}
 			else if (forceUpdate)
 			{
 				// Update the limb's name, mesh, and material
 				limb->SetName(name);
 				limb->Set(mesh, mat);
+				mIsDirty = true;
 			}
 		}
 		Unlock();
@@ -399,7 +426,7 @@ bool ModelTemplate::_LoadLimb ( const TreeNode& root, bool forceUpdate )
 // Save all current limbs
 //============================================================================================================
 
-void ModelTemplate::_SaveLimbs ( TreeNode& node, bool forceSave ) const
+void ModelTemplate::_SaveLimbs (TreeNode& node, bool forceSave) const
 {
 	Lock();
 	{

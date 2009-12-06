@@ -104,7 +104,7 @@ bool PointLight::OnFill (FillParams& params)
 
 	if ( mParams.IsVisible() && range > 0.0001f )
 	{
-		params.mLights.Expand() = &mParams;
+		params.mDrawQueue.Add(&mParams);
 	}
 	return true;
 }

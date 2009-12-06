@@ -13,6 +13,7 @@ class Object
 	friend class Script;	// Script needs access to 'mScripts' so it can remove itself
 	friend class Scene;		// Scene needs to be able to use 'mCore'
 	friend class Core;		// Core needs to be able to set 'mCore'
+	friend struct DrawList;	// DrawList needs access to 'OnDraw'
 
 public:
 
@@ -31,49 +32,22 @@ public:
 		};
 	};
 
-	// Drawable object entry -- used to gather a list of drawable objects when culling the scene
-	struct Drawable
-	{
-		Object*		mObject;		// Pointer to the object that will be rendered
-		uint		mMask;			// Technique mask that can be used to quickly eliminate objects
-		int			mLayer;			// Object's layer -- lower layers are drawn first
-		const void*	mGroup;			// Allow grouping of similar objects in order to avoid state switches
-		float		mDistSquared;	// Squared distance to the camera, used to sort objects
-
-		// Comparison operator for sorting -- groups objects by layer, pointer, and lastly -- distance
-		bool operator < (const Drawable& obj) const
-		{
-			if (mLayer < obj.mLayer) return true;
-			if (mLayer > obj.mLayer) return false;
-			if (mGroup < obj.mGroup) return true;
-			if (mGroup > obj.mGroup) return false;
-			return (mDistSquared < obj.mDistSquared);
-		}
-	};
-
 	// Types used by this class
 	typedef Object*					ObjectPtr;
-	typedef Array<Drawable>			Drawables;
 	typedef PointerArray<Object>	Children;
 	typedef PointerArray<Script>	Scripts;
 	typedef Thread::Lockable		Lockable;
 
-	// Culling parameters passed from one object to the next during the culling stage
+	// Needed parameters passed from one object to the next during the culling stage
 	struct FillParams
 	{
-		const Frustum&	 mFrustum;	// Frustum used to cull the scene
-		const Vector3f&	 mCamPos;	// Current camera position, used to sort objects
-		const Vector3f&	 mCamDir;	// Current camera direction
+		DrawQueue&		 mDrawQueue;	// Draw queue
+		const Frustum&	 mFrustum;		// Frustum used to cull the scene
+		const Vector3f&	 mCamPos;		// Current camera position, used to sort objects
+		const Vector3f&	 mCamDir;		// Current camera direction
 
-		Drawables&		 mObjects;	// Sorted list of visible objects
-		ILight::List&	 mLights;	// List of visible lights
-		uint			 mMask;		// Final culling mask
-
-		FillParams (const Frustum& f, const Vector3f& pos, const Vector3f& dir, Drawables& o, ILight::List& l)
-			: mFrustum(f), mCamPos(pos), mCamDir(dir), mObjects(o), mLights(l), mMask(0) {}
-
-		// Can be used to see if the lists get any new additions
-		uint GetArraySize() const { return mObjects.GetSize() + mLights.GetSize(); }
+		FillParams (DrawQueue& q, const Frustum& f, const Vector3f& pos, const Vector3f& dir)
+			: mDrawQueue(q), mFrustum(f), mCamPos(pos), mCamDir(dir) {}
 	};
 
 protected:
@@ -82,6 +56,8 @@ protected:
 	Flags		mFlags;				// Internal flags associated with this object
 	Object*		mParent;			// Object's parent
 	Core*		mCore;				// Engine's core that the object was created with
+	byte		mLayer;				// Draw layer on which this object resides
+
 	Vector3f	mRelativePos;		// Local space position
 	Quaternion	mRelativeRot;		// Local space rotation
 	float		mRelativeScale;		// Local space scale
@@ -175,6 +151,7 @@ public:
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}
 	const Object*		GetParent()				const	{ return mParent;			}
+	byte				GetLayer()				const	{ return mLayer;			}
 	const Flags&		GetFlags()				const	{ return mFlags;			}
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
 	bool				IsSerializable()		const	{ return mSerializable;		}
@@ -211,6 +188,9 @@ public:
 	// It's possible to switch object's parents
 	void SetParent (Object* ptr);
 
+	// Changes this object's draw layer
+	void SetLayer (byte layer) { mLayer = (byte)(layer & 31); }
+
 	// Whether the object will be saved out
 	void SetSerializable (bool val) { mSerializable = val; }
 
@@ -228,9 +208,6 @@ public:
 	void OverrideAbsolutePosition (const Vector3f&   pos)	{ mAbsolutePos	 = pos;		}
 	void OverrideAbsoluteRotation (const Quaternion& rot)	{ mAbsoluteRot	 = rot;		}
 	void OverrideAbsoluteScale	  (float scale)				{ mAbsoluteScale = scale;	}
-
-	// Force-draws this object, bypassing all culling logic
-	uint Draw (const ITechnique* tech, bool insideOut = false);
 
 public:
 

@@ -494,39 +494,40 @@ uint Mesh::GetNumberOfTriangles() const
 
 bool Mesh::ApplyTransforms (const Array<Matrix43>& transforms, uint instances)
 {
-	if (mV.IsEmpty() || mFormat.mTransSize == 0) return false;
-
-	uint maxWeights = GetNumberOfWeights();
-
-	if (maxWeights > 0)
+	if (mV.IsValid() && mFormat.mTransSize != 0)
 	{
-		Lock();
+		uint maxWeights = GetNumberOfWeights();
+
+		if (maxWeights > 0)
 		{
-			// If the model is referenced only once, we don't need to cache the result in a VBO.
-			// However if the VBO has already been created, we might as well reuse it.
-			if ( g_skinToVBO && (mGraphics != 0) && (mTbo != 0 || instances > 1) )
+			Lock();
 			{
-				// Try to transform directly into the VBO
-				if ( _TransformToVBO(transforms) )
+				// If the model is referenced only once, we don't need to cache the result in a VBO.
+				// However if the VBO has already been created, we might as well reuse it.
+				if ( g_skinToVBO && (mGraphics != 0) && (mTbo != 0 || instances > 1) )
 				{
-					// From here on all transforms will be using VBOs, so let's release the VAs
-					mTv.Release();
-					mTn.Release();
-					mTt.Release();
+					// Try to transform directly into the VBO
+					if ( _TransformToVBO(transforms) )
+					{
+						// From here on all transforms will be using VBOs, so let's release the VAs
+						mTv.Release();
+						mTn.Release();
+						mTt.Release();
+					}
+					else
+					{
+						// If fails, revert to Vertex Arrays
+						_TransformToVAs(transforms);
+					}
 				}
 				else
 				{
-					// If fails, revert to Vertex Arrays
+					// If there is only one instance, it's faster to use Vertex Arrays
 					_TransformToVAs(transforms);
 				}
 			}
-			else
-			{
-				// If there is only one instance, it's faster to use Vertex Arrays
-				_TransformToVAs(transforms);
-			}
+			Unlock();
 		}
-		Unlock();
 	}
 	return false;
 }
@@ -931,8 +932,7 @@ uint Mesh::GetNumberOfVertices() const
 
 uint Mesh::Draw (IGraphics* graphics)
 {
-	if (graphics == 0) return 0;
-	uint triangleCount(0);
+	uint result(0);
 
 	Lock();
 	{
@@ -1191,18 +1191,18 @@ uint Mesh::Draw (IGraphics* graphics)
 				if (mIbo != 0)
 				{
 					// Indices are in the VBO
-					triangleCount += graphics->DrawIndices( mIbo, mPrimitive, mIboSize );
+					result += graphics->DrawIndices( mIbo, mPrimitive, mIboSize );
 				}
 				else
 				{
 					// No VBO support
-					triangleCount += graphics->DrawIndices( mIndices, mPrimitive, mIndices.GetSize() );
+					result += graphics->DrawIndices( mIndices, mPrimitive, mIndices.GetSize() );
 				}
 			}
 		}
 	}
 	Unlock();
-	return triangleCount;
+	return result;
 }
 
 //============================================================================================================

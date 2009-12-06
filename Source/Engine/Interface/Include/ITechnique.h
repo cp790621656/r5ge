@@ -53,11 +53,24 @@ struct ITechnique
 		};
 	};
 
+protected:
+
+	// Each newly created technique should increment this value by 1. As such, there should be
+	// no more than 32 techniques total as this value is used to create a bit mask that's used
+	// for quick elimination. This value is out here rather than in the derived class because
+	// index and mask retrieval functions must remain identical in all implementations.
+
+	uint mIndex;
+
+public:
+
+	ITechnique() : mIndex(0) {}
 	virtual ~ITechnique() {}
 
-	virtual const String&	GetName() const=0;
-	virtual uint			GetMask() const=0;
+	inline uint GetIndex() const { return mIndex; }
+	inline uint GetMask() const { return (1 << mIndex); }
 
+	virtual const String& GetName() const=0;
 	virtual bool GetFog()			const=0;
 	virtual bool GetDepthWrite()	const=0;
 	virtual bool GetDepthTest()		const=0;

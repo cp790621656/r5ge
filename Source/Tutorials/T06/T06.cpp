@@ -154,7 +154,7 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mScene.Draw();
+	mScene.DrawAllForward();
 }
 
 //============================================================================================================

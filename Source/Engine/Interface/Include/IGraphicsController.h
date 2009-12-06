@@ -87,6 +87,30 @@ struct IGraphicsController
 		};
 	};
 
+	struct FrameStats
+	{
+		uint mTriangles;
+		uint mDrawCalls;
+		uint mTexSwitches;
+		uint mBufferBinds;
+		uint mShaderSwitches;
+		uint mLightSwitches;
+		uint mTechSwitches;
+
+		FrameStats() { Clear(); }
+
+		void Clear()
+		{
+			mTriangles		= 0;
+			mDrawCalls		= 0;
+			mTexSwitches	= 0;
+			mBufferBinds	= 0;
+			mShaderSwitches	= 0;
+			mLightSwitches	= 0;
+			mTechSwitches	= 0;
+		}
+	};
+
 public:
 
 	// Should finish all drawing operations
@@ -112,11 +136,8 @@ public:
 	virtual void SetBackgroundColor	(const Color4f& color )=0;
 	virtual void SetDefaultAF		(uint level)=0;
 
-	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
-	virtual void SetCameraOrientation	( const Vector3f& eye, const Vector3f& dir, const Vector3f& up )=0;
-	virtual void SetCameraRange			( const Vector3f& range )=0;
-
-	// State retrieval
+	// Statistics about the current frame
+	virtual const FrameStats&	GetFrameStats()			const=0;
 	virtual bool				GetFog()				const=0;
 	virtual bool				GetDepthWrite()			const=0;
 	virtual bool				GetDepthTest()			const=0;
@@ -161,6 +182,10 @@ public:
 	// View matrix manipulation
 	virtual void SetViewMatrix( const Matrix43& mat )=0;
 	virtual void ResetViewMatrix()=0;
+
+	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
+	virtual void SetCameraOrientation	( const Vector3f& eye, const Vector3f& dir, const Vector3f& up )=0;
+	virtual void SetCameraRange			( const Vector3f& range )=0;
 
 	// Active state control
 	virtual void SetActiveRenderTarget		( const IRenderTarget* tar )=0;

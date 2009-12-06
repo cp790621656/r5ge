@@ -48,11 +48,11 @@ public:
 	ModelViewer();
 	~ModelViewer();
 
-	const char* GetVersion() const { return "1.3.6"; }
+	const char* GetVersion() const { return "1.3.7"; }
 
 	void  Run();
 	void  OnDraw();
-	uint  OnDeferredDraw(const ITechnique* tech, bool insideOut);
+	uint  OnDeferredDraw(const Deferred::TechniqueList& techs, bool insideOut);
 	float UpdateFPS();
 	void  SetStatusText (const String& text, const Color3f& color = Color3f(1.0f));
 

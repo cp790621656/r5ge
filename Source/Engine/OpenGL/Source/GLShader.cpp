@@ -558,9 +558,10 @@ void GLShader::Release()
 // Activates the shader compiled for the specified number of lights
 //============================================================================================================
 
-uint GLShader::_Activate (uint activeLightCount, bool updateUniforms)
+IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updateUniforms)
 {
 	CHECK_GL_ERROR;
+	ActivationResult result;
 
 	// Release the shaders if necessary
 	if (mIsDirty)
@@ -599,6 +600,7 @@ uint GLShader::_Activate (uint activeLightCount, bool updateUniforms)
 		// If the program hasn't been compiled, do it now
 		if (program.mStatus == ShaderEntry::CompileStatus::Unknown && program.mGlID == 0)
 		{
+			result.mReused = false;
 			int success (0);
 
 #ifdef _DEBUG
@@ -743,6 +745,7 @@ uint GLShader::_Activate (uint activeLightCount, bool updateUniforms)
 			// Use the program if it hasn't been used already
 			if (g_activeProgram != program.mGlID)
 			{
+				result.mReused = false;
 				updateUniforms = true;
 				glUseProgram( g_activeProgram = program.mGlID );
 				CHECK_GL_ERROR;
@@ -772,7 +775,8 @@ uint GLShader::_Activate (uint activeLightCount, bool updateUniforms)
 				}
 			}
 			// Success -- exit the function
-			return i;
+			result.mCount = i;
+			return result;
 		}
 
 		// If the end of entries has been reached, break out
@@ -785,7 +789,7 @@ uint GLShader::_Activate (uint activeLightCount, bool updateUniforms)
 		glUseProgram(g_activeProgram = 0);
 		g_activeLightCount = 0;
 	}
-	return -1;
+	return result;
 }
 
 //============================================================================================================
@@ -813,10 +817,10 @@ void GLShader::SetCustomFlag (uint index, bool value)
 // Safely activates the shader
 //============================================================================================================
 
-uint GLShader::Activate (uint activeLightCount, bool forceUpdateUniforms) const
+IShader::ActivationResult GLShader::Activate (uint activeLightCount, bool forceUpdateUniforms) const
 {
 	mLock.Lock();
-	uint retVal = (const_cast<GLShader*>(this))->_Activate(activeLightCount, forceUpdateUniforms);
+	ActivationResult retVal = (const_cast<GLShader*>(this))->_Activate(activeLightCount, forceUpdateUniforms);
 	mLock.Unlock();
 	return retVal;
 }

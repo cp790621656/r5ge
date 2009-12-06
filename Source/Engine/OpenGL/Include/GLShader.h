@@ -92,7 +92,7 @@ private:
 	void _InternalRelease (bool clearUniforms);
 
 	// INTERNAL: Non thread-safe version of Activate()
-	uint _Activate (uint activeLighCount, bool updateUniforms);
+	ActivationResult _Activate (uint activeLighCount, bool updateUniforms);
 	
 public:
 
@@ -112,8 +112,7 @@ public:
 public: // The following functions are meant to be called only from the graphics thread
 
 	// Activates the shader compiled for the specified number of lights
-	// (Returns how many lights it was actually activated for)
-	virtual uint Activate (uint activeLightCount, bool forceUpdateUniforms = false) const;
+	virtual ActivationResult Activate (uint activeLightCount, bool forceUpdateUniforms = false) const;
 
 	// Deactivates the active shader
 	virtual void Deactivate() const;

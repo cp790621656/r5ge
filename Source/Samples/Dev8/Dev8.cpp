@@ -6,7 +6,6 @@
 //============================================================================================================
 
 #include "../../Engine/OpenGL/Include/_All.h"
-#include "../../Engine/Render/Include/_All.h"
 #include "../../Engine/Core/Include/_All.h"
 #include "../../Engine/UI/Include/_All.h"
 using namespace R5;
@@ -117,14 +116,7 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	const Scene::Lights& lights = mScene.GetVisibleLights();
-
-	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights,
-		bind(&Scene::Draw, &mScene),
-		bind(&Scene::Draw, &mScene),
-		SSAO::Low);
-
-	PostProcess::None(mGraphics, result.mColor);
+	mScene.DrawAllDeferred(true, false);
 
 	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );

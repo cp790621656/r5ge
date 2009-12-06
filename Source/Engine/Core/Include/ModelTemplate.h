@@ -38,9 +38,16 @@ protected:
 	ModelTemplate*		mTemplate;		// Model templates can be based on other templates
 	Skeleton*			mSkeleton;		// Skeleton used by this model
 	Thread::Lockable	mLock;			// Thread-safety lock
-	bool				mSerializable;	// Whether this template is serializable
 	Core*				mCore;			// Pointer back to the core that contains this template
-	int					mLayer;			// Drawing layer on which this model resides
+	bool				mSerializable;	// Whether this template is serializable
+	bool				mIsDirty;		// Whether the bounds of the model need to be recalculated
+	Bounds				mBounds;		// Calculated local bounding volume
+	uint				mMask;			// Calculated combined technique mask
+
+private:
+
+	// Updates the technique mask and the bounding volume
+	void _Update();
 
 public:
 
@@ -53,14 +60,19 @@ public:
 	void Lock()		const { mLock.Lock();	}
 	void Unlock()	const { mLock.Unlock(); }
 
+	// These functions may need to recalculate the values if something has changed
+	const Bounds&	GetBounds()		{ if (mIsDirty) _Update(); return mBounds;		}
+	uint			GetMask()		{ if (mIsDirty) _Update(); return mMask;		}
+
+	// Standard retrieval functions
 	bool					IsValid()			const	{ return mLimbs.IsValid();	}
 	bool					IsSerializable()	const	{ return mSerializable;		}
+	bool					IsDirty()			const	{ return mIsDirty;			}
 	const String&			GetName()			const	{ return mName;				}
 	const String&			GetFilename()		const	{ return mFilename;			}
 	const Limbs&			GetAllLimbs()		const	{ return mLimbs;			}
 	const ModelTemplate*	GetSource()			const	{ return mTemplate;			}
 	const Skeleton*			GetSkeleton()		const	{ return mSkeleton;			}
-	int						GetLayer()			const	{ return mLayer;			}
 	Limbs&					GetAllLimbs()				{ return mLimbs;			}
 	ModelTemplate*			GetSource()					{ return mTemplate;			}
 	Skeleton*				GetSkeleton()				{ return mSkeleton;			}
@@ -71,7 +83,7 @@ public:
 	void SetSkeleton	 (Skeleton* skel);
 	void SetSkeleton	 (const String& name);
 	void SetSerializable (bool val)						{ mSerializable = val;		}
-	void SetLayer		 (int layer)					{ mLayer = layer;			}
+	void SetDirty()										{ mIsDirty		= true;		}
 
 	// Limb retrieval
 	Limb* GetLimb (const String& name, bool createIfMissing = true)

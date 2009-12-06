@@ -58,27 +58,26 @@ void TestApp::OnDraw()
 
 	mScene.Cull(mCam);
 
-	uint triangles (0);
+	Array<const ITechnique*> techs;
 
 	if (g_ssao > 0)
 	{
-		const Scene::Lights& lights = mScene.GetVisibleLights();
-		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, bind(&Scene::Draw, &mScene),
-			0, ((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
+		techs.Expand() = deferred;
+		const ILight::List& lights = mScene.GetVisibleLights();
+		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, techs,
+			bind(&Scene::Draw, &mScene), ((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
 
 		PostProcess::None(mGraphics, result.mColor);
-		triangles = result.mTriangles;
 	}
 	else
 	{
+		techs.Expand() = opaque;
 		mGraphics->SetActiveRenderTarget(0);
 		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 		mGraphics->Clear();
-	
-		triangles += mScene.Draw(opaque);
 	}
 
-	if (tri) tri->SetText( String("TRI: %u", triangles) );
+	if (tri) tri->SetText( String("TRI: %u", mGraphics->GetFrameStats().mTriangles) );
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );
 	if (inf) inf->SetText( String(g_ssao == 0 ? "No SSAO (S)" : (g_ssao == 1 ?
 		"SSAO: Low Quality (S)" : "SSAO: High Quality (S)")) );
