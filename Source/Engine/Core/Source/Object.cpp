@@ -60,10 +60,12 @@ void RegisterDefaultObjects()
 	RegisterObject<ModelInstance>();
 	RegisterObject<DirectionalLight>();
 	RegisterObject<PointLight>();
-	RegisterObject<Glow>();
 	RegisterObject<Terrain>();
 	RegisterObject<Decal>();
 	RegisterObject<Billboard>();
+	RegisterObject<Glare>();
+	RegisterObject<DirectionalBillboard>();
+	RegisterObject<DirectionalGlare>();
 }
 
 //============================================================================================================

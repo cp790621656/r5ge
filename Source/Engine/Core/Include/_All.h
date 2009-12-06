@@ -22,18 +22,20 @@ namespace R5
 	#include "Resource.h"			// TreeNode-based resource
 	#include "Script.h"				// Scripts can be attached to game objects
 	#include "Object.h"				// Most basic game object
+	#include "Decal.h"				// Projected texture object
+
+	#include "Billboard.h"			// Screen-aligned billboard
+	#include "Glare.h"				// Screen-aligned billboard that fades out if it's obscured
+	#include "DirectionalBillboard.h"	// Billboard that always appears on the horizon
+	#include "DirectionalGlare.h"	// Glare version of the horizon billboard
+	#include "DirectionalLight.h"	// Directional light
+	#include "PointLight.h"			// Point light
+	#include "Emitter.h"			// Particle emitter system template
 
 	#include "Camera.h"				// Base camera class
 	#include "DebugCamera.h"		// Free movement camera, useful for debugging
 	#include "AnimatedCamera.h"		// Extended camera class supporting spline-based animation
 	#include "CameraController.h"	// Camera Controller provides a way to blend together different cameras
-	
-	#include "Decal.h"				// Projected texture object
-	#include "Billboard.h"			// Screen-aligned billboard
-	#include "Glow.h"				// Will be removed
-	#include "DirectionalLight.h"	// Directional light
-	#include "PointLight.h"			// Point light
-	#include "Emitter.h"			// Particle emitter system template
 
 	#include "Mesh.h"				// Complete drawable mesh
 	#include "Animatable.h"			// Animatable placeable

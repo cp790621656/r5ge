@@ -34,10 +34,20 @@ bool Billboard::OnFill (FillParams& params)
 uint Billboard::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
-	Matrix43 mat = graphics->GetViewMatrix();
+	Matrix43 mat (graphics->GetViewMatrix());
 	mat.PreTranslate(mAbsolutePos);
 	mat.ReplaceScaling(mAbsoluteScale);
+	graphics->SetViewMatrix(mat);
+	DrawBillboard();
+	return 1;
+}
 
+//============================================================================================================
+// Draws the actual billboard reusing the common buffers
+//============================================================================================================
+
+void Billboard::DrawBillboard()
+{
 	static float vertices[] =
 	{
 		-1.0f,  1.0f,
@@ -55,11 +65,11 @@ uint Billboard::OnDraw (const ITechnique* tech, bool insideOut)
 	};
 
 	// Set up active render states
-	graphics->SetActiveShader(0);
+	IGraphics* graphics = mCore->GetGraphics();
 	graphics->SetADT();
+	graphics->SetActiveShader(0);
 	graphics->SetActiveColor(mColor);
 	graphics->SetActiveMaterial(mTex);
-	graphics->SetViewMatrix(mat);
 
 	// Set the buffers
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,	  0 );
@@ -73,7 +83,6 @@ uint Billboard::OnDraw (const ITechnique* tech, bool insideOut)
 
 	// Draw the glow
 	graphics->DrawVertices (IGraphics::Primitive::Quad, 4);
-	return 1;
 }
 
 //============================================================================================================

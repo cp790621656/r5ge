@@ -44,7 +44,7 @@ void TestApp::Run()
 
 			while (mCore->Update());
 
-			*mCore >> "Config/Dev1.txt";
+			//*mCore >> "Config/Dev1.txt";
 		}
 	}
 }

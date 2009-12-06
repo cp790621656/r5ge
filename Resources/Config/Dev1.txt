@@ -68,33 +68,45 @@ Root
 			Position = 0.000000 0.000000 4.000000
 			Rotation = -0.279848 0.115917 -0.364705 0.880476
 			Scale = 1.000000
+			Layer = 10
 			Ambient = 0.100000 0.100000 0.100000
 			Diffuse = 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000
 			Brightness = 1.820788
 			Range = 29.868561
-			Power = 1.423990
+			Power = 2.165083
 
-			Glow
+			Billboard
 			{
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
-				Type = "Point"
-				Color = 1.000000 1.000000 1.000000 1.000000
-				Magnification = 6.000000
-				Background = "light.jpg"
-				Foreground = "glare_rgb.jpg"
+				Layer = 10
+				Color = 0xffffffff
+				Texture = "light.jpg"
+				Technique = "Glow"
+			}
+
+			Glare
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 6.000000
+				Layer = 10
+				Color = 0xffffffff
+				Texture = "glare_rgb.jpg"
+				Technique = "Glare"
 			}
 		}
 
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 2.000000
-			Rotation = -0.245586 0.110943 -0.397251 0.877252
+			Rotation = -0.248792 0.048103 -0.184538 0.949597
 			Scale = 1.000000
+			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 32.897137 50.000000
+			Dolly = 0.000000 18.896914 50.000000
 		}
 	}
 }

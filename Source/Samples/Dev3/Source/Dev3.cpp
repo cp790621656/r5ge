@@ -80,9 +80,10 @@ void TestApp::Init()
 	AddScript<SpinScript>(obj[3])->Set(-0.005f, 0.015f, 1.0f, -1.8f);
 
 	const ITexture* glowTex = mGraphics->GetTexture("light.jpg");
-	//const ITexture* glareTex = mGraphics->GetTexture("glare_rgb.jpg");
+	const ITexture* glareTex = mGraphics->GetTexture("glare_rgb.jpg");
 
 	const ITechnique* glow = mGraphics->GetTechnique("Glow");
+	//const ITechnique* glare = mGraphics->GetTechnique("Glare");
 
 	Random rnd (625462456);
 
@@ -109,12 +110,18 @@ void TestApp::Init()
 			bb->SetColor(clr);
 			bb->SetTexture(glowTex);
 			bb->SetTechnique(glow);
+
+			//Glare* gl = AddObject<Glare>(light, String("Glare %u", i));
+			//gl->SetTexture(glareTex);
+			//gl->SetTechnique(glare);
+			//gl->SetRelativeScale(4.0f);
 		}
 	}
 
 	// Techniques we'll be using
 	mDeferred.Expand() = mGraphics->GetTechnique("Deferred");
 	mForward.Expand()  = glow;
+	//mForward.Expand()  = glare;
 }
 
 //============================================================================================================

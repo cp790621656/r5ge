@@ -219,10 +219,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Source\ModelInstance.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\ModelTemplate.cpp"
 					>
 				</File>
@@ -271,10 +267,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\ModelInstance.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\ModelTemplate.h"
 					>
 				</File>
@@ -301,31 +293,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\Billboard.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\Core.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Include\Decal.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Include\Emitter.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\EventDispatcher.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Include\Glow.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Include\Object.h"
 					>
 				</File>
 				<File
@@ -334,10 +306,6 @@
 				</File>
 				<File
 					RelativePath=".\Include\Scene.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Include\Script.h"
 					>
 				</File>
 				<File
@@ -375,31 +343,11 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Source\Billboard.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\Core.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Source\Decal.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Emitter.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\EventDispatcher.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Glow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Object.cpp"
 					>
 				</File>
 				<File
@@ -408,10 +356,6 @@
 				</File>
 				<File
 					RelativePath=".\Source\Scene.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Script.cpp"
 					>
 				</File>
 				<File
@@ -502,12 +446,20 @@
 					RelativePath=".\Include\BoneAttachment.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Include\Script.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source"
 				>
 				<File
 					RelativePath=".\Source\BoneAttachment.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Script.cpp"
 					>
 				</File>
 			</Filter>
@@ -548,6 +500,82 @@
 				</File>
 				<File
 					RelativePath=".\Source\DrawQueue.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Objects"
+			>
+			<Filter
+				Name="Include"
+				>
+				<File
+					RelativePath=".\Include\Billboard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Decal.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\DirectionalBillboard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\DirectionalGlare.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Emitter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Glare.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\ModelInstance.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Object.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source"
+				>
+				<File
+					RelativePath=".\Source\Billboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Decal.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\DirectionalBillboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\DirectionalGlare.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Emitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Glare.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ModelInstance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Object.cpp"
 					>
 				</File>
 			</Filter>

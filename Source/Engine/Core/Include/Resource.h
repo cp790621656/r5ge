@@ -4,7 +4,8 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
-// Basic resource -- name, source, and the resource data itself
+// NOTE: Resource is just a TreeNode structure with a name. This class precedes the "Script" class, and its
+// future is questionable. For now it's just used to execute TreeNodes on different threads.
 //============================================================================================================
 
 class Resource

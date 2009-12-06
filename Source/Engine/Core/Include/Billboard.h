@@ -35,6 +35,9 @@ protected:
 	virtual bool OnFill (FillParams& params);
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
+	// Draws the actual billboard reusing the common buffers
+	void DrawBillboard();
+
 	// Serialization
 	virtual void OnSerializeTo	 (TreeNode& root) const;
 	virtual bool OnSerializeFrom (const TreeNode& root);
