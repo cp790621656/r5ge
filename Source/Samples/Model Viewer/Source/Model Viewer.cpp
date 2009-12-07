@@ -138,23 +138,33 @@ void ModelViewer::OnDraw()
 		if		(mParams.mSsao == 2) ao.bind(&SSAO::High);
 		else if (mParams.mSsao == 1) ao.bind(&SSAO::Low);
 
-		// Get all visible lights
-		const ILight::List& lights = mScene.GetVisibleLights();
+		static Deferred::TechniqueList dt;
+		static Deferred::TechniqueList ft;
 
-		static ITechnique*	deferred	= mGraphics->GetTechnique("Deferred");
-		static ITechnique*	wireframe	= mGraphics->GetTechnique("Wireframe");
-
-		static Deferred::TechniqueList techs;
-
-		if (techs.IsEmpty())
+		if (dt.IsEmpty())
 		{
-			techs.Expand() = deferred;
-			techs.Expand() = wireframe;
+			dt.Expand() = mGraphics->GetTechnique("Deferred");
+			dt.Expand() = mGraphics->GetTechnique("Decal");
+		}
+
+		if (ft.IsEmpty())
+		{
+			ft.Expand() = mGraphics->GetTechnique("Wireframe");
+			ft.Expand() = mGraphics->GetTechnique("Glow");
+			ft.Expand() = mGraphics->GetTechnique("Glare");
 		}
 
 		// Draw the scene using the deferred approach
-		result = Deferred::DrawScene(mGraphics, lights, techs,
-			bind(&ModelViewer::OnDeferredDraw, this), ao);
+		result = Deferred::DrawScene(mGraphics, mScene.GetVisibleLights(), dt,
+			bind(&Scene::Draw, &mScene), ao);
+
+		// Draw the grid
+		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
+		mGraphics->SetActiveTechnique(ft[0]);
+		mGraphics->Draw( IGraphics::Drawable::Grid );
+
+		// Draw the scene using the forward rendering approach, adding glow and glare effects
+		mScene.Draw(ft);
 	}
 
 	// Post-processing part
@@ -177,8 +187,8 @@ void ModelViewer::OnDraw()
 
 uint ModelViewer::OnDeferredDraw (const Deferred::TechniqueList& techs, bool insideOut)
 {
-	mGraphics->SetActiveTechnique(techs[0]);
-	mGraphics->Draw( IGraphics::Drawable::Grid );
+	//mGraphics->SetActiveTechnique(techs[0]);
+	//mGraphics->Draw( IGraphics::Drawable::Grid );
 	return mScene.Draw(techs, insideOut);
 }
 

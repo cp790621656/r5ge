@@ -117,10 +117,15 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
+	// Cull our scene like before
 	mScene.Cull(mCam);
-	mGraphics->Clear();
+
+	// Draw our scene using all forward rendering techniques. This function exists for convenience
+	// reasons, and it automatically changes projection back to perspective and clears the screen.
+	mScene.DrawAllForward();
+
+	// Add the grid at the end, just to show that we can still do manual rendering afterwards.
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	mScene.DrawAllForward();	// <-- NEW! Draw the scene using all normal forward rendering techniques.
 }
 
 //============================================================================================================

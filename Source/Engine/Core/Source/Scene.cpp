@@ -69,7 +69,6 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
-		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
 
 		// Update the frustum
 		mFrustum.Update( graphics->GetViewProjMatrix() ); // If world matrix is used: (world * ViewProj)
@@ -83,20 +82,23 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 // Convenience function: Draws the scene using default forward rendering techniques
 //============================================================================================================
 
-uint Scene::DrawAllForward()
+uint Scene::DrawAllForward (bool clearScreen)
 {
 	if (mRoot != 0)
 	{
+		IGraphics* graphics = mRoot->mCore->GetGraphics();
+
 		if (mForward.IsEmpty())
 		{
-			IGraphics* graphics = mRoot->mCore->GetGraphics();
-
 			mForward.Expand() = graphics->GetTechnique("Opaque");
+			mForward.Expand() = graphics->GetTechnique("Wireframe");
 			mForward.Expand() = graphics->GetTechnique("Transparent");
 			mForward.Expand() = graphics->GetTechnique("Particle");
 			mForward.Expand() = graphics->GetTechnique("Glow");
 			mForward.Expand() = graphics->GetTechnique("Glare");
 		}
+
+		if (clearScreen) graphics->Clear();
 		return Draw(mForward);
 	}
 	return 0;
@@ -145,6 +147,11 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
+
+		// Reset to perspective projection
+		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
+
+		// Draw the scene
 		result += mQueue.Draw(graphics, techniques, insideOut);
 
 		// Restore the potentially changed properties

@@ -128,8 +128,6 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	if (mRegenerate) Regenerate();
-
-	mGraphics->Clear();
 	mScene.Cull(mCam);
 	mScene.DrawAllForward();
 }

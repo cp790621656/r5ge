@@ -73,8 +73,7 @@ void TestApp::OnDraw()
 	{
 		techs.Expand() = opaque;
 		mGraphics->SetActiveRenderTarget(0);
-		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-		mGraphics->Clear();
+		mScene.DrawAllForward();
 	}
 
 	if (tri) tri->SetText( String("TRI: %u", mGraphics->GetFrameStats().mTriangles) );

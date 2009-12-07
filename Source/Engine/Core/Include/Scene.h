@@ -46,10 +46,10 @@ public:
 	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
 
 	// Convenience function: draws the scene using default forward rendering techniques
-	uint DrawAllForward();
+	uint DrawAllForward (bool clearScreen = true);
 
 	// Convenience function: draws the scene using default deferred rendering techniques
-	uint DrawAllDeferred(bool ssao = false, bool bloom = false);
+	uint DrawAllDeferred (bool ssao = false, bool bloom = false);
 
 	// Draws the scene using the specified techniques
 	uint Draw (const Techniques& techniques, bool insideOut = false);

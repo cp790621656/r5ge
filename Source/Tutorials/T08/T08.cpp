@@ -178,10 +178,7 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	mGraphics->Clear();
-
-	// Rather than drawing the scene with all default techniques, let's only use ours
-	mScene.Draw(mTechniques);
+	mScene.DrawAllForward();
 
 	// Since we have an on-screen label to play with, let's show how much of the terrain is currently visible
 	if (mLabel != 0) mLabel->SetText( String("%.0f%%", mTerrain->GetVisibility() * 100.0f) );

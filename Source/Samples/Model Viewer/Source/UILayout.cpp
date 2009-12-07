@@ -38,7 +38,6 @@ using namespace R5;
 IFont*			_font			= 0;
 UISkin*			_skin			= 0;
 ITechnique*		_deferred0		= 0;
-ITechnique*		_deferred1		= 0;
 ITechnique*		_wireframe		= 0;
 
 UIFrame*		_loadFrame		= 0;
@@ -253,7 +252,6 @@ bool ModelViewer::CreateUI()
 	_font		= mUI->GetDefaultFont();
 	_skin		= mUI->GetDefaultSkin();
 	_deferred0	= mGraphics->GetTechnique("Deferred");
-	_deferred1	= mGraphics->GetTechnique("Post-Deferred");
 	_wireframe	= mGraphics->GetTechnique("Wireframe");
 
 	if (_font == 0)
@@ -529,7 +527,6 @@ bool ModelViewer::CreateUI()
 		// They are both deferred in this rendering pipeline. Only difference is the order.
 		
 		_matTech->AddEntry( _deferred0->GetName() );
-		_matTech->AddEntry( _deferred1->GetName() );
 		_matTech->AddEntry( _wireframe->GetName() );
 		_matTech->SetOnValueChange( bind(&ModelViewer::OnMatTech, this) );
 		_matTech->SetTooltip("Material technique used to render this material. Leave at 'Deferred' for most cases.");
@@ -1760,8 +1757,7 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 
 					// Figure out which rendering method this material is currently using
 					IMaterial::DrawMethod* method0 = mat->GetDrawMethod(_deferred0, false);
-					IMaterial::DrawMethod* method1 = mat->GetDrawMethod(_deferred1, false);
-					IMaterial::DrawMethod* method2 = mat->GetDrawMethod(_wireframe, false);
+					IMaterial::DrawMethod* method1 = mat->GetDrawMethod(_wireframe, false);
 
 					// Ensure that we have at least one deferred rendering method available with this material
 					if (method0 != 0)
@@ -1771,13 +1767,8 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 					}
 					else if (method1 != 0)
 					{
-						_currentTech = _deferred1->GetName();
-						UpdateTechPanel(method1);
-					}
-					else if (method2 != 0)
-					{
 						_currentTech = _wireframe->GetName();
-						UpdateTechPanel(method2);
+						UpdateTechPanel(method1);
 					}
 					else
 					{
@@ -2215,18 +2206,21 @@ bool ModelViewer::OnMatTech (UIArea* area)
 			if (mat != 0)
 			{
 				if (tech != _deferred0) mat->DeleteDrawMethod(_deferred0);
-				if (tech != _deferred1) mat->DeleteDrawMethod(_deferred1);
 				if (tech != _wireframe) mat->DeleteDrawMethod(_wireframe);
 
 				IMaterial::DrawMethod* method = mat->GetDrawMethod(tech, true);
 
+				// Copy over the shader
 				method->SetShader( mGraphics->GetShader(_matShaderList->GetLastSelection(), false) );
 
+				// Copy over all textures
 				for (uint i = 0; i < TEXTURES; ++i)
 				{
 					method->SetTexture( i, mGraphics->GetTexture(_matTexList[i]->GetLastSelection(), false) );
 				}
 
+				// Mark the model as dirty so it can rebuild its technique mask
+				mModel->SetDirty();
 				UpdateTechPanel(method);
 				return true;
 			}

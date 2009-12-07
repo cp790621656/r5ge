@@ -65,14 +65,14 @@ void TestApp::OnDraw()
 	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
 
 	mScene.Cull(mCam);
-	mGraphics->Clear();
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 
 	Array<const ITechnique*> techs;
 	techs.Expand() = mTech;
 
-	mScene.Draw(techs);
 	mScene.DrawAllForward();
+	mScene.Draw(techs);
+
+	mGraphics->Draw( IGraphics::Drawable::Grid );
 	
 	if (fps != 0) fps->SetText( String("%u", Time::GetFPS()) );
 	if (tri != 0) tri->SetText( String("%u", mGraphics->GetFrameStats().mTriangles) );

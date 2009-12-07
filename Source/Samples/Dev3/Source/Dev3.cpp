@@ -162,7 +162,6 @@ void TestApp::OnDraw()
 	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, mDeferred, bind(&Scene::Draw, &mScene));
 
 	// Add transparent objects via forward rendering
-	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 	mObjects += mScene.Draw(mForward);
 
 	// Draw the result onto the screen

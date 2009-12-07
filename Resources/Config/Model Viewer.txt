@@ -5,7 +5,7 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Model Viewer"
-		Position = 100 103
+		Position = 257 82
 		Size = 900 600
 		Full Screen = false
 	}
@@ -53,6 +53,48 @@ Root
 			Format = "DXT1"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
+		}
+
+		Material = "Lizard"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 1.000000
+			Glow = 0.000000
+			ADT = 0.000000
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/DH_NS"
+				Texture 0 = "Textures/lizard_df.png"
+				Texture 1 = "Textures/lizard_nm.png"
+			}
+		}
+
+		Material = "Teapot"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.200000
+			Glow = 0.000000
+			ADT = 0.003922
+			Technique = "Opaque"
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Material"
+			}
+		}
+
+		Material = "Test"
+		{
+			Diffuse = 0.408776 0.408776 0.408776 1.000000
+			Specular = 1.000000 0.658199 0.173210 1.000000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Material"
+			}
 		}
 	}
 
@@ -191,7 +233,7 @@ Root
 						Skin = "Default"
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
-						Text = "Low Quality SSAO"
+						Text = "Deferred"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
@@ -251,7 +293,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "424"
+					Text = "916"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -264,7 +306,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.347225
+					Alpha = 0.000000
 					Color = 0.000000 0.000000 0.000000 1.000000
 					Receives Events = true
 					Layer = 0
@@ -278,7 +320,7 @@ Root
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
-						Text = "Loaded 'Models/peasant.r5a'"
+						Text = "R5 Model Viewer v.1.3.7. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
 						Shadow = true
 						Alignment = "Center"
 						Receives Events = false
@@ -295,7 +337,13 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/peasant.r5a"
+			Source = "Models/teapot.r5b"
+
+			Limb = "Teapot"
+			{
+				Mesh = "Teapot"
+				Material = "Lizard"
+			}
 		}
 	}
 
@@ -303,23 +351,45 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.032215 0.184958 6.250441
-			Rotation = -0.014623 0.110412 -0.985176 0.130478
+			Position = 0.000000 0.459110 3.156539
+			Rotation = -0.101163 0.208540 -0.875224 0.424570
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 18.725775 50.000000
+			Dolly = 0.000000 12.831017 50.000000
+		}
 
-			Directional Light = "Default Light"
+		Directional Light = "Default Light"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.057719 -0.063518 0.737547 -0.670226
+			Scale = 1.000000
+			Layer = 10
+			Ambient = 0.300000 0.300000 0.300000
+			Diffuse = 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000
+			Brightness = 1.250000
+
+			Directional Billboard
 			{
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
+				Scale = 0.250000
 				Layer = 10
-				Ambient = 0.300000 0.300000 0.300000
-				Diffuse = 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.250000
+				Color = 0xffffffff
+				Texture = "Textures/light.jpg"
+				Technique = "Glow"
+			}
+
+			Directional Glare
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 2.000000
+				Layer = 10
+				Color = 0xffffffff
+				Texture = "Textures/glare_rgb.jpg"
+				Technique = "Glare"
 			}
 		}
 

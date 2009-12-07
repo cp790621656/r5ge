@@ -1,5 +1,5 @@
-uniform sampler2D   R5_texture0;    // Material Diffuse (RGBA)
-uniform sampler2D   R5_texture1;    // Material Specular (RGB) + Glow (A)
+uniform sampler2D   R5_texture0;    // Material Diffuse (RGB)
+uniform sampler2D   R5_texture1;    // Material Specular (RGB) + Self-Illumination (A)
 uniform sampler2D   R5_texture2;    // Light Diffuse (RGB)
 uniform sampler2D   R5_texture3;    // Light Specular (RGB)
 

@@ -276,7 +276,7 @@ Deferred::DrawResult Deferred::DrawScene (
 		target0->AttachStencilTexture( depth );
 		target0->AttachColorTexture( 0, matDiff, ITexture::Format::RGB16F );
 		target0->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
-		target0->AttachColorTexture( 2, normal,  ITexture::Format::RGB30A2 );
+		target0->AttachColorTexture( 2, normal,  ITexture::Format::RGBA16F );
 		target0->UseSkybox(true);
 
 		// Scene Light contribution target
@@ -314,7 +314,6 @@ Deferred::DrawResult Deferred::DrawScene (
 
 		graphics->SetStencilTest(false);
 		graphics->SetActiveRenderTarget( target0 );
-		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
 		graphics->Clear(true, true, true);
 
 		// Set up the stencil test

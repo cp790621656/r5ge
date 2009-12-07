@@ -63,9 +63,10 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 
 	mGraphics->Clear();
+	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 
-	mScene.DrawAllForward();
+	mScene.DrawAllForward(false);
 
 	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
 	if (tri) tri->SetText( String("%u", mGraphics->GetFrameStats().mTriangles) );
