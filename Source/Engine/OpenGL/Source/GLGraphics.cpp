@@ -396,17 +396,16 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 	}
 
 	bool skyboxIsPresent = (mSkybox != 0 && ( mSkybox->GetType() == ITexture::Type::EnvironmentCubeMap ));
-	bool useSkybox		 = (mProjection == Projection::Perspective && ( mTarget == 0 || mTarget->IsUsingSkybox() ));
 
 	// Remember color/depth write setting
 	bool colorWrite (mColorWrite);
 	bool depthWrite (mDepthWrite);
 	bool depthTest  (mDepthTest);
 
-	if ( skyboxIsPresent && useSkybox )
-	{
-		uint flag (0);
+	uint flag (0);
 
+	if (skyboxIsPresent && (mTarget == 0 || mTarget->IsUsingSkybox()))
+	{
 		if (depth)
 		{
 			flag |= GL_DEPTH_BUFFER_BIT;
@@ -425,13 +424,12 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 
 		if (color)
 		{
+			SetActiveProjection(IGraphics::Projection::Perspective);
 			Draw(Drawable::Skybox);
 		}
 	}
 	else
 	{
-		uint flag (0);
-
 		if (color)
 		{
 			flag |= GL_COLOR_BUFFER_BIT;
@@ -471,7 +469,7 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 
 	if (depth)
 	{
-		if (mDepthWrite != depthWrite) SetDepthWrite(depthWrite);
+		if (mDepthWrite != depthWrite)	SetDepthWrite(depthWrite);
 		if (mDepthTest  != depthTest)	SetDepthTest(depthTest);
 	}
 	CHECK_GL_ERROR;

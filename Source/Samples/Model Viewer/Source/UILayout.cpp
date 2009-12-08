@@ -211,6 +211,7 @@ void ModelViewer::Load()
 		_fileInput->AddToHistory(mLoadFilename);
 		_loadFrame->Hide();
 		mInst->SetDirty();
+		mModel->SetDirty();
 		mResetCamera = true;
 		SetStatusText( String("Loaded '%s'", mLoadFilename.GetBuffer()) );
 	}

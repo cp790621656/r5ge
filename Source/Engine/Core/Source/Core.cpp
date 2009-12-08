@@ -131,7 +131,6 @@ void Core::Release()
 bool Core::Update()
 {
 	Time::Update();
-	Time::IncrementFPS();
 
 	if (mWin != 0)
 	{
@@ -199,6 +198,9 @@ bool Core::Update()
 			// Finish the drawing process
 			if (mGraphics != 0)	mGraphics->EndFrame();
 			mWin->EndFrame();
+
+			// Increment the framerate
+			Time::IncrementFPS();
 		}
 
 		// Sleep the thread, letting others run in the background

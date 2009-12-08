@@ -39,7 +39,7 @@ void ModelViewer::Run()
 	if (*mCore << "Config/Model Viewer.txt")
 	{
 		mCam			= FindObject<DebugCamera>		(mScene, "Default Camera");
-		mLight			= FindObject<DirectionalLight>	(mScene, "Default Light");
+		mLight			= FindObject<Light>				(mScene, "Default Light");
 		mStage			= FindObject<Object>			(mScene, "Stage");
 		mInst			= FindObject<ModelInstance>		(mScene, "Default Instance");
 		mSbHighlight	= FindWidget<UIHighlight>		(mUI,	 "Status Highlight");

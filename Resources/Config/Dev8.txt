@@ -16,26 +16,6 @@ Root
 		Background Color = 1.000000 1.000000 1.000000 1.000000
 		Fog Range = 100.000000 100.000000
 
-  		Material = "Box"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
-			Technique = "Opaque"
-
-			Technique = "Decal"
-			{
-				Shader = "Deferred/Decal"
-				Texture 0 = "[Generated] Diffuse Material"
-				Texture 1 = "[Generated] Specular Material"
-				Texture 2 = "[Generated] Normal"
-				Texture 3 = "[Generated] Depth"
-				Texture 4 = "Textures/stone_df.jpg"
-				Texture 5 = "Textures/stone_nm.png"
-			}
-		}
-		
 		Material = "Teapot"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -45,10 +25,9 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_N_S"
-				Texture 0 = "Textures/stone_df.jpg"
-				Texture 1 = "Textures/stone_nm.png"
-				Texture 2 = "Textures/stone_maps.jpg"
+				Shader = "Deferred/D_N"
+				Texture 0 = "Textures/jelly_df.jpg"
+				Texture 1 = "Textures/jelly_nm.png"
 			}
 		}
 	}
@@ -164,6 +143,7 @@ Root
 			Rotation = 0 0 0 1
 			Scale = 0.5
 			Model = "Teapot"
+			Layer = 10
 		}
 
 		Decal = "First Decal"
@@ -180,8 +160,8 @@ Root
 				"[Generated] Normal"
 				"[Generated] Diffuse Material"
 				"[Generated] Specular Material"
-				"Textures/jelly_df.jpg"
-				"Textures/jelly_nm.png"
+				"Textures/lizard_df.png"
+				"Textures/lizard_nm.png"
 			}
 		}
 
