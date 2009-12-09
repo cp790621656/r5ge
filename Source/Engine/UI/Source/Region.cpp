@@ -24,10 +24,10 @@ inline bool ToAnchor (const Variable& value, UIAnchor& a)
 
 void UIRegion::SetRect (float x, float y, float w, float h)
 {
-	mRelativeLeft.Set(0.0f, x);
-	mRelativeTop.Set(0.0f, y);
-	mRelativeRight.Set(0.0f, x + w);
-	mRelativeBottom.Set(0.0f, y + h);
+	mRelativeLeft.Set	(0.0f, x);
+	mRelativeTop.Set	(0.0f, y);
+	mRelativeRight.Set	(0.0f, x + w);
+	mRelativeBottom.Set	(0.0f, y + h);
 	mDimsChanged = true;
 }
 
@@ -50,10 +50,10 @@ bool UIRegion::Contains (const Vector2i& pos) const
 
 void UIRegion::Adjust (float left, float top, float right, float bottom)
 {
-	mRelativeLeft.mAbsolute	+= left;
-	mRelativeTop.mAbsolute	+= top;
+	mRelativeLeft.mAbsolute		+= left;
+	mRelativeTop.mAbsolute		+= top;
 	mRelativeRight.mAbsolute	+= right;
-	mRelativeBottom.mAbsolute += bottom;
+	mRelativeBottom.mAbsolute	+= bottom;
 	mDimsChanged = true;
 }
 
@@ -63,11 +63,30 @@ void UIRegion::Adjust (float left, float top, float right, float bottom)
 
 bool UIRegion::OnSerializeFrom (const TreeNode& node)
 {
-	if		( node.mTag == "Left"	&& ToAnchor(node.mValue, mRelativeLeft)	 )	mDimsChanged = true;
-	else if ( node.mTag == "Right"  && ToAnchor(node.mValue, mRelativeRight) )	mDimsChanged = true;
-	else if ( node.mTag == "Top"	&& ToAnchor(node.mValue, mRelativeTop)	 )	mDimsChanged = true;
-	else if ( node.mTag == "Bottom" && ToAnchor(node.mValue, mRelativeBottom))	mDimsChanged = true;
-	else if ( node.mTag == "Alpha"  && node.mValue >> mRelativeAlpha		 ) {}
+	if (node.mTag == "Left")
+	{
+		if (ToAnchor(node.mValue, mRelativeLeft))
+			mDimsChanged = true;
+	}
+	else if (node.mTag == "Right")
+	{
+		if (ToAnchor(node.mValue, mRelativeRight))
+			mDimsChanged = true;
+	}
+	else if (node.mTag == "Top")
+	{
+		if (ToAnchor(node.mValue, mRelativeTop))
+			mDimsChanged = true;
+	}
+	else if (node.mTag == "Bottom")
+	{
+		if (ToAnchor(node.mValue, mRelativeBottom))
+			mDimsChanged = true;
+	}
+	else if (node.mTag == "Alpha")
+	{
+		node.mValue >> mRelativeAlpha;
+	}
 	else return false;
 	return true;
 }
@@ -134,7 +153,7 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
 		// Update the dimension change flag
 		mDimsChanged =	Float::IsNotEqual(left,   mRect.mLeft)	||
 						Float::IsNotEqual(right,  mRect.mRight)	||
-						Float::IsNotEqual(top,	  mRect.mTop)		||
+						Float::IsNotEqual(top,	  mRect.mTop)	||
 						Float::IsNotEqual(bottom, mRect.mBottom);
 
 		// Check to see if the area is really visible according to dimensions
