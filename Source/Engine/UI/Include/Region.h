@@ -21,8 +21,8 @@ public:
 
 		Rectangle() : mLeft(0), mRight(0), mTop(0), mBottom(0) {}
 
-		inline float GetWidth()  const { return mRight - mLeft; }
-		inline float GetHeight() const { return mBottom - mTop; }
+		inline Type GetWidth()  const { return mRight - mLeft; }
+		inline Type GetHeight() const { return mBottom - mTop; }
 
 		inline void Set (Type left, Type right, Type top, Type bottom)
 		{
