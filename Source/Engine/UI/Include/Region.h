@@ -112,8 +112,8 @@ private:
 	friend class UIArea;
 
 	// Serialization
-	bool Load (const String& tag, const Variable& value);
-	void SerializeTo (TreeNode& root) const;
+	bool OnSerializeFrom (const TreeNode& node);
+	void OnSerializeTo (TreeNode& node) const;
 
 public:
 

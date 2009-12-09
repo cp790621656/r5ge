@@ -282,7 +282,7 @@ bool UIArea::SerializeFrom (const TreeNode& root)
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if ( (value.IsValid() || node.HasChildren()) && !mRegion.Load(tag, value) )
+		if ( (value.IsValid() || node.HasChildren()) && !mRegion.OnSerializeFrom(node) )
 		{
 			if ( tag == "Receives Events" )
 			{
@@ -322,7 +322,7 @@ bool UIArea::SerializeTo (TreeNode& root) const
 	if (mSerializable)
 	{
 		TreeNode& node = root.AddChild(GetClassID(), GetName());
-		mRegion.SerializeTo(node);
+		mRegion.OnSerializeTo(node);
 		OnSerializeTo(node);
 
 		node.AddChild("Receives Events", mReceivesEvents);

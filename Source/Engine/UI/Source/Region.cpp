@@ -61,27 +61,28 @@ void UIRegion::Adjust (float left, float top, float right, float bottom)
 // Serialization -- Load
 //====================================================================================================
 
-bool UIRegion::Load (const String& tag, const Variable& value)
+bool UIRegion::OnSerializeFrom (const TreeNode& node)
 {
-	if		( tag == "Left"	  && ToAnchor(value, mRelativeLeft)		)	return mDimsChanged  = true;
-	else if ( tag == "Right"  && ToAnchor(value, mRelativeRight)	)	return mDimsChanged  = true;
-	else if ( tag == "Top"	  && ToAnchor(value, mRelativeTop)		)	return mDimsChanged  = true;
-	else if ( tag == "Bottom" && ToAnchor(value, mRelativeBottom)	)	return mDimsChanged  = true;
-	else if ( tag == "Alpha"  && value >> mRelativeAlpha			)	return true;
-	return false;
+	if		( node.mTag == "Left"	&& ToAnchor(node.mValue, mRelativeLeft)	 )	mDimsChanged = true;
+	else if ( node.mTag == "Right"  && ToAnchor(node.mValue, mRelativeRight) )	mDimsChanged = true;
+	else if ( node.mTag == "Top"	&& ToAnchor(node.mValue, mRelativeTop)	 )	mDimsChanged = true;
+	else if ( node.mTag == "Bottom" && ToAnchor(node.mValue, mRelativeBottom))	mDimsChanged = true;
+	else if ( node.mTag == "Alpha"  && node.mValue >> mRelativeAlpha		 ) {}
+	else return false;
+	return true;
 }
 
 //====================================================================================================
 // Serialization -- Save
 //====================================================================================================
 
-void UIRegion::SerializeTo (TreeNode& root) const
+void UIRegion::OnSerializeTo (TreeNode& node) const
 {
-	root.AddChild("Left",	Vector2f(mRelativeLeft.mRelative,	mRelativeLeft.mAbsolute));
-	root.AddChild("Right",	Vector2f(mRelativeRight.mRelative,	mRelativeRight.mAbsolute));
-	root.AddChild("Top",	Vector2f(mRelativeTop.mRelative,	mRelativeTop.mAbsolute));
-	root.AddChild("Bottom", Vector2f(mRelativeBottom.mRelative,	mRelativeBottom.mAbsolute));
-	root.AddChild("Alpha",	mRelativeAlpha);
+	node.AddChild("Left",	Vector2f(mRelativeLeft.mRelative,	mRelativeLeft.mAbsolute));
+	node.AddChild("Right",	Vector2f(mRelativeRight.mRelative,	mRelativeRight.mAbsolute));
+	node.AddChild("Top",	Vector2f(mRelativeTop.mRelative,	mRelativeTop.mAbsolute));
+	node.AddChild("Bottom", Vector2f(mRelativeBottom.mRelative,	mRelativeBottom.mAbsolute));
+	node.AddChild("Alpha",	mRelativeAlpha);
 }
 
 //====================================================================================================
