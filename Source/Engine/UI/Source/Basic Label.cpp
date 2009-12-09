@@ -14,14 +14,14 @@ void BasicLabel::OnFill (UIQueue* queue)
 	{
 		byte height ( GetFontSize() );
 
-		Color4ub color ( mColor, mRegion.GetAlpha() );
-		Vector2f pos   ( mRegion.GetLeft(), mRegion.GetTop() );
+		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
-		mEnd = mStart + mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetWidth()),
+		mEnd = mStart + mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 			mStart, 0xFFFFFFFF, false, false, mTags );
 
 		// Adjust the height in order to center the text as necessary
-		float difference = mRegion.GetHeight() - height;
+		float difference = mRegion.GetCalculatedHeight() - height;
 		pos.y += difference * 0.5f;
 
 		// Drop a shadow if requested

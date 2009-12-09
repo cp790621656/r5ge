@@ -28,7 +28,7 @@ public:
 		{
 			mLeft   = left;
 			mRight  = right;
-			mTop	 = top;
+			mTop	= top;
 			mBottom = bottom;
 		}
 	};
@@ -63,48 +63,46 @@ public:
 
 public:
 
-	inline void SetLeft		(float relative, float absolute)	{   mRelativeLeft.Set(relative, absolute);  mDimsChanged  = true; }
-	inline void SetTop		(float relative, float absolute)	{    mRelativeTop.Set(relative, absolute);  mDimsChanged  = true; }
-	inline void SetRight	(float relative, float absolute)	{  mRelativeRight.Set(relative, absolute);  mDimsChanged  = true; }
-	inline void SetBottom	(float relative, float absolute)	{ mRelativeBottom.Set(relative, absolute);  mDimsChanged  = true; }
-	inline void SetAlpha	(float relative)					{ mRelativeAlpha = relative; }
-
+	// Set the relative-to-parent coordinates using the specified absolute offset values
 	void SetRect (float x, float y, float w, float h);
 
-	inline const Rectangle<float>& GetRect() const { return mRect; }
-	
-	// Convenience functions
-	inline float GetLeft()	 const	{ return mRect.mLeft;		}
-	inline float GetRight()	 const	{ return mRect.mRight;		}
-	inline float GetTop()	 const	{ return mRect.mTop;		}
-	inline float GetBottom() const	{ return mRect.mBottom;		}
-	inline float GetWidth()	 const	{ return mRect.GetWidth();	}
-	inline float GetHeight() const	{ return mRect.GetHeight();	}
-	inline float GetAlpha()	 const	{ return mAlpha;			}
+	// Write access to relative values
+	void SetLeft	(float relative, float absolute)	{   mRelativeLeft.Set(relative, absolute);  mDimsChanged  = true; }
+	void SetTop		(float relative, float absolute)	{    mRelativeTop.Set(relative, absolute);  mDimsChanged  = true; }
+	void SetRight	(float relative, float absolute)	{  mRelativeRight.Set(relative, absolute);  mDimsChanged  = true; }
+	void SetBottom	(float relative, float absolute)	{ mRelativeBottom.Set(relative, absolute);  mDimsChanged  = true; }
+	void SetAlpha	(float relative)					{ mRelativeAlpha = relative; }
 
-	// Relative anchors
-	inline UIAnchor& GetRelativeLeft()		{ return mRelativeLeft;		}
-	inline UIAnchor& GetRelativeRight()		{ return mRelativeRight;	}
-	inline UIAnchor& GetRelativeTop()		{ return mRelativeTop;		}
-	inline UIAnchor& GetRelativeBottom()	{ return mRelativeBottom;	}
+	// Read access to relative anchors
+	const UIAnchor& GetLeft()	const	{ return mRelativeLeft;		}
+	const UIAnchor& GetRight()	const	{ return mRelativeRight;	}
+	const UIAnchor& GetTop()	const	{ return mRelativeTop;		}
+	const UIAnchor& GetBottom()	const	{ return mRelativeBottom;	}
 
-	inline const UIAnchor& GetRelativeLeft()	const	{ return mRelativeLeft;		}
-	inline const UIAnchor& GetRelativeRight()	const	{ return mRelativeRight;	}
-	inline const UIAnchor& GetRelativeTop()		const	{ return mRelativeTop;		}
-	inline const UIAnchor& GetRelativeBottom()	const	{ return mRelativeBottom;	}
+	// Retrieves the calculated absolute rectangle
+	const Rectangle<float>& GetCalculatedRect() const { return mRect; }
+
+	// Access to calculated absolute values
+	float GetCalculatedLeft()	const	{ return mRect.mLeft;		}
+	float GetCalculatedRight()	const	{ return mRect.mRight;		}
+	float GetCalculatedTop()	const	{ return mRect.mTop;		}
+	float GetCalculatedBottom()	const	{ return mRect.mBottom;		}
+	float GetCalculatedWidth()	const	{ return mRect.GetWidth();	}
+	float GetCalculatedHeight()	const	{ return mRect.GetHeight();	}
+	float GetCalculatedAlpha()	const	{ return mAlpha;			}
 
 	// Used in animation
-	inline float GetParentAlpha()	 const	{ return mParentAlpha;	 }
-	inline float GetRelativeAlpha()  const	{ return mRelativeAlpha; }
+	float GetParentAlpha()		const	{ return mParentAlpha;		}
+	float GetRelativeAlpha()	const	{ return mRelativeAlpha;	}
 
 	// Changes the absolute alpha until the next Update()
-	inline void OverrideAlpha (float val) { mAlpha = val; }
+	void OverrideAlpha (float val) { mAlpha = val; }
 
 	// Check to see if the position lies inside the region
 	bool Contains (const Vector2i& pos) const;
 
 	// Whether the region is actually visible (lies at least partially within the parent's)
-	inline bool IsVisible() const { return (mIsVisible && mAlpha > 0.001f); }
+	bool IsVisible() const { return (mIsVisible && mAlpha > 0.001f); }
 
 	// Allows to adjust relative coordinates by the specified amount
 	void Adjust (float left, float top, float right, float bottom);

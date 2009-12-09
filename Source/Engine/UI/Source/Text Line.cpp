@@ -36,7 +36,7 @@ void UITextLine::SetText (const String& text)
 	if (mText != text)
 	{
 		mText = text;
-		if (GetAlpha() > 0.0f) SetDirty();
+		if (GetCalculatedAlpha() > 0.0f) SetDirty();
 	}
 }
 
@@ -77,11 +77,11 @@ void UITextLine::OnFill (UIQueue* queue)
 	{
 		byte height = mFont->GetSize();
 
-		Color4ub color ( mColor, mRegion.GetAlpha() );
-		Vector2f pos   ( mRegion.GetLeft(), mRegion.GetTop() );
+		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		// Adjust the height in order to center the text as necessary
-		float difference = mRegion.GetHeight() - height;
+		float difference = mRegion.GetCalculatedHeight() - height;
 		pos.y += difference * 0.5f;
 
 		pos.x = Float::Round(pos.x);
@@ -102,28 +102,28 @@ void UITextLine::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UITextLine::CustomSerializeFrom(const TreeNode& root)
+bool UITextLine::OnSerializeFrom (const TreeNode& node)
 {
-	const Variable& value = root.mValue;
+	const Variable& value = node.mValue;
 
-	if (root.mTag == "Color")
+	if (node.mTag == "Color")
 	{
 		Color3f color;
 		if (value >> color) SetColor(color);
 		return true;
 	}
-	else if (root.mTag == "Font")
+	else if (node.mTag == "Font")
 	{
 		const IFont* font = mRoot->GetFont( value.IsString() ? value.AsString() : value.GetString() );
 		SetFont(font);
 		return true;
 	}
-	else if (root.mTag == "Text")
+	else if (node.mTag == "Text")
 	{
 		SetText( value.IsString() ? value.AsString() : value.GetString() );
 		return true;
 	}
-	else if (root.mTag == "Shadow")
+	else if (node.mTag == "Shadow")
 	{
 		bool shadow;
 
@@ -140,13 +140,13 @@ bool UITextLine::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UITextLine::CustomSerializeTo(TreeNode& root) const
+void UITextLine::OnSerializeTo (TreeNode& node) const
 {
-	root.AddChild("Color", mColor);
+	node.AddChild("Color", mColor);
 
-	TreeNode& font = root.AddChild("Font");
+	TreeNode& font = node.AddChild("Font");
 	if (mFont != 0) font.mValue = mFont->GetName();
 
-	root.AddChild("Text", mText);
-	root.AddChild("Shadow", mShadow);
+	node.AddChild("Text", mText);
+	node.AddChild("Shadow", mShadow);
 }

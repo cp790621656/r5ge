@@ -28,12 +28,12 @@ void UIPicture::OnFill (UIQueue* queue)
 	{
 		queue->mIgnoreAlpha = mIgnoreAlpha;
 
-		float left	 ( mRegion.GetLeft() );
-		float top	 ( mRegion.GetTop() );
-		float right	 ( mRegion.GetRight() );
-		float bottom ( mRegion.GetBottom() );
+		float left	 ( mRegion.GetCalculatedLeft() );
+		float top	 ( mRegion.GetCalculatedTop() );
+		float right	 ( mRegion.GetCalculatedRight() );
+		float bottom ( mRegion.GetCalculatedBottom() );
 
-		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetAlpha() ));
+		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetCalculatedAlpha() ));
 
 		queue->mVertices.Expand().Set( left,  top,		0.0f, 1.0f, color );
 		queue->mVertices.Expand().Set( left,  bottom,	0.0f, 0.0f, color );
@@ -46,16 +46,16 @@ void UIPicture::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UIPicture::CustomSerializeFrom(const TreeNode& root)
+bool UIPicture::OnSerializeFrom (const TreeNode& node)
 {
-	const Variable& value = root.mValue;
+	const Variable& value = node.mValue;
 
-	if (root.mTag == "Texture")
+	if (node.mTag == "Texture")
 	{
 		SetTexture ( mRoot->GetTexture( value.IsString() ? value.AsString() : value.GetString() ) );
 		return true;
 	}
-	else if (root.mTag == "Ignore Alpha")
+	else if (node.mTag == "Ignore Alpha")
 	{
 		value >> mIgnoreAlpha;
 	}
@@ -66,11 +66,11 @@ bool UIPicture::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UIPicture::CustomSerializeTo(TreeNode& root) const
+void UIPicture::OnSerializeTo (TreeNode& node) const
 {
 	if (mTex != 0)
 	{
-		root.AddChild("Texture", mTex->GetName());
-		root.AddChild("Ignore Alpha", mIgnoreAlpha);
+		node.AddChild("Texture", mTex->GetName());
+		node.AddChild("Ignore Alpha", mIgnoreAlpha);
 	}
 }

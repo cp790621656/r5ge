@@ -71,7 +71,7 @@ bool UIInput::_OnLabelKey (UIArea* area, const Vector2i& pos, byte key, bool isD
 		{
 			const UIContext* context = mRoot->GetContextMenu();
 
-			if (context == 0 || context->GetAlpha() == 0.0f)
+			if (context == 0 || context->GetCalculatedAlpha() == 0.0f)
 			{
 				_ShowHistory();
 			}
@@ -168,8 +168,8 @@ UIContext* UIInput::_ShowHistory()
 		}
 		menu->SetFont( GetFont() );
 		menu->SetColor( GetColor() );
-		menu->SetAnchor( Vector3f(mRegion.GetLeft(), mRegion.GetBottom(), mRegion.GetHeight()) );
-		menu->SetMinWidth( mRegion.GetWidth() );
+		menu->SetAnchor( Vector3f(mRegion.GetCalculatedLeft(), mRegion.GetCalculatedBottom(), mRegion.GetCalculatedHeight()) );
+		menu->SetMinWidth( mRegion.GetCalculatedWidth() );
 		menu->SetAlignment( UILabel::Alignment::Left );
 		menu->Show();
 		menu->BringToFront();
@@ -185,7 +185,7 @@ UIContext* UIInput::_HideHistory()
 {
 	UIContext* menu = mRoot->GetContextMenu();
 
-	if (menu != 0 && menu->GetAlpha() > 0.0f)
+	if (menu != 0 && menu->GetCalculatedAlpha() > 0.0f)
 	{
 		mShowHistory = true;
 
@@ -231,21 +231,21 @@ bool UIInput::OnUpdate (bool dimensionsChanged)
 // Serialization -- Load
 //============================================================================================================
 
-bool UIInput::CustomSerializeFrom (const TreeNode& root)
+bool UIInput::OnSerializeFrom (const TreeNode& node)
 {
-	if ( mImage.CustomSerializeFrom(root) ) return true;
-	if ( mLabel.CustomSerializeFrom(root) ) return true;
+	if ( mImage.OnSerializeFrom (node) ) return true;
+	if ( mLabel.OnSerializeFrom (node) ) return true;
 
-	if (root.mTag == "History Size")
+	if (node.mTag == "History Size")
 	{
-		root.mValue >> mMaxHistorySize;
+		node.mValue >> mMaxHistorySize;
 		return true;
 	}
-	else if (root.mTag == "History")
+	else if (node.mTag == "History")
 	{
-		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
+		for (uint i = 0; i < node.mChildren.GetSize(); ++i)
 		{
-			AddToHistory(root.mChildren[i].mTag);
+			AddToHistory(node.mChildren[i].mTag);
 		}
 		return true;
 	}
@@ -256,23 +256,23 @@ bool UIInput::CustomSerializeFrom (const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UIInput::CustomSerializeTo (TreeNode& root) const
+void UIInput::OnSerializeTo (TreeNode& node) const
 {
-	mImage.CustomSerializeTo(root);
-	mLabel.CustomSerializeTo(root);
+	mImage.OnSerializeTo (node);
+	mLabel.OnSerializeTo (node);
 
-	root.AddChild("History Size", mMaxHistorySize);
+	node.AddChild("History Size", mMaxHistorySize);
 
 	if (mMaxHistorySize > 0 && mHistory.IsValid())
 	{
 		mHistory.Lock();
 		{
-			TreeNode& node = root.AddChild("History");
+			TreeNode& child = node.AddChild("History");
 
 			uint max = (mHistory.GetSize() > mMaxHistorySize ? mHistory.GetSize() - mMaxHistorySize : 0);
 
 			for (uint i = mHistory.GetSize(); i > max; )
-				node.AddChild(mHistory[--i]);
+				child.AddChild(mHistory[--i]);
 		}
 		mHistory.Unlock();
 	}

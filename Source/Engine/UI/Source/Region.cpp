@@ -105,7 +105,7 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
 	bool wasVisible ( mIsVisible && mAlpha > 0.001f );
 
 	// Calculate the current alpha
-	mParentAlpha = parent.GetAlpha();
+	mParentAlpha = parent.GetCalculatedAlpha();
 	float alpha = mParentAlpha * mRelativeAlpha;
 
 	// Update the alpha
@@ -118,7 +118,7 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
 	// Update the dimensions
 	if (forceUpdate || mDimsChanged)
 	{
-		const Rectangle<float>& pr (parent.GetRect());
+		const Rectangle<float>& pr (parent.GetCalculatedRect());
 
 		float width  = pr.GetWidth();
 		float height = pr.GetHeight();

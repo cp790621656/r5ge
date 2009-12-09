@@ -9,7 +9,7 @@ bool UICheckbox::OnUpdate (bool dimensionsChanged)
 {
 	if (dimensionsChanged)
 	{
-		float height = mRegion.GetHeight();
+		float height = mRegion.GetCalculatedHeight();
 
 		if (GetAlignment() == UILabel::Alignment::Right)
 		{
@@ -69,17 +69,17 @@ void UICheckbox::OnFill (UIQueue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool UICheckbox::CustomSerializeFrom (const TreeNode& root)
+bool UICheckbox::OnSerializeFrom (const TreeNode& node)
 {
-	if ( mImage.CustomSerializeFrom(root) )
+	if ( mImage.OnSerializeFrom(node) )
 	{
 		return true;
 	}
-	else if (root.mTag == "State")
+	else if (node.mTag == "State")
 	{
-		if (root.mValue.IsString())
+		if (node.mValue.IsString())
 		{
-			const String& state = root.mValue.AsString();
+			const String& state = node.mValue.AsString();
 
 			if		(state == "Disabled")	SetState(State::Enabled, false);
 			else if (state == "Checked")	SetState(State::Enabled | State::Checked, true);
@@ -87,22 +87,22 @@ bool UICheckbox::CustomSerializeFrom (const TreeNode& root)
 		}
 		return true;
 	}
-	return mLabel.CustomSerializeFrom(root);
+	return mLabel.OnSerializeFrom (node);
 }
 
 //============================================================================================================
 // Serialization -- Save
 //============================================================================================================
 
-void UICheckbox::CustomSerializeTo (TreeNode& root) const
+void UICheckbox::OnSerializeTo (TreeNode& node) const
 {
 	const UISkin* skin = mImage.GetSkin();
-	TreeNode& child = root.AddChild("Skin");
+	TreeNode& child = node.AddChild("Skin");
 	if (skin) child.mValue = skin->GetName();
 
-	mLabel.CustomSerializeTo(root);
+	mLabel.OnSerializeTo(node);
 
-	if		(mState & State::Checked)	root.AddChild("State", "Checked");
-	else if (mState & State::Enabled)	root.AddChild("State", "Enabled");
-	else								root.AddChild("State", "Disabled");
+	if		(mState & State::Checked)	node.AddChild("State", "Checked");
+	else if (mState & State::Enabled)	node.AddChild("State", "Enabled");
+	else								node.AddChild("State", "Disabled");
 }

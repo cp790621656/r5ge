@@ -27,10 +27,10 @@ void UILabel::OnFill (UIQueue* queue)
 
 	if (tex != 0 && tex == queue->mTex)
 	{
-		uint width = Float::RoundToUInt(mRegion.GetWidth());
+		uint width = Float::RoundToUInt(mRegion.GetCalculatedWidth());
 
-		Color4ub color ( mColor, mRegion.GetAlpha() );
-		Vector2f pos   ( mRegion.GetLeft(), mRegion.GetTop() );
+		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		if ( mAlignment == Alignment::Right )
 		{
@@ -43,7 +43,7 @@ void UILabel::OnFill (UIQueue* queue)
 		else
 		{
 			mStart = 0;
-			mEnd = mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetWidth()),
+			mEnd = mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 				0, 0xFFFFFFFF, false, false, mTags );
 
 			// For centered alignment simply figure out the bounding size of the text and adjust the position
@@ -55,7 +55,7 @@ void UILabel::OnFill (UIQueue* queue)
 		}
 
 		// Adjust the height in order to center the text as necessary
-		float difference = mRegion.GetHeight() - height;
+		float difference = mRegion.GetCalculatedHeight() - height;
 		pos.y += difference * 0.5f;
 
 		//pos.x = Float::Floor(pos.x + 0.5f);
@@ -77,17 +77,17 @@ void UILabel::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UILabel::CustomSerializeFrom(const TreeNode& root)
+bool UILabel::OnSerializeFrom (const TreeNode& node)
 {
-	if (UITextLine::CustomSerializeFrom(root))
+	if (UITextLine::OnSerializeFrom(node))
 	{
 		return true;
 	}
-	else if (root.mTag == "Alignment")
+	else if (node.mTag == "Alignment")
 	{
 		String alignment;
 
-		if (root.mValue >> alignment)
+		if (node.mValue >> alignment)
 		{
 			if		(alignment == "Left")	SetAlignment(Alignment::Left);
 			else if (alignment == "Right")	SetAlignment(Alignment::Right);
@@ -101,11 +101,11 @@ bool UILabel::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UILabel::CustomSerializeTo(TreeNode& root) const
+void UILabel::OnSerializeTo (TreeNode& node) const
 {
-	UITextLine::CustomSerializeTo(root);
+	UITextLine::OnSerializeTo(node);
 
-	if		(mAlignment == Alignment::Left)		root.AddChild("Alignment", "Left");
-	else if (mAlignment == Alignment::Right)	root.AddChild("Alignment", "Right");
-	else										root.AddChild("Alignment", "Center");
+	if		(mAlignment == Alignment::Left)		node.AddChild("Alignment", "Left");
+	else if (mAlignment == Alignment::Right)	node.AddChild("Alignment", "Right");
+	else										node.AddChild("Alignment", "Center");
 }

@@ -126,8 +126,8 @@ public:
 public:
 
 	// Can be overwritten for additional functionality (see the Animated Frame class)
-	virtual float GetAlpha() const								{ return mRegion.GetAlpha();	}
-	virtual void  SetAlpha (float val, float animTime = 0.0f)	{ mRegion.SetAlpha(val);		}
+	virtual float GetCalculatedAlpha() const { return mRegion.GetCalculatedAlpha(); }
+	virtual void  SetAlpha (float val, float animTime = 0.0f) { mRegion.SetAlpha(val); }
 
 	// Area::Update() function gets the sub-region, and that gets passed to all children (see Window class for an example)
 	virtual const UIRegion& GetSubRegion() const { return mRegion; }
@@ -155,8 +155,8 @@ public:
 	virtual void OnPostDraw(IGraphics* graphics) const {}
 
 	// Serialization
-	virtual bool CustomSerializeFrom(const TreeNode& root) { return false; }
-	virtual void CustomSerializeTo(TreeNode& root) const {}
+	virtual bool OnSerializeFrom (const TreeNode& root) { return false; }
+	virtual void OnSerializeTo (TreeNode& root) const {}
 
 protected:
 

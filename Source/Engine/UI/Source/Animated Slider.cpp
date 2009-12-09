@@ -40,22 +40,22 @@ bool UIAnimatedSlider::OnUpdate (bool dimensionsChanged)
 // Serialization - Load
 //============================================================================================================
 
-bool UIAnimatedSlider::CustomSerializeFrom(const TreeNode& root)
+bool UIAnimatedSlider::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Animation Time")
+	if (node.mTag == "Animation Time")
 	{
-		root.mValue >> mAnimTime;
+		node.mValue >> mAnimTime;
 		return true;
 	}
-	return UISlider::CustomSerializeFrom(root);
+	return UISlider::OnSerializeFrom(node);
 }
 
 //============================================================================================================
 // Serialization - Save
 //============================================================================================================
 
-void UIAnimatedSlider::CustomSerializeTo(TreeNode& root) const
+void UIAnimatedSlider::OnSerializeTo (TreeNode& node) const
 {
-	UISlider::CustomSerializeTo(root);
-	root.AddChild("Animation Time", mAnimTime);
+	UISlider::OnSerializeTo(node);
+	node.AddChild("Animation Time", mAnimTime);
 }

@@ -72,8 +72,8 @@ public:
 	virtual void OnFill (UIQueue* queue)				{ mImage.OnFill(queue); mLabel.OnFill(queue); }
 
 	// Serialization
-	virtual bool CustomSerializeFrom (const TreeNode& root);
-	virtual void CustomSerializeTo (TreeNode& root) const;
+	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual void OnSerializeTo (TreeNode& root) const;
 
 	// Events
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ mLabel.OnMouseMove(pos, delta);	UIArea::OnMouseMove(pos, delta);	return true; }

@@ -13,13 +13,13 @@ void UIHighlight::OnFill (UIQueue* queue)
 	{
 		Array<IUI::Vertex>& v (queue->mVertices);
 
-		float left	 ( mRegion.GetLeft()	);
-		float top	 ( mRegion.GetTop()		);
-		float right	 ( mRegion.GetRight()	);
-		float bottom ( mRegion.GetBottom()	);
+		float left	 ( mRegion.GetCalculatedLeft()	);
+		float top	 ( mRegion.GetCalculatedTop()		);
+		float right	 ( mRegion.GetCalculatedRight()	);
+		float bottom ( mRegion.GetCalculatedBottom()	);
 
-		Color4ub upper ( mColor, mRegion.GetAlpha() );
-		Color4ub lower ( upper.r, upper.g, upper.b, Float::ToRangeByte(mRegion.GetAlpha()) );
+		Color4ub upper ( mColor, mRegion.GetCalculatedAlpha() );
+		Color4ub lower ( upper.r, upper.g, upper.b, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) );
 
 		v.Expand().Set( left,  top,		0.0f, 0.0f, upper );
 		v.Expand().Set( left,  bottom,	0.0f, 1.0f, lower );
@@ -32,13 +32,13 @@ void UIHighlight::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UIHighlight::CustomSerializeFrom(const TreeNode& root)
+bool UIHighlight::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Color")
+	if (node.mTag == "Color")
 	{
 		Color4f color4 (1.0f);
 
-		if (root.mValue >> color4)
+		if (node.mValue >> color4)
 		{
 			SetColor(color4);
 		}
@@ -51,7 +51,7 @@ bool UIHighlight::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UIHighlight::CustomSerializeTo(TreeNode& root) const
+void UIHighlight::OnSerializeTo (TreeNode& node) const
 {
-	root.AddChild("Color", mColor);
+	node.AddChild("Color", mColor);
 }

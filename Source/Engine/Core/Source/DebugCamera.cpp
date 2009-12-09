@@ -214,19 +214,19 @@ void DebugCamera::OnPostUpdate()
 // Serialization -- Save
 //============================================================================================================
 
-void DebugCamera::OnSerializeTo (TreeNode& root) const
+void DebugCamera::OnSerializeTo (TreeNode& node) const
 {
-	Camera::OnSerializeTo(root);
-	root.AddChild("Dolly", mDolly);
+	Camera::OnSerializeTo (node);
+	node.AddChild("Dolly", mDolly);
 }
 
 //============================================================================================================
 // Serialization -- Load
 //============================================================================================================
 
-bool DebugCamera::OnSerializeFrom(const TreeNode& root)
+bool DebugCamera::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Dolly") root.mValue >> mDolly;
-	else return Camera::OnSerializeFrom(root);
+	if (node.mTag == "Dolly") node.mValue >> mDolly;
+	else return Camera::OnSerializeFrom (node);
 	return true;
 }

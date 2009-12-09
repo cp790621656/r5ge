@@ -109,22 +109,22 @@ void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UIAnimatedCheckbox::CustomSerializeFrom(const TreeNode& root)
+bool UIAnimatedCheckbox::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Animation Time")
+	if (node.mTag == "Animation Time")
 	{
-		root.mValue >> mAnimTime;
+		node.mValue >> mAnimTime;
 		return true;
 	}
-	return UICheckbox::CustomSerializeFrom(root);
+	return UICheckbox::OnSerializeFrom(node);
 }
 
 //============================================================================================================
 // Serialization - Save
 //============================================================================================================
 
-void UIAnimatedCheckbox::CustomSerializeTo(TreeNode& root) const
+void UIAnimatedCheckbox::OnSerializeTo (TreeNode& node) const
 {
-	UICheckbox::CustomSerializeTo(root);
-	root.AddChild("Animation Time", mAnimTime);
+	UICheckbox::OnSerializeTo(node);
+	node.AddChild("Animation Time", mAnimTime);
 }

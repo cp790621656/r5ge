@@ -27,7 +27,7 @@ public:
 	const IFont*	GetFont()		const	{ return mFont;	}
 	byte			GetFontSize()	const	{ return (mFont == 0) ? 0 : mFont->GetSize(); }
 	bool			DropsShadow()	const	{ return mShadow;  }
-	Color4ub		GetShadowColor()const	{ return Color4ub(0, 0, 0, Float::ToRangeByte(mRegion.GetAlpha()) ); }
+	Color4ub		GetShadowColor()const	{ return Color4ub(0, 0, 0, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) ); }
 
 	void SetColor	(uint color)			{ SetColor(Color3f(color)); }
 	void SetColor	(const Color4ub& color) { SetColor(Color3f(color.mVal)); }
@@ -47,6 +47,6 @@ public:
 	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
-	virtual bool CustomSerializeFrom(const TreeNode& root);
-	virtual void CustomSerializeTo(TreeNode& root) const;
+	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual void OnSerializeTo (TreeNode& root) const;
 };

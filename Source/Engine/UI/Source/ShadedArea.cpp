@@ -27,12 +27,12 @@ void UIShadedArea::OnFill (UIQueue* queue)
 	{
 		Array<IUI::Vertex>& v (queue->mVertices);
 
-		float left	 ( mRegion.GetLeft()	);
-		float top	 ( mRegion.GetTop()	);
-		float right	 ( mRegion.GetRight()  );
-		float bottom ( mRegion.GetBottom() );
+		float left	 ( mRegion.GetCalculatedLeft()	);
+		float top	 ( mRegion.GetCalculatedTop()	);
+		float right	 ( mRegion.GetCalculatedRight()  );
+		float bottom ( mRegion.GetCalculatedBottom() );
 
-		Color4ub color (255, 255, 255, Float::ToRangeByte(mRegion.GetAlpha()) );
+		Color4ub color (255, 255, 255, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) );
 
 		v.Expand().Set( left,  top,		0.0f, 0.0f, color );
 		v.Expand().Set( left,  bottom,	0.0f, 1.0f, color );
@@ -69,11 +69,11 @@ void UIShadedArea::OnPostDraw (IGraphics* graphics) const
 // Serialization - Load
 //============================================================================================================
 
-bool UIShadedArea::CustomSerializeFrom(const TreeNode& root)
+bool UIShadedArea::OnSerializeFrom (const TreeNode& node)
 {
-	const Variable& value = root.mValue;
+	const Variable& value = node.mValue;
 
-	if (root.mTag == "Shader")
+	if (node.mTag == "Shader")
 	{
 		SetShader( mRoot->GetShader( value.IsString() ? value.AsString() : value.GetString() ) );
 		return true;
@@ -82,7 +82,7 @@ bool UIShadedArea::CustomSerializeFrom(const TreeNode& root)
 	{
 		String left, right;
 		
-		if (root.mTag.Split(left, ' ', right))
+		if (node.mTag.Split(left, ' ', right))
 		{
 			if (left == "Texture")
 			{
@@ -104,9 +104,9 @@ bool UIShadedArea::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UIShadedArea::CustomSerializeTo(TreeNode& root) const
+void UIShadedArea::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& shader = root.AddChild("Shader");
+	TreeNode& shader = node.AddChild("Shader");
 	if (mShader != 0) shader.mValue = mShader->GetName();
 
 	for (uint i = 0; i < mTex.GetSize(); ++i)
@@ -115,7 +115,7 @@ void UIShadedArea::CustomSerializeTo(TreeNode& root) const
 
 		if (tex != 0)
 		{
-			root.AddChild( String("Texture %u", i), tex->GetName() );
+			node.AddChild( String("Texture %u", i), tex->GetName() );
 		}
 	}
 }

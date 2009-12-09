@@ -111,7 +111,7 @@ void UITextArea::_Rebuild (uint offset)
 {
 	mNeedsRebuild = false;
 
-	uint width = Float::FloorToUInt(mRegion.GetWidth());
+	uint width = Float::FloorToUInt(mRegion.GetCalculatedWidth());
 	String currentText;
 
 	// Run through the paragraphs and format the lines
@@ -188,7 +188,7 @@ void UITextArea::OnFill (UIQueue* queue)
 		if (mLines.IsValid())
 		{
 			// Visible region's height
-			uint maxHeight = Float::FloorToUInt(mRegion.GetHeight());
+			uint maxHeight = Float::FloorToUInt(mRegion.GetCalculatedHeight());
 			uint offset = 0;
 
 			// How many lines to skip
@@ -221,7 +221,7 @@ void UITextArea::OnFill (UIQueue* queue)
 							rgn.Update(mRegion);
 
 							// Override the alpha to make it consistent
-							rgn.OverrideAlpha(mRegion.GetAlpha());
+							rgn.OverrideAlpha(mRegion.GetCalculatedAlpha());
 
 							// Fill the line
 							line->OnFill(queue);
@@ -255,7 +255,7 @@ void UITextArea::OnFill (UIQueue* queue)
 							rgn.Update(mRegion);
 
 							// Override the alpha to make it consistent
-							rgn.OverrideAlpha(mRegion.GetAlpha());
+							rgn.OverrideAlpha(mRegion.GetCalculatedAlpha());
 
 							// Fill the line
 							line->OnFill(queue);
@@ -302,11 +302,11 @@ bool UITextArea::OnScroll (const Vector2i& pos, float delta)
 // Serialization -- Load
 //============================================================================================================
 
-bool UITextArea::CustomSerializeFrom(const TreeNode& root)
+bool UITextArea::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Style" && root.mValue.IsString())
+	if (node.mTag == "Style" && node.mValue.IsString())
 	{
-		if (root.mValue.AsString() == "Chat") mStyle = Style::Chat;
+		if (node.mValue.AsString() == "Chat") mStyle = Style::Chat;
 		else mStyle = Style::Normal;
 		return true;
 	}
@@ -317,7 +317,7 @@ bool UITextArea::CustomSerializeFrom(const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void UITextArea::CustomSerializeTo(TreeNode& root) const
+void UITextArea::OnSerializeTo (TreeNode& node) const
 {
-	root.AddChild("Style", (mStyle == Style::Chat) ? "Chat" : "Normal");
+	node.AddChild("Style", (mStyle == Style::Chat) ? "Chat" : "Normal");
 }

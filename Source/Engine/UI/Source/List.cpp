@@ -55,11 +55,11 @@ bool UIList::OnUpdate (bool dimensionsChanged)
 
 			if (mLabel.GetAlignment() == UILabel::Alignment::Right)
 			{
-				mSymbol.GetRegion().SetRight(0.0f, ratio * mImage.GetSubRegion().GetHeight());
+				mSymbol.GetRegion().SetRight(0.0f, ratio * mImage.GetSubRegion().GetCalculatedHeight());
 			}
 			else
 			{
-				mSymbol.GetRegion().SetLeft(1.0f, -ratio * mImage.GetSubRegion().GetHeight());
+				mSymbol.GetRegion().SetLeft(1.0f, -ratio * mImage.GetSubRegion().GetCalculatedHeight());
 			}
 		}
 	}
@@ -81,16 +81,16 @@ void UIList::OnFill (UIQueue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool UIList::CustomSerializeFrom (const TreeNode& root)
+bool UIList::OnSerializeFrom (const TreeNode& node)
 {
-	if (UIMenu::CustomSerializeFrom(root))
+	if (UIMenu::OnSerializeFrom (node))
 	{
-		if (root.mTag == "Text")
+		if (node.mTag == "Text")
 		{
-			root.mValue >> mSelection;
+			node.mValue >> mSelection;
 			if (mOnValueChange) mOnValueChange(this);
 		}
-		else if (root.mTag == "Skin")
+		else if (node.mTag == "Skin")
 		{
 			mSymbol.SetSkin(mImage.GetSkin(), false);
 			mSymbol.SetFace("Down Arrow", false);

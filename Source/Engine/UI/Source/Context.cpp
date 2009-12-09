@@ -149,12 +149,12 @@ bool UIContext::_OnMouseOverItem (UIArea* area, bool inside)
 			{
 				const UIRegion& areaRegion (area->GetSubRegion());
 				const UIRegion& parentRegion (parent->GetSubRegion());
-				float top = areaRegion.GetTop() - parentRegion.GetTop();
+				float top = areaRegion.GetCalculatedTop() - parentRegion.GetCalculatedTop();
 
 				img->SetSkin(parent->GetSkin());
 				img->SetFace("Generic Highlight");
 				img->GetRegion().SetTop(0, top);
-				img->GetRegion().SetBottom(0, top + areaRegion.GetHeight());
+				img->GetRegion().SetBottom(0, top + areaRegion.GetCalculatedHeight());
 				img->SetReceivesEvents(false);
 			}
 		}
@@ -191,7 +191,7 @@ bool UIContext::_OnItemFocus (UIArea* area, bool hasFocus)
 
 void UIContext::SetAlpha (float val, float animTime)
 {
-	float alpha = GetAlpha();
+	float alpha = GetCalculatedAlpha();
 
 	if (val == 1.0f)
 	{

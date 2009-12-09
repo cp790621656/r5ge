@@ -300,7 +300,7 @@ bool UIArea::SerializeFrom (const TreeNode& root)
 			{
 				value >> layer;
 			}
-			else if (!CustomSerializeFrom(node))
+			else if (!OnSerializeFrom(node))
 			{
 				// Try to find or add a child node
 				UIArea* child = _AddChild( tag, value.IsString() ? value.AsString() : value.GetString() );
@@ -323,7 +323,7 @@ bool UIArea::SerializeTo (TreeNode& root) const
 	{
 		TreeNode& node = root.AddChild(GetClassID(), GetName());
 		mRegion.SerializeTo(node);
-		CustomSerializeTo(node);
+		OnSerializeTo(node);
 
 		node.AddChild("Receives Events", mReceivesEvents);
 		if (mTooltip) node.AddChild("Tooltip", mTooltip);

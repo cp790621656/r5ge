@@ -76,8 +76,8 @@ UIContext* UIMenu::_ShowMenu()
 		menu->SetFace( (mMenuFace.IsValid() ? mMenuFace : "Button: Pressed") );
 		menu->SetFont( GetFont() );
 		menu->SetColor( GetColor() );
-		menu->SetAnchor( Vector3f(mRegion.GetLeft(), mRegion.GetBottom(), mRegion.GetHeight()) );
-		menu->SetMinWidth( mRegion.GetWidth() );
+		menu->SetAnchor( Vector3f(mRegion.GetCalculatedLeft(), mRegion.GetCalculatedBottom(), mRegion.GetCalculatedHeight()) );
+		menu->SetMinWidth( mRegion.GetCalculatedWidth() );
 		menu->SetAlignment( _GetMenuItemAlignment() );
 		menu->Show();
 		menu->SetFocus(true);
@@ -175,28 +175,28 @@ bool UIMenu::SetState (uint state, bool val)
 // Serialization -- Load
 //============================================================================================================
 
-bool UIMenu::CustomSerializeFrom (const TreeNode& root)
+bool UIMenu::OnSerializeFrom (const TreeNode& node)
 {
-	if (BaseClass::CustomSerializeFrom(root))
+	if (BaseClass::OnSerializeFrom (node))
 	{
 		return true;
 	}
-	else if (root.mTag == "Menu")
+	else if (node.mTag == "Menu")
 	{
-		mMenuFace = root.mValue.IsString() ? root.mValue.AsString() : root.mValue.GetString();
+		mMenuFace = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
 		return true;
 	}
-	else if (root.mTag == "Entries")
+	else if (node.mTag == "Entries")
 	{
-		if (root.mValue.IsStringArray())
+		if (node.mValue.IsStringArray())
 		{
-			mEntries = root.mValue.AsStringArray();
+			mEntries = node.mValue.AsStringArray();
 		}
 		else
 		{
 			ClearAllEntries();
-			for (uint i = 0; i < root.mChildren.GetSize(); ++i)
-				AddEntry(root.mChildren[i].mTag);
+			for (uint i = 0; i < node.mChildren.GetSize(); ++i)
+				AddEntry(node.mChildren[i].mTag);
 		}
 		return true;
 	}
@@ -207,9 +207,9 @@ bool UIMenu::CustomSerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void UIMenu::CustomSerializeTo (TreeNode& root) const
+void UIMenu::OnSerializeTo (TreeNode& node) const
 {
-	BaseClass::CustomSerializeTo(root);
-	root.AddChild("Menu", mMenuFace);
-	root.AddChild("Entries", mEntries);
+	BaseClass::OnSerializeTo (node);
+	node.AddChild("Menu", mMenuFace);
+	node.AddChild("Entries", mEntries);
 }

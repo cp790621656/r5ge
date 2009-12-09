@@ -40,8 +40,8 @@ void UIWindow::SetTitlebarHeight (byte val)
 
 Vector2f UIWindow::GetSizeForContent (float x, float y)
 {
-	float paddingX = mRegion.GetWidth()  - mContent.GetWidth();
-	float paddingY = mRegion.GetHeight() - mContent.GetHeight();
+	float paddingX = mRegion.GetCalculatedWidth()  - mContent.GetCalculatedWidth();
+	float paddingY = mRegion.GetCalculatedHeight() - mContent.GetCalculatedHeight();
 	return Vector2f(x + paddingX, y + paddingY);
 }
 
@@ -110,7 +110,7 @@ bool UIWindow::OnUpdate (bool dimensionsChanged)
 		float border = (face) ? (float)face->GetBorder() : 0.0f;
 		if (border < 0.0f) border = 0.0f;
 
-		float height = mTitlebar.GetRegion().GetHeight();
+		float height = mTitlebar.GetRegion().GetCalculatedHeight();
 		if (height < border) height = border;
 
 		mContent.SetTop		(0.0f,  height);
@@ -139,42 +139,42 @@ void UIWindow::OnFill (UIQueue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool UIWindow::CustomSerializeFrom (const TreeNode& root)
+bool UIWindow::OnSerializeFrom (const TreeNode& node)
 {
-	const Variable& value = root.mValue;
+	const Variable& value = node.mValue;
 
-	if (root.mTag == "Skin")
+	if (node.mTag == "Skin")
 	{
 		SetSkin( mRoot->GetSkin(value.IsString() ? value.AsString() : value.GetString()) );
 		return true;
 	}
-	else if (root.mTag == "Titlebar Height")
+	else if (node.mTag == "Titlebar Height")
 	{
 		uint height;
 		if (value >> height) SetTitlebarHeight((byte)height);
 		return true;
 	}
-	else if (root.mTag == "Resizable")
+	else if (node.mTag == "Resizable")
 	{
 		bool val;
 		if (value >> val) SetResizable(val);
 		return true;
 	}
-	return mTitle.CustomSerializeFrom(root);
+	return mTitle.OnSerializeFrom (node);
 }
 
 //============================================================================================================
 // Serialization -- Save
 //============================================================================================================
 
-void UIWindow::CustomSerializeTo (TreeNode& root) const
+void UIWindow::OnSerializeTo (TreeNode& node) const
 {
 	const UISkin* skin = GetSkin();
-	if (skin != 0) root.AddChild("Skin", skin->GetName());
-	else root.AddChild("Skin");
-	root.AddChild("Titlebar Height", mTitleHeight);
-	root.AddChild("Resizable", mResizable);
-	mTitle.CustomSerializeTo(root);
+	if (skin != 0) node.AddChild("Skin", skin->GetName());
+	else node.AddChild("Skin");
+	node.AddChild("Titlebar Height", mTitleHeight);
+	node.AddChild("Resizable", mResizable);
+	mTitle.OnSerializeTo (node);
 }
 
 //============================================================================================================
@@ -190,14 +190,14 @@ bool UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 	else if (mMovement != Movement::None)
 	{
 		Vector2f move;
-		Vector2f min (100.0f, mTitlebar.GetRegion().GetHeight());
+		Vector2f min (100.0f, mTitlebar.GetRegion().GetCalculatedHeight());
 		if (min.y < 10.0f) min.y = 10.0f;
 
 		if (mMovement & Movement::ResizeRight)
-			move.x = (mRegion.GetWidth()  + delta.x < min.x) ? min.x - mRegion.GetWidth()  : delta.x;
+			move.x = (mRegion.GetCalculatedWidth()  + delta.x < min.x) ? min.x - mRegion.GetCalculatedWidth()  : delta.x;
 
 		if (mMovement & Movement::ResizeBottom)
-			move.y = (mRegion.GetHeight() + delta.y < min.y) ? min.y - mRegion.GetHeight() : delta.y;
+			move.y = (mRegion.GetCalculatedHeight() + delta.y < min.y) ? min.y - mRegion.GetCalculatedHeight() : delta.y;
 
 		if (move.Dot() > 0.0f) mRegion.Adjust(0, 0, move.x, move.y);
 	}
@@ -222,11 +222,11 @@ bool UIWindow::OnKey (const Vector2i& pos, byte key, bool isDown)
 			if (mResizable)
 			{
 				// Resizing the window right border
-				if (pos.x >= mRegion.GetRight() - border)
+				if (pos.x >= mRegion.GetCalculatedRight() - border)
 					mMovement |= Movement::ResizeRight;
 
 				// Resizing the window by dragging the bottom border
-				if (pos.y >= mRegion.GetBottom() - border)
+				if (pos.y >= mRegion.GetCalculatedBottom() - border)
 					mMovement |= Movement::ResizeBottom;
 			}
 

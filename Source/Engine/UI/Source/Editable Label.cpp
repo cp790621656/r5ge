@@ -7,9 +7,9 @@ using namespace R5;
 
 uint UIEditableLabel::_GetIndexAt (const Vector2i& pos) const
 {
-	if ( mFont != 0 && mText.IsValid() && pos.x > mRegion.GetLeft() )
+	if ( mFont != 0 && mText.IsValid() && pos.x > mRegion.GetCalculatedLeft() )
 	{
-		uint width = Float::RoundToUInt(pos.x - mRegion.GetLeft());
+		uint width = Float::RoundToUInt(pos.x - mRegion.GetCalculatedLeft());
 		uint charIndex = mFont->CountChars( mText, width, mStart, 0xFFFFFFFF, false, true, mTags );
 		return mStart + charIndex;
 	}
@@ -47,7 +47,7 @@ void  UIEditableLabel::_MoveCursorTo(uint index)
 		else if ( index > mEnd )
 		{
 			uint count = mFont->CountChars( mText,
-				Float::RoundToUInt(mRegion.GetWidth()), 0, index, true, false, mTags );
+				Float::RoundToUInt(mRegion.GetCalculatedWidth()), 0, index, true, false, mTags );
 
 			mSelectionEnd	= index;
 			mStart			= index - count;
@@ -87,7 +87,7 @@ void  UIEditableLabel::SetText (const String& text)
 		mSelectionEnd	= 0;
 		mSelectionStart	= 0;
 
-		if (GetAlpha() > 0.0f) SetDirty();
+		if (GetCalculatedAlpha() > 0.0f) SetDirty();
 	}
 }
 
@@ -148,7 +148,7 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 		{
 			if (mHasFocus)
 			{
-				Color4ub color ( mSelColor, mRegion.GetAlpha() );
+				Color4ub color ( mSelColor, mRegion.GetCalculatedAlpha() );
 
 				uint selStart, selEnd;
 				float left, right;
@@ -168,17 +168,17 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 				// If the selection start is after the line start, figure out the offset in pixels
 				if ( selStart > mStart )
 				{
-					left = mRegion.GetLeft() + mFont->GetLength( mText, mStart, selStart, mTags );
+					left = mRegion.GetCalculatedLeft() + mFont->GetLength( mText, mStart, selStart, mTags );
 				}
 				else
 				{
 					// The selection start is at or below the line start -- cap it at line start
 					selStart = mStart;
-					left	 = mRegion.GetLeft();
+					left	 = mRegion.GetCalculatedLeft();
 				}
 
 				// Recalculate the end position
-				mEnd = mStart + mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetWidth()),
+				mEnd = mStart + mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 					mStart, 0xFFFFFFFF, false, false, mTags );
 
 				// Limit the selection end is past the right side, cap it
@@ -187,7 +187,7 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 				if ( selStart == selEnd )
 				{
 					// If the selection start and ending points match, make the highlight visible anyway
-					right = left + mRegion.GetHeight() / 4;
+					right = left + mRegion.GetCalculatedHeight() / 4;
 				}
 				else
 				{
@@ -195,8 +195,8 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 					right = left + mFont->GetLength( mText, selStart, selEnd, mTags );
 				}
 
-				float top	 = mRegion.GetTop();
-				float bottom = mRegion.GetBottom();
+				float top	 = mRegion.GetCalculatedTop();
+				float bottom = mRegion.GetCalculatedBottom();
 
 				Array<IUI::Vertex>& v (queue->mVertices);
 
@@ -214,16 +214,16 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UIEditableLabel::CustomSerializeFrom(const TreeNode& root)
+bool UIEditableLabel::OnSerializeFrom (const TreeNode& node)
 {
-	if (UITextLine::CustomSerializeFrom(root))
+	if (UITextLine::OnSerializeFrom(node))
 	{
 		return true;
 	}
-	else if (root.mTag == "Selection Color")
+	else if (node.mTag == "Selection Color")
 	{
 		Color4f color;
-		if (root.mValue >> color) SetSelectionColor(color);
+		if (node.mValue >> color) SetSelectionColor(color);
 	}
 	return false;
 }
@@ -232,10 +232,10 @@ bool UIEditableLabel::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UIEditableLabel::CustomSerializeTo(TreeNode& root) const
+void UIEditableLabel::OnSerializeTo (TreeNode& node) const
 {
-	UITextLine::CustomSerializeTo(root);
-	root.AddChild("Selection Color", mSelColor);
+	UITextLine::OnSerializeTo(node);
+	node.AddChild("Selection Color", mSelColor);
 }
 
 //============================================================================================================
@@ -361,7 +361,7 @@ bool UIEditableLabel::OnChar (byte character)
 	{
 		// If the point we're deleting up to is left of the rendered text, move it down
 		mStart = left - mFont->CountChars( mText,
-			Float::RoundToUInt(mRegion.GetWidth()), 0, left, true, false, mTags );
+			Float::RoundToUInt(mRegion.GetCalculatedWidth()), 0, left, true, false, mTags );
 	}
 
 	mSelectionEnd = mSelectionStart = left;

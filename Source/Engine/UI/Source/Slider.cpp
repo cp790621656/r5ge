@@ -22,10 +22,10 @@ void UISlider::SetValue (float val)
 
 void UISlider::SetValue (const Vector2i& pos)
 {
-	float left	 ( mRegion.GetLeft()   );
-	float bottom ( mRegion.GetBottom() );
-	float width  ( mRegion.GetWidth()  );
-	float height ( mRegion.GetHeight() );
+	float left	 ( mRegion.GetCalculatedLeft()   );
+	float bottom ( mRegion.GetCalculatedBottom() );
+	float width  ( mRegion.GetCalculatedWidth()  );
+	float height ( mRegion.GetCalculatedHeight() );
 
 	if (width > height)
 	{
@@ -90,15 +90,15 @@ void UISlider::OnFill (UIQueue* queue)
 	{
 		Array<IUI::Vertex>& v (queue->mVertices);
 
-		float left	 ( mRegion.GetLeft()   );
-		float top	 ( mRegion.GetTop()    );
-		float right	 ( mRegion.GetRight()  );
-		float bottom ( mRegion.GetBottom() );
-		float width	 ( mRegion.GetWidth()  );
-		float height ( mRegion.GetHeight() );
+		float left	 ( mRegion.GetCalculatedLeft()   );
+		float top	 ( mRegion.GetCalculatedTop()    );
+		float right	 ( mRegion.GetCalculatedRight()  );
+		float bottom ( mRegion.GetCalculatedBottom() );
+		float width	 ( mRegion.GetCalculatedWidth()  );
+		float height ( mRegion.GetCalculatedHeight() );
 
-		Color4ub white	 ( 255, 255, 255, Float::ToRangeByte(mRegion.GetAlpha()) );
-		Color4ub color   ( mColor, mRegion.GetAlpha() );
+		Color4ub white	 ( 255, 255, 255, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) );
+		Color4ub color   ( mColor, mRegion.GetCalculatedAlpha() );
 		Vector2i texSize ( queue->mTex->GetSize() );
 
 		UIFace::Rectangle  full  (  mFull->GetRectangle(texSize) );
@@ -175,16 +175,16 @@ void UISlider::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UISlider::CustomSerializeFrom(const TreeNode& root)
+bool UISlider::OnSerializeFrom (const TreeNode& node)
 {
-	const Variable& value = root.mValue;
+	const Variable& value = node.mValue;
 
-	if (root.mTag == "Skin")
+	if (node.mTag == "Skin")
 	{
 		SetSkin( mRoot->GetSkin( value.IsString() ? value.AsString() : value.GetString() ) );
 		return true;
 	}
-	else if (root.mTag == "Value")
+	else if (node.mTag == "Value")
 	{
 		float val;
 		if (value >> val)
@@ -194,7 +194,7 @@ bool UISlider::CustomSerializeFrom(const TreeNode& root)
 		}
 		return true;
 	}
-	else if (root.mTag == "Color")
+	else if (node.mTag == "Color")
 	{
 		Color3f color;
 		if (value >> color) SetColor(color);
@@ -207,12 +207,12 @@ bool UISlider::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UISlider::CustomSerializeTo(TreeNode& root) const
+void UISlider::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& skin = root.AddChild("Skin");
+	TreeNode& skin = node.AddChild("Skin");
 	if (mSkin != 0) skin.mValue = mSkin->GetName();
-	root.AddChild("Value", mVal);
-	root.AddChild("Color", mColor);
+	node.AddChild("Value", mVal);
+	node.AddChild("Color", mColor);
 }
 
 //============================================================================================================

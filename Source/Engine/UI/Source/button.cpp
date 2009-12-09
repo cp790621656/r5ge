@@ -112,17 +112,17 @@ void UIButton::OnFill (UIQueue* queue)
 // Serialization -- Load
 //============================================================================================================
 
-bool UIButton::CustomSerializeFrom (const TreeNode& root)
+bool UIButton::OnSerializeFrom (const TreeNode& node)
 {
-	if ( mImage.CustomSerializeFrom(root) )
+	if ( mImage.OnSerializeFrom(node) )
 	{
 		return true;
 	}
-	else if (root.mTag == "State")
+	else if (node.mTag == "State")
 	{
-		if (root.mValue.IsString())
+		if (node.mValue.IsString())
 		{
-			const String& state = root.mValue.AsString();
+			const String& state = node.mValue.AsString();
 
 			if		(state == "Disabled")	SetState(State::Enabled, false);
 			else if (state == "Pressed")	SetState(State::Enabled | State::Pressed, true);
@@ -130,36 +130,36 @@ bool UIButton::CustomSerializeFrom (const TreeNode& root)
 		}
 		return true;
 	}
-	else if ( root.mTag == "Sticky" )
+	else if ( node.mTag == "Sticky" )
 	{
 		bool val;
-		if (root.mValue >> val) SetSticky(val);
+		if (node.mValue >> val) SetSticky(val);
 		return true;
 	}
-	return mLabel.CustomSerializeFrom(root);
+	return mLabel.OnSerializeFrom (node);
 }
 
 //============================================================================================================
 // Serialization -- Save
 //============================================================================================================
 
-void UIButton::CustomSerializeTo (TreeNode& root) const
+void UIButton::OnSerializeTo (TreeNode& node) const
 {
 	// Only the skin is saved from the SubPicture. Face is ignored.
 	const UISkin* skin = mImage.GetSkin();
-	TreeNode& child = root.AddChild("Skin");
+	TreeNode& child = node.AddChild("Skin");
 	if (skin) child.mValue = skin->GetName();
 
 	// Label settings are saved fully
-	mLabel.CustomSerializeTo(root);
+	mLabel.OnSerializeTo (node);
 
 	// Save the state
-	if		(mState & State::Pressed && mSticky)	root.AddChild("State", "Pressed");
-	else if (mState & State::Enabled)				root.AddChild("State", "Enabled");
-	else											root.AddChild("State", "Disabled");
+	if		(mState & State::Pressed && mSticky)	node.AddChild("State", "Pressed");
+	else if (mState & State::Enabled)				node.AddChild("State", "Enabled");
+	else											node.AddChild("State", "Disabled");
 
 	// Whether the button is a sticky (push) button
-	root.AddChild("Sticky", mSticky);
+	node.AddChild("Sticky", mSticky);
 }
 
 //============================================================================================================

@@ -109,12 +109,12 @@ void UISubPicture::OnFill (UIQueue* queue)
 	{
 		Array<IUI::Vertex>& v (queue->mVertices);
 
-		float left	 ( mRegion.GetLeft() );
-		float top	 ( mRegion.GetTop() );
-		float right	 ( mRegion.GetRight() );
-		float bottom ( mRegion.GetBottom() );
+		float left	 ( mRegion.GetCalculatedLeft() );
+		float top	 ( mRegion.GetCalculatedTop() );
+		float right	 ( mRegion.GetCalculatedRight() );
+		float bottom ( mRegion.GetCalculatedBottom() );
 
-		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetAlpha() ));
+		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetCalculatedAlpha() ));
 		const Vector2i& texSize (queue->mTex->GetSize());
 		UIFace::Rectangle face (mFace->GetRectangle(texSize));
 
@@ -208,16 +208,16 @@ void UISubPicture::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UISubPicture::CustomSerializeFrom(const TreeNode& root)
+bool UISubPicture::OnSerializeFrom (const TreeNode& node)
 {
-	const Variable& value = root.mValue;
+	const Variable& value = node.mValue;
 	
-	if (root.mTag == "Skin")
+	if (node.mTag == "Skin")
 	{
 		SetSkin( mRoot->GetSkin( value.IsString() ? value.AsString() : value.GetString() ) );
 		return true;
 	}
-	else if (root.mTag == "Face")
+	else if (node.mTag == "Face")
 	{
 		SetFace( value.IsString() ? value.AsString() : value.GetString() );
 		return true;
@@ -229,11 +229,11 @@ bool UISubPicture::CustomSerializeFrom(const TreeNode& root)
 // Serialization - Save
 //============================================================================================================
 
-void UISubPicture::CustomSerializeTo(TreeNode& root) const
+void UISubPicture::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& skinNode = root.AddChild("Skin");
+	TreeNode& skinNode = node.AddChild("Skin");
 	if (mSkin != 0) skinNode.mValue = mSkin->GetName();
 
-	TreeNode& faceNode = root.AddChild("Face");
+	TreeNode& faceNode = node.AddChild("Face");
 	if (mFace != 0) faceNode.mValue = mFace->GetName();
 }

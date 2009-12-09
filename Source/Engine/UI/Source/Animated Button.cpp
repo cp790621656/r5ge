@@ -115,22 +115,22 @@ void UIAnimatedButton::OnFill (UIQueue* queue)
 // Serialization - Load
 //============================================================================================================
 
-bool UIAnimatedButton::CustomSerializeFrom(const TreeNode& root)
+bool UIAnimatedButton::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Animation Time")
+	if (node.mTag == "Animation Time")
 	{
-		root.mValue >> mAnimTime;
+		node.mValue >> mAnimTime;
 		return true;
 	}
-	return UIButton::CustomSerializeFrom(root);
+	return UIButton::OnSerializeFrom(node);
 }
 
 //============================================================================================================
 // Serialization - Save
 //============================================================================================================
 
-void UIAnimatedButton::CustomSerializeTo(TreeNode& root) const
+void UIAnimatedButton::OnSerializeTo (TreeNode& node) const
 {
-	UIButton::CustomSerializeTo(root);
-	root.AddChild("Animation Time", mAnimTime);
+	UIButton::OnSerializeTo(node);
+	node.AddChild("Animation Time", mAnimTime);
 }

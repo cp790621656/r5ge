@@ -38,6 +38,6 @@ public:
 	virtual void OnPostDraw(IGraphics* graphics) const;
 
 	// Serialization
-	virtual bool CustomSerializeFrom (const TreeNode& root);
-	virtual void CustomSerializeTo (TreeNode& root) const;
+	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual void OnSerializeTo (TreeNode& root) const;
 };

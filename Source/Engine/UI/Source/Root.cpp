@@ -332,14 +332,14 @@ bool UIRoot::CreateDefaultTooltip (UIArea* area)
 		hl->SetColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
 
 		UIRegion& hlrgn (hl->GetRegion());
-		hlrgn.GetRelativeLeft().Set		(0.0f, -3.0f);
-		hlrgn.GetRelativeRight().Set	(1.0f,  3.0f);
-		hlrgn.GetRelativeTop().Set		(0.0f, -3.0f);
-		hlrgn.GetRelativeBottom().Set	(1.0f,  3.0f);
+		hlrgn.SetLeft	(0.0f, -3.0f);
+		hlrgn.SetRight	(1.0f,  3.0f);
+		hlrgn.SetTop	(0.0f, -3.0f);
+		hlrgn.SetBottom	(1.0f,  3.0f);
 
 		UIRegion& rgn = mTooltip.GetRegion();
-		rgn.GetRelativeRight().Set (0.0f, (float)textWidth);
-		rgn.GetRelativeBottom().Set(0.0f, (float)textSize);
+		rgn.SetRight	(0.0f, (float)textWidth);
+		rgn.SetBottom	(0.0f, (float)textSize);
 
 		parent = hl;
 	}
@@ -352,8 +352,8 @@ bool UIRoot::CreateDefaultTooltip (UIArea* area)
 		if (border < 0) border = 0;
 
 		UIRegion& rgn = mTooltip.GetRegion();
-		rgn.GetRelativeRight().Set (0.0f, (float)(textWidth + border * 2));
-		rgn.GetRelativeBottom().Set(0.0f, (float)(textSize  + border * 2));
+		rgn.SetRight (0.0f, (float)(textWidth + border * 2));
+		rgn.SetBottom(0.0f, (float)(textSize  + border * 2));
 
 		parent = img;
 	}
@@ -375,20 +375,20 @@ bool UIRoot::CreateDefaultTooltip (UIArea* area)
 bool UIRoot::AlignDefaultTooltip()
 {
 	// Update
-	UIRegion& rgn  = mTooltip.GetRegion();
-	float left   = (float)mMousePos.x;
-	float top    = (float)mMousePos.y;
-	float topOff = top + 25.0f;
-	float width  = rgn.GetRelativeRight().mAbsolute - rgn.GetRelativeLeft().mAbsolute;
-	float half	 = width * 0.5f;
-	float height = rgn.GetRelativeBottom().mAbsolute - rgn.GetRelativeTop().mAbsolute;
+	UIRegion& rgn = mTooltip.GetRegion();
+	float left    = (float)mMousePos.x;
+	float top     = (float)mMousePos.y;
+	float topOff  = top + 25.0f;
+	float width   = rgn.GetRight().mAbsolute - rgn.GetLeft().mAbsolute;
+	float half	  = width * 0.5f;
+	float height  = rgn.GetBottom().mAbsolute - rgn.GetTop().mAbsolute;
 
 	if (width > 0.0f && height > 0.0f)
 	{
 		// The tooltip should be centered horizontally
-		if		(left - half < 0)			left = 0;
+		if (left - half < 0) left = 0;
 		else if (left + half > mSize.x)	left = mSize.x - width;
-		else								left = left - half;
+		else left = left - half;
 
 		// Vertically it should be either some space below, or directly above the mouse
 		top = (topOff + height < mSize.y) ? topOff : top - height - 5;
