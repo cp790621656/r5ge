@@ -16,6 +16,8 @@ PFNGLLOCKARRAYSEXTPROC				glLockArrays			= 0;
 PFNGLUNLOCKARRAYSEXTPROC			glUnlockArrays			= 0;
 PFNGLMULTITEXCOORD1FARBPROC			glMultiTexCoord1f		= 0;
 PFNGLMULTITEXCOORD2FARBPROC			glMultiTexCoord2f		= 0;
+PFNGLMULTITEXCOORD3FVARBPROC		glMultiTexCoord3fv		= 0;
+PFNGLMULTITEXCOORD4FVARBPROC		glMultiTexCoord4fv		= 0;
 PFNGLGENERATEMIPMAPEXTPROC			glGenerateMipmap		= 0;
 PFNGLTEXIMAGE3DEXTPROC				glTexImage3D			= 0;
 
@@ -148,6 +150,8 @@ bool _BindFunctionPointers()
 	glUnlockArrays				= (PFNGLUNLOCKARRAYSEXTPROC)			glGetFunction(essential, "glUnlockArraysEXT");
 	glMultiTexCoord1f			= (PFNGLMULTITEXCOORD1FARBPROC)			glGetFunction(essential, "glMultiTexCoord1fARB");
 	glMultiTexCoord2f			= (PFNGLMULTITEXCOORD2FARBPROC)			glGetFunction(essential, "glMultiTexCoord2fARB");
+	glMultiTexCoord3fv			= (PFNGLMULTITEXCOORD3FVARBPROC)		glGetFunction(essential, "glMultiTexCoord3fvARB");
+	glMultiTexCoord4fv			= (PFNGLMULTITEXCOORD4FVARBPROC)		glGetFunction(essential, "glMultiTexCoord4fvARB");
 	glGenerateMipmap			= (PFNGLGENERATEMIPMAPEXTPROC)			glGetFunction(essential, "glGenerateMipmapEXT");
 	glTexImage3D				= (PFNGLTEXIMAGE3DEXTPROC)				glGetFunction(essential, "glTexImage3DEXT");
 	

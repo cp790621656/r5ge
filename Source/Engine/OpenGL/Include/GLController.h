@@ -26,6 +26,19 @@ class GLController : public IGraphics
 		BufferEntry() : mVbo(0), mPtr((void*)(-1)), mEnabled(false) {}
 	};
 
+	template <typename Matrix>
+	struct MatrixEntry
+	{
+		Matrix	mMat;			// Actual matrix
+		bool	mRecalculate;	// Whether the matrix needs to be recalculated
+		bool	mOverwritten;	// Whether the matrix has been set to something other than the default value
+
+		MatrixEntry() : mRecalculate(false), mOverwritten(false) {}
+	};
+
+	typedef MatrixEntry<Matrix43> Mat43;
+	typedef MatrixEntry<Matrix44> Mat44;
+
 protected:
 
 	FrameStats	mStats;				// Current frame statistics
@@ -59,22 +72,18 @@ protected:
 	Vector3f	mDir;				// Camera's 'LookAt' direction
 	Vector3f	mUp;				// Camera's 'up' direction
 
-	Matrix43	mWorld;				// World matrix, aka the "model" part of "modelview"
-	Matrix43	mView;				// View matrix, changes with the camera position, lookAt, and up vectors
-	Matrix44	mProj;				// Projection matrix, changes with the viewport dimensions, FOV, near/fear planes, and aspect ratio
-	Matrix44	mVp;				// Cached View*Projection matrix
-	Matrix43	mIv;				// Inverse View matrix
-	Matrix44	mIp;				// Inverse Projection matrix
-	Matrix44	mIvp;				// Inverse View*Projection matrix
+	Mat43		mModel;				// World transformation matrix
+	Mat43		mView;				// View matrix, changes with camera's position and rotation
+	Mat44		mProj;				// Projection matrix, changes with the viewport dimensions, FOV, near/fear planes, and aspect ratio
 
-	bool		mViewIsDirty;		// Whether the modelview matrix needs to be updated
-	bool		mProjIsDirty;		// Whether the projection matrix needs to be updated
-	bool		mVpIsDirty;			// Whether the view*projection matrix needs to be updated
-	bool		mIvIsDirty;			// Whether the inverse view matrix needs to be updated
-	bool		mIpIsDirty;			// Whether the inverse projection matrix needs to be updated
-	bool		mIvpIsDirty;		// Whether the inverse view*projection matrix needs to be updated
-	bool		mCleanView;			// Whether the view matrix is currently set to its default value
-	bool		mCleanWorld;		// Whether the world matrix is currently set to identity
+	Mat43		mMV;				// World * View matrix
+	Mat44		mMVP;				// Cached ModelView*Projection matrix
+	Mat43		mIMV;				// Inverse ModelView matrix
+	Mat44		mIP;				// Inverse Projection matrix
+	Mat44		mIMVP;				// Inverse ModelView*Projection matrix
+
+	bool		mResetView;			// Whether to reset the view matrix next time we draw
+	bool		mResetProj;			// Whether to reset the projection matrix next time we draw
 
 	Color		mMatDiff;			// Active diffuse and ambient color
 	Color		mMatSpec;			// Active specular color
@@ -163,25 +172,27 @@ public:
 	virtual float				GetCameraFOV()			const	{ return mFov;			}
 
 	// Matrix retrieval
-	virtual const Matrix43&		GetWorldMatrix()				{					 return mWorld; }
-	virtual const Matrix43&		GetViewMatrix()					{ _UpdateMatrices(); return mView;	}
-	virtual const Matrix44&		GetProjectionMatrix()			{ _UpdateMatrices(); return mProj;	}
-	virtual const Matrix44&		GetViewProjMatrix();
-	virtual const Matrix43&		GetInverseViewMatrix();
+	virtual const Matrix43&		GetModelMatrix();
+	virtual const Matrix43&		GetViewMatrix();
+	virtual const Matrix44&		GetProjectionMatrix();
+
+	virtual const Matrix43&		GetModelViewMatrix();
+	virtual const Matrix44&		GetModelViewProjMatrix();
+	virtual const Matrix43&		GetInverseModelViewMatrix();
 	virtual const Matrix44&		GetInverseProjMatrix();
-	virtual const Matrix44&		GetInverseViewProjMatrix();
+	virtual const Matrix44&		GetInverseMVPMatrix();
 
-	// World matrix manipulation
-	virtual void SetWorldMatrix( const Matrix43& mat );
-	virtual void ResetWorldMatrix() { GLController::ResetViewMatrix(); }
+	// Model matrix manipulation -- resets the View matrix back to default
+	virtual void SetModelMatrix (const Matrix43& mat);
+	virtual void ResetModelMatrix();
 
-	// View matrix manipulation
-	virtual void SetViewMatrix( const Matrix43& mat );
-	virtual void ResetViewMatrix();
+	// ModelView matrix manipulation -- overrides the Model component
+	virtual void SetModelViewMatrix (const Matrix43& mat);
+	virtual void ResetModelViewMatrix();
 
 	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
-	virtual void SetCameraOrientation	( const Vector3f& eye, const Vector3f& dir, const Vector3f& up );
-	virtual void SetCameraRange			( const Vector3f& range );
+	virtual void SetCameraOrientation		( const Vector3f& eye, const Vector3f& dir, const Vector3f& up );
+	virtual void SetCameraRange				( const Vector3f& range );
 
 	// Active object control
 	virtual void SetActiveRenderTarget		( const IRenderTarget* tar );
@@ -194,7 +205,7 @@ public:
 	virtual void SetActiveProjection		( uint projection );
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid );
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr );
-	virtual void SetActiveLight				( uint index, const ILight* ptr );
+	virtual void SetActiveLight				( uint index, const Light* ptr );
 	virtual void SetActiveDepthFunction		( uint condition );
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask );
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass );
@@ -212,9 +223,18 @@ public:
 
 protected:
 
+	// Draw using an index array
 	uint _DrawIndices ( const IVBO* vbo, const ushort* ptr, uint primitive, uint indexCount );
 
-	void _UpdateMatrices ( bool forceReset = false );
+	// Activate all appropriate matrices
+	void _ActivateMatrices();
 
+	// Changes the currently active texture unit
 	bool _SetActiveTextureUnit ( uint textureUnit );
+
+	// Marks all view-affected matrices as needing to be recalculated
+	void _ViewHasChanged();
+
+	// Marks all projection-affected matrices as needing to be recalculated
+	void _ProjHasChanged();
 };

@@ -63,7 +63,7 @@ void TestApp::OnDraw()
 	if (g_ssao > 0)
 	{
 		techs.Expand() = deferred;
-		const ILight::List& lights = mScene.GetVisibleLights();
+		const Light::List& lights = mScene.GetVisibleLights();
 		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, techs,
 			bind(&Scene::Draw, &mScene), ((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
 

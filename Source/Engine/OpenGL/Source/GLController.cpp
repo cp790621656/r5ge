@@ -112,14 +112,8 @@ GLController::GLController() :
 	mSimpleMaterial		(false),
 	mActiveLightCount	(0),
 	mProjection			(Projection::Orthographic),
-	mViewIsDirty		(true),
-	mProjIsDirty		(true),
-	mVpIsDirty			(true),
-	mIvIsDirty			(true),
-	mIpIsDirty			(true),
-	mIvpIsDirty			(true),
-	mCleanView			(true),
-	mCleanWorld			(true),
+	mResetView			(false),
+	mResetProj			(false),
 	mMatGlow			(0.0f),
 	mTarget				(0),
 	mTechnique			(0),
@@ -414,7 +408,7 @@ void GLController::SetNormalize (bool val)
 {
 	if ( mNormalize != val )
 	{
-		if (mNormalize = val) glEnable(GL_RESCALE_NORMAL);
+		if ((mNormalize = val) && (mShader == 0)) glEnable(GL_RESCALE_NORMAL);
 		else glDisable(GL_RESCALE_NORMAL);
 	}
 }
@@ -446,7 +440,8 @@ void GLController::SetViewport(const Vector2i& size)
 	{
 		mSize = size;
 		glViewport(0, 0, mSize.x, mSize.y);
-		mProjIsDirty = true;
+		mProj.mRecalculate = true;
+		_ProjHasChanged();
 	}
 }
 
@@ -480,43 +475,114 @@ void GLController::SetSimpleMaterial (bool val)
 {
 	if ( mSimpleMaterial != val )
 	{
-		if (mSimpleMaterial = val)	glEnable(GL_COLOR_MATERIAL);
-		else						glDisable(GL_COLOR_MATERIAL);
+		if (mSimpleMaterial = val) glEnable(GL_COLOR_MATERIAL);
+		else glDisable(GL_COLOR_MATERIAL);
 	}
 }
 
 //============================================================================================================
-// Retrieves (and updates if necessary) the view*projection matrix used for frustum culling
+// Retrieves the model (world) matrix
 //============================================================================================================
 
-const Matrix44& GLController::GetViewProjMatrix()
+const Matrix43& GLController::GetModelMatrix()
 {
-	_UpdateMatrices();
-
-	if ( mVpIsDirty )
+	if (!mModel.mOverwritten && mModel.mRecalculate)
 	{
-		mVpIsDirty = false;
-		mIvpIsDirty = true;
-		mVp = mView * mProj;
+		mModel.mRecalculate = false;
+		mModel.mMat.SetToIdentity();
 	}
-	return mVp;
+	return mModel.mMat;
 }
 
 //============================================================================================================
-// Retrieves (and updates if necessary) the inverse view matrix used in converting view space to world space
+// Retrieves the view matrix
 //============================================================================================================
 
-const Matrix43& GLController::GetInverseViewMatrix()
+const Matrix43& GLController::GetViewMatrix()
 {
-	const Matrix43& view ( GetViewMatrix() );
-
-	if ( mIvIsDirty )
+	if (mView.mRecalculate)
 	{
-		mIvIsDirty = false;
-		mIv = view;
-		mIv.Invert();
+		mView.mRecalculate = false;
+		mView.mMat.SetToView(mEye, mDir, mUp);
 	}
-	return mIv;
+	return mView.mMat;
+}
+
+//============================================================================================================
+// Retrieves the projection matrix
+//============================================================================================================
+
+const Matrix44& GLController::GetProjectionMatrix()
+{
+	if (mProj.mRecalculate)
+	{
+		mProj.mRecalculate = false;
+		Vector2i size ( (mTarget != 0) ? mTarget->GetSize() : mSize );
+		mProj.mMat.SetToProjection( mFov, (float)size.x / size.y, mClipRange.x, mClipRange.y );
+	}
+	return mProj.mMat;
+}
+
+//============================================================================================================
+// Retrieves the Model * View matrix
+//============================================================================================================
+
+const Matrix43& GLController::GetModelViewMatrix()
+{
+	// If the ModelView matrix has been overwritten, use it as-is
+	if (mMV.mOverwritten) return mMV.mMat;
+
+	// If the model matrix hasn't been set, ModelView matrix is the view matrix
+	if (!mModel.mOverwritten) return GetViewMatrix();
+
+	// Recalculate the ModelView matrix if need be
+	if (mMV.mRecalculate)
+	{
+		mMV.mRecalculate = false;
+		mMV.mMat = GetModelMatrix() * GetViewMatrix();
+	}
+	return mMV.mMat;
+}
+
+//============================================================================================================
+// SetView  = View, ignore World
+// SetWorld = World * View
+// Reset	= Revert View, clear World
+
+//glLoadMatrixf( (mWorld * mView).mF );
+
+//glMultiTexCoord4fv(GL_TEXTURE2, mat.mColumn0);
+//glMultiTexCoord4fv(GL_TEXTURE3, mat.mColumn1);
+//glMultiTexCoord4fv(GL_TEXTURE4, mat.mColumn2);
+//glMultiTexCoord4fv(GL_TEXTURE5, mat.mColumn3);
+
+//============================================================================================================
+// Retrieves the View * Projection matrix used for frustum culling
+//============================================================================================================
+
+const Matrix44& GLController::GetModelViewProjMatrix()
+{
+	if (mMVP.mRecalculate)
+	{
+		mMVP.mRecalculate = false;
+		mMVP.mMat = GetModelViewMatrix() * GetProjectionMatrix();
+	}
+	return mMVP.mMat;
+}
+
+//============================================================================================================
+// Retrieves the inverse view matrix used in converting view space to world space
+//============================================================================================================
+
+const Matrix43& GLController::GetInverseModelViewMatrix()
+{
+	if (mIMV.mRecalculate)
+	{
+		mIMV.mRecalculate = false;
+		mIMV.mMat = GetModelViewMatrix();
+		mIMV.mMat.Invert();
+	}
+	return mIMV.mMat;
 }
 
 //============================================================================================================
@@ -525,91 +591,111 @@ const Matrix43& GLController::GetInverseViewMatrix()
 
 const Matrix44& GLController::GetInverseProjMatrix()
 {
-	// Retrieving the projection matrix will update all matrices
-	const Matrix44& proj ( GetProjectionMatrix() );
-
-	if ( mIpIsDirty )
+	if (mIP.mRecalculate)
 	{
-		mIpIsDirty = false;
-		mIp = proj;
-		mIp.Invert();
+		mIP.mRecalculate = false;
+		mIP.mMat = GetProjectionMatrix();
+		mIP.mMat.Invert();
 	}
-	return mIp;
+	return mIP.mMat;
 }
 
 //============================================================================================================
-// Retrieves (and updates if necessary) the inverse view*projection matrix used in converting 2D to 3D
+// Retrieves (and updates if necessary) the inverse ModelView * Projection matrix used in converting 2D to 3D
 //============================================================================================================
 
-const Matrix44& GLController::GetInverseViewProjMatrix()
+const Matrix44& GLController::GetInverseMVPMatrix()
 {
-	// Retrieving the view*projection matrix will update all matrices
-	const Matrix44& vp ( GetViewProjMatrix() );
-
-	if ( mIvpIsDirty )
+	if (mIMVP.mRecalculate)
 	{
-		mIvpIsDirty = false;
-		mIvp = vp;
-		mIvp.Invert();
+		mIMVP.mRecalculate = false;
+		mIMVP.mMat = GetModelViewProjMatrix();
+		mIMVP.mMat.Invert();
 	}
-	return mIvp;
+	return mIMVP.mMat;
 }
 
 //============================================================================================================
-// Changes the active modelview matrix
+// Sets the model matrix to the specified value
 //============================================================================================================
 
-void GLController::SetWorldMatrix( const Matrix43& mat )
+void GLController::SetModelMatrix (const Matrix43& mat)
 {
-	mCleanView  = false;
-	mCleanWorld = false;
-	mWorld		 = mat;
-	glLoadMatrixf( (mWorld * mView).mF );
+	mModel.mMat			= mat;
+	mModel.mRecalculate	= false;
+	mModel.mOverwritten	= true;
+	mMV.mOverwritten	= false;
+	_ViewHasChanged();
 }
 
 //============================================================================================================
-// Changes the active modelview matrix
+// Resets the model matrix to identity
 //============================================================================================================
 
-void GLController::SetViewMatrix( const Matrix43& mat )
+void GLController::ResetModelMatrix()
 {
-	mCleanView = false;
-	glLoadMatrixf( mat.mF );
-}
-
-//============================================================================================================
-// Restores the active modelview matrix
-//============================================================================================================
-
-void GLController::ResetViewMatrix()
-{
-	if (!mCleanWorld)
+	if (mModel.mOverwritten)
 	{
-		mCleanWorld = true;
-		mWorld.SetToIdentity();
-	}
-	if (!mCleanView)
-	{
-		mCleanView = true;
-		glLoadMatrixf( mView.mF );
+		mModel.mOverwritten	= false;
+		mModel.mRecalculate = true;
+		_ViewHasChanged();
 	}
 }
 
 //============================================================================================================
-// Changes the modelview matrix
+// Changes the view matrix to the specified value
 //============================================================================================================
 
-void GLController::SetCameraOrientation(const Vector3f& eye, const Vector3f& dir, const Vector3f& up)
+void GLController::SetModelViewMatrix (const Matrix43& mat)
 {
-	if ( mEye	!= eye	||
-		mDir	!= dir	||
-		mUp	!= up )
+	// ModelView now has a valid value and it doesn't need to be recalculated
+	mMV.mMat			= mat;
+	mMV.mOverwritten	= true;
+	mMV.mRecalculate	= false;
+
+	// The view has changed
+	mResetView			= true;
+	mMVP.mRecalculate	= true;
+	mIMV.mRecalculate	= true;
+	mIMVP.mRecalculate	= true;
+}
+
+//============================================================================================================
+// Resets the view matrix to camera's POV
+//============================================================================================================
+
+void GLController::ResetModelViewMatrix()
+{
+	if (mMV.mOverwritten)
 	{
-		mEye	= eye;
-		mDir	= dir;
-		mUp	= up;
-		mViewIsDirty = true;
+		mMV.mOverwritten = false;
+		mMV.mRecalculate = true;
+		_ViewHasChanged();
 	}
+
+	// Ensure that the model matrix is reset to identity
+	ResetModelMatrix();
+}
+
+//============================================================================================================
+// Changes the ModelView matrix
+//============================================================================================================
+
+void GLController::SetCameraOrientation (const Vector3f& eye, const Vector3f& dir, const Vector3f& up)
+{
+	if (mEye != eye	|| mDir != dir || mUp != up)
+	{
+		mEye = eye;
+		mDir = dir;
+		mUp	 = up;
+
+		// View matrix needs to be recalculated
+		mView.mRecalculate = true;
+		_ViewHasChanged();
+	}
+
+	// Ensure that the model matrix is reset to identity
+	ResetModelMatrix();
 }
 
 //============================================================================================================
@@ -629,7 +715,8 @@ void GLController::SetCameraRange (const Vector3f& range)
 		if ( mClipRange != copy )
 		{
 			mClipRange = copy;
-			mProjIsDirty = true;
+			mProj.mRecalculate = true;
+			_ProjHasChanged();
 		}
 	}
 
@@ -638,7 +725,8 @@ void GLController::SetCameraRange (const Vector3f& range)
 	if ( Float::IsNotZero(mFov - deg) )
 	{
 		mFov = deg;
-		mProjIsDirty = true;
+		mProj.mRecalculate = true;
+		_ProjHasChanged();
 	}
 }
 
@@ -646,10 +734,10 @@ void GLController::SetCameraRange (const Vector3f& range)
 // Sets the active camera properties
 //============================================================================================================
 
-void GLController::SetActiveRenderTarget( const IRenderTarget* tar )
+void GLController::SetActiveRenderTarget (const IRenderTarget* tar)
 {
 	// If the target is changing...
-	if ( mTarget != tar )
+	if (mTarget != tar)
 	{
 		if (tar)
 		{
@@ -664,7 +752,8 @@ void GLController::SetActiveRenderTarget( const IRenderTarget* tar )
 			if ( activeSize != size )
 			{
 				glViewport(0, 0, size.x, size.y);
-				mProjIsDirty = true;
+				mProj.mRecalculate = true;
+				_ProjHasChanged();
 			}
 		}
 		// Should be rendering to screen, but a target is currently active
@@ -677,7 +766,8 @@ void GLController::SetActiveRenderTarget( const IRenderTarget* tar )
 			if ( mSize != mTarget->GetSize() )
 			{
 				glViewport(0, 0, mSize.x, mSize.y);
-				mProjIsDirty = true;
+				mProj.mRecalculate = true;
+				_ProjHasChanged();
 			}
 		}
 		CHECK_GL_ERROR;
@@ -745,7 +835,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 	{
 		static uint maxIU = _CountImageUnits();
 
-		// If the material is invisible under the curent technique, consider options to be invalid
+		// If the material is invisible under the current technique, consider options to be invalid
 		const IMaterial::DrawMethod* ren = ( (ptr != 0 && mTechnique != 0) ?
 			ptr->GetVisibleMethod(mTechnique) : 0 );
 
@@ -806,7 +896,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 				}
 				else if ( Float::IsNotEqual(mMatGlow, glow) )
 				{
-					// Only glow has changed -- affects the emissive color
+					// Only glow has changed -- affects the emission color
 					mMatGlow = glow;
 
 					Color4f emis (diff.GetColor4f() * glow);
@@ -927,8 +1017,10 @@ void GLController::SetActiveProjection (uint projection)
 		{
 			SetActiveVertexAttribute(Attribute::Normal, 0, 0, 0, 0, 0);
 		}
+
+		mResetProj = true;
+		mResetView = true;
 	}
-	_UpdateMatrices(true);
 }
 
 //============================================================================================================
@@ -1026,11 +1118,11 @@ void GLController::SetActiveTexture ( uint textureUnit, const ITexture* tex )
 // Activates and/or changes light properties for the specified light
 //============================================================================================================
 
-void GLController::SetActiveLight ( uint index, const ILight* ptr )
+void GLController::SetActiveLight (uint index, const Light* ptr)
 {
 	CHECK_GL_ERROR;
 
-	if ( mLu.IsEmpty() )
+	if (mLu.IsEmpty())
 	{
 		ASSERT( g_caps.mMaxLights > 0, "Could not retrieve the maximum number of lights" );
 		mLu.ExpandTo( g_caps.mMaxLights );
@@ -1038,14 +1130,14 @@ void GLController::SetActiveLight ( uint index, const ILight* ptr )
 			mLu[i] = false;
 	}
 
-	if ( index < mLu.GetSize() )
+	if (index < mLu.GetSize())
 	{
-		bool& active ( mLu[index] );
+		bool& active (mLu[index]);
 		index += GL_LIGHT0;
 
-		if ( ptr == 0 )
+		if (ptr == 0)
 		{
-			if ( active )
+			if (active)
 			{
 				--mActiveLightCount;
 				active = false;
@@ -1054,61 +1146,62 @@ void GLController::SetActiveLight ( uint index, const ILight* ptr )
 		}
 		else
 		{
-			if ( !active )
+			// Activate the matrices as they will affect the lights
+			_ActivateMatrices();
+
+			// Activate the light
+			if (!active)
 			{
 				++mActiveLightCount;
 				active = true;
 				glEnable(index);
 			}
 
-			const Vector3f* atten = ptr->GetAttenParams();
-
-			// No attenuation params = directional light
-			if (atten == 0)
+			if (ptr->mType == Light::Type::Directional)
 			{
-				Vector3f dir (ptr->GetDirection());
+				Vector3f dir (ptr->mDir);
 
 				// Automatically adjust the light position to always be in view space
 				if (mProjection == Projection::Orthographic)
-					dir %= GetViewMatrix();
+					dir %= GetModelViewMatrix();
 
 				// Set the light's position
 				glLightfv(index, GL_POSITION, Quaternion(-dir.x, -dir.y, -dir.z, 0.0f));
 			}
 			else
 			{
-				Vector3f pos (ptr->GetPosition());
+				Vector3f pos (ptr->mPos);
 
 				// Automatically adjust the light position to always be in view space
 				if (mProjection == Projection::Orthographic)
-					pos *= GetViewMatrix();
+					pos *= GetModelViewMatrix();
 
 				// Set the light's position
 				glLightfv(index, GL_POSITION, Quaternion(pos.x, pos.y, pos.z, 1.0f));
 
-				const Vector3f* spot = ptr->GetSpotParams();
-
-				if (spot == 0)
+				// Point lights are marked by having a cutoff of 180
+				if (ptr->mType == Light::Type::Point)
 				{
-					// Point lights are marked by having a cutoff of 180
 					glLightf(index, GL_SPOT_CUTOFF, 180.0f);
 				}
-				else
-				{
-					glLightfv(index, GL_SPOT_DIRECTION, ptr->GetDirection());
-					glLightf(index, GL_SPOT_EXPONENT, Float::Clamp(spot->x, 0.0f, 128.0f));
-					glLightf(index, GL_SPOT_CUTOFF, Float::Clamp(spot->y, 0.0f, 90.0f));
-				}
+				//else
+				//{
+				//	glLightfv(index, GL_SPOT_DIRECTION, ptr->mDir);
+				//	glLightf(index, GL_SPOT_EXPONENT, Float::Clamp(ptr->mSpot.x, 0.0f, 128.0f));
+				//	glLightf(index, GL_SPOT_CUTOFF, Float::Clamp(ptr->mSpot.y, 0.0f, 90.0f));
+				//}
 
-				glLightf(index, GL_CONSTANT_ATTENUATION,	atten->x);
-				glLightf(index, GL_LINEAR_ATTENUATION,		atten->y);
-				glLightf(index, GL_QUADRATIC_ATTENUATION,	atten->z);
+				// Shaders perform completely different operations with the attenuation parameters
+				// As such, point lights are not supported using the fixed-function pipeline.
+				glLightf(index, GL_CONSTANT_ATTENUATION,	ptr->mAtten.x);
+				glLightf(index, GL_LINEAR_ATTENUATION,		ptr->mAtten.y);
+				glLightf(index, GL_QUADRATIC_ATTENUATION,	ptr->mAtten.z);
 			}
 
 			// Common light parameters
-			glLightfv(index, GL_AMBIENT,  ptr->GetAmbient());
-			glLightfv(index, GL_DIFFUSE,  ptr->GetDiffuse());
-			glLightfv(index, GL_SPECULAR, ptr->GetSpecular());
+			glLightfv(index, GL_AMBIENT,  ptr->mAmbient);
+			glLightfv(index, GL_DIFFUSE,  ptr->mDiffuse);
+			glLightfv(index, GL_SPECULAR, ptr->mSpecular);
 
 			++mStats.mLightSwitches;
 		}
@@ -1256,13 +1349,11 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 
 	if (triangleCount > 0)
 	{
-#if (defined(_DEBUG) && defined(_WINDOWS))
-		try { glDrawArrays( glPrimitive, 0, vertexCount ); }
-		catch (...) { ASSERT(false, "GLGraphics::Draw() -- failed!"); }
-		CHECK_GL_ERROR;
-#else
+		// Activate the matrices
+		_ActivateMatrices();
+
+		// Draw the arrays
 		glDrawArrays( glPrimitive, 0, vertexCount );
-#endif
 		mStats.mTriangles += triangleCount;
 		++mStats.mDrawCalls;
 	}
@@ -1280,24 +1371,14 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 
 	if (triangleCount > 0)
 	{
-#ifdef _DEBUG
-		if (vbo)
-		{
-			// If VBO was specified, ensure that it's an element array
-			ASSERT( vbo->GetType() == IVBO::Type::Index,
-				"Invalid type specified! Index array must be an element array." );
-		}
-#endif
 		// Activate the VBO, if any
 		SetActiveVBO( vbo, IVBO::Type::Index );
 
-#if (defined(_DEBUG) && defined(_WINDOWS))
-		try { glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr ); }
-		catch (...) { ASSERT(false, "GLGraphics::Draw() -- failed!"); }
-		CHECK_GL_ERROR;
-#else
+		// Activate the matrices
+		_ActivateMatrices();
+
+		// Draw the indices
 		glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr );
-#endif
 		mStats.mTriangles += triangleCount;
 		++mStats.mDrawCalls;
 	}
@@ -1305,15 +1386,14 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 }
 
 //============================================================================================================
-// Updates all the necessary matrices
+// Activate all appropriate matrices
 //============================================================================================================
 
-void GLController::_UpdateMatrices(bool forceReset)
+void GLController::_ActivateMatrices()
 {
-	// Orthographic projection
-	if ( mProjection == Projection::Orthographic )
+	if (mResetView || mResetProj)
 	{
-		if (forceReset)
+		if (mProjection == Projection::Orthographic)
 		{
 			Vector2i activeSize ( mTarget ? mTarget->GetSize() : mSize );
 			Matrix43 mat( activeSize.x, activeSize.y );
@@ -1324,48 +1404,27 @@ void GLController::_UpdateMatrices(bool forceReset)
 			glMatrixMode(GL_PROJECTION);
 			glLoadMatrixf( mat.mF );
 		}
-	}
-	else
-	{
-		// View matrix is set from the camera's position
-		if (mViewIsDirty)
+		else
 		{
-			mVpIsDirty = true;
-			mIvIsDirty = true;
-			mView.SetToView( mEye, mDir, mUp );
-		}
+			if (mResetProj)
+			{
+				glMatrixMode(GL_PROJECTION);
+				glLoadMatrixf(GetProjectionMatrix().mF);
+			}
 
-		// Perspective projection
-		if (mProjIsDirty)
-		{
-			mVpIsDirty = true;
-			mIpIsDirty = true;
-			Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
-			mProj.SetToProjection( mFov, (float)size.x / size.y, mClipRange.x, mClipRange.y );
+			if (mResetView)
+			{
+				glMatrixMode(GL_MODELVIEW);
+				glLoadMatrixf(GetModelViewMatrix().mF);
+			}
+			else if (mResetProj)
+			{
+				// Always end with ModelView
+				glMatrixMode(GL_MODELVIEW);
+			}
 		}
-		
-		// If projection is dirty, update OpenGL
-		if ( forceReset || mProjIsDirty )
-		{
-			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(mProj.mF);
-		}
-
-		// If the world matrix has changed, update the modelview
-		if ( forceReset || mViewIsDirty )
-		{
-			glMatrixMode(GL_MODELVIEW);
-			glLoadMatrixf(mView.mF);
-			mCleanView = true;
-		}
-		else if (mProjIsDirty)
-		{
-			// Always finish with the modelview matrix selected
-			glMatrixMode(GL_MODELVIEW);
-		}
-
-		mViewIsDirty = false;
-		mProjIsDirty = false;
+		mResetView = false;
+		mResetProj = false;
 	}
 }
 
@@ -1390,4 +1449,29 @@ bool GLController::_SetActiveTextureUnit( uint textureUnit )
 		return true;
 	}
 	return false;
+}
+
+//============================================================================================================
+// Marks all view-affected matrices as needing to be recalculated
+//============================================================================================================
+
+void GLController::_ViewHasChanged()
+{
+	mResetView			= true;
+	mMV.mRecalculate	= true;
+	mMVP.mRecalculate	= true;
+	mIMV.mRecalculate	= true;
+	mIMVP.mRecalculate	= true;
+}
+
+//============================================================================================================
+// Marks all projection-affected matrices as needing to be recalculated
+//============================================================================================================
+
+void GLController::_ProjHasChanged()
+{
+	mResetProj			= true;
+	mIP.mRecalculate	= true;
+	mMVP.mRecalculate	= true;
+	mIMVP.mRecalculate	= true;
 }

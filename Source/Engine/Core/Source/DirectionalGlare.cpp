@@ -27,7 +27,6 @@ void DirectionalGlare::OnUpdate()
 uint DirectionalGlare::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
-	graphics->ResetViewMatrix();
 
 	const Vector3f& camPos = graphics->GetCameraPosition();
 	const Vector2f& camRange = graphics->GetCameraRange();
@@ -51,7 +50,7 @@ uint DirectionalGlare::OnDraw (const ITechnique* tech, bool insideOut)
 		Matrix43 mat (graphics->GetViewMatrix());
 		mat.PreTranslate(camPos - offset);
 		mat.ReplaceScaling(scale * camRange.y * 0.1f);
-		graphics->SetViewMatrix(mat);
+		graphics->SetModelViewMatrix(mat);
 		DrawBillboard();
 	}
 	return 1;

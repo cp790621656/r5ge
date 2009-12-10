@@ -1,5 +1,3 @@
-#version 120
-
 attribute vec4 R5_boneWeight;
 attribute vec4 R5_boneIndex;
 
@@ -20,9 +18,14 @@ void main()
 					R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +
 					R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;
 
-	mat3 rotMat   	= mat3(transMat[0].xyz, transMat[1].xyz, transMat[2].xyz);
+   	mat3 rotMat   	= mat3(transMat[0].xyz, transMat[1].xyz, transMat[2].xyz);
 	vec4 vertex   	= transMat * gl_Vertex;
 	vec3 normal   	= rotMat   * gl_Normal;
+	
+	//mat4 worldMat	= mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);
+	//mat3 worldRot	= mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);
+	//vertex 			= worldMat * vertex;
+	//normal 			= worldRot * normal;
 
 	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
     _texCoord   	= gl_MultiTexCoord0.xy;

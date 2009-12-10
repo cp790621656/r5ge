@@ -27,13 +27,13 @@ public:
 
 		struct
 		{
+			float mColumn0[4];
 			float mColumn1[4];
 			float mColumn2[4];
-			float mColumn3[4];
 
 			union
 			{
-				float mColumn4[4];
+				float mColumn3[4];
 				struct { float x, y, z, w; };
 			};
 		};

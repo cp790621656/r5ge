@@ -39,6 +39,7 @@ namespace R5
 	#include "SplineV.h"		// Vector3f spline
 	#include "SplineQ.h"		// Quaternion spline
 	#include "Shapes.h"			// Geometric shapes generated using math algorithms
+	#include "Light.h"			// Basic light source-related data class
 };
 
 #endif

@@ -42,11 +42,16 @@ uint DrawQueue::Draw (IGraphics* graphics, const Techniques& techniques, bool in
 					{
 						uint last = mLights.GetSize();
 
-						for (uint i = 0; i < last; ++i)
-							graphics->SetActiveLight(i, mLights[i].mLight);
+						if (last > 0)
+						{
+							graphics->GetModelViewMatrix();
 
-						for (uint i = last; i < 8; ++i)
-							graphics->SetActiveLight(i, 0);
+							for (uint i = 0; i < last; ++i)
+								graphics->SetActiveLight(i, mLights[i].mLight);
+
+							for (uint i = last; i < 8; ++i)
+								graphics->SetActiveLight(i, 0);
+						}
 					}
 
 					// Draw everything on this layer using this technique

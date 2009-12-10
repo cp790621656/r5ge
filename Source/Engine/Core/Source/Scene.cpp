@@ -5,7 +5,7 @@ using namespace R5;
 // Retrieves active lights, sorting them front-to-back based on distance to the specified position
 //============================================================================================================
 
-const ILight::List& Scene::GetVisibleLights (const Vector3f& pos)
+const Light::List& Scene::GetVisibleLights (const Vector3f& pos)
 {
 	uint size = mQueue.mLights.GetSize();
 
@@ -14,9 +14,9 @@ const ILight::List& Scene::GetVisibleLights (const Vector3f& pos)
 		// Run through all lights and calculate their distance to the position
 		for (uint i = 0; i < size; ++i)
 		{
-			ILight::Entry& entry (mQueue.mLights[i]);
+			Light::Entry& entry (mQueue.mLights[i]);
 
-			if (entry.mLight->GetAttenParams() == 0)
+			if (entry.mLight->mType == Light::Type::Directional)
 			{
 				// Directional light
 				entry.mDistance = 0.0f;
@@ -24,7 +24,7 @@ const ILight::List& Scene::GetVisibleLights (const Vector3f& pos)
 			else
 			{
 				// Point/spot light
-				entry.mDistance = (entry.mLight->GetPosition() - pos).Dot();
+				entry.mDistance = pos.GetDistanceTo(entry.mLight->mPos);
 			}
 		}
 		mQueue.mLights.Sort();
@@ -40,10 +40,9 @@ void Scene::Cull (const Camera* cam)
 {
 	if (cam != 0)
 	{
-		Cull(
-			cam->GetAbsolutePosition(),
-			cam->GetAbsoluteRotation(),
-			cam->GetAbsoluteRange() );
+		Cull( cam->GetAbsolutePosition(),
+			  cam->GetAbsoluteRotation(),
+			  cam->GetAbsoluteRange() );
 	}
 }
 
@@ -67,11 +66,12 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		IGraphics* graphics (mRoot->mCore->GetGraphics());
 		Vector3f dir (rot.GetForward());
 
+		graphics->ResetModelMatrix();
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
 
 		// Update the frustum
-		mFrustum.Update( graphics->GetViewProjMatrix() ); // If world matrix is used: (world * ViewProj)
+		mFrustum.Update( graphics->GetModelViewProjMatrix() );
 
 		// Cull the scene
 		_Cull(mFrustum, pos, dir);
@@ -155,7 +155,7 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 		result += mQueue.Draw(graphics, techniques, insideOut);
 
 		// Restore the potentially changed properties
-		graphics->ResetWorldMatrix();
+		graphics->ResetModelMatrix();
 		graphics->SetNormalize(false);
 	}
 	return result;

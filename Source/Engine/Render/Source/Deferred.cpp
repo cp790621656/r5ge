@@ -5,7 +5,7 @@ using namespace R5;
 // Add all directional light contribution
 //============================================================================================================
 
-void AddDirectionalLights (IGraphics* graphics, const ILight::List& lights, const IShader* shader)
+void AddDirectionalLights (IGraphics* graphics, const Light::List& lights, const IShader* shader)
 {
 	if (lights.IsValid())
 	{
@@ -50,7 +50,7 @@ void AddDirectionalLights (IGraphics* graphics, const ILight::List& lights, cons
 // Add all point light contribution
 //============================================================================================================
 
-void AddPointLights (IGraphics* graphics, const ILight::List& lights, const IShader* shader)
+void AddPointLights (IGraphics* graphics, const Light::List& lights, const IShader* shader)
 {
 	if (lights.IsValid())
 	{
@@ -81,19 +81,19 @@ void AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 
 		// Disable all active lights except the first
 		for (uint b = lights.GetSize(); b > 1; )
-			graphics->SetActiveLight( --b, 0 );
+			graphics->SetActiveLight(--b, 0);
+
+		// Save the view matrix as it won't be changing
+		const Matrix43& view = graphics->GetViewMatrix();
+		Matrix43 mat;
 
 		// Run through all point lights
 		for (uint i = 0; i < lights.GetSize(); ++i)
 		{
-			const ILight::Entry& entry = lights[i];
+			const Light::Entry& entry = lights[i];
 
-			// Activate this light
-			graphics->ResetWorldMatrix();
-			graphics->SetActiveLight( 0, entry.mLight );
-
-			// First light activates the shader
-			if (i == 0) graphics->SetActiveShader(shader);
+			// Copy the light information as we'll be modifying it
+			Light light (*entry.mLight);
 
 			// The range of the light is stored in the first attenuation parameter. The 6.5%
 			// increase is there because the generated sphere goes up to (and never exceeds)
@@ -103,10 +103,31 @@ void AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 			// that 6.5% is based on observation only. For icosahedrons of 2 iterations this
 			// multiplier can be reduced down to 2%.
 
-			float range (entry.mLight->GetAttenParams()->x * 1.065f);
-			const Vector3f& lightPos (entry.mLight->GetPosition());
+			float range (light.mAtten.x * 1.065f);
 
-			if (lightPos.GetDistanceTo(camPos) > (range + nearClip * 2.0f))
+			// Distance to the light source
+			float dist (light.mPos.GetDistanceTo(camPos) > (range + nearClip * 2.0f));
+
+			// Start with the view matrix and apply the light's world transforms
+			mat = view;
+			mat.PreTranslate(light.mPos);
+			mat.PreScale(range);
+
+			// Set the matrix that will be used to transform this light and to draw it at the correct position
+			graphics->SetModelViewMatrix(mat);
+
+			// Reset the light's position as it will be transformed by the matrix we set above.
+			// This is done in order to avoid an extra matrix switch, taking advantage of the
+			// fact that OpenGL transforms light coordinates by the current ModelView matrix.
+			light.mPos = Vector3f();
+
+			// Activate the light at the matrix-transformed origin
+			graphics->SetActiveLight(0, &light);
+
+			// First light activates the shader
+			if (i == 0) graphics->SetActiveShader(shader);
+
+			if (dist)
 			{
 				// The camera is outside the sphere -- regular rendering approach
 				graphics->SetCulling( IGraphics::Culling::Back );
@@ -121,15 +142,14 @@ void AddPointLights (IGraphics* graphics, const ILight::List& lights, const ISha
 				graphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
 			}
 
-			// Draw the light's sphere
-			graphics->SetWorldMatrix( Matrix43 (lightPos, range) );
+			// Draw the light's sphere at the matrix-transformed position
 			graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
 		}
 
 		// Restore important states
 		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 		graphics->SetCulling(IGraphics::Culling::Back);
-		graphics->ResetWorldMatrix();
+		graphics->ResetModelMatrix();
 	}
 }
 
@@ -142,7 +162,7 @@ void DrawLights (
 	const ITexture*		depth,
 	const ITexture*		normal,
 	const ITexture*		lightmap,
-	const ILight::List&	lights )
+	const Light::List&	lights )
 {
 	// Set up appropriate states
 	graphics->SetFog(false);
@@ -177,25 +197,25 @@ void DrawLights (
 										IGraphics::Operation::Keep);
 
 	// Collect all lights
-	static ILight::List directional;
-	static ILight::List point;
+	static Light::List directional;
+	static Light::List point;
 
 	directional.Clear();
 	point.Clear();
 
 	for (uint i = 0; i < lights.GetSize(); ++i)
 	{
-		const ILight::Entry& entry (lights[i]);
+		const Light::Entry& entry (lights[i]);
 
 		if (entry.mLight != 0)
 		{
-			uint type = entry.mLight->GetLightType();
+			uint type = entry.mLight->mType;
 
-			if (type == ILight::Type::Directional)
+			if (type == Light::Type::Directional)
 			{
 				directional.Expand() = entry;
 			}
-			else if (type == ILight::Type::Point)
+			else if (type == Light::Type::Point)
 			{
 				point.Expand() = entry;
 			}
@@ -246,7 +266,7 @@ void Combine (
 
 Deferred::DrawResult Deferred::DrawScene (
 	IGraphics*				graphics,
-	const ILight::List&		lights,
+	const Light::List&		lights,
 	const TechniqueList&	techniques,
 	const DrawCallback&		drawCallback,
 	const AOCallback&		aoCallback,

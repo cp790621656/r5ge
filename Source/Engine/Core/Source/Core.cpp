@@ -54,6 +54,9 @@ void Core::Init()
 	mSleepDelay = 0;
 #endif
 
+	// First update should update the scene regardless of time delta
+	mIsDirty = true;
+
 	// Root of the scene needs to know who owns it
 	mRoot.mCore = this;
 
@@ -149,9 +152,14 @@ bool Core::Update()
 			mUpdatedSize = 0;
 		}
 
+		// If some time has passed, update the scene
+		if (Time::GetDelta() != 0) mIsDirty = true;
+
 		// Do not update anything unless some time has passed
-		if (Time::GetDelta() != 0)
+		if (mIsDirty)
 		{
+			mIsDirty = false;
+
 			// Update all props and models
 			mModels.Lock();
 			{
@@ -525,6 +533,8 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		// Registered serialization callback
 		else if (mOnFrom) mOnFrom(node);
 	}
+	// Something may have changed, update the scene
+	mIsDirty = true;
 	return true;
 }
 

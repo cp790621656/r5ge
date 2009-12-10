@@ -23,6 +23,7 @@ protected:
 	IGraphics*		mGraphics;			// Graphics manager and controller
 	IUI*			mUI;				// User interface, if available
 	Object			mRoot;				// Root of the entire scene
+	bool			mIsDirty;			// Whether to update the scene next update, regardless of time delta
 	bool			mIsKeyDown[256];	// Provides a quick way of checking whether some key is held down
 	Vector2i		mMousePos;			// Saved current mouse position
 	Vector2i		mUpdatedSize;		// If the window size gets updated, appropriate components must be notified
@@ -66,6 +67,9 @@ public:
 	void Release();		// Releases the meshes and the scene graph
 	bool Update();		// Updates all components
 	void Shutdown();	// Shuts down the app
+
+	// If we know we've changed something in the scene, we want to trigger an update next frame
+	void SetDirty() { mIsDirty = true; }
 
 	// Useful to have direct access to these components
 	Object*			GetRoot()				{ return &mRoot;			}

@@ -9,16 +9,6 @@
 
 class PointLight : public Object
 {
-private:
-
-	// The only difference from directional lights is that point lights use attenuation parameters
-	struct Params : public DirectionalLight::Params
-	{
-		Vector3f mAtten;
-		virtual uint GetLightType()	 const	{ return ILight::Type::Point; }
-		virtual const Vector3f*	GetAttenParams() const	{ return &mAtten; }
-	};
-
 protected:
 
 	Color3f		mAmbient;		// Ambient color
@@ -27,7 +17,7 @@ protected:
 	float		mBrightness;	// Light's brighness
 	float		mRange;			// Range of the light
 	float		mPower;			// Attenuation power
-	Params		mParams;		// Outgoing parameters
+	Light		mLight;			// Outgoing parameters
 
 public:
 

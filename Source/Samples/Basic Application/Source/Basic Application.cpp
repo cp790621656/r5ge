@@ -48,7 +48,6 @@ void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
 	mScene.DrawAllForward();
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

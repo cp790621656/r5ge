@@ -20,7 +20,6 @@ namespace R5
 	#include "ITechnique.h"				// Rendering technique is used to batch objects of similar properties together
 	#include "ITexture.h"				// Base class for textures (Images stored on the videocard)
 	#include "IVBO.h"					// Interface for the videocard memory buffer
-	#include "ILight.h"					// Light source object
 	#include "IFont.h"					// Basic interface for the Font class
 	#include "Uniform.h"				// Uniform is a constant value in the shader that is set by the program
 	#include "IShader.h"				// Unified shader interface

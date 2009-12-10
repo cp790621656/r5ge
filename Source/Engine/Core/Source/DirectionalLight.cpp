@@ -11,6 +11,7 @@ DirectionalLight::DirectionalLight() :
 	mSpecular	(1.0f),
 	mBrightness	(1.0f)
 {
+	mLight.mType = Light::Type::Directional;
 	_UpdateColors();
 }
 
@@ -20,9 +21,9 @@ DirectionalLight::DirectionalLight() :
 
 void DirectionalLight::_UpdateColors()
 {
-	mParams.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
-	mParams.mDiffuse  = Color4f(mDiffuse  * mBrightness, 1.0f);
-	mParams.mSpecular = Color4f(mSpecular * mBrightness, 1.0f);
+	mLight.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
+	mLight.mDiffuse  = Color4f(mDiffuse  * mBrightness, 1.0f);
+	mLight.mSpecular = Color4f(mSpecular * mBrightness, 1.0f);
 }
 
 //============================================================================================================
@@ -33,8 +34,8 @@ void DirectionalLight::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mParams.mPos = mAbsolutePos;
-		mParams.mDir = mAbsoluteRot.GetForward();
+		mLight.mPos = mAbsolutePos;
+		mLight.mDir = mAbsoluteRot.GetForward();
 	}
 }
 
@@ -44,9 +45,9 @@ void DirectionalLight::OnUpdate()
 
 bool DirectionalLight::OnFill (FillParams& params)
 {
-	if (mParams.IsVisible())
+	if (mLight.mDiffuse.IsVisibleRGB() || mLight.mAmbient.IsVisibleRGB())
 	{
-		params.mDrawQueue.Add(&mParams);
+		params.mDrawQueue.Add(&mLight);
 	}
 	return true;
 }
@@ -77,8 +78,8 @@ bool DirectionalLight::OnSerializeFrom (const TreeNode& root)
 
 void DirectionalLight::OnSerializeTo (TreeNode& root) const
 {
-	root.AddChild("Ambient", mAmbient);
-	root.AddChild("Diffuse", mDiffuse);
-	root.AddChild("Specular", mSpecular);
+	root.AddChild("Ambient",	mAmbient);
+	root.AddChild("Diffuse",	mDiffuse);
+	root.AddChild("Specular",	mSpecular);
 	root.AddChild("Brightness", mBrightness);
 }

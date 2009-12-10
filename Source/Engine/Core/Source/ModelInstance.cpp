@@ -105,7 +105,7 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 	graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
 
 	// Set the model's world matrix so the rendered objects show up in the proper place
-	graphics->SetWorldMatrix(mMatrix);
+	graphics->SetModelMatrix(mMatrix);
 
 	if (mModel != 0)
 	{
@@ -138,7 +138,7 @@ uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 	// If the model's outline is requested, draw it now
 	if (tech->GetColorWrite())
 	{
-		graphics->ResetWorldMatrix();
+		graphics->ResetModelMatrix();
 
 		Array<Vector3f> v;
 		const Bounds& complete = GetCompleteBounds();

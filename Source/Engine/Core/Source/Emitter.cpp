@@ -146,7 +146,7 @@ uint Emitter::OnDraw (const ITechnique* tech, bool insideOut)
 		uint flipV = mFlags.Get(Flag::FlipV) ? 2 : 0;
 
 		// Rotate the 4 corners using the inverse projection matrix
-		const Matrix43& invView = graphics->GetInverseViewMatrix();
+		const Matrix43& invView = graphics->GetInverseModelViewMatrix();
 
 		// 4 corners of the particle
 		Vector3f v0 (-1.0f,  1.0f, 0.5f);
@@ -232,7 +232,7 @@ uint Emitter::OnDraw (const ITechnique* tech, bool insideOut)
 	if (mPositions.IsValid())
 	{
 		// Set up initial drawing states
-		graphics->ResetViewMatrix();
+		graphics->ResetModelViewMatrix();
 		graphics->SetActiveShader(0);
 		graphics->SetADT(0.003921568627451f);
 		graphics->SetActiveMaterial(mTex);

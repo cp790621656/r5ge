@@ -49,7 +49,6 @@ uint Glare::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	// IGraphics::IsVisible() check is affected by the ModelView matrix
 	IGraphics* graphics = mCore->GetGraphics();
-	graphics->ResetViewMatrix();
 
 	// If the point is visible, alpha should be moving toward '1'
 	if (graphics->IsPointVisible(mAbsolutePos)) _SetTargetAlpha(1.0f);
@@ -60,11 +59,12 @@ uint Glare::OnDraw (const ITechnique* tech, bool insideOut)
 	// Only draw the billboard if it's large enough to be drawn
 	if (scale > 0.0f)
 	{
+		graphics->ResetModelViewMatrix();
 		IGraphics* graphics = mCore->GetGraphics();
 		Matrix43 mat (graphics->GetViewMatrix());
 		mat.PreTranslate(mAbsolutePos);
 		mat.ReplaceScaling(scale);
-		graphics->SetViewMatrix(mat);
+		graphics->SetModelViewMatrix(mat);
 		DrawBillboard();
 	}
 	return 1;

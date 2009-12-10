@@ -37,8 +37,9 @@ uint Billboard::OnDraw (const ITechnique* tech, bool insideOut)
 	Matrix43 mat (graphics->GetViewMatrix());
 	mat.PreTranslate(mAbsolutePos);
 	mat.ReplaceScaling(mAbsoluteScale);
-	graphics->SetViewMatrix(mat);
+	graphics->SetModelViewMatrix(mat);
 	DrawBillboard();
+	graphics->ResetModelViewMatrix();
 	return 1;
 }
 

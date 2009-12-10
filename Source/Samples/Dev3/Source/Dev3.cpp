@@ -41,7 +41,6 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mObjects(
 
 	// Register a new script type that can be created via AddScript<> template
 	RegisterScript<SpinScript>();
-
 	mCore->SetSleepDelay(0);
 }
 
@@ -156,7 +155,7 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	const ILight::List& lights = mScene.GetVisibleLights();
+	const Light::List& lights = mScene.GetVisibleLights();
 
 	// Draw the scene using the deferred approach, filling color and depth buffers
 	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, mDeferred, bind(&Scene::Draw, &mScene));

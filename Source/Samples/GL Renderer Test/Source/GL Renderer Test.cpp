@@ -92,19 +92,19 @@ struct Box
 
 	void Draw (IGraphics* graphics)
 	{
-		graphics->SetWorldMatrix(mPos);
+		graphics->SetModelMatrix(mPos);
 		graphics->SetActiveTexture(0, mTex);
 		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,		mVerts );
 		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		mNormals );
 		graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	mTexcoords );
 		graphics->DrawVertices(IGraphicsManager::Primitive::Quad, mVerts.GetSize());		
-		graphics->ResetWorldMatrix();
+		graphics->ResetModelMatrix();
 	}
 };
 
 //====================================================================================================
 
-struct FakeLight : public ILight
+struct FakeLight : public Light
 {
 	Vector3f	mPos;
 	Vector3f	mDir;
@@ -120,7 +120,7 @@ struct FakeLight : public ILight
 					mSpecular	(1, 1, 1),
 					mParams	(0) {}
 
-	virtual uint			GetLightType()		const	{ return ILight::Type::Directional; }
+	virtual uint			GetLightType()		const	{ return Light::Type::Directional; }
 	virtual const Color4f&	GetAmbient()		const	{ return mAmbient; }
 	virtual const Color4f&	GetDiffuse()		const	{ return mDiffuse; }
 	virtual const Color4f&	GetSpecular()		const	{ return mSpecular; }

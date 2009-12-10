@@ -97,7 +97,7 @@ void GLGraphics::SetUniform_PM (const String& name, Uniform& uniform)
 
 void GLGraphics::SetUniform_IVM (const String& name, Uniform& uniform)
 {
-	uniform = GetInverseViewMatrix();
+	uniform = GetInverseModelViewMatrix();
 }
 
 //============================================================================================================
@@ -115,16 +115,17 @@ void GLGraphics::SetUniform_IPM (const String& name, Uniform& uniform)
 
 void GLGraphics::SetUniform_IVRM (const String& name, Uniform& uniform)
 {
+	const Matrix43& mv = GetModelViewMatrix();
 	uniform.mType = Uniform::Type::Float9;
-	uniform.mVal[0] = mView[0];
-	uniform.mVal[1] = mView[4];
-	uniform.mVal[2] = mView[8];
-	uniform.mVal[3] = mView[1];
-	uniform.mVal[4] = mView[5];
-	uniform.mVal[5] = mView[9];
-	uniform.mVal[6] = mView[2];
-	uniform.mVal[7] = mView[6];
-	uniform.mVal[8] = mView[10];
+	uniform.mVal[0] = mv[0];
+	uniform.mVal[1] = mv[4];
+	uniform.mVal[2] = mv[8];
+	uniform.mVal[3] = mv[1];
+	uniform.mVal[4] = mv[5];
+	uniform.mVal[5] = mv[9];
+	uniform.mVal[6] = mv[2];
+	uniform.mVal[7] = mv[6];
+	uniform.mVal[8] = mv[10];
 }
 
 //============================================================================================================
@@ -133,7 +134,7 @@ void GLGraphics::SetUniform_IVRM (const String& name, Uniform& uniform)
 
 void GLGraphics::SetUniform_WTM (const String& name, Uniform& uniform)
 {
-	uniform = mWorld;
+	uniform = GetModelMatrix();
 }
 
 //============================================================================================================
@@ -142,16 +143,17 @@ void GLGraphics::SetUniform_WTM (const String& name, Uniform& uniform)
 
 void GLGraphics::SetUniform_WRM (const String& name, Uniform& uniform)
 {
+	const Matrix43& model = GetModelMatrix();
 	uniform.mType = Uniform::Type::Float9;
-	uniform.mVal[0] = mWorld[0];
-	uniform.mVal[1] = mWorld[1];
-	uniform.mVal[2] = mWorld[2];
-	uniform.mVal[3] = mWorld[4];
-	uniform.mVal[4] = mWorld[5];
-	uniform.mVal[5] = mWorld[6];
-	uniform.mVal[6] = mWorld[8];
-	uniform.mVal[7] = mWorld[9];
-	uniform.mVal[8] = mWorld[10];
+	uniform.mVal[0] = model[0];
+	uniform.mVal[1] = model[1];
+	uniform.mVal[2] = model[2];
+	uniform.mVal[3] = model[4];
+	uniform.mVal[4] = model[5];
+	uniform.mVal[5] = model[6];
+	uniform.mVal[6] = model[8];
+	uniform.mVal[7] = model[9];
+	uniform.mVal[8] = model[10];
 }
 
 //============================================================================================================
@@ -160,8 +162,10 @@ void GLGraphics::SetUniform_WRM (const String& name, Uniform& uniform)
 
 bool GLGraphics::IsPointVisible (const Vector3f& v)
 {
-	//return !(GetDistanceToDepthAt(v) < 0.0f);
+	// Reset the ModelView matrix as the query is affected by it
+	ResetModelViewMatrix();
 
+	// Convert the 3D point to screen coordinates
 	Vector2i screen (ConvertTo2D(v));
 
 	// Occlusion query should not be performed if the point is off-screen
@@ -169,6 +173,9 @@ bool GLGraphics::IsPointVisible (const Vector3f& v)
 	{
 		if (g_caps.mOcclusion)
 		{
+			// Activate the matrices as the query will need them to be properly set up
+			_ActivateMatrices();
+
 			// If the query hasn't been created yet, do that now
 			if (mQuery == 0)
 			{
@@ -226,7 +233,7 @@ Vector3f GLGraphics::ConvertTo3D (const Vector2i& v)
 	//val = (val - mNearPlane) / range;
     //val = Float::Clamp(val, 0.0f, 1.0f);
 
-	return GetInverseViewProjMatrix().Unproject( Vector2f(pos) / size, depth);
+	return GetInverseMVPMatrix().Unproject( Vector2f(pos) / size, depth);
 }
 
 //============================================================================================================
@@ -237,7 +244,7 @@ Vector2i GLGraphics::ConvertTo2D (const Vector3f& v)
 {
 	// Same as ((v * viewProjMat) * 0.5f + 0.5f) * size, with inverted Y (y = size.y - y)
 	Vector2i size ( mTarget != 0 ? mTarget->GetSize() : mSize );
-	Vector2i out  ( GetViewProjMatrix().Project(v) * size );
+	Vector2i out  ( GetModelViewProjMatrix().Project(v) * size );
 	out.y = size.y - out.y;
 	return out;
 }
@@ -259,7 +266,7 @@ Vector2i GLGraphics::ConvertTo2D (const Vector3f& v)
 //float GLGraphics::GetDistanceToDepthAt (const Vector3f& v)
 //{
 //	Vector2i size	( mTarget ? mTarget->GetSize() : mSize );
-//	Vector2f rel	( GetViewProjMatrix().Project(v) );
+//	Vector2f rel	( GetModelViewProjMatrix().Project(v) );
 //	Vector2i pos	( rel * size );
 //
 //	float depth (0.0f);
@@ -270,7 +277,7 @@ Vector2i GLGraphics::ConvertTo2D (const Vector3f& v)
 //
 //		if (depth < 1.0f)
 //		{
-//			Vector3f p (GetInverseViewProjMatrix().Unproject(rel, depth));
+//			Vector3f p (GetInverseMVPMatrix().Unproject(rel, depth));
 //			float distanceToV = mEye.GetDistanceTo(v);
 //			float distanceToD = mEye.GetDistanceTo(p);
 //			return distanceToD - distanceToV;
@@ -549,8 +556,11 @@ uint GLGraphics::Draw (uint drawable)
 		SetSimpleMaterial(true);
 		SetActiveShader(0);
 		glColor3ub(255, 255, 255);
-		SetWorldMatrix(mEye);
 
+		// Overwrite the ModelView matrix, changing it to use the current camera's position as origin
+		SetModelViewMatrix(mEye * GetViewMatrix());
+
+		// Set all active vertex attributes
 		SetActiveVertexAttribute( Attribute::Normal,	 0, 0, 0, 0, 0 );
 		SetActiveVertexAttribute( Attribute::Color,		 0, 0, 0, 0, 0 );
 		SetActiveVertexAttribute( Attribute::Tangent,	 0, 0, 0, 0, 0 );
@@ -560,14 +570,18 @@ uint GLGraphics::Draw (uint drawable)
 		SetActiveVertexAttribute( Attribute::TexCoord0, mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 		SetActiveVertexAttribute( Attribute::Position,	mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 
+		// Draw the skybox
 		result = DrawIndices( mSkyboxIBO, Primitive::Triangle, 36 );
-		ResetWorldMatrix();
 
+		// Reset the ModelView matrix back to its default values
+		ResetModelViewMatrix();
 		return 12;
 	}
 	else if (drawable == Drawable::FullscreenQuad)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
+
+		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
 		{
@@ -591,6 +605,8 @@ uint GLGraphics::Draw (uint drawable)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
 
+		_ActivateMatrices();
+
 		glBegin(GL_QUADS);
 		{
 			glTexCoord2i(0, 1);
@@ -611,6 +627,9 @@ uint GLGraphics::Draw (uint drawable)
 	}
 	else if (drawable == Drawable::Plane)
 	{
+		ResetModelViewMatrix();
+		_ActivateMatrices();
+
 		glBegin(GL_QUADS);
 		{
 			glNormal3f(0, 0, 1);
@@ -643,6 +662,9 @@ uint GLGraphics::Draw (uint drawable)
 		SetLighting(Lighting::None);
 		SetBlending(Blending::Normal);
 		SetActiveMaterial((const IMaterial*)0);
+
+		ResetModelViewMatrix();
+		_ActivateMatrices();
 
 		glBegin(GL_LINES);
 		{
@@ -690,6 +712,8 @@ uint GLGraphics::Draw (uint drawable)
 		SetLighting(Lighting::None);
 		SetBlending(Blending::Normal);
 		SetActiveMaterial((const IMaterial*)0);
+
+		_ActivateMatrices();
 
 		glBegin(GL_LINES);
 		{

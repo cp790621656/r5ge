@@ -68,7 +68,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "Time: 21"
+					Text = "Time: 309"
 					Shadow = true
 					Alignment = "Center"
 					Receives Events = false
@@ -777,10 +777,10 @@ Root
 
 			Window = "Texture Window"
 			{
-				Left = 1.000000 -256.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 0.000000 512.000000
+				Left = 1.000000 -990.000000
+				Right = 1.000000 34.000000
+				Top = 0.000000 132.000000
+				Bottom = 0.000000 2180.000000
 				Alpha = 1.000000
 				Skin = "Default"
 				Titlebar Height = 0
@@ -866,7 +866,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 3.000000
-			Rotation = 0.137991 -0.238564 0.832144 -0.481229
+			Rotation = 0.121590 -0.232943 0.855391 -0.446386
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000

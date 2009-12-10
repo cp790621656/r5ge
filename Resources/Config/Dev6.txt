@@ -16,7 +16,35 @@ Root
 		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 30.000000 75.000000
 
-  		Material = "Peasant"
+		Technique = "CPU"
+		{
+			Fog = false
+			Depth Write = true
+			Depth Test = true
+			Color Write = true
+			Alpha Test = false
+			Wireframe = false
+			Lighting = "One-sided"
+			Blending = "None"
+			Culling = "Back"
+			Sorting = "Front to Back"
+		}
+
+		Technique = "GPU"
+		{
+			Fog = false
+			Depth Write = true
+			Depth Test = true
+			Color Write = true
+			Alpha Test = false
+			Wireframe = false
+			Lighting = "One-sided"
+			Blending = "None"
+			Culling = "Back"
+			Sorting = "Front to Back"
+		}
+
+		Material = "Peasant"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
@@ -54,7 +82,7 @@ Root
 				Alpha = 1.000000
 				Receives Events = true
 				Layer = 0
-				
+
 				Checkbox = "Technique"
 				{
 					Left = 0.000000 3.000000
@@ -62,12 +90,14 @@ Root
 					Top = 0.000000 3.000000
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
+					Skin = "Default"
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					State = "Checked"
-					Skin = "Default"
+					Text = " Skinning on [55FF55]GPU"
 					Shadow = true
 					Alignment = "Left"
+					State = "Checked"
+					Animation Time = 0.150000
 					Receives Events = true
 					Layer = 0
 				}
@@ -81,7 +111,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = ""
+					Text = "[FF5555]441[FFFFFF] draw calls"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = false
@@ -97,13 +127,13 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = ""
+					Text = "[FF5555]6[FFFFFF] buffer binds"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = false
 					Layer = 0
 				}
-				
+
 				Label = "Debug 2"
 				{
 					Left = 0.000000 3.000000
@@ -113,13 +143,13 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = ""
+					Text = "[FF5555]1[FFFFFF] texture switches"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = false
 					Layer = 0
 				}
-				
+
 				Label = "Debug 3"
 				{
 					Left = 0.000000 3.000000
@@ -129,13 +159,13 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = ""
+					Text = "[FF5555]1[FFFFFF] shader switches"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = false
 					Layer = 0
 				}
-				
+
 				Label = "Debug 4"
 				{
 					Left = 0.000000 3.000000
@@ -145,13 +175,13 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = ""
+					Text = "[FF5555]1[FFFFFF] technique switches"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = false
 					Layer = 0
 				}
-				
+
 				Label = "Debug 5"
 				{
 					Left = 0.000000 3.000000
@@ -161,7 +191,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = ""
+					Text = "[FF5555]1[FFFFFF] light switches"
 					Shadow = true
 					Alignment = "Left"
 					Receives Events = false
@@ -177,7 +207,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "1224"
+					Text = "232"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -193,7 +223,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "12906"
+					Text = "242550"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -211,13 +241,11 @@ Root
 		Model = "First Model"
 		{
 			Source = "Models/peasant.r5a"
-			Layer = 0
 		}
 
 		Model = "Second Model"
 		{
 			Source = "Models/peasant.r5a"
-			Layer = 0
 		}
 	}
 
@@ -225,107 +253,24 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 2.000000
+			Position = 1.118778 -4.750380 4.046780
 			Rotation = -0.218756 0.028878 -0.129805 0.966676
-			Scale = 1.0
+			Scale = 1.000000
+			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 14.000076 50.000000
-			
+			Dolly = 0.000000 50.000000 50.000000
+
 			Directional Light = "First Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.0 0.0 0.0 1.0
-				Scale = 1.0
-				Ambient = 0.150000 0.150000 0.150000 1.000000
-				Diffuse = 1.000000 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000 1.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Ambient = 0.150000 0.150000 0.150000
+				Diffuse = 1.000000 1.000000 1.000000
+				Specular = 1.000000 1.000000 1.000000
 				Brightness = 1.250000
 			}
-		}
-
-		Model Instance = "Instance 0"
-		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "First Model"
-		}
-
-		Model Instance = "Instance 1"
-		{
-			Position = 3.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "Second Model"
-		}
-
-		Model Instance = "Instance 2"
-		{
-			Position = -3.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "Second Model"
-		}
-
-		Model Instance = "Instance 3"
-		{
-			Position = 3.000000 3.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "First Model"
-		}
-
-		Model Instance = "Instance 4"
-		{
-			Position = -3.000000 3.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "First Model"
-		}
-
-		Model Instance = "Instance 5"
-		{
-			Position = 3.000000 -3.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "First Model"
-			
-			Model Instance = "Attachment Test"
-			{
-				Position = 1.1 -0.2 -0.4
-				Rotation = 1.0 -0.3 0.0
-				Scale = 0.25
-				Model = "Models/teapot.r5b"
-
-				Script = "Bone Attachment"
-				{
-					Bone = "Bip01 R Hand"
-				}
-			}
-		}
-
-		Model Instance = "Instance 6"
-		{
-			Position = -3.000000 -3.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "First Model"
-		}
-
-		Model Instance = "Instance 7"
-		{
-			Position = 0.000000 3.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "Second Model"
-		}
-
-		Model Instance = "Instance 8"
-		{
-			Position = 0.000000 -3.000000 0.000000
-			Rotation = 0.000000 0.000000 -1.000000 -0.000000
-			Scale = 0.5
-			Model = "Second Model"
 		}
 	}
 }

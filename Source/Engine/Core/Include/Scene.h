@@ -35,10 +35,10 @@ public:
 
 	// These functions are valid after Cull() has been called
 	const Frustum&		GetFrustum()		const { return mFrustum; }
-	const ILight::List&	GetVisibleLights()	const { return mQueue.mLights;  }
+	const Light::List&	GetVisibleLights()	const { return mQueue.mLights;  }
 
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
-	const ILight::List& GetVisibleLights (const Vector3f& pos);
+	const Light::List& GetVisibleLights (const Vector3f& pos);
 
 	// Changes the camera's perspective to the specified values. All objects get culled.
 	void Cull (const Camera* cam);

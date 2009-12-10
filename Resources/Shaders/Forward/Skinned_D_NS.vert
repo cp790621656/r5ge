@@ -23,6 +23,12 @@ void main()
 	vec4 vertex   	= transMat * gl_Vertex;
 	vec3 normal   	= rotMat   * gl_Normal;
 	vec3 tangent  	= rotMat   * R5_tangent;
+	
+	//mat4 worldMat	= mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);
+	//mat3 worldRot	= mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);
+	//vertex 			= worldMat * vertex;
+	//normal 			= worldRot * normal;
+	//tangent 		= worldRot * tangent;
 
 	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
     _texCoord   	= gl_MultiTexCoord0.xy;

@@ -35,7 +35,7 @@ namespace Deferred
 	// Deferred rendering draw function -- does all the setup and rendering into off-screen buffers
 	DrawResult DrawScene (
 		IGraphics*			 graphics,
-		const ILight::List&	 lights,		// List of all visible lights
+		const Light::List&	 lights,		// List of all visible lights
 		const TechniqueList& techniques,	// Techniques to draw the scene with
 		const DrawCallback&	 drawCallback,	// Actual scene drawing callback
 		const AOCallback&	 aoCallback		= 0,

@@ -19,8 +19,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-	ModelInstance*	mInst0;
-	ModelInstance*	mInst1;
 	Camera*			mCam;
 	UILabel*		mDebug[6];
 	ITechnique*		mTech;
@@ -33,11 +31,6 @@ public:
 
 	void Run();
 	void OnDraw();
-
-	Model* GetModel0()		{ return (mInst0 != 0 ? mInst0->GetModel() : 0); }
-	Model* GetModel1()		{ return (mInst1 != 0 ? mInst1->GetModel() : 0); }
-	Model* GetRandomModel() { return (Time::GetMilliseconds() % 2 == 1) ? GetModel0() : GetModel1(); }
-
 	bool OnTechnique		(UIArea* area);
 	void PlayAnimation		(Model* model, const String& name, float speed = 1.0f);
 };

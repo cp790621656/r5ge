@@ -167,25 +167,26 @@ public:
 	virtual float				GetCameraFOV()			const=0;
 
 	// Matrix retrieval
-	virtual const Matrix43&		GetWorldMatrix()=0;
+	virtual const Matrix43&		GetModelMatrix()=0;
 	virtual const Matrix43&		GetViewMatrix()=0;
 	virtual const Matrix44&		GetProjectionMatrix()=0;
-	virtual const Matrix44&		GetViewProjMatrix()=0;
-	virtual const Matrix43&		GetInverseViewMatrix()=0;
+	virtual const Matrix43&		GetModelViewMatrix()=0;
+	virtual const Matrix44&		GetModelViewProjMatrix()=0;
+	virtual const Matrix43&		GetInverseModelViewMatrix()=0;
 	virtual const Matrix44&		GetInverseProjMatrix()=0;
-	virtual const Matrix44&		GetInverseViewProjMatrix()=0;
+	virtual const Matrix44&		GetInverseMVPMatrix()=0;
 
-	// World matrix manipulation
-	virtual void SetWorldMatrix( const Matrix43& mat )=0;
-	virtual void ResetWorldMatrix()=0;
+	// Model matrix manipulation -- resets the View matrix back to default
+	virtual void SetModelMatrix (const Matrix43& mat)=0;
+	virtual void ResetModelMatrix()=0;
 
-	// View matrix manipulation
-	virtual void SetViewMatrix( const Matrix43& mat )=0;
-	virtual void ResetViewMatrix()=0;
+	// ModelView matrix manipulation
+	virtual void SetModelViewMatrix (const Matrix43& mat)=0;
+	virtual void ResetModelViewMatrix()=0;
 
 	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
-	virtual void SetCameraOrientation	( const Vector3f& eye, const Vector3f& dir, const Vector3f& up )=0;
-	virtual void SetCameraRange			( const Vector3f& range )=0;
+	virtual void SetCameraOrientation		( const Vector3f& eye, const Vector3f& dir, const Vector3f& up )=0;
+	virtual void SetCameraRange				( const Vector3f& range )=0;
 
 	// Active state control
 	virtual void SetActiveRenderTarget		( const IRenderTarget* tar )=0;
@@ -198,7 +199,7 @@ public:
 	virtual void SetActiveProjection		( uint projection )=0;
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid )=0;
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr )=0;
-	virtual void SetActiveLight				( uint index, const ILight* ptr )=0;
+	virtual void SetActiveLight				( uint index, const Light* ptr )=0;
 	virtual void SetActiveDepthFunction		( uint condition )=0;
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask )=0;
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass )=0;

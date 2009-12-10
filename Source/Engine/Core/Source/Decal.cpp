@@ -133,7 +133,7 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 	// Set the color and world matrix
 	graphics->SetActiveColor(mColor);
 	graphics->SetNormalize(false);
-	graphics->SetWorldMatrix(mMatrix);
+	graphics->SetModelMatrix(mMatrix);
 
 	// Activate the shader, force-updating the uniforms
 	graphics->SetActiveShader(mShader, true);

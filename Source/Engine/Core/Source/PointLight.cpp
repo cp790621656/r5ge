@@ -13,6 +13,7 @@ PointLight::PointLight() :
 	mRange		(10.0f),
 	mPower		(2.0f)
 {
+	mLight.mType = Light::Type::Point;
 	_UpdateColors();
 	_UpdateAtten();
 }
@@ -23,17 +24,17 @@ PointLight::PointLight() :
 
 inline void PointLight::_UpdateColors()
 {
-	mParams.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
-	mParams.mDiffuse  = Color4f(mDiffuse  * mBrightness, mRange * mAbsoluteScale);
-	mParams.mSpecular = Color4f(mSpecular * mBrightness, mPower);
+	mLight.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
+	mLight.mDiffuse  = Color4f(mDiffuse  * mBrightness, mRange * mAbsoluteScale);
+	mLight.mSpecular = Color4f(mSpecular * mBrightness, mPower);
 }
 
 //============================================================================================================
 
 inline void PointLight::_UpdateAtten()
 {
-	mParams.mAtten.x = mRange * mAbsoluteScale;
-	mParams.mAtten.y = mPower;
+	mLight.mAtten.x = mRange * mAbsoluteScale;
+	mLight.mAtten.y = mPower;
 }
 
 //============================================================================================================
@@ -86,8 +87,8 @@ void PointLight::OnUpdate()
 		mRelativeBounds.Reset();
 		mRelativeBounds.Include(Vector3f(), mRange);
 
-		mParams.mPos = mAbsolutePos;
-		mParams.mDir = mAbsoluteRot.GetForward();
+		mLight.mPos = mAbsolutePos;
+		mLight.mDir = mAbsoluteRot.GetForward();
 
 		_UpdateAtten();
 		_UpdateColors();
@@ -102,9 +103,9 @@ bool PointLight::OnFill (FillParams& params)
 {
 	float range = mRange * mAbsoluteScale;
 
-	if ( mParams.IsVisible() && range > 0.0001f )
+	if ( (mLight.mDiffuse.IsVisibleRGB() || mLight.mAmbient.IsVisibleRGB()) && range > 0.0001f )
 	{
-		params.mDrawQueue.Add(&mParams);
+		params.mDrawQueue.Add(&mLight);
 	}
 	return true;
 }

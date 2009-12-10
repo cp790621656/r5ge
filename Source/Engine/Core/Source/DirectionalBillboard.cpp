@@ -8,6 +8,7 @@ using namespace R5;
 uint DirectionalBillboard::OnDraw (const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
+
 	Matrix43 mat (graphics->GetViewMatrix());
 
 	const Vector3f& camPos = graphics->GetCameraPosition();
@@ -15,7 +16,7 @@ uint DirectionalBillboard::OnDraw (const ITechnique* tech, bool insideOut)
 	mat.PreTranslate(camPos - mAbsoluteRot.GetForward() * camRange.y);
 	mat.ReplaceScaling(mAbsoluteScale * camRange.y * 0.1f);
 
-	graphics->SetViewMatrix(mat);
+	graphics->SetModelViewMatrix(mat);
 	DrawBillboard();
 	return 1;
 }

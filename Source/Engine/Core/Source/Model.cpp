@@ -325,8 +325,7 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 		graphics->SetActiveTechnique(0);
 		graphics->SetActiveMaterial	(0);
 
-		// World matrix will be changed below, so can't use a const reference
-		Matrix43 world (graphics->GetWorldMatrix());
+		const Matrix43& world = graphics->GetModelMatrix();
 
 		// Run through all transforms and draw colored XYZ axes at each bone's position
 		for (uint i = 0; i < mTransforms.GetSize(); ++i)
@@ -348,7 +347,7 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 			Matrix43 mat ( trans.mAbsolutePos, trans.mAbsoluteRot, 1.0f );
 
 			// Set the world transformation matrix
-			graphics->SetWorldMatrix( mat * world );
+			graphics->SetModelMatrix( mat * world );
 
 			// Draw the axes
 			graphics->Draw( IGraphics::Drawable::Axis );
@@ -357,7 +356,7 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 		// Draw lines connecting the bones
 		if (points.IsValid())
 		{
-			graphics->SetWorldMatrix			( world );
+			graphics->SetModelMatrix			( world );
 			graphics->SetActiveColor			( Color4f(1.0f, 0.0f, 0.0f, 1.0f) );
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Color,		0 );

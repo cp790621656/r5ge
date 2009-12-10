@@ -9,36 +9,13 @@
 
 class DirectionalLight : public Object
 {
-public:
-
-	// Struct that stores all the necessary final parameters passed back to the graphics engine
-	struct Params : public ILight
-	{
-		Vector3f	mPos;
-		Vector3f	mDir;
-		Color4f		mAmbient;
-		Color4f		mDiffuse;
-		Color4f		mSpecular;
-
-		virtual uint			GetLightType()	 const	{ return ILight::Type::Directional; }
-		virtual const Color4f&	GetAmbient()	 const	{ return mAmbient;	}
-		virtual const Color4f&	GetDiffuse()	 const	{ return mDiffuse;	}
-		virtual const Color4f&	GetSpecular()	 const	{ return mSpecular;	}
-		virtual const Vector3f&	GetPosition()	 const	{ return mPos;		}
-		virtual const Vector3f&	GetDirection()	 const	{ return mDir;		}
-		virtual const Vector3f*	GetAttenParams() const	{ return 0;			}
-		virtual const Vector3f*	GetSpotParams()	 const	{ return 0;			}
-
-		bool IsVisible() const { return (mDiffuse.IsVisibleRGB() || mAmbient.IsVisibleRGB()); }
-	};
-
 protected:
 
 	Color3f		mAmbient;		// Ambient color
 	Color3f		mDiffuse;		// Diffuse color
 	Color3f		mSpecular;		// Specular color
-	float		mBrightness;	// Light's brighness
-	Params		mParams;		// Outgoing parameters
+	float		mBrightness;	// Light's brightness
+	Light		mLight;			// Light's outgoing parameters
 
 	DirectionalLight();
 
@@ -47,15 +24,15 @@ public:
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Directional Light", DirectionalLight, Object, Object);
 
-	const Color3f&	GetAmbient()	const { return mAmbient;	 }
-	const Color3f&	GetDiffuse()	const { return mDiffuse;	 }
-	const Color3f&	GetSpecular()	const { return mSpecular;	 }
-	float			GetBrightness() const { return mBrightness; }
+	const Color3f&	GetAmbient()	const { return mAmbient;	}
+	const Color3f&	GetDiffuse()	const { return mDiffuse;	}
+	const Color3f&	GetSpecular()	const { return mSpecular;	}
+	float			GetBrightness() const { return mBrightness;	}
 
-	void SetAmbient		(const Color3f& c)	{ mAmbient	= c; _UpdateColors(); }
-	void SetDiffuse		(const Color3f& c)	{ mDiffuse	= c; _UpdateColors(); }
-	void SetSpecular	(const Color3f& c)	{ mSpecular = c; _UpdateColors(); }
-	void SetBrightness	(float val)			{ mBrightness = val; _UpdateColors(); }
+	void SetAmbient		(const Color3f& c)	{ mAmbient		= c;	_UpdateColors(); }
+	void SetDiffuse		(const Color3f& c)	{ mDiffuse		= c;	_UpdateColors(); }
+	void SetSpecular	(const Color3f& c)	{ mSpecular		= c;	_UpdateColors(); }
+	void SetBrightness	(float val)			{ mBrightness	= val;	_UpdateColors(); }
 
 protected:
 

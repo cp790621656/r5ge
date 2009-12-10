@@ -3,8 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mInst0(0),
-	mInst1(0), mCam(0), mTech(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mTech(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -40,17 +39,29 @@ void TestApp::Run()
 			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
 			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 
-			mInst0	= FindObject<ModelInstance>(mScene, "Instance 0");
-			mInst1	= FindObject<ModelInstance>(mScene, "Instance 1");
-
 			for (uint i = 0; i < 6; ++i) mDebug[i] = FindWidget<UILabel>(mUI, String("Debug %u", i));
 
-			PlayAnimation(GetModel0(), "Walk");
-			PlayAnimation(GetModel1(), "Run");
+			Model* model0 = mCore->GetModel("First Model");
+			Model* model1 = mCore->GetModel("Second Model");
+
+			PlayAnimation(model0, "Walk");
+			PlayAnimation(model1, "Run");
+
+			for (int y = -10; y < 11; ++y)
+			{
+				for (int x = -10; x < 11; ++x)
+				{
+					ModelInstance* inst = AddObject<ModelInstance>(mScene, String("Instance %dx%d", x, y));
+					inst->SetModel( (((x + y) & 1) == 0) ? model0 : model1 );
+					inst->SetRelativePosition( Vector3f(2.0f * x, 2.0f * y, 0.0f) );
+					inst->SetRelativeRotation( Vector3f(0.0f, -1.0f, 0.0f) );
+					inst->SetSerializable(false);
+				}
+			}
 
 			while (mCore->Update());
 
-			//*mCore >> "Config/Dev6 - out.txt";
+			//*mCore >> "Config/Dev6.txt";
 		}
 	}
 }
