@@ -57,7 +57,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 2.000000
-			Rotation = -0.060749 0.013051 -0.218011 0.973966
+			Rotation = -0.233075 0.140222 -0.497754 0.823562
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
@@ -74,14 +74,17 @@ Root
 			Diffuse = 1.000000 1.000000 1.000000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
-			Range = 30.000000
-			Power = 2.000000
 
 			Directional Billboard = "Test 0"
 			{
-                Texture = "light.jpg"
-                Technique = "Glow"
-            }
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Color = 0xffffffff
+				Texture = "light.jpg"
+				Technique = "Glow"
+			}
 		}
 
 		Model Instance = "Teapot"

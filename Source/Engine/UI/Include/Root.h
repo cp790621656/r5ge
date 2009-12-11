@@ -24,7 +24,7 @@ protected:
 	Vector2i					mMousePos;		// Current mouse position
 	Vector2i					mSize;			// Size of the window
 	Hash<CreateDelegate>		mCreators;		// Registered widget creator entries
-	PointerArray<UIArea>		mChildren;		// Array of areas that make up the Root hierarchy
+	UIFrame						mRoot;			// Root widget of the user interface
 	bool						mDimsChanged;	// Whether the regions need to be recalculated next frame
 	bool						mIsDirty;		// Whether the UI needs to be redrawn next frame
 
@@ -89,13 +89,13 @@ public:
 public:
 
 	// Find a responsive area by position
-	UIArea* _FindChild (const Vector2i& pos);
+	UIArea* _FindChild (const Vector2i& pos) { return mRoot._FindChild(pos); }
 
 	// Finds an area with the specified name
-	UIArea* _FindChild (const String& name, bool recursive = true);
+	UIArea* _FindChild (const String& name, bool recursive = true) { return mRoot._FindChild(name, recursive); }
 
 	// Adds a top-level child of specified type (or returns a child with the same name, if found)
-	UIArea* _AddChild (const String& type, const String& name, bool unique = true);
+	UIArea* _AddChild (const String& type, const String& name, bool unique = true) { return mRoot._AddChild(type, name, unique); }
 
 public:
 
@@ -113,19 +113,16 @@ public:
 	void SetSetOnScroll		(const String& areaName, const UIEventHandler::OnScrollDelegate&	fnct);
 	void SetOnStateChange	(const String& areaName, const UIEventHandler::OnChangeDelegate&	fnct);
 	void SetOnValueChange	(const String& areaName, const UIEventHandler::OnChangeDelegate&	fnct);
-	void SetOnTooltip		(const OnTooltipDelegate& fnct) { mTtDelegate = fnct; }
-
-public:
 
 	// The delay in seconds between the time the mouse stops moving and when the tooltip is shown
 	float GetTooltipDelay() const { return mTtDelay; }
 	void SetTooltipDelay(float val) { mTtDelay = val; }
 
-	// The following two functions can be used from inside the "mTtDelegate" to create default
-	// tooltips if no custom tooltip is desired. Look inside Root::_FillTooltip() for an example.
+	// If desired, a custom tooltip creating behavior can be used to overwrite the default one
+	void SetOnTooltip (const OnTooltipDelegate& fnct) { mTtDelegate = fnct; }
 
 	// Creates a default tooltip (returns whether the tooltip is valid)
-	bool CreateDefaultTooltip(UIArea* area);
+	bool CreateDefaultTooltip (UIArea* area);
 
 	// Aligns the tooltip using default logic (returns whether the tooltip is valid)
 	bool AlignDefaultTooltip();
@@ -140,9 +137,6 @@ private:
 
 	// Internal function that retrieves an event handler associated with the specified area
 	UIEventHandler* _GetHandler (const String& areaName);
-
-	// Brings the specified area to foreground
-	void _BringToFront (UIArea* ptr);
 
 protected:
 

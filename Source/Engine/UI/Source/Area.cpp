@@ -8,6 +8,7 @@ using namespace R5;
 UIArea* UIArea::_FindChild (const Vector2i& pos)
 {
 	UIArea* ptr (0);
+
 	if ( mReceivesEvents && mRegion.Contains(pos) && mRegion.IsVisible() )
 	{
 		mChildren.Lock();
@@ -31,6 +32,7 @@ UIArea* UIArea::_FindChild (const Vector2i& pos)
 UIArea* UIArea::_FindChild (const String& name, bool recursive)
 {
 	UIArea* ptr (0);
+
 	mChildren.Lock();
 	{
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
@@ -64,6 +66,7 @@ UIArea* UIArea::_FindChild (const String& name, bool recursive)
 UIArea* UIArea::_AddChild (const String& type, const String& name, bool unique)
 {
 	UIArea* ptr (0);
+
 	mChildren.Lock();
 	{
 		if (unique)
@@ -156,8 +159,7 @@ void UIArea::BringToFront (UIArea* child)
 		child->SetDirty();
 	}
 
-	if (mParent) mParent->BringToFront(this);
-	else mRoot->_BringToFront(this);
+	if (mParent != 0) mParent->BringToFront(this);
 }
 
 //============================================================================================================

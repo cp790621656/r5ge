@@ -5,22 +5,26 @@ using namespace R5;
 // Default function that fills the tooltip
 //============================================================================================================
 
-UIRoot::UIRoot() :	mSerializable	(true),
-				mDimsChanged	(false),
-				mIsDirty		(false),
-				mHoverArea		(0),
-				mFocusArea		(0),
-				mSelectedArea	(0),
-				mContext		(0),
-				mDefaultSkin	(0),
-				mDefaultFont	(0),
-				mTtArea			(0),
-				mTtTime			(100000.0f),
-				mTtDelay		(1.0f),
-				mTtQueued		(false),
-				mTtShown		(false)
+UIRoot::UIRoot() :
+	mSerializable	(true),
+	mDimsChanged	(false),
+	mIsDirty		(false),
+	mHoverArea		(0),
+	mFocusArea		(0),
+	mSelectedArea	(0),
+	mContext		(0),
+	mDefaultSkin	(0),
+	mDefaultFont	(0),
+	mTtArea			(0),
+	mTtTime			(100000.0f),	// High number so tooltip doesn't show up right away
+	mTtDelay		(1.0f),
+	mTtQueued		(false),
+	mTtShown		(false)
 {
 	memset(mKey, 0, 256);
+
+	mRoot._SetRootPtr(this);
+	mRoot.SetName("UI Root");
 
 	mTooltip._SetRootPtr(this);
 	mTooltip.GetRegion().SetAlpha(0.0f);
@@ -91,90 +95,6 @@ void UIRoot::_RegisterWidget(const String& type, const CreateDelegate& callback)
 }
 
 //============================================================================================================
-// Find an area by position that will respond to events
-//============================================================================================================
-
-UIArea* UIRoot::_FindChild (const Vector2i& pos)
-{
-	UIArea* ptr (0);
-	mChildren.Lock();
-	{
-		for (uint i = mChildren.GetSize(); i > 0; )
-			if (mChildren[--i] && (ptr = mChildren[i]->_FindChild(pos)))
-				break;
-	}
-	mChildren.Unlock();
-	return ptr;
-}
-
-//============================================================================================================
-// Finds an area with the specified name
-//============================================================================================================
-
-UIArea* UIRoot::_FindChild (const String& name, bool recursive)
-{
-	UIArea* ptr (0);
-	mChildren.Lock();
-	{
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
-		{
-			if (mChildren[i] && mChildren[i]->GetName() == name)
-			{
-				ptr = mChildren[i];
-				break;
-			}
-		}
-
-		if (recursive && ptr == 0)
-		{
-			for (uint i = 0; i < mChildren.GetSize(); ++i)
-			{
-				if (mChildren[i] && (ptr = mChildren[i]->_FindChild(name)))
-				{
-					break;
-				}
-			}
-		}
-	}
-	mChildren.Unlock();
-	return ptr;
-}
-
-//============================================================================================================
-// Adds a top-level child of specified type (or returns a child with the same name, if found)
-//============================================================================================================
-
-UIArea* UIRoot::_AddChild (const String& type, const String& name, bool unique)
-{
-	UIArea* ptr (0);
-	mChildren.Lock();
-	{
-		if (unique)
-		{
-			for (uint i = 0; i < mChildren.GetSize(); ++i)
-			{
-				if (mChildren[i] && mChildren[i]->GetName() == name)
-				{
-					ptr = mChildren[i];
-					break;
-				}
-			}
-		}
-
-		if (ptr == 0)
-		{
-			if ( ptr = _CreateArea(type, name, 0) )
-			{
-				if (mSize != 0) ptr->Update(mSize);
-				mChildren.Expand() = ptr;
-			}
-		}
-	}
-	mChildren.Unlock();
-	return ptr;
-}
-
-//============================================================================================================
 // Retrieves a pointer to the context menu
 //============================================================================================================
 
@@ -194,14 +114,8 @@ UIContext* UIRoot::GetContextMenu (bool createIfMissing)
 
 void UIRoot::_TextureChanged (const ITexture* ptr)
 {
-	mChildren.Lock();
-	{
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
-			if (mChildren[i])
-				mChildren[i]->_TextureChanged(ptr);
-	}
+	mRoot._TextureChanged(ptr);
 	mTooltip._TextureChanged(ptr);
-	mChildren.Unlock();
 }
 
 //============================================================================================================
@@ -317,8 +231,8 @@ bool UIRoot::CreateDefaultTooltip (UIArea* area)
 	const String& text (area->GetTooltip());
 	if (text.IsEmpty()) return false;
 
-	byte textSize   = mDefaultFont->GetSize();
-	uint  textWidth = mDefaultFont->GetLength(text, 0, 0xFFFFFFFF, IFont::Tags::Skip);
+	byte textSize  = mDefaultFont->GetSize();
+	uint textWidth = mDefaultFont->GetLength(text, 0, 0xFFFFFFFF, IFont::Tags::Skip);
 
 	// If the printable text has no width, no point in showing an empty tooltip
 	if (textWidth == 0) return false;
@@ -453,26 +367,6 @@ UIEventHandler* UIRoot::_GetHandler (const String& areaName)
 }
 
 //============================================================================================================
-// Brings the specified area to foreground
-//============================================================================================================
-
-void UIRoot::_BringToFront (UIArea* ptr)
-{
-	if (ptr != 0)
-	{
-		mChildren.Lock();
-		{
-			if (mChildren.Remove(ptr))
-			{
-				mChildren.Expand() = ptr;
-				ptr->SetDirty();
-			}
-		}
-		mChildren.Unlock();
-	}
-}
-
-//============================================================================================================
 // Create an area of specified type
 //============================================================================================================
 
@@ -492,7 +386,7 @@ UIArea* UIRoot::_CreateArea (const String& type, const String& name, UIArea* par
 			// See if this area has a queued event handler
 			mHandlers.Lock();
 			{
-				uint	key		= HashKey(name);
+				uint key = HashKey(name);
 				UIEventHandler*	handler = mHandlers.GetIfExists(key);
 
 				if (handler != 0)
@@ -514,12 +408,10 @@ UIArea* UIRoot::_CreateArea (const String& type, const String& name, UIArea* par
 
 void UIRoot::OnResize(const Vector2i& size)
 {
-	if ( mSize != size )
+	if (mSize != size)
 	{
 		mSize = size;
-		mChildren.Lock();
 		mDimsChanged = true;
-		mChildren.Unlock();
 	}
 }
 
@@ -529,19 +421,9 @@ void UIRoot::OnResize(const Vector2i& size)
 
 bool UIRoot::Update()
 {
-	// Run through all children and update them
-	mChildren.Lock();
-	{
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
-		{
-			if (mChildren[i])
-			{
-				mChildren[i]->Update(mSize, mDimsChanged);
-			}
-		}
-		mDimsChanged = false;
-	}
-	mChildren.Unlock();
+	// Update all wildgets
+	mRoot.Update(mSize, mDimsChanged);
+	mDimsChanged = false;
 
 	// Show the tooltip if the tooltip area is valid, and the time has been reached
 	if (mTtQueued && (mTtTime + mTtDelay < GetCurrentTime()))
@@ -587,7 +469,7 @@ bool UIRoot::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 		// Queue the tooltip
 		mTtArea	= mHoverArea;
 		mTtTime	= GetCurrentTime();
-		mTtQueued	= true;
+		mTtQueued = true;
 	}
 
 	// Inform the hovering area of mouse movement
@@ -646,8 +528,6 @@ bool UIRoot::OnChar (byte character)
 
 bool UIRoot::SerializeFrom (const TreeNode& root)
 {
-	bool localSerializable (true);
-
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
 		const TreeNode& node  = root.mChildren[i];
@@ -657,10 +537,6 @@ bool UIRoot::SerializeFrom (const TreeNode& root)
 		if (tag == "UI")
 		{
 			return SerializeFrom(node);
-		}
-		else if (tag == "Serializable")
-		{
-			value >> localSerializable;
 		}
 		else if (tag == "Default Skin")
 		{
@@ -678,23 +554,10 @@ bool UIRoot::SerializeFrom (const TreeNode& root)
 		{
 			UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
 			skin->SerializeFrom(node);
-			if (!localSerializable) skin->SetSerializable(false);
 		}
 		else if (tag == "Layout")
 		{
-			for (uint b = 0; b < node.mChildren.GetSize(); ++b)
-			{
-				const TreeNode& area = node.mChildren[b];
-
-				UIArea* ptr = _AddChild(area.mTag,  area.mValue.IsString() ?
-					area.mValue.AsString() : area.mValue.GetString() );
-
-				if (ptr != 0)
-				{
-					ptr->SerializeFrom(area);
-					if (!localSerializable) ptr->SetSerializable(false);
-				}
-			}
+			mRoot.SerializeFrom(node);
 		}
 	}
 	return true;
@@ -716,6 +579,7 @@ bool UIRoot::SerializeTo (TreeNode& root) const
 		if (mDefaultFont != 0) font.mValue = mDefaultFont->GetName();
 		node.AddChild("Tooltip Delay", mTtDelay);
 
+		// Serialize all skins
 		mSkins.Lock();
 		{
 			const PointerArray<UISkin>& allSkins = mSkins.GetAllValues();
@@ -733,21 +597,21 @@ bool UIRoot::SerializeTo (TreeNode& root) const
 		}
 		mSkins.Unlock();
 
-		if (mChildren.IsValid())
+		// Serialize all children
+		const UIArea::Children& children = mRoot.GetChildren();
+
+		if (children.IsValid())
 		{
 			TreeNode& layout = node.AddChild("Layout");
 
-			mChildren.Lock();
+			children.Lock();
 			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
+				for (uint i = 0; i < children.GetSize(); ++i)
 				{
-					if (mChildren[i] != 0)
-					{
-						mChildren[i]->SerializeTo(layout);
-					}
+					children[i]->SerializeTo(layout);
 				}
 			}
-			mChildren.Unlock();
+			children.Unlock();
 		}
 		return true;
 	}
@@ -763,17 +627,12 @@ uint UIRoot::Draw()
 	mIsDirty = false;
 	uint triangles (0);
 
-	if (mChildren.IsValid())
+	if (mRoot.GetChildren().IsValid())
 	{
 		OnPreDraw();
 		{
 			// Draw all children
-			mChildren.Lock();
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					triangles += mChildren[i]->Draw();
-			}
-			mChildren.Unlock();
+			mRoot.Draw();
 
 			// Draw the tooltip
 			triangles += mTooltip.Draw();

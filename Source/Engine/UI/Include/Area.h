@@ -13,9 +13,11 @@ class UIArea : public UIEventHandler
 	friend class UIRoot;
 	friend class UIFrame;
 
-protected:
+public:
 
 	typedef PointerArray<UIArea> Children;
+
+protected:
 
 	String		mName;				// Every area needs a name
 	UIRegion	mRegion;			// As well as a region
@@ -41,11 +43,12 @@ public:
 
 public:
 
-	const String& GetName() const		{ return mName;    }
-	const String& GetTooltip() const	{ return mTooltip; }
-	void SetName(const String& name)	{ mName = name;    }
-	void SetTooltip(const String& text)	{ mTooltip = text; }
-	UIArea* GetParent()					{ return mParent;  }
+	const String& GetName() const		{ return mName;		}
+	const String& GetTooltip() const	{ return mTooltip;	}
+	void SetName(const String& name)	{ mName = name;		}
+	void SetTooltip(const String& text)	{ mTooltip = text;	}
+	UIArea* GetParent()					{ return mParent;	}
+	const Children& GetChildren() const { return mChildren;	}
 
 	// Returns whether the specified parent is reachable by going up the hierarchy tree
 	bool IsChildOf (const UIArea* parent) const { return (parent == this || (mParent == 0 ? false : mParent->IsChildOf(parent))); }
@@ -88,7 +91,7 @@ public:
 
 	// Having access to the area's dimensions can come in handy
 	UIRegion& GetRegion() { return mRegion; }
-	void	SetRegion (float left, float top, float width, float height) { mRegion.SetRect(left, top, width, height); }
+	void SetRegion (float left, float top, float width, float height) { mRegion.SetRect(left, top, width, height); }
 
 	// Calls OnTextureChanged() and recurses through children
 	void _TextureChanged (const ITexture* ptr);
@@ -106,7 +109,7 @@ public:
 
 protected:
 
-	// Convenience function, seeing as most areas will sue the built-in layer
+	// Convenience function, seeing as most areas will use the built-in layer
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
 
 	// Functions overwritten by Frame class

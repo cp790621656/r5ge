@@ -4,13 +4,13 @@ Root
 {
 	UI
 	{
-	    Serializable = false
-		Default Skin = Default
+	    Default Skin = Default
 		Default Font = Arial 15
 		Tooltip Delay = 1.000
-	
+
 		Skin = Default
 		{
+		    Serializable = false
 		    Texture = Textures/leo.png
 	
 			Face = Window: Background
