@@ -4,7 +4,10 @@ uniform sampler2D   R5_texture1;    // View space normal and shininess
 uniform mat4 R5_inverseProjMatrix;  // Inverse projection matrix
 uniform vec2 R5_pixelSize;          // (1 / width, 1 / height)
 
+//============================================================================================================
 // Gets the view space position at the specified texture coordinates
+//============================================================================================================
+
 vec3 GetViewPos (in vec2 texCoord)
 {
 	float depth = texture2D(R5_texture0, texCoord).r;
@@ -13,6 +16,10 @@ vec3 GetViewPos (in vec2 texCoord)
     view = R5_inverseProjMatrix * view;
     return view.xyz / view.w;
 }
+
+//============================================================================================================
+// Fragment Shader
+//============================================================================================================
 
 void main()
 {

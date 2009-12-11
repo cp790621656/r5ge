@@ -66,6 +66,7 @@ uint Glare::OnDraw (const ITechnique* tech, bool insideOut)
 		mat.ReplaceScaling(scale);
 		graphics->SetModelViewMatrix(mat);
 		DrawBillboard();
+		graphics->ResetModelViewMatrix();
 	}
 	return 1;
 }

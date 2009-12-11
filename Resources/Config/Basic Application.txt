@@ -61,10 +61,10 @@ Root
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 24.001606 50.000000
+			Dolly = 0.000000 14.001606 50.000000
 		}
 
-		Point Light = "First Light"
+		Directional Light = "First Light"
 		{
 			Position = -7.000000 -7.000000 2.000000
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
@@ -76,8 +76,8 @@ Root
 			Brightness = 1.000000
 			Range = 30.000000
 			Power = 2.000000
-			
-			Billboard = "Test 0"
+
+			Directional Billboard = "Test 0"
 			{
                 Texture = "light.jpg"
                 Technique = "Glow"

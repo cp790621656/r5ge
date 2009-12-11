@@ -44,7 +44,7 @@ uint DrawQueue::Draw (IGraphics* graphics, const Techniques& techniques, bool in
 
 						if (last > 0)
 						{
-							graphics->GetModelViewMatrix();
+							graphics->ResetModelViewMatrix();
 
 							for (uint i = 0; i < last; ++i)
 								graphics->SetActiveLight(i, mLights[i].mLight);

@@ -545,18 +545,6 @@ const Matrix43& GLController::GetModelViewMatrix()
 }
 
 //============================================================================================================
-// SetView  = View, ignore World
-// SetWorld = World * View
-// Reset	= Revert View, clear World
-
-//glLoadMatrixf( (mWorld * mView).mF );
-
-//glMultiTexCoord4fv(GL_TEXTURE2, mat.mColumn0);
-//glMultiTexCoord4fv(GL_TEXTURE3, mat.mColumn1);
-//glMultiTexCoord4fv(GL_TEXTURE4, mat.mColumn2);
-//glMultiTexCoord4fv(GL_TEXTURE5, mat.mColumn3);
-
-//============================================================================================================
 // Retrieves the View * Projection matrix used for frustum culling
 //============================================================================================================
 
@@ -1414,8 +1402,22 @@ void GLController::_ActivateMatrices()
 
 			if (mResetView)
 			{
-				glMatrixMode(GL_MODELVIEW);
-				glLoadMatrixf(GetModelViewMatrix().mF);
+				// If the active shader supports pseudo-instancing, take advantage of that
+				if (mShader != 0 && mShader->GetFlag(IShader::Flag::Instanced))
+				{
+					const Matrix43& mat = GetModelMatrix();
+
+					glMultiTexCoord4fv(GL_TEXTURE2, mat.mColumn0);
+					glMultiTexCoord4fv(GL_TEXTURE3, mat.mColumn1);
+					glMultiTexCoord4fv(GL_TEXTURE4, mat.mColumn2);
+					glMultiTexCoord4fv(GL_TEXTURE5, mat.mColumn3);
+				}
+				else
+				{
+					// NOTE: glLoadMatrixf is a rather slow operation. Avoid it when possible.
+					glMatrixMode(GL_MODELVIEW);
+					glLoadMatrixf(GetModelViewMatrix().mF);
+				}
 			}
 			else if (mResetProj)
 			{

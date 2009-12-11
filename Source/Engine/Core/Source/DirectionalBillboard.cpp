@@ -18,5 +18,6 @@ uint DirectionalBillboard::OnDraw (const ITechnique* tech, bool insideOut)
 
 	graphics->SetModelViewMatrix(mat);
 	DrawBillboard();
+	graphics->ResetModelViewMatrix();
 	return 1;
 }

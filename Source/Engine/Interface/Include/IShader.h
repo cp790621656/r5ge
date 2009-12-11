@@ -26,8 +26,8 @@ struct IShader
 	{
 		enum
 		{
-			Processed	= 0x1,
-			Skinned		= 0x2,
+			Skinned		= 0x1,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
+			Instanced	= 0x2,	// The shader has a pseudo-instancing component
 		};
 	};
 
@@ -50,8 +50,10 @@ private:
 public:
 
 	// All shaders should have flags that can be easily modified
-	inline Flags&		GetFlags()			{ return mFlags; }
-	inline const Flags&	GetFlags() const	{ return mFlags; }
+	bool GetFlag (uint flags) const			{ return mFlags.Get(flags); }
+
+	// It should also be possible to change the flags
+	void SetFlag (uint flags, bool value)	{ mFlags.Set(flags, value); }
 
 public:
 

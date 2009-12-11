@@ -1,25 +1,27 @@
-//============================================================================================================ 
+#pragma once
+
+//============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Basic light information
 //============================================================================================================
- 
+
 struct Light
- {
- 	// Light type is used to identify light groups
- 	struct Type
+{
+	// Light type is used to identify light groups
+	struct Type
 	{
 		enum
- 		{
- 			Directional	= 0,
- 			Point		= 1,
- 		};
- 	};
- 
- 	// Active light entry contains a pointer to the light and its calculated distance to the camera
- 	struct Entry
- 	{
+		{
+			Directional	= 0,
+			Point		= 1,
+		};
+	};
+
+	// Active light entry contains a pointer to the light and its calculated distance to the camera
+	struct Entry
+	{
 		Light*	mLight;
 		float	mDistance;
 
@@ -29,6 +31,8 @@ struct Light
 	};
 
 	typedef Array<Entry> List;
+
+public:
 
 	uint		mType;		// Type of this light
 	Vector3f	mPos;		// This light's position

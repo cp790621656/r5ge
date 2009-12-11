@@ -52,6 +52,7 @@ uint DirectionalGlare::OnDraw (const ITechnique* tech, bool insideOut)
 		mat.ReplaceScaling(scale * camRange.y * 0.1f);
 		graphics->SetModelViewMatrix(mat);
 		DrawBillboard();
+		graphics->ResetModelViewMatrix();
 	}
 	return 1;
 }

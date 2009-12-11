@@ -7,9 +7,9 @@ varying vec2 _texCoord;
 varying vec3 _eyeDir, _normal;
 varying float _fogFactor;
 
-//============================================================================================================================
+//============================================================================================================
 // Vertex Shader
-//============================================================================================================================
+//============================================================================================================
 
 void main()
 {
@@ -21,11 +21,8 @@ void main()
    	mat3 rotMat   	= mat3(transMat[0].xyz, transMat[1].xyz, transMat[2].xyz);
 	vec4 vertex   	= transMat * gl_Vertex;
 	vec3 normal   	= rotMat   * gl_Normal;
-	
-	//mat4 worldMat	= mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);
-	//mat3 worldRot	= mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);
-	//vertex 			= worldMat * vertex;
-	//normal 			= worldRot * normal;
+
+    // R5_IMPLEMENT_INSTANCING vertex normal
 
 	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
     _texCoord   	= gl_MultiTexCoord0.xy;

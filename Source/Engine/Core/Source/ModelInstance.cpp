@@ -45,6 +45,20 @@ void GetBoundingBoxLines (Array<Vector3f>& v, const Vector3f& min, const Vector3
 }
 
 //============================================================================================================
+// Retrieves the world transformation matrix
+//============================================================================================================
+
+const Matrix43& ModelInstance::GetMatrix() const
+{
+	if (mRecalculate)
+	{
+		mRecalculate = false;
+		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
+	}
+	return mMatrix;
+}
+
+//============================================================================================================
 // Updates the pointer to the instanced model, keeping track of the number of instances
 //============================================================================================================
 
@@ -67,8 +81,7 @@ void ModelInstance::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mMatrix.SetToTransform( mAbsolutePos, mAbsoluteRot, mAbsoluteScale );
-
+		mRecalculate = true;
 		mRelativeBounds = mCullBounds;
 
 		if (mModel != 0)
@@ -104,8 +117,8 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 	// Automatically normalize normals if the scale is not 1.0
 	graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
 
-	// Set the model's world matrix so the rendered objects show up in the proper place
-	graphics->SetModelMatrix(mMatrix);
+	// Set the model's world matrix so the rendered objects show up in their proper place
+	graphics->SetModelMatrix( GetMatrix() );
 
 	if (mModel != 0)
 	{

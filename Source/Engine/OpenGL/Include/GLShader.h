@@ -23,9 +23,9 @@ public:
 
 	struct ShaderInfo
 	{
-		String	mPath;		// Path to the source of the shader
-		String	mSource;	// Actual original source code
-		bool	mSpecial;	// Whether it requires special pre-processing
+		String	mPath;			// Path to the source of the shader
+		String	mSource;		// Actual original source code
+		bool	mSpecial;		// Whether it requires special pre-processing
 
 		ShaderInfo() : mSpecial(false) {}
 
@@ -74,7 +74,6 @@ private:
 	ShaderInfo			mVertexInfo;		// Vertex shader source code/path
 	ShaderInfo			mFragmentInfo;		// Fragment shader source code/path
 	Array<ProgramEntry>	mPrograms;			// List of programs, one per light
-	uint				mFlag;				// Custom user-set flag that can be used to hold up to 32 custom states
 	bool				mIsDirty;			// Whether the shader should be rebuilt next frame
 	bool				mSerializable;		// Whether the shader will be serialized
 	uint				mLast;				// Starts with the maximum number of lights and moves down if shaders fail to compile
@@ -93,6 +92,12 @@ private:
 
 	// INTERNAL: Non thread-safe version of Activate()
 	ActivationResult _Activate (uint activeLighCount, bool updateUniforms);
+
+	// INTERNAL: Sets the shader's source code, not thread safe
+	void _SetSourceCode (const String& code, uint type);
+
+	// INTERNAL: Sets the path where the shader's source code can be found
+	void _SetSourcePath (const String& path, uint type);
 	
 public:
 
@@ -104,10 +109,6 @@ public:
 
 	// Returns whether the shader is in a usable state
 	virtual bool IsValid() const { return (mVertexInfo.mSource.IsValid() || mFragmentInfo.mSource.IsValid()); }
-
-	// Sets a custom flag for the shader that can be used to cache "is this uniform present?" type states
-	virtual void SetCustomFlag (uint index, bool value);
-	virtual bool GetCustomFlag (uint index) const { return (index < 32 ? (((mFlag >> index) & 0x1) != 0) : false); }
 
 public: // The following functions are meant to be called only from the graphics thread
 
@@ -129,14 +130,14 @@ public:
 	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint id = 0);
 
 	// Directly sets the source code for the shader
-	virtual void SetSourceCode (const String& code, uint type);
+	virtual void SetSourceCode (const String& code, uint type) { mLock.Lock(); _SetSourceCode(code, type); mLock.Unlock(); }
 
 	// Sets the path where the shader's source code can be found
-	virtual void SetSourcePath (const String& path, uint type);
+	virtual void SetSourcePath (const String& path, uint type) { mLock.Lock(); _SetSourcePath(path, type); mLock.Unlock(); }
 
 	// It's always useful to be able to retrieve what was once set
-	virtual const String&	GetSourcePath (uint type) const { return (type == Type::Vertex ? mVertexInfo.mPath   : mFragmentInfo.mPath);   }
-	virtual const String&	GetSourceCode (uint type) const { return (type == Type::Vertex ? mVertexInfo.mSource : mFragmentInfo.mSource); }
+	virtual const String& GetSourcePath (uint type) const { return (type == Type::Vertex ? mVertexInfo.mPath   : mFragmentInfo.mPath);   }
+	virtual const String& GetSourceCode (uint type) const { return (type == Type::Vertex ? mVertexInfo.mSource : mFragmentInfo.mSource); }
 	
 	// Serialization
 	virtual bool IsSerializable() const { return mSerializable; }

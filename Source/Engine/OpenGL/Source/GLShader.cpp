@@ -171,6 +171,7 @@ uint CreateShader (const String& name, const String& code, uint type)
 		PrintInfoLog(debug);
 		glDeleteShader(shader);
 		shader = 0;
+		WARNING("Shader compilation failure");
 	}
 	return shader;
 }
@@ -368,9 +369,80 @@ bool UpdateUniform (const GLShader::UniformEntry& entry)
 // Determines whether the shader's source will need pre-processing
 //============================================================================================================
 
-inline bool PreprocessCheck (const String& source)
+inline bool NeedsLightPreprocessing (const String& source)
 {
-	return	source.Find("R5_FOR_EACH_LIGHT") != source.GetLength();
+	return source.Find("R5_FOR_EACH_LIGHT") != source.GetLength();
+}
+
+//============================================================================================================
+// Macro that adds pseudo-instancing support. Example implementations:
+//============================================================================================================
+// // R5_IMPLEMENT_INSTANCING vertex
+// // R5_IMPLEMENT_INSTANCING vertex normal
+// // R5_IMPLEMENT_INSTANCING vertex normal tangent
+//============================================================================================================
+
+bool PreprocessInstancing (String& source)
+{
+	String match ("R5_IMPLEMENT_INSTANCING");
+
+	uint length = source.GetLength();
+	uint phrase = source.Find(match);
+
+	if (phrase < length)
+	{
+		String line, vertex, normal, tangent;
+
+		// Extract the entire macroed line
+		uint lineEnd = source.GetLine(line, phrase + match.GetLength());
+
+		// Extract the names of the variables
+		uint offset = line.GetWord(vertex);
+		offset = line.GetWord(normal, offset);
+		offset = line.GetWord(tangent, offset);
+
+		// At least 1 argument is necessary for this macro to work
+		bool isValid = vertex.IsValid();
+		ASSERT(isValid, "Expecting at least 1 argument");
+		
+		if (isValid)
+		{
+			String left, right;
+			source.GetString(left, 0, phrase);
+			source.GetString(right, lineEnd);
+
+			left << "\n";
+			left << "mat4 worldMat	= mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);\n";
+			left << "mat3 worldRot	= mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);\n";
+			
+			left << vertex;
+			left << " = worldMat * ";
+			left << vertex;
+			left << ";\n";
+			
+			if (normal.IsValid())
+			{
+				left << normal;
+				left << " = worldRot * ";
+				left << normal;
+				left << ";\n";
+			}
+
+			if (tangent.IsValid())
+			{
+				left << tangent;
+				left << " = worldRot * ";
+				left << tangent;
+				left << ";\n";
+			}
+
+			// Copy the result back into the Source
+			source = left;
+			source << right;
+			return true;
+		}
+	}
+	return false;
 }
 
 //============================================================================================================
@@ -391,8 +463,8 @@ bool PreprocessCompile (const String& name, GLShader::ShaderEntry& entry, GLShad
 				while ( (offset = source.Find("R5_FOR_EACH_LIGHT", true, offset)) != source.GetLength() )
 				{
 					int braces = 0;
-					uint start (source.GetLength()),
-								 end   (source.GetLength());
+					uint start (source.GetLength());
+					uint end = start;
 
 					for (uint i = offset; i < source.GetLength(); ++i)
 					{
@@ -483,7 +555,6 @@ bool PreprocessCompile (const String& name, GLShader::ShaderEntry& entry, GLShad
 
 GLShader::GLShader (const String& name) :
 	mName			(name),
-	mFlag			(0),
 	mIsDirty		(false),
 	mSerializable	(false),
 	mLast			(g_caps.mMaxLights + 1),
@@ -505,7 +576,6 @@ GLShader::GLShader (const String& name) :
 
 void GLShader::_InternalRelease (bool clearUniforms)
 {
-	mFlag = 0;
 	mLast = g_caps.mMaxLights + 1;
 
 	// Detach and release all shaders
@@ -537,21 +607,6 @@ void GLShader::_InternalRelease (bool clearUniforms)
 		}
 		uniforms.Unlock();
 	}
-}
-
-//============================================================================================================
-// Releases the source for the shader and marks it as dirty so it's released next frame
-//============================================================================================================
-
-void GLShader::Release()
-{
-	mLock.Lock();
-	{
-		mVertexInfo.Clear();
-		mFragmentInfo.Clear();
-		mIsDirty = true;
-	}
-	mLock.Unlock();
 }
 
 //============================================================================================================
@@ -642,8 +697,8 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 #endif
 
 			// Add up the results
-			if		(vertex.mStatus	== ShaderEntry::CompileStatus::Success)	++success;
-			else if (vertex.mStatus	== ShaderEntry::CompileStatus::Error)	success -= 100;
+			if		(vertex.mStatus		== ShaderEntry::CompileStatus::Success)	++success;
+			else if (vertex.mStatus		== ShaderEntry::CompileStatus::Error)	success -= 100;
 			if		(fragment.mStatus	== ShaderEntry::CompileStatus::Success) ++success;
 			else if (fragment.mStatus	== ShaderEntry::CompileStatus::Error)	success -= 100;
 
@@ -703,7 +758,7 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 			}
 			else
 			{
-				// Some compiling error occured -- exit prematurely
+				// Some compiling error occurred -- exit prematurely
 				vertex.mStatus   = ShaderEntry::CompileStatus::Error;
 				fragment.mStatus = ShaderEntry::CompileStatus::Error;
 				program.mStatus  = ShaderEntry::CompileStatus::Error;
@@ -724,7 +779,6 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 				}
 
 				CHECK_GL_ERROR;
-				ASSERT(success == 0, "Shader compilation failure");
 
 				// No need to keep the defective source code
 				mVertexInfo.mSource.Release();
@@ -793,24 +847,59 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 }
 
 //============================================================================================================
-// Sets a custom flag for the shader that can be used to cache "is this uniform present?" type states
+// Directly sets the source code for the shader
 //============================================================================================================
 
-void GLShader::SetCustomFlag (uint index, bool value)
+void GLShader::_SetSourceCode (const String& code, uint type)
 {
-	ASSERT(index < 32, "Only up to 32 flags are supported");
+	mIsDirty = true;
+	mSerializable = false;
 
-	if (index < 32)
+	if (type == Type::Vertex)
 	{
-		if (value)
-		{
-			mFlag |= (1 << index);
-		}
-		else
-		{
-			mFlag &= ~(1 << index);
-		}
+		mVertexInfo.mPath.Clear();
+		mVertexInfo.mSource = code;
+		mVertexInfo.mSpecial = ::NeedsLightPreprocessing(mVertexInfo.mSource);
+
+		if (mVertexInfo.mSource.Contains("R5_boneTransforms"))	SetFlag(Flag::Skinned,	 true);
+		if (::PreprocessInstancing(mVertexInfo.mSource))		SetFlag(Flag::Instanced, true);
 	}
+	else
+	{
+		mFragmentInfo.mPath.Clear();
+		mFragmentInfo.mSource = code;
+		mFragmentInfo.mSpecial = ::NeedsLightPreprocessing(mFragmentInfo.mSource);
+	}
+}
+
+//============================================================================================================
+// Sets the path where the shader's source code can be found
+//============================================================================================================
+
+void GLShader::_SetSourcePath (const String& path, uint type)
+{
+	mIsDirty = true;
+
+	String text;
+	if (text.Load(path)) _SetSourceCode(text, type);
+
+	// Serialization should only happen if the paths are valid
+	mSerializable = mVertexInfo.mPath.IsValid() || mFragmentInfo.mPath.IsValid();
+}
+
+//============================================================================================================
+// Releases the source for the shader and marks it as dirty so it's released next frame
+//============================================================================================================
+
+void GLShader::Release()
+{
+	mLock.Lock();
+	{
+		mVertexInfo.Clear();
+		mFragmentInfo.Clear();
+		mIsDirty = true;
+	}
+	mLock.Unlock();
 }
 
 //============================================================================================================
@@ -862,10 +951,12 @@ void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUnifo
 	{
 		for (uint i = 0; i < mUniforms.GetSize(); ++i)
 		{
-			if (mUniforms[i].mName == name)
+			UniformEntry& entry = mUniforms[i];
+
+			if (entry.mName == name)
 			{
-				mUniforms[i].mId = id;
-				mUniforms[i].mDelegate = fnct;
+				entry.mId = id;
+				entry.mDelegate = fnct;
 				mUniforms.Unlock();
 				return;
 			}
@@ -873,8 +964,8 @@ void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUnifo
 
 		UniformEntry& entry = mUniforms.Expand();
 		entry.mId			= id;
-		entry.mName		= name;
-		entry.mDelegate	= fnct;
+		entry.mName			= name;
+		entry.mDelegate		= fnct;
 	}
 	mUniforms.Unlock();
 }
@@ -925,69 +1016,6 @@ bool GLShader::ProgramEntry::UpdateUniform (uint id, const SetUniformDelegate& f
 }
 
 //============================================================================================================
-// Directly sets the source code for the shader
-//============================================================================================================
-
-void GLShader::SetSourceCode (const String& code, uint type)
-{
-	mLock.Lock();
-	{
-		mIsDirty = true;
-		mSerializable = false;
-
-		if (type == Type::Vertex)
-		{
-			mVertexInfo.mPath.Clear();
-			mVertexInfo.mSource = code;
-		}
-		else
-		{
-			mFragmentInfo.mPath.Clear();
-			mFragmentInfo.mSource = code;
-		}
-
-		// Serialization should only happen if the paths are valid
-		mSerializable = mVertexInfo.mPath.IsValid() || mFragmentInfo.mPath.IsValid();
-	}
-	mLock.Unlock();
-}
-
-//============================================================================================================
-// Sets the path where the shader's source code can be found
-//============================================================================================================
-
-void GLShader::SetSourcePath (const String& path, uint type)
-{
-	mLock.Lock();
-	{
-		mIsDirty = true;
-
-		if (type == Type::Vertex)
-		{
-			if (mVertexInfo.mSource.Load(path))
-			{
-				 mVertexInfo.mPath = path;
-				 mVertexInfo.mSpecial = ::PreprocessCheck(mVertexInfo.mSource);
-			}
-			else mVertexInfo.Clear();
-		}
-		else
-		{
-			if (mFragmentInfo.mSource.Load(path))
-			{
-				 mFragmentInfo.mPath = path;
-				 mFragmentInfo.mSpecial = ::PreprocessCheck(mFragmentInfo.mSource);
-			}
-			else mFragmentInfo.Clear();
-		}
-
-		// Serialization should only happen if the paths are valid
-		mSerializable = mVertexInfo.mPath.IsValid() || mFragmentInfo.mPath.IsValid();
-	}
-	mLock.Unlock();
-}
-
-//============================================================================================================
 // Serialization -- Load
 //============================================================================================================
 
@@ -1011,8 +1039,8 @@ bool GLShader::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				}
 				else if (value.IsString())
 				{
-					if		(tag == "Vertex")		SetSourcePath(value.AsString(), Type::Vertex);
-					else if (tag == "Fragment")		SetSourcePath(value.AsString(), Type::Fragment);
+					if		(tag == "Vertex")		_SetSourcePath(value.AsString(), Type::Vertex);
+					else if (tag == "Fragment")		_SetSourcePath(value.AsString(), Type::Fragment);
 				}
 			}
 		}

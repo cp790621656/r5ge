@@ -253,29 +253,20 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 								// If the material's shader hasn't updated the skinning flag, check why
 								IShader* shader = method->GetShader();
 
-								if (shader != 0)
+								// Try to update the uniform directly
+								if (shader != 0 && shader->GetFlag(IShader::Flag::Skinned) && !shader->UpdateUniform(1))
 								{
-									Flags& flags = shader->GetFlags();
+									// If failed, register it and update it again
+									shader->RegisterUniform("R5_boneTransforms", OnUpdateBoneTransforms, 1);
+									shader->UpdateUniform(1);
 
-									if ( (lastModel == this) && flags.Get( IShader::Flag::Processed ) )
+									// Ensure that we now have the shader active
+									ASSERT(g_skinningShaderActive, "Shader marked as skinned, yet no bone transforms?");
+
+									// Odd case, should never happen, but can't hurt to be safe.
+									if (!g_skinningShaderActive)
 									{
-										// If the shader has already been processed, reuse 'skinned' flag
-										g_skinningShaderActive = flags.Get( IShader::Flag::Skinned );
-									}
-									else
-									{
-										// The shader can now be considered processed
-										flags.Set( IShader::Flag::Processed, true );
-
-										// The shader hasn't been processed -- register its skinning callback
-										if (!shader->UpdateUniform(1))
-										{
-											shader->RegisterUniform("R5_boneTransforms", OnUpdateBoneTransforms, 1);
-											shader->UpdateUniform(1);
-										}
-
-										// Remember whether this shader supports skinning
-										flags.Set( IShader::Flag::Skinned, g_skinningShaderActive );
+										shader->SetFlag(IShader::Flag::Skinned, false);
 									}
 								}
 							}
