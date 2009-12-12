@@ -375,17 +375,15 @@ inline bool NeedsLightPreprocessing (const String& source)
 }
 
 //============================================================================================================
-// Macro that adds pseudo-instancing support. Example implementations:
-//============================================================================================================
-// // R5_IMPLEMENT_INSTANCING vertex
-// // R5_IMPLEMENT_INSTANCING vertex normal
-// // R5_IMPLEMENT_INSTANCING vertex normal tangent
+// Common preprocessing function that removes the matched value
 //============================================================================================================
 
-bool PreprocessInstancing (String& source)
+uint PreprocessCommon (const String& source,
+					   const String& match,
+					   String& v0,
+					   String& v1,
+					   String& v2)
 {
-	String match ("R5_IMPLEMENT_INSTANCING");
-
 	uint length = source.GetLength();
 	uint phrase = source.Find(match);
 
@@ -397,50 +395,124 @@ bool PreprocessInstancing (String& source)
 		uint lineEnd = source.GetLine(line, phrase + match.GetLength());
 
 		// Extract the names of the variables
-		uint offset = line.GetWord(vertex);
-		offset = line.GetWord(normal, offset);
-		offset = line.GetWord(tangent, offset);
+		uint offset = line.GetWord(v0);
+		offset = line.GetWord(v1, offset);
+		offset = line.GetWord(v2, offset);
+		return lineEnd;
+	}
+	return length;
+}
 
-		// At least 1 argument is necessary for this macro to work
-		bool isValid = vertex.IsValid();
-		ASSERT(isValid, "Expecting at least 1 argument");
-		
-		if (isValid)
+//============================================================================================================
+// Macro that adds skinning support. Example implementations:
+//============================================================================================================
+// // R5_IMPLEMENT_SKINNING vertex
+// // R5_IMPLEMENT_SKINNING vertex normal
+// // R5_IMPLEMENT_SKINNING vertex normal tangent
+//============================================================================================================
+
+bool PreprocessSkinning (String& source)
+{
+	String left, right, vertex, normal, tangent;
+
+	uint offset = PreprocessCommon(source, "R5_IMPLEMENT_SKINNING", vertex, normal, tangent);
+
+	if (vertex.IsValid())
+	{
+		source.GetString(left, 0, offset);
+		source.GetString(right, offset);
+
+		left << "\n{\n";
+		left << "mat4 transMat = R5_boneTransforms[int(R5_boneIndex.x)] * R5_boneWeight.x +\n";
+		left << "	R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n";
+		left << "	R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n";
+		left << "	R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n";
+		left << "mat3 rotMat = mat3(transMat[0].xyz, transMat[1].xyz, transMat[2].xyz);\n";
+
+		left << vertex;
+		left << " = transMat * ";
+		left << vertex;
+		left << ";\n";
+
+		if (normal.IsValid())
 		{
-			String left, right;
-			source.GetString(left, 0, phrase);
-			source.GetString(right, lineEnd);
-
-			left << "\n";
-			left << "mat4 worldMat	= mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);\n";
-			left << "mat3 worldRot	= mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);\n";
-			
-			left << vertex;
-			left << " = worldMat * ";
-			left << vertex;
+			left << normal;
+			left << " = rotMat * ";
+			left << normal;
 			left << ";\n";
-			
-			if (normal.IsValid())
-			{
-				left << normal;
-				left << " = worldRot * ";
-				left << normal;
-				left << ";\n";
-			}
-
-			if (tangent.IsValid())
-			{
-				left << tangent;
-				left << " = worldRot * ";
-				left << tangent;
-				left << ";\n";
-			}
-
-			// Copy the result back into the Source
-			source = left;
-			source << right;
-			return true;
 		}
+
+		if (tangent.IsValid())
+		{
+			left << tangent;
+			left << " = rotMat * ";
+			left << tangent;
+			left << ";\n";
+		}
+
+		// Closing bracket
+		left << "}\n";
+
+		// Copy the result back into the Source
+		source = "uniform mat4 R5_boneTransforms[32];\n";
+		source << left;
+		source << right;
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
+// Macro that adds pseudo-instancing support. Example implementations:
+//============================================================================================================
+// // R5_IMPLEMENT_INSTANCING vertex
+// // R5_IMPLEMENT_INSTANCING vertex normal
+// // R5_IMPLEMENT_INSTANCING vertex normal tangent
+//============================================================================================================
+
+bool PreprocessInstancing (String& source)
+{
+	String left, right, vertex, normal, tangent;
+
+	uint offset = PreprocessCommon(source, "R5_IMPLEMENT_INSTANCING", vertex, normal, tangent);
+
+	if (vertex.IsValid())
+	{
+		source.GetString(left, 0, offset);
+		source.GetString(right, offset);
+
+		left << "\n{\n";
+		left << "mat4 transMat = mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);\n";
+		left << "mat3 rotMat = mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);\n";
+		
+		left << vertex;
+		left << " = transMat * ";
+		left << vertex;
+		left << ";\n";
+		
+		if (normal.IsValid())
+		{
+			left << normal;
+			left << " = rotMat * ";
+			left << normal;
+			left << ";\n";
+		}
+
+		if (tangent.IsValid())
+		{
+			left << tangent;
+			left << " = rotMat * ";
+			left << tangent;
+			left << ";\n";
+		}
+
+		// Closing bracket
+		left << "}\n";
+
+		// Copy the result back into the Source
+		source = left;
+		source << right;
+		return true;
 	}
 	return false;
 }
@@ -449,7 +521,7 @@ bool PreprocessInstancing (String& source)
 // Unwraps the 'for' loops then compiles the shader (fix for shoddy GLSL support on Intel cards)
 //============================================================================================================
 
-bool PreprocessCompile (const String& name, GLShader::ShaderEntry& entry, GLShader::ShaderInfo& info, uint type, uint lights)
+bool PreprocessLights (const String& name, GLShader::ShaderEntry& entry, GLShader::ShaderInfo& info, uint type, uint lights)
 {
 	if (entry.mGlID == 0 && entry.mStatus != GLShader::ShaderEntry::CompileStatus::Error)
 	{
@@ -665,7 +737,7 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 			// Compile the vertex shader
 			if (vertex.mStatus == ShaderEntry::CompileStatus::Unknown && mVertexInfo.mSource.IsValid())
 			{
-				::PreprocessCompile(mVertexInfo.mPath.IsValid() ? mVertexInfo.mPath :
+				::PreprocessLights(mVertexInfo.mPath.IsValid() ? mVertexInfo.mPath :
 					(mName + " (Vertex)"), vertex, mVertexInfo,
 					Type::Vertex, mVertexInfo.mSpecial ? i : 0);
 
@@ -682,7 +754,7 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 			// Compile the fragment shader
 			if (fragment.mStatus == ShaderEntry::CompileStatus::Unknown && mFragmentInfo.mSource.IsValid())
 			{
-				::PreprocessCompile(mFragmentInfo.mPath.IsValid() ? mFragmentInfo.mPath :
+				::PreprocessLights(mFragmentInfo.mPath.IsValid() ? mFragmentInfo.mPath :
 					(mName + " (Fragment)"), fragment, mFragmentInfo, Type::Fragment,
 					mFragmentInfo.mSpecial ? i : 0);
 
@@ -861,8 +933,8 @@ void GLShader::_SetSourceCode (const String& code, uint type)
 		mVertexInfo.mSource = code;
 		mVertexInfo.mSpecial = ::NeedsLightPreprocessing(mVertexInfo.mSource);
 
-		if (mVertexInfo.mSource.Contains("R5_boneTransforms"))	SetFlag(Flag::Skinned,	 true);
-		if (::PreprocessInstancing(mVertexInfo.mSource))		SetFlag(Flag::Instanced, true);
+		if (::PreprocessSkinning(mVertexInfo.mSource))		SetFlag(Flag::Skinned,	 true);
+		if (::PreprocessInstancing(mVertexInfo.mSource))	SetFlag(Flag::Instanced, true);
 	}
 	else
 	{

@@ -102,18 +102,23 @@ public:
 	bool IsIdentity();
 	void SetToIdentity();
 	void Translate		(const Vector3f& offset)				{ x += offset.x;	y += offset.y;		z += offset.z; }
-	void PreTranslate	(const Vector3f& offset);
 	void Rotate			(const Vector3f& axis, float radAngle);
 	void Scale			(float scale);
 	void Scale			(const Vector3f& scale);
-	void PreScale		(float scale);
-	void PreScale		(const Vector3f& scale);
 	void Invert();
 	void InvertOrthogonal()										{ Transpose(); FlipTranslation(); }
 	void Transpose();
 	void FlipTranslation()										{ x = -x;  y = -y;  z = -z; }
 	void ClearTranslation()										{ x = 0.0f; y = 0.0f; z = 0.0f; }
+
+	// Replaces scaling and rotation component with the specified uniform scale
 	void ReplaceScaling (float scale = 1.0f);
+
+	// Prior-to-transform manipulation
+	void PreTranslate	(const Vector3f& offset);
+	void PreScale		(float scale);
+	void PreScale		(const Vector3f& scale);
+	void PreRotate		(const Quaternion& rot);
 };
 
 //============================================================================================================

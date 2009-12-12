@@ -39,7 +39,7 @@ void TestApp::Run()
 			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
 			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 
-			for (uint i = 0; i < 6; ++i) mDebug[i] = FindWidget<UILabel>(mUI, String("Debug %u", i));
+			for (uint i = 0; i < 7; ++i) mDebug[i] = FindWidget<UILabel>(mUI, String("Debug %u", i));
 
 			Model* model0 = mCore->GetModel("First Model");
 			Model* model1 = mCore->GetModel("Second Model");
@@ -102,22 +102,27 @@ void TestApp::OnDraw()
 
 	if (mDebug[2] != 0)
 	{
-		mDebug[2]->SetText( String("[FF5555]%u[FFFFFF] texture switches", stats.mTexSwitches) );
+		mDebug[2]->SetText( String("[FF5555]%u[FFFFFF] matrix switches", stats.mMatSwitches) );
 	}
 
 	if (mDebug[3] != 0)
 	{
-		mDebug[3]->SetText( String("[FF5555]%u[FFFFFF] shader switches", stats.mShaderSwitches) );
+		mDebug[3]->SetText( String("[FF5555]%u[FFFFFF] texture switches", stats.mTexSwitches) );
 	}
 
 	if (mDebug[4] != 0)
 	{
-		mDebug[4]->SetText( String("[FF5555]%u[FFFFFF] technique switches", stats.mTechSwitches) );
+		mDebug[4]->SetText( String("[FF5555]%u[FFFFFF] shader switches", stats.mShaderSwitches) );
 	}
 
 	if (mDebug[5] != 0)
 	{
-		mDebug[5]->SetText( String("[FF5555]%u[FFFFFF] light switches", stats.mLightSwitches) );
+		mDebug[5]->SetText( String("[FF5555]%u[FFFFFF] technique switches", stats.mTechSwitches) );
+	}
+
+	if (mDebug[6] != 0)
+	{
+		mDebug[6]->SetText( String("[FF5555]%u[FFFFFF] light switches", stats.mLightSwitches) );
 	}
 }
 

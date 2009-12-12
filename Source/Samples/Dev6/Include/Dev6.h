@@ -20,7 +20,7 @@ class TestApp
 	UI*				mUI;
 	Core*			mCore;
 	Camera*			mCam;
-	UILabel*		mDebug[6];
+	UILabel*		mDebug[7];
 	ITechnique*		mTech;
 	Scene			mScene;
 

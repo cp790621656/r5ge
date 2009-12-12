@@ -279,12 +279,12 @@ void Matrix43::SetToTransform ( const Vector3f&		pos,
 	mF[0]  = 1.0f - 2.0f * (yy + zz);
 	mF[1]  =        2.0f * (xy + zw);
 	mF[2]  =        2.0f * (xz - yw);
-	mF[3]	= 0.0f;
+	mF[3]  = 0.0f;
 
 	mF[4]  =        2.0f * (xy - zw);
 	mF[5]  = 1.0f - 2.0f * (xx + zz);
 	mF[6]  =        2.0f * (yz + xw);
-	mF[7]	= 0.0f;
+	mF[7]  = 0.0f;
 
 	mF[8]  =        2.0f * (xz + yw);
 	mF[9]  =        2.0f * (yz - xw);
@@ -412,18 +412,6 @@ void Matrix43::SetToIdentity()
 }
 
 //============================================================================================================
-// Translate in Matrix space
-// 18 arithmetic operations
-//============================================================================================================
-
-void Matrix43::PreTranslate(const Vector3f& v)
-{
-	x += mF[0] * v.x + mF[4] * v.y + mF[8 ] * v.z;
-	y += mF[1] * v.x + mF[5] * v.y + mF[9 ] * v.z;
-	z += mF[2] * v.x + mF[6] * v.y + mF[10] * v.z;
-}
-
-//============================================================================================================
 // Rotates the matrix around the given axis by the given angle
 //============================================================================================================
 
@@ -530,39 +518,6 @@ void Matrix43::Scale (const Vector3f& scale)
 }
 
 //============================================================================================================
-// Equivalent of: *this = Matrix43(scale) * (*this)
-// 9 arithmetic operations
-//============================================================================================================
-
-void Matrix43::PreScale (float scale)
-{
-	mF[0]  *= scale;
-	mF[1]  *= scale;
-	mF[2]  *= scale;
-	mF[4]  *= scale;
-	mF[5]  *= scale;
-	mF[6]  *= scale;
-	mF[8]  *= scale;
-	mF[9]  *= scale;
-	mF[10] *= scale;
-}
-
-//============================================================================================================
-
-void Matrix43::PreScale (const Vector3f& scale)
-{
-	mF[0]  *= scale.x;
-	mF[1]  *= scale.x;
-	mF[2]  *= scale.x;
-	mF[4]  *= scale.y;
-	mF[5]  *= scale.y;
-	mF[6]  *= scale.y;
-	mF[8]  *= scale.z;
-	mF[9]  *= scale.z;
-	mF[10] *= scale.z;
-}
-
-//============================================================================================================
 // Quick inversion of a matrix -- from www.humus.name
 // 69 arithmetic operations + memcpy
 //============================================================================================================
@@ -640,4 +595,106 @@ void Matrix43::ReplaceScaling (float scale)
 	mF[ 8] = 0.0f;
 	mF[ 9] = 0.0f;
 	mF[10] = scale;
+}
+
+//============================================================================================================
+// Translate in Matrix space
+// 18 arithmetic operations
+//============================================================================================================
+
+void Matrix43::PreTranslate(const Vector3f& v)
+{
+	x += mF[0] * v.x + mF[4] * v.y + mF[8 ] * v.z;
+	y += mF[1] * v.x + mF[5] * v.y + mF[9 ] * v.z;
+	z += mF[2] * v.x + mF[6] * v.y + mF[10] * v.z;
+}
+
+//============================================================================================================
+// Equivalent of: *this = Matrix43(scale) * (*this)
+// 9 arithmetic operations
+//============================================================================================================
+
+void Matrix43::PreScale (float scale)
+{
+	mF[0]  *= scale;
+	mF[1]  *= scale;
+	mF[2]  *= scale;
+	mF[4]  *= scale;
+	mF[5]  *= scale;
+	mF[6]  *= scale;
+	mF[8]  *= scale;
+	mF[9]  *= scale;
+	mF[10] *= scale;
+}
+
+//============================================================================================================
+
+void Matrix43::PreScale (const Vector3f& scale)
+{
+	mF[0]  *= scale.x;
+	mF[1]  *= scale.x;
+	mF[2]  *= scale.x;
+	mF[4]  *= scale.y;
+	mF[5]  *= scale.y;
+	mF[6]  *= scale.y;
+	mF[8]  *= scale.z;
+	mF[9]  *= scale.z;
+	mF[10] *= scale.z;
+}
+
+//============================================================================================================
+// Equivalent of: *this = Matrix43(rot) * (*this)
+// 75 arithmetic operations
+//============================================================================================================
+
+void Matrix43::PreRotate (const Quaternion& rot)
+{
+	Matrix43 out;
+	float xx, xy, xz, xw, yy, yz, yw, zz, zw, a, b, c;
+
+	xx = rot.x * rot.x;
+	xy = rot.x * rot.y;
+	xz = rot.x * rot.z;
+	xw = rot.x * rot.w;
+	yy = rot.y * rot.y;
+	yz = rot.y * rot.z;
+	yw = rot.y * rot.w;
+	zz = rot.z * rot.z;
+	zw = rot.z * rot.w;
+
+	a = 1.0f - 2.0f * (yy + zz);
+	b =        2.0f * (xy + zw);
+	c =        2.0f * (xz - yw);
+
+	out[0]  = mF[0] * a  + mF[4] * b  + mF[8]  * c;
+	out[1]  = mF[1] * a  + mF[5] * b  + mF[9]  * c;
+	out[2]  = mF[2] * a  + mF[6] * b  + mF[10] * c;
+
+	a =        2.0f * (xy - zw);
+	b = 1.0f - 2.0f * (xx + zz);
+	c =        2.0f * (yz + xw);
+
+	out[4]  = mF[0] * a  + mF[4] * b  + mF[8]  * c;
+	out[5]  = mF[1] * a  + mF[5] * b  + mF[9]  * c;
+	out[6]  = mF[2] * a  + mF[6] * b  + mF[10] * c;
+
+	a =        2.0f * (xz + yw);
+	b =        2.0f * (yz - xw);
+	c = 1.0f - 2.0f * (xx + yy);
+
+	out[8]  = mF[0] * a  + mF[4] * b  + mF[8]  * c;
+	out[9]  = mF[1] * a  + mF[5] * b  + mF[9]  * c;
+	out[10] = mF[2] * a  + mF[6] * b  + mF[10] * c;
+
+	mF[0] = out[0];
+	mF[1] = out[1];
+	mF[2] = out[2];
+
+	mF[4] = out[4];
+	mF[5] = out[5];
+	mF[6] = out[6];
+
+	mF[ 8] = out[ 8];
+	mF[ 9] = out[ 9];
+	mF[10] = out[10];
 }

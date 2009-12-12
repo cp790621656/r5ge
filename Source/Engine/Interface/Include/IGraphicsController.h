@@ -91,6 +91,7 @@ struct IGraphicsController
 	{
 		uint mTriangles;
 		uint mDrawCalls;
+		uint mMatSwitches;
 		uint mTexSwitches;
 		uint mBufferBinds;
 		uint mShaderSwitches;
@@ -103,6 +104,7 @@ struct IGraphicsController
 		{
 			mTriangles		= 0;
 			mDrawCalls		= 0;
+			mMatSwitches	= 0;
 			mTexSwitches	= 0;
 			mBufferBinds	= 0;
 			mShaderSwitches	= 0;

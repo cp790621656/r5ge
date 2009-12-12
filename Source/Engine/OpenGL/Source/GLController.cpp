@@ -1390,14 +1390,19 @@ void GLController::_ActivateMatrices()
 			glLoadIdentity();
 
 			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf( mat.mF );
+			glLoadMatrixf(mat.mF);
+			++mStats.mMatSwitches;
 		}
 		else
 		{
+			bool reset (false);
+
 			if (mResetProj)
 			{
+				reset = true;
 				glMatrixMode(GL_PROJECTION);
 				glLoadMatrixf(GetProjectionMatrix().mF);
+				++mStats.mMatSwitches;
 			}
 
 			if (mResetView)
@@ -1414,12 +1419,14 @@ void GLController::_ActivateMatrices()
 				}
 				else
 				{
-					// NOTE: glLoadMatrixf is a rather slow operation. Avoid it when possible.
 					glMatrixMode(GL_MODELVIEW);
 					glLoadMatrixf(GetModelViewMatrix().mF);
+					++mStats.mMatSwitches;
+					reset = false;
 				}
 			}
-			else if (mResetProj)
+			
+			if (reset)
 			{
 				// Always end with ModelView
 				glMatrixMode(GL_MODELVIEW);

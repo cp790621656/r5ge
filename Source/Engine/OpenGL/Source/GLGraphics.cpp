@@ -558,7 +558,9 @@ uint GLGraphics::Draw (uint drawable)
 		glColor3ub(255, 255, 255);
 
 		// Overwrite the ModelView matrix, changing it to use the current camera's position as origin
-		SetModelViewMatrix(mEye * GetViewMatrix());
+		Matrix43 view = GetViewMatrix();
+		view.PreTranslate(mEye);
+		SetModelViewMatrix(view);
 
 		// Set all active vertex attributes
 		SetActiveVertexAttribute( Attribute::Normal,	 0, 0, 0, 0, 0 );
