@@ -11,7 +11,7 @@ Root
 	
 		Skin = Default
 		{
-		    Texture = Textures/slick.png
+		    Texture = Textures/UI/slick.png
 	
 			Face = Window: Background
 			{

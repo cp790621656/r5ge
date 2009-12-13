@@ -11,7 +11,7 @@ Root
 		Skin = Default
 		{
 		    Serializable = false
-		    Texture = Textures/leo.png
+		    Texture = Textures/UI/leo.png
 	
 			Face = Window: Background
 			{
@@ -29,13 +29,13 @@ Root
 	
 			Face = Slider: Full
 			{
-				Position = 40 18
+				Position = 39 18
 				Size = 0 16
 			}
 	
 			Face = Slider: Empty
 			{
-				Position = 43 18
+				Position = 42 18
 				Size = 0 16
 			}
 	
@@ -62,7 +62,7 @@ Root
 	
 			Face = Button: Disabled
 			{
-				Position = 61 6
+				Position = 45 16
 				Size = 11 11
 				Border = 3
 			}
@@ -124,7 +124,7 @@ Root
 	
 			Face = Down Arrow
 			{
-				Position = 47 19
+				Position = 20 39
 				Size = 20 14
 			}
 	

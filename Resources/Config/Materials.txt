@@ -1,0 +1,52 @@
+//R5A
+
+Root
+{
+	Graphics
+	{
+		Material = "Lizard"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 1.000000
+			Glow = 0.000000
+			ADT = 0.000000
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/DH_NS"
+				Texture 0 = "Textures/Other/lizard.png"
+				Texture 1 = "Textures/Other/lizard_n.png"
+			}
+		}
+
+		Material = "Limestone"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.256351 0.260970 0.256351 0.003922
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/lime.jpg"
+				Texture 1 = "Textures/Stone/lime_ns.png"
+			}
+		}
+
+		Material = "Grey Brick"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.653580 0.491917 0.200924 0.390300
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/brick.jpg"
+				Texture 1 = "Textures/Stone/brick_ns.png"
+			}
+		}
+	}
+}

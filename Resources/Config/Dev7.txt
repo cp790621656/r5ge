@@ -126,14 +126,14 @@ Root
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
-				Texture = "Textures/fire.jpg"
+				Texture = "Textures/Billboards/fire.jpg"
 
 				Smoke Emitter = "Smoke 0"
 				{
 					Position = 0.000000 0.000000 0.000000
 					Rotation = 0.000000 0.000000 0.000000 1.000000
 					Scale = 1.000000
-					Texture = "Textures/whitefire.png"
+					Texture = "Textures/Billboards/whitefire.png"
 				}
 			}
 
@@ -142,14 +142,14 @@ Root
 				Position = 3.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 0.750000
-				Texture = "Textures/fire.jpg"
+				Texture = "Textures/Billboards/fire.jpg"
 
 				Smoke Emitter = "Smoke 1"
 				{
 					Position = 0.000000 0.000000 0.000000
 					Rotation = 0.000000 0.000000 0.000000 1.000000
 					Scale = 1.000000
-					Texture = "Textures/whitefire.png"
+					Texture = "Textures/Billboards/whitefire.png"
 				}
 			}
 
@@ -158,14 +158,14 @@ Root
 				Position = -3.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 0.750000
-				Texture = "Textures/fire.jpg"
+				Texture = "Textures/Billboards/fire.jpg"
 
 				Smoke Emitter = "Smoke 2"
 				{
 					Position = 0.000000 0.000000 0.000000
 					Rotation = 0.000000 0.000000 0.000000 1.000000
 					Scale = 1.000000
-					Texture = "Textures/whitefire.png"
+					Texture = "Textures/Billboards/whitefire.png"
 				}
 			}
 		}

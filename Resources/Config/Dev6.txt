@@ -54,13 +54,13 @@ Root
 			Technique = "CPU"
 			{
 				Shader = "Forward/D"
-				Texture 0 = "Textures/peasant.jpg"
+				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 
 			Technique = "GPU"
 			{
 				Shader = "Forward/Skinned_D"
-				Texture 0 = "Textures/peasant.jpg"
+				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 		}
 	}

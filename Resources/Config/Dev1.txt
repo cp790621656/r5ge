@@ -25,8 +25,9 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/D"
-				Texture 0 = "Textures/Terrain/sand_beach.jpg"
+				Shader = "Forward/D_NS"
+				Texture 0 = "Textures/Sand/beach.jpg"
+				Texture 1 = "Textures/Sand/beach_ns.png"
 			}
 		}
 
@@ -39,9 +40,9 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/D_N"
-				Texture 0 = "Textures/jelly_df.jpg"
-				Texture 1 = "Textures/jelly_nm.png"
+				Shader = "Forward/D_NS"
+				Texture 0 = "Textures/Stone/lime.jpg"
+				Texture 1 = "Textures/Stone/lime_ns.png"
 			}
 		}
 	}
@@ -83,7 +84,7 @@ Root
 				Scale = 1.000000
 				Layer = 10
 				Color = 0xffffffff
-				Texture = "light.jpg"
+				Texture = "Billboards/light.jpg"
 				Technique = "Glow"
 			}
 
@@ -94,7 +95,7 @@ Root
 				Scale = 6.000000
 				Layer = 10
 				Color = 0xffffffff
-				Texture = "glare_rgb.jpg"
+				Texture = "Billboards/glare_rgb.jpg"
 				Technique = "Glare"
 			}
 		}

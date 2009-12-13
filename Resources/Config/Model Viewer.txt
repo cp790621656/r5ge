@@ -13,9 +13,8 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.000000 0.000000 0.000000 1.000000
+		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 50.000000 150.000000
-		Skybox = "LDR Skybox 1"
 
 		Texture = "LDR Skybox 0"
 		{
@@ -56,18 +55,33 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
-		Material = "Lizard"
+		Material = "Limestone"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.256351 0.260970 0.256351 0.003922
 			Glow = 0.000000
-			ADT = 0.000000
+			ADT = 0.003922
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/DH_NS"
-				Texture 0 = "Textures/lizard_df.png"
-				Texture 1 = "Textures/lizard_nm.png"
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/lime.jpg"
+				Texture 1 = "Textures/Stone/lime_ns.png"
+			}
+		}
+
+		Material = "Grey Brick"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.653580 0.491917 0.200924 0.390300
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/brick.jpg"
+				Texture 1 = "Textures/Stone/brick_ns.png"
 			}
 		}
 	}
@@ -195,7 +209,7 @@ Root
 						Skin = "Default"
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
-						Text = "LDR Skybox 1"
+						Text = "Grey Color"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
@@ -267,7 +281,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "344"
+					Text = "708"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -311,12 +325,12 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/peasant.r5a"
+			Source = "Models/teapot.r5b"
 
-			Limb = "Peasant"
+			Limb = "Teapot"
 			{
-				Mesh = "Peasant"
-				Material = "Lizard"
+				Mesh = "Teapot"
+				Material = "Grey Brick"
 			}
 		}
 	}
@@ -325,17 +339,17 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.032215 0.184958 6.250441
-			Rotation = -0.012760 0.093937 -0.986438 0.133989
+			Position = 0.000000 0.459110 3.156539
+			Rotation = -0.143339 0.108022 -0.592070 0.785645
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 16.725657 50.000000
+			Dolly = 0.000000 13.830810 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Rotation = 0.474994 -0.218364 0.356163 -0.774740
 				Scale = 1.000000
 				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
@@ -350,7 +364,7 @@ Root
 					Scale = 0.250000
 					Layer = 10
 					Color = 0xffffffff
-					Texture = "Textures/light.jpg"
+					Texture = "Textures/Billboards/light.jpg"
 					Technique = "Glow"
 				}
 
@@ -361,7 +375,7 @@ Root
 					Scale = 2.000000
 					Layer = 10
 					Color = 0xffffffff
-					Texture = "Textures/glare_rgb.jpg"
+					Texture = "Textures/Billboards/glare_rgb.jpg"
 					Technique = "Glare"
 				}
 			}
@@ -387,14 +401,13 @@ Root
 
 	File History = String[]
 	{
-		"Models/toyota black.r5b"
-		"Models/toyota white.r5b"
+		"Models/teapot.r5b"
 		"Models/steambo.r5b"
 		"Models/copcar.r5b"
-		"Models/peasant.r5a"
+		"Models/delorean.r5b"
 		"Models/mill.r5b"
-		"Models/teapot.r5b"
-		"Models/teapot.r5a"
+		"Models/building.r5b"
 		"Models/fern.r5b"
+		"Models/peasant.r5a"
 	}
 }

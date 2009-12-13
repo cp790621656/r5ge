@@ -104,34 +104,6 @@ struct Box
 
 //====================================================================================================
 
-struct FakeLight : public Light
-{
-	Vector3f	mPos;
-	Vector3f	mDir;
-	Color4f		mAmbient;
-	Color4f		mDiffuse;
-	Color4f		mSpecular;
-	Vector3f*	mParams;
-
-	FakeLight() :	mPos		(0, 0, 0),
-					mDir		(0, 0, -1),
-					mAmbient	(0, 0, 0),
-					mDiffuse	(1, 1, 1),
-					mSpecular	(1, 1, 1),
-					mParams	(0) {}
-
-	virtual uint			GetLightType()		const	{ return Light::Type::Directional; }
-	virtual const Color4f&	GetAmbient()		const	{ return mAmbient; }
-	virtual const Color4f&	GetDiffuse()		const	{ return mDiffuse; }
-	virtual const Color4f&	GetSpecular()		const	{ return mSpecular; }
-	virtual const Vector3f&	GetPosition()		const	{ return mPos; }
-	virtual const Vector3f&	GetDirection()		const	{ return mDir; }
-	virtual const Vector3f*	GetAttenParams()	const	{ return mParams; }
-	virtual const Vector3f*	GetSpotParams()		const	{ return 0; }
-};
-
-//====================================================================================================
-
 class TestApp : public IEventReceiver
 {
     IWindow*	mWindow;
@@ -201,20 +173,23 @@ public:
 
 		mGraphics->SetActiveColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
-		FakeLight light0;
-		Vector3f params (0, 0.1f, 0.003f);
+		Light light0;
+		light0.mType = Light::Type::Point;
 		light0.mDiffuse.Set( 1, 0, 0 );
 		light0.mPos.Set(4, 4, 1);
-		light0.mParams = &params;
+		light0.mAtten.Set(0, 0.1f, 0.003f);
+		light0.mDiffuse.Set(1.0f, 0.0f, 0.0f);
 
-		FakeLight light1;
+		Light light1;
+		light1.mType = Light::Type::Directional;
 		light1.mDir.Set(3, 3, -1);
 		light1.mAmbient.Set( 0.2f, 0.2f, 0.2f);
 		light1.mDiffuse.Set( 1, 1, 1 );
+		light1.mSpecular.Set(1.0f, 1.0f, 1.0f);
 
-		ITexture* floorTex	= mGraphics->GetTexture("Textures/organic_df.jpg");
-		ITexture* hitTex	= mGraphics->GetTexture("Textures/limestone.jpg");
-		ITexture* onTex		= mGraphics->GetTexture("Textures/gemstone_df.jpg");
+		ITexture* floorTex	= mGraphics->GetTexture("Textures/Stone/brick.jpg");
+		ITexture* hitTex	= mGraphics->GetTexture("Textures/Stone/lime.jpg");
+		ITexture* onTex		= mGraphics->GetTexture("Textures/Sand/wavy.jpg");
 
 		Box boxTest1(	Vector3f( 0, 1, 0 ),
 						Vector3f( 1, 3, 1 ),

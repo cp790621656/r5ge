@@ -25,9 +25,9 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_N"
-				Texture 0 = "Textures/jelly_df.jpg"
-				Texture 1 = "Textures/jelly_nm.png"
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/brick2.jpg"
+				Texture 1 = "Textures/Stone/brick2_ns.png"
 			}
 		}
 	}
@@ -160,8 +160,8 @@ Root
 				"[Generated] Normal"
 				"[Generated] Diffuse Material"
 				"[Generated] Specular Material"
-				"Textures/lizard_df.png"
-				"Textures/lizard_nm.png"
+				"Textures/Stone/brick.jpg"
+				"Textures/Stone/brick_ns.png"
 			}
 		}
 
@@ -179,7 +179,7 @@ Root
 				"[Generated] Normal"
 				"[Generated] Diffuse Material"
 				"[Generated] Specular Material"
-				"Textures/tree_leaves.png"
+				"Textures/Plants/tree_leaves.png"
 			}
 		}
 	}

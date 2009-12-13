@@ -22,22 +22,12 @@ Root
 			Specular = 1.000000 1.000000 1.000000 0.990000
 			Glow = 0.000000
 			ADT = 0.003922
-			Technique = "Opaque Depth"
-
-			Technique = "Opaque"
-			{
-				Shader = "Forward/D_N_S"
-				Texture 0 = "Textures/stone_df.jpg"
-				Texture 1 = "Textures/stone_nm.png"
-				Texture 2 = "Textures/stone_maps.jpg"
-			}
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_N_S"
-				Texture 0 = "Textures/stone_df.jpg"
-				Texture 1 = "Textures/stone_nm.png"
-				Texture 2 = "Textures/stone_maps.jpg"
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Sand/wavy.jpg"
+				Texture 1 = "Textures/Sand/wavy_ns.png"
 			}
 		}
 
@@ -47,20 +37,12 @@ Root
 			Specular = 1.000000 1.000000 1.000000 0.990000
 			Glow = 0.000000
 			ADT = 0.003922
-			Technique = "Opaque Depth"
-
-			Technique = "Opaque"
-			{
-				Shader = "Forward/D_N"
-				Texture 0 = "Textures/jelly_df1.jpg"
-				Texture 1 = "Textures/jelly_nm.png"
-			}
 
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/D_N"
-				Texture 0 = "Textures/jelly_df1.jpg"
-				Texture 1 = "Textures/jelly_nm.png"
+				Texture 0 = "Textures/Sand/wavy.jpg"
+				Texture 1 = "Textures/Sand/wavy_ns.png"
 			}
 		}
 	}
