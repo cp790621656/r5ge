@@ -132,14 +132,18 @@ bool UIMenu::_OnContextValue (UIArea* area)
 		// Have context intercept all mouse events until something else is selected
 		mRoot->_SetEventArea(context);
 
-		// Save the selection
-		mSelection = context->GetLastSelection();
+		// Save the previous selection
+		String previous (mLabel.GetText());
 
-		// Inform the derived class
-		_OnValue(mSelection);
+		// Set the current selection
+		mLabel.SetText(context->GetText());
 
 		// Inform the listener
-		if (mOnValueChange) mOnValueChange(this);
+		if (mOnValueChange)
+		{
+			// If the callback returns 'false', change the selection back to the previous value
+			if (!mOnValueChange(this)) mLabel.SetText(previous);
+		}
 
 		// Turn off the button's "pressed" state
 		if (!mSticky) SetState( State::Pressed, false );

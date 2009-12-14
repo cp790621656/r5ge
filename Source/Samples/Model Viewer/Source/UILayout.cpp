@@ -1616,7 +1616,7 @@ bool ModelViewer::OnFillModelMenu (UIArea* area, bool hasFocus)
 
 bool ModelViewer::OnFileMenuSelection (UIArea* area)
 {
-	const String& item = _fileMenu->GetLastSelection();
+	const String& item = _fileMenu->GetText();
 
 	if (item == SAVE)
 	{
@@ -1634,7 +1634,7 @@ bool ModelViewer::OnFileMenuSelection (UIArea* area)
 	{
 		mCore->Shutdown();
 	}
-	return true;
+	return false;
 }
 
 //============================================================================================================
@@ -1645,7 +1645,7 @@ bool ModelViewer::OnViewMenuSelection (UIArea* area)
 
 	if (menu != 0)
 	{
-		const String& item = menu->GetLastSelection();
+		const String& item = menu->GetText();
 
 		if (item == RESET_CAMERA)
 		{
@@ -1664,7 +1664,7 @@ bool ModelViewer::OnViewMenuSelection (UIArea* area)
 			ShowAboutInfo();
 		}
 	}
-	return true;
+	return false;
 }
 
 //============================================================================================================
@@ -1673,7 +1673,7 @@ bool ModelViewer::OnLimbMenuSelection (UIArea* area)
 {
 	if (mModel != 0)
 	{
-		const String& name = _limbMenu->GetLastSelection();
+		const String& name = _limbMenu->GetText();
 
 		Limb* limb = (name.IsValid() ? mModel->GetLimb(name, false) : 0);
 
@@ -1681,25 +1681,25 @@ bool ModelViewer::OnLimbMenuSelection (UIArea* area)
 		{
 			_currentLimb = name;
 
-			_limbName->SetText( limb->GetName() );
+			_limbName->SetText( _currentLimb );
 			_limbMesh->SetText( (limb->GetMesh()	 == 0 ? "" : limb->GetMesh()->GetName()) );
 			_limbMat->SetText ( (limb->GetMaterial() == 0 ? "" : limb->GetMaterial()->GetName()) );
 
 			_limbFrame->Show();
 			_limbFrame->BringToFront();
-			return true;
+			return false;
 		}
 	}
 	_currentLimb.Clear();
 	_limbFrame->Hide();
-	return true;
+	return false;
 }
 
 //============================================================================================================
 
 bool ModelViewer::OnMeshMenuSelection (UIArea* area)
 {
-	_currentMesh = _meshMenu->GetLastSelection();
+	_currentMesh = _meshMenu->GetText();
 
 	if (_currentMesh.IsValid())
 	{
@@ -1714,12 +1714,12 @@ bool ModelViewer::OnMeshMenuSelection (UIArea* area)
 			_meshTri->SetText( tri );
 			_meshFrame->Show();
 			_meshFrame->BringToFront();
-			return true;
+			return false;
 		}
 	}
 	_currentMesh.Clear();
 	_meshFrame->Hide();
-	return true;
+	return false;
 }
 
 //============================================================================================================
@@ -1731,7 +1731,7 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 
 	if (_matFrame != 0)
 	{
-		_currentMat = _matMenu->GetLastSelection();
+		_currentMat = _matMenu->GetText();
 
 		if (_currentMat.IsValid())
 		{
@@ -1827,20 +1827,20 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 					// Show the frame and bring it to the front
 					_matFrame->Show();
 					_matFrame->BringToFront();
-					return true;
+					return false;
 				}
 			}
 		}
 	}
 	_matFrame->Hide();
-	return true;
+	return false;
 }
 
 //============================================================================================================
 
 bool ModelViewer::OnTexMenuSelection (UIArea* area)
 {
-	_currentTex = _texMenu->GetLastSelection();
+	_currentTex = _texMenu->GetText();
 
 	if (_currentTex == CLEAR)
 	{
@@ -1857,20 +1857,20 @@ bool ModelViewer::OnTexMenuSelection (UIArea* area)
 			UpdateTexPanel(tex);
 			_texFrame->Show();
 			_texFrame->BringToFront();
-			return true;
+			return false;
 		}
 	}
 
 	_currentTex.Clear();
 	_texFrame->Hide();
-	return true;
+	return false;
 }
 
 //============================================================================================================
 
 bool ModelViewer::OnAnimMenuSelection (UIArea* area)
 {
-	_currentAnim = _animMenu->GetLastSelection();
+	_currentAnim = _animMenu->GetText();
 
 	if (_currentAnim == CLEAR)
 	{
@@ -1890,13 +1890,13 @@ bool ModelViewer::OnAnimMenuSelection (UIArea* area)
 			UpdateAnimPanel(anim);
 			_animFrame->Show();
 			_animFrame->BringToFront();
-			return true;
+			return false;
 		}
 	}
 
 	_currentAnim.Clear();
 	_animFrame->Hide();
-	return true;
+	return false;
 }
 
 //============================================================================================================
@@ -1906,7 +1906,7 @@ bool ModelViewer::OnAnimMenuSelection (UIArea* area)
 bool ModelViewer::OnDrawMode (UIArea* area)
 {
 	UIList* list = (UIList*)area;
-	const String& value (list->GetLastSelection());
+	const String& value (list->GetText());
 
 	if		(value == "Deferred")			mParams.mSsao = 0;
 	else if (value == "Low Quality SSAO")	mParams.mSsao = 1;
@@ -1920,7 +1920,7 @@ bool ModelViewer::OnDrawMode (UIArea* area)
 bool ModelViewer::OnBackground (UIArea* area)
 {
 	UIList* list = (UIList*)area;
-	const String& value (list->GetLastSelection());
+	const String& value (list->GetText());
 
 	if (value == "Black Color")
 	{
@@ -2095,6 +2095,7 @@ bool ModelViewer::OnModelBake (UIArea* area, const Vector2i& pos, byte key, bool
 		// Remove then re-add the skeleton, forcing an update
 		mModel->SetSkeleton(0);
 		mModel->SetSkeleton(skel);
+		mModel->SetDirty();
 
 		// Update the model window
 		OnFillModelMenu(0, true);
@@ -2196,9 +2197,9 @@ bool ModelViewer::OnMatTech (UIArea* area)
 {
 	if (_matTech == area)
 	{
-		_currentTech = _matTech->GetLastSelection();
+		_currentTech = _matTech->GetText();
 
-		const ITechnique* tech = mGraphics->GetTechnique(_matTech->GetLastSelection(), false);
+		const ITechnique* tech = mGraphics->GetTechnique(_matTech->GetText(), false);
 
 		if (tech != 0)
 		{
@@ -2212,12 +2213,12 @@ bool ModelViewer::OnMatTech (UIArea* area)
 				IMaterial::DrawMethod* method = mat->GetDrawMethod(tech, true);
 
 				// Copy over the shader
-				method->SetShader( mGraphics->GetShader(_matShaderList->GetLastSelection(), false) );
+				method->SetShader( mGraphics->GetShader(_matShaderList->GetText(), false) );
 
 				// Copy over all textures
 				for (uint i = 0; i < TEXTURES; ++i)
 				{
-					method->SetTexture( i, mGraphics->GetTexture(_matTexList[i]->GetLastSelection(), false) );
+					method->SetTexture( i, mGraphics->GetTexture(_matTexList[i]->GetText(), false) );
 				}
 
 				// Mark the model as dirty so it can rebuild its technique mask
@@ -2239,7 +2240,7 @@ bool ModelViewer::OnMatShaderList (UIArea* area)
 {
 	if (_matShaderList != 0)
 	{
-		const String& sel = _matShaderList->GetLastSelection();
+		const String& sel = _matShaderList->GetText();
 
 		if (sel == NEW)
 		{
@@ -2303,7 +2304,7 @@ bool ModelViewer::OnMatTexList (UIArea* area)
 
 			if (right >> index && index < TEXTURES)
 			{
-				const String& sel = list->GetLastSelection();
+				const String& sel = list->GetText();
 
 				if (sel == NEW)
 				{
@@ -2459,7 +2460,7 @@ bool ModelViewer::OnTexReload (UIArea* area, bool hasFocus)
 
 		if (tex != 0)
 		{
-			uint format = ITexture::StringToFormat( _texFormat->GetLastSelection() );
+			uint format = ITexture::StringToFormat( _texFormat->GetText() );
 			uint filter = tex->GetFiltering();
 			uint wrap	= tex->GetWrapMode();
 
@@ -2849,7 +2850,7 @@ void ModelViewer::_UpdateLimbData()
 {
 	if (_currentLimb.IsEmpty()) return;
 
-	Limb* limb = (_currentLimb.IsValid() ? mModel->GetLimb(_currentLimb, false) : 0);
+	Limb* limb = mModel->GetLimb(_currentLimb, false);
 
 	if (limb != 0)
 	{
@@ -2859,9 +2860,9 @@ void ModelViewer::_UpdateLimbData()
 
 			if (name.IsEmpty())
 			{
-				_limbName->SetText( limb->GetName() );
+				_limbName->SetText(_currentLimb);
 			}
-			else if (limb->GetName() != name)
+			else if (_currentLimb != name)
 			{
 				_currentLimb = name;
 				limb->SetName(name);
@@ -2870,13 +2871,13 @@ void ModelViewer::_UpdateLimbData()
 
 		// Limb's mesh
 		{
-			const String& name = _limbMesh->GetLastSelection();
+			const String& name = _limbMesh->GetText();
 			limb->SetMesh( (name.IsEmpty() ? 0 : mCore->GetMesh(name, false)) );
 		}
 
 		// Limb's material
 		{
-			const String& name = _limbMat->GetLastSelection();
+			const String& name = _limbMat->GetText();
 			limb->SetMaterial( (name.IsEmpty() ? 0 : mGraphics->GetMaterial(name, false)) );
 		}
 	}

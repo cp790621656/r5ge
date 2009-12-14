@@ -5,7 +5,7 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Model Viewer"
-		Position = 257 82
+		Position = 84 85
 		Size = 900 600
 		Full Screen = false
 	}
@@ -13,8 +13,9 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Background Color = 0.000000 0.000000 0.000000 1.000000
 		Fog Range = 50.000000 150.000000
+		Skybox = "LDR Skybox 0"
 
 		Texture = "LDR Skybox 0"
 		{
@@ -55,6 +56,14 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
+		Texture = "Textures/Plants/fern3.png"
+		{
+			Source = "Textures/Plants/fern3.png"
+			Format = "Default"
+			Filtering = "Anisotropic"
+			Wrap Mode = "Clamp to Edge"
+		}
+
 		Material = "Limestone"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -82,6 +91,21 @@ Root
 				Shader = "Deferred/D_NS"
 				Texture 0 = "Textures/Stone/brick.jpg"
 				Texture 1 = "Textures/Stone/brick_ns.png"
+			}
+		}
+
+		Material = "Lizard"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 1.000000
+			Glow = 0.000000
+			ADT = 0.000000
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/DH_NS"
+				Texture 0 = "Textures/Other/lizard.png"
+				Texture 1 = "Textures/Other/lizard_n.png"
 			}
 		}
 	}
@@ -209,7 +233,7 @@ Root
 						Skin = "Default"
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
-						Text = "Grey Color"
+						Text = "LDR Skybox 0"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
@@ -241,7 +265,7 @@ Root
 						Skin = "Default"
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
-						Text = "Deferred"
+						Text = "Low Quality SSAO"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
@@ -281,7 +305,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "708"
+					Text = "324"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -294,7 +318,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
+					Alpha = 0.850000
 					Color = 0.000000 0.000000 0.000000 1.000000
 					Receives Events = true
 					Layer = 0
@@ -325,13 +349,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/teapot.r5b"
-
-			Limb = "Teapot"
-			{
-				Mesh = "Teapot"
-				Material = "Grey Brick"
-			}
+			Source = "Models/sponza.r5a"
 		}
 	}
 
@@ -339,17 +357,17 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.459110 3.156539
-			Rotation = -0.143339 0.108022 -0.592070 0.785645
+			Position = -27.992929 -1.083088 5.319015
+			Rotation = -0.006137 0.005864 0.690681 -0.723110
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 13.830810 50.000000
+			Dolly = 0.000000 0.000000 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.474994 -0.218364 0.356163 -0.774740
+				Rotation = -0.164220 -0.073651 0.402674 0.897855
 				Scale = 1.000000
 				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
@@ -401,7 +419,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/teapot.r5b"
 		"Models/steambo.r5b"
 		"Models/copcar.r5b"
 		"Models/delorean.r5b"
@@ -409,5 +426,8 @@ Root
 		"Models/building.r5b"
 		"Models/fern.r5b"
 		"Models/peasant.r5a"
+		"Models/tree.r5a"
+		"Config/Materials.txt"
+		"Models/sponza.r5a"
 	}
 }

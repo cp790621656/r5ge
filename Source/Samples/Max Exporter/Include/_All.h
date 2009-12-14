@@ -4,6 +4,12 @@
 //                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
+// NOTE: You must add your 3ds Max 9 SDK folders to the configuration lists! Example:
+//============================================================================================================
+// Tools -> Options -> Projects & Solutions -> VC++ Directories
+// Include files: C:\Program Files (x86)\Autodesk\3ds Max 9 SDK\maxsdk\include
+// Library files: C:\Program Files (x86)\Autodesk\3ds Max 9 SDK\maxsdk\lib
+//============================================================================================================
 
 // R5 Engine include files
 #include "../../../Engine/Serialization/Include/_All.h"

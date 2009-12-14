@@ -124,7 +124,7 @@ private: // Numerous callback functions triggered by the UI elements
 	bool OnTexMenuSelection		(UIArea* area);
 	bool OnAnimMenuSelection	(UIArea* area);
 
-	bool OnDrawMode			(UIArea* area);
+	bool OnDrawMode				(UIArea* area);
 	bool OnBackground			(UIArea* area);
 	bool OnBloomToggle			(UIArea* area);
 	bool OnBloomChange			(UIArea* area);

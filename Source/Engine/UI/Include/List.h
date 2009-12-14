@@ -20,12 +20,7 @@ public:
 	void SetSymbol	(const String& face)	{ mSymbol.SetFace(face);	}
 	void SetSkin	(const UISkin* skin)	{ UIMenu::SetSkin(skin); mSymbol.SetSkin(skin); }
 
-	virtual const String& GetLastSelection() const	{ return (mSelection.IsValid() ? mSelection : mLabel.GetText()); }
-
 protected:
-
-	// List selection should update the label
-	virtual void _OnValue (const String& val);
 
 	// Keep the label's alignment for list items
 	virtual uint _GetMenuItemAlignment() { return mLabel.GetAlignment(); }

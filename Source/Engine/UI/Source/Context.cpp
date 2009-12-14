@@ -21,7 +21,7 @@ UIContext::UIContext() :	mSkin		(0),
 
 void UIContext::ClearAllEntries()
 {
-	mLast.Clear();
+	mText.Clear();
 	mEntries.Lock();
 	mEntries.Clear();
 	mEntries.Unlock();
@@ -174,7 +174,7 @@ bool UIContext::_OnItemFocus (UIArea* area, bool hasFocus)
 
 		if (lbl != 0)
 		{
-			mLast = lbl->GetText();
+			mText = lbl->GetText();
 			if (mOnValueChange) mOnValueChange(this);
 		}
 	}

@@ -16,7 +16,6 @@ public:
 
 protected:
 
-	String	mSelection;	// Last selected value in the drop-down list
 	String	mMenuFace;	// Face used by the menu
 	Entries	mEntries;	// Menu of drop-down menu entries
 
@@ -28,17 +27,11 @@ public:
 	void AddEntry (const String& entry);
 	void SetEntries (const Entries& entries);
 
-	// The last selected value
-	virtual const String& GetLastSelection() const	{ return mSelection; }
-
 protected:
 
 	// Shows or hides the popup menu
 	UIContext* _ShowMenu();
 	UIContext* _HideMenu();
-
-	// Overrideable function triggered when the value changes (used by the List widget)
-	virtual void _OnValue (const String& val) {}
 
 private:
 

@@ -89,7 +89,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;$(TargetDir)\R5 Max Exporter.gup&quot; &quot;D:\Program Files\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;copy /y &quot;$(IntDir)\R5 Max Exporter.pdb&quot; &quot;D:\Program Files\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;"
+				CommandLine="copy /y &quot;$(TargetDir)\R5 Max Exporter.gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;copy /y &quot;$(IntDir)\R5 Max Exporter.pdb&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -164,7 +164,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;$(TargetDir)\R5 Max Exporter.gup&quot; &quot;D:\Program Files\Autodesk\3ds Max 9\plugins&quot;"
+				CommandLine="copy /y &quot;$(TargetDir)\R5 Max Exporter.gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;"
 			/>
 		</Configuration>
 	</Configurations>

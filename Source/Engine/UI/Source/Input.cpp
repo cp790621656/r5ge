@@ -127,7 +127,7 @@ bool UIInput::_OnContextValue	(UIArea* area)
 
 	if (menu != 0)
 	{
-		const String& selection = menu->GetLastSelection();
+		const String& selection = menu->GetText();
 		SetText(selection);
 
 		mShowHistory = false;

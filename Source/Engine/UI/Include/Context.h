@@ -29,21 +29,21 @@ protected:
 	float			mMinWidth;
 	Vector3f		mAnchor;
 	Vector2f		mSize;
-	String			mLast;
+	String			mText;
 
 public:
 
 	UIContext();
 
-	const UISkin*	GetSkin()			const	{ return mSkin; }
-	const IFont*	GetFont()			const	{ return mFont; }
-	const Color3f&	GetColor()			const	{ return mColor; }
-	bool			DropsShadow()		const	{ return mShadow;  }
-	uint			GetAlignment()		const	{ return mAlignment; }
-	const Entries&	GetAllEntries()		const	{ return mEntries; }
-	float			GetMinWidth()		const	{ return mMinWidth; }
-	const Vector3f&	GetAnchor()			const	{ return mAnchor; }
-	const String&	GetLastSelection()	const	{ return mLast; }
+	const UISkin*	GetSkin()		const	{ return mSkin; }
+	const IFont*	GetFont()		const	{ return mFont; }
+	const Color3f&	GetColor()		const	{ return mColor; }
+	bool			DropsShadow()	const	{ return mShadow;  }
+	uint			GetAlignment()	const	{ return mAlignment; }
+	const Entries&	GetAllEntries()	const	{ return mEntries; }
+	float			GetMinWidth()	const	{ return mMinWidth; }
+	const Vector3f&	GetAnchor()		const	{ return mAnchor; }
+	const String&	GetText()		const	{ return mText; }
 
 	void SetSkin		(const UISkin* skin)	{ mSkin		 = skin; mIsDirty = true; }
 	void SetFace		(const String& face)	{ mFace		 = face; mIsDirty = true; }

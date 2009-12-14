@@ -2,15 +2,6 @@
 using namespace R5;
 
 //============================================================================================================
-// List selection should update the label
-//============================================================================================================
-
-void UIList::_OnValue (const String& val)
-{
-	mLabel.SetText(val);
-}
-
-//============================================================================================================
 // Internal functions. These values are normally set by Root::CreateArea
 //============================================================================================================
 
@@ -87,8 +78,13 @@ bool UIList::OnSerializeFrom (const TreeNode& node)
 	{
 		if (node.mTag == "Text")
 		{
-			node.mValue >> mSelection;
-			if (mOnValueChange) mOnValueChange(this);
+			String text;
+
+			if (node.mValue >> text)
+			{
+				SetText(text);
+				if (mOnValueChange) mOnValueChange(this);
+			}
 		}
 		else if (node.mTag == "Skin")
 		{

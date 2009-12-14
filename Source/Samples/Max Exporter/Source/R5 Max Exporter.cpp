@@ -1,6 +1,7 @@
 #include "../Include/_All.h"
 
 #define POSITION_SCALE 0.2f
+#undef CopyMemory
 
 //============================================================================================================
 // Required R5 Libraries
@@ -236,7 +237,7 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 			float range = (float)(next.mTime - previous.mTime);
 			float time  = (float)(current.mTime - previous.mTime);
 
-			if ( IsAMatch(current.mPos, Interpolate::Linear(previous.mPos, next.mPos, time / range), precise) )
+			if ( IsAMatch(current.mPos, Interpolation::Linear(previous.mPos, next.mPos, time / range), precise) )
 			{
 				keys.RemoveAt(i+1);
 				eliminated = true;
@@ -308,7 +309,7 @@ void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precis
 			float range = (float)(next.mTime - previous.mTime);
 			float time  = (float)(current.mTime - previous.mTime);
 
-			if ( IsAMatch(current.mRot, Interpolate::Slerp(previous.mRot, next.mRot, time / range), precise) )
+			if ( IsAMatch(current.mRot, Interpolation::Slerp(previous.mRot, next.mRot, time / range), precise) )
 			{
 				keys.RemoveAt(i+1);
 				eliminated = true;
@@ -642,10 +643,10 @@ R5MaxExporter::Material*  R5MaxExporter::_ConvertMaterial (::Mtl* mtl, uint subM
 
 			// Retrieve the material and set its properties
 			myMat				= GetMaterial(matName);
-			myMat->mDiffuse	= diffuse;
+			myMat->mDiffuse		= diffuse;
 			myMat->mSpecular	= specular;
 			myMat->mDiffuse.a	= alpha;
-			myMat->mSpecular.a = shininess;
+			myMat->mSpecular.a	= shininess;
 			myMat->mGlow		= (emission.r + emission.g + emission.b) / 3.0f;
 			myMat->mWireframe	= wireframe;
 			myMat->mTwosided	= twosided;
@@ -701,8 +702,8 @@ void R5MaxExporter::_CreateLimbs (  MultiMesh&		myMultiMesh,
 			myMesh->mHasTexCoords	= myMultiMesh.mHasTexCoords;
 			myMesh->mHasWeights		= myMultiMesh.mHasWeights;
 
-			myMesh->mVertices.Copy( mySub->mVertices );
-			myMesh->mIndices.Copy ( mySub->mIndices  );
+			myMesh->mVertices.CopyMemory( mySub->mVertices );
+			myMesh->mIndices.CopyMemory ( mySub->mIndices  );
 
 			// Get the limb and assign its mesh
 			Limb* myLimb	= GetLimb(myName);
@@ -819,14 +820,14 @@ void R5MaxExporter::_ExportFull( Bone* bone, ::INode* node, ::INode* parent, ::I
 			myMat *= myParent;
 		}
 
-		PosKey& pk	 = bone->mPosKeys.Expand();
-		pk.mTime	 = (uint)i;
-		pk.mPos	 = myMat;
-		pk.mPos	*= POSITION_SCALE;
+		PosKey& pk	= bone->mPosKeys.Expand();
+		pk.mTime	= (uint)i;
+		pk.mPos		= myMat;
+		pk.mPos		*= POSITION_SCALE;
 
-		RotKey& rk	 = bone->mRotKeys.Expand();
-		rk.mTime	 = (uint)i;
-		rk.mRot	 = myMat;
+		RotKey& rk	= bone->mRotKeys.Expand();
+		rk.mTime	= (uint)i;
+		rk.mRot		= myMat;
 	}
 }
 
@@ -868,13 +869,13 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	}
 
 	// Unfortunately bipeds require insane precision in order to export them out properly
-	bool precise = isBiped;/* && (isBipedRoot				||
-				   (bone->mName.BeginsWith("Bip")		&&
-				   (bone->mName.Contains("Spine")		||
-					bone->mName.Contains("Pelvis")		||
+	bool precise = isBiped;/* && (isBipedRoot		||
+				   (bone->mName.BeginsWith("Bip")	&&
+				   (bone->mName.Contains("Spine")	||
+					bone->mName.Contains("Pelvis")	||
 					bone->mName.Contains("L Thigh")	||
 					bone->mName.Contains("R Thigh")	||
-					bone->mName.Contains("L Calf")		||
+					bone->mName.Contains("L Calf")	||
 					bone->mName.Contains("R Calf"))));*/
 
 	// If this bone can be exported low precision, do so now
