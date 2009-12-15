@@ -94,18 +94,48 @@ Root
 			}
 		}
 
-		Material = "Lizard"
+		Material = "White Brick"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.653580 0.491917 0.200924 0.390300
 			Glow = 0.000000
-			ADT = 0.000000
+			ADT = 0.003922
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/DH_NS"
-				Texture 0 = "Textures/Other/lizard.png"
-				Texture 1 = "Textures/Other/lizard_n.png"
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/brick2.jpg"
+				Texture 1 = "Textures/Stone/brick2_ns.png"
+			}
+		}
+
+		Material = "Fuzzy Tree"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.653580 0.491917 0.200924 0.390300
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Plants/fuzzytree.jpg"
+				Texture 1 = "Textures/Plants/fuzzytree_ns.png"
+			}
+		}
+
+		Material = "Leaf"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.653580 0.491917 0.200924 0.390300
+			Glow = 0.000000
+			ADT = 0.879908
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Billboards/leaf.png"
+				Texture 1 = "Textures/Billboards/leaf_ns.png"
 			}
 		}
 	}
@@ -203,26 +233,6 @@ Root
 						Layer = 0
 					}
 
-					Checkbox = "Bloom Checkbox"
-					{
-						Left = 0.400000 5.000000
-						Right = 0.400000 19.000000
-						Top = 0.000000 51.000000
-						Bottom = 0.000000 65.000000
-						Alpha = 1.000000
-						Skin = "Default"
-						Color = 1.000000 1.000000 1.000000
-						Font = "Arial 15"
-						Text
-						Shadow = true
-						Alignment = "Left"
-						State = "Checked"
-						Animation Time = 0.150000
-						Receives Events = true
-						Tooltip = "Turning this on will make bright areas glow"
-						Layer = 0
-					}
-
 					List = "Background"
 					{
 						Left = 0.400000 3.000000
@@ -252,6 +262,26 @@ Root
 						}
 
 						Receives Events = true
+						Layer = 0
+					}
+
+					Checkbox = "Bloom Checkbox"
+					{
+						Left = 0.400000 5.000000
+						Right = 0.400000 19.000000
+						Top = 0.000000 51.000000
+						Bottom = 0.000000 65.000000
+						Alpha = 1.000000
+						Skin = "Default"
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text
+						Shadow = true
+						Alignment = "Left"
+						State = "Enabled"
+						Animation Time = 0.150000
+						Receives Events = true
+						Tooltip = "Turning this on will make bright areas glow"
 						Layer = 0
 					}
 
@@ -305,7 +335,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "324"
+					Text = "308"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -318,7 +348,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.850000
+					Alpha = 0.000000
 					Color = 0.000000 0.000000 0.000000 1.000000
 					Receives Events = true
 					Layer = 0
@@ -349,7 +379,13 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/sponza.r5a"
+			Source = "Models/box.r5a"
+
+			Limb = "Box"
+			{
+				Mesh = "Box"
+				Material = "Leaf"
+			}
 		}
 	}
 
@@ -357,17 +393,17 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = -27.992929 -1.083088 5.319015
-			Rotation = -0.006137 0.005864 0.690681 -0.723110
+			Position = 0.000000 0.000000 2.000000
+			Rotation = 0.037526 0.037305 -0.704035 -0.708192
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 0.000000 50.000000
+			Dolly = 0.000000 13.999969 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = -0.164220 -0.073651 0.402674 0.897855
+				Rotation = 0.016471 -0.985999 -0.168443 0.002814
 				Scale = 1.000000
 				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
@@ -419,9 +455,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/steambo.r5b"
-		"Models/copcar.r5b"
-		"Models/delorean.r5b"
 		"Models/mill.r5b"
 		"Models/building.r5b"
 		"Models/fern.r5b"
@@ -429,5 +462,8 @@ Root
 		"Models/tree.r5a"
 		"Config/Materials.txt"
 		"Models/sponza.r5a"
+		"Models/sponza.r5b"
+		"Models/egg.r5a"
+		"Models/box.r5a"
 	}
 }
