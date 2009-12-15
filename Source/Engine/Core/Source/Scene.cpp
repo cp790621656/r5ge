@@ -66,7 +66,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		IGraphics* graphics (mRoot->mCore->GetGraphics());
 		Vector3f dir (rot.GetForward());
 
-		graphics->ResetModelMatrix();
+		graphics->ResetModelViewMatrix();
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
 
@@ -154,8 +154,7 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 		// Draw the scene
 		result += mQueue.Draw(graphics, techniques, insideOut);
 
-		// Restore the potentially changed properties
-		graphics->ResetModelMatrix();
+		// Restore the potentially altered default state
 		graphics->SetNormalize(false);
 	}
 	return result;
