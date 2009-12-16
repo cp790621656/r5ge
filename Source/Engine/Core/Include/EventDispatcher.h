@@ -16,7 +16,7 @@ public:
 	typedef FastDelegate<bool (const Vector2i& pos, const Vector2i& delta)>		OnMouseMoveDelegate;
 	typedef FastDelegate<bool (const Vector2i& pos, float delta)>				OnScrollDelegate;
 	typedef FastDelegate<bool (const TreeNode& root)>							SerializeFromDelegate;
-	typedef FastDelegate<bool (TreeNode& root)>									SerializeToDelegate;
+	typedef FastDelegate<void (TreeNode& root)>									SerializeToDelegate;
 
 protected:
 

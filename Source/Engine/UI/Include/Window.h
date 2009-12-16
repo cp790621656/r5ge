@@ -51,8 +51,11 @@ public:
 	void SetTitlebarHeight	(byte val);
 	void SetResizable		(bool val)				{ mResizable = val;				}
 
+	// Resizes the window to fit the specified size
+	void ResizeToFit (const Vector2i& size);
+
 	// Returns the size the window has to be in order to have content area of specified size
-	Vector2f GetSizeForContent (float x, float y);
+	Vector2i GetSizeForContent (const Vector2i& size);
 
 public:
 

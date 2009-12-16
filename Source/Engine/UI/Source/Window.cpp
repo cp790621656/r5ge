@@ -35,14 +35,30 @@ void UIWindow::SetTitlebarHeight (byte val)
 }
 
 //============================================================================================================
+// Resizes the window to fit the specified size
+//============================================================================================================
+
+void UIWindow::ResizeToFit (const Vector2i& size)
+{
+	Vector2f mySize ( GetSizeForContent(size) );
+
+	const UIAnchor& left = mRegion.GetLeft();
+	const UIAnchor& top  = mRegion.GetTop();
+
+	mRegion.SetRight ( left.mRelative, left.mAbsolute + mySize.x );
+	mRegion.SetBottom( top.mRelative,  top.mAbsolute  + mySize.x );
+}
+
+//============================================================================================================
 // Resize the window so that the content region matches these dimensions
 //============================================================================================================
 
-Vector2f UIWindow::GetSizeForContent (float x, float y)
+Vector2i UIWindow::GetSizeForContent (const Vector2i& size)
 {
-	float paddingX = mRegion.GetCalculatedWidth()  - mContent.GetCalculatedWidth();
-	float paddingY = mRegion.GetCalculatedHeight() - mContent.GetCalculatedHeight();
-	return Vector2f(x + paddingX, y + paddingY);
+	if (mParent != 0) Update(mParent->GetRegion());
+	short paddingX = (short)(mRegion.GetCalculatedWidth()  - mContent.GetCalculatedWidth());
+	short paddingY = (short)(mRegion.GetCalculatedHeight() - mContent.GetCalculatedHeight());
+	return Vector2i(size.x + paddingX, size.y + paddingY);
 }
 
 //============================================================================================================

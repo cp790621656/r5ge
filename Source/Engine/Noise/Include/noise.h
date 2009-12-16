@@ -70,12 +70,13 @@ public:
 	uint GetSeed()		const	{ return mSeed; }
 	uint GetWidth()		const	{ return (uint)mSize.x; }
 	uint GetHeight()	const	{ return (uint)mSize.y; }
-	uint GetSize()		const	{ return (uint)mSize.x * (uint)mSize.y; }
 	bool IsSeamless()	const	{ return mSeamless; }
+
+	const Vector2i&	GetSize() const { return mSize; }
 
 	void SetSeed(uint seed)				{ if (mSeed != seed) { mSeed = seed; mIsDirty = true; } }
 	void SetSeamless (bool val)			{ mSeamless = val; }
-	void SetSize (ushort x, ushort y)	{ mSize.Set(x, y); mIsDirty = true; }
+	void SetSize (int x, int y)			{ mSize.Set((short)x, (short)y); mIsDirty = true; }
 	void SetSize (const Vector2i& size)	{ mSize = size; mIsDirty = true; }
 
 	// Applies a new filter to the noise

@@ -93,7 +93,7 @@ public:
 	void Unlock()	const	{ mIsLocked = false; mLock.Unlock(); }
 
 	// Clears all memory used by the mesh, but does not release it
-	void Clear() { Lock(); _Clear(); Unlock(); }
+	void Clear() { _AssertIfUnlocked(); _Clear(); }
 
 	// Releases all memory used by the mesh
 	void Release();

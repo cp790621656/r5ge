@@ -1,0 +1,288 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev9 (Trees)"
+		Position = 100 100
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Fog Range = 100.000000 100.000000
+
+		Texture = "Leaf Diffuse map"
+		{
+			Source = "Textures/Billboards/leaf.png"
+			Format = "Default"
+			Filtering = "Anisotropic"
+			Wrap Mode = "Repeat"
+		}
+
+		Texture = "Leaf Normal map"
+		{
+			Source = "Textures/Billboards/leaf_ns.png"
+			Format = "Default"
+			Filtering = "Anisotropic"
+			Wrap Mode = "Repeat"
+		}
+
+		Material = "Leaf"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.235800 0.151917 0.070924 0.390300
+			Glow = 0.000000
+			ADT = 0.800000
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Leaf Diffuse map"
+				Texture 1 = "Leaf Normal map"
+			}
+		}
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Window = "Leaf Normal Window"
+			{
+				Left = 0.000000 3.000000
+				Right = 0.000000 267.000000
+				Top = 0.000000 267.000000
+				Bottom = 0.000000 531.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial 15"
+				Text = "Normal map (256x256)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Normal Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Normal map"
+					Ignore Alpha = true
+					Receives Events = true
+					Layer = 1
+				}
+			}
+
+			Window = "Leaf Diffuse Window"
+			{
+				Left = 0.000000 3.000000
+				Right = 0.000000 267.000000
+				Top = 0.000000 3.000000
+				Bottom = 0.000000 267.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial 15"
+				Text = "Diffuse map (256x256)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Diffuse Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Diffuse map"
+					Ignore Alpha = true
+					Receives Events = true
+					Layer = 1
+				}
+			}
+
+			Window = "Options"
+			{
+				Left = 0.000000 676.000000
+				Right = 0.000000 897.000000
+				Top = 0.000000 1.000000
+				Bottom = 0.000000 112.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Font = "Arial 15"
+				Text = "Options"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Slider = "Tilt"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 23.000000
+					Bottom = 0.000000 40.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Value = 0.256039
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Tilt Text"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Tilt Factor"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+
+				Slider = "Count"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 43.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Value = 0.280193
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Count Text"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Number of Particles"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+
+				Slider = "Size"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Value = 0.280193
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Size Text"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Particle Size"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+
+				Button = "Generate"
+				{
+					Left = 0.000000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 63.000000
+					Bottom = 0.000000 85.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
+					Font = "Arial 15"
+					Text = "Generate"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+			}
+		}
+	}
+
+	Core
+	{
+		Execute = "Config/Default UI Skin.txt"
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = -0.004267 0.314807 -0.366205
+			Rotation = -0.550642 0.393221 -0.427916 0.599215
+			Scale = 1.000000
+			Layer = 10
+			Range = 1.000000 100.000000 25.000000
+			Dolly = 0.000000 9.999331 50.000000
+
+			Directional Light = "First Light"
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Ambient = 0.150000 0.150000 0.150000
+				Diffuse = 1.000000 1.000000 1.000000
+				Specular = 1.000000 1.000000 1.000000
+				Brightness = 1.000000
+			}
+		}
+	}
+
+	Seed = 258704183
+}

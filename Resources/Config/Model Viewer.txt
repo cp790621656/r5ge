@@ -335,7 +335,7 @@ Root
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
 					Font = "Arial 15"
-					Text = "308"
+					Text = "296"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -393,12 +393,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 2.000000
-			Rotation = 0.037526 0.037305 -0.704035 -0.708192
+			Position = 1.356820 -0.161123 1.987809
+			Rotation = 0.002104 0.002078 -0.702641 -0.711538
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 13.999969 50.000000
+			Dolly = 0.000000 4.999994 50.000000
 
 			Directional Light = "Default Light"
 			{

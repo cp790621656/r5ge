@@ -188,9 +188,12 @@ void TestApp::Regenerate()
 		// Update the UI information
 		if (seedLabel) seedLabel->SetText( String("Seed: %u", startTime) );
 		if (timeLabel) timeLabel->SetText( String("Time: %u", diff) );
+
 		if (window)
 		{
-			Vector2i size = window->GetSizeForContent((float)mNoise.GetWidth(), mNoise.GetHeight()*2.0f);
+			Vector2i size = Vector2i( (short)mNoise.GetWidth(), (short)(mNoise.GetHeight() * 2) );
+
+			size = window->GetSizeForContent(size);
 
 			UIRegion& rgn = window->GetRegion();
 			rgn.SetLeft		(1.0f, -(float)size.x);

@@ -233,9 +233,11 @@ void Mesh::_CalculateNormalsAndTangents()
 	mT.ExpandTo(mV.GetSize());
 
 	// Triangles
-	if (mPrimitive == IGraphics::Primitive::Triangle && mIndices.GetSize() > 2)
+	if (mIndices.GetSize() > 2)
 	{
-		for (uint i = 0; i < mIndices.GetSize(); i+=3)
+		bool even = true;
+
+		for (uint i = 0; i + 2 < mIndices.GetSize(); )
 		{
 			uint i0 ( mIndices[i  ] );
 			uint i1 ( mIndices[i+1] );
@@ -289,6 +291,18 @@ void Mesh::_CalculateNormalsAndTangents()
 				binormals[i1] += binormal;
 				binormals[i2] += binormal;
 			}
+
+			if (mPrimitive == IGraphics::Primitive::Triangle)
+			{
+				i += 3;
+			}
+			else if (mPrimitive == IGraphics::Primitive::Quad)
+			{
+				if (even) ++i;
+				else i += 3;
+				even = !even;
+			}
+			else ++i;
 		}
 
 		// If we're calculating normals we need to match all normals with identical vertices
