@@ -385,7 +385,9 @@ void UIArea::Fill (UIQueue* queue)
 		{
 			for (uint i = 0; i < mChildren.GetSize(); ++i)
 			{
-				if (mChildren[i])
+				UIArea* child = mChildren[i];
+
+				if (child != 0 && !child->IsOfClass(UIFrame::ClassID()))
 				{
 					mChildren[i]->Fill(queue);
 				}

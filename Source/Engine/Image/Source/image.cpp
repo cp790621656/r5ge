@@ -11,8 +11,8 @@ namespace Codec
 {
 struct RegisteredCodec
 {
-	String					mName;		// Name of the registered codec
-	Image::CodecDelegate	mDelegate;	// Delegate function that decodes the buffer using this codec
+	String				mName;		// Name of the registered codec
+	Image::ReadDelegate	mDelegate;	// Delegate function that decodes the buffer using this codec
 };
 
 Array<RegisteredCodec> g_allCodecs;
@@ -21,7 +21,7 @@ Array<RegisteredCodec> g_allCodecs;
 // Registers a codec (used in the _RegisterAll() function below)
 //============================================================================================================
 
-inline void _Register (const String& name, const Image::CodecDelegate& fnct)
+inline void _Register (const String& name, const Image::ReadDelegate& fnct)
 {
 	RegisteredCodec& codec = g_allCodecs.Expand();
 	codec.mName = name;
@@ -54,9 +54,9 @@ using namespace Codec;
 // Retrieves a registered codec callback
 //============================================================================================================
 
-Image::CodecDelegate _GetCodec (const String& name)
+Image::ReadDelegate _GetCodec (const String& name)
 {
-	Image::CodecDelegate fnct;
+	Image::ReadDelegate fnct;
 
 	g_allCodecs.Lock();
 	{
@@ -82,7 +82,7 @@ Image::CodecDelegate _GetCodec (const String& name)
 // STATIC: Registers a new filter
 //============================================================================================================
 
-void Image::RegisterCodec (const String& name, const Image::CodecDelegate& fnct)
+void Image::RegisterCodec (const String& name, const Image::ReadDelegate& fnct)
 {
 	g_allCodecs.Lock();
 	{
@@ -133,12 +133,12 @@ void Image::GetRegisteredCodecs (Array<String>& list)
 // STATIC: Creates a normal map for the specified heightmap
 //============================================================================================================
 
-void Image::Utilities::HeightMapToNormalMap (	const float*		buffer,
-												uint				width,
-												uint				height,
-												Array<Color4ub>&	c,
-												bool				seamless,
-												const Vector3f&		scale )
+void Image::HeightMapToNormalMap (	const float*		buffer,
+									uint				width,
+									uint				height,
+									Array<Color4ub>&	c,
+									bool				seamless,
+									const Vector3f&		scale )
 {
 	uint size = width * height;
 	c.Clear();

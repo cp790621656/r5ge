@@ -87,7 +87,7 @@ void  UIEditableLabel::SetText (const String& text)
 		mSelectionEnd	= 0;
 		mSelectionStart	= 0;
 
-		if (GetCalculatedAlpha() > 0.0f) SetDirty();
+		if (GetAlpha() > 0.0f) SetDirty();
 	}
 }
 

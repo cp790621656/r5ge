@@ -112,9 +112,11 @@ protected:
 	// Convenience function, seeing as most areas will use the built-in layer
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
 
+	// Calls OnFill() on itself then recurses through all non-UIFrame children.
+	void Fill (UIQueue* queue);
+
 	// Functions overwritten by Frame class
 	virtual void OnDirty (const ITexture* tex, int layer, const UIArea* area = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, area); }
-	virtual void Fill (UIQueue* queue);
 	virtual uint OnDraw() { return 0; }
 
 public:
@@ -129,10 +131,11 @@ public:
 public:
 
 	// Can be overwritten for additional functionality (see the Animated Frame class)
-	virtual float GetCalculatedAlpha() const { return mRegion.GetCalculatedAlpha(); }
+	virtual float GetAlpha() const { return mRegion.GetCalculatedAlpha(); }
 	virtual void  SetAlpha (float val, float animTime = 0.0f) { mRegion.SetAlpha(val); }
 
-	// Area::Update() function gets the sub-region, and that gets passed to all children (see Window class for an example)
+	// UIArea::Update() function gets the sub-region, and that gets passed to all children
+	// See UIWindow class for an example
 	virtual const UIRegion& GetSubRegion() const { return mRegion; }
 
 	// Marks this specific area as needing to be rebuilt

@@ -191,7 +191,7 @@ bool UIContext::_OnItemFocus (UIArea* area, bool hasFocus)
 
 void UIContext::SetAlpha (float val, float animTime)
 {
-	float alpha = GetCalculatedAlpha();
+	float alpha = GetAlpha();
 
 	if (val == 1.0f)
 	{

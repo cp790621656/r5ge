@@ -15,7 +15,7 @@ UIAnimatedFrame::UIAnimatedFrame() :
 
 void UIAnimatedFrame::SetAlpha (float val, float animTime)
 {
-	if (mRegion.GetRelativeAlpha() != val)
+	if (mRegion.GetAlpha() != val)
 	{
 		mIsFading	= true;
 		mAnimTime	= animTime;
@@ -32,7 +32,7 @@ void UIAnimatedFrame::SetAlpha (float val, float animTime)
 bool UIAnimatedFrame::OnPreUpdate (bool dimensionsChanged)
 {
 	// Target alpha is always the region's relative alpha
-	float targetAlpha = mRegion.GetRelativeAlpha();
+	float targetAlpha = mRegion.GetAlpha();
 
 	// Current alpha hasn't reached the target yet -- interpolate the new value based on time
 	if ( Float::IsNotEqual(mCurrentAlpha, targetAlpha) )

@@ -111,8 +111,7 @@ void TestApp::Run()
 
 			// Use the Image utility to generate a normal map
 			Array<Color4ub> c;
-			Image::Utilities::HeightMapToNormalMap(noise.GetBuffer(),
-				noise.GetWidth(), noise.GetHeight(), c, false);
+			Image::HeightMapToNormalMap(noise.GetBuffer(), noise.GetWidth(), noise.GetHeight(), c, false);
 
 			// Create a new texture called "Terrain"
 			ITexture* tex = mGraphics->GetTexture("Terrain");

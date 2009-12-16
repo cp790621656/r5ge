@@ -73,11 +73,12 @@ public:
 	void SetBottom	(float relative, float absolute)	{ mRelativeBottom.Set(relative, absolute);  mDimsChanged  = true; }
 	void SetAlpha	(float relative)					{ mRelativeAlpha = relative; }
 
-	// Read access to relative anchors
+	// Read access to relative values
 	const UIAnchor& GetLeft()	const	{ return mRelativeLeft;		}
 	const UIAnchor& GetRight()	const	{ return mRelativeRight;	}
 	const UIAnchor& GetTop()	const	{ return mRelativeTop;		}
 	const UIAnchor& GetBottom()	const	{ return mRelativeBottom;	}
+	float			GetAlpha()	const	{ return mRelativeAlpha;	}
 
 	// Retrieves the calculated absolute rectangle
 	const Rectangle<float>& GetCalculatedRect() const { return mRect; }
@@ -93,7 +94,6 @@ public:
 
 	// Used in animation
 	float GetParentAlpha()		const	{ return mParentAlpha;		}
-	float GetRelativeAlpha()	const	{ return mRelativeAlpha;	}
 
 	// Changes the absolute alpha until the next Update()
 	void OverrideAlpha (float val) { mAlpha = val; }

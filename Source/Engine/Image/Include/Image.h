@@ -46,25 +46,21 @@ protected:
 public:
 
 	// Codec functions accept the input data buffer, size of the buffer, and the output image buffer
-	typedef FastDelegate<bool (const byte* in, uint inSize, const String& extension, Image::Buffer& out)> CodecDelegate;
+	typedef FastDelegate<bool (const byte* in, uint inSize, const String& extension, Image::Buffer& out)> ReadDelegate;
 
 	// STATIC: Registeres a new codec
-	static void RegisterCodec (const String& name, const CodecDelegate& fnct);
+	static void RegisterCodec (const String& name, const ReadDelegate& fnct);
 
 	// STATIC: Retrieves the names of all registered codecs
 	static void GetRegisteredCodecs (Array<String>& out);
 
-	struct Utilities
-	{
-		// STATIC: Creates a normal map for the specified heightmap
-		static void HeightMapToNormalMap (	const float*		buffer,
-											uint				width,
-											uint				height,
-											Array<Color4ub>&	c,
-											bool				seamless,
-											const Vector3f&		scale = Vector3f(1.0f, 1.0f, 0.1f) );
-	};
-
+	// STATIC: Creates a normal map for the specified heightmap
+	static void HeightMapToNormalMap (	const float*		buffer,
+										uint				width,
+										uint				height,
+										Array<Color4ub>&	c,
+										bool				seamless,
+										const Vector3f&		scale = Vector3f(1.0f, 1.0f, 0.1f) );
 public:
 
 	~Image() { Release(); }

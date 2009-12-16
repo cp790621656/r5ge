@@ -36,7 +36,7 @@ void UITextLine::SetText (const String& text)
 	if (mText != text)
 	{
 		mText = text;
-		if (GetCalculatedAlpha() > 0.0f) SetDirty();
+		if (GetAlpha() > 0.0f) SetDirty();
 	}
 }
 

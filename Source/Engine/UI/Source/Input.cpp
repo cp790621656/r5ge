@@ -71,7 +71,7 @@ bool UIInput::_OnLabelKey (UIArea* area, const Vector2i& pos, byte key, bool isD
 		{
 			const UIContext* context = mRoot->GetContextMenu();
 
-			if (context == 0 || context->GetCalculatedAlpha() == 0.0f)
+			if (context == 0 || context->GetAlpha() == 0.0f)
 			{
 				_ShowHistory();
 			}
@@ -185,7 +185,7 @@ UIContext* UIInput::_HideHistory()
 {
 	UIContext* menu = mRoot->GetContextMenu();
 
-	if (menu != 0 && menu->GetCalculatedAlpha() > 0.0f)
+	if (menu != 0 && menu->GetAlpha() > 0.0f)
 	{
 		mShowHistory = true;
 

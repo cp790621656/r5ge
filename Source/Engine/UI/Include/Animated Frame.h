@@ -20,7 +20,7 @@ public:
 
 	UIAnimatedFrame();
 
-	virtual float GetCalculatedAlpha() const { return mRegion.GetParentAlpha() * mRegion.GetRelativeAlpha(); }
+	virtual float GetAlpha() const { return mRegion.GetParentAlpha() * mRegion.GetAlpha(); }
 	virtual void  SetAlpha (float val, float animTime = 0.0f);
 
 public:

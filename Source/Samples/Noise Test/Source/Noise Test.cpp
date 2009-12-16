@@ -174,7 +174,7 @@ void TestApp::Regenerate()
 
 		// Generate normals
 		Array<Color4ub> colors;
-		Image::Utilities::HeightMapToNormalMap(buffer, width, height, colors, mNoise.IsSeamless());
+		Image::HeightMapToNormalMap(buffer, width, height, colors, mNoise.IsSeamless());
 
 		// Create the normal map texture
 		nmapTex->Set(colors, width, height, 1,

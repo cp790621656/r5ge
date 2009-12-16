@@ -30,9 +30,6 @@ public:
 	// Marks all rendering queues as needing to be rebuilt
 	virtual void SetDirty();
 
-	// Called by parent, so do nothing. Frame::OnDraw() takes care of all the children.
-	virtual void Fill (UIQueue* queue) {}
-
 	// Updates the rendering queues as necessary, then draws them to the screen
 	virtual uint OnDraw();
 };
