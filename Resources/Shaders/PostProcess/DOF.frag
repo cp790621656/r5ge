@@ -2,7 +2,6 @@ uniform sampler2D   R5_texture0;    // Color
 uniform sampler2D   R5_texture1;    // Depth
 uniform sampler2D   R5_texture2;    // Downsampled and blurred color
 uniform sampler2D   R5_texture3;    // Even further downsampled / blurred color
-uniform vec3        R5_pixelSize;   // 0-1 factor size of the pixel
 uniform vec4        R5_clipRange;   // Near/far clipping range
 
 // Value 0 = center distance for the depth of field calculations

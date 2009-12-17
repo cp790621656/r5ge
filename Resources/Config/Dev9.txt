@@ -35,13 +35,13 @@ Root
 		Material = "Leaf"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.235800 0.151917 0.070924 0.390300
+			Specular = 0.000000 0.000000 0.000000 0.200000
 			Glow = 0.000000
-			ADT = 0.800000
+			ADT = 0.350000
 
-			Technique = "Deferred"
+			Technique = "Transparent"
 			{
-				Shader = "Deferred/D_NS"
+				Shader = "Forward/ToBillboard"
 				Texture 0 = "Leaf Diffuse map"
 				Texture 1 = "Leaf Normal map"
 			}
@@ -66,7 +66,7 @@ Root
 				Skin = "Default"
 				Titlebar Height = 24
 				Resizable = true
-				Color = 0 0 0
+				Color = 0.000000 0.000000 0.000000
 				Font = "Arial 15"
 				Text = "Diffuse map (256x256)"
 				Shadow = false
@@ -88,6 +88,70 @@ Root
 				}
 			}
 
+			Window = "Leaf Normal Window"
+			{
+				Left = 0.000000 5.000000
+				Right = 0.000000 269.000000
+				Top = 0.000000 401.000000
+				Bottom = 0.000000 665.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 24
+				Resizable = true
+				Color = 0.000000 0.000000 0.000000
+				Font = "Arial 15"
+				Text = "Normal map (256x256)"
+				Shadow = false
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Normal Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Normal map"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
+			Window = "Final Window"
+			{
+				Left = 0.000000 326.000000
+				Right = 0.000000 846.000000
+				Top = 0.000000 77.000000
+				Bottom = 0.000000 597.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 24
+				Resizable = true
+				Color = 0.000000 0.000000 0.000000
+				Font = "Arial 15"
+				Text = "Final Texture (512x512)"
+				Shadow = false
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Final Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Out - Diffuse"
+					Ignore Alpha = false
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
 			Window = "Options"
 			{
 				Left = 0.000000 20.000000
@@ -98,7 +162,7 @@ Root
 				Skin = "Default"
 				Titlebar Height = 24
 				Resizable = true
-				Color = 0 0 0
+				Color = 0.000000 0.000000 0.000000
 				Font = "Arial 15"
 				Text = "Options"
 				Shadow = false
@@ -137,37 +201,6 @@ Root
 					}
 				}
 
-				Slider = "Count"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 43.000000
-					Bottom = 0.000000 60.000000
-					Alpha = 1.000000
-					Skin = "Default"
-					Value = 0.280193
-					Color = 1.000000 1.000000 1.000000
-					Animation Time = 0.000000
-					Receives Events = true
-					Layer = 0
-
-					Label = "Count Text"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Font = "Arial 15"
-						Text = "Number of Particles"
-						Shadow = true
-						Alignment = "Center"
-						Receives Events = false
-						Layer = 1
-					}
-				}
-
 				Slider = "Size"
 				{
 					Left = 0.000000 3.000000
@@ -176,7 +209,7 @@ Root
 					Bottom = 0.000000 20.000000
 					Alpha = 1.000000
 					Skin = "Default"
-					Value = 0.280193
+					Value = 0.265700
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
 					Receives Events = true
@@ -192,6 +225,37 @@ Root
 						Color = 1.000000 1.000000 1.000000
 						Font = "Arial 15"
 						Text = "Particle Size"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+
+				Slider = "Count"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 43.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
+					Skin = "Default"
+					Value = 0.260870
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Count Text"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Font = "Arial 15"
+						Text = "Number of Particles"
 						Shadow = true
 						Alignment = "Center"
 						Receives Events = false
@@ -219,70 +283,6 @@ Root
 					Layer = 0
 				}
 			}
-
-			Window = "Leaf Normal Window"
-			{
-				Left = 0.000000 5.000000
-				Right = 0.000000 269.000000
-				Top = 0.000000 401.000000
-				Bottom = 0.000000 665.000000
-				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 24
-				Resizable = true
-				Color = 0 0 0
-				Font = "Arial 15"
-				Text = "Normal map (256x256)"
-				Shadow = false
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Leaf Normal Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Leaf Normal map"
-					Ignore Alpha = true
-					Receives Events = false
-					Layer = 1
-				}
-			}
-
-			Window = "Final Window"
-			{
-				Left = 0.000000 326.000000
-				Right = 0.000000 846.000000
-				Top = 0.000000 77.000000
-				Bottom = 0.000000 597.000000
-				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 24
-				Resizable = true
-				Color = 0 0 0
-				Font = "Arial 15"
-				Text = "Final map"
-				Shadow = false
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Final Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "[Generated] Final"
-					Ignore Alpha = true
-					Receives Events = false
-					Layer = 1
-				}
-			}
 		}
 	}
 
@@ -299,8 +299,8 @@ Root
 			Rotation = -0.707107 0.000000 0.000000 0.707107
 			Scale = 1.000000
 			Layer = 10
-			Range = 1.000000 100.000000 25.000000
-			Dolly = 0.000000 10.000000 50.000000
+			Range = 90.000000 105.000000 2.400000
+			Dolly = 0.000000 100.000000 100.000000
 
 			Directional Light = "First Light"
 			{
@@ -316,5 +316,5 @@ Root
 		}
 	}
 
-	Seed = 258704183
+	Seed = 1033282418
 }

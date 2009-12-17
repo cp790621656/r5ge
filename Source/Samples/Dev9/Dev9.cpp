@@ -19,16 +19,13 @@ class TestApp
 	UI*				mUI;
 	Core*			mCore;
 	Scene			mScene;
-	DebugCamera*	mCam;
 	Mesh*			mMesh;
 	uint			mSeed;
 	Random			mRand;
 	UISlider*		mSize;
 	UISlider*		mTilt;
 	UISlider*		mCount;
-
-	// Result of the deferred draw operation
-	Deferred::DrawResult mResult;
+	bool			mIsDirty;
 
 public:
 
@@ -45,7 +42,7 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mMesh(0), mSeed(0), mSize(0), mTilt(0), mCount(0)
+TestApp::TestApp() : mMesh(0), mSeed(0), mSize(0), mTilt(0), mCount(0), mIsDirty(true)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -73,9 +70,6 @@ void TestApp::Run()
 
 	if (*mCore << "Config/Dev9.txt")
 	{
-		// The camera we'll be using
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
-
 		// User Interface setup
 		{
 			ITexture* diffuse = mGraphics->GetTexture("Leaf Diffuse map");
@@ -122,8 +116,7 @@ void TestApp::Run()
 			Generate();
 		}
 
-		// SSAO parameters -- shortened focus range and increased strength
-		SSAO::SetParams(1.0f, 8.0f);
+		// Enter the game loop
 		while (mCore->Update()) {}
 
 		//*mCore >> "Config/Dev9.txt";
@@ -135,27 +128,115 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	// Cull and draw the scene into an off-screen buffer
-	if (mResult.mColor == 0)
+	if (mIsDirty)
 	{
-		mScene.Cull(mCam);
+		mIsDirty = false;
 
-		Deferred::DrawParams params;
-		params.mDrawCallback = bind(&Scene::Draw, &mScene);
-		params.mSize.Set(512, 512);
-		params.mAOLevel = 2;
-		params.mColor.Set(36, 56, 10, 255);
-		params.mUseColor = true;
-		params.mTechniques.Expand() = mGraphics->GetTechnique("Deferred");
+		DebugCamera* cam = FindObject<DebugCamera>(mScene, "Default Camera");
 
-		mResult = Deferred::DrawScene(mGraphics, mScene.GetVisibleLights(), params);
-
-		// Resize the output window to fit this image
-		UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
-		if (final != 0)
+		if (cam != 0)
 		{
-			Vector2i size (mResult.mColor->GetSize());
-			final->ResizeToFit(size);
-			final->SetText( String("Final Texture (%ux%u)", size.x, size.y) );
+			mScene.Cull(cam);
+
+			Array<const ITechnique*> tech;
+			tech.Expand() = mGraphics->GetTechnique("Transparent");
+
+			static IRenderTarget* target0 = 0;
+			static IRenderTarget* target1 = 0;
+
+			static ITexture* diffuse = mGraphics->GetTexture("Out - Diffuse");
+			static ITexture* normal  = mGraphics->GetTexture("Out - Normal");
+			static ITexture* depth	 = mGraphics->GetTexture("Out - Depth");
+			
+			// Diffuse / normal draw
+			{
+				if (target0 == 0)
+				{
+					target0 = mGraphics->CreateRenderTarget();
+					target0->AttachDepthTexture(depth);
+					target0->AttachStencilTexture(depth);
+					target0->AttachColorTexture(0, diffuse, ITexture::Format::RGBA);
+					target0->AttachColorTexture(1, normal,  ITexture::Format::RGBA);
+					target0->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
+					target0->SetSize( Vector2i(512, 512) );
+				}
+
+				mGraphics->SetActiveRenderTarget(target0);
+				mGraphics->Clear();
+
+				mGraphics->SetStencilTest(true);
+				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
+				mGraphics->SetActiveStencilOperation(
+					IGraphics::Operation::Keep,
+					IGraphics::Operation::Keep,
+					IGraphics::Operation::Replace );
+
+				mScene.Draw(tech);
+				mGraphics->Flush();
+			}
+
+			// Ambient Occlusion
+			{
+				if (target1 == 0)
+				{
+					target1 = mGraphics->CreateRenderTarget();
+					target1->AttachDepthTexture(depth);
+					target1->AttachStencilTexture(depth);
+					target1->AttachColorTexture(0, diffuse, ITexture::Format::RGBA);
+					target1->SetSize(diffuse->GetSize());
+					target1->SetBackgroundColor(target0->GetBackgroundColor());
+				}
+
+				SSAO::SetParams(3.0f, 6.0f);
+				const ITexture* ao = SSAO::High(mGraphics, depth, normal);
+
+				static IShader* bake = mGraphics->GetShader("PostProcess/BakeAO");
+				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
+
+				mGraphics->SetActiveRenderTarget(target1);
+				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
+				mGraphics->SetActiveStencilOperation(
+					IGraphics::Operation::Keep,
+					IGraphics::Operation::Keep,
+					IGraphics::Operation::Keep );
+
+				mGraphics->SetActiveProjection(IGraphics::Projection::Orthographic);
+				mGraphics->SetActiveTechnique(tech);
+				mGraphics->SetActiveMaterial(0);
+				mGraphics->SetActiveShader(bake);
+				mGraphics->SetActiveTexture(0, diffuse);
+				mGraphics->SetActiveTexture(1, ao);
+				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
+				mGraphics->Flush();
+
+				/*static IShader* bake = mGraphics->GetShader("PostProcess/Darken");
+				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
+
+				mGraphics->SetActiveRenderTarget(target1);
+				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
+				mGraphics->SetActiveStencilOperation(
+					IGraphics::Operation::Keep,
+					IGraphics::Operation::Keep,
+					IGraphics::Operation::Keep );
+
+				mGraphics->SetActiveProjection(IGraphics::Projection::Orthographic);
+				mGraphics->SetActiveTechnique(tech);
+				mGraphics->SetActiveMaterial(0);
+				mGraphics->SetActiveShader(bake);
+				mGraphics->SetActiveTexture(0, diffuse);
+				mGraphics->SetActiveTexture(1, depth);
+				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
+				mGraphics->Flush();*/
+			}
+
+			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
+
+			if (final != 0)
+			{
+				Vector2i size (diffuse->GetSize());
+				final->ResizeToFit(size);
+				final->SetText( String("Final Texture (%ux%u)", size.x, size.y) );
+			}
 		}
 	}
 
@@ -168,10 +249,11 @@ void TestApp::OnDraw()
 
 void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Indices& indices)
 {
+	mIsDirty = true;
 	mRand.SetSeed(mSeed);
 
 	// Maximum depth range
-	float depth = 1.0f;
+	float depth = 5.0f;
 
 	// How much the leaves will twist
 	float twist = HALFPI * 0.5f;
@@ -192,15 +274,23 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 	Vector3f pos, axis;
 	Quaternion rot;
 
+	float rangeSq = range * range;
+
 	for (uint b = 0; b < count; ++b)
 	{
-		rot.SetFromAxisAngle(Vector3f(0.0f, 0.0f, 1.0f), mRand.GenerateRangeFloat() * PI);
-		float val = mRand.GenerateFloat();
-		pos = rot.GetForward() * (range * (1.0f - val * val));
-		pos.z += mRand.GenerateRangeFloat() * depth;
+		do 
+		{
+			pos.Set(mRand.GenerateRangeFloat() * range,
+					mRand.GenerateRangeFloat() * range,
+					0.0f);
+		}
+		while ((pos.x * pos.x + pos.y * pos.y) > range);		
+
+		pos.z = (depth * b) / count;
 
 		axis.Set(mRand.GenerateRangeFloat() * bias, mRand.GenerateRangeFloat() * bias, invBias);
 		axis.Normalize();
+
 		rot.SetFromDirection( Vector3f(pos.x, pos.y, 0.0f) );
 		rot *= Quaternion(axis, mRand.GenerateRangeFloat() * twist);
 
@@ -231,9 +321,6 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 
 	for (uint i = 0; i < verts.GetSize(); ++i)
 		indices.Expand() = (ushort)i;
-
-	// Reset the color so it's rebuilt the next frame
-	mResult.mColor = 0;
 }
 
 //============================================================================================================
