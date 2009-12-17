@@ -187,7 +187,7 @@ void TestApp::OnDraw()
 					target1->SetBackgroundColor(target0->GetBackgroundColor());
 				}
 
-				SSAO::SetParams(3.0f, 6.0f);
+				/*SSAO::SetParams(3.0f, 6.0f);
 				const ITexture* ao = SSAO::High(mGraphics, depth, normal);
 
 				static IShader* bake = mGraphics->GetShader("PostProcess/BakeAO");
@@ -207,9 +207,9 @@ void TestApp::OnDraw()
 				mGraphics->SetActiveTexture(0, diffuse);
 				mGraphics->SetActiveTexture(1, ao);
 				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
-				mGraphics->Flush();
+				mGraphics->Flush();*/
 
-				/*static IShader* bake = mGraphics->GetShader("PostProcess/Darken");
+				static IShader* bake = mGraphics->GetShader("PostProcess/Darken");
 				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
 
 				mGraphics->SetActiveRenderTarget(target1);
@@ -226,7 +226,7 @@ void TestApp::OnDraw()
 				mGraphics->SetActiveTexture(0, diffuse);
 				mGraphics->SetActiveTexture(1, depth);
 				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
-				mGraphics->Flush();*/
+				mGraphics->Flush();
 			}
 
 			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
