@@ -117,9 +117,8 @@ void TestApp::Init()
 		}
 	}
 
-	// Techniques we'll be using
-	mDeferred.Expand() = mGraphics->GetTechnique("Deferred");
-	mForward.Expand()  = glow;
+	// Techniques we'll be using for forward rendering
+	mForward.Expand() = glow;
 	//mForward.Expand()  = glare;
 }
 
@@ -157,8 +156,8 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 	const Light::List& lights = mScene.GetVisibleLights();
 
-	// Draw the scene using the deferred approach, filling color and depth buffers
-	Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, mDeferred, bind(&Scene::Draw, &mScene));
+	// Draw the scene using the deferred approach
+	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
 
 	// Add transparent objects via forward rendering
 	mObjects += mScene.Draw(mForward);

@@ -116,7 +116,7 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	mScene.DrawAllDeferred(true, false);
+	mScene.DrawAllDeferred(1);
 
 	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );

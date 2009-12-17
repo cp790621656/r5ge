@@ -109,7 +109,7 @@ void TestApp::OnDraw()
 
 	// Draw our scene using all default deferred rendering techniques, which includes our "Deferred"
 	// technique used by the model. As a bonus we can also add a bloom post-processing effect.
-	mScene.DrawAllDeferred(false, true);
+	mScene.DrawAllDeferred(0, 2);
 
 	// Note that the function above is a convenience function, just like 'DrawAllForward' function we used
 	// before. As such, its functionality, while perfect for small demos, can also be limiting. You are

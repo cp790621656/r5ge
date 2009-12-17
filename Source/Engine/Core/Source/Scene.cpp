@@ -108,32 +108,45 @@ uint Scene::DrawAllForward (bool clearScreen)
 // Convenience function: draws the scene using default deferred rendering techniques
 //============================================================================================================
 
-uint Scene::DrawAllDeferred (bool ssao, bool bloom)
+Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 {
+	Deferred::DrawResult result;
+
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
-		if (mDeferred.IsEmpty())
+		// Set the draw callback
+		if (!mParams.mDrawCallback)
 		{
-			mDeferred.Expand() = graphics->GetTechnique("Deferred");
-			mDeferred.Expand() = graphics->GetTechnique("Decal");
+			mParams.mDrawCallback = bind(&Scene::Draw, this);
 		}
 
-		Deferred::DrawResult result = Deferred::DrawScene(graphics, mQueue.mLights, mDeferred,
-			bind(&Scene::Draw, this), (ssao ? &SSAO::Low : 0));
+		// Set the list of techniques used to draw the scene
+		if (mParams.mTechniques.IsEmpty())
+		{
+			mParams.mTechniques.Expand() = graphics->GetTechnique("Deferred");
+			mParams.mTechniques.Expand() = graphics->GetTechnique("Decal");
+		}
 
-		if (bloom)
+		// Update the potentially changed parameters
+		mParams.mAOLevel = ssao;
+
+		// Draw the scene
+		result = Deferred::DrawScene(graphics, mQueue.mLights, mParams);
+
+		// Post-process step
+		if (postProcess == 2)
 		{
 			PostProcess::Bloom(graphics, result.mColor, 1.0f);
 		}
-		else
+		else if (postProcess == 1)
 		{
 			PostProcess::None(graphics, result.mColor);
 		}
-		return result.mObjects;
+		return result;
 	}
-	return 0;
+	return result;
 }
 
 //============================================================================================================

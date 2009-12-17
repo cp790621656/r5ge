@@ -19,9 +19,11 @@ private:
 	Frustum		mFrustum;	// Viewing frustum used for culling
 	DrawQueue	mQueue;		// Draw queue created by the culling process
 
+	// Deferred draw parameters. Saved for convenience and speed.
+	Deferred::DrawParams mParams;
+
 	// Default techniques, only filled if used. Cached here for speed.
 	Array<const ITechnique*> mForward;
-	Array<const ITechnique*> mDeferred;
 
 public:
 
@@ -49,7 +51,8 @@ public:
 	uint DrawAllForward (bool clearScreen = true);
 
 	// Convenience function: draws the scene using default deferred rendering techniques
-	uint DrawAllDeferred (bool ssao = false, bool bloom = false);
+	// PostProcess: 0 (do nothing), 1 = draw to screen as-is, 2 = bloom
+	Deferred::DrawResult DrawAllDeferred (byte ssao = 0, byte postProcess = 1);
 
 	// Draws the scene using the specified techniques
 	uint Draw (const Techniques& techniques, bool insideOut = false);

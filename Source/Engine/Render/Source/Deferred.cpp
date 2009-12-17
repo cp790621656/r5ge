@@ -264,13 +264,7 @@ void Combine (
 // Deferred rendering draw function -- does all the setup and renders into off-screen buffers
 //============================================================================================================
 
-Deferred::DrawResult Deferred::DrawScene (
-	IGraphics*				graphics,
-	const Light::List&		lights,
-	const TechniqueList&	techniques,
-	const DrawCallback&		drawCallback,
-	const AOCallback&		aoCallback,
-	bool					insideOut)
+Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List& lights, const DrawParams& params)
 {
 	static bool				firstTime	= true;
 	static IRenderTarget*	target0		= graphics->CreateRenderTarget();
@@ -316,18 +310,27 @@ Deferred::DrawResult Deferred::DrawScene (
 	}
 
 	// Setting size only changes it if it's different
-	Vector2i size (graphics->GetActiveViewport());
+	Vector2i size (params.mSize == 0 ? graphics->GetActiveViewport() : params.mSize);
 	target0->SetSize( size );
 	target1->SetSize( size );
 	target2->SetSize( size );
 
 	// Active background color
-	Color4f color (graphics->GetBackgroundColor());
-	color.a = 1.0f;
-	target0->SetBackgroundColor(color);
+	if (params.mUseColor)
+	{
+		target0->SetBackgroundColor(params.mColor);
+		target0->UseSkybox(false);
+	}
+	else
+	{
+		Color4f color (graphics->GetBackgroundColor());
+		color.a = 1.0f;
+		target0->SetBackgroundColor(color);
+		target0->UseSkybox(true);
+	}
 
 	// Deferred rendering -- encoding pass
-	if (drawCallback)
+	if (params.mDrawCallback)
 	{
 		graphics->SetCulling( IGraphics::Culling::Back );
 		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
@@ -344,20 +347,25 @@ Deferred::DrawResult Deferred::DrawScene (
 											 IGraphics::Operation::Replace );
 
 		// Draw the scene using the deferred approach
-		result.mObjects += drawCallback(techniques, insideOut);
+		result.mObjects += params.mDrawCallback(params.mTechniques, params.mInsideOut);
 	}
 
 	// Screen-space ambient occlusion pass
-	if (aoCallback)
+	if (params.mAOLevel > 0)
 	{
 		graphics->SetStencilTest(true);
 		graphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
 		graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
 											 IGraphics::Operation::Keep,
 											 IGraphics::Operation::Keep );
-
-		// Trigger the ambient occlusion callback
-		lightmap = aoCallback(graphics, depth, normal);
+		if (params.mAOLevel == 1)
+		{
+			lightmap = SSAO::Low(graphics, depth, normal);
+		}
+		else
+		{
+			lightmap = SSAO::High(graphics, depth, normal);
+		}
 	}
 
 	// Light contribution

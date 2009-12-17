@@ -133,19 +133,7 @@ void ModelViewer::OnDraw()
 
 	// Deferred rendering part
 	{
-		Deferred::AOCallback ao;
-
-		if		(mParams.mSsao == 2) ao.bind(&SSAO::High);
-		else if (mParams.mSsao == 1) ao.bind(&SSAO::Low);
-
-		static Deferred::TechniqueList dt;
 		static Deferred::TechniqueList ft;
-
-		if (dt.IsEmpty())
-		{
-			dt.Expand() = mGraphics->GetTechnique("Deferred");
-			dt.Expand() = mGraphics->GetTechnique("Decal");
-		}
 
 		if (ft.IsEmpty())
 		{
@@ -155,10 +143,9 @@ void ModelViewer::OnDraw()
 		}
 
 		// Draw the scene using the deferred approach
-		result = Deferred::DrawScene(mGraphics, mScene.GetVisibleLights(), dt,
-			bind(&Scene::Draw, &mScene), ao);
+		result = mScene.DrawAllDeferred(mParams.mSsao, 0);
 
-		// Draw the grid
+		// Draw the grid and all forward-rendered objects last
 		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 		mGraphics->SetActiveTechnique(ft[0]);
 		mGraphics->Draw( IGraphics::Drawable::Grid );

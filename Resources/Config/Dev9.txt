@@ -6,7 +6,7 @@ Root
 	{
 		Title = "R5 Engine: Dev9 (Trees)"
 		Position = 100 100
-		Size = 900 600
+		Size = 900 681
 		Full Screen = false
 	}
 
@@ -56,52 +56,20 @@ Root
 
 		Layout
 		{
-			Window = "Leaf Normal Window"
-			{
-				Left = 0.000000 3.000000
-				Right = 0.000000 267.000000
-				Top = 0.000000 267.000000
-				Bottom = 0.000000 531.000000
-				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 20
-				Resizable = true
-				Color = 1.000000 1.000000 1.000000
-				Font = "Arial 15"
-				Text = "Normal map (256x256)"
-				Shadow = true
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Leaf Normal Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Leaf Normal map"
-					Ignore Alpha = true
-					Receives Events = true
-					Layer = 1
-				}
-			}
-
 			Window = "Leaf Diffuse Window"
 			{
-				Left = 0.000000 3.000000
-				Right = 0.000000 267.000000
-				Top = 0.000000 3.000000
-				Bottom = 0.000000 267.000000
+				Left = 0.000000 4.000000
+				Right = 0.000000 268.000000
+				Top = 0.000000 130.000000
+				Bottom = 0.000000 394.000000
 				Alpha = 1.000000
 				Skin = "Default"
-				Titlebar Height = 20
+				Titlebar Height = 24
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Color = 0 0 0
 				Font = "Arial 15"
 				Text = "Diffuse map (256x256)"
-				Shadow = true
+				Shadow = false
 				Alignment = "Center"
 				Receives Events = true
 				Layer = 0
@@ -115,25 +83,25 @@ Root
 					Alpha = 1.000000
 					Texture = "Leaf Diffuse map"
 					Ignore Alpha = true
-					Receives Events = true
+					Receives Events = false
 					Layer = 1
 				}
 			}
 
 			Window = "Options"
 			{
-				Left = 0.000000 676.000000
-				Right = 0.000000 897.000000
-				Top = 0.000000 1.000000
-				Bottom = 0.000000 112.000000
+				Left = 0.000000 20.000000
+				Right = 0.000000 241.000000
+				Top = 0.000000 11.000000
+				Bottom = 0.000000 122.000000
 				Alpha = 1.000000
 				Skin = "Default"
-				Titlebar Height = 20
+				Titlebar Height = 24
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Color = 0 0 0
 				Font = "Arial 15"
 				Text = "Options"
-				Shadow = true
+				Shadow = false
 				Alignment = "Center"
 				Receives Events = true
 				Layer = 0
@@ -251,6 +219,70 @@ Root
 					Layer = 0
 				}
 			}
+
+			Window = "Leaf Normal Window"
+			{
+				Left = 0.000000 5.000000
+				Right = 0.000000 269.000000
+				Top = 0.000000 401.000000
+				Bottom = 0.000000 665.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 24
+				Resizable = true
+				Color = 0 0 0
+				Font = "Arial 15"
+				Text = "Normal map (256x256)"
+				Shadow = false
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Normal Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Normal map"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
+			Window = "Final Window"
+			{
+				Left = 0.000000 326.000000
+				Right = 0.000000 846.000000
+				Top = 0.000000 77.000000
+				Bottom = 0.000000 597.000000
+				Alpha = 1.000000
+				Skin = "Default"
+				Titlebar Height = 24
+				Resizable = true
+				Color = 0 0 0
+				Font = "Arial 15"
+				Text = "Final map"
+				Shadow = false
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Final Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "[Generated] Final"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+			}
 		}
 	}
 
@@ -263,12 +295,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = -0.004267 0.314807 -0.366205
-			Rotation = -0.550642 0.393221 -0.427916 0.599215
+			Position = 0.000000 0.000000 0.000000
+			Rotation = -0.707107 0.000000 0.000000 0.707107
 			Scale = 1.000000
 			Layer = 10
 			Range = 1.000000 100.000000 25.000000
-			Dolly = 0.000000 9.999331 50.000000
+			Dolly = 0.000000 10.000000 50.000000
 
 			Directional Light = "First Light"
 			{

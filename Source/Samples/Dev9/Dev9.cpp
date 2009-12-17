@@ -27,6 +27,9 @@ class TestApp
 	UISlider*		mTilt;
 	UISlider*		mCount;
 
+	// Result of the deferred draw operation
+	Deferred::DrawResult mResult;
+
 public:
 
 	TestApp();
@@ -66,9 +69,13 @@ void TestApp::Run()
 {
 	mCore->SetListener( bind(&TestApp::OnSerializeTo,	this) );
 	mCore->SetListener( bind(&TestApp::OnSerializeFrom, this) );
+	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
 
 	if (*mCore << "Config/Dev9.txt")
 	{
+		// The camera we'll be using
+		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+
 		// User Interface setup
 		{
 			ITexture* diffuse = mGraphics->GetTexture("Leaf Diffuse map");
@@ -117,16 +124,9 @@ void TestApp::Run()
 
 		// SSAO parameters -- shortened focus range and increased strength
 		SSAO::SetParams(1.0f, 8.0f);
-
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
-		mCore->SetListener( bind(&Camera::OnScroll, mCam) );
-
 		while (mCore->Update()) {}
 
-		*mCore >> "Config/Dev9.txt";
+		//*mCore >> "Config/Dev9.txt";
 	}
 }
 
@@ -134,8 +134,34 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mScene.Cull(mCam);
-	mScene.DrawAllDeferred(true, false);
+	// Cull and draw the scene into an off-screen buffer
+	if (mResult.mColor == 0)
+	{
+		mScene.Cull(mCam);
+
+		Deferred::DrawParams params;
+		params.mDrawCallback = bind(&Scene::Draw, &mScene);
+		params.mSize.Set(512, 512);
+		params.mAOLevel = 2;
+		params.mColor.Set(36, 56, 10, 255);
+		params.mUseColor = true;
+		params.mTechniques.Expand() = mGraphics->GetTechnique("Deferred");
+
+		mResult = Deferred::DrawScene(mGraphics, mScene.GetVisibleLights(), params);
+
+		// Resize the output window to fit this image
+		UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
+		if (final != 0)
+		{
+			Vector2i size (mResult.mColor->GetSize());
+			final->ResizeToFit(size);
+			final->SetText( String("Final Texture (%ux%u)", size.x, size.y) );
+		}
+	}
+
+	// Clear the screen
+	mGraphics->SetActiveRenderTarget(0);
+	mGraphics->Clear();
 }
 
 //============================================================================================================
@@ -205,6 +231,9 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 
 	for (uint i = 0; i < verts.GetSize(); ++i)
 		indices.Expand() = (ushort)i;
+
+	// Reset the color so it's rebuilt the next frame
+	mResult.mColor = 0;
 }
 
 //============================================================================================================

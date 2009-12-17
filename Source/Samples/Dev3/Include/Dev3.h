@@ -25,9 +25,8 @@ class TestApp
 	String		mDebug;
 	uint		mObjects;
 
-	IGraphics::FrameStats mStats;
-	Scene::Techniques mDeferred;
-	Scene::Techniques mForward;
+	IGraphics::FrameStats	mStats;
+	Scene::Techniques		mForward;
 
 public:
 

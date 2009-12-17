@@ -226,7 +226,7 @@ void ModelViewer::Load()
 // Serialization -- Save
 //============================================================================================================
 
-bool ModelViewer::SerializeTo (TreeNode& root) const
+void ModelViewer::SerializeTo (TreeNode& root) const
 {
 	if (_fileInput != 0)
 	{
@@ -241,7 +241,6 @@ bool ModelViewer::SerializeTo (TreeNode& root) const
 			history.Unlock();
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

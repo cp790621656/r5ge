@@ -58,19 +58,13 @@ void TestApp::OnDraw()
 
 	mScene.Cull(mCam);
 
-	Array<const ITechnique*> techs;
-
 	if (g_ssao > 0)
 	{
-		techs.Expand() = deferred;
-		const Light::List& lights = mScene.GetVisibleLights();
-		Deferred::DrawResult result = Deferred::DrawScene(mGraphics, lights, techs,
-			bind(&Scene::Draw, &mScene), ((g_ssao % 2) == 0) ? SSAO::High : SSAO::Low);
-
-		PostProcess::None(mGraphics, result.mColor);
+		mScene.DrawAllDeferred(g_ssao);
 	}
 	else
 	{
+		Array<const ITechnique*> techs;
 		techs.Expand() = opaque;
 		mGraphics->SetActiveRenderTarget(0);
 		mScene.DrawAllForward();
