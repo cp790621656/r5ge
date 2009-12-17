@@ -23,7 +23,7 @@ void UIPicture::OnFill (UIQueue* queue)
 {
 	if (mTex != 0 &&
 		queue->mLayer	== mLayer &&
-		queue->mTex	== mTex &&
+		queue->mTex		== mTex &&
 		queue->mArea	== 0)
 	{
 		queue->mIgnoreAlpha = mIgnoreAlpha;

@@ -22,7 +22,7 @@ public:
 
 	const ITexture* GetTexture() const	{ return mSkin ? mSkin->GetTexture() : 0; }
 	const UISkin*	GetSkin()	 const	{ return mSkin; }
-	const UIFace*		GetFace()	 const	{ return mFace; }
+	const UIFace*	GetFace()	 const	{ return mFace; }
 
 	void Set	 (const UISkin* skin, const String& face, bool setDirty = true);
 	void SetSkin (const UISkin* skin, bool setDirty = true);

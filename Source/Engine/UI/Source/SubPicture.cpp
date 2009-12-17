@@ -121,10 +121,10 @@ void UISubPicture::OnFill (UIQueue* queue)
 		if (mFace->GetBorder() == 0)
 		{
 			// No border? Must be a basic sub-image, a single textured quad
-			v.Expand().Set( left,  top,		face.mLeft,  face.mTop,	color );
-			v.Expand().Set( left,  bottom,	face.mLeft,  face.mBottom, color );
-			v.Expand().Set( right, bottom,	face.mRight, face.mBottom, color );
-			v.Expand().Set( right, top,		face.mRight, face.mTop,	color );
+			v.Expand().Set( left,  top,		face.mLeft,  face.mTop,		color );
+			v.Expand().Set( left,  bottom,	face.mLeft,  face.mBottom,	color );
+			v.Expand().Set( right, bottom,	face.mRight, face.mBottom,	color );
+			v.Expand().Set( right, top,		face.mRight, face.mTop,		color );
 		}
 		else
 		{
