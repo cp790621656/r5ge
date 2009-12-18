@@ -46,7 +46,7 @@ void UIWindow::ResizeToFit (const Vector2i& size)
 	const UIAnchor& top  = mRegion.GetTop();
 
 	mRegion.SetRight ( left.mRelative, left.mAbsolute + mySize.x );
-	mRegion.SetBottom( top.mRelative,  top.mAbsolute  + mySize.x );
+	mRegion.SetBottom( top.mRelative,  top.mAbsolute  + mySize.y );
 }
 
 //============================================================================================================
