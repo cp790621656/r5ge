@@ -11,7 +11,8 @@ class UISlider : public UIArea
 {
 protected:
 
-	UISkin*		mSkin;
+	mutable UISkin*	mSkin;
+
 	UIFace*		mFull;
 	UIFace*		mEmpty;
 	UIFace*		mKnob;
@@ -23,7 +24,7 @@ public:
 
 	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(1.0f), mSelected(false) {}
 
-	const ITexture* GetTexture() const	{ return mSkin ? mSkin->GetTexture() : 0; }
+	const ITexture* GetTexture() const;
 	virtual float	GetValue()	 const	{ return mVal;   }
 	const UISkin*	GetSkin()	 const	{ return mSkin;  }
 	const Color3f&	GetColor()	 const	{ return mColor; }
@@ -33,7 +34,7 @@ public:
 
 	// Sets the slider's value by the 2D position
 	void SetValue (const Vector2i& pos);
-	void SetSkin  (const UISkin* skin);
+	void SetSkin  (const UISkin* skin, bool setDirty = true);
 	void SetColor (const Color3f& color);
 
 public:

@@ -7,10 +7,12 @@ using namespace R5;
 
 uint UIEditableLabel::_GetIndexAt (const Vector2i& pos) const
 {
-	if ( mFont != 0 && mText.IsValid() && pos.x > mRegion.GetCalculatedLeft() )
+	const IFont* font = GetFont();
+
+	if ( font != 0 && mText.IsValid() && pos.x > mRegion.GetCalculatedLeft() )
 	{
 		uint width = Float::RoundToUInt(pos.x - mRegion.GetCalculatedLeft());
-		uint charIndex = mFont->CountChars( mText, width, mStart, 0xFFFFFFFF, false, true, mTags );
+		uint charIndex = font->CountChars( mText, width, mStart, 0xFFFFFFFF, false, true, mTags );
 		return mStart + charIndex;
 	}
 	return mStart;
@@ -22,7 +24,9 @@ uint UIEditableLabel::_GetIndexAt (const Vector2i& pos) const
 
 void  UIEditableLabel::_MoveCursorTo(uint index)
 {
-	if (mFont)
+	const IFont* font = GetFont();
+
+	if (font != 0)
 	{
 		// 'index' can come in as 0xFFFFFFFF, so be sure to cap it at maximum length
 		if (index > mText.GetLength())  index = mText.GetLength();
@@ -46,7 +50,7 @@ void  UIEditableLabel::_MoveCursorTo(uint index)
 		// The requested index is right of the visible end -- move the text
 		else if ( index > mEnd )
 		{
-			uint count = mFont->CountChars( mText,
+			uint count = font->CountChars( mText,
 				Float::RoundToUInt(mRegion.GetCalculatedWidth()), 0, index, true, false, mTags );
 
 			mSelectionEnd	= index;
@@ -148,6 +152,7 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 		{
 			if (mHasFocus)
 			{
+				const IFont* font = GetFont();
 				Color4ub color ( mSelColor, mRegion.GetCalculatedAlpha() );
 
 				uint selStart, selEnd;
@@ -168,7 +173,7 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 				// If the selection start is after the line start, figure out the offset in pixels
 				if ( selStart > mStart )
 				{
-					left = mRegion.GetCalculatedLeft() + mFont->GetLength( mText, mStart, selStart, mTags );
+					left = mRegion.GetCalculatedLeft() + font->GetLength( mText, mStart, selStart, mTags );
 				}
 				else
 				{
@@ -178,7 +183,7 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 				}
 
 				// Recalculate the end position
-				mEnd = mStart + mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
+				mEnd = mStart + font->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 					mStart, 0xFFFFFFFF, false, false, mTags );
 
 				// Limit the selection end is past the right side, cap it
@@ -192,7 +197,7 @@ void UIEditableLabel::OnFill (UIQueue* queue)
 				else
 				{
 					// Otherwise simply figure out the end of the selection in pixels
-					right = left + mFont->GetLength( mText, selStart, selEnd, mTags );
+					right = left + font->GetLength( mText, selStart, selEnd, mTags );
 				}
 
 				float top	 = mRegion.GetCalculatedTop();
@@ -359,8 +364,11 @@ bool UIEditableLabel::OnChar (byte character)
 
 	if (left < mStart || left > mEnd)
 	{
+		const IFont* font = GetFont();
+		ASSERT(font != 0, "Font is missing?");
+
 		// If the point we're deleting up to is left of the rendered text, move it down
-		mStart = left - mFont->CountChars( mText,
+		mStart = left - font->CountChars( mText,
 			Float::RoundToUInt(mRegion.GetCalculatedWidth()), 0, left, true, false, mTags );
 	}
 

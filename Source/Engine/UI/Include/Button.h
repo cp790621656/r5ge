@@ -38,6 +38,7 @@ public:
 	const String&	GetText()		const	{ return mLabel.GetText();			}
 	const IFont*	GetFont()		const	{ return mLabel.GetFont();			}
 	char			GetAlignment()	const	{ return mLabel.GetAlignment();		}
+	bool			GetShadow()		const	{ return mLabel.GetShadow();		}
 	bool			IsSticky()		const	{ return mSticky;					}
 	uint			GetState()		const	{ return mState;					}
 
@@ -46,6 +47,7 @@ public:
 	void SetText	  (const String& text)	{ mLabel.SetText(text);				}
 	void SetFont	  (const IFont* font)	{ mLabel.SetFont(font);				}
 	void SetAlignment (char alignment)		{ mLabel.SetAlignment(alignment);	}
+	void SetShadow	  (bool shadow)			{ mLabel.SetShadow(shadow);			}
 	void SetSticky	  (bool val)			{ mSticky = val;					}
 
 	// Changes the visible state of the button
@@ -61,7 +63,7 @@ public:
 	virtual void _SetRootPtr   (UIRoot* ptr);
 
 	// Area functions
-	virtual void SetDirty()								{ mImage.SetDirty(); mLabel.SetDirty(); }
+	virtual void SetDirty();
 	virtual void OnTextureChanged (const ITexture* ptr)	{ mImage.OnTextureChanged(ptr); }
 	virtual void OnLayerChanged()						{ mImage.SetLayer(mLayer, false); mLabel.SetLayer(mLayer+1, false); }
 	virtual bool OnUpdate (bool dimensionsChanged);

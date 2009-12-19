@@ -43,7 +43,7 @@ public:
 	byte			GetTitlebarHeight() const		{ return mTitleHeight;			}
 	bool			IsResizable()		const		{ return mResizable;			}
 
-	void SetSkin			(const UISkin* skin);
+	void SetSkin			(const UISkin* skin, bool setDirty = true);
 	void SetColor			(const Color3f& color)	{ mTitle.SetColor(color);		}
 	void SetText			(const String& text)	{ mTitle.SetText(text);			}
 	void SetFont			(const IFont* font)		{ mTitle.SetFont(font);			}

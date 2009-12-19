@@ -2,6 +2,25 @@
 using namespace R5;
 
 //============================================================================================================
+// Retrieves the texture associated with the widget
+//============================================================================================================
+
+const ITexture* UISubPicture::GetTexture() const
+{
+	const UISkin* skin = GetSkin();
+	return (skin != 0) ? skin->GetTexture() : 0;
+}
+
+//============================================================================================================
+// Sets the skin to the UI's default if one hasn't been set
+//============================================================================================================
+
+const UISkin* UISubPicture::GetSkin() const
+{
+	return (mSkin != 0) ? mSkin : (mSkin = mRoot->GetDefaultSkin());
+}
+
+//============================================================================================================
 // Changes the skin and face for the image
 //============================================================================================================
 
@@ -11,8 +30,12 @@ void UISubPicture::Set (const UISkin* skin, const String& face, bool setDirty)
 	{
 		if (setDirty) SetDirty();
 		mSkin = const_cast<UISkin*>(skin);
-		mFace = (mSkin == 0) ? 0 : mSkin->GetFace(face);
-		if (setDirty) SetDirty();
+
+		if (mSkin != 0)
+		{
+			mFace = mSkin->GetFace(face);
+			if (setDirty) SetDirty();
+		}
 	}
 }
 
@@ -27,8 +50,11 @@ void UISubPicture::SetSkin (const UISkin* skin, bool setDirty)
 		if (setDirty) SetDirty();
 		mSkin = const_cast<UISkin*>(skin);
 
-		if (mFace) mFace = mSkin->GetFace(mFace->GetName());
-		if (setDirty) SetDirty();
+		if (mSkin != 0 && mFace != 0)
+		{
+			mFace = mSkin->GetFace(mFace->GetName());
+			if (setDirty) SetDirty();
+		}
 	}
 }
 
@@ -38,7 +64,9 @@ void UISubPicture::SetSkin (const UISkin* skin, bool setDirty)
 
 void UISubPicture::SetFace (const String& face, bool setDirty)
 {
-	if (mSkin != 0)
+	const UISkin* skin = GetSkin();
+
+	if (skin != 0)
 	{
 		if (face.IsEmpty())
 		{
@@ -57,13 +85,29 @@ void UISubPicture::SetFace (const String& face, bool setDirty)
 }
 
 //============================================================================================================
+// Marks the area as needing to be rebuilt
+//============================================================================================================
+
+void UISubPicture::SetDirty()
+{
+	if (mFace != 0)
+	{
+		const ITexture* tex = GetTexture();
+		if (tex != 0) OnDirty(tex);
+	}
+}
+
+//============================================================================================================
 // Called when something changes in the skin
 //============================================================================================================
 
 void UISubPicture::OnTextureChanged (const ITexture* ptr)
 {
-	const ITexture* tex = GetTexture();
-	if (tex == ptr) OnDirty(tex);
+	if (mFace != 0)
+	{
+		const ITexture* tex = GetTexture();
+		if (tex == ptr) OnDirty(tex);
+	}
 }
 
 //============================================================================================================
@@ -101,11 +145,11 @@ bool UISubPicture::OnUpdate (bool dimensionsChanged)
 
 void UISubPicture::OnFill (UIQueue* queue)
 {
-	if (queue->mLayer	== mLayer &&
+	if (mFace			!= 0 &&
+		queue->mLayer	== mLayer &&
 		queue->mTex		!= 0 &&
 		queue->mTex		== GetTexture() &&
-		queue->mArea	== 0 &&
-		mFace != 0)
+		queue->mArea	== 0)
 	{
 		Array<IUI::Vertex>& v (queue->mVertices);
 
@@ -231,8 +275,8 @@ bool UISubPicture::OnSerializeFrom (const TreeNode& node)
 
 void UISubPicture::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& skinNode = node.AddChild("Skin");
-	if (mSkin != 0) skinNode.mValue = mSkin->GetName();
+	if (mSkin != 0 && mSkin != mRoot->GetDefaultSkin())
+		node.AddChild("Skin", mSkin->GetName());
 
 	TreeNode& faceNode = node.AddChild("Face");
 	if (mFace != 0) faceNode.mValue = mFace->GetName();

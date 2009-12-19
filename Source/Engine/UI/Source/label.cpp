@@ -32,24 +32,27 @@ void UILabel::OnFill (UIQueue* queue)
 		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
 		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
+		const IFont* font = GetFont();
+		ASSERT(font != 0, "Font is null? What?");
+
 		if ( mAlignment == Alignment::Right )
 		{
 			mEnd = mText.GetLength();
-			mStart = mEnd - mFont->CountChars( mText, width, 0, 0xFFFFFFFF, true, false, mTags );
+			mStart = mEnd - font->CountChars( mText, width, 0, 0xFFFFFFFF, true, false, mTags );
 
 			// Position needs to be adjusted by the difference between label's width and the length of the text
-			pos.x += width - mFont->GetLength( mText, mStart, mEnd, mTags );
+			pos.x += width - font->GetLength( mText, mStart, mEnd, mTags );
 		}
 		else
 		{
 			mStart = 0;
-			mEnd = mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
+			mEnd = font->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 				0, 0xFFFFFFFF, false, false, mTags );
 
 			// For centered alignment simply figure out the bounding size of the text and adjust the position
 			if ( mAlignment == Alignment::Center )
 			{
-				uint size = mFont->GetLength( mText, mStart, mEnd, mTags );
+				uint size = font->GetLength( mText, mStart, mEnd, mTags );
 				if (size < width) pos.x += (width - size) / 2;
 			}
 		}
@@ -64,12 +67,12 @@ void UILabel::OnFill (UIQueue* queue)
 		// Drop a shadow if requested
 		if (mShadow)
 		{
-			mFont->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, mStart, mEnd,
+			font->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, mStart, mEnd,
 				(mTags == IFont::Tags::Ignore) ? IFont::Tags::Ignore : IFont::Tags::Skip );
 		}
 
 		// Print the text directly into the buffer
-		mFont->Print( queue->mVertices, pos, color, mText, mStart, mEnd, mTags );
+		font->Print( queue->mVertices, pos, color, mText, mStart, mEnd, mTags );
 	}
 }
 

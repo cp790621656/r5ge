@@ -35,7 +35,7 @@ protected:
 
 protected:
 
-	Array<Paragraph>		mParagraphs;	// Paragraph entries
+	Array<Paragraph>			mParagraphs;	// Paragraph entries
 	PointerArray<UITextLine>	mLines;			// Generated lines based on the paragraphs above
 
 	bool	mNeedsRebuild;	// Whether the paragraph lines need to be rebuilt

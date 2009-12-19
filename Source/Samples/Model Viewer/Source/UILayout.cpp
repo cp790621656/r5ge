@@ -708,6 +708,7 @@ bool ModelViewer::CreateUI()
 			cancel->SetSkin(_skin);
 			cancel->SetFont(_font);
 			cancel->SetText("Cancel");
+			cancel->SetShadow(true);
 
 			UIRegion& rgn = cancel->GetRegion();
 			rgn.SetLeft		(0.5f,  10.0f);
@@ -722,6 +723,7 @@ bool ModelViewer::CreateUI()
 			_fileOK->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
 			_fileOK->SetSkin(_skin);
 			_fileOK->SetFont(_font);
+			_fileOK->SetShadow(true);
 
 			UIRegion& rgn = _fileOK->GetRegion();
 			rgn.SetLeft		(0.5f, -150.0f);
@@ -1057,6 +1059,7 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 		menu->SetSticky(true);
 		menu->SetSkin(_skin);
 		menu->SetText(name);
+		menu->SetShadow(true);
 		menu->SetAlignment( UILabel::Alignment::Center );
 		menu->SetFont(_font);
 		menu->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
@@ -1091,6 +1094,7 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 		btn->SetSkin(_skin);
 		btn->SetSticky(true);
 		btn->SetText(name);
+		btn->SetShadow(true);
 		btn->SetAlignment( UILabel::Alignment::Center );
 		btn->SetFont(_font);
 		btn->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
@@ -1106,8 +1110,6 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 {
 	UIWindow* frame = AddWidget<UIWindow>(mUI, name + " Frame");
 
-	//frame->SetSkin(_skin);
-
 	frame->SetSerializable(false);
 	frame->SetAlpha(0.0f);
 	frame->SetOnKey( &OnIgnoreKey );
@@ -1120,7 +1122,7 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 
 	UISubPicture* pic = AddWidget<UISubPicture>(frame, name + " Background");
 	pic->SetSkin(_skin, false);
-	pic->SetFace("Grey Area");
+	pic->SetFace("Window: Background");
 	pic->SetReceivesEvents(false);
 	pic->SetSerializable(false);
 
@@ -1174,6 +1176,7 @@ UIButton*	ModelViewer::AddButton (UIArea* parent, uint line, const String& name,
 	btn->SetAlignment( UILabel::Alignment::Center );
 	btn->SetSkin(_skin);
 	btn->SetFont(_font);
+	btn->SetShadow(true);
 
 	return btn;
 }
@@ -1233,6 +1236,7 @@ UIList* ModelViewer::AddList (UIArea* parent, uint line, const String& name, int
 	list->SetSkin(_skin);
 	list->SetSymbol("Down Arrow");
 	list->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
+	list->SetShadow(true);
 
 	return list;
 }

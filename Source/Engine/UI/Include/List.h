@@ -34,6 +34,9 @@ public:
 	virtual void _SetParentPtr (UIArea* ptr);
 	virtual void _SetRootPtr   (UIRoot* ptr);
 
+	// Notification of texture change
+	virtual void OnTextureChanged(const ITexture* ptr);
+
 	// Area functions
 	virtual void OnLayerChanged();
 	virtual bool OnUpdate (bool dimensionsChanged);

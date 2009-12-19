@@ -11,17 +11,17 @@ class UISubPicture : public UIArea
 {
 protected:
 
-	UISkin*		mSkin;		// Pointer to the skin used to draw this area
-	UIFace*		mFace;		// Pointer to the face within the skin used to draw this area
-	short		mBorder;	// Saved border value, used to track face border changes
-	UIRegion	mSubRegion;	// Child region, calculated based on the border
+	mutable UISkin*	mSkin;		// Pointer to the skin used to draw this area
+	UIFace*			mFace;		// Pointer to the face within the skin used to draw this area
+	short			mBorder;	// Saved border value, used to track face border changes
+	UIRegion		mSubRegion;	// Child region, calculated based on the border
 
 public:
 
 	UISubPicture() : mSkin(0), mFace(0), mBorder(0) {}
 
-	const ITexture* GetTexture() const	{ return mSkin ? mSkin->GetTexture() : 0; }
-	const UISkin*	GetSkin()	 const	{ return mSkin; }
+	const ITexture* GetTexture() const;
+	const UISkin*	GetSkin()	 const;
 	const UIFace*	GetFace()	 const	{ return mFace; }
 
 	void Set	 (const UISkin* skin, const String& face, bool setDirty = true);
@@ -35,7 +35,7 @@ public:
 
 	// Area functions
 	virtual const UIRegion& GetSubRegion() const { return mSubRegion; }
-	virtual void SetDirty() { const ITexture* tex = GetTexture(); if (tex) OnDirty(tex); }
+	virtual void SetDirty();
 	virtual void OnTextureChanged (const ITexture* ptr);
 	virtual bool OnUpdate (bool dimensionsChanged);
 	virtual void OnFill (UIQueue* queue);

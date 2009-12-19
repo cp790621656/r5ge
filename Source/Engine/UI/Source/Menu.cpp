@@ -65,21 +65,30 @@ UIContext* UIMenu::_ShowMenu()
 		menu->SetOnValueChange	( bind(&UIMenu::_OnContextValue, this) );
 		menu->ClearAllEntries();
 
-		mEntries.Lock();
+		// Only show the menu if it's actually valid
+		if (mEntries.IsValid())
 		{
-			for (uint i = 0; i < mEntries.GetSize(); ++i)
-				menu->AddEntry( mEntries[i] );
-		}
-		mEntries.Unlock();
+			mEntries.Lock();
+			{
+				for (uint i = 0; i < mEntries.GetSize(); ++i)
+					menu->AddEntry( mEntries[i] );
+			}
+			mEntries.Unlock();
 
-		menu->SetSkin( GetSkin() );
-		menu->SetFace( (mMenuFace.IsValid() ? mMenuFace : "Button: Pressed") );
-		menu->SetFont( GetFont() );
-		menu->SetColor( GetColor() );
-		menu->SetAnchor( Vector3f(mRegion.GetCalculatedLeft(), mRegion.GetCalculatedBottom(), mRegion.GetCalculatedHeight()) );
-		menu->SetMinWidth( mRegion.GetCalculatedWidth() );
-		menu->SetAlignment( _GetMenuItemAlignment() );
-		menu->Show();
+			menu->SetSkin( GetSkin() );
+			menu->SetFace( (mMenuFace.IsValid() ? mMenuFace : "Button: Pressed") );
+			menu->SetFont( GetFont() );
+			menu->SetColor( GetColor() );
+			menu->SetAnchor( Vector3f(
+				mRegion.GetCalculatedLeft(),
+				mRegion.GetCalculatedBottom(),
+				mRegion.GetCalculatedHeight()) );
+			menu->SetMinWidth( mRegion.GetCalculatedWidth() );
+			menu->SetAlignment( _GetMenuItemAlignment() );
+			menu->Show();
+		}
+
+		// Regardless of whether the menu was shown or not, give it focus so it closes properly
 		menu->SetFocus(true);
 	}
 	return menu;

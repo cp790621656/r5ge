@@ -58,11 +58,15 @@ bool UIAnimatedButton::OnUpdate (bool dimensionsChanged)
 
 void UIAnimatedButton::OnFill (UIQueue* queue)
 {
-	if (queue->mLayer	== mLayer &&
-		queue->mTex	== mImage.GetTexture() &&
-		queue->mArea	== 0)
+	if (queue->mLayer == mLayer && queue->mArea == 0 && queue->mTex	== mImage.GetTexture())
 	{
-		static String faceName[] = {"Button: Disabled", "Button: Enabled", "Button: Highlighted", "Button: Pressed"};
+		static String faceName[] =
+		{
+			"Button: Disabled",
+			"Button: Enabled",
+			"Button: Highlighted",
+			"Button: Pressed"
+		};
 
 		UIRegion& rgn = mImage.GetRegion();
 

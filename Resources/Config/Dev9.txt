@@ -6,7 +6,7 @@ Root
 	{
 		Title = "R5 Engine: Dev9 (Trees)"
 		Position = 100 100
-		Size = 900 681
+		Size = 870 712
 		Full Screen = false
 	}
 
@@ -50,90 +50,24 @@ Root
 
 	UI
 	{
-		Default Skin = "Default"
+		Default Skin = "Neon"
 		Default Font = "Arial 15"
 		Tooltip Delay = 1.000000
 
 		Layout
 		{
-			Window = "Leaf Diffuse Window"
-			{
-				Left = 0.000000 4.000000
-				Right = 0.000000 268.000000
-				Top = 0.000000 130.000000
-				Bottom = 0.000000 394.000000
-				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 24
-				Resizable = true
-				Color = 0.000000 0.000000 0.000000
-				Font = "Arial 15"
-				Text = "Diffuse map (256x256)"
-				Shadow = false
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Leaf Diffuse Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Leaf Diffuse map"
-					Ignore Alpha = true
-					Receives Events = false
-					Layer = 1
-				}
-			}
-
-			Window = "Leaf Normal Window"
-			{
-				Left = 0.000000 5.000000
-				Right = 0.000000 269.000000
-				Top = 0.000000 401.000000
-				Bottom = 0.000000 665.000000
-				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 24
-				Resizable = true
-				Color = 0.000000 0.000000 0.000000
-				Font = "Arial 15"
-				Text = "Normal map (256x256)"
-				Shadow = false
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Leaf Normal Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Leaf Normal map"
-					Ignore Alpha = true
-					Receives Events = false
-					Layer = 1
-				}
-			}
-
 			Window = "Final Window"
 			{
-				Left = 0.000000 326.000000
-				Right = 0.000000 846.000000
-				Top = 0.000000 77.000000
-				Bottom = 0.000000 597.000000
+				Left = 0.000000 310.000000
+				Right = 0.000000 822.000000
+				Top = 0.000000 138.000000
+				Bottom = 0.000000 670.000000
 				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 24
+				Titlebar Height = 20
 				Resizable = true
-				Color = 0.000000 0.000000 0.000000
-				Font = "Arial 15"
+				Color = 1.000000 1.000000 1.000000
 				Text = "Final Texture (512x512)"
-				Shadow = false
+				Shadow = true
 				Alignment = "Center"
 				Receives Events = true
 				Layer = 0
@@ -152,20 +86,78 @@ Root
 				}
 			}
 
+			Window = "Leaf Normal Window"
+			{
+				Left = 0.000000 26.000000
+				Right = 0.000000 282.000000
+				Top = 0.000000 390.000000
+				Bottom = 0.000000 666.000000
+				Alpha = 1.000000
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Normal map (256x256)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Normal Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Normal map"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
+			Window = "Leaf Diffuse Window"
+			{
+				Left = 0.000000 27.000000
+				Right = 0.000000 283.000000
+				Top = 0.000000 70.000000
+				Bottom = 0.000000 346.000000
+				Alpha = 1.000000
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Diffuse map (256x256)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Diffuse Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Diffuse map"
+					Ignore Alpha = false
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
 			Window = "Options"
 			{
-				Left = 0.000000 20.000000
-				Right = 0.000000 241.000000
+				Left = 0.000000 456.000000
+				Right = 0.000000 677.000000
 				Top = 0.000000 11.000000
-				Bottom = 0.000000 122.000000
+				Bottom = 0.000000 118.000000
 				Alpha = 1.000000
-				Skin = "Default"
-				Titlebar Height = 24
+				Titlebar Height = 20
 				Resizable = true
-				Color = 0.000000 0.000000 0.000000
-				Font = "Arial 15"
+				Color = 1.000000 1.000000 1.000000
 				Text = "Options"
-				Shadow = false
+				Shadow = true
 				Alignment = "Center"
 				Receives Events = true
 				Layer = 0
@@ -177,7 +169,6 @@ Root
 					Top = 0.000000 23.000000
 					Bottom = 0.000000 40.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Value = 0.256039
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
@@ -192,7 +183,6 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Font = "Arial 15"
 						Text = "Tilt Factor"
 						Shadow = true
 						Alignment = "Center"
@@ -208,7 +198,6 @@ Root
 					Top = 0.000000 3.000000
 					Bottom = 0.000000 20.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Value = 0.265700
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
@@ -223,7 +212,6 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Font = "Arial 15"
 						Text = "Particle Size"
 						Shadow = true
 						Alignment = "Center"
@@ -239,7 +227,6 @@ Root
 					Top = 0.000000 43.000000
 					Bottom = 0.000000 60.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Value = 0.260870
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
@@ -254,7 +241,6 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Font = "Arial 15"
 						Text = "Number of Particles"
 						Shadow = true
 						Alignment = "Center"
@@ -270,9 +256,7 @@ Root
 					Top = 0.000000 63.000000
 					Bottom = 0.000000 85.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
+					Color = 0.500000 1.000000 0.250000
 					Text = "Generate"
 					Shadow = true
 					Alignment = "Center"
@@ -288,7 +272,7 @@ Root
 
 	Core
 	{
-		Execute = "Config/Default UI Skin.txt"
+		Execute = "Config/Neon UI Skin.txt"
 	}
 
 	Scene

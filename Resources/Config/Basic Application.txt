@@ -32,11 +32,9 @@ Root
 				Top = 0.000000 16.000000
 				Bottom = 0.000000 207.000000
 				Alpha = 1.000000
-				Skin = "Default"
 				Titlebar Height = 22
 				Resizable = true
 				Color = 1.000000 1.000000 1.000000
-				Font = "Arial 15"
 				Text = "Hello World!"
 				Shadow = true
 				Alignment = "Center"

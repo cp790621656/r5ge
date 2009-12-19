@@ -58,11 +58,15 @@ bool UIAnimatedCheckbox::OnUpdate (bool dimensionsChanged)
 
 void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 {
-	if (queue->mLayer	== mLayer &&
-		queue->mTex	== mImage.GetTexture() &&
-		queue->mArea	== 0)
+	if (queue->mLayer == mLayer && queue->mArea == 0 && queue->mTex == mImage.GetTexture())
 	{
-		static String faceName[] = {"Checkbox: Disabled", "Checkbox: Unchecked", "Checkbox: Highlighted", "Checkbox: Checked"};
+		static String faceName[] =
+		{
+			"Checkbox: Disabled",
+			"Checkbox: Unchecked",
+			"Checkbox: Highlighted",
+			"Checkbox: Checked"
+		};
 
 		if (mState & State::Enabled)
 		{

@@ -2,6 +2,36 @@
 using namespace R5;
 
 //============================================================================================================
+// Retrieves the font's associated texture
+//============================================================================================================
+
+const ITexture* UITextLine::GetTexture() const
+{
+	const IFont* font = GetFont();
+	return (font != 0) ? font->GetTexture() : 0;
+}
+
+//============================================================================================================
+// Retrieving the font should use the default if one hasn't been provided
+//============================================================================================================
+
+const IFont* UITextLine::GetFont() const
+{
+	if (mFont == 0 && mRoot != 0) mFont = mRoot->GetDefaultFont();
+	return mFont;
+}
+
+//============================================================================================================
+// Retrieves the size of the font
+//============================================================================================================
+
+byte UITextLine::GetFontSize() const
+{
+	const IFont* font = GetFont();
+	return (font == 0) ? 0 : font->GetSize();
+}
+
+//============================================================================================================
 // Changes the label's color
 //============================================================================================================
 
@@ -60,11 +90,8 @@ void UITextLine::SetFont (const IFont* font)
 
 void UITextLine::SetDirty()
 {
-	if (mFont != 0)
-	{
-		const ITexture* tex = mFont->GetTexture();
-		if (tex) OnDirty(tex);
-	}
+	const ITexture* tex = GetTexture();
+	if (tex != 0) OnDirty(tex);
 }
 
 //============================================================================================================
@@ -142,11 +169,10 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 
 void UITextLine::OnSerializeTo (TreeNode& node) const
 {
+	if (mFont != 0 && mFont != mRoot->GetDefaultFont())
+		node.AddChild("Font", mFont->GetName());
+
 	node.AddChild("Color", mColor);
-
-	TreeNode& font = node.AddChild("Font");
-	if (mFont != 0) font.mValue = mFont->GetName();
-
 	node.AddChild("Text", mText);
 	node.AddChild("Shadow", mShadow);
 }

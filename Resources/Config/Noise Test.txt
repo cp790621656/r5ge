@@ -67,8 +67,7 @@ Root
 					Bottom = 0.000000 16.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "Time: 18"
+					Text = "Time: 19"
 					Shadow = true
 					Alignment = "Center"
 					Receives Events = false
@@ -79,15 +78,13 @@ Root
 			Window = "Options"
 			{
 				Left = 0.000000 -1.000000
-				Right = 0.000000 263.000000
+				Right = 0.000000 260.000000
 				Top = 0.000000 0.000000
 				Bottom = 0.000000 248.000000
 				Alpha = 1.000000
-				Skin = "Default"
 				Titlebar Height = 22
 				Resizable = true
 				Color = 1.000000 1.000000 1.000000
-				Font = "Arial 15"
 				Text = "Options"
 				Shadow = true
 				Alignment = "Center"
@@ -101,9 +98,8 @@ Root
 					Top = 0.000000 82.000000
 					Bottom = 0.000000 100.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -141,10 +137,9 @@ Root
 					Top = 0.000000 82.000000
 					Bottom = 0.000000 100.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -161,9 +156,8 @@ Root
 					Top = 0.000000 102.000000
 					Bottom = 0.000000 120.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -201,10 +195,9 @@ Root
 					Top = 0.000000 102.000000
 					Bottom = 0.000000 120.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -221,9 +214,8 @@ Root
 					Top = 0.000000 122.000000
 					Bottom = 0.000000 140.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -261,10 +253,9 @@ Root
 					Top = 0.000000 122.000000
 					Bottom = 0.000000 140.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -281,9 +272,8 @@ Root
 					Top = 0.000000 142.000000
 					Bottom = 0.000000 160.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -321,10 +311,9 @@ Root
 					Top = 0.000000 142.000000
 					Bottom = 0.000000 160.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -341,9 +330,8 @@ Root
 					Top = 0.000000 162.000000
 					Bottom = 0.000000 180.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -381,10 +369,9 @@ Root
 					Top = 0.000000 162.000000
 					Bottom = 0.000000 180.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -401,9 +388,8 @@ Root
 					Top = 0.000000 182.000000
 					Bottom = 0.000000 200.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -441,9 +427,8 @@ Root
 					Top = 0.000000 62.000000
 					Bottom = 0.000000 80.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -481,9 +466,8 @@ Root
 					Top = 0.000000 42.000000
 					Bottom = 0.000000 60.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -521,10 +505,9 @@ Root
 					Top = 0.000000 62.000000
 					Bottom = 0.000000 80.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -541,30 +524,9 @@ Root
 					Top = 0.000000 42.000000
 					Bottom = 0.000000 60.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
-					Layer = 0
-				}
-
-				Input = "Input 9"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 182.000000
-					Bottom = 0.000000 200.000000
-					Alpha = 1.000000
-					Skin = "Default"
-					Face = "Grey Area"
 					Color = 1.000000 1.000000 1.000000
-					Font = "Arial"
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -581,10 +543,9 @@ Root
 					Top = 0.000000 22.000000
 					Bottom = 0.000000 40.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
@@ -601,9 +562,7 @@ Root
 					Top = 1.000000 -22.000000
 					Bottom = 1.000000 -2.000000
 					Alpha = 1.000000
-					Skin = "Default"
 					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
 					Text = "512"
 					Shadow = true
 					Alignment = "Center"
@@ -614,6 +573,98 @@ Root
 					Layer = 0
 				}
 
+				Input = "Input 0"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 2.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text = "1"
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
+					Layer = 0
+				}
+
+				Button = "1024"
+				{
+					Left = 0.750000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "1024"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+
+				Button = "128"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.250000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "128"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+
+				Button = "256"
+				{
+					Left = 0.250000 2.000000
+					Right = 0.500000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "256"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Receives Events = true
+					Layer = 0
+				}
+
+				Input = "Input 9"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 182.000000
+					Bottom = 0.000000 200.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Receives Events = true
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
 				List = "Filter 1"
 				{
 					Left = 0.000000 2.000000
@@ -621,9 +672,8 @@ Root
 					Top = 0.000000 22.000000
 					Bottom = 0.000000 40.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text
 					Shadow = true
 					Alignment = "Center"
@@ -661,9 +711,8 @@ Root
 					Top = 0.000000 2.000000
 					Bottom = 0.000000 20.000000
 					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
 					Text = "Fractal"
 					Shadow = true
 					Alignment = "Center"
@@ -693,86 +742,6 @@ Root
 					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
 					Layer = 0
 				}
-
-				Button = "128"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.250000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "128"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
-
-				Button = "256"
-				{
-					Left = 0.250000 2.000000
-					Right = 0.500000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "256"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
-
-				Input = "Input 0"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 2.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
-					Skin = "Default"
-					Face = "Grey Area"
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial"
-					Text = "1"
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
-					Layer = 0
-				}
-
-				Button = "1024"
-				{
-					Left = 0.750000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Skin = "Default"
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "1024"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
 			}
 
 			Window = "Texture Window"
@@ -782,11 +751,9 @@ Root
 				Top = 0.000000 0.000000
 				Bottom = 0.000000 512.000000
 				Alpha = 1.000000
-				Skin = "Default"
 				Titlebar Height = 0
 				Resizable = true
 				Color = 1.000000 1.000000 1.000000
-				Font = "Arial 15"
 				Text = "Noise Texture"
 				Shadow = true
 				Alignment = "Center"
@@ -866,11 +833,11 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 3.000000
-			Rotation = 0.121590 -0.232943 0.855391 -0.446386
+			Rotation = 0.119919 -0.237411 0.860483 -0.434539
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 25.000910 50.000000
+			Dolly = 0.000000 21.000904 50.000000
 		}
 
 		Model Instance = "Teapot"

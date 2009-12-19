@@ -2,6 +2,16 @@
 using namespace R5;
 
 //============================================================================================================
+// Retrieves the texture associated with the widget
+//============================================================================================================
+
+const ITexture* UISlider::GetTexture() const
+{
+	if (mSkin == 0) const_cast<UISlider*>(this)->SetSkin(mRoot->GetDefaultSkin(), false);
+	return (mSkin != 0) ? mSkin->GetTexture() : 0;
+}
+
+//============================================================================================================
 // Changes the slider's value
 //============================================================================================================
 
@@ -41,16 +51,16 @@ void UISlider::SetValue (const Vector2i& pos)
 // Changes the skin
 //============================================================================================================
 
-void UISlider::SetSkin (const UISkin* skin)
+void UISlider::SetSkin (const UISkin* skin, bool setDirty)
 {
 	if (mSkin != skin)
 	{
-		SetDirty();
+		if (setDirty) SetDirty();
 		mSkin	= const_cast<UISkin*>(skin);
-		mFull  = mSkin->GetFace( "Slider: Full"  );
-		mEmpty = mSkin->GetFace( "Slider: Empty" );
-		mKnob  = mSkin->GetFace( "Slider: Knob"  );
-		SetDirty();
+		mFull	= mSkin->GetFace( "Slider: Full"  );
+		mEmpty	= mSkin->GetFace( "Slider: Empty" );
+		mKnob	= mSkin->GetFace( "Slider: Knob"  );
+		if (setDirty) SetDirty();
 	}
 }
 
@@ -157,16 +167,16 @@ void UISlider::OnFill (UIQueue* queue)
 			v.Expand().Set( right,	centerFull,		full.mRight,	tcCenterFull,	color);
 
 			// Empty bar
-			v.Expand().Set( left,	top,			empty.mLeft,	empty.mTop,		color);
-			v.Expand().Set( left,	centerEmpty,	empty.mLeft,	tcCenterEmpty,	color);
-			v.Expand().Set( right,	centerEmpty,	empty.mRight,	tcCenterEmpty,	color);
-			v.Expand().Set( right,	top,			empty.mRight,	empty.mTop,		color);
+			v.Expand().Set( left,	top,			empty.mLeft,	empty.mTop,		white);
+			v.Expand().Set( left,	centerEmpty,	empty.mLeft,	tcCenterEmpty,	white);
+			v.Expand().Set( right,	centerEmpty,	empty.mRight,	tcCenterEmpty,	white);
+			v.Expand().Set( right,	top,			empty.mRight,	empty.mTop,		white);
 
 			// Knob
-			v.Expand().Set( left,	knobTop,		knob.mLeft,		knob.mTop,		color);
-			v.Expand().Set( left,	knobBottom,		knob.mLeft,		knob.mBottom,	color);
-			v.Expand().Set( right,	knobBottom,		knob.mRight,	knob.mBottom,	color);
-			v.Expand().Set( right,	knobTop,		knob.mRight,	knob.mTop,		color);
+			v.Expand().Set( left,	knobTop,		knob.mLeft,		knob.mTop,		white);
+			v.Expand().Set( left,	knobBottom,		knob.mLeft,		knob.mBottom,	white);
+			v.Expand().Set( right,	knobBottom,		knob.mRight,	knob.mBottom,	white);
+			v.Expand().Set( right,	knobTop,		knob.mRight,	knob.mTop,		white);
 		}
 	}
 }
@@ -209,8 +219,9 @@ bool UISlider::OnSerializeFrom (const TreeNode& node)
 
 void UISlider::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& skin = node.AddChild("Skin");
-	if (mSkin != 0) skin.mValue = mSkin->GetName();
+	if (mSkin != 0 && mSkin != mRoot->GetDefaultSkin())
+		node.AddChild("Skin", mSkin->GetName());
+
 	node.AddChild("Value", mVal);
 	node.AddChild("Color", mColor);
 }

@@ -12,12 +12,14 @@ void BasicLabel::OnFill (UIQueue* queue)
 		queue->mTex		== GetTexture() &&
 		queue->mArea	== 0)
 	{
+		const IFont* font = GetFont();
+
 		byte height ( GetFontSize() );
 
 		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
 		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
-		mEnd = mStart + mFont->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
+		mEnd = mStart + font->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 			mStart, 0xFFFFFFFF, false, false, mTags );
 
 		// Adjust the height in order to center the text as necessary
@@ -27,9 +29,9 @@ void BasicLabel::OnFill (UIQueue* queue)
 		// Drop a shadow if requested
 		if (mShadow)
 		{
-			mFont->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, mStart, mEnd,
+			font->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, mStart, mEnd,
 				(mTags == IFont::Tags::Ignore) ? IFont::Tags::Ignore : IFont::Tags::Skip );
 		}
-		mFont->Print( queue->mVertices, pos, color, mText, mStart, mEnd, mTags );
+		font->Print( queue->mVertices, pos, color, mText, mStart, mEnd, mTags );
 	}
 }

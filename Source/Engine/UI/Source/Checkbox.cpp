@@ -33,36 +33,43 @@ bool UICheckbox::OnUpdate (bool dimensionsChanged)
 
 void UICheckbox::OnFill (UIQueue* queue)
 {
-	if (queue->mLayer	== mLayer &&
-		queue->mTex		== mImage.GetTexture() &&
-		queue->mArea	== 0)
+	if (queue->mLayer == mLayer && queue->mArea == 0)
 	{
-		static String faceName[] = {"Checkbox: Disabled", "Checkbox: Unchecked", "Checkbox: Highlighted", "Checkbox: Checked"};
-
-		if (mState & State::Enabled)
+		if (queue->mTex != 0 && queue->mTex == mImage.GetTexture())
 		{
-			mImage.SetFace(faceName[1], false);
-			mImage.OnFill(queue);
-
-			if (mState & State::Highlighted)
+			static String faceName[] =
 			{
-				mImage.SetFace(faceName[2], false);
+				"Checkbox: Disabled",
+				"Checkbox: Unchecked",
+				"Checkbox: Highlighted",
+				"Checkbox: Checked"
+			};
+
+			if (mState & State::Enabled)
+			{
+				mImage.SetFace(faceName[1], false);
 				mImage.OnFill(queue);
-			}
 
-			if (mState & State::Checked)
+				if (mState & State::Highlighted)
+				{
+					mImage.SetFace(faceName[2], false);
+					mImage.OnFill(queue);
+				}
+
+				if (mState & State::Checked)
+				{
+					mImage.SetFace(faceName[3], false);
+					mImage.OnFill(queue);
+				}
+			}
+			else
 			{
-				mImage.SetFace(faceName[3], false);
+				mImage.SetFace(faceName[0], false);
 				mImage.OnFill(queue);
 			}
 		}
-		else
-		{
-			mImage.SetFace(faceName[0], false);
-			mImage.OnFill(queue);
-		}
+		else mLabel.OnFill(queue);
 	}
-	else mLabel.OnFill(queue);
 }
 
 //============================================================================================================
@@ -96,9 +103,12 @@ bool UICheckbox::OnSerializeFrom (const TreeNode& node)
 
 void UICheckbox::OnSerializeTo (TreeNode& node) const
 {
+	// Only the skin is saved from the SubPicture. Face is ignored.
 	const UISkin* skin = mImage.GetSkin();
-	TreeNode& child = node.AddChild("Skin");
-	if (skin) child.mValue = skin->GetName();
+
+	// Only save the skin if it's something other than the default one
+	if (skin != 0 && skin != mRoot->GetDefaultSkin())
+		node.AddChild("Skin", skin->GetName());
 
 	mLabel.OnSerializeTo(node);
 

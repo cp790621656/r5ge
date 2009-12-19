@@ -26,7 +26,10 @@ bool UIButton::SetState (uint state, bool val)
 		}
 
 		mState = newState;
-		if (mImage.GetSkin() != 0) mImage.SetDirty();
+
+		const ITexture* tex = mImage.GetTexture();
+		if (tex != 0) OnDirty(tex);
+
 		if (mOnStateChange) mOnStateChange(this);
 		return true;
 	}
@@ -54,11 +57,25 @@ void UIButton::_SetRootPtr (UIRoot* ptr)
 }
 
 //============================================================================================================
+// Marking the button as dirty should mark the associated texture as dirty regardless of 'face' being set.
+//============================================================================================================
+
+void UIButton::SetDirty()
+{
+	const ITexture* tex = mImage.GetTexture();
+	if (tex != 0) OnDirty(tex);
+	mLabel.SetDirty();
+}
+
+//============================================================================================================
 // Any per-frame animation should go here
 //============================================================================================================
 
 bool UIButton::OnUpdate (bool dimensionsChanged)
 {
+	// Use the default face for the sake of calculating proper dimensions
+	if (mImage.GetFace() == 0) mImage.SetFace("Button: Enabled", false);
+
 	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged);
 	mLabel.Update(mImage.GetSubRegion(), dimensionsChanged);
 	return false;
@@ -70,9 +87,7 @@ bool UIButton::OnUpdate (bool dimensionsChanged)
 
 void UIButton::OnFill (UIQueue* queue)
 {
-	if (queue->mLayer	== mLayer &&
-		queue->mTex		== mImage.GetTexture() &&
-		queue->mArea	== 0)
+	if (queue->mLayer == mLayer && queue->mArea == 0 && queue->mTex == mImage.GetTexture())
 	{
 		static String faceName[] =
 		{
@@ -147,8 +162,10 @@ void UIButton::OnSerializeTo (TreeNode& node) const
 {
 	// Only the skin is saved from the SubPicture. Face is ignored.
 	const UISkin* skin = mImage.GetSkin();
-	TreeNode& child = node.AddChild("Skin");
-	if (skin) child.mValue = skin->GetName();
+
+	// Only save the skin if it's something other than the default one
+	if (skin != 0 && skin != mRoot->GetDefaultSkin())
+		node.AddChild("Skin", skin->GetName());
 
 	// Label settings are saved fully
 	mLabel.OnSerializeTo (node);

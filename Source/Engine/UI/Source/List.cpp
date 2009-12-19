@@ -28,29 +28,50 @@ void UIList::OnLayerChanged()
 }
 
 //============================================================================================================
+// Notification of texture being changed
+//============================================================================================================
+
+void UIList::OnTextureChanged (const ITexture* ptr)
+{
+	mSymbol.OnTextureChanged(ptr);
+	UIMenu::OnTextureChanged(ptr);
+}
+
+//============================================================================================================
 // Triggered once per frame
 //============================================================================================================
 
 bool UIList::OnUpdate (bool dimensionsChanged)
 {
+	// Update the parent class
 	dimensionsChanged |= UIMenu::OnUpdate(dimensionsChanged);
 
+	const UIFace* face = mSymbol.GetFace();
+
+	// If we haven't set the drop-down list arrow to be the symbol, let's do that now
+	if (face == 0)
+	{
+		mSymbol.SetFace("Down Arrow");
+		face = mSymbol.GetFace();
+	}
+
+	// If dimensions have changed, we should reposition the symbol picture
 	if (dimensionsChanged)
 	{
-		const UIFace* face = mSymbol.GetFace();
-
 		if (face != 0)
 		{
 			const Vector2i& size = face->GetSize();
 			float ratio = (float)size.x / size.y;
+			float height = mImage.GetSubRegion().GetCalculatedHeight();
+			float hmm = mImage.GetRegion().GetCalculatedHeight();
 
 			if (mLabel.GetAlignment() == UILabel::Alignment::Right)
 			{
-				mSymbol.GetRegion().SetRight(0.0f, ratio * mImage.GetSubRegion().GetCalculatedHeight());
+				mSymbol.GetRegion().SetRight(0.0f, ratio * height);
 			}
 			else
 			{
-				mSymbol.GetRegion().SetLeft(1.0f, -ratio * mImage.GetSubRegion().GetCalculatedHeight());
+				mSymbol.GetRegion().SetLeft(1.0f, -ratio * height);
 			}
 		}
 	}
@@ -89,7 +110,6 @@ bool UIList::OnSerializeFrom (const TreeNode& node)
 		else if (node.mTag == "Skin")
 		{
 			mSymbol.SetSkin(mImage.GetSkin(), false);
-			mSymbol.SetFace("Down Arrow", false);
 		}
 		return true;
 	}

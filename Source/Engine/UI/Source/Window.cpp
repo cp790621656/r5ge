@@ -5,6 +5,10 @@ using namespace R5;
 
 UIWindow::UIWindow() : mTitleHeight(0), mMovement(Movement::None), mResizable(true)
 {
+	mBackground._SetParentPtr(this);
+	mTitlebar._SetParentPtr(this);
+	mTitle._SetParentPtr(this);
+	mTitle.SetShadow(true);
 	mTitle.SetAlignment(UILabel::Alignment::Center);
 	mTitlebar.GetRegion().SetBottom(0, 0);
 	mTitle.SetLayer(1, false);
@@ -14,10 +18,10 @@ UIWindow::UIWindow() : mTitleHeight(0), mMovement(Movement::None), mResizable(tr
 // Changes the active skin
 //============================================================================================================
 
-void UIWindow::SetSkin (const UISkin* skin)
+void UIWindow::SetSkin (const UISkin* skin, bool setDirty)
 {
-	mBackground.Set(skin, "Window: Background");
-	mTitlebar.Set(skin, "Window: Titlebar");
+	mBackground.Set(skin, "Window: Background", setDirty);
+	mTitlebar.Set(skin, "Window: Titlebar", setDirty);
 }
 
 //============================================================================================================
@@ -68,9 +72,6 @@ Vector2i UIWindow::GetSizeForContent (const Vector2i& size)
 void UIWindow::_SetParentPtr (UIArea* ptr)
 {
 	UIArea::_SetParentPtr(ptr);
-	mBackground._SetParentPtr(this);
-	mTitlebar._SetParentPtr(this);
-	mTitle._SetParentPtr(this);
 }
 
 //============================================================================================================
@@ -83,6 +84,9 @@ void UIWindow::_SetRootPtr (UIRoot* ptr)
 	mBackground._SetRootPtr(ptr);
 	mTitlebar._SetRootPtr(ptr);
 	mTitle._SetRootPtr(ptr);
+
+	// Assume the default skin is used
+	SetSkin(ptr->GetDefaultSkin(), false);
 }
 
 //============================================================================================================
@@ -115,8 +119,11 @@ bool UIWindow::OnUpdate (bool dimensionsChanged)
 	// Update the background. If background changes, it affects everything else
 	dimensionsChanged |= mBackground.Update(mRegion, dimensionsChanged);
 
-	// Update the titlebar and label
-	mTitle.Update(mTitlebar.GetSubRegion(), mTitlebar.Update(mRegion, dimensionsChanged));
+	// Update the title bar's background
+	bool titleChanged = mTitlebar.Update(mRegion, dimensionsChanged);
+
+	// Update the title bar's label
+	mTitle.Update(mTitlebar.GetSubRegion(), titleChanged);
 
 	// Update the content pane
 	if (dimensionsChanged)
@@ -186,11 +193,13 @@ bool UIWindow::OnSerializeFrom (const TreeNode& node)
 void UIWindow::OnSerializeTo (TreeNode& node) const
 {
 	const UISkin* skin = GetSkin();
-	if (skin != 0) node.AddChild("Skin", skin->GetName());
-	else node.AddChild("Skin");
+	if (skin != 0 && skin != mRoot->GetDefaultSkin())
+		node.AddChild("Skin", skin->GetName());
+
 	node.AddChild("Titlebar Height", mTitleHeight);
 	node.AddChild("Resizable", mResizable);
-	mTitle.OnSerializeTo (node);
+
+	mTitle.OnSerializeTo(node);
 }
 
 //============================================================================================================

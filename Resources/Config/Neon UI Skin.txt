@@ -1,0 +1,139 @@
+//R5A
+
+Root
+{
+	UI
+	{
+	    Default Skin = Neon
+		Default Font = Arial 15
+		Tooltip Delay = 1.000
+
+		Skin = Neon
+		{
+		    Serializable = false
+		    Texture = Textures/UI/neon.png
+	
+			Face = Window: Background
+			{
+				Position = 5 5
+				Size = 7 7
+				Border = -6
+			}
+	
+			Face = Window: Titlebar
+			{
+				Position = 3 20
+				Size = 14 14
+				Border = -1
+			}
+	
+			Face = Slider: Full
+			{
+				Position = 39 18
+				Size = 0 16
+			}
+	
+			Face = Slider: Empty
+			{
+				Position = 42 18
+				Size = 0 16
+			}
+	
+			Face = Button: Enabled
+			{
+				Position = 19 3
+				Size = 11 11
+				Border = 3
+			}
+	
+			Face = Button: Highlighted
+			{
+				Position = 32 3
+				Size = 11 11
+				Border = 3
+			}
+	
+			Face = Button: Pressed
+			{
+				Position = 45 3
+				Size = 11 11
+				Border = 3
+			}
+	
+			Face = Button: Disabled
+			{
+				Position = 45 16
+				Size = 11 11
+				Border = 3
+			}
+	
+			Face = Checkbox: Unchecked
+			{
+				Position = 22 6
+				Size = 5 5
+				Border = -3
+			}
+	
+			Face = Checkbox: Highlighted
+			{
+				Position = 35 6
+				Size = 5 5
+				Border = -3
+			}
+	
+			Face = Checkbox: Disabled
+			{
+				Position = 48 6
+				Size = 5 5
+				Border = -3
+			}
+	
+			Face = Checkbox: Checked
+			{
+				Position = 2 39
+				Size = 16 16
+			}
+	
+			Face = Bright Area
+			{
+	            Position = 0 0
+				Size = 17 17
+				Border = 5
+	        }
+	
+			Face = Grey Area
+			{
+				Position = 19 3
+				Size = 11 11
+				Border = 3
+			}
+	
+			Face = Dark Area
+			{
+				Position = 45 3
+				Size = 11 11
+				Border = 3
+			}
+	
+			Face = Generic Highlight
+			{
+				Position = 24 22
+				Size = 9 9
+				Border = -3
+			}
+	
+			Face = Down Arrow
+			{
+				Position = 20 39
+				Size = 20 14
+			}
+	
+			Face = Tooltip
+			{
+				Position = 45 3
+				Size = 11 11
+				Border = 5
+			}
+		}
+	}
+}
