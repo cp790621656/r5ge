@@ -14,18 +14,26 @@ using namespace R5;
 
 class TestApp
 {
-	IWindow*		mWin;
-	IGraphics*		mGraphics;
-	UI*				mUI;
-	Core*			mCore;
-	Scene			mScene;
-	Mesh*			mMesh;
-	uint			mSeed;
-	Random			mRand;
-	UISlider*		mSize;
-	UISlider*		mTilt;
-	UISlider*		mCount;
-	bool			mIsDirty;
+	IWindow*	mWin;
+	IGraphics*	mGraphics;
+	UI*			mUI;
+	Core*		mCore;
+	Scene		mScene;
+	Mesh*		mMesh;
+	uint		mSeed;
+	Random		mRand;
+	bool		mIsDirty;
+	
+	ITexture*	mDiffuseTex;
+	ITexture*	mNormalTex;
+	ITexture*	mDepthTex;
+
+	UISlider*	mSize;
+	UISlider*	mTilt;
+	UISlider*	mCount;
+	UIButton*	mAlpha;
+	UIButton*	mNormal;
+	UIPicture*	mFinal;
 
 public:
 
@@ -34,6 +42,7 @@ public:
 	void Run();
 	void OnDraw();
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Indices& indices);
+	bool OnStateChange(UIArea* area);
 	bool OnGenerate(UIArea* area, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
 	void OnSerializeTo (TreeNode& node) const;
@@ -42,7 +51,8 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mMesh(0), mSeed(0), mSize(0), mTilt(0), mCount(0), mIsDirty(true)
+TestApp::TestApp() : mMesh(0), mSeed(0), mIsDirty(true), mDiffuseTex(0), mNormalTex(0), mDepthTex(0),
+	mSize(0), mTilt(0), mCount(0), mAlpha(0), mNormal(0), mFinal(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -64,10 +74,22 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
+	// Core event listeners
 	mCore->SetListener( bind(&TestApp::OnSerializeTo,	this) );
 	mCore->SetListener( bind(&TestApp::OnSerializeFrom, this) );
 	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
 
+	// UI callbacks
+	mUI->SetOnKey		 ("Generate",	bind(&TestApp::OnGenerate,		this));
+	mUI->SetOnStateChange("Alpha",		bind(&TestApp::OnStateChange,	this));
+	mUI->SetOnStateChange("Normal",		bind(&TestApp::OnStateChange,	this));
+
+	// Textures we'll be using
+	mDiffuseTex = mGraphics->GetTexture("Out - Diffuse");
+	mNormalTex  = mGraphics->GetTexture("Out - Normal");
+	mDepthTex	= mGraphics->GetTexture("Out - Depth");
+
+	// Load the configuration
 	if (*mCore << "Config/Dev9.txt")
 	{
 		// User Interface setup
@@ -96,8 +118,9 @@ void TestApp::Run()
 			mSize	= FindWidget<UISlider>(mUI, "Size");
 			mTilt	= FindWidget<UISlider>(mUI, "Tilt");
 			mCount	= FindWidget<UISlider>(mUI, "Count");
-
-			mUI->SetOnKey("Generate", bind(&TestApp::OnGenerate, this));
+			mAlpha	= FindWidget<UIButton>(mUI, "Alpha");
+			mNormal = FindWidget<UIButton>(mUI, "Normal");
+			mFinal	= FindWidget<UIPicture>(mUI, "Final");
 		}
 
 		// Model setup
@@ -141,29 +164,51 @@ void TestApp::OnDraw()
 			Array<const ITechnique*> tech;
 			tech.Expand() = mGraphics->GetTechnique("Transparent");
 
-			static IRenderTarget* target0 = 0;
-			static IRenderTarget* target1 = 0;
+			static IRenderTarget* drawTarget = mGraphics->CreateRenderTarget();
+			static IRenderTarget* postTarget = 0;
 
-			static ITexture* diffuse = mGraphics->GetTexture("Out - Diffuse");
-			static ITexture* normal  = mGraphics->GetTexture("Out - Normal");
-			static ITexture* depth	 = mGraphics->GetTexture("Out - Depth");
-			
 			// Diffuse / normal draw
 			{
-				if (target0 == 0)
-				{
-					target0 = mGraphics->CreateRenderTarget();
-					target0->AttachDepthTexture(depth);
-					target0->AttachStencilTexture(depth);
-					target0->AttachColorTexture(0, diffuse, ITexture::Format::RGBA);
-					target0->AttachColorTexture(1, normal,  ITexture::Format::RGBA);
-					target0->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
-					target0->SetSize( Vector2i(512, 512) );
-				}
+				mGraphics->SetStencilTest(false);
+				mGraphics->SetDepthWrite(true);
+				mGraphics->SetDepthTest(false);
 
-				mGraphics->SetActiveRenderTarget(target0);
-				mGraphics->Clear();
+				// Common properties
+				drawTarget->AttachDepthTexture(mDepthTex);
+				drawTarget->AttachStencilTexture(mDepthTex);
+				drawTarget->AttachColorTexture(1, 0);
+				drawTarget->SetSize( Vector2i(512, 512) );
 
+				// Diffuse-only render target
+				drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
+				drawTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
+				
+				// Clear depth, stencil, and diffuse
+				mGraphics->SetActiveRenderTarget(drawTarget);
+				mGraphics->Clear(true, true, true);
+
+				// Unbind the render target
+				mGraphics->SetActiveRenderTarget(0);
+
+				// Normal map-only render target
+				drawTarget->AttachColorTexture(0, mNormalTex, ITexture::Format::RGBA);
+				drawTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
+				
+				// Clear the normal map
+				mGraphics->SetActiveRenderTarget(drawTarget);
+				mGraphics->Clear(true, false, false);
+
+				// Unbind the render target
+				mGraphics->SetActiveRenderTarget(0);
+
+				// Set up the render targets for actual rendering
+				drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
+				drawTarget->AttachColorTexture(1, mNormalTex, ITexture::Format::RGBA);
+
+				// Activate the render target
+				mGraphics->SetActiveRenderTarget(drawTarget);
+
+				// Use the stencil buffer to speed things up
 				mGraphics->SetStencilTest(true);
 				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
 				mGraphics->SetActiveStencilOperation(
@@ -171,20 +216,21 @@ void TestApp::OnDraw()
 					IGraphics::Operation::Keep,
 					IGraphics::Operation::Replace );
 
+				// Draw the scene into the render targets
 				mScene.Draw(tech);
 				mGraphics->Flush();
 			}
 
 			// Ambient Occlusion
 			{
-				if (target1 == 0)
+				if (postTarget == 0)
 				{
-					target1 = mGraphics->CreateRenderTarget();
-					target1->AttachDepthTexture(depth);
-					target1->AttachStencilTexture(depth);
-					target1->AttachColorTexture(0, diffuse, ITexture::Format::RGBA);
-					target1->SetSize(diffuse->GetSize());
-					target1->SetBackgroundColor(target0->GetBackgroundColor());
+					postTarget = mGraphics->CreateRenderTarget();
+					postTarget->AttachDepthTexture(mDepthTex);
+					postTarget->AttachStencilTexture(mDepthTex);
+					postTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
+					postTarget->SetSize(mDiffuseTex->GetSize());
+					postTarget->SetBackgroundColor(drawTarget->GetBackgroundColor());
 				}
 
 				/*SSAO::SetParams(3.0f, 6.0f);
@@ -193,7 +239,7 @@ void TestApp::OnDraw()
 				static IShader* bake = mGraphics->GetShader("PostProcess/BakeAO");
 				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
 
-				mGraphics->SetActiveRenderTarget(target1);
+				mGraphics->SetActiveRenderTarget(postTarget);
 				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
 				mGraphics->SetActiveStencilOperation(
 					IGraphics::Operation::Keep,
@@ -212,7 +258,7 @@ void TestApp::OnDraw()
 				static IShader* bake = mGraphics->GetShader("PostProcess/Darken");
 				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
 
-				mGraphics->SetActiveRenderTarget(target1);
+				mGraphics->SetActiveRenderTarget(postTarget);
 				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
 				mGraphics->SetActiveStencilOperation(
 					IGraphics::Operation::Keep,
@@ -223,8 +269,8 @@ void TestApp::OnDraw()
 				mGraphics->SetActiveTechnique(tech);
 				mGraphics->SetActiveMaterial(0);
 				mGraphics->SetActiveShader(bake);
-				mGraphics->SetActiveTexture(0, diffuse);
-				mGraphics->SetActiveTexture(1, depth);
+				mGraphics->SetActiveTexture(0, mDiffuseTex);
+				mGraphics->SetActiveTexture(1, mDepthTex);
 				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
 				mGraphics->Flush();
 			}
@@ -233,7 +279,7 @@ void TestApp::OnDraw()
 
 			if (final != 0)
 			{
-				Vector2i size (diffuse->GetSize());
+				Vector2i size (mDiffuseTex->GetSize());
 				final->ResizeToFit(size);
 				final->SetText( String("Final Texture (%ux%u)", size.x, size.y) );
 			}
@@ -256,7 +302,7 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 	float depth = 5.0f;
 
 	// How much the leaves will twist
-	float twist = HALFPI * 0.5f;
+	float twist = HALFPI;
 
 	// Maximum size of the particle
 	float size = (mSize != 0 ? mSize->GetValue() * 0.5f : 0.2f);
@@ -321,6 +367,23 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 
 	for (uint i = 0; i < verts.GetSize(); ++i)
 		indices.Expand() = (ushort)i;
+}
+
+//============================================================================================================
+
+bool TestApp::OnStateChange(UIArea* area)
+{
+	if (mFinal != 0)
+	{
+		const ITexture* tex = (mNormal != 0 && mNormal->GetState(UIButton::State::Pressed)) ?
+			mNormalTex : mDiffuseTex;
+
+		bool alpha = (tex == mNormalTex) || (mAlpha != 0 && !mAlpha->GetState(UIButton::State::Pressed));
+
+		mFinal->IgnoreAlpha(alpha);
+		mFinal->SetTexture(tex);
+	}
+	return true;
 }
 
 //============================================================================================================

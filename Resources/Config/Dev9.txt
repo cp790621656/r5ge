@@ -71,8 +71,31 @@ Root
 				Alignment = "Center"
 				Receives Events = true
 				Layer = 0
+				
+				Button = "Alpha"
+				{
+					Left = 0 0
+					Right = 0 22
+					Top = 0 -20
+					Bottom = 0 0
+					Text = "A"
+					Sticky = true
+					State = "Pressed"
+					Tooltip = "Toggles the image's [FF8833]Alpha[FFFFFF] channel"
+				}
+				
+				Button = "Normal"
+				{
+					Left = 0 22
+					Right = 0 44
+					Top = 0 -20
+					Bottom = 0 0
+					Text = "N"
+					Sticky = true
+					Tooltip = "Toggles the [FF8833]normal map[FFFFFF]"
+				}
 
-				Picture = "Final Texture"
+				Picture = "Final"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000

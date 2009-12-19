@@ -188,7 +188,7 @@ bool GLFBO::AttachColorTexture( uint bufferIndex, ITexture* tex, uint format )
 				{
 					bool revert = false;
 
-					// If revert attachments are not supported
+					// If mixed attachments are not supported
 					if (!g_caps.mMixedAttachments)
 					{
 						// Check to see if we have formats that don't match
@@ -314,7 +314,7 @@ void GLFBO::Activate() const
 		mLock.Lock();
 		{
 			mIsDirty = false;
-			Array<uint>	buffers;
+			mBuffers.Clear();
 			
 			// Clear mask is passed to glClear()
 			uint clearMask = 0;
@@ -326,7 +326,6 @@ void GLFBO::Activate() const
 
 				if (tex != 0)
 				{
-					clearMask |= GL_COLOR_BUFFER_BIT;
 					uint format = mAttachment[i].mFormat;
 
 					// Auto-adjust unsupported RGB30A2 textures to be RGBA
@@ -344,6 +343,7 @@ void GLFBO::Activate() const
 
 					if ( mSize != tex->GetSize() )
 					{
+						clearMask |= GL_COLOR_BUFFER_BIT;
 						uint filter = tex->GetFiltering();
 
 						if (filter > ITexture::Filter::Nearest)
@@ -362,7 +362,7 @@ void GLFBO::Activate() const
 						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
 					}
 
-					buffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
+					mBuffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
 					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i,
 						GL_TEXTURE_2D, tex->GetTextureID(), 0);
 					CHECK_GL_ERROR;
@@ -401,10 +401,9 @@ void GLFBO::Activate() const
 						mDepthTex->GetFormat() == depthFormat,
 						"Changing depth attachment's format type... is this intentional?");
 
-				clearMask |= GL_DEPTH_BUFFER_BIT;
-
 				if (mDepthTex->GetSize() != mSize || mDepthTex->GetFormat() != depthFormat)
 				{
+					clearMask |= GL_DEPTH_BUFFER_BIT;
 					mDepthTex->Set(0, mSize.x, mSize.y, 1, depthFormat, depthFormat);
 					mDepthTex->SetFiltering(ITexture::Filter::Nearest);
 					mDepthTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
@@ -427,10 +426,9 @@ void GLFBO::Activate() const
 						mStencilTex->GetFormat() == stencilFormat,
 						"Changing stencil attachment's format type... is this intentional?");
 
-				clearMask |= GL_STENCIL_BUFFER_BIT;
-
 				if (mStencilTex->GetSize() != mSize || mStencilTex->GetFormat() != stencilFormat)
 				{
+					clearMask |= GL_STENCIL_BUFFER_BIT;
 					mStencilTex->Set(0, mSize.x, mSize.y, 1, stencilFormat, stencilFormat);
 					mStencilTex->SetFiltering(ITexture::Filter::Nearest);
 					mStencilTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
@@ -443,10 +441,10 @@ void GLFBO::Activate() const
 			}
 
 			// If there were attachments to work with, activate them all
-			if (buffers.IsValid())
+			if (mBuffers.IsValid())
 			{
 				// Specify which buffers will be drawn to
-				glDrawBuffers(buffers.GetSize(), buffers);
+				glDrawBuffers(mBuffers.GetSize(), mBuffers);
 				CHECK_GL_ERROR;
 			}
 			else
@@ -471,7 +469,7 @@ void GLFBO::Activate() const
 				}
 #ifdef _DEBUG
 				System::Log("[FBO]     Attachments were relinked for FBO #%u", mFbo);
-				System::Log("          - Color:   %u/%u", buffers.GetSize(), g_caps.mMaxFBOAttachments);
+				System::Log("          - Color:   %u/%u", mBuffers.GetSize(), g_caps.mMaxFBOAttachments);
 				System::Log("          - Depth:   %u/1", (depthFormat != ITexture::Format::Invalid) ? 1 : 0);
 				System::Log("          - Stencil: %u/1", (stencilFormat != ITexture::Format::Invalid) ? 1 : 0);
 #endif

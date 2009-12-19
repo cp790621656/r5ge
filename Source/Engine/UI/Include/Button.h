@@ -50,6 +50,9 @@ public:
 	void SetShadow	  (bool shadow)			{ mLabel.SetShadow(shadow);			}
 	void SetSticky	  (bool val)			{ mSticky = val;					}
 
+	// Convenience function
+	bool GetState (uint state) const { return (mState & state) != 0; }
+
 	// Changes the visible state of the button
 	virtual bool SetState (uint state, bool val);
 

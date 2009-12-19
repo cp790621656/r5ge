@@ -97,7 +97,7 @@ GLController::GLController() :
 	mDepthWrite			(false),
 	mDepthTest			(false),
 	mColorWrite			(true),
-	mAlphaTest			(true),
+	mAlphaTest			(false),
 	mStencilTest		(false),
 	mWireframe			(false),
 	mLighting			(Lighting::None),

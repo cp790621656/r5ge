@@ -29,6 +29,7 @@ protected:
 	ITexture*			mDepthTex;
 	ITexture*			mStencilTex;
 	TextureEntry*		mAttachment;
+	mutable Array<uint>	mBuffers;
 	Color4f				mBackground;
 	bool				mUsesSkybox;
 	mutable bool		mIsDirty;
