@@ -262,7 +262,7 @@ uint GLTexture::_GetOrCreate()
 			if (!active)
 			{
 				active = true;
-				glBindTexture( mGlType, mGlID );
+				_BindTexture( mGlType, mGlID );
 			}
 
 			if (mFilter & Filter::Mipmap)
@@ -294,7 +294,7 @@ uint GLTexture::_GetOrCreate()
 			if (!active)
 			{
 				active = true;
-				glBindTexture( mGlType, mGlID );
+				_BindTexture( mGlType, mGlID );
 			}
 
 			glTexParameteri( mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF );
@@ -328,7 +328,7 @@ uint GLTexture::_GetOrCreate()
 			if (!active)
 			{
 				active = true;
-				glBindTexture( mGlType, mGlID );
+				_BindTexture( mGlType, mGlID );
 			}
 
 			if (mWrapMode == WrapMode::Mirror)
@@ -378,7 +378,7 @@ uint GLTexture::_GetOrCreate()
 				if (!active)
 				{
 					active = true;
-					glBindTexture( mGlType, mGlID );
+					_BindTexture( mGlType, mGlID );
 				}
 
 				// Generate the mipmap
@@ -428,7 +428,7 @@ uint GLTexture::_GetOrCreate()
 				if (!active)
 				{
 					active = true;
-					glBindTexture( mGlType, mGlID );
+					_BindTexture( mGlType, mGlID );
 				}
 				glGenerateMipmap(mGlType);
 			}
@@ -469,7 +469,7 @@ void GLTexture::_Create()
 #endif
 
 	// Bind the texture
-	glBindTexture(mGlType, mGlID);
+	_BindTexture(mGlType, mGlID);
 
 	// Figure out the appropriate texture format
 	int inFormat;
@@ -636,6 +636,17 @@ void GLTexture::_Create()
 }
 
 //============================================================================================================
+// Binds the specified texture
+//============================================================================================================
+
+inline bool GLTexture::_BindTexture (uint glType, uint glID)
+{
+	return ((GLGraphics*)mGraphics)->_BindTexture(glType, glID);
+}
+
+//============================================================================================================
+// Whether the texture can be used
+//============================================================================================================
 
 bool GLTexture::IsValid() const
 {
@@ -643,6 +654,8 @@ bool GLTexture::IsValid() const
 	return (mFormat != Format::Invalid);
 }
 
+//============================================================================================================
+// Changes the texture wrapping mode
 //============================================================================================================
 
 void GLTexture::SetWrapMode (uint wrapMode)
@@ -654,6 +667,8 @@ void GLTexture::SetWrapMode (uint wrapMode)
 	}
 }
 
+//============================================================================================================
+// Changes the texture's filtering
 //============================================================================================================
 
 void GLTexture::SetFiltering (uint filtering)

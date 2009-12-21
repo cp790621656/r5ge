@@ -161,7 +161,8 @@ ModelTemplate::ModelTemplate (const String& name) :
 	mSkeleton		(0),
 	mCore			(0),
 	mSerializable	(false),
-	mIsDirty		(false)
+	mIsDirty		(true),
+	mMask			(0)
 {
 	static bool doOnce = true;
 	

@@ -26,7 +26,6 @@ class TestApp
 	
 	ITexture*	mDiffuseTex;
 	ITexture*	mNormalTex;
-	ITexture*	mDepthTex;
 
 	UISlider*	mSize;
 	UISlider*	mTilt;
@@ -51,7 +50,7 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mMesh(0), mSeed(0), mIsDirty(true), mDiffuseTex(0), mNormalTex(0), mDepthTex(0),
+TestApp::TestApp() : mMesh(0), mSeed(0), mIsDirty(true), mDiffuseTex(0), mNormalTex(0),
 	mSize(0), mTilt(0), mCount(0), mAlpha(0), mNormal(0), mFinal(0)
 {
 	mWin		= new GLWindow();
@@ -87,7 +86,6 @@ void TestApp::Run()
 	// Textures we'll be using
 	mDiffuseTex = mGraphics->GetTexture("Out - Diffuse");
 	mNormalTex  = mGraphics->GetTexture("Out - Normal");
-	mDepthTex	= mGraphics->GetTexture("Out - Depth");
 
 	// Load the configuration
 	if (*mCore << "Config/Dev9.txt")
@@ -155,68 +153,39 @@ void TestApp::OnDraw()
 	{
 		mIsDirty = false;
 
-		DebugCamera* cam = FindObject<DebugCamera>(mScene, "Default Camera");
+		static DebugCamera* cam = FindObject<DebugCamera>(mScene, "Default Camera");
 
 		if (cam != 0)
 		{
-			Array<const ITechnique*> tech;
-			tech.Expand() = mGraphics->GetTechnique("Transparent");
+			static IRenderTarget* diffuseTarget = 0;
+			static IRenderTarget* normalTarget  = 0;
 
-			static IRenderTarget* drawTarget = mGraphics->CreateRenderTarget();
-			static IRenderTarget* postTarget = 0;
+			if (diffuseTarget == 0)
+			{
+				diffuseTarget = mGraphics->CreateRenderTarget();
+				diffuseTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
+				diffuseTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
+				diffuseTarget->SetSize( Vector2i(512, 512) );
+			}
 
-			mGraphics->SetStencilTest(false);
-			mGraphics->SetDepthWrite(true);
-			mGraphics->SetDepthTest(false);
+			if (normalTarget == 0)
+			{
+				normalTarget = mGraphics->CreateRenderTarget();
+				normalTarget->AttachColorTexture(0, mNormalTex, ITexture::Format::RGBA);
+				normalTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
+				normalTarget->SetSize( Vector2i(512, 512) );
+			}
 
-			// Common properties
-			drawTarget->AttachDepthTexture(mDepthTex);
-			drawTarget->AttachStencilTexture(mDepthTex);
-			drawTarget->AttachColorTexture(1, 0);
-			drawTarget->SetSize( Vector2i(512, 512) );
-
-			// Diffuse-only render target
-			drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
-			drawTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
-			
-			// Clear depth, stencil, and diffuse
-			mGraphics->SetActiveRenderTarget(drawTarget);
-			mGraphics->Clear(true, true, true);
-
-			// Unbind the render target
-			mGraphics->SetActiveRenderTarget(0);
-
-			// Normal map-only render target
-			drawTarget->AttachColorTexture(0, mNormalTex, ITexture::Format::RGBA);
-			drawTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
-			
-			// Clear the normal map
-			mGraphics->SetActiveRenderTarget(drawTarget);
-			mGraphics->Clear(true, false, false);
-
-			// Unbind the render target
-			mGraphics->SetActiveRenderTarget(0);
-
-			// Set up the render targets for actual rendering
-			drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
-			drawTarget->AttachColorTexture(1, mNormalTex, ITexture::Format::RGBA);
-
-			// Activate the render target
-			mGraphics->SetActiveRenderTarget(drawTarget);
-
-			// Cull the scene
+			// Draw the scene into the diffuse map target
+			mGraphics->SetActiveRenderTarget(diffuseTarget);
+			mGraphics->Clear();
 			mScene.Cull(cam);
+			mScene.Draw("Diffuse Map");
 
-			// Use the stencil buffer to speed things up
-			mGraphics->SetStencilTest(true);
-			mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
-			mGraphics->SetActiveStencilOperation(
-				IGraphics::Operation::Keep,
-				IGraphics::Operation::Keep,
-				IGraphics::Operation::Replace );
-
-			// Draw the scene into the render targets
-			mScene.Draw(tech);
+			// Draw the scene into the normal map target
+			mGraphics->SetActiveRenderTarget(normalTarget);
+			mGraphics->Clear();
+			mScene.Draw("Normal Map");
 
 			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
 

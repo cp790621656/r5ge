@@ -60,6 +60,9 @@ private:
 	// Internal function: Creates the texture
 	void _Create();
 
+	// Binds the specified texture
+	bool _BindTexture (uint glType, uint glID);
+
 public:
 
 	// Some functions should be overwritten

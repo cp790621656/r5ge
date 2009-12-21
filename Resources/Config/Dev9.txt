@@ -39,9 +39,14 @@ Root
 			Glow = 0.000000
 			ADT = 0.350000
 
-			Technique = "Transparent"
+            Technique = "Diffuse Map"
 			{
-				Shader = "Forward/ToBillboard"
+				Texture 0 = "Leaf Diffuse map"
+			}
+			
+			Technique = "Normal Map"
+			{
+				Shader = "Other/NormalMap"
 				Texture 0 = "Leaf Diffuse map"
 				Texture 1 = "Leaf Normal map"
 			}

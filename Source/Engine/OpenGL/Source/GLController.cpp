@@ -128,7 +128,7 @@ GLController::GLController() :
 
 inline uint GLController::_CountImageUnits()
 {
-	if ( mTu.IsEmpty() )
+	if (mTu.IsEmpty())
 	{
 		uint maxIU = glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS);
 		ASSERT( maxIU > 0, "Could not retrieve the maximum number of texture units" );
@@ -1033,70 +1033,39 @@ void GLController::SetActiveVBO (const IVBO* ptr, uint type)
 
 const uint convertTextureTypeToGL [5] = { 0, GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP };
 
-void GLController::SetActiveTexture ( uint textureUnit, const ITexture* tex )
+void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 {
 	static uint maxIU = _CountImageUnits();
 
 	if (textureUnit < maxIU)
 	{
-		TextureUnit& tu ( mTu[textureUnit] );
-		mMaterial = (const IMaterial*)(-1);
-
-		uint glType (0);
-
-		if (tex != 0 && tex->IsValid())
+		if (_SetActiveTextureUnit(textureUnit))
 		{
-			uint type = tex->GetType();
-			ASSERT(type < 5, "Invalid texture type passed");
-			glType = convertTextureTypeToGL[type];
-		}
+			mMaterial = (const IMaterial*)(-1);
 
-		if ( tu.mType != glType )
-		{
-			if (_SetActiveTextureUnit(textureUnit))
+			uint glType (0);
+
+			if (tex != 0 && tex->IsValid())
 			{
-				if ( tu.mType != 0 )
-				{
-					// If the type is changing, the old type needs to be disabled first (going from CUBE to 2D for example)
-					glBindTexture( tu.mType, 0 );
-					glDisable( tu.mType );
-					tu.mType = 0;
-					tu.mTex = 0;
-				}
-
-				if ( glType != 0 )
-				{
-					// If there's a valid new texture type, enable the texture unit and bind the texture
-					if (tu.mTex != tex)
-					{
-						tu.mTex = tex;
-						tu.mType = glType;
-						glEnable( glType );
-						glBindTexture( tu.mType, tex->GetTextureID() );
-						CHECK_GL_ERROR;
-						++mStats.mTexSwitches;
-					}
-				}
-				else if ( textureUnit < 8 )
-				{
-					BufferEntry& buffer = mBuffers[ Attribute::TexCoord0 + textureUnit ];
-
-					if (buffer.mEnabled)
-					{
-						SetActiveVertexAttribute( Attribute::TexCoord0 + textureUnit, 0, 0, 0, 0, 0 );
-					}
-				}
+				uint type = tex->GetType();
+				ASSERT(type < 5, "Invalid texture type passed");
+				glType = convertTextureTypeToGL[type];
 			}
-		}
-		else if ( glType )
-		{
-			if (tu.mTex != tex && _SetActiveTextureUnit(textureUnit))
+
+			// Retrieving the texture ID creates it on the GPU if it's new
+			uint glID = (tex != 0) ? tex->GetTextureID() : 0;
+
+			// If the specified texture has been bound and it happens to be null
+			if (_BindTexture(glType, glID) && (glID == 0) && (textureUnit < 8))
 			{
-				// Only the texture ID changed
-				tu.mTex = tex;
-				glBindTexture( tu.mType, tex->GetTextureID() );
-				CHECK_GL_ERROR;
-				++mStats.mTexSwitches;
+				// We must also disable the appropriate 
+				BufferEntry& buffer = mBuffers[ Attribute::TexCoord0 + textureUnit ];
+
+				if (buffer.mEnabled)
+				{
+					// If the texture buffer is enabled, disable it
+					SetActiveVertexAttribute(Attribute::TexCoord0 + textureUnit, 0, 0, 0, 0, 0);
+				}
 			}
 		}
 	}
@@ -1274,14 +1243,7 @@ void GLController::SetActiveVertexAttribute(
 				case Attribute::Position:	glEnableClientState(GL_VERTEX_ARRAY);			break;
 				case Attribute::Normal:		glEnableClientState(GL_NORMAL_ARRAY);			break;
 				case Attribute::TexCoord0:	glEnableClientState(GL_TEXTURE_COORD_ARRAY);	break;
-				case Attribute::Color:
-				{
-					// Using color arrays means we need to disable complex material properties,
-					// or the fixed-function pipeline will not be using the color array.
-					glEnableClientState(GL_COLOR_ARRAY);
-					if (mShader == 0) SetSimpleMaterial(true);
-					break;
-				}
+				case Attribute::Color:		glEnableClientState(GL_COLOR_ARRAY);			break;
 				default:
 				{
 					if (glEnableVertexAttribArray != 0 && glVertexAttribPointer != 0)
@@ -1299,6 +1261,10 @@ void GLController::SetActiveVertexAttribute(
 		{
 			changed = (buffer.mVbo != vbo) || (buffer.mPtr != ptr);
 		}
+
+		// Using color arrays means we need to disable complex material properties,
+		// or the fixed-function pipeline will not be using the color array.
+		if (attribute == Attribute::Color && mShader == 0) SetSimpleMaterial(true);
 
 		if (changed)
 		{
@@ -1448,19 +1414,59 @@ void GLController::_ActivateMatrices()
 // Changes the currently active texture unit
 //============================================================================================================
 
-bool GLController::_SetActiveTextureUnit( uint textureUnit )
+bool GLController::_SetActiveTextureUnit (uint textureUnit)
 {
 	static uint maxTU = glGetInteger(GL_MAX_TEXTURE_UNITS);
 	static uint maxIU = _CountImageUnits();
 
-	if ( textureUnit < maxIU )
+	if (textureUnit < maxIU)
 	{
-		textureUnit += GL_TEXTURE0;
-
-		if ( mActiveTU != textureUnit )
+		if (mActiveTU != textureUnit)
 		{
-			glActiveTexture(mActiveTU = textureUnit);
-			if (mActiveTU < maxTU) glActiveClientTexture(mActiveTU);
+			mActiveTU = textureUnit;
+			glActiveTexture(GL_TEXTURE0 + mActiveTU);
+			if (mActiveTU < maxTU) glActiveClientTexture(GL_TEXTURE0 + mActiveTU);
+		}
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
+// Binds the specified texture
+//============================================================================================================
+
+bool GLController::_BindTexture (uint glType, uint glID)
+{
+	// Counting the image units also happens to create the initial 'mTu' array
+	static uint maxTU = _CountImageUnits();
+
+	// Currently active texture unit
+	TextureUnit& tu = mTu[mActiveTU];
+
+	// If the texture ID is changing...
+	if (tu.mId != glID)
+	{
+		// If the type is changing, the old type needs to be disabled first (going from CUBE to 2D for example)
+		if (tu.mType != glID && tu.mType != 0)
+		{
+			glBindTexture(tu.mType, 0);
+			glDisable(tu.mType);
+			CHECK_GL_ERROR;
+			tu.mType = 0;
+			tu.mId = 0;
+		}
+
+		if (glID != 0)
+		{
+			// Enable the new type if it has changed
+			if (tu.mType != glType) glEnable(tu.mType = glType);
+
+			// Activate the texture
+			glBindTexture(glType, tu.mId = glID);
+
+			CHECK_GL_ERROR;
+			++mStats.mTexSwitches;
 		}
 		return true;
 	}

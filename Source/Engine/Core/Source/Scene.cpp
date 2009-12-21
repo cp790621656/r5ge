@@ -150,6 +150,31 @@ Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 }
 
 //============================================================================================================
+// Draws the scene using the specified technique
+//============================================================================================================
+
+uint Scene::Draw (const String& technique)
+{
+	if (mRoot != 0)
+	{
+		IGraphics* graphics = mRoot->mCore->GetGraphics();
+		return Draw(graphics->GetTechnique(technique));
+	}
+	return 0;
+}
+
+//============================================================================================================
+// Draws the scene using the specified technique
+//============================================================================================================
+
+uint Scene::Draw (const ITechnique* technique)
+{
+	mTechs.Clear();
+	mTechs.Expand() = technique;
+	return Draw(mTechs);
+}
+
+//============================================================================================================
 // Draw the specified scene
 //============================================================================================================
 

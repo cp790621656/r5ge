@@ -11,10 +11,10 @@ class GLController : public IGraphics
 {
 	struct TextureUnit
 	{
-		uint			mType;
-		const ITexture*	mTex;
+		uint mType;
+		uint mId;
 
-		TextureUnit() : mType(0), mTex(0) {}
+		TextureUnit() : mType(0), mId(0) {}
 	};
 
 	struct BufferEntry
@@ -223,6 +223,9 @@ public:
 
 protected:
 
+	// Allow GLTexture class to access _BindTexture()
+	friend class GLTexture;
+
 	// Draw using an index array
 	uint _DrawIndices ( const IVBO* vbo, const ushort* ptr, uint primitive, uint indexCount );
 
@@ -230,7 +233,10 @@ protected:
 	void _ActivateMatrices();
 
 	// Changes the currently active texture unit
-	bool _SetActiveTextureUnit ( uint textureUnit );
+	bool _SetActiveTextureUnit (uint textureUnit);
+
+	// Binds the specified texture
+	bool _BindTexture (uint glType, uint glID);
 
 	// Marks all view-affected matrices as needing to be recalculated
 	void _ViewHasChanged();

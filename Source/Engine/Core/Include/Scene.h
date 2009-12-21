@@ -18,6 +18,7 @@ private:
 	Object*		mRoot;		// Scene's root
 	Frustum		mFrustum;	// Viewing frustum used for culling
 	DrawQueue	mQueue;		// Draw queue created by the culling process
+	Techniques	mTechs;		// Cached list of techniques, for convenience reasons
 
 	// Deferred draw parameters. Saved for convenience and speed.
 	Deferred::DrawParams mParams;
@@ -53,6 +54,12 @@ public:
 	// Convenience function: draws the scene using default deferred rendering techniques
 	// PostProcess: 0 (do nothing), 1 = draw to screen as-is, 2 = bloom
 	Deferred::DrawResult DrawAllDeferred (byte ssao = 0, byte postProcess = 1);
+
+	// Draws the scene using the specified technique
+	uint Draw (const String& technique);
+
+	// Draws the scene using the specified technique
+	uint Draw (const ITechnique* technique);
 
 	// Draws the scene using the specified techniques
 	uint Draw (const Techniques& techniques, bool insideOut = false);
