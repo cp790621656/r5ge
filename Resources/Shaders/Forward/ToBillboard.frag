@@ -17,6 +17,6 @@ void main()
     mat3 TBN      	= mat3(tangent, cross(normal, tangent), normal);
     normal        	= normalize(TBN * (normalMap.xyz * 2.0 - 1.0));
 
-    gl_FragData[0] = vec4(colorMap.rgb * gl_FrontMaterial.diffuse.rgb, colorMap.a);
-    gl_FragData[1] = vec4(normal * 0.5 + 0.5, normalMap.a);
+    gl_FragData[0] = vec4(colorMap.rgb * gl_Color.rgb, colorMap.a);
+    gl_FragData[1] = vec4(normal * 0.5 + 0.5, 1.0);
 }

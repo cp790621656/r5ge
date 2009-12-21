@@ -471,7 +471,7 @@ void GLController::SetBackgroundColor(const Color4f& color)
 // Whether current active color defines the material colors
 //============================================================================================================
 
-void GLController::SetSimpleMaterial (bool val)
+inline void GLController::SetSimpleMaterial (bool val)
 {
 	if ( mSimpleMaterial != val )
 	{
@@ -1248,8 +1248,8 @@ void GLController::SetActiveStencilOperation (uint testFail, uint depthFail, uin
 //============================================================================================================
 // Short note about this function: Attribute arrays can be used everywhere instead of Client State calls
 // if the shaders are used. If they are not however, position must be specified via glVertexPointer.
-// Also, attribute array calls require OpenGL 2.0, so for the sake of compatibility client state calls
-// are used instead of attribute arrays whenever possible.
+// Attribute array calls also happen to require OpenGL 2.0, so for the sake of compatibility client state
+// calls are used instead of attribute arrays whenever possible.
 //============================================================================================================
 
 void GLController::SetActiveVertexAttribute(
@@ -1273,8 +1273,15 @@ void GLController::SetActiveVertexAttribute(
 			{
 				case Attribute::Position:	glEnableClientState(GL_VERTEX_ARRAY);			break;
 				case Attribute::Normal:		glEnableClientState(GL_NORMAL_ARRAY);			break;
-				case Attribute::Color:		glEnableClientState(GL_COLOR_ARRAY);			break;
 				case Attribute::TexCoord0:	glEnableClientState(GL_TEXTURE_COORD_ARRAY);	break;
+				case Attribute::Color:
+				{
+					// Using color arrays means we need to disable complex material properties,
+					// or the fixed-function pipeline will not be using the color array.
+					glEnableClientState(GL_COLOR_ARRAY);
+					if (mShader == 0) SetSimpleMaterial(true);
+					break;
+				}
 				default:
 				{
 					if (glEnableVertexAttribArray != 0 && glVertexAttribPointer != 0)

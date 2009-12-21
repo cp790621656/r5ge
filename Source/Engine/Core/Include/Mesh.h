@@ -15,6 +15,7 @@ public:
 	typedef Array<Vector3f>	Normals;
 	typedef Array<Vector2f>	TexCoords;
 	typedef Array<Vector3f>	Tangents;
+	typedef Array<Color4ub>	Colors;
 	typedef Array<Color4f>	BoneWeights;
 	typedef Array<Color4ub>	BoneIndices;
 	typedef unsigned short	Index;
@@ -28,6 +29,7 @@ public:
 		uint mNormal;
 		uint mTexCoord;
 		uint mTangent;
+		uint mColor;
 		uint mBoneIndex;
 		uint mBoneWeight;
 
@@ -41,6 +43,7 @@ public:
 			mNormal		= 0xFFFFFFFF;
 			mTexCoord	= 0xFFFFFFFF;
 			mTangent	= 0xFFFFFFFF;
+			mColor		= 0xFFFFFFFF;
 			mBoneIndex	= 0xFFFFFFFF;
 			mBoneWeight = 0xFFFFFFFF;
 		}
@@ -56,6 +59,7 @@ private:
 	Normals				mN;					// Normals
 	Tangents			mT;					// Tangents (calculated)
 	TexCoords			mTc;				// Texture coordinates
+	Colors				mC;					// Vertex colors
 	BoneIndices			mBi;				// Bone indices
 	BoneWeights			mBw;				// Bone weights
 	uint				mBones;				// Number of bones per vertex
@@ -124,6 +128,7 @@ public: // These functions should only be used after the mesh has been locked
 	Normals&		GetNormalArray()		{ _AssertIfUnlocked(); return mN;		}
 	Tangents&		GetTangentArray()		{ _AssertIfUnlocked(); return mT;		}
 	TexCoords&		GetTexCoordArray()		{ _AssertIfUnlocked(); return mTc;		}
+	Colors&			GetColorArray()			{ _AssertIfUnlocked(); return mC;		}
 	BoneWeights&	GetBoneWeightArray()	{ _AssertIfUnlocked(); return mBw;		}
 	BoneIndices&	GetBoneIndexArray()		{ _AssertIfUnlocked(); return mBi;		}
 	Indices&		GetIndexArray()			{ _AssertIfUnlocked(); return mIndices;	}
@@ -158,6 +163,7 @@ public:
 	bool HasNormals()	const	{ return mN.IsValid() || mTn.IsValid(); }
 	bool HasTangents()	const	{ return mT.IsValid() || mTt.IsValid(); }
 	bool HasTexCoords()	const	{ return mTc.IsValid();	}
+	bool HasColors()	const	{ return mC.IsValid(); }
 	bool HasBoneInfo()	const	{ return mBw.IsValid() && mBi.IsValid(); }
 	bool HasIndices()	const	{ return mIndices.IsValid(); }
 

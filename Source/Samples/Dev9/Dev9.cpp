@@ -41,7 +41,7 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Indices& indices);
+	void Fill(Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& colors);
 	bool OnStateChange(UIArea* area);
 	bool OnGenerate(UIArea* area, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
@@ -127,9 +127,9 @@ void TestApp::Run()
 		{
 			mMesh = mCore->GetMesh("Branch");
 			Model* model = mCore->GetModel("Branch");
-			Limb* limb = model->GetLimb("Branch");
-			limb->SetMesh(mMesh);
-			limb->SetMaterial(mGraphics->GetMaterial("Leaf"));
+
+			// Set the mesh/material
+			model->GetLimb("Branch")->Set(mMesh, mGraphics->GetMaterial("Leaf"));
 
 			ModelInstance* inst = AddObject<ModelInstance>(mScene, "Branch");
 			inst->SetModel(model);
@@ -159,121 +159,64 @@ void TestApp::OnDraw()
 
 		if (cam != 0)
 		{
-			mScene.Cull(cam);
-
 			Array<const ITechnique*> tech;
 			tech.Expand() = mGraphics->GetTechnique("Transparent");
 
 			static IRenderTarget* drawTarget = mGraphics->CreateRenderTarget();
 			static IRenderTarget* postTarget = 0;
 
-			// Diffuse / normal draw
-			{
-				mGraphics->SetStencilTest(false);
-				mGraphics->SetDepthWrite(true);
-				mGraphics->SetDepthTest(false);
+			mGraphics->SetStencilTest(false);
+			mGraphics->SetDepthWrite(true);
+			mGraphics->SetDepthTest(false);
 
-				// Common properties
-				drawTarget->AttachDepthTexture(mDepthTex);
-				drawTarget->AttachStencilTexture(mDepthTex);
-				drawTarget->AttachColorTexture(1, 0);
-				drawTarget->SetSize( Vector2i(512, 512) );
+			// Common properties
+			drawTarget->AttachDepthTexture(mDepthTex);
+			drawTarget->AttachStencilTexture(mDepthTex);
+			drawTarget->AttachColorTexture(1, 0);
+			drawTarget->SetSize( Vector2i(512, 512) );
 
-				// Diffuse-only render target
-				drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
-				drawTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
-				
-				// Clear depth, stencil, and diffuse
-				mGraphics->SetActiveRenderTarget(drawTarget);
-				mGraphics->Clear(true, true, true);
+			// Diffuse-only render target
+			drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
+			drawTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
+			
+			// Clear depth, stencil, and diffuse
+			mGraphics->SetActiveRenderTarget(drawTarget);
+			mGraphics->Clear(true, true, true);
 
-				// Unbind the render target
-				mGraphics->SetActiveRenderTarget(0);
+			// Unbind the render target
+			mGraphics->SetActiveRenderTarget(0);
 
-				// Normal map-only render target
-				drawTarget->AttachColorTexture(0, mNormalTex, ITexture::Format::RGBA);
-				drawTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
-				
-				// Clear the normal map
-				mGraphics->SetActiveRenderTarget(drawTarget);
-				mGraphics->Clear(true, false, false);
+			// Normal map-only render target
+			drawTarget->AttachColorTexture(0, mNormalTex, ITexture::Format::RGBA);
+			drawTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
+			
+			// Clear the normal map
+			mGraphics->SetActiveRenderTarget(drawTarget);
+			mGraphics->Clear(true, false, false);
 
-				// Unbind the render target
-				mGraphics->SetActiveRenderTarget(0);
+			// Unbind the render target
+			mGraphics->SetActiveRenderTarget(0);
 
-				// Set up the render targets for actual rendering
-				drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
-				drawTarget->AttachColorTexture(1, mNormalTex, ITexture::Format::RGBA);
+			// Set up the render targets for actual rendering
+			drawTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
+			drawTarget->AttachColorTexture(1, mNormalTex, ITexture::Format::RGBA);
 
-				// Activate the render target
-				mGraphics->SetActiveRenderTarget(drawTarget);
+			// Activate the render target
+			mGraphics->SetActiveRenderTarget(drawTarget);
 
-				// Use the stencil buffer to speed things up
-				mGraphics->SetStencilTest(true);
-				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
-				mGraphics->SetActiveStencilOperation(
-					IGraphics::Operation::Keep,
-					IGraphics::Operation::Keep,
-					IGraphics::Operation::Replace );
+			// Cull the scene
+			mScene.Cull(cam);
 
-				// Draw the scene into the render targets
-				mScene.Draw(tech);
-				mGraphics->Flush();
-			}
+			// Use the stencil buffer to speed things up
+			mGraphics->SetStencilTest(true);
+			mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
+			mGraphics->SetActiveStencilOperation(
+				IGraphics::Operation::Keep,
+				IGraphics::Operation::Keep,
+				IGraphics::Operation::Replace );
 
-			// Ambient Occlusion
-			{
-				if (postTarget == 0)
-				{
-					postTarget = mGraphics->CreateRenderTarget();
-					postTarget->AttachDepthTexture(mDepthTex);
-					postTarget->AttachStencilTexture(mDepthTex);
-					postTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
-					postTarget->SetSize(mDiffuseTex->GetSize());
-					postTarget->SetBackgroundColor(drawTarget->GetBackgroundColor());
-				}
-
-				/*SSAO::SetParams(3.0f, 6.0f);
-				const ITexture* ao = SSAO::High(mGraphics, depth, normal);
-
-				static IShader* bake = mGraphics->GetShader("PostProcess/BakeAO");
-				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
-
-				mGraphics->SetActiveRenderTarget(postTarget);
-				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
-				mGraphics->SetActiveStencilOperation(
-					IGraphics::Operation::Keep,
-					IGraphics::Operation::Keep,
-					IGraphics::Operation::Keep );
-
-				mGraphics->SetActiveProjection(IGraphics::Projection::Orthographic);
-				mGraphics->SetActiveTechnique(tech);
-				mGraphics->SetActiveMaterial(0);
-				mGraphics->SetActiveShader(bake);
-				mGraphics->SetActiveTexture(0, diffuse);
-				mGraphics->SetActiveTexture(1, ao);
-				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
-				mGraphics->Flush();*/
-
-				static IShader* bake = mGraphics->GetShader("PostProcess/Darken");
-				static ITechnique* tech = mGraphics->GetTechnique("Post Process");
-
-				mGraphics->SetActiveRenderTarget(postTarget);
-				mGraphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
-				mGraphics->SetActiveStencilOperation(
-					IGraphics::Operation::Keep,
-					IGraphics::Operation::Keep,
-					IGraphics::Operation::Keep );
-
-				mGraphics->SetActiveProjection(IGraphics::Projection::Orthographic);
-				mGraphics->SetActiveTechnique(tech);
-				mGraphics->SetActiveMaterial(0);
-				mGraphics->SetActiveShader(bake);
-				mGraphics->SetActiveTexture(0, mDiffuseTex);
-				mGraphics->SetActiveTexture(1, mDepthTex);
-				mGraphics->Draw(IGraphics::Drawable::InvertedQuad);
-				mGraphics->Flush();
-			}
+			// Draw the scene into the render targets
+			mScene.Draw(tech);
 
 			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
 
@@ -293,13 +236,14 @@ void TestApp::OnDraw()
 
 //============================================================================================================
 
-void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Indices& indices)
+void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& colors)
 {
 	mIsDirty = true;
 	mRand.SetSeed(mSeed);
 
 	// Maximum depth range
 	float depth = 5.0f;
+	float invDepth = 1.0f / depth;
 
 	// How much the leaves will twist
 	float twist = HALFPI;
@@ -317,13 +261,18 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 	// Maximum distance a particle can be spawned at without getting clipped
 	float range = Float::Max(0.0f, 1.0f - size * 1.145f);
 
+	// Color of the far-away vertices will be tinted up by up to this amount (1.0 - tint)
+	float tint = 0.85f;
+	float minTint = 1.0f - tint;
+
 	Vector3f pos, axis;
 	Quaternion rot;
+	float shade, rangeSq = range * range;
 
-	float rangeSq = range * range;
-
+	// Create all leaf particles
 	for (uint b = 0; b < count; ++b)
 	{
+		// Ensure that the generated particles are within circular bounds
 		do 
 		{
 			pos.Set(mRand.GenerateRangeFloat() * range,
@@ -332,6 +281,7 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 		}
 		while ((pos.x * pos.x + pos.y * pos.y) > range);		
 
+		// Offset by depth
 		pos.z = (depth * b) / count;
 
 		axis.Set(mRand.GenerateRangeFloat() * bias, mRand.GenerateRangeFloat() * bias, invBias);
@@ -340,33 +290,44 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 		rot.SetFromDirection( Vector3f(pos.x, pos.y, 0.0f) );
 		rot *= Quaternion(axis, mRand.GenerateRangeFloat() * twist);
 
+		// Top-left
 		verts.Expand().Set(-size,  size, 0.0f);
 		verts.Back() *= rot;
 		verts.Back() += pos;
 
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+
+		// Bottom-left
 		verts.Expand().Set(-size, -size, 0.0f);
 		verts.Back() *= rot;
 		verts.Back() += pos;
 
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+
+		// Bottom-right
 		verts.Expand().Set( size, -size, 0.0f);
 		verts.Back() *= rot;
 		verts.Back() += pos;
 
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+
+		// Top-right
 		verts.Expand().Set( size,  size, 0.0f);
 		verts.Back() *= rot;
 		verts.Back() += pos;
 
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+
+		// Texture coordinates are always the same
 		tc.Expand().Set(0.0f, 1.0f);
 		tc.Expand().Set(0.0f, 0.0f);
 		tc.Expand().Set(1.0f, 0.0f);
 		tc.Expand().Set(1.0f, 1.0f);
-
-		Vector3f normal (rot.GetUp());
-		for (uint i = 0; i < 4; ++i) normals.Expand() = normal;
 	}
-
-	for (uint i = 0; i < verts.GetSize(); ++i)
-		indices.Expand() = (ushort)i;
 }
 
 //============================================================================================================
@@ -409,12 +370,11 @@ void TestApp::Generate()
 			mMesh->Clear();
 
 			Fill(mMesh->GetVertexArray(),
-				mMesh->GetNormalArray(),
-				mMesh->GetTexCoordArray(),
-				mMesh->GetIndexArray());
+				 mMesh->GetTexCoordArray(),
+				 mMesh->GetColorArray());
 
 			mMesh->SetPrimitive(IGraphics::Primitive::Quad);
-			mMesh->Update(true, true, true, true, false, true);
+			mMesh->Update(true, true, true, true, false, false);
 		}
 		mMesh->Unlock();
 	}
