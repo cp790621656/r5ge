@@ -18,7 +18,9 @@ class TestApp
 	IGraphics*	mGraphics;
 	UI*			mUI;
 	Core*		mCore;
+	Camera*		mCam;
 	Scene		mScene;
+	Scene		mOffscreen;
 	Mesh*		mMesh;
 	uint		mSeed;
 	Random		mRand;
@@ -56,7 +58,12 @@ TestApp::TestApp() : mMesh(0), mSeed(0), mIsDirty(true), mDiffuseTex(0), mNormal
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
+
+	Object* root = mCore->GetRoot();
+	mScene.SetRoot( AddObject<Object>(root, "Scene Root") );
+	mOffscreen.SetRoot( AddObject<Object>(root, "Off-screen Root") );
+	mOffscreen.GetRoot()->SetSerializable(false);
 }
 
 //============================================================================================================
@@ -84,8 +91,8 @@ void TestApp::Run()
 	mUI->SetOnStateChange("Normal",		bind(&TestApp::OnStateChange,	this));
 
 	// Textures we'll be using
-	mDiffuseTex = mGraphics->GetTexture("Out - Diffuse");
-	mNormalTex  = mGraphics->GetTexture("Out - Normal");
+	mDiffuseTex = mGraphics->GetTexture("Canopy Diffuse");
+	mNormalTex  = mGraphics->GetTexture("Canopy Normal");
 
 	// Load the configuration
 	if (*mCore << "Config/Dev9.txt")
@@ -121,6 +128,24 @@ void TestApp::Run()
 			mFinal	= FindWidget<UIPicture>(mUI, "Final");
 		}
 
+		// Camera setup
+		{
+			// Default camera's orientation comes from the configuration file
+			mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+
+			if (mCam != 0)
+			{
+				mCore->SetListener( bind(&Camera::OnScroll, mCam) );
+				mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
+			}
+
+			// Off-screen camera is not serialized, but is rather created here
+			DebugCamera* cam = AddObject<DebugCamera>(mOffscreen, "Off-screen Camera");
+			cam->SetRelativeRotation( Vector3f(0.0f, 0.0f, -1.0f) );
+			cam->SetRelativeRange( Vector3f(90.0f, 105.0f, 2.4f) );
+			cam->SetDolly( Vector3f(0.0f, 100.0f, 100.0f) );
+		}
+
 		// Model setup
 		{
 			mMesh = mCore->GetMesh("Branch");
@@ -129,7 +154,7 @@ void TestApp::Run()
 			// Set the mesh/material
 			model->GetLimb("Branch")->Set(mMesh, mGraphics->GetMaterial("Leaf"));
 
-			ModelInstance* inst = AddObject<ModelInstance>(mScene, "Branch");
+			ModelInstance* inst = AddObject<ModelInstance>(mOffscreen, "Branch");
 			inst->SetModel(model);
 			inst->SetSerializable(false);
 
@@ -153,9 +178,9 @@ void TestApp::OnDraw()
 	{
 		mIsDirty = false;
 
-		static DebugCamera* cam = FindObject<DebugCamera>(mScene, "Default Camera");
+		static DebugCamera* offCam = FindObject<DebugCamera>(mOffscreen, "Off-screen Camera");
 
-		if (cam != 0)
+		if (offCam != 0)
 		{
 			static IRenderTarget* diffuseTarget = 0;
 			static IRenderTarget* normalTarget  = 0;
@@ -179,13 +204,13 @@ void TestApp::OnDraw()
 			// Draw the scene into the diffuse map target
 			mGraphics->SetActiveRenderTarget(diffuseTarget);
 			mGraphics->Clear();
-			mScene.Cull(cam);
-			mScene.Draw("Diffuse Map");
+			mOffscreen.Cull(offCam);
+			mOffscreen.Draw("Diffuse Map");
 
 			// Draw the scene into the normal map target
 			mGraphics->SetActiveRenderTarget(normalTarget);
 			mGraphics->Clear();
-			mScene.Draw("Normal Map");
+			mOffscreen.Draw("Normal Map");
 
 			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
 
@@ -200,7 +225,9 @@ void TestApp::OnDraw()
 
 	// Clear the screen
 	mGraphics->SetActiveRenderTarget(0);
-	mGraphics->Clear();
+	mScene.Cull(mCam);
+	mScene.DrawAllForward();
+	mGraphics->Draw(IGraphics::Drawable::Grid);
 }
 
 //============================================================================================================
@@ -230,7 +257,7 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 	// Maximum distance a particle can be spawned at without getting clipped
 	float range = Float::Max(0.0f, 1.0f - size * 1.145f);
 
-	// Color of the far-away vertices will be tinted up by up to this amount (1.0 - tint)
+	// Color of the far-away vertices will be tinted by up to this amount (1.0 - tint)
 	float tint = 0.85f;
 	float minTint = 1.0f - tint;
 

@@ -16,6 +16,34 @@ Root
 		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 100.000000 100.000000
 
+		Technique = "Diffuse Map"
+		{
+			Fog = true
+			Depth Write = true
+			Depth Test = true
+			Color Write = true
+			Alpha Test = true
+			Wireframe = false
+			Lighting = "None"
+			Blending = "Normal"
+			Culling = "Back"
+			Sorting = "None"
+		}
+
+		Technique = "Normal Map"
+		{
+			Fog = true
+			Depth Write = true
+			Depth Test = true
+			Color Write = true
+			Alpha Test = true
+			Wireframe = false
+			Lighting = "None"
+			Blending = "Normal"
+			Culling = "Back"
+			Sorting = "None"
+		}
+
 		Texture = "Leaf Diffuse map"
 		{
 			Source = "Textures/Billboards/leaf.png"
@@ -39,16 +67,28 @@ Root
 			Glow = 0.000000
 			ADT = 0.350000
 
-            Technique = "Diffuse Map"
+			Technique = "Diffuse Map"
 			{
 				Texture 0 = "Leaf Diffuse map"
 			}
-			
+
 			Technique = "Normal Map"
 			{
 				Shader = "Other/NormalMap"
 				Texture 0 = "Leaf Diffuse map"
 				Texture 1 = "Leaf Normal map"
+			}
+		}
+		
+		Material = "Canopy"
+		{
+			Diffuse = 1 1 1 1
+			
+			Technique = "Transparent"
+			{
+				Shader = "Forward/D_N"
+				Texture 0 = "Canopy Diffuse"
+				Texture 1 = "Canopy Normal"
 			}
 		}
 	}
@@ -76,28 +116,43 @@ Root
 				Alignment = "Center"
 				Receives Events = true
 				Layer = 0
-				
+
 				Button = "Alpha"
 				{
-					Left = 0 0
-					Right = 0 22
-					Top = 0 -20
-					Bottom = 0 0
+					Left = 0.000000 0.000000
+					Right = 0.000000 22.000000
+					Top = 0.000000 -20.000000
+					Bottom = 0.000000 0.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
 					Text = "A"
-					Sticky = true
+					Shadow = false
+					Alignment = "Center"
 					State = "Pressed"
+					Sticky = true
+					Animation Time = 0.150000
+					Receives Events = true
 					Tooltip = "Toggles the image's [FF8833]Alpha[FFFFFF] channel"
+					Layer = 0
 				}
-				
+
 				Button = "Normal"
 				{
-					Left = 0 22
-					Right = 0 44
-					Top = 0 -20
-					Bottom = 0 0
+					Left = 0.000000 22.000000
+					Right = 0.000000 44.000000
+					Top = 0.000000 -20.000000
+					Bottom = 0.000000 0.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
 					Text = "N"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
 					Sticky = true
+					Animation Time = 0.150000
+					Receives Events = true
 					Tooltip = "Toggles the [FF8833]normal map[FFFFFF]"
+					Layer = 0
 				}
 
 				Picture = "Final"
@@ -107,7 +162,7 @@ Root
 					Top = 0.000000 0.000000
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
-					Texture = "Out - Diffuse"
+					Texture = "Canopy Diffuse"
 					Ignore Alpha = false
 					Receives Events = false
 					Layer = 1
@@ -301,29 +356,57 @@ Root
 	Core
 	{
 		Execute = "Config/Neon UI Skin.txt"
+		
+		Model = "Tree"
+		{
+			Source = "Models/teapot.r5b"
+
+			Limb = "Teapot"
+			{
+				Mesh = "Teapot"
+				Material = "Canopy"
+			}
+		}
 	}
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		Object = "Scene Root"
 		{
 			Position = 0.000000 0.000000 0.000000
-			Rotation = -0.707107 0.000000 0.000000 0.707107
+			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
 			Layer = 10
-			Range = 90.000000 105.000000 2.400000
-			Dolly = 0.000000 100.000000 100.000000
 
-			Directional Light = "First Light"
+			Model Instance = "Tree"
 			{
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
 				Layer = 10
-				Ambient = 0.150000 0.150000 0.150000
-				Diffuse = 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.000000
+				Model = "Tree"
+			}
+
+			Debug Camera = "Default Camera"
+			{
+				Position = 0.000000 0.000000 2.000000
+				Rotation = -0.292534 0.124394 -0.371023 0.872521
+				Scale = 1.000000
+				Layer = 10
+				Range = 1.000000 100.000000 90.000000
+				Dolly = 0.000000 20.000000 50.000000
+
+				Directional Light = "First Light"
+				{
+					Position = 0.000000 0.000000 0.000000
+					Rotation = 0.000000 0.000000 0.000000 1.000000
+					Scale = 1.000000
+					Layer = 10
+					Ambient = 0.150000 0.150000 0.150000
+					Diffuse = 1.000000 1.000000 1.000000
+					Specular = 1.000000 1.000000 1.000000
+					Brightness = 1.000000
+				}
 			}
 		}
 	}
