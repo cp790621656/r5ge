@@ -88,7 +88,7 @@ GLFBO::GLFBO(IGraphics* graphics) :
 // Releases the resources associated with the FBO
 //============================================================================================================
 
-void GLFBO::_InternalRelease(bool delayExecution)
+void GLFBO::_InternalRelease (bool delayExecution)
 {
 	if (mAttachment != 0)
 	{
@@ -133,7 +133,7 @@ bool GLFBO::SupportsStencilAttachments() const
 // Changes the buffer's size
 //============================================================================================================
 
-bool GLFBO::SetSize( const Vector2i& size )
+bool GLFBO::SetSize (const Vector2i& size)
 {
 	if ( mSize != size )
 	{
@@ -170,7 +170,7 @@ bool GLFBO::SetSize( const Vector2i& size )
 // Attaches a texture to the specified color index
 //============================================================================================================
 
-bool GLFBO::AttachColorTexture( uint bufferIndex, ITexture* tex, uint format )
+bool GLFBO::AttachColorTexture (uint bufferIndex, ITexture* tex, uint format)
 {
 	if ( bufferIndex < g_caps.mMaxFBOAttachments )
 	{
@@ -294,8 +294,8 @@ bool GLFBO::HasColor() const
 void GLFBO::Activate() const
 {
 	// If the buffer isn't valid, don't bother
-	if ( mSize == 0 ) return;
-	if ( mFbo  == 0 )
+	if (mSize == 0) return;
+	if (mFbo  == 0)
 	{
 		glGenFramebuffers(1, &mFbo);
 		ASSERT( mFbo != 0, "Failed to create a FBO!" );
@@ -308,8 +308,27 @@ void GLFBO::Activate() const
 		CHECK_GL_ERROR;
 	}
 
+#ifdef _DEBUG
+	for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
+	{
+		ITexture* tex ( mAttachment[i].mTex );
+
+		if (tex != 0 && tex->GetFiltering() > ITexture::Filter::Linear)
+		{
+			// If this assert gets triggered, then you've changed the filtering of one or more textures
+			// attached to this render target to be mip-mapped or anisotropic-filtered (which also generates
+			// a mip-map). This is a problem, as the render target will only render into the top-level layer
+			// of a mip-mapped texture, ignoring others. 99% of the time you don't want textures attached
+			// to a render target to be mip-mapped. In the rare cases that you do, change the texture's
+			// filtering to 'nearest' or 'linear' prior to activating the render target, then change it back.
+
+			ASSERT(false, "Probable error: render target's textures can't be mip-mapped!");
+		}
+	}
+#endif
+
 	// NOTE: Supposedly some ATI drivers have issues if FBO textures are not rebound every frame...
-	if ( mIsDirty )
+	if (mIsDirty)
 	{
 		mLock.Lock();
 		{
@@ -341,27 +360,19 @@ void GLFBO::Activate() const
 					ASSERT(tex->GetFormat() == ITexture::Format::Invalid || tex->GetFormat() == format,
 						"Changing color attachment's format type... is this intentional?");
 
+					// If the target size has changed, the texture needs to be resized as well
 					if ( mSize != tex->GetSize() )
 					{
+						// We will need to clear the render target to ensure that the new texture is clean
 						clearMask |= GL_COLOR_BUFFER_BIT;
-						uint filter = tex->GetFiltering();
 
-						if (filter > ITexture::Filter::Nearest)
-						{
-							// If the filter is set to a value above "Nearest", use linear filtering
-							filter = ITexture::Filter::Linear;
-						}
-						else
-						{
-							// Otherwise assume the default value -- no filtering
-							filter = ITexture::Filter::Nearest;
-						}
-
-						tex->Set(0, mSize.x, mSize.y, 1, format, format );
-						tex->SetFiltering(filter);
+						// Set the size of the texture to match the render target's size
+						tex->Set(0, mSize.x, mSize.y, 1, format, format);
 						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
+						tex->SetFiltering(ITexture::Filter::Nearest);
 					}
 
+					// Bind the texture as a render target's color attachment
 					mBuffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
 					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i,
 						GL_TEXTURE_2D, tex->GetTextureID(), 0);

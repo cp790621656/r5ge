@@ -201,6 +201,10 @@ void TestApp::OnDraw()
 				normalTarget->SetSize( Vector2i(512, 512) );
 			}
 
+			// Change the texture filtering to use 'nearest' filtering
+			mDiffuseTex->SetFiltering(ITexture::Filter::Nearest);
+			mNormalTex->SetFiltering (ITexture::Filter::Nearest);
+
 			// Draw the scene into the diffuse map target
 			mGraphics->SetActiveRenderTarget(diffuseTarget);
 			mGraphics->Clear();
@@ -211,6 +215,12 @@ void TestApp::OnDraw()
 			mGraphics->SetActiveRenderTarget(normalTarget);
 			mGraphics->Clear();
 			mOffscreen.Draw("Normal Map");
+
+			// Change filtering to anisotropic since the textures will be used on a 3D model
+			mDiffuseTex->SetFiltering(ITexture::Filter::Anisotropic);
+			mNormalTex->SetFiltering (ITexture::Filter::Anisotropic);
+			mDiffuseTex->SetWrapMode (ITexture::WrapMode::Repeat);
+			mNormalTex->SetWrapMode  (ITexture::WrapMode::Repeat);
 
 			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
 
