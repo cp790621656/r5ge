@@ -175,7 +175,7 @@ bool UIContext::_OnItemFocus (UIArea* area, bool hasFocus)
 		if (lbl != 0)
 		{
 			mText = lbl->GetText();
-			if (mOnValueChange) mOnValueChange(this);
+			OnValueChange();
 		}
 	}
 	else

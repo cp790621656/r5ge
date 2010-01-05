@@ -112,12 +112,14 @@ protected:
 	// Convenience function, seeing as most areas will use the built-in layer
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
 
+	// Should notify the listeners of state changes
+	void OnStateChange() const { if (mOnStateChange) mOnStateChange(this); }
+
+	// Should notify the listeners of value changes
+	void OnValueChange() const { if (mOnValueChange) mOnValueChange(this); }
+
 	// Calls OnFill() on itself then recurses through all non-UIFrame children.
 	void Fill (UIQueue* queue);
-
-	// Functions overwritten by Frame class
-	virtual void OnDirty (const ITexture* tex, int layer, const UIArea* area = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, area); }
-	virtual uint OnDraw() { return 0; }
 
 public:
 
@@ -127,6 +129,12 @@ public:
 	// Internal functions. These values are normally set by Root::CreateArea
 	virtual void _SetParentPtr (UIArea* ptr) { mParent = ptr; }
 	virtual void _SetRootPtr   (UIRoot* ptr) { mRoot   = ptr; }
+
+protected:
+
+	// Functions overwritten by the Frame class
+	virtual void OnDirty (const ITexture* tex, int layer, const UIArea* area = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, area); }
+	virtual uint OnDraw() { return 0; }
 
 public:
 

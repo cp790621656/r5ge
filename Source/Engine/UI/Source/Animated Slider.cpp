@@ -30,7 +30,7 @@ bool UIAnimatedSlider::OnUpdate (bool dimensionsChanged)
 		mVal = mStartVal * (1.0f - factor) + mTargetVal * factor;
 
 		// Trigger the callback
-		if (mOnValueChange) mOnValueChange(this);
+		OnValueChange();
 		return true;
 	}
 	return false;

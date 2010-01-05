@@ -18,11 +18,10 @@ protected:
 	UIFace*		mKnob;
 	float		mVal;
 	Color3f		mColor;
-	bool		mSelected;
 
 public:
 
-	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(1.0f), mSelected(false) {}
+	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(1.0f) {}
 
 	const ITexture* GetTexture() const;
 	virtual float	GetValue()	 const	{ return mVal;   }
@@ -58,5 +57,5 @@ public:
 	// Events
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown);
-	virtual bool OnFocus	(bool selected)	{ UIArea::OnFocus(mSelected = selected); return true; }
+	virtual bool OnFocus	(bool selected)	{ UIArea::OnFocus(selected); return true; }
 };

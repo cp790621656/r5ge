@@ -113,7 +113,7 @@ bool UIInput::_OnLabelFocus (UIArea* area, bool hasFocus)
 
 bool UIInput::_OnLabelValue (UIArea* area)
 {
-	if (mOnValueChange) mOnValueChange(this);
+	OnValueChange();
 	return true;
 }
 

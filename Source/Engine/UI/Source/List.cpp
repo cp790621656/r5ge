@@ -104,7 +104,7 @@ bool UIList::OnSerializeFrom (const TreeNode& node)
 			if (node.mValue >> text)
 			{
 				SetText(text);
-				if (mOnValueChange) mOnValueChange(this);
+				OnValueChange();
 			}
 		}
 		else if (node.mTag == "Skin")

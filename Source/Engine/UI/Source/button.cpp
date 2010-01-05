@@ -30,7 +30,7 @@ bool UIButton::SetState (uint state, bool val)
 		const ITexture* tex = mImage.GetTexture();
 		if (tex != 0) OnDirty(tex);
 
-		if (mOnStateChange) mOnStateChange(this);
+		OnStateChange();
 		return true;
 	}
 	return false;

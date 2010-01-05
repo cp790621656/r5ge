@@ -22,6 +22,7 @@ void UISlider::SetValue (float val)
 	if ( Float::IsNotEqual(mVal, val) )
 	{
 		mVal = val;
+		OnValueChange();
 		SetDirty();
 	}
 }
@@ -197,11 +198,7 @@ bool UISlider::OnSerializeFrom (const TreeNode& node)
 	else if (node.mTag == "Value")
 	{
 		float val;
-		if (value >> val)
-		{
-			SetValue(val);
-			if (mOnValueChange) mOnValueChange(this);
-		}
+		if (value >> val) SetValue(val);
 		return true;
 	}
 	else if (node.mTag == "Color")
