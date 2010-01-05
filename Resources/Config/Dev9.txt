@@ -80,15 +80,24 @@ Root
 			}
 		}
 		
-		Material = "Canopy"
+		Material = "Trunk"
 		{
-			Diffuse = 1 1 1 1
-			
-			Technique = "Transparent"
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_N"
+				Texture 0 = "C:\Projects\Textures\bark.png"
+				Texture 1 = "C:\Projects\Textures\bark_n.png"
+			}
+
+			Technique = "Opaque"
 			{
 				Shader = "Forward/D_N"
-				Texture 0 = "Canopy Diffuse"
-				Texture 1 = "Canopy Normal"
+				Texture 0 = "C:\Projects\Textures\bark.png"
+				Texture 1 = "C:\Projects\Textures\bark_n.png"
 			}
 		}
 	}
@@ -359,13 +368,7 @@ Root
 		
 		Model = "Tree"
 		{
-			Source = "Models/teapot.r5b"
-
-			Limb = "Teapot"
-			{
-				Mesh = "Teapot"
-				Material = "Canopy"
-			}
+			Source = "Models/tree.r5a"
 		}
 	}
 
