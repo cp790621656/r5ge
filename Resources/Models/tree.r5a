@@ -24,6 +24,11 @@ Root
 	Core
 	{
 		Serializable = false
+		
+		Canopy = "Leaves"
+		{
+			0.0 0.0 10.0 1.0
+		}
 
 		Mesh = "Trunk"
 		{

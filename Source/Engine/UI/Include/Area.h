@@ -113,10 +113,10 @@ protected:
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
 
 	// Should notify the listeners of state changes
-	void OnStateChange() const { if (mOnStateChange) mOnStateChange(this); }
+	void OnStateChange() { if (mOnStateChange) mOnStateChange(this); }
 
 	// Should notify the listeners of value changes
-	void OnValueChange() const { if (mOnValueChange) mOnValueChange(this); }
+	void OnValueChange() { if (mOnValueChange) mOnValueChange(this); }
 
 	// Calls OnFill() on itself then recurses through all non-UIFrame children.
 	void Fill (UIQueue* queue);
