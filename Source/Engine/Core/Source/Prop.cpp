@@ -111,7 +111,14 @@ uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
 			{
 				if ( graphics->SetActiveMaterial(limb->mMat) )
 				{
-					limb->mMesh->Draw(graphics);
+					if (limb->mMesh != 0)
+					{
+						limb->mMesh->Draw(graphics);
+					}
+					else if (limb->mBBMesh != 0)
+					{
+						limb->mBBMesh->Draw(graphics);
+					}
 				}
 			}
 		}

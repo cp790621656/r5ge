@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Low-level graphics controller -- closest level of interaction with the renderer API
@@ -162,6 +162,7 @@ public:
 	virtual const Color4f&		GetBackgroundColor()	const	{ return mBackground;	}
 	virtual const ITexture*		GetActiveSkybox()		const	{ return mSkybox;		}
 	virtual const ITechnique*	GetActiveTechnique()	const	{ return mTechnique;	}
+	virtual const IShader*		GetActiveShader()		const	{ return mShader;		}
 	virtual const Vector2i&		GetActiveViewport()		const	{ return mTarget == 0 ? mSize : mTarget->GetSize(); }
 
 	// Camera orientation retrieval

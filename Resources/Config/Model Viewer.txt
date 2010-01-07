@@ -56,14 +56,6 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
-		Texture = "Textures/Plants/fern3.png"
-		{
-			Source = "Textures/Plants/fern3.png"
-			Format = "Default"
-			Filtering = "Anisotropic"
-			Wrap Mode = "Clamp to Edge"
-		}
-
 		Material = "Limestone"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -148,59 +140,6 @@ Root
 
 		Layout
 		{
-			Frame = "Debug Frame"
-			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
-				Receives Events = false
-				Layer = 0
-
-				Label = "FPS"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 18.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "492"
-					Shadow = true
-					Alignment = "Right"
-					Receives Events = false
-					Layer = 1
-				}
-
-				Highlight = "Status Highlight"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
-					Color = 0.000000 0.000000 0.000000 1.000000
-					Receives Events = true
-					Layer = 0
-
-					Label = "Status Label"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "This model has no associated skeleton and thus cannot have any animations"
-						Shadow = true
-						Alignment = "Center"
-						Receives Events = false
-						Layer = 1
-					}
-				}
-			}
-
 			Frame = "Options Frame"
 			{
 				Left = 0.000000 0.000000
@@ -357,6 +296,59 @@ Root
 					}
 				}
 			}
+
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "576"
+					Shadow = true
+					Alignment = "Right"
+					Receives Events = false
+					Layer = 1
+				}
+
+				Highlight = "Status Highlight"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 0.000000
+					Color = 0.000000 0.000000 0.000000 1.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Status Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "Saved as 'Models/tree.r5a'"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+			}
 		}
 	}
 
@@ -366,13 +358,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/box.r5a"
-
-			Limb = "Box"
-			{
-				Mesh = "Box"
-				Material = "Leaf"
-			}
+			Source = "Models/tree.r5a"
 		}
 	}
 
@@ -380,12 +366,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 2.000000
-			Rotation = -0.000198 -0.039613 0.999203 0.004998
+			Position = -0.428421 -0.040031 8.193066
+			Rotation = 0.040741 -0.239727 0.956274 -0.162515
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 8.313844 50.000000
+			Dolly = 0.000000 28.991280 50.000000
 
 			Directional Light = "Default Light"
 			{

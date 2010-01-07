@@ -1,5 +1,5 @@
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Dev9: Trees
@@ -9,15 +9,6 @@
 #include "../../Engine/Core/Include/_All.h"
 #include "../../Engine/UI/Include/_All.h"
 using namespace R5;
-
-//============================================================================================================
-// TODO: Use the model's center
-//============================================================================================================
-
-void OnTreeCenterUniform (const String& name, Uniform& uniform)
-{
-	uniform = Vector3f(0.0f, 0.0f, 6.0f);
-}
 
 //============================================================================================================
 
@@ -100,7 +91,7 @@ void TestApp::Run()
 	mUI->SetOnStateChange("Normal",		bind(&TestApp::OnStateChange,	this));
 
 	// Textures we'll be using
-	mDiffuseTex = mGraphics->GetTexture("Canopy Diffuse");
+	mDiffuseTex = mGraphics->GetTexture("Canopy");
 	mNormalTex  = mGraphics->GetTexture("Canopy Normal");
 
 	// Load the configuration
@@ -247,40 +238,6 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 	mScene.DrawAllForward();
 	mGraphics->Draw(IGraphics::Drawable::Grid);
-
-	// Leaf test
-	{
-		static float vertices[] =
-		{
-			-2.5f, -3.0f, 8.4f,
-			-2.5f, -3.0f, 8.4f,
-			-2.5f, -3.0f, 8.4f,
-			-2.5f, -3.0f, 8.4f,
-		};
-
-		static float texCoords[] =
-		{
-			0.0f, 1.0f, 2.0f,
-			0.0f, 0.0f, 2.0f,
-			1.0f, 0.0f, 2.0f,
-			1.0f, 1.0f, 2.0f,
-		};
-
-		static IShader* shader = 0;
-		
-		if (shader == 0)
-		{
-			shader = mGraphics->GetShader("Other/Canopy");
-			shader->RegisterUniform("_center", OnTreeCenterUniform);
-		}
-
-		mGraphics->SetActiveMaterial(mDiffuseTex);
-		mGraphics->SetActiveShader(shader);
-		mGraphics->SetLighting(IGraphics::Lighting::None);
-		mGraphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,  vertices,  IGraphics::DataType::Float, 3, 0);
-		mGraphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord0, texCoords, IGraphics::DataType::Float, 3, 0);
-		mGraphics->DrawVertices(IGraphics::Primitive::Quad, 4);
-	}
 }
 
 //============================================================================================================

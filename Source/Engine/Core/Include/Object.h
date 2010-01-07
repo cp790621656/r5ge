@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Most basic game object -- can be positioned somewhere in the scene and can contain children.

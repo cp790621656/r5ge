@@ -238,6 +238,16 @@ Mesh* Core::GetMesh (const String& name, bool createIfMissing)
 }
 
 //============================================================================================================
+// Retrieves a mesh with the specified name
+//============================================================================================================
+
+BillboardMesh* Core::GetBillboardMesh (const String& name, bool createIfMissing)
+{
+	if (name.IsEmpty()) return 0;
+	return (createIfMissing ? mBBMeshes.AddUnique(name) : mBBMeshes.Find(name));
+}
+
+//============================================================================================================
 // Creates a new model or retrieves an existing one
 //============================================================================================================
 
@@ -463,6 +473,11 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		{
 			Mesh* mesh = GetMesh(value.IsString() ? value.AsString() : value.GetString(), true);
 			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
+		}
+		else if ( tag == BillboardMesh::ClassID() )
+		{
+			BillboardMesh* bm = GetBillboardMesh(value.IsString() ? value.AsString() : value.GetString(), true);
+			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
 		}
 		else if ( tag == Skeleton::ClassID() )
 		{

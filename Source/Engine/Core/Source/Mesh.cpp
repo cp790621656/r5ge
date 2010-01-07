@@ -111,7 +111,6 @@ uint CountBonesPerVertex (const Mesh::BoneWeights& bw)
 
 Mesh::Mesh (const String& name) :
 	mName				(name),
-	mIsLocked			(false),
 	mBones				(0),
 	mGeneratedNormals	(true),
 	mVbo				(0),

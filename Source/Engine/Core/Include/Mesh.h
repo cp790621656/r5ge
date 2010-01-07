@@ -1,13 +1,13 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Complete drawable mesh
 //============================================================================================================
 
-class Mesh
+class Mesh : public Thread::Lockable
 {
 public:
 
@@ -52,9 +52,6 @@ public:
 private:
 
 	String				mName;				// Every mesh needs a unique name
-	Thread::Lockable	mLock;				// Thread-safe lock
-	mutable bool		mIsLocked;			// Whether the mesh is locked
-
 	Vertices			mV;					// Vertex positions
 	Normals				mN;					// Normals
 	Tangents			mT;					// Tangents (calculated)
@@ -92,17 +89,17 @@ public:
 	// Static identifier, for consistency
 	R5_DECLARE_SOLO_CLASS("Mesh");
 
-	// Thread-safe locking functionality
-	void Lock()		const	{ mLock.Lock(); mIsLocked = true; }
-	void Unlock()	const	{ mIsLocked = false; mLock.Unlock(); }
-
 	// Clears all memory used by the mesh, but does not release it
-	void Clear() { _AssertIfUnlocked(); _Clear(); }
+	void Clear() { ASSERT_IF_UNLOCKED; _Clear(); }
 
 	// Releases all memory used by the mesh
 	void Release();
 
 private:
+
+#ifdef _DEBUG
+	void ASSERT_IF_UNLOCKED const { ASSERT(IsLocked(), "You must lock the mesh first!"); }
+#endif
 
 	// Clears all arrays and resets all flags
 	void _Clear();
@@ -124,14 +121,14 @@ public: // Various functions to allow read access to private data
 
 public: // These functions should only be used after the mesh has been locked
 
-	Vertices&		GetVertexArray()		{ _AssertIfUnlocked(); return mV;		}
-	Normals&		GetNormalArray()		{ _AssertIfUnlocked(); return mN;		}
-	Tangents&		GetTangentArray()		{ _AssertIfUnlocked(); return mT;		}
-	TexCoords&		GetTexCoordArray()		{ _AssertIfUnlocked(); return mTc;		}
-	Colors&			GetColorArray()			{ _AssertIfUnlocked(); return mC;		}
-	BoneWeights&	GetBoneWeightArray()	{ _AssertIfUnlocked(); return mBw;		}
-	BoneIndices&	GetBoneIndexArray()		{ _AssertIfUnlocked(); return mBi;		}
-	Indices&		GetIndexArray()			{ _AssertIfUnlocked(); return mIndices;	}
+	Vertices&		GetVertexArray()		{ ASSERT_IF_UNLOCKED; return mV;		}
+	Normals&		GetNormalArray()		{ ASSERT_IF_UNLOCKED; return mN;		}
+	Tangents&		GetTangentArray()		{ ASSERT_IF_UNLOCKED; return mT;		}
+	TexCoords&		GetTexCoordArray()		{ ASSERT_IF_UNLOCKED; return mTc;		}
+	Colors&			GetColorArray()			{ ASSERT_IF_UNLOCKED; return mC;		}
+	BoneWeights&	GetBoneWeightArray()	{ ASSERT_IF_UNLOCKED; return mBw;		}
+	BoneIndices&	GetBoneIndexArray()		{ ASSERT_IF_UNLOCKED; return mBi;		}
+	Indices&		GetIndexArray()			{ ASSERT_IF_UNLOCKED; return mIndices;	}
 
 	// Rebuilds the mesh arrays -- use this function after changing the original values via functions above
 	void Update (bool rebuildBuffers,		// Whether to rebuild VBOs
@@ -142,17 +139,16 @@ public: // These functions should only be used after the mesh has been locked
 				 bool indicesChanged);		// Whether indices have changed
 
 	// Change the primitive type
-	void SetPrimitive(uint primitive)		{ _AssertIfUnlocked(); mPrimitive = primitive;	}
+	void SetPrimitive(uint primitive)		{ ASSERT_IF_UNLOCKED; mPrimitive = primitive;	}
 
 	// You can manipulate transformed vertices directly -- if present, they will be used instead of the original ones
 	// NOTE: You don't need to call 'Rebuild' function after changing the transformed values.
-	Vertices&	GetTransformedVertices()	{ _AssertIfUnlocked(); return mTv; }
-	Normals&	GetTransformedNormals()		{ _AssertIfUnlocked(); return mTn; }
-	Tangents&	GetTransformedTangents()	{ _AssertIfUnlocked(); return mTt; }
+	Vertices&	GetTransformedVertices()	{ ASSERT_IF_UNLOCKED; return mTv; }
+	Normals&	GetTransformedNormals()		{ ASSERT_IF_UNLOCKED; return mTn; }
+	Tangents&	GetTransformedTangents()	{ ASSERT_IF_UNLOCKED; return mTt; }
 
 private:
 
-	void _AssertIfUnlocked() const { ASSERT(mIsLocked, "You must lock the mesh first!"); }
 	bool _TransformToVBO (const Array<Matrix43>& transforms);
 	void _TransformToVAs (const Array<Matrix43>& transforms);
 

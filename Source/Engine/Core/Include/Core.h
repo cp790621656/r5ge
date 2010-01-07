@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // R5 Core -- central nexus for everything
@@ -13,6 +13,7 @@ public:
 
 	typedef ResourceArray<Resource>			Resources;
 	typedef ResourceArray<Mesh>				Meshes;
+	typedef ResourceArray<BillboardMesh>	BBMeshes;
 	typedef ResourceArray<Skeleton>			Skeletons;
 	typedef ResourceArray<ModelTemplate>	ModelTemplates;
 	typedef ResourceArray<Model>			Models;
@@ -28,7 +29,8 @@ protected:
 	Vector2i		mMousePos;			// Saved current mouse position
 	Vector2i		mUpdatedSize;		// If the window size gets updated, appropriate components must be notified
 	Resources		mResources;			// Managed array of resources
-	Meshes			mMeshes;			// Managed array of meshes
+	Meshes			mMeshes;			// Managed array of regular meshes
+	BBMeshes	mBBMeshes;			// Managed array of billboard meshes
 	Skeletons		mSkeletons;			// Managed array of skeletons
 	ModelTemplates	mModelTemplates;	// Managed array of model templates that can be used to create models
 	Models			mModels;			// Managed array of instantiable models
@@ -74,6 +76,7 @@ public:
 	// Useful to have direct access to these components
 	Object*			GetRoot()				{ return &mRoot;			}
 	Meshes&			GetAllMeshes()			{ return mMeshes;			}
+	BBMeshes&		GetAllBillboardMeshes() { return mBBMeshes;			}
 	Models&			GetAllModels()			{ return mModels;			}
 	Resources&		GetAllResources()		{ return mResources;		}
 	Skeletons&		GetAllSkeletons()		{ return mSkeletons;		}
@@ -81,6 +84,7 @@ public:
 
 	// Resource retrieval and creation
 	Mesh*			GetMesh			(const String& name, bool createIfMissing = true);
+	BillboardMesh*	GetBillboardMesh(const String& name, bool createIfMissing = true);
 	Model*			GetModel		(const String& name, bool createIfMissing = true);
 	Resource*		GetResource		(const String& name, bool createIfMissing = true);
 	Skeleton*		GetSkeleton		(const String& name, bool createIfMissing = true);

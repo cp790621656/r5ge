@@ -137,13 +137,12 @@ void ModelTemplate::_Update()
 			for (uint i = mLimbs.GetSize(); i > 0; )
 			{
 				const Limb* limb = mLimbs[--i];
-				const Mesh* mesh = limb->GetMesh();
-				const IMaterial* mat = limb->GetMaterial();
 
-				if (mesh != 0 && mat != 0)
+				if (limb->IsValid())
 				{
-					mBounds.Include(mesh->GetBounds());
-					mMask |= mat->GetTechniqueMask();
+					if (limb->mMesh != 0) mBounds.Include(limb->mMesh->GetBounds());
+					else if (limb->mBBMesh != 0) mBounds.Include(limb->mBBMesh->GetBounds());
+					mMask |= limb->mMat->GetTechniqueMask();
 				}
 			}
 		}
@@ -209,6 +208,7 @@ void ModelTemplate::SetSource (ModelTemplate* temp, bool forceUpdate)
 							// Copy the limb mesh and material information
 							Limb* myLimb = mLimbs.Add( limb->GetName() );
 							myLimb->SetMesh( limb->GetMesh() );
+							myLimb->SetMesh( limb->GetBillboardMesh() );
 							myLimb->SetMaterial( limb->GetMaterial() );
 						}
 					}
@@ -269,8 +269,9 @@ void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 
 				if (limb != 0)
 				{
-					if (meshes    && limb->mMat  != 0)  limb->mMat->Release();
-					if (materials && limb->mMesh != 0)  limb->mMesh->Release();
+					if (meshes    && limb->mMat		!= 0)  limb->mMat->Release();
+					if (materials && limb->mMesh	!= 0)  limb->mMesh->Release();
+					if (materials && limb->mBBMesh	!= 0)  limb->mBBMesh->Release();
 				}
 			}
 		}
@@ -355,8 +356,9 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 	IGraphics* graphics = mCore->GetGraphics();
 	if (graphics == 0) return false;
 
-	Mesh* mesh(0);
-	IMaterial* mat (0);
+	Mesh*			mesh	= 0;
+	BillboardMesh*	bm		= 0;
+	IMaterial*		mat		= 0;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -368,13 +370,17 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 		{
 			mesh = mCore->GetMesh(value.IsString() ? value.AsString() : value.GetString());
 		}
+		else if (tag == BillboardMesh::ClassID())
+		{
+			bm = mCore->GetBillboardMesh(value.IsString() ? value.AsString() : value.GetString());
+		}
 		else if ( tag == IMaterial::ClassID() )
 		{
 			mat = graphics->GetMaterial(value.IsString() ? value.AsString() : value.GetString());
 		}
 	}
-	
-	if (mesh != 0 && mat != 0)
+
+	if ((mesh != 0 || bm != 0) && mat != 0)
 	{
 		Lock();
 		{
@@ -391,7 +397,9 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 					Limb* ptr = mLimbs[i];
 
 					// Remember the matching limb
-					if (ptr != 0 && ptr->mMesh == mesh)
+					if ( ptr  != 0 &&
+						(mesh != 0 && ptr->mMesh == mesh) ||
+						(bm   != 0 && ptr->mBBMesh == bm) )
 					{
 						limb = ptr;
 						break;
@@ -402,19 +410,16 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 			// If the limb is still missing, time to add a new entry
 			if (limb == 0)
 			{
-				// This is a new limb -- add a new entry
 				limb = mLimbs.Add(name);
-
-				// Update the limb's name, mesh, and material
-				limb->SetName(name);
-				limb->Set(mesh, mat);
-				mIsDirty = true;
+				forceUpdate = true;
 			}
-			else if (forceUpdate)
+
+			if (forceUpdate)
 			{
 				// Update the limb's name, mesh, and material
 				limb->SetName(name);
-				limb->Set(mesh, mat);
+				if (mesh != 0) limb->Set(mesh, mat);
+				else limb->Set(bm, mat);
 				mIsDirty = true;
 			}
 		}
@@ -435,10 +440,18 @@ void ModelTemplate::_SaveLimbs (TreeNode& node, bool forceSave) const
 		{
 			const Limb* limb ( mLimbs[i] );
 
-			if ( limb != 0 && (forceSave || limb->mSerializable) && limb->mMat != 0 && limb->mMesh != 0 )
+			if ( limb != 0 && (forceSave || limb->mSerializable) && limb->IsValid() )
 			{
 				TreeNode& child = node.AddChild( Limb::ClassID(), limb->GetName() );
-				child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+
+				if (limb->mMesh != 0) 
+				{
+					child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+				}
+				else if (limb->mBBMesh != 0)
+				{
+					child.AddChild( BillboardMesh::ClassID(), limb->mBBMesh->GetName() );
+				}
 				child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
 			}
 		}
@@ -509,8 +522,9 @@ bool ModelTemplate::Load (const byte* buffer, uint size, const String& extension
 
 bool ModelTemplate::Save (TreeNode& root) const
 {
-	Array<Mesh*>		meshes;
-	Array<IMaterial*>	materials;
+	Array<Mesh*> meshes;
+	Array<BillboardMesh*> mBMs;
+	Array<IMaterial*> materials;
 
 	Lock();
 	{
@@ -536,14 +550,23 @@ bool ModelTemplate::Save (TreeNode& root) const
 
 			if (limb != 0)
 			{
-				if (limb->mMat  != 0) materials.AddUnique(limb->mMat);
-				if (limb->mMesh != 0) meshes.AddUnique(limb->mMesh);
+				if (limb->mMat		!= 0) materials.AddUnique(limb->mMat);
+				if (limb->mMesh		!= 0) meshes.AddUnique(limb->mMesh);
+				if (limb->mBBMesh	!= 0) mBMs.AddUnique(limb->mBBMesh);
 
 				// If the limb is valid, save it right away
 				if (limb->IsValid())
 				{
 					TreeNode& child ( model.AddChild( Limb::ClassID(), limb->GetName() ) );
-					child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+
+					if (limb->mMesh != 0)
+					{
+						child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+					}
+					else if (limb->mBBMesh != 0)
+					{
+						child.AddChild( BillboardMesh::ClassID(), limb->mBBMesh->GetName() );
+					}
 					child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
 				}
 			}
@@ -564,8 +587,8 @@ bool ModelTemplate::Save (TreeNode& root) const
 		}
 
 		// Save meshes
-		for (uint i = 0; i < meshes.GetSize(); ++i)
-			meshes[i]->SerializeTo(core);
+		for (uint i = 0; i < meshes.GetSize(); ++i) meshes[i]->SerializeTo(core);
+		for (uint i = 0; i < mBMs.GetSize(); ++i) mBMs[i]->SerializeTo(core);
 	}
 	Unlock();
 	return true;

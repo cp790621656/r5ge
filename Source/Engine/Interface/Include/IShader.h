@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Unified shader interface
@@ -76,13 +76,13 @@ public: // The following functions are meant to be called only from the graphics
 	// Deactivates the active shader
 	virtual void Deactivate() const=0;
 
-	// Force-updates the value of the specified uniform using either the existing function or the new one, if specified
-	virtual bool UpdateUniform (uint id, const SetUniformDelegate& fnct = 0) const=0;
+	// Force-updates the value of the specified uniform
+	virtual bool UpdateUniform (const String& name, const Uniform& uniform) const=0;
 
 public:
 
 	// Registers a uniform variable that will be updated when the shader is activated
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint id = 0)=0;
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct)=0;
 
 	// Directly sets the source code for the shader
 	virtual void SetSourceCode (const String& code, uint type)=0;

@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 
@@ -9,6 +9,14 @@
 #define _CORE_INCLUDE_H
 
 #include "../../Render/Include/_All.h"
+
+#ifdef _DEBUG
+ #ifndef ASSERT_IF_UNLOCKED
+  #define ASSERT_IF_UNLOCKED _AssertIfUnlocked()
+ #endif
+#else
+ #define ASSERT_IF_UNLOCKED
+#endif
 
 namespace R5
 {
@@ -38,6 +46,7 @@ namespace R5
 	#include "CameraController.h"	// Camera Controller provides a way to blend together different cameras
 
 	#include "Mesh.h"				// Complete drawable mesh
+	#include "BillboardMesh.h"		// Mesh made up of screen-facing billboards (tree canopy, for example)
 	#include "Animatable.h"			// Animatable placeable
 	#include "Bone.h"				// Single bone for skeletal animation
 	#include "Animation.h"			// Keyframed animation

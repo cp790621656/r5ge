@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // This file contains inlined macroed functionality used by the Variable class.
@@ -52,6 +52,16 @@
 	void operator =(const Array<varType>& arr)								\
 	{																		\
 		To##funcType##Array() = arr;										\
+	}																		\
+																			\
+	bool operator >> (R5::Array<varType>& value) const						\
+	{																		\
+		if (Is##funcType##Array())											\
+		{																	\
+			value = As##funcType##Array();									\
+			return true;													\
+		}																	\
+		return false;														\
 	}
 
 //============================================================================================================

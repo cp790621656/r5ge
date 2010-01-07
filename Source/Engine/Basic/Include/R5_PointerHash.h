@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Hash meant to store pointers -- it will automatically delete them when destroyed

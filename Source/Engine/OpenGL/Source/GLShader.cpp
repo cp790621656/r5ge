@@ -282,84 +282,70 @@ bool SetUniform1i (uint program, const char* name, int val)
 }
 
 //============================================================================================================
+// Find the OpenGL ID of the specified uniform entry
+//============================================================================================================
+
+uint GetUniformID (const String& name)
+{
+	uint glID = glGetUniformLocation(g_activeProgram, name.GetBuffer());
+	CHECK_GL_ERROR;
+#ifdef _DEBUG
+	if (glID != -1) System::Log("          - Found uniform '%s' [%u]", name.GetBuffer(), glID);
+#endif
+	return glID;
+}
+
+//============================================================================================================
 // Updates a uniform entry
 //============================================================================================================
 
-bool UpdateUniform (const GLShader::UniformEntry& entry)
+bool UpdateUniform (uint glID, const Uniform& uni)
 {
-	if (entry.mGlID == -2)
+	if (glID >= 0)
 	{
-		entry.mGlID = glGetUniformLocation(g_activeProgram, entry.mName.GetBuffer());
+		switch (uni.mType)
+		{
+		case Uniform::Type::Float1:
+			glUniform1f(glID, uni.mVal[0]);
+			break;
+		case Uniform::Type::Float2:
+			glUniform2f(glID, uni.mVal[0], uni.mVal[1]);
+			break;
+		case Uniform::Type::Float3:
+			glUniform3f(glID, uni.mVal[0], uni.mVal[1], uni.mVal[2]);
+			break;
+		case Uniform::Type::Float4:
+			glUniform4f(glID, uni.mVal[0], uni.mVal[1], uni.mVal[2], uni.mVal[3]);
+			break;
+		case Uniform::Type::Float9:
+			glUniformMatrix3fv(glID, 1, 0, uni.mVal);
+			break;
+		case Uniform::Type::Float16:
+			glUniformMatrix4fv(glID, 1, 0, uni.mVal);
+			break;
+		case Uniform::Type::ArrayFloat1:
+			glUniform1fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat2:
+			glUniform2fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat3:
+			glUniform3fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat4:
+			glUniform4fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat9:
+			glUniformMatrix3fv(glID, uni.mElements, 0, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat16:
+			glUniformMatrix4fv(glID, uni.mElements, 0, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayInt:
+			glUniform1iv(glID, uni.mElements, (int*)uni.mPtr);
+			break;
+		}
 		CHECK_GL_ERROR;
-
-#ifdef _DEBUG
-		if (entry.mGlID != -1)
-		{
-			System::Log("          - Found uniform '%s' [%u]",
-				entry.mName.GetBuffer(), entry.mGlID);
-		}
-#endif
-	}
-#ifdef _DEBUG
-	else
-	{
-		uint id = glGetUniformLocation(g_activeProgram, entry.mName.GetBuffer());
-		ASSERT(entry.mGlID == id, "The uniform shifted!");
-	}
-#endif
-	
-	if (entry.mGlID != -1)
-	{
-		if (entry.mDelegate)
-		{
-			Uniform uni;
-			uni.mType = Uniform::Type::Invalid;
-			entry.mDelegate(entry.mName, uni);
-
-			switch (uni.mType)
-			{
-			case Uniform::Type::Float1:
-				glUniform1f(entry.mGlID, uni.mVal[0]);
-				break;
-			case Uniform::Type::Float2:
-				glUniform2f(entry.mGlID, uni.mVal[0], uni.mVal[1]);
-				break;
-			case Uniform::Type::Float3:
-				glUniform3f(entry.mGlID, uni.mVal[0], uni.mVal[1], uni.mVal[2]);
-				break;
-			case Uniform::Type::Float4:
-				glUniform4f(entry.mGlID, uni.mVal[0], uni.mVal[1], uni.mVal[2], uni.mVal[3]);
-				break;
-			case Uniform::Type::Float9:
-				glUniformMatrix3fv(entry.mGlID, 1, 0, uni.mVal);
-				break;
-			case Uniform::Type::Float16:
-				glUniformMatrix4fv(entry.mGlID, 1, 0, uni.mVal);
-				break;
-			case Uniform::Type::ArrayFloat1:
-				glUniform1fv(entry.mGlID, uni.mElements, (float*)uni.mPtr);
-				break;
-			case Uniform::Type::ArrayFloat2:
-				glUniform2fv(entry.mGlID, uni.mElements, (float*)uni.mPtr);
-				break;
-			case Uniform::Type::ArrayFloat3:
-				glUniform3fv(entry.mGlID, uni.mElements, (float*)uni.mPtr);
-				break;
-			case Uniform::Type::ArrayFloat4:
-				glUniform4fv(entry.mGlID, uni.mElements, (float*)uni.mPtr);
-				break;
-			case Uniform::Type::ArrayFloat9:
-				glUniformMatrix3fv(entry.mGlID, uni.mElements, 0, (float*)uni.mPtr);
-				break;
-			case Uniform::Type::ArrayFloat16:
-				glUniformMatrix4fv(entry.mGlID, uni.mElements, 0, (float*)uni.mPtr);
-				break;
-			case Uniform::Type::ArrayInt:
-				glUniform1iv(entry.mGlID, uni.mElements, (int*)uni.mPtr);
-				break;
-			}
-			CHECK_GL_ERROR;
-		}
 		return true;
 	}
 	return false;
@@ -888,15 +874,25 @@ IShader::ActivationResult GLShader::_Activate (uint activeLightCount, bool updat
 			// Update all registered uniforms
 			if (updateUniforms && program.mGlID != 0 && uniforms.GetSize() > 0)
 			{
+				Uniform uni;
 				mUpdateStamp = current;
 
 				for (uint u = uniforms.GetSize(); u > 0; )
 				{
 					const UniformEntry& entry = uniforms[--u];
 
-					if (entry.mGlID != -1)
+					if (entry.mGlID != -1 && entry.mDelegate)
 					{
-						::UpdateUniform(entry);
+						// Find the uniform if we have not yet tried to find it
+						if (entry.mGlID == -2) entry.mGlID = GetUniformID(entry.mName);
+
+						// If the uniform has been found, update it
+						if (entry.mGlID != -1)
+						{
+							uni.mType = Uniform::Type::Invalid;
+							entry.mDelegate(entry.mName, uni);
+							::UpdateUniform(entry.mGlID, uni);
+						}
 					}
 				}
 			}
@@ -1003,7 +999,7 @@ void GLShader::Deactivate() const
 // Registers a uniform variable
 //============================================================================================================
 
-void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint id)
+void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fnct)
 {
 	uint maxEntries = g_caps.mMaxLights + 1;
 	if (mPrograms.GetSize() < maxEntries)
@@ -1011,13 +1007,13 @@ void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fn
 
 	for (uint i = 0; i < mPrograms.GetSize(); ++i)
 	{
-		mPrograms[i].RegisterUniform(name, fnct, id);
+		mPrograms[i].RegisterUniform(name, fnct);
 	}
 }
 
 //============================================================================================================
 
-void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint id)
+void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUniformDelegate& fnct)
 {
 	mUniforms.Lock();
 	{
@@ -1027,7 +1023,6 @@ void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUnifo
 
 			if (entry.mName == name)
 			{
-				entry.mId = id;
 				entry.mDelegate = fnct;
 				mUniforms.Unlock();
 				return;
@@ -1035,7 +1030,6 @@ void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUnifo
 		}
 
 		UniformEntry& entry = mUniforms.Expand();
-		entry.mId			= id;
 		entry.mName			= name;
 		entry.mDelegate		= fnct;
 	}
@@ -1046,24 +1040,21 @@ void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUnifo
 // Force-updates the value of the specified uniform
 //============================================================================================================
 
-bool GLShader::UpdateUniform (uint id, const SetUniformDelegate& fnct) const
+bool GLShader::UpdateUniform (const String& name, const Uniform& uniform) const
 {
 	if (g_activeProgram != 0)
 	{
 		if (mPrograms[g_activeLightCount].mProgram.mGlID == g_activeProgram)
 		{
-			return mPrograms[g_activeLightCount].UpdateUniform(id, fnct);
+			return mPrograms[g_activeLightCount].UpdateUniform(name, uniform);
 		}
-#ifdef _DEBUG
-		else ASSERT(false, "Calling IShader::UpdateUniform on a shader that's not currently active!");
-#endif
 	}
-	return true;
+	return false;
 }
 
 //============================================================================================================
 
-bool GLShader::ProgramEntry::UpdateUniform (uint id, const SetUniformDelegate& fnct) const
+bool GLShader::ProgramEntry::UpdateUniform (const String& name, const Uniform& uniform) const
 {
 	mUniforms.Lock();
 	{
@@ -1071,13 +1062,27 @@ bool GLShader::ProgramEntry::UpdateUniform (uint id, const SetUniformDelegate& f
 		{
 			const UniformEntry& entry = mUniforms[--i];
 
-			if (entry.mId == id)
+			if (entry.mName == name)
 			{
+				if (entry.mGlID == -2) entry.mGlID = GetUniformID(name);
 				if (entry.mGlID != -1)
 				{
-					if (fnct) entry.mDelegate = fnct;
-					::UpdateUniform(entry);
+					::UpdateUniform(entry.mGlID, uniform);
+					mUniforms.Unlock();
+					return true;
 				}
+			}
+		}
+
+		// This must be a new entry -- try to add it
+		{
+			UniformEntry& entry = mUniforms.Expand();
+			entry.mName = name;
+			entry.mGlID = GetUniformID(name);
+			
+			if (entry.mGlID != -1)
+			{
+				::UpdateUniform(entry.mGlID, uniform);
 				mUniforms.Unlock();
 				return true;
 			}

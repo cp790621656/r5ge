@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 
@@ -44,6 +44,7 @@ namespace Thread
 		
 	public:
 		inline void Lock()		const	{ pthread_mutex_lock(&mLock); }
+		inline void IsLocked()	const	{ return mLock != 0; }
 		inline void Unlock()	const	{ pthread_mutex_unlock(&mLock); }
 	};
 
@@ -59,6 +60,7 @@ namespace Thread
 		
 	public:
 		inline void Lock()		const	{ WaitFor(mLock); }
+		inline bool IsLocked()	const	{ return mLock != 0; }
 		inline void Unlock()	const	{ mLock = 0; }
 	};
 

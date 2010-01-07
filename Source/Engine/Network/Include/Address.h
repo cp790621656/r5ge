@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Network, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//              R5 Network, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Network::Address contains the IP and Port of the remote host

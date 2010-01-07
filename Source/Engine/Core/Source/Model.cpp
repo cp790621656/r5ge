@@ -16,23 +16,8 @@ struct Notification
 // Globally defined variables
 //============================================================================================================
 
-bool	g_skinningShaderActive = false;
-void*	g_matrices	= 0;
-uint	g_elements	= 0;
-bool	g_skinOnGPU	= true;
-bool	g_skinToVBO	= true;
-
-//============================================================================================================
-// Skinning callback, triggered when the material's shader gets activated if it supports GPU skinning
-//============================================================================================================
-
-void OnUpdateBoneTransforms (const String& name, Uniform& uniform)
-{
-	g_skinningShaderActive	= true;
-	uniform.mType		= Uniform::Type::ArrayFloat16;
-	uniform.mPtr		= g_matrices;
-	uniform.mElements	= g_elements;
-}
+bool g_skinOnGPU = true;
+bool g_skinToVBO = true;
 
 //============================================================================================================
 // Constructor just sets the default values
@@ -221,10 +206,6 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 	// Go through every limb and render it
 	Lock();
 	{
-		// Update the GPU skinning callback's values
-		g_matrices = &mMatrices[0][0];
-		g_elements = mMatrices.GetSize();
-
 		// Go through all limbs
 		for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
 		{
@@ -238,41 +219,26 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 
 				IMaterial::DrawMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
 
-				if (method != 0)
+				if (mesh != 0 && method != 0)
 				{
-					// Reset the switch -- it will get flipped to 'true' when the skinning shader kicks in
-					g_skinningShaderActive = false;
-
 					// Set the active material, possibly updating the shader in the process
 					if ( graphics->SetActiveMaterial(mat) )
 					{
 						if (updateSkin)
 						{
-							if (g_skinOnGPU && !g_skinningShaderActive)
+							IShader* shader = method->GetShader();
+
+							// If we're skinning on the GPU and we have a shader active
+							if (g_skinOnGPU && shader != 0 && shader->GetFlag(IShader::Flag::Skinned))
 							{
-								// If the material's shader hasn't updated the skinning flag, check why
-								IShader* shader = method->GetShader();
+								Uniform uniform;
+								uniform.mType		= Uniform::Type::ArrayFloat16;
+								uniform.mPtr		= &mMatrices[0][0];
+								uniform.mElements	= mMatrices.GetSize();
 
-								// Try to update the uniform directly
-								if (shader != 0 && shader->GetFlag(IShader::Flag::Skinned) && !shader->UpdateUniform(1))
-								{
-									// If failed, register it and update it again
-									shader->RegisterUniform("R5_boneTransforms", OnUpdateBoneTransforms, 1);
-									shader->UpdateUniform(1);
+								// Update the transform matrix
+								shader->UpdateUniform("R5_boneTransforms", uniform);
 
-									// Ensure that we now have the shader active
-									ASSERT(g_skinningShaderActive, "Shader marked as skinned, yet no bone transforms?");
-
-									// Odd case, should never happen, but can't hurt to be safe.
-									if (!g_skinningShaderActive)
-									{
-										shader->SetFlag(IShader::Flag::Skinned, false);
-									}
-								}
-							}
-
-							if (g_skinningShaderActive)
-							{
 								// If we're skinning on the GPU, we don't need transformed vertices
 								mesh->DiscardTransforms();
 							}

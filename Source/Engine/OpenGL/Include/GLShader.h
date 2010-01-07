@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Vertex and fragment shader management
@@ -13,12 +13,11 @@ public:
 
 	struct UniformEntry
 	{
-		uint						mId;		// Unique identifier used to locate the uniform quickly
 		String						mName;		// Name of the uniform variable (ie: "R5_eyePos")
 		mutable SetUniformDelegate	mDelegate;	// Delegate function that will set the data for that uniform
 		mutable int					mGlID;		// OpenGL resource ID in the shader, once found (-2 if not checked, -1 if not found)
 
-		UniformEntry() : mId(0), mGlID(-2) {}
+		UniformEntry() : mGlID(-2) {}
 	};
 
 	struct ShaderInfo
@@ -59,12 +58,13 @@ private:
 
 	struct ProgramEntry
 	{
-		ShaderEntry			mVertex;		// Compiled vertex shaders
-		ShaderEntry			mFragment;		// Compiled fragment shaders
-		ShaderEntry			mProgram;		// Linked shader programs
-		Array<UniformEntry>	mUniforms;		// Array of registered uniform variables for this program
+		ShaderEntry					mVertex;	// Compiled vertex shaders
+		ShaderEntry					mFragment;	// Compiled fragment shaders
+		ShaderEntry					mProgram;	// Linked shader programs
+		mutable Array<UniformEntry>	mUniforms;	// Array of registered uniform variables for this program
 
-		void RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint id);
+		void RegisterUniform (const String& name, const SetUniformDelegate& fnct);
+		bool UpdateUniform (const String& name, const Uniform& uniform) const;
 		bool UpdateUniform (uint id, const SetUniformDelegate& fnct) const;
 	};
 
@@ -118,16 +118,13 @@ public: // The following functions are meant to be called only from the graphics
 	// Deactivates the active shader
 	virtual void Deactivate() const;
 
-	// Force-updates the value of the specified uniform using either the existing function or the new one,
-	// if specified. Returns 'true' if the ID's entry was found, 'false' if it was not. Whether the function
-	// gets executed or not has no effect on the return value. Place some flag in your function if you want
-	// to know when it is actually executed.
-	virtual bool UpdateUniform (uint id, const SetUniformDelegate& fnct = 0) const;
+	// Force-updates the value of the specified uniform
+	virtual bool UpdateUniform (const String& name, const Uniform& uniform) const;
 
 public:
 
 	// Registers a uniform variable that's updated once per frame
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint id = 0);
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct);
 
 	// Directly sets the source code for the shader
 	virtual void SetSourceCode (const String& code, uint type) { mLock.Lock(); _SetSourceCode(code, type); mLock.Unlock(); }

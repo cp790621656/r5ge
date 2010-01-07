@@ -1,12 +1,12 @@
-uniform vec3 _center;
+uniform vec3 R5_origin;
 
 void main()
 {
 	// Calculate the view-transformed vertex
     vec4 vertex = gl_ModelViewMatrix * gl_Vertex;
 
-	// Leaf's normal is relative to the center of the canopy
-    vec3 normal = normalize( gl_NormalMatrix * (gl_Vertex.xyz - _center) );
+	// Leaf's normal is relative to the origin of the canopy
+    vec3 normal = normalize( gl_NormalMatrix * (gl_Vertex.xyz - R5_origin) );
 
 	// The leaf's tint depends on the dot product of the camera's direction and the leaf's normal.
 	// The idea behind this is to make leaves on the opposite side of the canopy darker, simulating depth.

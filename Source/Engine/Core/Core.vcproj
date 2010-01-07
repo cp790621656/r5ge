@@ -207,6 +207,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\BillboardMesh.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\Bone.cpp"
 					>
 				</File>
@@ -244,6 +248,10 @@
 				</File>
 				<File
 					RelativePath=".\Include\Animation.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\BillboardMesh.h"
 					>
 				</File>
 				<File

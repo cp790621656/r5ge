@@ -11,6 +11,7 @@ Root
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
+			ADT = 0.003922
 
 			Technique = "Deferred"
 			{
@@ -19,17 +20,24 @@ Root
 
 			Technique = "Opaque"
 		}
+
+		Material = "Canopy"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.250000
+
+			Technique = "Transparent"
+			{
+				Shader = "Other/Canopy"
+				Texture 0 = "Canopy"
+			}
+		}
 	}
 
 	Core
 	{
-		Serializable = false
-		
-		Canopy = "Leaves"
-		{
-			0.0 0.0 10.0 1.0
-		}
-
 		Mesh = "Trunk"
 		{
 			Vertices = Float3[]
@@ -1157,6 +1165,17 @@ Root
 				311 320 311 313 321 313 304 316
 			}
 		}
+
+		Billboard Mesh = "Canopy"
+		{
+			Origin = 0.000000 0.000000 6.000000
+
+			Instances = Float4[]
+			{
+				-2.500000 -3.000000 8.400000 2.000000
+				2.500000 3.000000 8.400000 2.000000
+			}
+		}
 	}
 
 	Template
@@ -1167,6 +1186,12 @@ Root
 		{
 			Mesh = "Trunk"
 			Material = "Trunk"
+		}
+
+		Limb = "Canopy"
+		{
+			Billboard Mesh = "Canopy"
+			Material = "Canopy"
 		}
 	}
 }
