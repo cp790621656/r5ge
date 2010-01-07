@@ -264,7 +264,7 @@ bool UIEditableLabel::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 }
 
 //============================================================================================================
-// Respond to mouse buttons
+// Respond to key events
 //============================================================================================================
 
 bool UIEditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)

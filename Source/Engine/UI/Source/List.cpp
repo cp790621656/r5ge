@@ -56,23 +56,19 @@ bool UIList::OnUpdate (bool dimensionsChanged)
 	}
 
 	// If dimensions have changed, we should reposition the symbol picture
-	if (dimensionsChanged)
+	if (dimensionsChanged && face != 0)
 	{
-		if (face != 0)
-		{
-			const Vector2i& size = face->GetSize();
-			float ratio = (float)size.x / size.y;
-			float height = mImage.GetSubRegion().GetCalculatedHeight();
-			float hmm = mImage.GetRegion().GetCalculatedHeight();
+		const Vector2i& size = face->GetSize();
+		float ratio = (float)size.x / size.y;
+		float height = mImage.GetSubRegion().GetCalculatedHeight();
 
-			if (mLabel.GetAlignment() == UILabel::Alignment::Right)
-			{
-				mSymbol.GetRegion().SetRight(0.0f, ratio * height);
-			}
-			else
-			{
-				mSymbol.GetRegion().SetLeft(1.0f, -ratio * height);
-			}
+		if (mLabel.GetAlignment() == UILabel::Alignment::Right)
+		{
+			mSymbol.GetRegion().SetRight(0.0f, ratio * height);
+		}
+		else
+		{
+			mSymbol.GetRegion().SetLeft(1.0f, -ratio * height);
 		}
 	}
 	dimensionsChanged |= mSymbol.Update(mImage.GetSubRegion(), dimensionsChanged);
