@@ -90,15 +90,15 @@ Root
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/D_N"
-				Texture 0 = "C:\Projects\Textures\bark.png"
-				Texture 1 = "C:\Projects\Textures\bark_n.png"
+				Texture 0 = "Textures\Plants\bark.jpg"
+				Texture 1 = "Textures\Plants\bark_n.png"
 			}
 
 			Technique = "Opaque"
 			{
 				Shader = "Forward/D_N"
-				Texture 0 = "C:\Projects\Textures\bark.png"
-				Texture 1 = "C:\Projects\Textures\bark_n.png"
+				Texture 0 = "Textures\Plants\bark.jpg"
+				Texture 1 = "Textures\Plants\bark_n.png"
 			}
 		}
 
