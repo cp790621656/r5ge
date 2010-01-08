@@ -241,10 +241,10 @@ Mesh* Core::GetMesh (const String& name, bool createIfMissing)
 // Retrieves a mesh with the specified name
 //============================================================================================================
 
-BillboardMesh* Core::GetBillboardMesh (const String& name, bool createIfMissing)
+Cloud* Core::GetCloud (const String& name, bool createIfMissing)
 {
 	if (name.IsEmpty()) return 0;
-	return (createIfMissing ? mBBMeshes.AddUnique(name) : mBBMeshes.Find(name));
+	return (createIfMissing ? mClouds.AddUnique(name) : mClouds.Find(name));
 }
 
 //============================================================================================================
@@ -474,9 +474,9 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			Mesh* mesh = GetMesh(value.IsString() ? value.AsString() : value.GetString(), true);
 			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
 		}
-		else if ( tag == BillboardMesh::ClassID() )
+		else if ( tag == Cloud::ClassID() )
 		{
-			BillboardMesh* bm = GetBillboardMesh(value.IsString() ? value.AsString() : value.GetString(), true);
+			Cloud* bm = GetCloud(value.IsString() ? value.AsString() : value.GetString(), true);
 			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
 		}
 		else if ( tag == Skeleton::ClassID() )

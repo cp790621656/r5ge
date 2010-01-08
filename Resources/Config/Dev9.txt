@@ -46,7 +46,7 @@ Root
 
 		Texture = "Leaf Diffuse map"
 		{
-			Source = "Textures/Billboards/leaf.png"
+			Source = "Textures/Billboards/leaf2.png"
 			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Repeat"
@@ -54,7 +54,7 @@ Root
 
 		Texture = "Leaf Normal map"
 		{
-			Source = "Textures/Billboards/leaf_ns.png"
+			Source = "Textures/Billboards/leaf2_ns.png"
 			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Repeat"
@@ -79,12 +79,13 @@ Root
 				Texture 1 = "Leaf Normal map"
 			}
 		}
-		
+
 		Material = "Trunk"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
+			ADT = 0.003922
 
 			Technique = "Deferred"
 			{
@@ -100,6 +101,20 @@ Root
 				Texture 1 = "C:\Projects\Textures\bark_n.png"
 			}
 		}
+
+		Material = "Canopy"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.250000
+
+			Technique = "Transparent"
+			{
+				Shader = "Other/Canopy"
+				Texture 0 = "Canopy"
+			}
+		}
 	}
 
 	UI
@@ -110,74 +125,6 @@ Root
 
 		Layout
 		{
-			Window = "Final Window"
-			{
-				Left = 0.000000 310.000000
-				Right = 0.000000 822.000000
-				Top = 0.000000 138.000000
-				Bottom = 0.000000 670.000000
-				Alpha = 1.000000
-				Titlebar Height = 20
-				Resizable = true
-				Color = 1.000000 1.000000 1.000000
-				Text = "Final Texture (512x512)"
-				Shadow = true
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Button = "Alpha"
-				{
-					Left = 0.000000 0.000000
-					Right = 0.000000 22.000000
-					Top = 0.000000 -20.000000
-					Bottom = 0.000000 0.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "A"
-					Shadow = false
-					Alignment = "Center"
-					State = "Pressed"
-					Sticky = true
-					Animation Time = 0.150000
-					Receives Events = true
-					Tooltip = "Toggles the image's [FF8833]Alpha[FFFFFF] channel"
-					Layer = 0
-				}
-
-				Button = "Normal"
-				{
-					Left = 0.000000 22.000000
-					Right = 0.000000 44.000000
-					Top = 0.000000 -20.000000
-					Bottom = 0.000000 0.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "N"
-					Shadow = false
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = true
-					Animation Time = 0.150000
-					Receives Events = true
-					Tooltip = "Toggles the [FF8833]normal map[FFFFFF]"
-					Layer = 0
-				}
-
-				Picture = "Final"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Canopy"
-					Ignore Alpha = false
-					Receives Events = false
-					Layer = 1
-				}
-			}
-
 			Window = "Leaf Normal Window"
 			{
 				Left = 0.000000 26.000000
@@ -283,35 +230,6 @@ Root
 					}
 				}
 
-				Slider = "Size"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
-					Value = 0.265700
-					Color = 1.000000 1.000000 1.000000
-					Animation Time = 0.000000
-					Receives Events = true
-					Layer = 0
-
-					Label = "Size Text"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "Particle Size"
-						Shadow = true
-						Alignment = "Center"
-						Receives Events = false
-						Layer = 1
-					}
-				}
-
 				Slider = "Count"
 				{
 					Left = 0.000000 3.000000
@@ -319,7 +237,7 @@ Root
 					Top = 0.000000 43.000000
 					Bottom = 0.000000 60.000000
 					Alpha = 1.000000
-					Value = 0.260870
+					Value = 0.372093
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
 					Receives Events = true
@@ -334,6 +252,35 @@ Root
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
 						Text = "Number of Particles"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
+					}
+				}
+
+				Slider = "Size"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Value = 0.176744
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Size Text"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "Particle Size"
 						Shadow = true
 						Alignment = "Center"
 						Receives Events = false
@@ -359,13 +306,81 @@ Root
 					Layer = 0
 				}
 			}
+
+			Window = "Final Window"
+			{
+				Left = 0.000000 319.000000
+				Right = 0.000000 831.000000
+				Top = 0.000000 134.000000
+				Bottom = 0.000000 666.000000
+				Alpha = 1.000000
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Final Texture (512x512)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Button = "Alpha"
+				{
+					Left = 0.000000 0.000000
+					Right = 0.000000 22.000000
+					Top = 0.000000 -20.000000
+					Bottom = 0.000000 0.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "A"
+					Shadow = false
+					Alignment = "Center"
+					State = "Pressed"
+					Sticky = true
+					Animation Time = 0.150000
+					Receives Events = true
+					Tooltip = "Toggles the image's [FF8833]Alpha[FFFFFF] channel"
+					Layer = 0
+				}
+
+				Button = "Normal"
+				{
+					Left = 0.000000 22.000000
+					Right = 0.000000 44.000000
+					Top = 0.000000 -20.000000
+					Bottom = 0.000000 0.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "N"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = true
+					Animation Time = 0.150000
+					Receives Events = true
+					Tooltip = "Toggles the [FF8833]normal map[FFFFFF]"
+					Layer = 0
+				}
+
+				Picture = "Final"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Canopy"
+					Ignore Alpha = false
+					Receives Events = false
+					Layer = 1
+				}
+			}
 		}
 	}
 
 	Core
 	{
 		Execute = "Config/Neon UI Skin.txt"
-		
+
 		Model = "Tree"
 		{
 			Source = "Models/tree.r5a"
@@ -392,12 +407,12 @@ Root
 
 			Debug Camera = "Default Camera"
 			{
-				Position = 0.000000 0.000000 2.000000
-				Rotation = -0.292534 0.124394 -0.371023 0.872521
+				Position = 0.048904 0.235138 7.578767
+				Rotation = -0.168919 -0.069033 0.371943 0.910142
 				Scale = 1.000000
 				Layer = 10
 				Range = 1.000000 100.000000 90.000000
-				Dolly = 0.000000 20.000000 50.000000
+				Dolly = 0.000000 30.000252 50.000000
 
 				Directional Light = "First Light"
 				{
@@ -414,5 +429,5 @@ Root
 		}
 	}
 
-	Seed = 1033282418
+	Seed = 2362750605
 }

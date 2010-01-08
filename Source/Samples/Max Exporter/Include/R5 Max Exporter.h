@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // R5 exporter plugin for Autodesk's 3ds Max
@@ -66,8 +66,9 @@ public:
 		IndexArray		mIndices;
 		bool			mHasTexCoords;
 		bool			mHasWeights;
+		bool			mClouds;
 
-		Mesh (const String& name) : mName(name), mHasTexCoords(false), mHasWeights(false) {}
+		Mesh (const String& name) : mName(name), mHasTexCoords(false), mHasWeights(false), mClouds(false) {}
 		const String& GetName() const { return mName; }
 	};
 
@@ -79,8 +80,9 @@ public:
 		float		mGlow;
 		bool		mWireframe;
 		bool		mTwosided;
+		bool		mClouds;
 
-		Material (const String& name) : mName(name), mGlow(0.0f), mWireframe(false), mTwosided(false) {}
+		Material (const String& name) : mName(name), mGlow(0.0f), mWireframe(false), mTwosided(false), mClouds(false) {}
 		const String& GetName() const { return mName; }
 	};
 
@@ -125,7 +127,7 @@ protected:
 
 private:
 
-	void		_FillMultiMesh	( MultiMesh& myMultiMesh, ::Mesh& maxMesh, ::Mtl* maxMtl, ::Matrix3& tm, ::ISkin* skin = 0, ::ISkinContextData* skinData = 0 );
+	void		_FillMultiMesh	( MultiMesh& myMultiMesh, ::Mesh& maxMesh, ::Mtl* maxMtl, ::Matrix3& tm, ::ISkin* skin = 0, ::ISkinContextData* skinData = 0, bool onlyVertices = false );
 	Material*	_ConvertMaterial( ::Mtl* mtl, unsigned int subMatIndex = 0 );
 	void		_CreateLimbs	( MultiMesh& myMultiMesh, ::Mtl* maxMtl, ::TimeValue time, const String& meshName );
 	void		_ExportKeys		( Bone* bone, ::INode* node, ::INode* parent, ::Interval interval );
@@ -145,10 +147,10 @@ public:
 	virtual const char*		LongDesc()				{ return "R5 Engine Model"; }
 	virtual const char*		ShortDesc()				{ return "R5 Model"; }
 	virtual const char*		AuthorName()			{ return "Michael Lyashenko"; }
-	virtual const char*		CopyrightMessage()		{ return "Copyright (c) 2009 Michael Lyashenko"; }
+	virtual const char*		CopyrightMessage()		{ return "Copyright (c) 2007-2010 Michael Lyashenko"; }
 	virtual const char*		OtherMessage1()			{ return "";  }
 	virtual const char*		OtherMessage2()			{ return "";  }
-	virtual unsigned int	Version()				{ return 130; }
+	virtual unsigned int	Version()				{ return 200; }
 	virtual void			ShowAbout(HWND hWnd)	{ Thread::MessageWindow("R5 Engine 3ds Max Exporter: Please visit [www.nextrevision.com] for more information."); }
 
 	virtual int SupportsOptions (int ext, unsigned long options) { return 0; }

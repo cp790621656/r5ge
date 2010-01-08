@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-BillboardMesh::BillboardMesh(const String& name) :
+Cloud::Cloud(const String& name) :
 	mName		(name),
 	mGraphics	(0),
 	mVbo		(0),
@@ -12,7 +12,7 @@ BillboardMesh::BillboardMesh(const String& name) :
 
 //============================================================================================================
 
-BillboardMesh::~BillboardMesh()
+Cloud::~Cloud()
 {
 	if (mGraphics != 0 && mVbo != 0) mGraphics->DeleteVBO(mVbo);
 }
@@ -21,7 +21,7 @@ BillboardMesh::~BillboardMesh()
 // Releases all memory used by the mesh
 //============================================================================================================
 
-void BillboardMesh::Release()
+void Cloud::Release()
 {
 	Lock();
 	{
@@ -35,7 +35,7 @@ void BillboardMesh::Release()
 // Clears all arrays and resets all flags
 //============================================================================================================
 
-void BillboardMesh::_Clear()
+void Cloud::_Clear()
 {
 	mInstances.Clear();
 	mV.Clear();
@@ -46,7 +46,7 @@ void BillboardMesh::_Clear()
 // Recalculate min/max/center/radius bounds
 //============================================================================================================
 
-void BillboardMesh::_RecalculateBounds()
+void Cloud::_RecalculateBounds()
 {
 	mBounds.Reset();
 
@@ -60,7 +60,7 @@ void BillboardMesh::_RecalculateBounds()
 // Marks the mesh as needing to be rebuilt
 //============================================================================================================
 
-void BillboardMesh::SetDirty()
+void Cloud::SetDirty()
 {
 	ASSERT_IF_UNLOCKED;
 	_RecalculateBounds();
@@ -71,11 +71,11 @@ void BillboardMesh::SetDirty()
 // Draws the mesh. Ideally all of this should be done in a geometry shader...
 //============================================================================================================
 
-uint BillboardMesh::Draw (IGraphics* graphics)
+uint Cloud::Draw (IGraphics* graphics)
 {
 	uint triangles = 0;
 
-	// Billboard meshes are only drawn via a shader for efficiency and simplicity purposes
+	// Clouds are only drawn via a shader for efficiency and simplicity purposes
 	const IShader* shader = graphics->GetActiveShader();
 
 	// Update the active shader's uniform for the origin of the mesh
@@ -172,7 +172,7 @@ uint BillboardMesh::Draw (IGraphics* graphics)
 // Serialization -- Save
 //============================================================================================================
 
-bool BillboardMesh::SerializeTo (TreeNode& root) const
+bool Cloud::SerializeTo (TreeNode& root) const
 {
 	if (IsValid())
 	{
@@ -188,7 +188,7 @@ bool BillboardMesh::SerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-bool BillboardMesh::SerializeFrom (const TreeNode& root, bool forceUpdate)
+bool Cloud::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{

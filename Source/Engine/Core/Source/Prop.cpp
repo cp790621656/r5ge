@@ -115,9 +115,9 @@ uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
 					{
 						limb->mMesh->Draw(graphics);
 					}
-					else if (limb->mBBMesh != 0)
+					else if (limb->mCloud != 0)
 					{
-						limb->mBBMesh->Draw(graphics);
+						limb->mCloud->Draw(graphics);
 					}
 				}
 			}

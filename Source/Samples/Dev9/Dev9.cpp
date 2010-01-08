@@ -302,7 +302,9 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 		verts.Back() += pos;
 
 		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
 
 		// Bottom-left
 		verts.Expand().Set(-size, -size, 0.0f);
@@ -310,7 +312,9 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 		verts.Back() += pos;
 
 		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
 
 		// Bottom-right
 		verts.Expand().Set( size, -size, 0.0f);
@@ -318,7 +322,9 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 		verts.Back() += pos;
 
 		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
 
 		// Top-right
 		verts.Expand().Set( size,  size, 0.0f);
@@ -326,7 +332,9 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 		verts.Back() += pos;
 
 		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade, shade, shade, 1.0);
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
+								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
 
 		// Texture coordinates are always the same
 		tc.Expand().Set(0.0f, 1.0f);

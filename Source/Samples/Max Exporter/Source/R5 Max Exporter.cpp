@@ -474,7 +474,8 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 									::Mtl*				maxMtl,
 									::Matrix3&			tm,
 									::ISkin*			skin,
-									::ISkinContextData*	skinData )
+									::ISkinContextData*	skinData,
+									bool				onlyVertices)
 {
 	uint	vertexCount = maxMesh.getNumVerts();
 	uint	tcCount		= maxMesh.getNumTVerts();
@@ -486,12 +487,12 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 	Vector2f t;
 
 	// Create an array of cross-indices: an index of R5 bone for every Max bone present in the skin
-	int boneCount = (skin == 0 ? 0 : skin->GetNumBones());
+	int boneCount = (onlyVertices || skin == 0 ? 0 : skin->GetNumBones());
 	Array<uint> boneIndices ( boneCount );
 
 	// Remember whether the mesh has texture coordinates and bone weights
-	myMultiMesh.mHasTexCoords	= (maxMesh.tvFace != 0);
-	myMultiMesh.mHasWeights	= (boneCount > 0);
+	myMultiMesh.mHasTexCoords	= !onlyVertices && (maxMesh.tvFace != 0);
+	myMultiMesh.mHasWeights		= !onlyVertices && (boneCount > 0);
 
 	for (int i = 0; i < boneCount; ++i)
 	{
@@ -526,17 +527,20 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 			int maxIndex = face.v[iVert];
 
 			v = tm.PointTransform ( maxMesh.getVert(maxIndex) );
-			n = tm.VectorTransform( GetVertexNormal(maxMesh, iFace, iVert) );
 
-			// If texture coordinates are present, use them
-			if (maxMesh.tvFace != 0)
+			if (!onlyVertices)
 			{
-				TVFace& tvFace = maxMesh.tvFace[iFace];
-				t = maxMesh.getTVert( tvFace.t[iVert] );
-			}
+				// Matrix3::VectorTransform() actually applies the scaling as well, so Normalize() is required
+				n = tm.VectorTransform( GetVertexNormal(maxMesh, iFace, iVert) );
+				n.Normalize();
 
-			// Matrix3::VectorTransform() actually applies the scaling as well, so Normalize() is required
-			n.Normalize();
+				// If texture coordinates are present, use them
+				if (maxMesh.tvFace != 0)
+				{
+					TVFace& tvFace = maxMesh.tvFace[iFace];
+					t = maxMesh.getTVert( tvFace.t[iVert] );
+				}
+			}
 
 			// Adjust by position scale
 			v *= POSITION_SCALE;
@@ -547,7 +551,16 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 			// Check to see if this vertex is already present
 			for (uint c = 0; c < myVertices.GetSize(); ++c)
 			{
-				if (myVertices[c].Matches(v, n, t))
+				if (onlyVertices)
+				{
+					if (myVertices[c].mPos == v)
+					{
+						// Existing entry
+						myIndex = c;
+						break;
+					}
+				}
+				else if (myVertices[c].Matches(v, n, t))
 				{
 					// Existing entry -- remember the index
 					myIndex = c;
@@ -566,7 +579,7 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 				vertex.ClearBoneWeights();
 
 				// If there is a skin present, run through all influences of this vertex and assign the bone weights
-				if (boneCount > 0)
+				if (!onlyVertices && boneCount > 0)
 				{
 					int influences = skinData->GetNumAssignedBones(maxIndex);
 
@@ -584,25 +597,31 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 				}
 			}
 
-			// For safety purposes limit the maximum number of vertices to 65535
-			ASSERT(myIndex < 65535, "Indices exceed the limit of an unsigned short");
+			if (!onlyVertices)
+			{
+				// For safety purposes limit the maximum number of vertices to 65535
+				ASSERT(myIndex < 65535, "Indices exceed the limit of an unsigned short");
 
-			// Remember the index
-			myTriangle[iVert] = (unsigned short)myIndex;
+				// Remember the index
+				myTriangle[iVert] = (unsigned short)myIndex;
+			}
 		}
 
 		// Update the myTriangle array
-		if (reverseIndices)
+		if (!onlyVertices)
 		{
-			myIndices.Expand() = myTriangle[2];
-			myIndices.Expand() = myTriangle[1];
-			myIndices.Expand() = myTriangle[0];
-		}
-		else
-		{
-			myIndices.Expand() = myTriangle[0];
-			myIndices.Expand() = myTriangle[1];
-			myIndices.Expand() = myTriangle[2];
+			if (reverseIndices)
+			{
+				myIndices.Expand() = myTriangle[2];
+				myIndices.Expand() = myTriangle[1];
+				myIndices.Expand() = myTriangle[0];
+			}
+			else
+			{
+				myIndices.Expand() = myTriangle[0];
+				myIndices.Expand() = myTriangle[1];
+				myIndices.Expand() = myTriangle[2];
+			}
 		}
 	}
 }
@@ -632,14 +651,15 @@ R5MaxExporter::Material*  R5MaxExporter::_ConvertMaterial (::Mtl* mtl, uint subM
 
 		if (mtl != 0)
 		{
-			Color3f ambient   (mtl->GetAmbient());
-			Color3f diffuse   (mtl->GetDiffuse());
-			Color3f specular  (mtl->GetSpecular() * mtl->GetShinStr());
-			Color3f emission  (mtl->GetSelfIllumColor() * mtl->GetSelfIllum());
-			float	shininess (mtl->GetShininess());
-			float	alpha	  (1.0f - mtl->GetXParency());
-			bool	twosided  ((mtl->Requirements(0) & MTLREQ_2SIDE) != 0);
-			bool	wireframe ((mtl->Requirements(0) & MTLREQ_WIRE)  != 0);
+			Color3f ambient		(mtl->GetAmbient());
+			Color3f diffuse		(mtl->GetDiffuse());
+			Color3f specular	(mtl->GetSpecular() * mtl->GetShinStr());
+			Color3f emission	(mtl->GetSelfIllumColor() * mtl->GetSelfIllum());
+			float	shininess	(mtl->GetShininess());
+			float	alpha		(1.0f - mtl->GetXParency());
+			bool	twosided	((mtl->Requirements(0) & MTLREQ_2SIDE)	 != 0);
+			bool	wireframe	((mtl->Requirements(0) & MTLREQ_WIRE)	 != 0);
+			bool	faceted		((mtl->Requirements(0) & MTLREQ_FACETED) != 0);
 
 			// Retrieve the material and set its properties
 			myMat				= GetMaterial(matName);
@@ -650,6 +670,7 @@ R5MaxExporter::Material*  R5MaxExporter::_ConvertMaterial (::Mtl* mtl, uint subM
 			myMat->mGlow		= (emission.r + emission.g + emission.b) / 3.0f;
 			myMat->mWireframe	= wireframe;
 			myMat->mTwosided	= twosided;
+			myMat->mClouds		= faceted;
 
 			// Leaving for future reference -- texture retrieval:
 			//::BitmapTex* diffuseTex		= dynamic_cast<BitmapTex*>(mtl->GetSubTexmap(ID_DI));
@@ -669,6 +690,7 @@ R5MaxExporter::Material*  R5MaxExporter::_ConvertMaterial (::Mtl* mtl, uint subM
 		myMat->mGlow		= 0.0f;
 		myMat->mWireframe	= false;
 		myMat->mTwosided	= false;
+		myMat->mClouds		= false;
 	}
 	return myMat;
 }
@@ -709,6 +731,9 @@ void R5MaxExporter::_CreateLimbs (  MultiMesh&		myMultiMesh,
 			Limb* myLimb	= GetLimb(myName);
 			myLimb->mMesh	= myMesh;
 			myLimb->mMat	= _ConvertMaterial(maxMtl, i);
+
+			// Special case: "faceted" marked meshes get exported as billboard clouds instead
+			myLimb->mMesh->mClouds = myLimb->mMat->mClouds;
 		}
 	}
 }
@@ -927,7 +952,8 @@ void R5MaxExporter::ExportGeometry (::INode* node, ::Object* object, ::TimeValue
 			MultiMesh myMultiMesh;
 
 			// Every Max mesh can support sub-materials, essentially making us split the meshes up into sub-meshes
-			_FillMultiMesh( myMultiMesh, maxMesh, maxMtl, tm, skin, skinData );
+			_FillMultiMesh( myMultiMesh, maxMesh, maxMtl, tm, skin, skinData,
+				(maxMtl->Requirements(0) & MTLREQ_FACETED) != 0 );
 
 			// Convert submeshes to actual R5 meshes
 			_CreateLimbs( myMultiMesh, maxMtl, time, node->GetName() );
@@ -1055,10 +1081,45 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 		for (uint i = 0; i < mMeshes.GetSize(); ++i)
 		{
 			Mesh* mesh		= mMeshes[i];
-			TreeNode& node	= core.AddChild("Mesh", mesh->mName);
+			TreeNode& node	= core.AddChild(mesh->mClouds ? "Cloud" : "Mesh", mesh->mName);
 			uint vertices	= mesh->mVertices.GetSize();
 
 			// Vertex information comes first
+			if (mesh->mClouds)
+			{
+				float size = 1.0f;
+
+				// Find the center
+				Vector3f origin;
+				for (uint b = 0; b < vertices; ++b) origin += mesh->mVertices[b].mPos;
+				origin *= 1.0f / vertices;
+				node.AddChild("Origin", origin);
+
+				// Find the distance to the farthest point
+				float radius = 0.0f;
+				for (uint b = 0; b < vertices; ++b)
+				{
+					float current = origin.GetDistanceTo(mesh->mVertices[b].mPos);
+					if (current > radius) radius = current;
+				}
+
+				// Starting radius of each billboard
+				radius /= vertices;
+				radius *= 10.0f;
+
+				Array<Quaternion>& verts = node.AddChild(mesh->mClouds ? "Instances" : "Vertices").mValue.ToQuaternionArray();
+
+				for (uint b = 0; b < vertices; ++b)
+				{
+					const Vertex& v = mesh->mVertices[b];
+					verts.Expand().Set(v.mPos.x, v.mPos.y, v.mPos.z, radius);
+				}
+
+				// Billboard clouds don't need to save normals, texture coordinates, or bone information
+				mesh->mHasTexCoords = false;
+				mesh->mHasWeights	= false;
+			}
+			else
 			{
 				Array<Vector3f>& verts		= node.AddChild("Vertices").mValue.ToVector3fArray();
 				Array<Vector3f>& normals	= node.AddChild("Normals").mValue.ToVector3fArray();
@@ -1098,8 +1159,11 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 			}
 
 			// Indices follow
-			TreeNode& indices = node.AddChild("Triangles");
-			indices.mValue = mesh->mIndices;
+			if (!mesh->mClouds)
+			{
+				TreeNode& indices = node.AddChild("Triangles");
+				indices.mValue = mesh->mIndices;
+			}
 		}
 
 		// Save all limbs
@@ -1108,7 +1172,7 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 			Limb* limb		= mLimbs[i];
 			TreeNode& node	= model.AddChild("Limb", limb->mName);
 
-			node.AddChild("Mesh", limb->mMesh->mName);
+			node.AddChild(limb->mMesh->mClouds ? "Cloud" : "Mesh", limb->mMesh->mName);
 			node.AddChild("Material", limb->mMat->mName);
 		}
 

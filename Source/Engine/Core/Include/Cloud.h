@@ -7,7 +7,7 @@
 // Mesh made up of screen-facing billboards (tree canopy, for example)
 //============================================================================================================
 
-class BillboardMesh : public Thread::Lockable
+class Cloud : public Thread::Lockable
 {
 	String				mName;			// Every mesh needs a unique name
 	Thread::Lockable	mLock;			// Thread-safe lock
@@ -24,11 +24,11 @@ class BillboardMesh : public Thread::Lockable
 
 public:
 
-	BillboardMesh(const String& name);
-	~BillboardMesh();
+	Cloud(const String& name);
+	~Cloud();
 
 	// Static identifier, for consistency
-	R5_DECLARE_SOLO_CLASS("Billboard Mesh");
+	R5_DECLARE_SOLO_CLASS("Cloud");
 
 	// Clears all memory used by the mesh, but does not release it
 	void Clear() { ASSERT_IF_UNLOCKED; _Clear(); }

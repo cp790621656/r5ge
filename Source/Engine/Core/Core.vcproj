@@ -207,11 +207,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Source\BillboardMesh.cpp"
+					RelativePath=".\Source\Bone.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Source\Bone.cpp"
+					RelativePath=".\Source\Cloud.cpp"
 					>
 				</File>
 				<File
@@ -251,15 +251,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\BillboardMesh.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\Bone.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Include\BoneTransform.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Cloud.h"
 					>
 				</File>
 				<File

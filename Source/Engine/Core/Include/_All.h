@@ -46,7 +46,7 @@ namespace R5
 	#include "CameraController.h"	// Camera Controller provides a way to blend together different cameras
 
 	#include "Mesh.h"				// Complete drawable mesh
-	#include "BillboardMesh.h"		// Mesh made up of screen-facing billboards (tree canopy, for example)
+	#include "Cloud.h"		// Mesh made up of screen-facing billboards (tree canopy, for example)
 	#include "Animatable.h"			// Animatable placeable
 	#include "Bone.h"				// Single bone for skeletal animation
 	#include "Animation.h"			// Keyframed animation

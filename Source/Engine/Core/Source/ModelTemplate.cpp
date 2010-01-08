@@ -141,7 +141,7 @@ void ModelTemplate::_Update()
 				if (limb->IsValid())
 				{
 					if (limb->mMesh != 0) mBounds.Include(limb->mMesh->GetBounds());
-					else if (limb->mBBMesh != 0) mBounds.Include(limb->mBBMesh->GetBounds());
+					else if (limb->mCloud != 0) mBounds.Include(limb->mCloud->GetBounds());
 					mMask |= limb->mMat->GetTechniqueMask();
 				}
 			}
@@ -208,7 +208,7 @@ void ModelTemplate::SetSource (ModelTemplate* temp, bool forceUpdate)
 							// Copy the limb mesh and material information
 							Limb* myLimb = mLimbs.Add( limb->GetName() );
 							myLimb->SetMesh( limb->GetMesh() );
-							myLimb->SetMesh( limb->GetBillboardMesh() );
+							myLimb->SetMesh( limb->GetCloud() );
 							myLimb->SetMaterial( limb->GetMaterial() );
 						}
 					}
@@ -271,7 +271,7 @@ void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 				{
 					if (meshes    && limb->mMat		!= 0)  limb->mMat->Release();
 					if (materials && limb->mMesh	!= 0)  limb->mMesh->Release();
-					if (materials && limb->mBBMesh	!= 0)  limb->mBBMesh->Release();
+					if (materials && limb->mCloud	!= 0)  limb->mCloud->Release();
 				}
 			}
 		}
@@ -357,7 +357,7 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 	if (graphics == 0) return false;
 
 	Mesh*			mesh	= 0;
-	BillboardMesh*	bm		= 0;
+	Cloud*	bm		= 0;
 	IMaterial*		mat		= 0;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
@@ -370,9 +370,9 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 		{
 			mesh = mCore->GetMesh(value.IsString() ? value.AsString() : value.GetString());
 		}
-		else if (tag == BillboardMesh::ClassID())
+		else if (tag == Cloud::ClassID())
 		{
-			bm = mCore->GetBillboardMesh(value.IsString() ? value.AsString() : value.GetString());
+			bm = mCore->GetCloud(value.IsString() ? value.AsString() : value.GetString());
 		}
 		else if ( tag == IMaterial::ClassID() )
 		{
@@ -399,7 +399,7 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 					// Remember the matching limb
 					if ( ptr  != 0 &&
 						(mesh != 0 && ptr->mMesh == mesh) ||
-						(bm   != 0 && ptr->mBBMesh == bm) )
+						(bm   != 0 && ptr->mCloud == bm) )
 					{
 						limb = ptr;
 						break;
@@ -448,9 +448,9 @@ void ModelTemplate::_SaveLimbs (TreeNode& node, bool forceSave) const
 				{
 					child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
 				}
-				else if (limb->mBBMesh != 0)
+				else if (limb->mCloud != 0)
 				{
-					child.AddChild( BillboardMesh::ClassID(), limb->mBBMesh->GetName() );
+					child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
 				}
 				child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
 			}
@@ -523,7 +523,7 @@ bool ModelTemplate::Load (const byte* buffer, uint size, const String& extension
 bool ModelTemplate::Save (TreeNode& root) const
 {
 	Array<Mesh*> meshes;
-	Array<BillboardMesh*> mBMs;
+	Array<Cloud*> mBMs;
 	Array<IMaterial*> materials;
 
 	Lock();
@@ -552,7 +552,7 @@ bool ModelTemplate::Save (TreeNode& root) const
 			{
 				if (limb->mMat		!= 0) materials.AddUnique(limb->mMat);
 				if (limb->mMesh		!= 0) meshes.AddUnique(limb->mMesh);
-				if (limb->mBBMesh	!= 0) mBMs.AddUnique(limb->mBBMesh);
+				if (limb->mCloud	!= 0) mBMs.AddUnique(limb->mCloud);
 
 				// If the limb is valid, save it right away
 				if (limb->IsValid())
@@ -563,9 +563,9 @@ bool ModelTemplate::Save (TreeNode& root) const
 					{
 						child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
 					}
-					else if (limb->mBBMesh != 0)
+					else if (limb->mCloud != 0)
 					{
-						child.AddChild( BillboardMesh::ClassID(), limb->mBBMesh->GetName() );
+						child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
 					}
 					child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
 				}
