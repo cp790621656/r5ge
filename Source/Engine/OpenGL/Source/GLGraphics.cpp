@@ -4,14 +4,6 @@ using namespace R5;
 
 //============================================================================================================
 
-void SetUniform_TimeFactor (const String& name, Uniform& uniform)
-{
-	uniform.mType = Uniform::Type::Float1;
-	uniform.mVal[0] = Time::GetTime();
-}
-
-//============================================================================================================
-
 GLGraphics::GLGraphics() :
 	mThread		(0),
 	mSkyboxVBO	(0),
@@ -41,6 +33,24 @@ GLGraphics::~GLGraphics()
 }
 
 //============================================================================================================
+// Shader callback function for R5_time uniform
+//------------------------------------------------------------------------------------------------------------
+// R5_time.x = Current time in seconds
+// R5_time.y = Irregular wavy sin(time), used for wind
+// R5_time.z = sin(R5_time.z) gives a 360 degree rotation every 1000 seconds
+//============================================================================================================
+
+void SetUniform_Time (const String& name, Uniform& uniform)
+{
+	uniform.mType = Uniform::Type::Float3;
+	uniform.mVal[0] = Time::GetTime();
+	uniform.mVal[1] = (0.6f * Float::Sin(uniform.mVal[0] * 0.421f) +
+					   0.3f * Float::Sin(uniform.mVal[0] * 1.737f) +
+					   0.1f * Float::Cos(uniform.mVal[0] * 2.786f)) * 0.5f + 0.5f;
+	uniform.mVal[2] = Float::Fract(uniform.mVal[0] * 0.001f) * TWOPI;
+}
+
+//============================================================================================================
 // Shader callback function for R5_eyePos
 //============================================================================================================
 
@@ -51,6 +61,9 @@ void GLGraphics::SetUniform_EyePos (const String& name, Uniform& uniform)
 
 //============================================================================================================
 // Shader callback function for R5_pixelSize
+//------------------------------------------------------------------------------------------------------------
+// Can be used to figure out 0-1 range full-screen texture coordinates in the fragment shader:
+// gl_FragCoord.xy * R5_pixelSize
 //============================================================================================================
 
 void GLGraphics::SetUniform_PixelSize (const String& name, Uniform& uniform)
@@ -1015,7 +1028,7 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 			if (createIfMissing)
 			{
 				shader = new GLShader(name);
-				shader->RegisterUniform( "R5_timeFactor",				 &SetUniform_TimeFactor );
+				shader->RegisterUniform( "R5_time",						 &SetUniform_Time );
 				shader->RegisterUniform( "R5_worldEyePosition",			 bind(&GLGraphics::SetUniform_EyePos,		this) );
 				shader->RegisterUniform( "R5_pixelSize",				 bind(&GLGraphics::SetUniform_PixelSize,	this) );
 				shader->RegisterUniform( "R5_clipRange",				 bind(&GLGraphics::SetUniform_ClipRange,	this) );

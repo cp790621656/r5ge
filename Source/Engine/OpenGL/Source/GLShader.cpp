@@ -441,6 +441,8 @@ bool PreprocessSkinning (String& source)
 
 		// Copy the result back into the Source
 		source = "uniform mat4 R5_boneTransforms[32];\n";
+		source << "attribute vec4 R5_boneWeight;\n";
+		source << "attribute vec4 R5_boneIndex;\n";
 		source << left;
 		source << right;
 		return true;
@@ -497,6 +499,66 @@ bool PreprocessInstancing (String& source)
 
 		// Copy the result back into the Source
 		source = left;
+		source << right;
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
+// Macro that adds billboard cloud transform functionality.
+//============================================================================================================
+// // R5_IMPLEMENT_BILLBOARDING vertex
+// // R5_IMPLEMENT_BILLBOARDING vertex normal
+// // R5_IMPLEMENT_BILLBOARDING vertex normal tangent
+//============================================================================================================
+
+bool PreprocessBillboarding (String& source)
+{
+	String left, right, vertex, normal, tangent;
+
+	uint offset = PreprocessCommon(source, "R5_IMPLEMENT_BILLBOARDING", vertex, normal, tangent);
+
+	if (vertex.IsValid())
+	{
+		source.GetString(left, 0, offset);
+		source.GetString(right, offset);
+
+		// View-space offset is calculated based on texture coordinates, enlarged by the size (texCoord's Z)
+		left << "\n{\n";
+		left << "vec3 offset = gl_MultiTexCoord0.xyz;\n";
+	    left << "offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;\n";
+		left << "offset.z *= 0.25;\n";
+		
+		// Calculate the view-transformed vertex
+	    left << vertex;
+		left << " = gl_ModelViewMatrix * ";
+		left << vertex;
+		left << ";\n";
+
+		// Apply the view-space offset
+		left << vertex;
+		left << ".xyz += offset;\n";
+		
+		if (normal.IsValid())
+		{
+			left << "vec3 diff = gl_Vertex.xyz - R5_origin;\n";
+			left << normal;
+			left << " = normalize(gl_NormalMatrix * diff);\n";
+
+			if (tangent.IsValid())
+			{
+				left << tangent;
+				left << " = normalize(gl_NormalMatrix * vec3(diff.y, -diff.x, 0.0));\n";
+			}
+		}
+
+		// Closing bracket
+		left << "}\n";
+
+		// Copy the result back into the Source
+		source = "uniform vec3 R5_origin;\n";
+		source << left;
 		source << right;
 		return true;
 	}
@@ -931,6 +993,7 @@ void GLShader::_SetSourceCode (const String& code, uint type)
 
 		if (::PreprocessSkinning(mVertexInfo.mSource))		SetFlag(Flag::Skinned,	 true);
 		if (::PreprocessInstancing(mVertexInfo.mSource))	SetFlag(Flag::Instanced, true);
+		if (::PreprocessBillboarding(mVertexInfo.mSource))	SetFlag(Flag::Billboarded, true);
 	}
 	else
 	{

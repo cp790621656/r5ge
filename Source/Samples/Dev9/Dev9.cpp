@@ -42,7 +42,7 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	void Fill(Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& colors);
+	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
 	bool OnStateChange(UIArea* area);
 	bool OnGenerate(UIArea* area, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
@@ -216,6 +216,17 @@ void TestApp::OnDraw()
 			mGraphics->Clear();
 			mOffscreen.Draw("Normal Map");
 
+			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
+			// side-effect by-product of rendering alpha-blended textures into an FBO.
+			mGraphics->SetFog(false);
+			mGraphics->SetAlphaTest(false);
+			mGraphics->SetBlending(IGraphics::Blending::None);
+			mGraphics->SetActiveRenderTarget(diffuseTarget);
+			mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+			mGraphics->SetActiveTexture(0, mDiffuseTex);
+			mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
+			mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
+
 			// Change filtering to anisotropic since the textures will be used on a 3D model
 			mDiffuseTex->SetFiltering(ITexture::Filter::Anisotropic);
 			mNormalTex->SetFiltering (ITexture::Filter::Anisotropic);
@@ -242,7 +253,7 @@ void TestApp::OnDraw()
 
 //============================================================================================================
 
-void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& colors)
+void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors)
 {
 	mIsDirty = true;
 	mRand.SetSeed(mSeed);
@@ -271,7 +282,7 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 	float tint = 0.85f;
 	float minTint = 1.0f - tint;
 
-	Vector3f pos, axis;
+	Vector3f pos, axis, normal;
 	Quaternion rot;
 	float shade, rangeSq = range * range;
 
@@ -295,6 +306,15 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::TexCoords& tc, Mesh::Colors& co
 
 		rot.SetFromDirection( Vector3f(pos.x, pos.y, 0.0f) );
 		rot *= Quaternion(axis, mRand.GenerateRangeFloat() * twist);
+
+		// Calculate and set the normals
+		normal.Set(0.0f, 0.0f, 1.0f);
+		normal *= rot;
+
+		normals.Expand() = normal;
+		normals.Expand() = normal;
+		normals.Expand() = normal;
+		normals.Expand() = normal;
 
 		// Top-left
 		verts.Expand().Set(-size,  size, 0.0f);
@@ -384,11 +404,12 @@ void TestApp::Generate()
 			mMesh->Clear();
 
 			Fill(mMesh->GetVertexArray(),
+				 mMesh->GetNormalArray(),
 				 mMesh->GetTexCoordArray(),
 				 mMesh->GetColorArray());
 
 			mMesh->SetPrimitive(IGraphics::Primitive::Quad);
-			mMesh->Update(true, true, true, true, false, false);
+			mMesh->Update(true, false, true, true, false, false);
 		}
 		mMesh->Unlock();
 	}

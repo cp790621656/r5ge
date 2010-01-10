@@ -28,6 +28,7 @@ struct IShader
 		{
 			Skinned		= 0x1,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
 			Instanced	= 0x2,	// The shader has a pseudo-instancing component
+			Billboarded	= 0x4,	// The shader is meant for a billboarded quad (or a series of quads)
 		};
 	};
 

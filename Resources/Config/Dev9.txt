@@ -5,7 +5,7 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Dev9 (Trees)"
-		Position = 100 100
+		Position = 97 257
 		Size = 870 712
 		Full Screen = false
 	}
@@ -13,7 +13,7 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Background Color = 1.000000 1.000000 1.000000 1.000000
 		Fog Range = 100.000000 100.000000
 
 		Technique = "Diffuse Map"
@@ -65,7 +65,7 @@ Root
 			Diffuse = 1.000000 0.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.200000
 			Glow = 0.000000
-			ADT = 0.350000
+			ADT = 0.003922
 
 			Technique = "Diffuse Map"
 			{
@@ -87,16 +87,9 @@ Root
 			Glow = 0.000000
 			ADT = 0.003922
 
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_N"
-				Texture 0 = "Textures\Plants\bark.jpg"
-				Texture 1 = "Textures\Plants\bark_n.png"
-			}
-
 			Technique = "Opaque"
 			{
-				Shader = "Forward/D_N"
+				Shader = "Forward/TreeTrunk"
 				Texture 0 = "Textures\Plants\bark.jpg"
 				Texture 1 = "Textures\Plants\bark_n.png"
 			}
@@ -107,12 +100,13 @@ Root
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
-			ADT = 0.250000
+			ADT = 0.900000
 
 			Technique = "Transparent"
 			{
-				Shader = "Other/Canopy"
+				Shader = "Forward/TreeCanopy"
 				Texture 0 = "Canopy"
+				Texture 1 = "Canopy Normal"
 			}
 		}
 	}
@@ -125,66 +119,6 @@ Root
 
 		Layout
 		{
-			Window = "Leaf Normal Window"
-			{
-				Left = 0.000000 26.000000
-				Right = 0.000000 282.000000
-				Top = 0.000000 390.000000
-				Bottom = 0.000000 666.000000
-				Alpha = 1.000000
-				Titlebar Height = 20
-				Resizable = true
-				Color = 1.000000 1.000000 1.000000
-				Text = "Normal map (256x256)"
-				Shadow = true
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Leaf Normal Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Leaf Normal map"
-					Ignore Alpha = true
-					Receives Events = false
-					Layer = 1
-				}
-			}
-
-			Window = "Leaf Diffuse Window"
-			{
-				Left = 0.000000 27.000000
-				Right = 0.000000 283.000000
-				Top = 0.000000 70.000000
-				Bottom = 0.000000 346.000000
-				Alpha = 1.000000
-				Titlebar Height = 20
-				Resizable = true
-				Color = 1.000000 1.000000 1.000000
-				Text = "Diffuse map (256x256)"
-				Shadow = true
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				Picture = "Leaf Diffuse Texture"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Leaf Diffuse map"
-					Ignore Alpha = false
-					Receives Events = false
-					Layer = 1
-				}
-			}
-
 			Window = "Options"
 			{
 				Left = 0.000000 456.000000
@@ -208,7 +142,7 @@ Root
 					Top = 0.000000 23.000000
 					Bottom = 0.000000 40.000000
 					Alpha = 1.000000
-					Value = 0.256039
+					Value = 0.604651
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
 					Receives Events = true
@@ -237,7 +171,7 @@ Root
 					Top = 0.000000 43.000000
 					Bottom = 0.000000 60.000000
 					Alpha = 1.000000
-					Value = 0.372093
+					Value = 0.279070
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
 					Receives Events = true
@@ -266,7 +200,7 @@ Root
 					Top = 0.000000 3.000000
 					Bottom = 0.000000 20.000000
 					Alpha = 1.000000
-					Value = 0.176744
+					Value = 0.269767
 					Color = 1.000000 1.000000 1.000000
 					Animation Time = 0.000000
 					Receives Events = true
@@ -307,12 +241,72 @@ Root
 				}
 			}
 
+			Window = "Leaf Diffuse Window"
+			{
+				Left = 0.000000 7.000000
+				Right = 0.000000 263.000000
+				Top = 0.000000 9.000000
+				Bottom = 0.000000 285.000000
+				Alpha = 1.000000
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Diffuse map (256x256)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Diffuse Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Diffuse map"
+					Ignore Alpha = false
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
+			Window = "Leaf Normal Window"
+			{
+				Left = 0.000000 6.000000
+				Right = 0.000000 262.000000
+				Top = 0.000000 295.000000
+				Bottom = 0.000000 571.000000
+				Alpha = 1.000000
+				Titlebar Height = 20
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Normal map (256x256)"
+				Shadow = true
+				Alignment = "Center"
+				Receives Events = true
+				Layer = 0
+
+				Picture = "Leaf Normal Texture"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Leaf Normal map"
+					Ignore Alpha = true
+					Receives Events = false
+					Layer = 1
+				}
+			}
+
 			Window = "Final Window"
 			{
-				Left = 0.000000 319.000000
-				Right = 0.000000 831.000000
-				Top = 0.000000 134.000000
-				Bottom = 0.000000 666.000000
+				Left = 0.000000 300.000000
+				Right = 0.000000 812.000000
+				Top = 0.000000 137.000000
+				Bottom = 0.000000 669.000000
 				Alpha = 1.000000
 				Titlebar Height = 20
 				Resizable = true
@@ -342,6 +336,19 @@ Root
 					Layer = 0
 				}
 
+				Picture = "Final"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 0.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 1.000000
+					Texture = "Canopy"
+					Ignore Alpha = false
+					Receives Events = false
+					Layer = 1
+				}
+
 				Button = "Normal"
 				{
 					Left = 0.000000 22.000000
@@ -359,19 +366,6 @@ Root
 					Receives Events = true
 					Tooltip = "Toggles the [FF8833]normal map[FFFFFF]"
 					Layer = 0
-				}
-
-				Picture = "Final"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Texture = "Canopy"
-					Ignore Alpha = false
-					Receives Events = false
-					Layer = 1
 				}
 			}
 		}
@@ -396,9 +390,81 @@ Root
 			Scale = 1.000000
 			Layer = 10
 
-			Model Instance = "Tree"
+			Model Instance = "Tree 0"
 			{
 				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 1"
+			{
+				Position = 10.000000 10.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 2"
+			{
+				Position = -10.000000 10.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 3"
+			{
+				Position = 10.000000 -10.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 4"
+			{
+				Position = -10.000000 -10.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 5"
+			{
+				Position = 0.000000 10.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 6"
+			{
+				Position = 10.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 7"
+			{
+				Position = -10.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Model = "Tree"
+			}
+
+			Model Instance = "Tree 8"
+			{
+				Position = 0.000000 -10.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
 				Layer = 10
@@ -408,26 +474,26 @@ Root
 			Debug Camera = "Default Camera"
 			{
 				Position = 0.048904 0.235138 7.578767
-				Rotation = -0.168919 -0.069033 0.371943 0.910142
+				Rotation = -0.226618 0.026254 -0.112052 0.967160
 				Scale = 1.000000
 				Layer = 10
 				Range = 1.000000 100.000000 90.000000
-				Dolly = 0.000000 30.000252 50.000000
+				Dolly = 0.000000 40.855690 50.000000
+			}
 
-				Directional Light = "First Light"
-				{
-					Position = 0.000000 0.000000 0.000000
-					Rotation = 0.000000 0.000000 0.000000 1.000000
-					Scale = 1.000000
-					Layer = 10
-					Ambient = 0.150000 0.150000 0.150000
-					Diffuse = 1.000000 1.000000 1.000000
-					Specular = 1.000000 1.000000 1.000000
-					Brightness = 1.000000
-				}
+			Directional Light = "First Light"
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = -0.294863 -0.209613 0.540152 0.759839
+				Scale = 1.000000
+				Layer = 10
+				Ambient = 0.150000 0.150000 0.150000
+				Diffuse = 1.000000 1.000000 1.000000
+				Specular = 1.000000 1.000000 1.000000
+				Brightness = 1.000000
 			}
 		}
 	}
 
-	Seed = 2362750605
+	Seed = 2711135145
 }

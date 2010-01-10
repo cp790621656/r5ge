@@ -1,6 +1,3 @@
-attribute vec4 R5_boneWeight;
-attribute vec4 R5_boneIndex;
-
 varying vec2 _texCoord;
 varying vec3 _normal;
 
