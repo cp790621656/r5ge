@@ -171,7 +171,7 @@ Root
 					Top = 0.000000 0.000000
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
-					Shader = "Xray"
+					Shader = "Other/Xray"
 					Texture 0 = "[Generated] Specular Light"
 					Receives Events = false
 					Layer = 1
@@ -203,7 +203,7 @@ Root
 					Top = 0.000000 0.000000
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
-					Shader = "Xray"
+					Shader = "Other/Xray"
 					Texture 0 = "[Generated] Diffuse Light"
 					Receives Events = false
 					Layer = 1

@@ -97,7 +97,7 @@ Root
 				
 				Shaded Area = "X-Ray Area"
 				{
-					Shader = "Xray"
+					Shader = "Other/Xray"
 					Texture 0 = "[Generated] Normal"
 					Receives Events = false
 				}
