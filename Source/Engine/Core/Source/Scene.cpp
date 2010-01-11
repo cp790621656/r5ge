@@ -205,7 +205,7 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 Object* Scene::Select (const Vector3f& pos)
 {
 	Object* ptr = 0;
-	float radius = 65535.0f;
+	//float radius = 65535.0f;
 
 	//for (uint i = mObjects.GetSize(); i > 0; )
 	//{
@@ -221,6 +221,7 @@ Object* Scene::Select (const Vector3f& pos)
 void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
 {
 	mQueue.Clear();
-	mRoot->_Fill( Object::FillParams(mQueue, frustum, pos, dir) );
+	Object::FillParams params (mQueue, frustum, pos, dir);
+	mRoot->_Fill(params);
 	mQueue.Sort();
 }

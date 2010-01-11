@@ -23,7 +23,7 @@ class TestApp
 	Scene		mOffscreen;		// Off-screen scene
 	Mesh*		mBranch;		// Generated mesh used to draw the cluster of leaves
 	uint		mSeed;			// Seed used for randomization
-	Random		mRand;			// Random number generator
+	R5::Random	mRand;			// Random number generator
 
 	ITexture*	mOriginalD;		// Original diffuse texture
 	ITexture*	mOriginalN;		// Original normal map texture
@@ -231,9 +231,9 @@ void TestApp::DrawLeaves(void* param)
 
 		// Change filtering to anisotropic since the textures will be used on a 3D model
 		mFinalD->SetFiltering(ITexture::Filter::Anisotropic);
-		mFinalN->SetFiltering (ITexture::Filter::Anisotropic);
-		mFinalD->SetWrapMode (ITexture::WrapMode::Repeat);
-		mFinalN->SetWrapMode  (ITexture::WrapMode::Repeat);
+		mFinalN->SetFiltering(ITexture::Filter::Anisotropic);
+		mFinalD->SetWrapMode(ITexture::WrapMode::Repeat);
+		mFinalN->SetWrapMode(ITexture::WrapMode::Repeat);
 	}
 }
 
@@ -274,7 +274,7 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 
 	Vector3f pos, axis, normal;
 	Quaternion rot;
-	float shade, rangeSq = range * range;
+	float shade;
 
 	// Create all leaf particles
 	for (uint b = 0; b < count; ++b)

@@ -67,7 +67,7 @@ Root
 					Bottom = 0.000000 16.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "Time: 19"
+					Text = "Time: 8"
 					Shadow = true
 					Alignment = "Center"
 					Receives Events = false
@@ -833,7 +833,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 3.000000
-			Rotation = 0.119919 -0.237411 0.860483 -0.434539
+			Rotation = 0.111496 -0.194246 0.845304 -0.485075
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000

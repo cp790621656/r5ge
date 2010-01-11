@@ -155,7 +155,7 @@ void TestApp::Regenerate()
 		ulong startTime = Time::GetMilliseconds();
 
 		// Use the timestamp as the seed
-		mNoise.SetSeed(3246234234);
+		mNoise.SetSeed(startTime);
 		//mNoise.SetSeamless(false);
 
 		// Generate the noise

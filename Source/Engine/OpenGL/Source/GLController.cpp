@@ -1438,8 +1438,7 @@ bool GLController::_SetActiveTextureUnit (uint textureUnit)
 
 bool GLController::_BindTexture (uint glType, uint glID)
 {
-	// Counting the image units also happens to create the initial 'mTu' array
-	static uint maxTU = _CountImageUnits();
+	if (mTu.IsEmpty()) _CountImageUnits();
 
 	// Currently active texture unit
 	TextureUnit& tu = mTu[mActiveTU];

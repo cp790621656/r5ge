@@ -5,8 +5,8 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Dev9 (Trees)"
-		Position = 97 257
-		Size = 870 712
+		Position = 100 100
+		Size = 900 600
 		Full Screen = false
 	}
 

@@ -21,7 +21,8 @@ public:
 	virtual void OnPreUpdate()
 	{
 		Quaternion rot = mObject->GetRelativeRotation();
-		rot.Rotate( Vector3f(0.0f, 1.0f, 0.0f), Time::GetDelta() * 0.0002f );
+		Vector3f axis (0.0f, 1.0f, 0.0f);
+		rot.Rotate(axis, Time::GetDelta() * 0.0002f);
 		mObject->SetRelativeRotation(rot);
 	}
 };

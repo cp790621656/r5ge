@@ -40,9 +40,9 @@ DeviceInfo::DeviceInfo() :
 	// Windows OS is subdivided into different versions and is set in "_Windows_OpenGL.cpp"
 #ifdef _WINDOWS
 	mOS = OS::Windows;
-#elif _MACOS
+#elif defined(_MACOS)
 	mOS = OS::MacOS;
-#elif _LINUX
+#elif defined(_LINUX)
 	mOS = OS::Linux;
 #endif
 }

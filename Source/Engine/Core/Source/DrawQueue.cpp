@@ -8,7 +8,6 @@ using namespace R5;
 uint DrawQueue::Draw (IGraphics* graphics, const Techniques& techniques, bool insideOut)
 {
 	uint result(0);
-	bool drawable = false;
 	uint mask = 0;
 
 	// Run through all specified techniques and collect the combined mask

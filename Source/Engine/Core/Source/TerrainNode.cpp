@@ -7,7 +7,6 @@ using namespace R5;
 
 void TerrainNode::OnFill (void* ptr, float bboxPadding)
 {
-	Terrain* terrain = (Terrain*)mTree;
 	IGraphics* graphics = mTree->GetCore()->GetGraphics();
 
 	if (graphics != 0)
