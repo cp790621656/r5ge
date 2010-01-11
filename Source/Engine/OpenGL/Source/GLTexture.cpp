@@ -173,7 +173,7 @@ void GLTexture::_InternalRelease(bool delayExecution)
 		if (delayExecution)
 		{
 			// OpenGL textures should only be destroyed on the graphics thread
-			mGraphics->AddDelayedDelegate(DeleteTexture, (void*)mGlID);
+			mGraphics->ExecuteBeforeNextFrame(DeleteTexture, (void*)mGlID);
 		}
 		else
 		{

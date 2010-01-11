@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Higher level of renderer API interaction, handles resource management for graphical resources
 //============================================================================================================
@@ -72,7 +72,7 @@ public:
 	virtual void Release();
 
 	// Adds a delayed callback function that should be executed on the next frame (at BeginFrame)
-	virtual void AddDelayedDelegate(DelayedDelegate callback, void* param);
+	virtual void ExecuteBeforeNextFrame(DelayedDelegate callback, void* param);
 
 	// Clear the screen or the off-screen target, rendering the skybox if necessary (pre-render)
 	virtual void Clear (bool color = true, bool depth = true, bool stencil = true);

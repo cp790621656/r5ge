@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Column-major 4x3 matrix. Note that it is actually a 4x4 matrix, but only 4x3 part of it is used.
 // This matrix is suitable for everything that does not involve projection, such as view and world transforms.

@@ -389,7 +389,7 @@ void GLGraphics::Release()
 // Adds a delayed callback function that should be executed on the next frame (at BeginFrame)
 //============================================================================================================
 
-void GLGraphics::AddDelayedDelegate(DelayedDelegate callback, void* param)
+void GLGraphics::ExecuteBeforeNextFrame(DelayedDelegate callback, void* param)
 {
 	mDelegates.Lock();
 	{

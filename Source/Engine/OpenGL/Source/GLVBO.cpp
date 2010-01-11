@@ -69,7 +69,7 @@ void GLVBO::_InternalRelease(bool delayExecution)
 		{
 			if (delayExecution)
 			{
-				mGraphics->AddDelayedDelegate(DeleteBuffer, (void*)mVbo);
+				mGraphics->ExecuteBeforeNextFrame(DeleteBuffer, (void*)mVbo);
 			}
 			else
 			{

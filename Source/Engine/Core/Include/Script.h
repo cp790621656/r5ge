@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Scripts can be attached to game objects and are the ideal way of inserting code into the scene.
 //============================================================================================================

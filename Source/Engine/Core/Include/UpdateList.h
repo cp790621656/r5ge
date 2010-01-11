@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Container for registered update callbacks
 // TODO: Is it now obsolete with the addition of scripts?

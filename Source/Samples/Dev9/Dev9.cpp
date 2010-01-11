@@ -1,6 +1,6 @@
 //============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Dev9: Trees
 //============================================================================================================
@@ -14,35 +14,38 @@ using namespace R5;
 
 class TestApp
 {
-	IWindow*	mWin;
-	IGraphics*	mGraphics;
-	UI*			mUI;
-	Core*		mCore;
-	Camera*		mCam;
-	Scene		mScene;
-	Scene		mOffscreen;
-	Mesh*		mMesh;
-	uint		mSeed;
-	Random		mRand;
-	bool		mIsDirty;
-	
-	ITexture*	mDiffuseTex;
-	ITexture*	mNormalTex;
+	IWindow*	mWin;			// Application window
+	IGraphics*	mGraphics;		// Graphics controller
+	UI*			mUI;			// User interface manager
+	Core*		mCore;			// Engine core
+	Camera*		mCam;			// Main camera
+	Scene		mScene;			// Main scene
+	Scene		mOffscreen;		// Off-screen scene
+	Mesh*		mBranch;		// Generated mesh used to draw the cluster of leaves
+	uint		mSeed;			// Seed used for randomization
+	Random		mRand;			// Random number generator
 
-	UISlider*	mSize;
-	UISlider*	mTilt;
-	UISlider*	mCount;
-	UIButton*	mAlpha;
-	UIButton*	mNormal;
-	UIPicture*	mFinal;
+	ITexture*	mOriginalD;		// Original diffuse texture
+	ITexture*	mOriginalN;		// Original normal map texture
+	ITexture*	mFinalD;		// Generated diffuse texture for the cluster of leaves
+	ITexture*	mFinalN;		// Generated normal map
+
+	UISlider*	mSize;			// Slider controlling the size of individual leaves
+	UISlider*	mTilt;			// Slider controlling the maximum tilting of the leaves
+	UISlider*	mCount;			// Slider controlling the number of leaves in the generated mesh
+	UIPicture*	mFinal;			// Widget with the final texture
 
 public:
 
 	TestApp();
 	~TestApp();
+
 	void Run();
 	void OnDraw();
+	void DrawLeaves(void* param);
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
+
+	bool OnShowTexture(UIArea* area);
 	bool OnStateChange(UIArea* area);
 	bool OnGenerate(UIArea* area, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
@@ -52,8 +55,8 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mMesh(0), mSeed(0), mIsDirty(true), mDiffuseTex(0), mNormalTex(0),
-	mSize(0), mTilt(0), mCount(0), mAlpha(0), mNormal(0), mFinal(0)
+TestApp::TestApp() : mBranch(0), mSeed(0), mOriginalD(0), mOriginalN(0), mFinalD(0), mFinalN(0),
+	mSize(0), mTilt(0), mCount(0), mFinal(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -61,7 +64,11 @@ TestApp::TestApp() : mMesh(0), mSeed(0), mIsDirty(true), mDiffuseTex(0), mNormal
 	mCore		= new Core(mWin, mGraphics, mUI);
 
 	Object* root = mCore->GetRoot();
+
+	// Scene that contains regular visible objects
 	mScene.SetRoot( AddObject<Object>(root, "Scene Root") );
+
+	// Off-screen scene used for off-screen rendering
 	mOffscreen.SetRoot( AddObject<Object>(root, "Off-screen Root") );
 	mOffscreen.GetRoot()->SetSerializable(false);
 }
@@ -77,6 +84,8 @@ TestApp::~TestApp()
 }
 
 //============================================================================================================
+// Bind listeners, load the configuration and enter the main loop
+//============================================================================================================
 
 void TestApp::Run()
 {
@@ -85,46 +94,28 @@ void TestApp::Run()
 	mCore->SetListener( bind(&TestApp::OnSerializeFrom, this) );
 	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
 
-	// UI callbacks
-	mUI->SetOnKey		 ("Generate",	bind(&TestApp::OnGenerate,		this));
-	mUI->SetOnStateChange("Alpha",		bind(&TestApp::OnStateChange,	this));
-	mUI->SetOnStateChange("Normal",		bind(&TestApp::OnStateChange,	this));
+	// UI callbacks can be bound even before the actual widgets are loaded
+	mUI->SetOnKey		 ("Generate",		bind(&TestApp::OnGenerate,		this));
+	mUI->SetOnStateChange("Show",			bind(&TestApp::OnShowTexture,	this));
+	mUI->SetOnStateChange("Normal Toggle",	bind(&TestApp::OnStateChange,	this));
+	mUI->SetOnStateChange("Final Toggle",	bind(&TestApp::OnStateChange,	this));
+	mUI->SetOnStateChange("Alpha Toggle",	bind(&TestApp::OnStateChange,	this));
 
-	// Textures we'll be using
-	mDiffuseTex = mGraphics->GetTexture("Canopy");
-	mNormalTex  = mGraphics->GetTexture("Canopy Normal");
+	// Textures used by the application
+	mOriginalD	= mGraphics->GetTexture("Leaf Diffuse map");
+	mOriginalN	= mGraphics->GetTexture("Leaf Normal map");
+	mFinalD		= mGraphics->GetTexture("Generated Diffuse map");
+	mFinalN		= mGraphics->GetTexture("Generated Normal map");
 
 	// Load the configuration
 	if (*mCore << "Config/Dev9.txt")
 	{
 		// User Interface setup
 		{
-			ITexture* diffuse = mGraphics->GetTexture("Leaf Diffuse map");
-			ITexture* normal  = mGraphics->GetTexture("Leaf Normal map");
-
-			const Vector2i& sd = diffuse->GetSize();
-			const Vector2i& sn = normal->GetSize();
-
-			UIWindow* win0 = FindWidget<UIWindow>(mUI, "Leaf Diffuse Window");
-			UIWindow* win1 = FindWidget<UIWindow>(mUI, "Leaf Normal Window");
-			
-			if (win0 != 0)
-			{
-				win0->ResizeToFit(sd);
-				win0->SetText( String("Diffuse map (%ux%u)", sd.x, sd.y) );
-			}
-
-			if (win1 != 0)
-			{
-				win1->ResizeToFit(sn);
-				win1->SetText( String("Normal map (%ux%u)", sn.x, sn.y) );
-			}
-
+			// Widgets are defined in the configuration file
 			mSize	= FindWidget<UISlider>(mUI, "Size");
 			mTilt	= FindWidget<UISlider>(mUI, "Tilt");
 			mCount	= FindWidget<UISlider>(mUI, "Count");
-			mAlpha	= FindWidget<UIButton>(mUI, "Alpha");
-			mNormal = FindWidget<UIButton>(mUI, "Normal");
 			mFinal	= FindWidget<UIPicture>(mUI, "Final");
 		}
 
@@ -146,14 +137,15 @@ void TestApp::Run()
 			cam->SetDolly( Vector3f(0.0f, 100.0f, 100.0f) );
 		}
 
-		// Model setup
+		// Branch model setup
 		{
-			mMesh = mCore->GetMesh("Branch");
+			mBranch = mCore->GetMesh("Branch");
 			Model* model = mCore->GetModel("Branch");
 
 			// Set the mesh/material
-			model->GetLimb("Branch")->Set(mMesh, mGraphics->GetMaterial("Leaf"));
+			model->GetLimb("Branch")->Set(mBranch, mGraphics->GetMaterial("Leaf"));
 
+			// Add this model to the off-screen scene
 			ModelInstance* inst = AddObject<ModelInstance>(mOffscreen, "Branch");
 			inst->SetModel(model);
 			inst->SetSerializable(false);
@@ -170,81 +162,11 @@ void TestApp::Run()
 }
 
 //============================================================================================================
+// Draw the scene
+//============================================================================================================
 
 void TestApp::OnDraw()
 {
-	// Cull and draw the scene into an off-screen buffer
-	if (mIsDirty)
-	{
-		mIsDirty = false;
-
-		static DebugCamera* offCam = FindObject<DebugCamera>(mOffscreen, "Off-screen Camera");
-
-		if (offCam != 0)
-		{
-			static IRenderTarget* diffuseTarget = 0;
-			static IRenderTarget* normalTarget  = 0;
-
-			if (diffuseTarget == 0)
-			{
-				diffuseTarget = mGraphics->CreateRenderTarget();
-				diffuseTarget->AttachColorTexture(0, mDiffuseTex, ITexture::Format::RGBA);
-				diffuseTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
-				diffuseTarget->SetSize( Vector2i(512, 512) );
-			}
-
-			if (normalTarget == 0)
-			{
-				normalTarget = mGraphics->CreateRenderTarget();
-				normalTarget->AttachColorTexture(0, mNormalTex, ITexture::Format::RGBA);
-				normalTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
-				normalTarget->SetSize( Vector2i(512, 512) );
-			}
-
-			// Change the texture filtering to use 'nearest' filtering
-			mDiffuseTex->SetFiltering(ITexture::Filter::Nearest);
-			mNormalTex->SetFiltering (ITexture::Filter::Nearest);
-
-			// Draw the scene into the diffuse map target
-			mGraphics->SetActiveRenderTarget(diffuseTarget);
-			mGraphics->Clear();
-			mOffscreen.Cull(offCam);
-			mOffscreen.Draw("Diffuse Map");
-
-			// Draw the scene into the normal map target
-			mGraphics->SetActiveRenderTarget(normalTarget);
-			mGraphics->Clear();
-			mOffscreen.Draw("Normal Map");
-
-			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
-			// side-effect by-product of rendering alpha-blended textures into an FBO.
-			mGraphics->SetFog(false);
-			mGraphics->SetAlphaTest(false);
-			mGraphics->SetBlending(IGraphics::Blending::None);
-			mGraphics->SetActiveRenderTarget(diffuseTarget);
-			mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
-			mGraphics->SetActiveTexture(0, mDiffuseTex);
-			mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
-			mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
-
-			// Change filtering to anisotropic since the textures will be used on a 3D model
-			mDiffuseTex->SetFiltering(ITexture::Filter::Anisotropic);
-			mNormalTex->SetFiltering (ITexture::Filter::Anisotropic);
-			mDiffuseTex->SetWrapMode (ITexture::WrapMode::Repeat);
-			mNormalTex->SetWrapMode  (ITexture::WrapMode::Repeat);
-
-			UIWindow* final = FindWidget<UIWindow>(mUI, "Final Window");
-
-			if (final != 0)
-			{
-				Vector2i size (mDiffuseTex->GetSize());
-				final->ResizeToFit(size);
-				final->SetText( String("Final Texture (%ux%u)", size.x, size.y) );
-			}
-		}
-	}
-
-	// Clear the screen
 	mGraphics->SetActiveRenderTarget(0);
 	mScene.Cull(mCam);
 	mScene.DrawAllForward();
@@ -252,18 +174,90 @@ void TestApp::OnDraw()
 }
 
 //============================================================================================================
+// Cull and draw the leaves into an off-screen buffer
+//============================================================================================================
+
+void TestApp::DrawLeaves(void* param)
+{
+	static DebugCamera* offCam = FindObject<DebugCamera>(mOffscreen, "Off-screen Camera");
+
+	if (offCam != 0)
+	{
+		static IRenderTarget* diffuseTarget = 0;
+		static IRenderTarget* normalTarget  = 0;
+		ITexture* tex = mGraphics->GetTexture("Leaf Diffuse map");
+
+		if (diffuseTarget == 0)
+		{
+			diffuseTarget = mGraphics->CreateRenderTarget();
+			diffuseTarget->AttachColorTexture(0, mFinalD, ITexture::Format::RGBA);
+			diffuseTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
+			diffuseTarget->SetSize( tex->GetSize() * 2 );
+		}
+
+		if (normalTarget == 0)
+		{
+			normalTarget = mGraphics->CreateRenderTarget();
+			normalTarget->AttachColorTexture(0, mFinalN, ITexture::Format::RGBA);
+			normalTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
+			normalTarget->SetSize( tex->GetSize() * 2 );
+		}
+
+		// Change the texture filtering to use 'nearest' filtering
+		mFinalD->SetFiltering(ITexture::Filter::Nearest);
+		mFinalN->SetFiltering (ITexture::Filter::Nearest);
+
+		// Draw the scene into the diffuse map target
+		mGraphics->SetActiveRenderTarget(diffuseTarget);
+		mGraphics->Clear();
+		mOffscreen.Cull(offCam);
+		mOffscreen.Draw("Diffuse Map");
+
+		// Draw the scene into the normal map target
+		mGraphics->SetActiveRenderTarget(normalTarget);
+		mGraphics->Clear();
+		mOffscreen.Draw("Normal Map");
+
+		// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
+		// side-effect by-product of rendering alpha-blended textures into an FBO.
+		mGraphics->SetFog(false);
+		mGraphics->SetAlphaTest(false);
+		mGraphics->SetBlending(IGraphics::Blending::None);
+		mGraphics->SetActiveRenderTarget(diffuseTarget);
+		mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		mGraphics->SetActiveTexture(0, mFinalD);
+		mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
+		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
+
+		// Change filtering to anisotropic since the textures will be used on a 3D model
+		mFinalD->SetFiltering(ITexture::Filter::Anisotropic);
+		mFinalN->SetFiltering (ITexture::Filter::Anisotropic);
+		mFinalD->SetWrapMode (ITexture::WrapMode::Repeat);
+		mFinalN->SetWrapMode  (ITexture::WrapMode::Repeat);
+	}
+}
+
+//============================================================================================================
+// Fill the branch mesh geometry
+//============================================================================================================
 
 void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors)
 {
-	mIsDirty = true;
 	mRand.SetSeed(mSeed);
+
+	// How much the leaves will twist
+	const float twist = HALFPI;
+
+	// Color of the far-away vertices will be tinted by up to this amount (1.0 - tint)
+	const float tint = 0.85f;
+	const float minTint = 1.0f - tint;
+
+	// Maximum color variance between the leaves
+	const float variance = 0.25f;
 
 	// Maximum depth range
 	float depth = 5.0f;
 	float invDepth = 1.0f / depth;
-
-	// How much the leaves will twist
-	float twist = HALFPI;
 
 	// Maximum size of the particle
 	float size = (mSize != 0 ? mSize->GetValue() * 0.5f : 0.2f);
@@ -277,10 +271,6 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 
 	// Maximum distance a particle can be spawned at without getting clipped
 	float range = Float::Max(0.0f, 1.0f - size * 1.145f);
-
-	// Color of the far-away vertices will be tinted by up to this amount (1.0 - tint)
-	float tint = 0.85f;
-	float minTint = 1.0f - tint;
 
 	Vector3f pos, axis, normal;
 	Quaternion rot;
@@ -307,6 +297,46 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 		rot.SetFromDirection( Vector3f(pos.x, pos.y, 0.0f) );
 		rot *= Quaternion(axis, mRand.GenerateRangeFloat() * twist);
 
+		// Top-left
+		verts.Expand().Set(-size,  size, 0.0f);
+		verts.Back() *= rot;
+		verts.Back() += pos;
+
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance, 1.0);
+
+		// Bottom-left
+		verts.Expand().Set(-size, -size, 0.0f);
+		verts.Back() *= rot;
+		verts.Back() += pos;
+
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance, 1.0);
+
+		// Bottom-right
+		verts.Expand().Set( size, -size, 0.0f);
+		verts.Back() *= rot;
+		verts.Back() += pos;
+
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance, 1.0);
+
+		// Top-right
+		verts.Expand().Set( size,  size, 0.0f);
+		verts.Back() *= rot;
+		verts.Back() += pos;
+
+		shade = minTint + tint * verts.Back().z * invDepth;
+		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance,
+								  shade + shade * mRand.GenerateRangeFloat() * variance, 1.0);
+
 		// Calculate and set the normals
 		normal.Set(0.0f, 0.0f, 1.0f);
 		normal *= rot;
@@ -316,71 +346,98 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 		normals.Expand() = normal;
 		normals.Expand() = normal;
 
-		// Top-left
-		verts.Expand().Set(-size,  size, 0.0f);
-		verts.Back() *= rot;
-		verts.Back() += pos;
-
-		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
-
-		// Bottom-left
-		verts.Expand().Set(-size, -size, 0.0f);
-		verts.Back() *= rot;
-		verts.Back() += pos;
-
-		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
-
-		// Bottom-right
-		verts.Expand().Set( size, -size, 0.0f);
-		verts.Back() *= rot;
-		verts.Back() += pos;
-
-		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
-
-		// Top-right
-		verts.Expand().Set( size,  size, 0.0f);
-		verts.Back() *= rot;
-		verts.Back() += pos;
-
-		shade = minTint + tint * verts.Back().z * invDepth;
-		colors.Expand() = Color4f(shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f,
-								  shade + shade * mRand.GenerateRangeFloat() * 0.25f, 1.0);
-
 		// Texture coordinates are always the same
 		tc.Expand().Set(0.0f, 1.0f);
 		tc.Expand().Set(0.0f, 0.0f);
 		tc.Expand().Set(1.0f, 0.0f);
 		tc.Expand().Set(1.0f, 1.0f);
 	}
+
+	// Recreate the leaf texture at the beginning of the next frame
+	mGraphics->ExecuteBeforeNextFrame( bind(&TestApp::DrawLeaves, this) );
 }
 
+//============================================================================================================
+// Callback triggered when the state of N, A and F buttons changes
 //============================================================================================================
 
 bool TestApp::OnStateChange(UIArea* area)
 {
 	if (mFinal != 0)
 	{
-		const ITexture* tex = (mNormal != 0 && mNormal->GetState(UIButton::State::Pressed)) ?
-			mNormalTex : mDiffuseTex;
+		UIWindow* parent = R5_CAST(UIWindow, area->GetParent());
 
-		bool alpha = (tex == mNormalTex) || (mAlpha != 0 && !mAlpha->GetState(UIButton::State::Pressed));
+		if (parent != 0)
+		{
+			UIButton* n = FindWidget<UIButton>(parent, "Normal Toggle", false);
+			UIButton* f = FindWidget<UIButton>(parent, "Final Toggle", false);
+			UIButton* a = FindWidget<UIButton>(parent, "Alpha Toggle", false);
 
-		mFinal->IgnoreAlpha(alpha);
-		mFinal->SetTexture(tex);
+			if (n != 0 && f != 0 && a != 0)
+			{
+				const char* title (0);
+
+				if (f->GetState(UIButton::State::Pressed))
+				{
+					if (n->GetState(UIButton::State::Pressed))
+					{
+						title = "Generated Normal Map";
+						mFinal->SetTexture(mFinalN);
+						mFinal->IgnoreAlpha(true);
+					}
+					else
+					{
+						title = "Generated Diffuse Map";
+						mFinal->SetTexture(mFinalD);
+						mFinal->IgnoreAlpha(a->GetState(UIButton::State::Pressed));
+					}
+				}
+				else
+				{
+					if (n->GetState(UIButton::State::Pressed))
+					{
+						title = "Original Normal Map";
+						mFinal->SetTexture(mOriginalN);
+						mFinal->IgnoreAlpha(true);
+					}
+					else
+					{
+						title = "Original Diffuse Map";
+						mFinal->SetTexture(mOriginalD);
+						mFinal->IgnoreAlpha(a->GetState(UIButton::State::Pressed));
+					}
+				}
+
+				Vector2i size (mFinal->GetTexture()->GetSize());
+				parent->ResizeToFit(size);
+				parent->SetText( String("%s (%dx%d)", title, size.x, size.y) );
+			}
+		}
 	}
 	return true;
 }
 
+//============================================================================================================
+// Callback triggered when the user clicks the "Show" button
+//============================================================================================================
+
+bool TestApp::OnShowTexture(UIArea* area)
+{
+	if (mFinal != 0)
+	{
+		UIButton* btn = R5_CAST(UIButton, area);
+
+		if (btn != 0)
+		{
+			mFinal->GetParent()->SetAlpha( btn->GetState(UIButton::State::Pressed) ? 1.0f : 0.0f, 0.25f );
+			OnStateChange(mFinal);
+		}
+	}
+	return true;
+}
+
+//============================================================================================================
+// Callback triggered when the user clicks on the "Generate" button
 //============================================================================================================
 
 bool TestApp::OnGenerate (UIArea* area, const Vector2i& pos, byte key, bool isDown)
@@ -394,27 +451,31 @@ bool TestApp::OnGenerate (UIArea* area, const Vector2i& pos, byte key, bool isDo
 }
 
 //============================================================================================================
+// Clear and regenerate the mesh used by the off-screen tree branch
+//============================================================================================================
 
 void TestApp::Generate()
 {
-	if (mMesh != 0)
+	if (mBranch != 0)
 	{
-		mMesh->Lock();
+		mBranch->Lock();
 		{
-			mMesh->Clear();
+			mBranch->Clear();
 
-			Fill(mMesh->GetVertexArray(),
-				 mMesh->GetNormalArray(),
-				 mMesh->GetTexCoordArray(),
-				 mMesh->GetColorArray());
+			Fill(mBranch->GetVertexArray(),
+				 mBranch->GetNormalArray(),
+				 mBranch->GetTexCoordArray(),
+				 mBranch->GetColorArray());
 
-			mMesh->SetPrimitive(IGraphics::Primitive::Quad);
-			mMesh->Update(true, false, true, true, false, false);
+			mBranch->SetPrimitive(IGraphics::Primitive::Quad);
+			mBranch->Update(true, false, true, true, false, false);
 		}
-		mMesh->Unlock();
+		mBranch->Unlock();
 	}
 }
 
+//============================================================================================================
+// Save the seed used to generate the branch when serializing out
 //============================================================================================================
 
 void TestApp::OnSerializeTo (TreeNode& node) const
@@ -422,6 +483,8 @@ void TestApp::OnSerializeTo (TreeNode& node) const
 	node.AddChild("Seed", mSeed);
 }
 
+//============================================================================================================
+// Load the previously saved seed used to generate the branch
 //============================================================================================================
 
 bool TestApp::OnSerializeFrom (const TreeNode& node)
@@ -434,6 +497,8 @@ bool TestApp::OnSerializeFrom (const TreeNode& node)
 	return false;
 }
 
+//============================================================================================================
+// Application entry point
 //============================================================================================================
 
 R5_MAIN_FUNCTION

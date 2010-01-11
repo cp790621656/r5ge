@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Distant screen-aligned billboard -- always relative to the camera on the farthest edge of the horizon
 //============================================================================================================

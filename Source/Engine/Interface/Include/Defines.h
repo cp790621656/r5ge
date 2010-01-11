@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Macros for standarized class creation and traversal. They eliminate the need for the 'dynamic_cast'
 // functionality and provide a quick way of comparing class types.

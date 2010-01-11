@@ -1089,9 +1089,16 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 			{
 				float size = 1.0f;
 
-				// Find the center
 				Vector3f origin;
-				for (uint b = 0; b < vertices; ++b) origin += mesh->mVertices[b].mPos;
+				Bounds bounds;
+				
+				for (uint b = 0; b < vertices; ++b)
+				{
+					const Vertex& v = mesh->mVertices[b];
+					origin += v.mPos;
+					bounds.Include(v.mPos);
+				}
+				
 				origin *= 1.0f / vertices;
 				node.AddChild("Origin", origin);
 
@@ -1105,14 +1112,15 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 
 				// Starting radius of each billboard
 				radius /= vertices;
-				radius *= 10.0f;
+				radius *= 12.5f;
 
-				Array<Quaternion>& verts = node.AddChild(mesh->mClouds ? "Instances" : "Vertices").mValue.ToQuaternionArray();
+				Array<Quaternion>& verts = node.AddChild("Instances").mValue.ToQuaternionArray();
 
 				for (uint b = 0; b < vertices; ++b)
 				{
 					const Vertex& v = mesh->mVertices[b];
-					verts.Expand().Set(v.mPos.x, v.mPos.y, v.mPos.z, radius);
+					verts.Expand().Set(v.mPos.x, v.mPos.y, v.mPos.z, radius +
+						radius * 0.25f * (origin.z - v.mPos.z) / bounds.GetRadius());
 				}
 
 				// Billboard clouds don't need to save normals, texture coordinates, or bone information

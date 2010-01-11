@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Functions for various interpolations
 // http://www.gamedev.net/reference/articles/article1497.asp

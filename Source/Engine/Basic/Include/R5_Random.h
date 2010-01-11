@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Cross platform pseudo-random number generator
 // Based on: http://www.codeproject.com/KB/cs/fastrandom.aspx

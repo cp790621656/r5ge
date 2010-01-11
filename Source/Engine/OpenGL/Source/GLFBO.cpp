@@ -100,7 +100,7 @@ void GLFBO::_InternalRelease (bool delayExecution)
 	{
 		if (delayExecution)
 		{
-			mGraphics->AddDelayedDelegate(DeleteFBO, (void*)mFbo);
+			mGraphics->ExecuteBeforeNextFrame(DeleteFBO, (void*)mFbo);
 		}
 		else
 		{

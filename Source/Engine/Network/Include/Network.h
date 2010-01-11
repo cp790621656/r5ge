@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //              R5 Network, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Network class implements all the basic functionality dealing with connecting, sending, and receiving data
 //============================================================================================================

@@ -2,7 +2,7 @@
 
 //============================================================================================================
 //              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//											www.nextrevision.com
 //============================================================================================================
 // Double precision floating point vector
 // NOTE: Unless you are certain you need double precision, I recommend using Vector3f instead.
