@@ -179,7 +179,7 @@ Root
 				"[Generated] Normal"
 				"[Generated] Diffuse Material"
 				"[Generated] Specular Material"
-				"Textures/Plants/tree_leaves.png"
+				"Textures/Billboards/leaf3.png"
 			}
 		}
 	}
