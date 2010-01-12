@@ -53,9 +53,6 @@ void TestApp::OnDraw()
 	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
 	static UILabel* inf = FindWidget<UILabel>(mUI, "Info");
 
-	static ITechnique*	opaque	 = mGraphics->GetTechnique("Opaque");
-	static ITechnique*	deferred = mGraphics->GetTechnique("Deferred");
-
 	mScene.Cull(mCam);
 
 	if (g_ssao > 0)
@@ -64,8 +61,6 @@ void TestApp::OnDraw()
 	}
 	else
 	{
-		Array<const ITechnique*> techs;
-		techs.Expand() = opaque;
 		mGraphics->SetActiveRenderTarget(0);
 		mScene.DrawAllForward();
 	}

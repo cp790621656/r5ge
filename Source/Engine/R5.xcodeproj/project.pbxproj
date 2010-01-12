@@ -6668,7 +6668,6 @@
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
 					"-lR5_Render",
-					"-lR5_Noise",
 					"-lR5_UI",
 				);
 				SKIP_INSTALL = YES;
@@ -6703,7 +6702,6 @@
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
 					"-lR5_Render",
-					"-lR5_Noise",
 					"-lR5_UI",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6740,7 +6738,6 @@
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
 					"-lR5_Render",
-					"-lR5_Noise",
 					"-lR5_UI",
 				);
 				SKIP_INSTALL = YES;
@@ -6775,7 +6772,6 @@
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
 					"-lR5_Render",
-					"-lR5_Noise",
 					"-lR5_UI",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
