@@ -55,101 +55,6 @@ Root
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
 		}
-
-		Material = "Limestone"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.256351 0.260970 0.256351 0.003922
-			Glow = 0.000000
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Stone/lime.jpg"
-				Texture 1 = "Textures/Stone/lime_ns.png"
-			}
-		}
-
-		Material = "Grey Brick"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.653580 0.491917 0.200924 0.390300
-			Glow = 0.000000
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Stone/brick.jpg"
-				Texture 1 = "Textures/Stone/brick_ns.png"
-			}
-		}
-
-		Material = "White Brick"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.653580 0.491917 0.200924 0.390300
-			Glow = 0.000000
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Stone/brick2.jpg"
-				Texture 1 = "Textures/Stone/brick2_ns.png"
-			}
-		}
-
-		Material = "Fuzzy Tree"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.653580 0.491917 0.200924 0.390300
-			Glow = 0.000000
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Plants/fuzzytree.jpg"
-				Texture 1 = "Textures/Plants/fuzzytree_ns.png"
-			}
-		}
-
-		Material = "Leaf"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.653580 0.491917 0.200924 0.390300
-			Glow = 0.000000
-			ADT = 0.879908
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Billboards/leaf.png"
-				Texture 1 = "Textures/Billboards/leaf_ns.png"
-			}
-		}
-
-		Material = "Peasant"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D"
-				Texture 0 = "Textures/Skins/peasant.jpg"
-			}
-
-			Technique = "Opaque"
-			{
-				Shader = "Forward/Skinned_D"
-				Texture 0 = "Textures/Skins/peasant.jpg"
-			}
-		}
 	}
 
 	UI
@@ -160,59 +65,6 @@ Root
 
 		Layout
 		{
-			Frame = "Debug Frame"
-			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
-				Receives Events = false
-				Layer = 0
-
-				Label = "FPS"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 18.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "96"
-					Shadow = true
-					Alignment = "Right"
-					Receives Events = false
-					Layer = 1
-				}
-
-				Highlight = "Status Highlight"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
-					Color = 0.000000 0.000000 0.000000 1.000000
-					Receives Events = true
-					Layer = 0
-
-					Label = "Status Label"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "R5 Model Viewer v.1.3.7. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
-						Shadow = true
-						Alignment = "Center"
-						Receives Events = false
-						Layer = 1
-					}
-				}
-			}
-
 			Frame = "Options Frame"
 			{
 				Left = 0.000000 0.000000
@@ -366,6 +218,59 @@ Root
 						Receives Events = true
 						Tooltip = "Turning this on will make bright areas glow"
 						Layer = 0
+					}
+				}
+			}
+
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Receives Events = false
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "4"
+					Shadow = true
+					Alignment = "Right"
+					Receives Events = false
+					Layer = 1
+				}
+
+				Highlight = "Status Highlight"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 0.850000
+					Color = 0.000000 0.000000 0.000000 1.000000
+					Receives Events = true
+					Layer = 0
+
+					Label = "Status Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "R5 Model Viewer v.1.3.7. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
+						Shadow = true
+						Alignment = "Center"
+						Receives Events = false
+						Layer = 1
 					}
 				}
 			}

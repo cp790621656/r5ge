@@ -200,7 +200,7 @@ bool CheckMixedAttachmentSupport()
 
 	glGenTextures(1, &tex1);
 	glBindTexture(GL_TEXTURE_2D, tex1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_GL_ERROR;
