@@ -65,7 +65,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T02.txt")
 	{
 		// At this point our window has been created. Our camera has also been loaded, so now we just find it:
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		// Register our listeners and enter the message processing loop, same as in the previous tutorial
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );

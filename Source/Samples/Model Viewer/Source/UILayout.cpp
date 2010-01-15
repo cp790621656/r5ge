@@ -135,8 +135,8 @@ String			_currentAnim;
 // A pair of empty functions that are used to intercept keyboard and mouse events for frames
 //============================================================================================================
 
-bool OnIgnoreKey	(UIArea* area, const Vector2i& pos, byte key, bool isDown)	{ return true; }
-bool OnIgnoreMouse	(UIArea* area, const Vector2i& pos, const Vector2i& delta)	{ return true; }
+bool OnIgnoreKey	(UIWidget* widget, const Vector2i& pos, byte key, bool isDown)	{ return true; }
+bool OnIgnoreMouse	(UIWidget* widget, const Vector2i& pos, const Vector2i& delta)	{ return true; }
 
 //============================================================================================================
 // Helper function used by widget creation functions
@@ -168,14 +168,14 @@ void SetRegion (UIRegion& rgn, uint line, int flag, float x, float y)
 }
 
 //============================================================================================================
-// Simple callback function that hides the area's parent
+// Simple callback function that hides the widget's parent
 //============================================================================================================
 
-bool HideParent (UIArea* area, bool hasFocus)
+bool HideParent (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		UIFrame* parent = R5_CAST(UIFrame, area->GetParent());
+		UIFrame* parent = R5_CAST(UIFrame, widget->GetParent());
 		if (parent != 0) parent->Hide();
 	}
 	return true;
@@ -1130,10 +1130,10 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 }
 
 //============================================================================================================
-// Adds a new caption to the specified area
+// Adds a new caption to the specified widget
 //============================================================================================================
 
-UILabel* ModelViewer::AddCaption (UIArea* parent, uint line, const String& text)
+UILabel* ModelViewer::AddCaption (UIWidget* parent, uint line, const String& text)
 {
 	UILabel* lbl = AddLabel(parent, line, String("Caption %u", line), 0);
 	lbl->SetReceivesEvents(false);
@@ -1144,10 +1144,10 @@ UILabel* ModelViewer::AddCaption (UIArea* parent, uint line, const String& text)
 }
 
 //============================================================================================================
-// Adds a new text label to the specified area
+// Adds a new text label to the specified widget
 //============================================================================================================
 
-UILabel* ModelViewer::AddLabel (UIArea* parent, uint line, const String& name, int offset)
+UILabel* ModelViewer::AddLabel (UIWidget* parent, uint line, const String& name, int offset)
 {
 	UILabel* lbl = AddWidget<UILabel>(parent, name);
 
@@ -1166,7 +1166,7 @@ UILabel* ModelViewer::AddLabel (UIArea* parent, uint line, const String& name, i
 // Adds a new button tot he specified frame
 //============================================================================================================
 
-UIButton*	ModelViewer::AddButton (UIArea* parent, uint line, const String& name, int offset)
+UIButton*	ModelViewer::AddButton (UIWidget* parent, uint line, const String& name, int offset)
 {
 	UIButton* btn = AddWidget<UIButton>(parent, name);
 
@@ -1182,10 +1182,10 @@ UIButton*	ModelViewer::AddButton (UIArea* parent, uint line, const String& name,
 }
 
 //============================================================================================================
-// Adds a new checkbox to the specified area
+// Adds a new checkbox to the specified widget
 //============================================================================================================
 
-UICheckbox* ModelViewer::AddCheckbox (UIArea* parent, uint line, const String& name)
+UICheckbox* ModelViewer::AddCheckbox (UIWidget* parent, uint line, const String& name)
 {
 	UICheckbox* chk = AddWidget<UICheckbox>(parent, name);
 
@@ -1204,10 +1204,10 @@ UICheckbox* ModelViewer::AddCheckbox (UIArea* parent, uint line, const String& n
 }
 
 //============================================================================================================
-// Adds a new input field to the specified area
+// Adds a new input field to the specified widget
 //============================================================================================================
 
-UIInput* ModelViewer::AddInput (UIArea* parent, uint line, const String& name, int offset)
+UIInput* ModelViewer::AddInput (UIWidget* parent, uint line, const String& name, int offset)
 {
 	UIInput* inp = AddWidget<UIInput>(parent, name);
 
@@ -1222,10 +1222,10 @@ UIInput* ModelViewer::AddInput (UIArea* parent, uint line, const String& name, i
 }
 
 //============================================================================================================
-// Adds a new drop-down list to the specified area
+// Adds a new drop-down list to the specified widget
 //============================================================================================================
 
-UIList* ModelViewer::AddList (UIArea* parent, uint line, const String& name, int offset)
+UIList* ModelViewer::AddList (UIWidget* parent, uint line, const String& name, int offset)
 {
 	UIList* list = AddWidget<UIList>(parent, name);
 
@@ -1242,10 +1242,10 @@ UIList* ModelViewer::AddList (UIArea* parent, uint line, const String& name, int
 }
 
 //============================================================================================================
-// Adds a new slider to the specified area
+// Adds a new slider to the specified widget
 //============================================================================================================
 
-UISlider* ModelViewer::AddSlider (UIArea* parent, uint line, const String& name, int offset)
+UISlider* ModelViewer::AddSlider (UIWidget* parent, uint line, const String& name, int offset)
 {
 	UISlider* slider = AddWidget<UISlider>(parent, name);
 	SetRegion(slider->GetRegion(), line, offset, 1, 0);
@@ -1255,10 +1255,10 @@ UISlider* ModelViewer::AddSlider (UIArea* parent, uint line, const String& name,
 }
 
 //============================================================================================================
-// Adds a new highlight to the specified area
+// Adds a new highlight to the specified widget
 //============================================================================================================
 
-UIHighlight* ModelViewer::AddHighlight (UIArea* parent, uint line, const String& name, int offset)
+UIHighlight* ModelViewer::AddHighlight (UIWidget* parent, uint line, const String& name, int offset)
 {
 	UIHighlight* hlt = AddWidget<UIHighlight>(parent, name);
 	SetRegion(hlt->GetRegion(), line, offset, 1, 0);
@@ -1271,10 +1271,10 @@ UIHighlight* ModelViewer::AddHighlight (UIArea* parent, uint line, const String&
 // Delegate function triggered when an "OK" button is clicked on the file dialog menu
 //============================================================================================================
 
-bool ModelViewer::OnFileDialogOK (UIArea* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnFileDialogOK (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
-	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
+	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
 	{
 		_ConfirmFileDialog();
 	}
@@ -1285,13 +1285,13 @@ bool ModelViewer::OnFileDialogOK (UIArea* area, const Vector2i& pos, byte key, b
 // Delegate triggered when the "OK" button is pressed in a confirmation dialog window
 //============================================================================================================
 
-bool ModelViewer::OnConfirmDialogOK	(UIArea* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
-	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
+	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
 	{
-		UIButton* btn		= R5_CAST(UIButton, area);
-		UIFrame*	parent	= R5_CAST(UIFrame, area->GetParent());
+		UIButton* btn		= R5_CAST(UIButton, widget);
+		UIFrame*	parent	= R5_CAST(UIFrame, widget->GetParent());
 
 		const String& text = btn->GetText();
 
@@ -1389,9 +1389,9 @@ bool ModelViewer::OnConfirmDialogOK	(UIArea* area, const Vector2i& pos, byte key
 // Helper callback functions that toggle the visibility of the options frames
 //============================================================================================================
 
-bool ModelViewer::ToggleBoth (UIArea* area)
+bool ModelViewer::ToggleBoth (UIWidget* widget)
 {
-	UIButton* btn = (UIButton*)area;
+	UIButton* btn = (UIButton*)widget;
 	bool pressed = ((btn->GetState() & UIButton::State::Pressed) != 0);
 
 	UIFrame* frame = FindWidget<UIFrame>(mUI, btn->GetName() + " Frame", false);
@@ -1410,9 +1410,9 @@ bool ModelViewer::ToggleBoth (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::ToggleOff (UIArea* area)
+bool ModelViewer::ToggleOff (UIWidget* widget)
 {
-	UIButton* btn = (UIButton*)area;
+	UIButton* btn = (UIButton*)widget;
 	bool pressed = ((btn->GetState() & UIButton::State::Pressed) != 0);
 
 	if (!pressed)
@@ -1431,7 +1431,7 @@ bool ModelViewer::ToggleOff (UIArea* area)
 // Updates the limb menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillLimbMenu (UIArea* area, bool hasFocus)
+bool ModelViewer::OnFillLimbMenu (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1455,7 +1455,7 @@ bool ModelViewer::OnFillLimbMenu (UIArea* area, bool hasFocus)
 // Updates the mesh menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillMeshMenu (UIArea* area, bool hasFocus)
+bool ModelViewer::OnFillMeshMenu (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1484,7 +1484,7 @@ bool ModelViewer::OnFillMeshMenu (UIArea* area, bool hasFocus)
 // Updates the material menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillMatMenu (UIArea* area, bool hasFocus)
+bool ModelViewer::OnFillMatMenu (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1516,7 +1516,7 @@ bool ModelViewer::OnFillMatMenu (UIArea* area, bool hasFocus)
 // Updates the texture menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillTexMenu (UIArea* area, bool hasFocus)
+bool ModelViewer::OnFillTexMenu (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1549,7 +1549,7 @@ bool ModelViewer::OnFillTexMenu (UIArea* area, bool hasFocus)
 // Updates the animation menu items
 //============================================================================================================
 
-bool ModelViewer::OnFillAnimMenu (UIArea* area, bool hasFocus)
+bool ModelViewer::OnFillAnimMenu (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1589,7 +1589,7 @@ bool ModelViewer::OnFillAnimMenu (UIArea* area, bool hasFocus)
 // Updates the model's information panel
 //============================================================================================================
 
-bool ModelViewer::OnFillModelMenu (UIArea* area, bool hasFocus)
+bool ModelViewer::OnFillModelMenu (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -1617,7 +1617,7 @@ bool ModelViewer::OnFillModelMenu (UIArea* area, bool hasFocus)
 // Menu callback functions
 //============================================================================================================
 
-bool ModelViewer::OnFileMenuSelection (UIArea* area)
+bool ModelViewer::OnFileMenuSelection (UIWidget* widget)
 {
 	const String& item = _fileMenu->GetText();
 
@@ -1642,9 +1642,9 @@ bool ModelViewer::OnFileMenuSelection (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnViewMenuSelection (UIArea* area)
+bool ModelViewer::OnViewMenuSelection (UIWidget* widget)
 {
-	UIMenu* menu = R5_CAST(UIMenu, area);
+	UIMenu* menu = R5_CAST(UIMenu, widget);
 
 	if (menu != 0)
 	{
@@ -1672,7 +1672,7 @@ bool ModelViewer::OnViewMenuSelection (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnLimbMenuSelection (UIArea* area)
+bool ModelViewer::OnLimbMenuSelection (UIWidget* widget)
 {
 	if (mModel != 0)
 	{
@@ -1700,7 +1700,7 @@ bool ModelViewer::OnLimbMenuSelection (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnMeshMenuSelection (UIArea* area)
+bool ModelViewer::OnMeshMenuSelection (UIWidget* widget)
 {
 	_currentMesh = _meshMenu->GetText();
 
@@ -1727,7 +1727,7 @@ bool ModelViewer::OnMeshMenuSelection (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnMatMenuSelection (UIArea* area)
+bool ModelViewer::OnMatMenuSelection (UIWidget* widget)
 {
 	_currentMat.Clear();
 	_currentTech.Clear();
@@ -1841,7 +1841,7 @@ bool ModelViewer::OnMatMenuSelection (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnTexMenuSelection (UIArea* area)
+bool ModelViewer::OnTexMenuSelection (UIWidget* widget)
 {
 	_currentTex = _texMenu->GetText();
 
@@ -1871,7 +1871,7 @@ bool ModelViewer::OnTexMenuSelection (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimMenuSelection (UIArea* area)
+bool ModelViewer::OnAnimMenuSelection (UIWidget* widget)
 {
 	_currentAnim = _animMenu->GetText();
 
@@ -1906,9 +1906,9 @@ bool ModelViewer::OnAnimMenuSelection (UIArea* area)
 // Program options panel callbacks
 //============================================================================================================
 
-bool ModelViewer::OnDrawMode (UIArea* area)
+bool ModelViewer::OnDrawMode (UIWidget* widget)
 {
-	UIList* list = (UIList*)area;
+	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
 
 	if		(value == "Deferred")			mParams.mSsao = 0;
@@ -1920,9 +1920,9 @@ bool ModelViewer::OnDrawMode (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnBackground (UIArea* area)
+bool ModelViewer::OnBackground (UIWidget* widget)
 {
-	UIList* list = (UIList*)area;
+	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
 
 	if (value == "Black Color")
@@ -1950,18 +1950,18 @@ bool ModelViewer::OnBackground (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnBloomToggle	(UIArea* area)
+bool ModelViewer::OnBloomToggle	(UIWidget* widget)
 {
-	UICheckbox* chk = (UICheckbox*)area;
+	UICheckbox* chk = (UICheckbox*)widget;
 	mParams.mBloom = ((chk->GetState() & UICheckbox::State::Checked) != 0);
 	return true;
 }
 
 //============================================================================================================
 
-bool ModelViewer::OnBloomChange	(UIArea* area)
+bool ModelViewer::OnBloomChange	(UIWidget* widget)
 {
-	UISlider* sld = (UISlider*)area;
+	UISlider* sld = (UISlider*)widget;
 	mParams.mThreshold = sld->GetValue();
 	return true;
 }
@@ -1970,10 +1970,10 @@ bool ModelViewer::OnBloomChange	(UIArea* area)
 // Force-applies all active transformations to all of the model's meshes
 //============================================================================================================
 
-bool ModelViewer::OnModelBake (UIArea* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
-	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
+	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
 	{
 		const Vector3f&		pos		= mInst->GetRelativePosition();
 		const Quaternion&	rot		= mInst->GetRelativeRotation();
@@ -2110,9 +2110,9 @@ bool ModelViewer::OnModelBake (UIArea* area, const Vector2i& pos, byte key, bool
 // Whether to spin the model around the model (or spin it around)
 //============================================================================================================
 
-bool ModelViewer::OnModelSpin (UIArea* area)
+bool ModelViewer::OnModelSpin (UIWidget* widget)
 {
-	UICheckbox* chk = (UICheckbox*)area;
+	UICheckbox* chk = (UICheckbox*)widget;
 	mAnimate = ((chk->GetState() & UICheckbox::State::Checked) != 0);
 	if (!mAnimate) mStage->SetRelativeRotation( Quaternion() );
 	return true;
@@ -2122,9 +2122,9 @@ bool ModelViewer::OnModelSpin (UIArea* area)
 // Whether to show the model's bounds
 //============================================================================================================
 
-bool ModelViewer::OnModelBounds (UIArea* area)
+bool ModelViewer::OnModelBounds (UIWidget* widget)
 {
-	UICheckbox* chk = (UICheckbox*)area;
+	UICheckbox* chk = (UICheckbox*)widget;
 	bool bounds = ((chk->GetState() & UICheckbox::State::Checked) != 0);
 	if (mInst != 0) mInst->SetShowOutline(bounds);
 	return true;
@@ -2134,7 +2134,7 @@ bool ModelViewer::OnModelBounds (UIArea* area)
 // Delegate triggered when the material name input field gains or loses focus
 //============================================================================================================
 
-bool ModelViewer::OnMatNameSelect (UIArea* area, bool hasFocus)
+bool ModelViewer::OnMatNameSelect (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2147,7 +2147,7 @@ bool ModelViewer::OnMatNameSelect (UIArea* area, bool hasFocus)
 // Delegate triggered when the material name changes
 //============================================================================================================
 
-bool ModelViewer::OnMatNameValue (UIArea* area)
+bool ModelViewer::OnMatNameValue (UIWidget* widget)
 {
 	const String& name = _matName->GetText();
 
@@ -2180,7 +2180,7 @@ bool ModelViewer::OnMatNameValue (UIArea* area)
 // Responds to standard material properties changes
 //============================================================================================================
 
-bool ModelViewer::OnMatProperties (UIArea* area)
+bool ModelViewer::OnMatProperties (UIWidget* widget)
 {
 	IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
 
@@ -2196,9 +2196,9 @@ bool ModelViewer::OnMatProperties (UIArea* area)
 // Triggered when a new material technique is selected from the drop-down menu
 //============================================================================================================
 
-bool ModelViewer::OnMatTech (UIArea* area)
+bool ModelViewer::OnMatTech (UIWidget* widget)
 {
-	if (_matTech == area)
+	if (_matTech == widget)
 	{
 		_currentTech = _matTech->GetText();
 
@@ -2239,7 +2239,7 @@ bool ModelViewer::OnMatTech (UIArea* area)
 // Triggered on material shader list selection change
 //============================================================================================================
 
-bool ModelViewer::OnMatShaderList (UIArea* area)
+bool ModelViewer::OnMatShaderList (UIWidget* widget)
 {
 	if (_matShaderList != 0)
 	{
@@ -2264,7 +2264,7 @@ bool ModelViewer::OnMatShaderList (UIArea* area)
 // Triggered when material shader field gains or loses focus
 //============================================================================================================
 
-bool ModelViewer::OnMatShaderInput (UIArea* area, bool hasFocus)
+bool ModelViewer::OnMatShaderInput (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2278,12 +2278,12 @@ bool ModelViewer::OnMatShaderInput (UIArea* area, bool hasFocus)
 // Responds to material shader input field changes
 //============================================================================================================
 
-bool ModelViewer::OnMatShaderValue (UIArea* area)
+bool ModelViewer::OnMatShaderValue (UIWidget* widget)
 {
 	if (_matShaderInput != 0)
 	{
 		_SetMatShader( _matShaderInput->GetText() );
-		area->SetFocus(false);
+		widget->SetFocus(false);
 	}
 	return true;
 }
@@ -2292,9 +2292,9 @@ bool ModelViewer::OnMatShaderValue (UIArea* area)
 // Triggered on material texture list selection change
 //============================================================================================================
 
-bool ModelViewer::OnMatTexList (UIArea* area)
+bool ModelViewer::OnMatTexList (UIWidget* widget)
 {
-	UIList* list = R5_CAST(UIList, area);
+	UIList* list = R5_CAST(UIList, widget);
 
 	if (list != 0)
 	{
@@ -2330,7 +2330,7 @@ bool ModelViewer::OnMatTexList (UIArea* area)
 // Triggered when material texture field gains or loses focus
 //============================================================================================================
 
-bool ModelViewer::OnMatTexInput	(UIArea* area, bool hasFocus)
+bool ModelViewer::OnMatTexInput	(UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2347,9 +2347,9 @@ bool ModelViewer::OnMatTexInput	(UIArea* area, bool hasFocus)
 // Responds to material texture input field changes
 //============================================================================================================
 
-bool ModelViewer::OnMatTexValue (UIArea* area)
+bool ModelViewer::OnMatTexValue (UIWidget* widget)
 {
-	UIInput* input = R5_CAST(UIInput, area);
+	UIInput* input = R5_CAST(UIInput, widget);
 
 	if (input != 0)
 	{
@@ -2373,7 +2373,7 @@ bool ModelViewer::OnMatTexValue (UIArea* area)
 // Responds to color selection in the material pane
 //============================================================================================================
 
-bool ModelViewer::OnMatColor (UIArea* area, bool hasFocus)
+bool ModelViewer::OnMatColor (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -2383,7 +2383,7 @@ bool ModelViewer::OnMatColor (UIArea* area, bool hasFocus)
 		{
 			Color4f color (1.0f);
 
-			if (area->GetName() == "Material Diffuse")
+			if (widget->GetName() == "Material Diffuse")
 			{
 				_colorLabel->SetText("Alpha:");
 				color = mat->GetDiffuse().GetColor4f();
@@ -2410,7 +2410,7 @@ bool ModelViewer::OnMatColor (UIArea* area, bool hasFocus)
 // Delegate triggered when material color sliders are moved
 //============================================================================================================
 
-bool ModelViewer::OnColor (UIArea* area)
+bool ModelViewer::OnColor (UIWidget* widget)
 {
 	// Color's alpha should never get down to 0. Diffuse alpha of 0 makes the material invisible,
 	// which means it won't show up in the list of materials. We don't want that happening.
@@ -2441,11 +2441,11 @@ bool ModelViewer::OnColor (UIArea* area)
 // Delegate triggered on color panel's selections
 //============================================================================================================
 
-bool ModelViewer::OnColorSelect (UIArea* area, bool hasFocus)
+bool ModelViewer::OnColorSelect (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
-		const UIArea* input = mUI->GetFocusArea();
+		const UIWidget* input = mUI->GetFocusArea();
 		if ( input == 0 || !input->IsChildOf(_colorFrame) ) _colorFrame->Hide();
 	}
 	return true;
@@ -2455,7 +2455,7 @@ bool ModelViewer::OnColorSelect (UIArea* area, bool hasFocus)
 // Texture options panel callbacks
 //============================================================================================================
 
-bool ModelViewer::OnTexReload (UIArea* area, bool hasFocus)
+bool ModelViewer::OnTexReload (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -2479,7 +2479,7 @@ bool ModelViewer::OnTexReload (UIArea* area, bool hasFocus)
 
 //============================================================================================================
 
-bool ModelViewer::OnTexChange (UIArea* area)
+bool ModelViewer::OnTexChange (UIWidget* widget)
 {
 	uint wrap = ITexture::StringToWrapMode( _texWrap->GetText() );
 	uint filt = ITexture::StringToFilter( _texFilter->GetText() );
@@ -2496,7 +2496,7 @@ bool ModelViewer::OnTexChange (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimNameSelect (UIArea* area, bool hasFocus)
+bool ModelViewer::OnAnimNameSelect (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2507,7 +2507,7 @@ bool ModelViewer::OnAnimNameSelect (UIArea* area, bool hasFocus)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimNameValue (UIArea* area)
+bool ModelViewer::OnAnimNameValue (UIWidget* widget)
 {
 	const String& name = _animName->GetText();
 
@@ -2538,7 +2538,7 @@ bool ModelViewer::OnAnimNameValue (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimLoop (UIArea* area)
+bool ModelViewer::OnAnimLoop (UIWidget* widget)
 {
 	Animation* anim = mModel->GetAnimation(_currentAnim, false);
 
@@ -2551,7 +2551,7 @@ bool ModelViewer::OnAnimLoop (UIArea* area)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimProperties (UIArea* area, bool hasFocus)
+bool ModelViewer::OnAnimProperties (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -2581,9 +2581,9 @@ void OnAnimationEnd (Model* model, const Animation* anim, float timeToEnd)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimPlay (UIArea* area, const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnAnimPlay (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
-	if ( key == Key::MouseLeft && !isDown && area->GetRegion().Contains(pos) )
+	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
 	{
 		Animation* anim = mModel->GetAnimation(_currentAnim, false);
 
@@ -2608,11 +2608,11 @@ bool ModelViewer::OnAnimPlay (UIArea* area, const Vector2i& pos, byte key, bool 
 // Fills the list with all available meshes when it's selected
 //============================================================================================================
 
-bool ModelViewer::OnMeshListFocus (UIArea* area, bool hasFocus)
+bool ModelViewer::OnMeshListFocus (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		UIList* list = R5_CAST(UIList, area);
+		UIList* list = R5_CAST(UIList, widget);
 
 		if (list != 0)
 		{
@@ -2636,11 +2636,11 @@ bool ModelViewer::OnMeshListFocus (UIArea* area, bool hasFocus)
 // Fills the list with all available materials when it's selected
 //============================================================================================================
 
-bool ModelViewer::OnMatListFocus (UIArea* area, bool hasFocus)
+bool ModelViewer::OnMatListFocus (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		UIList* list = R5_CAST(UIList, area);
+		UIList* list = R5_CAST(UIList, widget);
 
 		if (list != 0)
 		{
@@ -2671,11 +2671,11 @@ bool ModelViewer::OnMatListFocus (UIArea* area, bool hasFocus)
 // Fills the list with all available textures when it's selected
 //============================================================================================================
 
-bool ModelViewer::OnTexListFocus (UIArea* area, bool hasFocus)
+bool ModelViewer::OnTexListFocus (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		UIList* list = R5_CAST(UIList, area);
+		UIList* list = R5_CAST(UIList, widget);
 
 		if (list != 0)
 		{
@@ -2716,11 +2716,11 @@ bool ModelViewer::OnTexListFocus (UIArea* area, bool hasFocus)
 // Fills in the list with all available shaders on selection
 //============================================================================================================
 
-bool ModelViewer::OnShaderListFocus (UIArea* area, bool hasFocus)
+bool ModelViewer::OnShaderListFocus (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		UIList* list = R5_CAST(UIList, area);
+		UIList* list = R5_CAST(UIList, widget);
 
 		if (list != 0)
 		{

@@ -9,6 +9,16 @@
 
 class Script
 {
+public:
+
+	// Allow Object class to create scripts and access internal memebers in order to simplify code
+	friend class Object;
+
+	// Script creation function delegate
+	typedef FastDelegate<Script* (void)>  CreateDelegate;
+
+protected:
+
 	struct Ignore
 	{
 		enum
@@ -19,11 +29,6 @@ class Script
 		};
 	};
 
-protected:
-
-	// Allow Entity class to access private data members in order to simplify code
-	friend class Object;
-
 	Object*		mObject;
 	Flags		mIgnore;
 	bool		mEnabled;
@@ -33,13 +38,24 @@ protected:
 	// It's not possible to create just plain scripts -- they need to be derived from
 	Script() : mEnabled(true) {}
 
-	// Destroys this script, deleting it from memory and from its owner Object
+	// Destroys this script, deleting it from memory and from its owner
 	void DestroySelf() { delete this; }
+
+private:
+
+	// INTERNAL: Registers a new script of the specified type
+	static void _Register(const String& type, const CreateDelegate& func);
+
+	// INTERNAL: Creates a new script of the specified type
+	static Script* _Create (const String& type);
 
 public:
 
 	// This is a top-level base class
 	R5_DECLARE_INTERFACE_CLASS("Script");
+
+	// Registers a new script
+	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
 
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();

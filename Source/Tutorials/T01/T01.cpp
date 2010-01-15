@@ -66,7 +66,7 @@ void TestApp::Run()
 	mWin->Create("Tutorial 1: Window Creation", 100, 100, 900, 600);
 
 	// Add a new camera to the scene: it's added at (0, 0, 0)
-	mCam = AddObject<DebugCamera>(mScene, "Default Camera");
+	mCam = mScene.AddObject<DebugCamera>("Default Camera");
 
 	// Set the rotation to have an isometric look
 	mCam->SetRelativeRotation(Vector3f(1, 1, -1));

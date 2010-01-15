@@ -2,6 +2,36 @@
 using namespace R5;
 
 //============================================================================================================
+// Register default object types
+//============================================================================================================
+
+void RegisterDefaultObjects()
+{
+	Object::Register<Object>();
+	Object::Register<Camera>();
+	Object::Register<DebugCamera>();
+	Object::Register<AnimatedCamera>();
+	Object::Register<ModelInstance>();
+	Object::Register<DirectionalLight>();
+	Object::Register<PointLight>();
+	Object::Register<Terrain>();
+	Object::Register<Decal>();
+	Object::Register<Billboard>();
+	Object::Register<Glare>();
+	Object::Register<DirectionalBillboard>();
+	Object::Register<DirectionalGlare>();
+}
+
+//============================================================================================================
+// Registers all default scripts
+//============================================================================================================
+
+void RegisterDefaultScripts()
+{
+	Script::Register<BoneAttachment>();
+}
+
+//============================================================================================================
 // Each object is enabled by default
 //============================================================================================================
 
@@ -22,14 +52,13 @@ Object::Object() :
 // List of registered object and script types
 //============================================================================================================
 
-Hash<Object::ObjectDelegate>	gObjectTypes;
-Hash<Object::ScriptDelegate>	gScriptTypes;
+Hash<Object::CreateDelegate> gObjectTypes;
 
 //============================================================================================================
 // INTERNAL: Registers a new object
 //============================================================================================================
 
-void Object::_RegisterObject (const String& type, const ObjectDelegate& callback)
+void Object::_Register (const String& type, const CreateDelegate& callback)
 {
 	gObjectTypes.Lock();
 	gObjectTypes[type] = callback;
@@ -37,44 +66,19 @@ void Object::_RegisterObject (const String& type, const ObjectDelegate& callback
 }
 
 //============================================================================================================
-// INTERNAL: Registers a new script
+// INTERNAL: Creates a new object of specified type
 //============================================================================================================
 
-void Object::_RegisterScript (const String& type, const ScriptDelegate& callback)
+Object* Object::_Create (const String& type)
 {
-	gScriptTypes.Lock();
-	gScriptTypes[type] = callback;
-	gScriptTypes.Unlock();
-}
-
-//============================================================================================================
-// Register default object types
-//============================================================================================================
-
-void RegisterDefaultObjects()
-{
-	RegisterObject<Object>();
-	RegisterObject<Camera>();
-	RegisterObject<DebugCamera>();
-	RegisterObject<AnimatedCamera>();
-	RegisterObject<ModelInstance>();
-	RegisterObject<DirectionalLight>();
-	RegisterObject<PointLight>();
-	RegisterObject<Terrain>();
-	RegisterObject<Decal>();
-	RegisterObject<Billboard>();
-	RegisterObject<Glare>();
-	RegisterObject<DirectionalBillboard>();
-	RegisterObject<DirectionalGlare>();
-}
-
-//============================================================================================================
-// Registers all default scripts
-//============================================================================================================
-
-void RegisterDefaultScripts()
-{
-	RegisterScript<BoneAttachment>();
+	Object* ptr (0);
+	gObjectTypes.Lock();
+	{
+		const CreateDelegate* callback = gObjectTypes.GetIfExists(type);
+		if (callback != 0) ptr = (*callback)();
+	}
+	gObjectTypes.Unlock();
+	return ptr;
 }
 
 //============================================================================================================
@@ -106,20 +110,11 @@ Object* Object::_AddObject (const String& type, const String& name)
 
 	if (ptr == 0)
 	{
-		gObjectTypes.Lock();
-		{
-			const ObjectDelegate* callback = gObjectTypes.GetIfExists(type);
-
-			if (callback != 0)
-			{
-				ptr = (*callback)();
-				ptr->mCore = mCore;
-			}
-		}
-		gObjectTypes.Unlock();
+		ptr = Object::_Create(type);
 
 		if (ptr != 0)
 		{
+			ptr->mCore = mCore;
 			ptr->SetName(name);
 			ptr->mParent = this;
 			mChildren.Expand() = ptr;
@@ -186,20 +181,14 @@ Script* Object::_AddScript (const String& type)
 
 	if (ptr == 0)
 	{
-		gScriptTypes.Lock();
+		ptr = Script::_Create(type);
+
+		if (ptr != 0)
 		{
-			const ScriptDelegate* callback = gScriptTypes.GetIfExists(type);
-
-			if (callback != 0)
-			{
-				ptr = (*callback)();
-				ptr->mObject = this;
-				mScripts.Expand() = ptr;
-			}
+			ptr->mObject = this;
+			mScripts.Expand() = ptr;
+			ptr->Init();
 		}
-		gScriptTypes.Unlock();
-
-		if (ptr != 0) ptr->Init();
 	}
 	return ptr;
 }

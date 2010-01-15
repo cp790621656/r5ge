@@ -45,9 +45,9 @@ public:
 	void DrawLeaves(void* param);
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
 
-	bool OnShowTexture(UIArea* area);
-	bool OnStateChange(UIArea* area);
-	bool OnGenerate(UIArea* area, const Vector2i& pos, byte key, bool isDown);
+	bool OnShowTexture(UIWidget* widget, uint state, bool isSet);
+	bool OnStateChange(UIWidget* widget, uint state, bool isSet);
+	bool OnGenerate(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
 	void OnSerializeTo (TreeNode& node) const;
 	bool OnSerializeFrom (const TreeNode& node);
@@ -66,10 +66,10 @@ TestApp::TestApp() : mBranch(0), mSeed(0), mOriginalD(0), mOriginalN(0), mFinalD
 	Object* root = mCore->GetRoot();
 
 	// Scene that contains regular visible objects
-	mScene.SetRoot( AddObject<Object>(root, "Scene Root") );
+	mScene.SetRoot( root->AddObject<Object>("Scene Root") );
 
 	// Off-screen scene used for off-screen rendering
-	mOffscreen.SetRoot( AddObject<Object>(root, "Off-screen Root") );
+	mOffscreen.SetRoot( root->AddObject<Object>("Off-screen Root") );
 	mOffscreen.GetRoot()->SetSerializable(false);
 }
 
@@ -94,6 +94,18 @@ void TestApp::Run()
 	mCore->SetListener( bind(&TestApp::OnSerializeFrom, this) );
 	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
 
+	// NOTE: Positive changes so far:
+	// - Changed all UI classes to have UI<> filenames.
+	// - Changed one of the UI classes to have a UI class name. Basic Label?
+	// - Added OnStateChange parameters (uint, bool).
+	// - Adding USEventListener helped to reduce clutter.
+
+	// NOTE: Missing functionality: Set<> functions for UI Root.
+
+	// Other changes are questionable. Why add scripts when I can simply derive from the widget and
+	// add functionality right inside? If going forward, it would make sense to rewrite some of the
+	// existing widgets to use the script approach. Button, for example. But this is a major task...
+
 	// UI callbacks can be bound even before the actual widgets are loaded
 	mUI->SetOnKey		 ("Generate",		bind(&TestApp::OnGenerate,		this));
 	mUI->SetOnStateChange("Show",			bind(&TestApp::OnShowTexture,	this));
@@ -113,16 +125,16 @@ void TestApp::Run()
 		// User Interface setup
 		{
 			// Widgets are defined in the configuration file
-			mSize	= FindWidget<UISlider>(mUI, "Size");
-			mTilt	= FindWidget<UISlider>(mUI, "Tilt");
-			mCount	= FindWidget<UISlider>(mUI, "Count");
-			mFinal	= FindWidget<UIPicture>(mUI, "Final");
+			mSize	= mUI->FindWidget<UISlider>("Size");
+			mTilt	= mUI->FindWidget<UISlider>("Tilt");
+			mCount	= mUI->FindWidget<UISlider>("Count");
+			mFinal	= mUI->FindWidget<UIPicture>("Final");
 		}
 
 		// Camera setup
 		{
 			// Default camera's orientation comes from the configuration file
-			mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+			mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 			if (mCam != 0)
 			{
@@ -131,7 +143,7 @@ void TestApp::Run()
 			}
 
 			// Off-screen camera is not serialized, but is rather created here
-			DebugCamera* cam = AddObject<DebugCamera>(mOffscreen, "Off-screen Camera");
+			DebugCamera* cam = mOffscreen.AddObject<DebugCamera>("Off-screen Camera");
 			cam->SetRelativeRotation( Vector3f(0.0f, 0.0f, -1.0f) );
 			cam->SetRelativeRange( Vector3f(90.0f, 105.0f, 2.4f) );
 			cam->SetDolly( Vector3f(0.0f, 100.0f, 100.0f) );
@@ -146,7 +158,7 @@ void TestApp::Run()
 			model->GetLimb("Branch")->Set(mBranch, mGraphics->GetMaterial("Leaf"));
 
 			// Add this model to the off-screen scene
-			ModelInstance* inst = AddObject<ModelInstance>(mOffscreen, "Branch");
+			ModelInstance* inst = mOffscreen.AddObject<ModelInstance>("Branch");
 			inst->SetModel(model);
 			inst->SetSerializable(false);
 
@@ -179,7 +191,7 @@ void TestApp::OnDraw()
 
 void TestApp::DrawLeaves(void* param)
 {
-	static DebugCamera* offCam = FindObject<DebugCamera>(mOffscreen, "Off-screen Camera");
+	static DebugCamera* offCam = mOffscreen.FindObject<DebugCamera>("Off-screen Camera");
 
 	if (offCam != 0)
 	{
@@ -358,20 +370,34 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 }
 
 //============================================================================================================
+// Callback triggered when the user clicks the "Show" button
+//============================================================================================================
+
+bool TestApp::OnShowTexture(UIWidget* widget, uint state, bool isSet)
+{
+	if (mFinal != 0 && (state & UIButton::State::Pressed) != 0)
+	{
+		mFinal->GetParent()->SetAlpha(isSet ? 1.0f : 0.0f, 0.25f );
+		OnStateChange(mFinal, 0, false);
+	}
+	return true;
+}
+
+//============================================================================================================
 // Callback triggered when the state of N, A and F buttons changes
 //============================================================================================================
 
-bool TestApp::OnStateChange(UIArea* area)
+bool TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 {
 	if (mFinal != 0)
 	{
-		UIWindow* parent = R5_CAST(UIWindow, area->GetParent());
+		UIWindow* parent = R5_CAST(UIWindow, widget->GetParent());
 
 		if (parent != 0)
 		{
-			UIButton* n = FindWidget<UIButton>(parent, "Normal Toggle", false);
-			UIButton* f = FindWidget<UIButton>(parent, "Final Toggle", false);
-			UIButton* a = FindWidget<UIButton>(parent, "Alpha Toggle", false);
+			UIButton* n = parent->FindWidget<UIButton>("Normal Toggle", false);
+			UIButton* f = parent->FindWidget<UIButton>("Final Toggle", false);
+			UIButton* a = parent->FindWidget<UIButton>("Alpha Toggle", false);
 
 			if (n != 0 && f != 0 && a != 0)
 			{
@@ -418,29 +444,10 @@ bool TestApp::OnStateChange(UIArea* area)
 }
 
 //============================================================================================================
-// Callback triggered when the user clicks the "Show" button
-//============================================================================================================
-
-bool TestApp::OnShowTexture(UIArea* area)
-{
-	if (mFinal != 0)
-	{
-		UIButton* btn = R5_CAST(UIButton, area);
-
-		if (btn != 0)
-		{
-			mFinal->GetParent()->SetAlpha( btn->GetState(UIButton::State::Pressed) ? 1.0f : 0.0f, 0.25f );
-			OnStateChange(mFinal);
-		}
-	}
-	return true;
-}
-
-//============================================================================================================
 // Callback triggered when the user clicks on the "Generate" button
 //============================================================================================================
 
-bool TestApp::OnGenerate (UIArea* area, const Vector2i& pos, byte key, bool isDown)
+bool TestApp::OnGenerate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft && !isDown)
 	{

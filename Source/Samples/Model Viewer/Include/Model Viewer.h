@@ -26,7 +26,7 @@ public:
 
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
-	UIRoot*			mUI;
+	UIManager*			mUI;
 	Core*			mCore;
 	Scene			mScene;
 	DebugCamera*	mCam;
@@ -91,82 +91,82 @@ protected: // Functions that facilitate widget creation with common properties a
 	UIMenu*			AddMenuItem		(const String& name);
 	UIButton*		AddMenuButton	(const String& name);
 	UIFrame*		AddArea			(const String& name, uint lines);
-	UILabel*		AddCaption		(UIArea* parent, uint line, const String& text);
-	UILabel*		AddLabel		(UIArea* parent, uint line, const String& name, int offset = 1);
-	UIButton*		AddButton		(UIArea* parent, uint line, const String& name, int offset = 1);
-	UICheckbox*		AddCheckbox		(UIArea* parent, uint line, const String& name);
-	UIInput*		AddInput		(UIArea* parent, uint line, const String& name, int offset = 1);
-	UIList*			AddList			(UIArea* parent, uint line, const String& name, int offset = 1);
-	UISlider*		AddSlider		(UIArea* parent, uint line, const String& name, int offset = 1);
-	UIHighlight*	AddHighlight	(UIArea* parent, uint line, const String& name, int offset = 1);
+	UILabel*		AddCaption		(UIWidget* parent, uint line, const String& text);
+	UILabel*		AddLabel		(UIWidget* parent, uint line, const String& name, int offset = 1);
+	UIButton*		AddButton		(UIWidget* parent, uint line, const String& name, int offset = 1);
+	UICheckbox*		AddCheckbox		(UIWidget* parent, uint line, const String& name);
+	UIInput*		AddInput		(UIWidget* parent, uint line, const String& name, int offset = 1);
+	UIList*			AddList			(UIWidget* parent, uint line, const String& name, int offset = 1);
+	UISlider*		AddSlider		(UIWidget* parent, uint line, const String& name, int offset = 1);
+	UIHighlight*	AddHighlight	(UIWidget* parent, uint line, const String& name, int offset = 1);
 
 private: // Numerous callback functions triggered by the UI elements
 
-	bool OnFileInputValue		(UIArea* area) { _ConfirmFileDialog(); return true; }
-	bool OnFileDialogOK			(UIArea* area, const Vector2i& pos, byte key, bool isDown);
-	bool OnConfirmDialogOK		(UIArea* area, const Vector2i& pos, byte key, bool isDown);
+	bool OnFileInputValue		(UIWidget* widget) { _ConfirmFileDialog(); return true; }
+	bool OnFileDialogOK			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	bool OnConfirmDialogOK		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
-	bool ToggleBoth				(UIArea* area);
-	bool ToggleOff				(UIArea* area);
+	bool ToggleBoth				(UIWidget* widget);
+	bool ToggleOff				(UIWidget* widget);
 
-	bool OnFillModelMenu		(UIArea* area, bool hasFocus);
-	bool OnFillLimbMenu			(UIArea* area, bool hasFocus);
-	bool OnFillMeshMenu			(UIArea* area, bool hasFocus);
-	bool OnFillMatMenu			(UIArea* area, bool hasFocus);
-	bool OnFillTexMenu			(UIArea* area, bool hasFocus);
-	bool OnFillAnimMenu			(UIArea* area, bool hasFocus);
+	bool OnFillModelMenu		(UIWidget* widget, bool hasFocus);
+	bool OnFillLimbMenu			(UIWidget* widget, bool hasFocus);
+	bool OnFillMeshMenu			(UIWidget* widget, bool hasFocus);
+	bool OnFillMatMenu			(UIWidget* widget, bool hasFocus);
+	bool OnFillTexMenu			(UIWidget* widget, bool hasFocus);
+	bool OnFillAnimMenu			(UIWidget* widget, bool hasFocus);
 
-	bool OnFileMenuSelection	(UIArea* area);
-	bool OnViewMenuSelection	(UIArea* area);
-	bool OnLimbMenuSelection	(UIArea* area);
-	bool OnMeshMenuSelection	(UIArea* area);
-	bool OnMatMenuSelection		(UIArea* area);
-	bool OnTexMenuSelection		(UIArea* area);
-	bool OnAnimMenuSelection	(UIArea* area);
+	bool OnFileMenuSelection	(UIWidget* widget);
+	bool OnViewMenuSelection	(UIWidget* widget);
+	bool OnLimbMenuSelection	(UIWidget* widget);
+	bool OnMeshMenuSelection	(UIWidget* widget);
+	bool OnMatMenuSelection		(UIWidget* widget);
+	bool OnTexMenuSelection		(UIWidget* widget);
+	bool OnAnimMenuSelection	(UIWidget* widget);
 
-	bool OnDrawMode				(UIArea* area);
-	bool OnBackground			(UIArea* area);
-	bool OnBloomToggle			(UIArea* area);
-	bool OnBloomChange			(UIArea* area);
+	bool OnDrawMode				(UIWidget* widget);
+	bool OnBackground			(UIWidget* widget);
+	bool OnBloomToggle			(UIWidget* widget);
+	bool OnBloomChange			(UIWidget* widget);
 
-	bool OnModelBake			(UIArea* area, const Vector2i& pos, byte key, bool isDown);
-	bool OnModelChange			(UIArea* area, bool hasFocus)	{ if (!hasFocus) _UpdateModelData();	return true; }
-	bool OnModelToggle			(UIArea* area)					{ _UpdateModelData();					return true; }
-	bool OnModelSpin			(UIArea* area);
-	bool OnModelBounds			(UIArea* area);
+	bool OnModelBake			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	bool OnModelChange			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateModelData();	return true; }
+	bool OnModelToggle			(UIWidget* widget)					{ _UpdateModelData();					return true; }
+	bool OnModelSpin			(UIWidget* widget);
+	bool OnModelBounds			(UIWidget* widget);
 
-	bool OnLimbSelect			(UIArea* area, bool hasFocus)	{ if (!hasFocus) _UpdateLimbData();		return true; }
-	bool OnLimbChange			(UIArea* area)					{ _UpdateLimbData();					return true; }
+	bool OnLimbSelect			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateLimbData();		return true; }
+	bool OnLimbChange			(UIWidget* widget)					{ _UpdateLimbData();					return true; }
 
-	bool OnMatNameSelect		(UIArea* area, bool hasFocus);
-	bool OnMatNameValue			(UIArea* area);
-	bool OnMatProperties		(UIArea* area);
-	bool OnMatTech				(UIArea* area);
-	bool OnMatShaderList		(UIArea* area);
-	bool OnMatShaderInput		(UIArea* area, bool hasFocus);
-	bool OnMatShaderValue		(UIArea* area);
-	bool OnMatTexList			(UIArea* area);
-	bool OnMatTexInput			(UIArea* area, bool hasFocus);
-	bool OnMatTexValue			(UIArea* area);
-	bool OnMatColor				(UIArea* area, bool hasFocus);
+	bool OnMatNameSelect		(UIWidget* widget, bool hasFocus);
+	bool OnMatNameValue			(UIWidget* widget);
+	bool OnMatProperties		(UIWidget* widget);
+	bool OnMatTech				(UIWidget* widget);
+	bool OnMatShaderList		(UIWidget* widget);
+	bool OnMatShaderInput		(UIWidget* widget, bool hasFocus);
+	bool OnMatShaderValue		(UIWidget* widget);
+	bool OnMatTexList			(UIWidget* widget);
+	bool OnMatTexInput			(UIWidget* widget, bool hasFocus);
+	bool OnMatTexValue			(UIWidget* widget);
+	bool OnMatColor				(UIWidget* widget, bool hasFocus);
 
-	bool OnColor				(UIArea* area);
-	bool OnColorSelect			(UIArea* area, bool hasFocus);
+	bool OnColor				(UIWidget* widget);
+	bool OnColorSelect			(UIWidget* widget, bool hasFocus);
 
-	bool OnTexReload			(UIArea* area, bool hasFocus);
-	bool OnTexChange			(UIArea* area);
+	bool OnTexReload			(UIWidget* widget, bool hasFocus);
+	bool OnTexChange			(UIWidget* widget);
 
-	bool OnAnimNameSelect		(UIArea* area, bool hasFocus);
-	bool OnAnimNameValue		(UIArea* area);
-	bool OnAnimProperties		(UIArea* area, bool hasFocus);
-	bool OnAnimLoop				(UIArea* area);
-	bool OnAnimPlay				(UIArea* area, const Vector2i& pos, byte key, bool isDown);
+	bool OnAnimNameSelect		(UIWidget* widget, bool hasFocus);
+	bool OnAnimNameValue		(UIWidget* widget);
+	bool OnAnimProperties		(UIWidget* widget, bool hasFocus);
+	bool OnAnimLoop				(UIWidget* widget);
+	bool OnAnimPlay				(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 	// List selection callbacks -- they fill their appropriate lists with all the relevant entries
-	bool OnMeshListFocus		(UIArea* area, bool hasFocus);
-	bool OnMatListFocus			(UIArea* area, bool hasFocus);
-	bool OnTexListFocus			(UIArea* area, bool hasFocus);
-	bool OnShaderListFocus		(UIArea* area, bool hasFocus);
+	bool OnMeshListFocus		(UIWidget* widget, bool hasFocus);
+	bool OnMatListFocus			(UIWidget* widget, bool hasFocus);
+	bool OnTexListFocus			(UIWidget* widget, bool hasFocus);
+	bool OnShaderListFocus		(UIWidget* widget, bool hasFocus);
 
 private:
 

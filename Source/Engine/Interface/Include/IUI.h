@@ -7,7 +7,7 @@
 // Basic interface for the GUI -- based on the event receiver interface
 //============================================================================================================
 
-struct IUI : public IEventReceiver
+struct IUI : public IEventReceiver, public Thread::Lockable
 {
 	R5_DECLARE_INTERFACE_CLASS("UI");
 

@@ -59,9 +59,9 @@ namespace Thread
 		Lockable()	: mLock(0) {}
 		
 	public:
-		inline void Lock()		const	{ WaitFor(mLock); }
-		inline bool IsLocked()	const	{ return mLock != 0; }
-		inline void Unlock()	const	{ mLock = 0; }
+		void Lock()		const	{ WaitFor(mLock); }
+		bool IsLocked()	const	{ return mLock != 0; }
+		void Unlock()	const	{ mLock = 0; }
 	};
 
 #endif

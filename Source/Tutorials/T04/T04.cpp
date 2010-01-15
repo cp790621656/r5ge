@@ -32,7 +32,7 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	bool OnSliderChange(UIArea* area);
+	bool OnSliderChange(UIWidget* widget);
 };
 
 //============================================================================================================
@@ -101,7 +101,7 @@ void TestApp::OnDraw()
 // The callback is identical to the one in the previous tutorial
 //============================================================================================================
 
-bool TestApp::OnSliderChange (UIArea* area)
+bool TestApp::OnSliderChange (UIWidget* widget)
 {
 	UISlider* sld = R5_CAST(UISlider, area);
 	if (sld != 0 && mLabel != 0) mLabel->SetText( String("Value: %.2f", sld->GetValue()) );

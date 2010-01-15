@@ -17,9 +17,8 @@ class Object
 
 public:
 
-	// Object and script creation delegates
-	typedef FastDelegate<Object* (void)> ObjectDelegate;
-	typedef FastDelegate<Script* (void)> ScriptDelegate;
+	// Object creation delegate
+	typedef FastDelegate<Object* (void)> CreateDelegate;
 
 	// Flags used by the Object
 	struct Flag
@@ -113,25 +112,67 @@ public:
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
 
-public:
+	// Registers a new object of the specified type
+	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
 
-	// NOTE: The functions below are not meant to be used directly. Instead consider using
-	// templates such as AddObject<>, AddScript<>, RegisterObject<>, etc.
+	// Finds a child object of the specified name and type
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
+	{
+		Lock();
+		Object* obj = _FindObject(name, recursive);
+		Unlock();
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
 
-	// Registers a new object
-	static void _RegisterObject (const String& type, const ObjectDelegate& callback);
+	// Creates a new child of specified type and name
+	template <typename Type> Type* AddObject (const String& name)
+	{
+		Lock();
+		Object* obj = _AddObject(Type::ClassID(), name);
+		Unlock();
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
 
-	// Registers a new script
-	static void _RegisterScript (const String& type, const ScriptDelegate& callback);
+	// Retrieves an existing script on the object
+	template <typename Type> Type* GetScript()
+	{
+		Lock();
+		Script* script = _GetScript(Type::ClassID());
+		Unlock();
+		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+	}
+
+	// Adds a new script to the object (only one script of each type can be active on the object)
+	template <typename Type> Type* AddScript()
+	{
+		Lock();
+		Script* script = _AddScript(Type::ClassID());
+		Unlock();
+		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+	}
+
+	// Removes the specified script from the game object
+	template <typename Type> void RemoveScript()
+	{
+		Lock();
+		Script* script = _GetScript(Type::ClassID());
+		if (script != 0) delete script;
+		Unlock();
+	}
+
+private:
+
+	// INTERNAL Registers a new object of specified type
+	static void _Register (const String& type, const CreateDelegate& callback);
+
+	// INTERNAL: Creates a new object of specified type
+	static Object* _Create (const String& type);
 
 	Object*	_AddObject	(const String& type, const String& name);
     Object*	_FindObject	(const String& name, bool recursive = true);
 	Script* _AddScript	(const String& type);
 	Script* _GetScript	(const String& type);
 
-private:
-
-	// Internal functions
 	void _Add	(Object* ptr);
 	void _Remove(Object* ptr);
 

@@ -31,7 +31,7 @@ public:
 
 	void Run();
 	void OnDraw();
-	bool OnTechnique		(UIArea* area);
+	bool OnTechnique		(UIWidget* widget);
 	void PlayAnimation		(Model* model, const String& name, float speed = 1.0f);
 };
 }

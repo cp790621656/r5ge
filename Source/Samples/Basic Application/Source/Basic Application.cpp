@@ -27,7 +27,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Basic Application.txt")
 	{
-		mCam = FindObject<Camera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<Camera>("Default Camera");
 
 		if (mCam != 0)
 		{

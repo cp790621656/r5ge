@@ -400,7 +400,7 @@ void TestApp::OnDraw()
 // Delegate triggered when a key is pressed over the grid
 //============================================================================================================
 
-bool TestApp::OnHighlightKey (UIArea* ptr, const Vector2i& pos, byte key, bool isDown)
+bool TestApp::OnHighlightKey (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft || key == Key::MouseRight)
 	{
@@ -414,7 +414,7 @@ bool TestApp::OnHighlightKey (UIArea* ptr, const Vector2i& pos, byte key, bool i
 // Delegate triggered when mouse is moving over the grid
 //============================================================================================================
 
-bool TestApp::OnHighlightMove (UIArea* ptr, const Vector2i& pos, const Vector2i& delta)
+bool TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta)
 {
 	bool left  = mCore->IsKeyDown(Key::MouseLeft);
 	bool right = mCore->IsKeyDown(Key::MouseRight);

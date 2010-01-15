@@ -130,7 +130,7 @@ void TestApp::OnDraw()
 // Toggles the current technique from GPU to CPU and vice versa
 //============================================================================================================
 
-bool TestApp::OnTechnique (UIArea* area)
+bool TestApp::OnTechnique (UIWidget* widget)
 {
 	UICheckbox* chk = R5_CAST(UICheckbox, area);
 

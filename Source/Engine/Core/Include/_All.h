@@ -67,7 +67,6 @@ namespace R5
 	#include "BoneAttachment.h"		// Script that binds its owner to the specified bone of the owner's parent
 
 	#include "Scene.h"				// Scene root
-	#include "Templates.h"			// Templated FindWidget<> and AddWidget<> functions
 	#include "UpdateList.h"			// Container for registered update callbacks
 	#include "EventDispatcher.h"	// Event dispatcher has the ability to register event handling callbacks
 	#include "Core.h"				// Engine Core

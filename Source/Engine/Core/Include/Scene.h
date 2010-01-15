@@ -32,6 +32,18 @@ public:
 
 	Scene (Object* root = 0) : mRoot(root) {}
 
+	// Finds a child object of the specified name and type
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
+	{
+		return mRoot->FindObject<Type>(name, recursive);
+	}
+
+	// Creates a new child of specified type and name
+	template <typename Type> Type* AddObject (const String& name)
+	{
+		return mRoot->AddObject<Type>(name);
+	}
+
 	// It should be possible to change the root of the scene if desired
 	Object* GetRoot() { return mRoot; }
 	void SetRoot (Object* root) { mRoot = root; }

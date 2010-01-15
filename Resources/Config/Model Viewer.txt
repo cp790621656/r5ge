@@ -240,7 +240,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "4"
+					Text = "496"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -253,7 +253,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.850000
+					Alpha = 0.000000
 					Color = 0.000000 0.000000 0.000000 1.000000
 					Receives Events = true
 					Layer = 0
@@ -292,7 +292,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.032215 0.184958 6.250441
-			Rotation = -0.024114 0.169069 -0.975438 0.139124
+			Rotation = -0.037832 0.173240 -0.961493 0.209970
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000

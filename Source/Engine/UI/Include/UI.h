@@ -4,10 +4,10 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// R5 engine-based implementation of the UIRoot
+// R5 engine-based implementation of the UIManager
 //============================================================================================================
 
-class UI : public UIRoot
+class UI : public UIManager
 {
 private:
 

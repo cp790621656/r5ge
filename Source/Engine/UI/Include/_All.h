@@ -14,43 +14,42 @@
 
 namespace R5
 {
-	#include "Queue.h"				// Rendering queue
-	#include "Anchor.h"				// Simple struct that combines relative and absolute coordinates
-	#include "Region.h"				// Basic anchored 2D region
-	#include "Face.h"				// Struct containing a pair of UV texture coordinates
-	#include "Skin.h"				// Skin is a collection of faces associated with a texture
-	#include "Event Handler.h"		// Event handler class containing functors for event callbacks
+	#include "UIQueue.h"			// Rendering queue
+	#include "UIAnchor.h"			// Simple struct that combines relative and absolute coordinates
+	#include "UIRegion.h"			// Basic anchored 2D region
+	#include "UIFace.h"				// Struct containing a pair of UV texture coordinates
+	#include "UISkin.h"				// Skin is a collection of faces associated with a texture
 	
-	#include "Area.h"				// Hierarchical GUI node, based on EventHandler, holding a region
-	#include "Frame.h"				// Simple invisible frame that holds rendering queues for all its children
-	#include "Highlight.h"			// Most basic visible UI component -- a colored quad
-	#include "Picture.h"			// Simple textured quad
-	#include "SubPicture.h"			// Drawable Face
-	#include "Slider.h"				// Slider widget
-	#include "Text Line.h"			// Basic printable text line with no alignment or boundaries
-	#include "Text Area.h"			// Multi-paragraph text area
-	#include "Basic Label.h"		// Expanded text line, adding start and end boundaries
-	#include "Label.h"				// Expanded BasicLabel, adding left/center/right alignment options
-	#include "Button.h"				// Basic button (SubPicture + Label)
-	#include "Checkbox.h"			// Checkbox (Slightly modified sticky button)
-	#include "Editable Label.h"		// Modifiable left-aligned text label
-	#include "Input.h"				// Input field (SubPicture + Editable Label)
-	#include "ShadedArea.h"			// Area affected by a shader
+	#include "UIScript.h"			// Script that can be attached to the widget
+	#include "USEventListener.h"	// Event listener is a UI Script that can forward events to delegates
+	#include "UIWidget.h"			// Hierarchical GUI node
+	#include "UIFrame.h"			// Simple invisible frame that holds rendering queues for all its children
+	#include "UIHighlight.h"		// Most basic visible UI component -- a colored quad
+	#include "UIPicture.h"			// Simple textured quad
+	#include "UISubPicture.h"		// Drawable Face
+	#include "UISlider.h"			// Slider widget
+	#include "UITextLine.h"			// Basic printable text line with no alignment or boundaries
+	#include "UITextArea.h"			// Multi-paragraph text widget
+	#include "UIBasicLabel.h"		// Expanded text line, adding start and end boundaries
+	#include "UILabel.h"			// Expanded UIBasicLabel, adding left/center/right alignment options
+	#include "UIButton.h"			// Basic button (SubPicture + Label)
+	#include "UICheckbox.h"			// Checkbox (Slightly modified sticky button)
+	#include "UIEditableLabel.h"	// Modifiable left-aligned text label
+	#include "UIInput.h"			// Input field (SubPicture + Editable Label)
+	#include "UIShadedArea.h"		// Area affected by a shader
 
-	#include "Animated Frame.h"		// Frame that smoothly fades in and out when alpha changes
-	#include "Animated Slider.h"	// Slider that smoothly animated to its set value
-	#include "Animated Button.h"	// Button that smoothly fades from one state to the next
-	#include "Animated Checkbox.h"	// Same as the animated button, just based on the Checkbox class
+	#include "UIAnimatedFrame.h"	// Frame that smoothly fades in and out when alpha changes
+	#include "UIAnimatedSlider.h"	// Slider that smoothly animated to its set value
+	#include "UIAnimatedButton.h"	// Button that smoothly fades from one state to the next
+	#include "UIAnimatedCheckbox.h"	// Same as the animated button, just based on the Checkbox class
 
-	#include "Context.h"			// Context menu
-	#include "Menu.h"				// Drop-down menu, animated button + context menu
-	#include "List.h"				// Slightly extended menu class that updates the button's text
+	#include "UIContext.h"			// Context menu
+	#include "UIMenu.h"				// Drop-down menu, animated button + context menu
+	#include "UIList.h"				// Slightly extended menu class that updates the button's text
 
-	#include "Window.h"				// Window is a complex widget based on Animated Frame, using several other widgets
-	#include "Root.h"				// User interface root
-
-	#include "Templates.h"			// FindWidget<> and AddWidget<> function templates
-	#include "UI.h"					// R5 engine-based implementation of the Root
+	#include "UIWindow.h"			// Window is a complex widget based on Animated Frame, using several other widgets
+	#include "UIManager.h"			// User interface manager
+	#include "UI.h"					// R5 engine-based implementation of the UIManager
 };
 
 #endif

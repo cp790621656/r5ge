@@ -211,7 +211,7 @@ void TestApp::Regenerate()
 // Triggered when "Generate" button is clicked in the UI
 //============================================================================================================
 
-bool TestApp::Generate (UIArea* area, const Vector2i& pos, byte key, bool isDown)
+bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown && key == Key::MouseLeft)
 	{
@@ -256,7 +256,7 @@ bool TestApp::Generate (UIArea* area, const Vector2i& pos, byte key, bool isDown
 // Triggered when filters change
 //============================================================================================================
 
-bool TestApp::UpdateTooltips (UIArea* area)
+bool TestApp::UpdateTooltips (UIWidget* widget)
 {
 	static UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
 	ASSERT(parent != NULL, "Missing parameter window");

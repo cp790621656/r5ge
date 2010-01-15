@@ -55,15 +55,15 @@ uint UI::DrawQueue (UIQueue* queue)
 		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Color,		q->mVbo, 16, IGraphics::DataType::Byte,  4, sizeof(Vertex) );
 		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Position,	q->mVbo, 0,  IGraphics::DataType::Float, 2, sizeof(Vertex) );
 
-		if (q->mArea == 0)
+		if (q->mWidget == 0)
 		{
 			tri = mGraphics->DrawVertices( IGraphicsManager::Primitive::Quad, q->mVertexCount );
 		}
 		else
 		{
-			q->mArea->OnPreDraw(mGraphics);
+			q->mWidget->OnPreDraw(mGraphics);
 			tri = mGraphics->DrawVertices( IGraphicsManager::Primitive::Quad, q->mVertexCount );
-			q->mArea->OnPostDraw(mGraphics);
+			q->mWidget->OnPostDraw(mGraphics);
 		}
 	}
 	return tri;

@@ -33,7 +33,7 @@ public:
 	void Run();
 	void OnDraw();
 	void CreateWindow();
-	bool OnSliderChange(UIArea* area);
+	bool OnSliderChange(UIWidget* widget);
 };
 
 //============================================================================================================
@@ -201,7 +201,7 @@ void TestApp::CreateWindow()
 // Callback triggered when the slider's value changes
 //============================================================================================================
 
-bool TestApp::OnSliderChange (UIArea* area)
+bool TestApp::OnSliderChange (UIWidget* widget)
 {
 	// The passed area is actually a slider
 	UISlider* sld = R5_CAST(UISlider, area);

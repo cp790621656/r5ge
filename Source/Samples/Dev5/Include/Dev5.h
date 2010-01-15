@@ -53,7 +53,7 @@ protected:
 	
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
-	UIRoot*			mUI;
+	UIManager*			mUI;
 	Core*			mCore;
 	UIFrame*		mRoot;
 	UILabel*		mStatus;
@@ -76,8 +76,8 @@ public:
 	void Run();
 	void Update();
 	void OnDraw();
-	bool OnHighlightKey  (UIArea* ptr, const Vector2i& pos, byte key, bool isDown);
-	bool OnHighlightMove (UIArea* ptr, const Vector2i& pos, const Vector2i& delta);
+	bool OnHighlightKey  (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown);
+	bool OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta);
 	bool OnKey (const Vector2i& pos, byte key, bool isDown);
 };
 
