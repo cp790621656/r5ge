@@ -68,7 +68,7 @@ void TestApp::Run()
 		// Create a simple UI window via code
 		CreateWindow();
 
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -102,15 +102,14 @@ void TestApp::CreateWindow()
 	UISkin* skin = mUI->GetDefaultSkin();
 	IFont*  font = mUI->GetDefaultFont();
 
-	// Add a new UI widget: a simple window. Note that simply adding any widget to the UI root will NOT
-	// make it draw itself. R5::UI is optimized to "collect" all widgets into as few draw calls as possible.
-	// You can separate the drawing process into additional batches by changing the 'layer' parameter, or
-	// by adding different drawing stages -- frames. All drawing happens on "Frame" level. Frame is an
-	// invisible container of widgets that has the ability to draw them all. Everything inside the frame
-	// is drawn BY that frame. UI's "Window" class is derived from "Frame", so it has the ability to render
-	// itself in addition to all of its children.
+	// Add a new UI widget: a simple window. R5::UI is optimized to "collect" all widgets into as few draw
+	// calls as possible, dividing them by parent frames. Each frame creates a new set of draw buffers,
+	// and each frame can be further refined by specifying different layers for widgets, which can also
+	// be used to ensure that certain widgets show up on top. Everything inside the frame is drawn BY that
+	// frame. UI's "Window" class is derived from "Frame", so it has the ability to render itself in
+	// addition to all of its children.
 
-	UIWindow* win = AddWidget<UIWindow>(mUI, "First Window");
+	UIWindow* win = mUI->AddWidget<UIWindow>("First Window");
 
 	// All widgets have a region which is defined by 4 relative and absolute coordinate pairs.
 	// Relative coordinates are typically in the 0-1 range, 0 being the left/top, and 1 being
@@ -144,15 +143,17 @@ void TestApp::CreateWindow()
 	// Since we created this widget programmatically, let's not bother saving it.
 	win->SetSerializable(false);
 
-	// Now we want to add a slider to the window. Note that instead of 'mUI' we pass 'win'.
+	// Now we want to add a slider to the window. Note that instead of 'mUI' we use 'win'.
 	{
-		UISlider* sld = AddWidget<UISlider>(win, "First Slider");
+		UISlider* sld = win->AddWidget<UISlider>("First Slider");
 
 		// The slider will use the same UI
 		sld->SetSkin(skin);
 
-		// We want to listen to value changing events, so that when we drag the slider the callback gets called
-		sld->SetOnValueChange( bind(&TestApp::OnSliderChange, this) );
+		// We want to listen to value changing events, so that when we drag the slider our
+		// callback gets called. We can do that by attaching a listener script to the widget.
+		USEventListener* listener = sld->AddScript<USEventListener>();
+		listener->SetOnValueChange( bind(&TestApp::OnSliderChange, this) );
 
 		// The slider's region is padded 5 pixels on all sides, bottom side being fixed to the top
 		UIRegion& rgn = sld->GetRegion();
@@ -163,7 +164,7 @@ void TestApp::CreateWindow()
 
 		// Add a label on top of the slider
 		{
-			mLabel = AddWidget<UILabel>(sld, "Slider Value");
+			mLabel = sld->AddWidget<UILabel>("Slider Value");
 
 			// Label will use the default font
 			mLabel->SetFont(font);
@@ -204,7 +205,7 @@ void TestApp::CreateWindow()
 bool TestApp::OnSliderChange (UIWidget* widget)
 {
 	// The passed area is actually a slider
-	UISlider* sld = R5_CAST(UISlider, area);
+	UISlider* sld = R5_CAST(UISlider, widget);
 	
 	// Set the label's text, mirroring the slider's value
 	if (sld != 0 && mLabel != 0) mLabel->SetText( String("Value: %.2f", sld->GetValue()) );

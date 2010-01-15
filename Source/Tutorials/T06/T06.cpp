@@ -135,7 +135,7 @@ void TestApp::Run()
 		// I recommend adding animation code to all the shaders that will be used by animated models.
 
 		// The rest of the tutorial is identical to the previous
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );

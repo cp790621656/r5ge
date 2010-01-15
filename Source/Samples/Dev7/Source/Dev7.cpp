@@ -17,8 +17,8 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 	mCore->SetSleepDelay(0);
 
 	// Register the new fire and smoke emitters
-	RegisterObject<FireEmitter>();
-	RegisterObject<SmokeEmitter>();
+	Object::Register<FireEmitter>();
+	Object::Register<SmokeEmitter>();
 }
 
 //============================================================================================================
@@ -37,7 +37,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev7.txt")
 	{
-		mCam = FindObject<Camera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<Camera>("Default Camera");
 
 		if (mCam != 0)
 		{
@@ -56,9 +56,9 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static UILabel*	fps		= FindWidget<UILabel>(mUI, "FPS");
-	static UILabel*	tri		= FindWidget<UILabel>(mUI, "Triangles");
-	static Object*	place	= FindObject<Object>(mScene, "Stage");
+	static UILabel*	fps		= mUI->FindWidget<UILabel>("FPS");
+	static UILabel*	tri		= mUI->FindWidget<UILabel>("Triangles");
+	static Object*	place	= mScene.FindObject<Object>("Stage");
 
 	mScene.Cull(mCam);
 

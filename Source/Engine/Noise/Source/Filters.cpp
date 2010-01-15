@@ -698,17 +698,17 @@ FILTER(Blur)
 
 			if (seamless)
 			{
-				y0 = R5::Wrap(y-1, height) * width;
-				y1 = R5::Wrap(y+1, height) * width;
-				y2 = R5::Wrap(y-2, height) * width;
-				y3 = R5::Wrap(y+2, height) * width;
+				y0 = R5::Wrap((int)y-1, height) * width;
+				y1 = R5::Wrap((int)y+1, height) * width;
+				y2 = R5::Wrap((int)y-2, height) * width;
+				y3 = R5::Wrap((int)y+2, height) * width;
 			}
 			else
 			{
-				y0 = R5::Clamp(y-1, height) * width;
-				y1 = R5::Clamp(y+1, height) * width;
-				y2 = R5::Clamp(y-2, height) * width;
-				y3 = R5::Clamp(y+2, height) * width;
+				y0 = R5::Clamp((int)y-1, height) * width;
+				y1 = R5::Clamp((int)y+1, height) * width;
+				y2 = R5::Clamp((int)y-2, height) * width;
+				y3 = R5::Clamp((int)y+2, height) * width;
 			}
 
 			for (uint x = 0; x < width; ++x)
@@ -852,6 +852,129 @@ FILTER(Mirror)
 			else if (data[i] < low)		data[i] = low  + (low - data[i]);
 		}
 	}
+}
+
+//============================================================================================================
+// Helper function used below
+//============================================================================================================
+
+inline void ChooseMin (float* buffer, float& height, int& current, int target)
+{
+	float f = buffer[target];
+
+	if (f < height)
+	{
+		height = f;
+		current = target;
+	}
+}
+
+//============================================================================================================
+// Helper function used below
+//============================================================================================================
+
+void ErodePoint (float* buffer, int* water, int x, int y, int width, int height, bool seamless)
+{
+	int y0w, y1w = y * width, y2w, x0, x2;
+	int index = y1w + x;
+	int& precip (water[index]);
+
+	if (precip != 0)
+	{
+		if (seamless)
+		{
+			x0  = ::Wrap(x - 1, width);
+			x2  = ::Wrap(x + 1, width);
+			y0w = ::Wrap(y - 1, height) * width;
+			y2w = ::Wrap(y + 1, height) * width;
+		}
+		else
+		{
+			x0  = ::Clamp(x - 1, width);
+			x2  = ::Clamp(x + 1, width);
+			y0w = ::Clamp(y - 1, height) * width;
+			y2w = ::Clamp(y + 1, height) * width;
+		}
+
+		float origin = buffer[index];
+		float lowest = origin;
+		int dest = index;
+
+		// Choose the lowest nearby point
+		ChooseMin(buffer, lowest, dest, y0w + x0);
+		ChooseMin(buffer, lowest, dest, y1w + x0);
+		ChooseMin(buffer, lowest, dest, y2w + x0);
+		ChooseMin(buffer, lowest, dest, y0w + x2);
+		ChooseMin(buffer, lowest, dest, y1w + x2);
+		ChooseMin(buffer, lowest, dest, y2w + x2);
+		ChooseMin(buffer, lowest, dest, y0w + x);
+		ChooseMin(buffer, lowest, dest, y2w + x);
+
+		// If the water can't move anywhere, don't do anything else
+		if (index != dest)
+		{
+			// Move one unit of water from source to destination
+			--precip;
+			++water[dest];
+
+			// Height difference
+			lowest -= origin;
+
+			// Move a part of the sediment to the destination
+			lowest *= 0.25f;
+			buffer[index] += lowest;
+			buffer[dest]  -= lowest;
+		}
+	}
+}
+
+//============================================================================================================
+// Hydraulic erosion of the terrain
+//============================================================================================================
+
+FILTER(Erode)
+{
+	uint allocated = (uint)size.x * size.y;
+
+	// Number of raindrops, width and height of the noise
+	uint rain = (params.GetCount() > 0) ? (uint)params[0] : 10;
+
+	int width  = size.x;
+	int height = size.y;
+
+	int* water = new int[allocated];
+	memset(water, 0, sizeof(int) * allocated);
+
+	// Add some rainfall
+	for (uint i = 0; i < allocated; ++i) water[i] += rain;
+
+	// Keep going until all water evaporates
+	bool keepGoing (true);
+
+	while (keepGoing)
+	{
+		keepGoing = false;
+
+		// Run through the map, eroding each point
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				ErodePoint(data, water, x, y, width, height, false);
+			}
+		}
+
+		// Evaporate one layer of water
+		for (uint i = 0; i < allocated; ++i)
+		{
+			if (water[i] > 0)
+			{
+				--water[i];
+				keepGoing = true;
+			}
+		}
+	}
+	delete [] water;
 }
 
 } // namespace Filter

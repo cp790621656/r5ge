@@ -2,6 +2,15 @@
 using namespace R5;
 
 //============================================================================================================
+// DISCLAIMER: This file is garbage. In fact, this entire application is coded with utmost hideous
+// standards. In my defense, it was created before all the advanced features were in which would allow it
+// to be shrunken down to 20% of the length it currently occupies, if not less... but that does not excuse
+// the low quality of code all linked together via global variables. Ugh. This app is going to be rewritten
+// from scratch at some point when I get enough time to do so.
+//============================================================================================================
+
+
+//============================================================================================================
 // Used by options creation functions
 //============================================================================================================
 
@@ -263,7 +272,7 @@ bool ModelViewer::CreateUI()
 
 	// Create the menu frame at the top of the screen
 	{
-		_menuFrame = AddWidget<UIFrame>(mUI, "Menu Frame");
+		_menuFrame = mUI->AddWidget<UIFrame>("Menu Frame");
 		_menuFrame->SetSerializable(false);
 		{
 			UIRegion& rgn = _menuFrame->GetRegion();
@@ -280,9 +289,9 @@ bool ModelViewer::CreateUI()
 		_fileMenu->AddEntry(SAVE);
 		_fileMenu->AddEntry(SAVEAS);
 		_fileMenu->AddEntry(EXIT);
-		_fileMenu->SetOnValueChange( bind(&ModelViewer::OnFileMenuSelection, this) );
 		_fileMenu->SetSticky(false);
 		_fileMenu->SetTooltip("File menu allows you to open and save models");
+		_fileMenu->AddScript<USEventListener>()->SetOnValueChange(bind(&ModelViewer::OnFileMenuSelection, this));
 	}
 
 	// View menu
@@ -294,12 +303,12 @@ bool ModelViewer::CreateUI()
 		menu->AddEntry(ABOUT);
 		menu->SetSticky(false);
 		menu->SetTooltip("Click and find out!");
-		menu->SetOnValueChange( bind(&ModelViewer::OnViewMenuSelection, this) );
+		menu->AddScript<USEventListener>()->SetOnValueChange(bind(&ModelViewer::OnViewMenuSelection, this));
 	}
 
 	// The options menu is different as it has to be saved for options to stay persistent
 	{
-		_optFrame = FindWidget<UIFrame>(mUI, "Options Frame");
+		_optFrame = mUI->FindWidget<UIFrame>("Options Frame");
 
 		if (_optFrame != 0)
 		{
@@ -307,42 +316,42 @@ bool ModelViewer::CreateUI()
 			btn->SetTooltip("Non-model related options: rendering method, background, bloom");
 
 			_optFrame->SetAlpha(0.0f);
-			_optFrame->SetOnKey( &OnIgnoreKey );
-			_optFrame->SetOnMouseMove( &OnIgnoreMouse );
+			_optFrame->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+			_optFrame->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 
-			UISubPicture*	bnd = FindWidget<UISubPicture>	(_optFrame, "Options Background", false);
-			UIList*			ren = FindWidget<UIList>		(_optFrame, "Rendering Method");
-			UIList*			bgd = FindWidget<UIList>		(_optFrame, "Background");
-			UICheckbox*		chk = FindWidget<UICheckbox>	(_optFrame, "Bloom Checkbox");
-			UISlider*			sld = FindWidget<UISlider>		(_optFrame, "Bloom Slider");
+			UISubPicture*	bnd = _optFrame->FindWidget<UISubPicture>	("Options Background", false);
+			UIList*			ren = _optFrame->FindWidget<UIList>			("Rendering Method");
+			UIList*			bgd = _optFrame->FindWidget<UIList>			("Background");
+			UICheckbox*		chk = _optFrame->FindWidget<UICheckbox>		("Bloom Checkbox");
+			UISlider*		sld = _optFrame->FindWidget<UISlider>		("Bloom Slider");
 
 			if (bnd != 0)
 			{
-				bnd->SetOnKey( &OnIgnoreKey );
-				bnd->SetOnMouseMove( &OnIgnoreMouse );
+				bnd->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+				bnd->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 			}
 
 			if (ren != 0)
 			{
-				ren->SetOnStateChange( bind(&ModelViewer::OnDrawMode, this) );
-				OnDrawMode(ren);
+				ren->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnDrawMode, this) );
+				OnDrawMode(ren, 0, false);
 			}
 
 			if (bgd != 0)
 			{
-				bgd->SetOnStateChange( bind(&ModelViewer::OnBackground, this) );
-				OnBackground(bgd);
+				bgd->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnBackground, this) );
+				OnBackground(bgd, 0, false);
 			}
 
 			if (chk != 0)
 			{
-				chk->SetOnStateChange( bind(&ModelViewer::OnBloomToggle, this) );
-				OnBloomToggle(chk);
+				chk->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnBloomToggle, this) );
+				OnBloomToggle(chk, 0, false);
 			}
 
 			if (sld != 0)
 			{
-				sld->SetOnValueChange( bind(&ModelViewer::OnBloomChange, this) );
+				sld->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnBloomChange, this) );
 				OnBloomChange(sld);
 			}
 		}
@@ -351,7 +360,7 @@ bool ModelViewer::CreateUI()
 	// Model options menu
 	{
 		UIButton* btn = AddMenuButton("Model");
-		btn->SetOnFocus( bind(&ModelViewer::OnFillModelMenu, this) );
+		btn->AddScript<USEventListener>()->SetOnFocus( bind(&ModelViewer::OnFillModelMenu, this) );
 		btn->SetTooltip("Options affecting the entire model");
 
 		_modelFrame = AddArea("Model", 8);
@@ -372,7 +381,7 @@ bool ModelViewer::CreateUI()
 		_modelScale		= AddInput (_modelFrame, 4, "Model Scale Value",	2);
 		_modelBake		= AddButton(_modelFrame, 7, "Model Bake");
 
-		UILabel* spinLabel	= AddLabel (_modelFrame, 5, "Model Spin Label", 2);
+		UILabel* spinLabel		= AddLabel (_modelFrame, 5, "Model Spin Label", 2);
 		UILabel* boundsLabel	= AddLabel (_modelFrame, 6, "Model Bounds Label", 2);
 
 		_modelPos->SetTooltip	("Positional offset. Don't forget to check the checkbox to the left.");
@@ -391,24 +400,24 @@ bool ModelViewer::CreateUI()
 		_modelSpin		= AddCheckbox(_modelFrame, 5, "Model Spin");
 		_modelBounds	= AddCheckbox(_modelFrame, 6, "Model Bounds");
 
-		_modelBake->SetOnKey	( bind(&ModelViewer::OnModelBake,	this) );
-		_modelPos->SetOnFocus	( bind(&ModelViewer::OnModelChange, this) );
-		_modelRot->SetOnFocus	( bind(&ModelViewer::OnModelChange, this) );
-		_modelScale->SetOnFocus	( bind(&ModelViewer::OnModelChange, this) );
+		_modelBake->AddScript<USEventListener>()->SetOnKey		( bind(&ModelViewer::OnModelBake,	this) );
+		_modelPos->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnModelChange, this) );
+		_modelRot->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnModelChange, this) );
+		_modelScale->AddScript<USEventListener>()->SetOnFocus	( bind(&ModelViewer::OnModelChange, this) );
 
-		_modelUsePos->SetOnStateChange	( bind(&ModelViewer::OnModelToggle, this) );
-		_modelUseRot->SetOnStateChange	( bind(&ModelViewer::OnModelToggle, this) );
-		_modelUseScale->SetOnStateChange( bind(&ModelViewer::OnModelToggle, this) );
-		_modelSpin->SetOnStateChange	( bind(&ModelViewer::OnModelSpin,	this) );
-		_modelBounds->SetOnStateChange	( bind(&ModelViewer::OnModelBounds,	this) );
+		_modelUsePos->AddScript<USEventListener>()->SetOnStateChange	( bind(&ModelViewer::OnModelToggle, this) );
+		_modelUseRot->AddScript<USEventListener>()->SetOnStateChange	( bind(&ModelViewer::OnModelToggle, this) );
+		_modelUseScale->AddScript<USEventListener>()->SetOnStateChange	( bind(&ModelViewer::OnModelToggle, this) );
+		_modelSpin->AddScript<USEventListener>()->SetOnStateChange		( bind(&ModelViewer::OnModelSpin,	this) );
+		_modelBounds->AddScript<USEventListener>()->SetOnStateChange	( bind(&ModelViewer::OnModelBounds,	this) );
 	}
 
 	// Limb menu
 	{
-		_limbMenu = AddMenuItem		("Limbs");
-		_limbMenu->SetTooltip		("Limbs are what models are made out of, associating meshes with materials");
-		_limbMenu->SetOnValueChange	( bind(&ModelViewer::OnLimbMenuSelection,	this) );
-		_limbMenu->SetOnFocus		( bind(&ModelViewer::OnFillLimbMenu,		this) );
+		_limbMenu = AddMenuItem	("Limbs");
+		_limbMenu->SetTooltip	("Limbs are what models are made out of, associating meshes with materials");
+		_limbMenu->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnLimbMenuSelection,	this) );
+		_limbMenu->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnFillLimbMenu,		this) );
 
 		_limbFrame = AddArea("Limbs", 3);
 
@@ -420,19 +429,19 @@ bool ModelViewer::CreateUI()
 		_limbMesh	= AddList (_limbFrame, 1, "Limb Mesh List");
 		_limbMat	= AddList (_limbFrame, 2, "Limb Mat List");
 
-		_limbName->SetOnFocus		( bind(&ModelViewer::OnLimbSelect,		this) );
-		_limbMesh->SetOnFocus		( bind(&ModelViewer::OnMeshListFocus,	this) );
-		_limbMesh->SetOnValueChange	( bind(&ModelViewer::OnLimbChange,		this) );
-		_limbMat->SetOnFocus		( bind(&ModelViewer::OnMatListFocus,	this) );
-		_limbMat->SetOnValueChange	( bind(&ModelViewer::OnLimbChange,		this) );
+		_limbName->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnLimbSelect,		this) );
+		_limbMesh->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnMeshListFocus,	this) );
+		_limbMesh->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnLimbChange,		this) );
+		_limbMat->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnMatListFocus,	this) );
+		_limbMat->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnLimbChange,		this) );
 	}
 
 	// Mesh menu
 	{
 		_meshMenu = AddMenuItem		("Meshes");
 		_meshMenu->SetTooltip		("Mesh panel allows you to see the number of triangles in each mesh");
-		_meshMenu->SetOnValueChange	( bind(&ModelViewer::OnMeshMenuSelection,	this) );
-		_meshMenu->SetOnFocus		( bind(&ModelViewer::OnFillMeshMenu,		this) );
+		_meshMenu->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnMeshMenuSelection,	this) );
+		_meshMenu->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnFillMeshMenu,		this) );
 
 		_meshFrame = AddArea("Meshes", 2);
 
@@ -447,8 +456,8 @@ bool ModelViewer::CreateUI()
 	{
 		_animMenu = AddMenuItem		("Animations");
 		_animMenu->SetTooltip		("Animations are available for skinned models");
-		_animMenu->SetOnValueChange	( bind(&ModelViewer::OnAnimMenuSelection,	this) );
-		_animMenu->SetOnFocus		( bind(&ModelViewer::OnFillAnimMenu,		this) );
+		_animMenu->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnAnimMenuSelection,	this) );
+		_animMenu->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnFillAnimMenu,		this) );
 
 		_animFrame = AddArea("Animations", 4);
 
@@ -463,12 +472,12 @@ bool ModelViewer::CreateUI()
 		_animLoop		= AddCheckbox	(_animFrame, 3, "Animation Loop");
 		_animPlay		= AddButton		(_animFrame, 3, "Animation Play", 2);
 
-		_animName->SetOnFocus			( bind(&ModelViewer::OnAnimNameSelect,	this) );
-		_animName->SetOnValueChange		( bind(&ModelViewer::OnAnimNameValue,	this) );
-		_animRange->SetOnFocus			( bind(&ModelViewer::OnAnimProperties,	this) );
-		_animDuration->SetOnFocus		( bind(&ModelViewer::OnAnimProperties,	this) );
-		_animLoop->SetOnStateChange		( bind(&ModelViewer::OnAnimLoop,		this) );
-		_animPlay->SetOnKey				( bind(&ModelViewer::OnAnimPlay,		this) );
+		_animName->AddScript<USEventListener>()->SetOnFocus			( bind(&ModelViewer::OnAnimNameSelect,	this) );
+		_animName->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnAnimNameValue,	this) );
+		_animRange->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnAnimProperties,	this) );
+		_animDuration->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnAnimProperties,	this) );
+		_animLoop->AddScript<USEventListener>()->SetOnStateChange	( bind(&ModelViewer::OnAnimLoop,		this) );
+		_animPlay->AddScript<USEventListener>()->SetOnKey			( bind(&ModelViewer::OnAnimPlay,		this) );
 
 		_animPlay->SetText				("Play");
 		_animName->SetTooltip			("You can change this name to whatever you like");
@@ -482,8 +491,8 @@ bool ModelViewer::CreateUI()
 	{
 		_matMenu = AddMenuItem		("Materials");
 		_matMenu->SetTooltip		("Material properties -- fully modifiable for your pleasure");
-		_matMenu->SetOnValueChange	( bind(&ModelViewer::OnMatMenuSelection,	this) );
-		_matMenu->SetOnFocus		( bind(&ModelViewer::OnFillMatMenu,			this) );
+		_matMenu->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatMenuSelection,	this) );
+		_matMenu->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnFillMatMenu,			this) );
 
 		_matFrame = AddArea("Materials", 7 + TEXTURES);
 
@@ -507,28 +516,29 @@ bool ModelViewer::CreateUI()
 		_matGlow->SetTooltip("Percentage of material affected by light. 0% is normal, 100% makes it immune to light");
 		_matADT->SetTooltip("Alpha Discard Threshold: Alpha test will fail below this value");
 
-		_matName->SetTooltip		("You can change this name to whatever you like");
-		_matName->SetOnFocus		( bind(&ModelViewer::OnMatNameSelect,	this) );
-		_matName->SetOnValueChange	( bind(&ModelViewer::OnMatNameValue,	this) );
-		_matGlow->SetOnValueChange  ( bind(&ModelViewer::OnMatProperties,	this) );
-		_matADT->SetOnValueChange   ( bind(&ModelViewer::OnMatProperties,	this) );
-		_matDiff->SetOnFocus		( bind(&ModelViewer::OnMatColor,		this) );
-		_matSpec->SetOnFocus		( bind(&ModelViewer::OnMatColor,		this) );
+		_matName->SetTooltip("You can change this name to whatever you like");
+		_matName->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatNameSelect,	this) );
+		_matName->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatNameValue,	this) );
+		_matGlow->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
+		_matADT->AddScript<USEventListener>()->SetOnValueChange ( bind(&ModelViewer::OnMatProperties,	this) );
+		_matDiff->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatColor,		this) );
+		_matSpec->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatColor,		this) );
 
-		_matShaderList->SetTooltip			("Active shader used by this material");
-		_matShaderList->SetOnFocus			( bind(&ModelViewer::OnShaderListFocus,	this) );
-		_matShaderList->SetOnValueChange	( bind(&ModelViewer::OnMatShaderList,	this) );
-		_matShaderInput->SetTooltip			("Hit 'Escape' to cancel or 'Enter' to confirm");
-		_matShaderInput->SetOnFocus			( bind(&ModelViewer::OnMatShaderInput,	this) );
-		_matShaderInput->SetOnValueChange	( bind(&ModelViewer::OnMatShaderValue,	this) );
+		_matShaderList->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnShaderListFocus,	this) );
+		_matShaderList->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnMatShaderList,	this) );
+		_matShaderInput->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatShaderInput,	this) );
+		_matShaderInput->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnMatShaderValue,	this) );
 		_matShaderInput->SetAlpha(0.0f);
+
+		_matShaderList->SetTooltip("Active shader used by this material");
+		_matShaderInput->SetTooltip("Hit 'Escape' to cancel or 'Enter' to confirm");
 
 		// Although materials support any number of techniques, we only care about two.
 		// They are both deferred in this rendering pipeline. Only difference is the order.
 		
 		_matTech->AddEntry( _deferred0->GetName() );
 		_matTech->AddEntry( _wireframe->GetName() );
-		_matTech->SetOnValueChange( bind(&ModelViewer::OnMatTech, this) );
+		_matTech->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatTech, this) );
 		_matTech->SetTooltip("Material technique used to render this material. Leave at 'Deferred' for most cases.");
 
 		for (uint i = 0; i < TEXTURES; ++i)
@@ -542,19 +552,19 @@ bool ModelViewer::CreateUI()
 			_matTexList	[i]->SetTooltip( String("Texture bound to texture unit %u", i) );
 			_matTexInput[i]->SetTooltip("Hit 'Escape' to cancel or 'Enter' to confirm");
 
-			_matTexList	[i]->SetOnFocus			( bind(&ModelViewer::OnTexListFocus,	this) );
-			_matTexList [i]->SetOnValueChange	( bind(&ModelViewer::OnMatTexList,		this) );
-			_matTexInput[i]->SetOnFocus			( bind(&ModelViewer::OnMatTexInput,		this) );
-			_matTexInput[i]->SetOnValueChange	( bind(&ModelViewer::OnMatTexValue,		this) );
+			_matTexList	[i]->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnTexListFocus,	this) );
+			_matTexList [i]->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnMatTexList,		this) );
+			_matTexInput[i]->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatTexInput,		this) );
+			_matTexInput[i]->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnMatTexValue,		this) );
 		}
 	}
 
 	// Texture menu
 	{
-		_texMenu = AddMenuItem		("Textures");
-		_texMenu->SetTooltip		("Texture menu allows you to reload and change the basic properties of textures");
-		_texMenu->SetOnValueChange	( bind(&ModelViewer::OnTexMenuSelection,	this) );
-		_texMenu->SetOnFocus		( bind(&ModelViewer::OnFillTexMenu,			this) );
+		_texMenu = AddMenuItem("Textures");
+		_texMenu->SetTooltip("Texture menu allows you to reload and change the basic properties of textures");
+		_texMenu->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnTexMenuSelection, this) );
+		_texMenu->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnFillTexMenu,		 this) );
 
 		_texFrame = AddArea("Textures", 23);
 
@@ -565,7 +575,7 @@ bool ModelViewer::CreateUI()
 		AddCaption(_texFrame, 4, "Filtering:");
 
 		UIButton* btn = AddButton(_texFrame, 5, "Texture Reload", 0);
-		btn->SetOnFocus( bind(&ModelViewer::OnTexReload, this) );
+		btn->AddScript<USEventListener>()->SetOnFocus( bind(&ModelViewer::OnTexReload, this) );
 		btn->SetText("Reload as:");
 		btn->SetTooltip("Clicking this button will discard then reload this texture");
 
@@ -583,14 +593,14 @@ bool ModelViewer::CreateUI()
 		_texWrap->AddEntry( ITexture::WrapModeToString( ITexture::WrapMode::ClampToEdge ) );
 		_texWrap->AddEntry( ITexture::WrapModeToString( ITexture::WrapMode::ClampToZero ) );
 		_texWrap->AddEntry( ITexture::WrapModeToString( ITexture::WrapMode::ClampToOne ) );
-		_texWrap->SetOnValueChange( bind(&ModelViewer::OnTexChange, this) );
+		_texWrap->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnTexChange, this) );
 		_texWrap->SetTooltip("Stick with the 'Repeat' wrapping method unless you're certain otherwise.");
 
 		_texFilter->AddEntry( ITexture::FilterToString( ITexture::Filter::Nearest ) );
 		_texFilter->AddEntry( ITexture::FilterToString( ITexture::Filter::Linear ) );
 		_texFilter->AddEntry( ITexture::FilterToString( ITexture::Filter::Mipmap ) );
 		_texFilter->AddEntry( ITexture::FilterToString( ITexture::Filter::Anisotropic ) );
-		_texFilter->SetOnValueChange( bind(&ModelViewer::OnTexChange, this) );
+		_texFilter->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnTexChange, this) );
 		_texFilter->SetTooltip("Anisotropic filtering produces best quality. Linear filtering works best for UI textures.");
 
 		_texFormat->AddEntry( ITexture::FormatToString( ITexture::Format::Alpha ) );
@@ -601,9 +611,10 @@ bool ModelViewer::CreateUI()
 		_texFormat->AddEntry( ITexture::FormatToString( ITexture::Format::DXT5 ) );
 		_texFormat->SetTooltip("DXT3 is the all-around best choice. RGB is for normal maps, RGBA is for UI textures.");
 
-		_texImage = AddWidget<UIPicture>(_texFrame, "Texture Image");
-		_texImage->SetOnKey( &OnIgnoreKey );
-		_texImage->SetOnMouseMove( &OnIgnoreMouse );
+		_texImage = _texFrame->AddWidget<UIPicture>("Texture Image");
+		_texImage->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+		_texImage->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
+
 		UIRegion& tr = _texImage->GetRegion();
 		tr.SetLeft		(0.0f,  5.0f);
 		tr.SetRight		(1.0f, -5.0f);
@@ -614,7 +625,7 @@ bool ModelViewer::CreateUI()
 	// Color menu
 	{
 		_colorFrame = AddArea("Color", 4);
-		_colorFrame->SetOnFocus( bind(&ModelViewer::OnColorSelect, this) );
+		_colorFrame->AddScript<USEventListener>()->SetOnFocus( bind(&ModelViewer::OnColorSelect, this) );
 
 		AddCaption(_colorFrame, 0, "Red:");
 		AddCaption(_colorFrame, 1, "Green:");
@@ -630,35 +641,35 @@ bool ModelViewer::CreateUI()
 		_colorGreen->SetColor	( Color3f(0.0f, 1.0f, 0.0f) );
 		_colorBlue->SetColor	( Color3f(0.0f, 0.0f, 1.0f) );
 
-		_colorRed->SetOnValueChange		( bind(&ModelViewer::OnColor, this) );
-		_colorGreen->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
-		_colorBlue->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
-		_colorAlpha->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
+		_colorRed->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
+		_colorGreen->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
+		_colorBlue->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
+		_colorAlpha->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
 
-		_colorRed->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
-		_colorGreen->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
-		_colorBlue->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
-		_colorAlpha->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
+		_colorRed->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnColorSelect, this) );
+		_colorGreen->AddScript<USEventListener>()->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
+		_colorBlue->AddScript<USEventListener>()->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
+		_colorAlpha->AddScript<USEventListener>()->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
 	}
 
 	// File dialog
 	{
 		// Dialog window
 		{
-			_fileDialog = AddWidget<UIWindow>(mUI, "File Dialog");
+			_fileDialog = mUI->AddWidget<UIWindow>("File Dialog");
 			_fileDialog->SetSerializable(false);
 			_fileDialog->SetResizable(false);
 			_fileDialog->SetAlpha(0.0f);
 			_fileDialog->SetSkin(_skin);
 			_fileDialog->SetFont(_font);
 			_fileDialog->SetTitlebarHeight(20);
-			_fileDialog->SetOnKey( &OnIgnoreKey );
-			_fileDialog->SetOnMouseMove( &OnIgnoreMouse );
+			_fileDialog->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+			_fileDialog->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 		}
 
 		// Caption label
 		{
-			_fileLabel = AddWidget<UILabel>(_fileDialog, "File Dialog Label");
+			_fileLabel = _fileDialog->AddWidget<UILabel>("File Dialog Label");
 			_fileLabel->SetLayer(1, false);
 			_fileLabel->SetAlignment( UILabel::Alignment::Center );
 			_fileLabel->SetFont(_font);
@@ -673,11 +684,11 @@ bool ModelViewer::CreateUI()
 
 		// Input field
 		{
-			_fileInput = AddWidget<UIInput>(_fileDialog, "File Dialog Input");
+			_fileInput = _fileDialog->AddWidget<UIInput>("File Dialog Input");
 			_fileInput->SetSkin(_skin);
 			_fileInput->SetFont(_font);
 			_fileInput->SetFace("Dark Area");
-			_fileInput->SetOnValueChange( bind(&ModelViewer::OnFileInputValue, this) );
+			_fileInput->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnFileInputValue, this) );
 			_fileInput->SetMaxHistorySize(10);
 
 			// Copy over the history and release the cached list as it's no longer needed
@@ -703,8 +714,8 @@ bool ModelViewer::CreateUI()
 
 		// Cancel button
 		{
-			UIButton* cancel = AddWidget<UIButton>(_fileDialog, "File Dialog Cancel");
-			cancel->SetOnFocus( &HideParent );
+			UIButton* cancel = _fileDialog->AddWidget<UIButton>("File Dialog Cancel");
+			cancel->AddScript<USEventListener>()->SetOnFocus( &HideParent );
 			cancel->SetSkin(_skin);
 			cancel->SetFont(_font);
 			cancel->SetText("Cancel");
@@ -719,8 +730,8 @@ bool ModelViewer::CreateUI()
 
 		// OK button
 		{
-			_fileOK = AddWidget<UIButton>(_fileDialog, "File Dialog OK");
-			_fileOK->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
+			_fileOK = _fileDialog->AddWidget<UIButton>("File Dialog OK");
+			_fileOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
 			_fileOK->SetSkin(_skin);
 			_fileOK->SetFont(_font);
 			_fileOK->SetShadow(true);
@@ -737,19 +748,19 @@ bool ModelViewer::CreateUI()
 	{
 		// Dialog window
 		{
-			_confirmDialog = AddWidget<UIWindow>(mUI, "Confirm Dialog");
+			_confirmDialog = mUI->AddWidget<UIWindow>("Confirm Dialog");
 			_confirmDialog->SetSerializable(false);
 			_confirmDialog->SetAlpha(0.0f);
 			_confirmDialog->SetSkin(_skin);
 			_confirmDialog->SetFont(_font);
 			_confirmDialog->SetTitlebarHeight(20);
-			_confirmDialog->SetOnKey( &OnIgnoreKey );
-			_confirmDialog->SetOnMouseMove( &OnIgnoreMouse );
+			_confirmDialog->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+			_confirmDialog->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 		}
 
 		// Caption label
 		{
-			_confirmLabel = AddWidget<UILabel>(_confirmDialog, "Confirm Dialog Label");
+			_confirmLabel = _confirmDialog->AddWidget<UILabel>("Confirm Dialog Label");
 			_confirmLabel->SetLayer(1, false);
 			_confirmLabel->SetAlignment( UILabel::Alignment::Center );
 			_confirmLabel->SetFont(_font);
@@ -764,8 +775,8 @@ bool ModelViewer::CreateUI()
 
 		// Cancel button
 		{
-			UIButton* cancel = AddWidget<UIButton>(_confirmDialog, "Confirm Dialog Cancel");
-			cancel->SetOnFocus( &HideParent );
+			UIButton* cancel = _confirmDialog->AddWidget<UIButton>("Confirm Dialog Cancel");
+			cancel->AddScript<USEventListener>()->SetOnFocus( &HideParent );
 			cancel->SetText("Cancel");
 			cancel->SetSkin(_skin);
 			cancel->SetFont(_font);
@@ -779,8 +790,8 @@ bool ModelViewer::CreateUI()
 
 		// OK button
 		{
-			_confirmOK = AddWidget<UIButton>(_confirmDialog, "Confirm Dialog OK");
-			_confirmOK->SetOnKey( bind(&ModelViewer::OnConfirmDialogOK, this) );
+			_confirmOK = _confirmDialog->AddWidget<UIButton>("Confirm Dialog OK");
+			_confirmOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnConfirmDialogOK, this) );
 			_confirmOK->SetSkin(_skin);
 			_confirmOK->SetFont(_font);
 
@@ -794,13 +805,13 @@ bool ModelViewer::CreateUI()
 
 	// Loading frame
 	{
-		_loadFrame = AddWidget<UIFrame>(mUI, "Loading Frame");
+		_loadFrame = mUI->AddWidget<UIFrame>("Loading Frame");
 		_loadFrame->SetSerializable(false);
-		_loadFrame->SetOnKey( &OnIgnoreKey );
-		_loadFrame->SetOnMouseMove( &OnIgnoreMouse );
+		_loadFrame->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+		_loadFrame->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 		_loadFrame->SetAlpha(0.0f);
 
-		UIHighlight* hlt = AddWidget<UIHighlight>(_loadFrame, "Loading Frame Background");
+		UIHighlight* hlt = _loadFrame->AddWidget<UIHighlight>("Loading Frame Background");
 		hlt->SetColor( Color4f(0.0f, 0.0f, 0.0f, 0.0f) );
 		hlt->SetAlpha(0.85f);
 		hlt->SetReceivesEvents(false);
@@ -1038,7 +1049,7 @@ void ModelViewer::UpdateTechPanel (const DrawMethod* method)
 
 UIMenu* ModelViewer::AddMenuItem (const String& name)
 {
-	UIMenu* menu = AddWidget<UIMenu>(_menuFrame, name);
+	UIMenu* menu = _menuFrame->AddWidget<UIMenu>(name);
 
 	if (menu != 0)
 	{
@@ -1062,7 +1073,7 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 		menu->SetShadow(true);
 		menu->SetAlignment( UILabel::Alignment::Center );
 		menu->SetFont(_font);
-		menu->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
+		menu->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
 	}
 	return menu;
 }
@@ -1073,7 +1084,7 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 
 UIButton* ModelViewer::AddMenuButton (const String& name)
 {
-	UIButton* btn = AddWidget<UIButton>(_menuFrame, name);
+	UIButton* btn = _menuFrame->AddWidget<UIButton>(name);
 
 	if (btn != 0)
 	{
@@ -1097,7 +1108,7 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 		btn->SetShadow(true);
 		btn->SetAlignment( UILabel::Alignment::Center );
 		btn->SetFont(_font);
-		btn->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
+		btn->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
 	}
 	return btn;
 }
@@ -1108,19 +1119,19 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 
 UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 {
-	UIWindow* frame = AddWidget<UIWindow>(mUI, name + " Frame");
+	UIWindow* frame = mUI->AddWidget<UIWindow>(name + " Frame");
 
 	frame->SetSerializable(false);
 	frame->SetAlpha(0.0f);
-	frame->SetOnKey( &OnIgnoreKey );
-	frame->SetOnMouseMove( &OnIgnoreMouse );
+	frame->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
+	frame->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 
 	UIRegion& rgn = frame->GetRegion();
 	rgn.SetRight (0.0f, WIDTH);
 	rgn.SetTop	 (0.0f, OFFSET);
 	rgn.SetBottom(0.0f, OFFSET + (PADDING + LINE) * lines + PADDING * 4.0f);
 
-	UISubPicture* pic = AddWidget<UISubPicture>(frame, name + " Background");
+	UISubPicture* pic = frame->AddWidget<UISubPicture>(name + " Background");
 	pic->SetSkin(_skin, false);
 	pic->SetFace("Window: Background");
 	pic->SetReceivesEvents(false);
@@ -1149,7 +1160,7 @@ UILabel* ModelViewer::AddCaption (UIWidget* parent, uint line, const String& tex
 
 UILabel* ModelViewer::AddLabel (UIWidget* parent, uint line, const String& name, int offset)
 {
-	UILabel* lbl = AddWidget<UILabel>(parent, name);
+	UILabel* lbl = parent->AddWidget<UILabel>(name);
 
 	SetRegion(lbl->GetRegion(), line, offset, 0, 0);
 
@@ -1168,7 +1179,7 @@ UILabel* ModelViewer::AddLabel (UIWidget* parent, uint line, const String& name,
 
 UIButton*	ModelViewer::AddButton (UIWidget* parent, uint line, const String& name, int offset)
 {
-	UIButton* btn = AddWidget<UIButton>(parent, name);
+	UIButton* btn = parent->AddWidget<UIButton>(name);
 
 	SetRegion(btn->GetRegion(), line, offset, 0, -PADDING * 0.6f);
 
@@ -1187,7 +1198,7 @@ UIButton*	ModelViewer::AddButton (UIWidget* parent, uint line, const String& nam
 
 UICheckbox* ModelViewer::AddCheckbox (UIWidget* parent, uint line, const String& name)
 {
-	UICheckbox* chk = AddWidget<UICheckbox>(parent, name);
+	UICheckbox* chk = parent->AddWidget<UICheckbox>(name);
 
 	float top = PADDING * 2 + (PADDING + LINE) * line;
 
@@ -1209,7 +1220,7 @@ UICheckbox* ModelViewer::AddCheckbox (UIWidget* parent, uint line, const String&
 
 UIInput* ModelViewer::AddInput (UIWidget* parent, uint line, const String& name, int offset)
 {
-	UIInput* inp = AddWidget<UIInput>(parent, name);
+	UIInput* inp = parent->AddWidget<UIInput>(name);
 
 	SetRegion(inp->GetRegion(), line, offset, -PADDING * 0.3f, -PADDING * 0.6f);
 
@@ -1227,7 +1238,7 @@ UIInput* ModelViewer::AddInput (UIWidget* parent, uint line, const String& name,
 
 UIList* ModelViewer::AddList (UIWidget* parent, uint line, const String& name, int offset)
 {
-	UIList* list = AddWidget<UIList>(parent, name);
+	UIList* list = parent->AddWidget<UIList>(name);
 
 	SetRegion(list->GetRegion(), line, offset, 0, -PADDING * 0.6f);
 
@@ -1247,7 +1258,7 @@ UIList* ModelViewer::AddList (UIWidget* parent, uint line, const String& name, i
 
 UISlider* ModelViewer::AddSlider (UIWidget* parent, uint line, const String& name, int offset)
 {
-	UISlider* slider = AddWidget<UISlider>(parent, name);
+	UISlider* slider = parent->AddWidget<UISlider>(name);
 	SetRegion(slider->GetRegion(), line, offset, 1, 0);
 	slider->SetSerializable(false);
 	slider->SetSkin(_skin);
@@ -1260,7 +1271,7 @@ UISlider* ModelViewer::AddSlider (UIWidget* parent, uint line, const String& nam
 
 UIHighlight* ModelViewer::AddHighlight (UIWidget* parent, uint line, const String& name, int offset)
 {
-	UIHighlight* hlt = AddWidget<UIHighlight>(parent, name);
+	UIHighlight* hlt = parent->AddWidget<UIHighlight>(name);
 	SetRegion(hlt->GetRegion(), line, offset, 1, 0);
 	hlt->SetSerializable(false);
 	hlt->SetLayer(1, false);
@@ -1389,12 +1400,12 @@ bool ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte
 // Helper callback functions that toggle the visibility of the options frames
 //============================================================================================================
 
-bool ModelViewer::ToggleBoth (UIWidget* widget)
+bool ModelViewer::ToggleBoth (UIWidget* widget, uint state, bool isSet)
 {
 	UIButton* btn = (UIButton*)widget;
 	bool pressed = ((btn->GetState() & UIButton::State::Pressed) != 0);
 
-	UIFrame* frame = FindWidget<UIFrame>(mUI, btn->GetName() + " Frame", false);
+	UIFrame* frame = mUI->FindWidget<UIFrame>(btn->GetName() + " Frame", false);
 
 	if (frame != 0)
 	{
@@ -1410,14 +1421,14 @@ bool ModelViewer::ToggleBoth (UIWidget* widget)
 
 //============================================================================================================
 
-bool ModelViewer::ToggleOff (UIWidget* widget)
+bool ModelViewer::ToggleOff (UIWidget* widget, uint state, bool isSet)
 {
 	UIButton* btn = (UIButton*)widget;
 	bool pressed = ((btn->GetState() & UIButton::State::Pressed) != 0);
 
 	if (!pressed)
 	{
-		UIFrame* frame = FindWidget<UIFrame>(mUI, btn->GetName() + " Frame", false);
+		UIFrame* frame = mUI->FindWidget<UIFrame>(btn->GetName() + " Frame", false);
 
 		if ( frame != 0 )
 		{
@@ -1637,7 +1648,7 @@ bool ModelViewer::OnFileMenuSelection (UIWidget* widget)
 	{
 		mCore->Shutdown();
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -1667,7 +1678,7 @@ bool ModelViewer::OnViewMenuSelection (UIWidget* widget)
 			ShowAboutInfo();
 		}
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -1690,12 +1701,12 @@ bool ModelViewer::OnLimbMenuSelection (UIWidget* widget)
 
 			_limbFrame->Show();
 			_limbFrame->BringToFront();
-			return false;
+			return true;
 		}
 	}
 	_currentLimb.Clear();
 	_limbFrame->Hide();
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -1722,7 +1733,7 @@ bool ModelViewer::OnMeshMenuSelection (UIWidget* widget)
 	}
 	_currentMesh.Clear();
 	_meshFrame->Hide();
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -1830,13 +1841,13 @@ bool ModelViewer::OnMatMenuSelection (UIWidget* widget)
 					// Show the frame and bring it to the front
 					_matFrame->Show();
 					_matFrame->BringToFront();
-					return false;
+					return true;
 				}
 			}
 		}
 	}
 	_matFrame->Hide();
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -1860,13 +1871,13 @@ bool ModelViewer::OnTexMenuSelection (UIWidget* widget)
 			UpdateTexPanel(tex);
 			_texFrame->Show();
 			_texFrame->BringToFront();
-			return false;
+			return true;
 		}
 	}
 
 	_currentTex.Clear();
 	_texFrame->Hide();
-	return false;
+	return true;
 }
 
 //============================================================================================================
@@ -1893,20 +1904,20 @@ bool ModelViewer::OnAnimMenuSelection (UIWidget* widget)
 			UpdateAnimPanel(anim);
 			_animFrame->Show();
 			_animFrame->BringToFront();
-			return false;
+			return true;
 		}
 	}
 
 	_currentAnim.Clear();
 	_animFrame->Hide();
-	return false;
+	return true;
 }
 
 //============================================================================================================
 // Program options panel callbacks
 //============================================================================================================
 
-bool ModelViewer::OnDrawMode (UIWidget* widget)
+bool ModelViewer::OnDrawMode (UIWidget* widget, uint state, bool isSet)
 {
 	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
@@ -1920,7 +1931,7 @@ bool ModelViewer::OnDrawMode (UIWidget* widget)
 
 //============================================================================================================
 
-bool ModelViewer::OnBackground (UIWidget* widget)
+bool ModelViewer::OnBackground (UIWidget* widget, uint state, bool isSet)
 {
 	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
@@ -1950,10 +1961,11 @@ bool ModelViewer::OnBackground (UIWidget* widget)
 
 //============================================================================================================
 
-bool ModelViewer::OnBloomToggle	(UIWidget* widget)
+bool ModelViewer::OnBloomToggle	(UIWidget* widget, uint state, bool isSet)
 {
 	UICheckbox* chk = (UICheckbox*)widget;
 	mParams.mBloom = ((chk->GetState() & UICheckbox::State::Checked) != 0);
+	return true;
 	return true;
 }
 
@@ -2110,7 +2122,7 @@ bool ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 // Whether to spin the model around the model (or spin it around)
 //============================================================================================================
 
-bool ModelViewer::OnModelSpin (UIWidget* widget)
+bool ModelViewer::OnModelSpin (UIWidget* widget, uint state, bool isSet)
 {
 	UICheckbox* chk = (UICheckbox*)widget;
 	mAnimate = ((chk->GetState() & UICheckbox::State::Checked) != 0);
@@ -2122,7 +2134,7 @@ bool ModelViewer::OnModelSpin (UIWidget* widget)
 // Whether to show the model's bounds
 //============================================================================================================
 
-bool ModelViewer::OnModelBounds (UIWidget* widget)
+bool ModelViewer::OnModelBounds (UIWidget* widget, uint state, bool isSet)
 {
 	UICheckbox* chk = (UICheckbox*)widget;
 	bool bounds = ((chk->GetState() & UICheckbox::State::Checked) != 0);
@@ -2538,7 +2550,7 @@ bool ModelViewer::OnAnimNameValue (UIWidget* widget)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimLoop (UIWidget* widget)
+bool ModelViewer::OnAnimLoop (UIWidget* widget, uint state, bool isSet)
 {
 	Animation* anim = mModel->GetAnimation(_currentAnim, false);
 

@@ -38,12 +38,12 @@ void ModelViewer::Run()
 {
 	if (*mCore << "Config/Model Viewer.txt")
 	{
-		mCam			= FindObject<DebugCamera>		(mScene, "Default Camera");
-		mLight			= FindObject<Light>				(mScene, "Default Light");
-		mStage			= FindObject<Object>			(mScene, "Stage");
-		mInst			= FindObject<ModelInstance>		(mScene, "Default Instance");
-		mSbHighlight	= FindWidget<UIHighlight>		(mUI,	 "Status Highlight");
-		mSbLabel		= FindWidget<UILabel>			(mUI,	 "Status Label");
+		mCam			= mScene.FindObject<DebugCamera>	("Default Camera");
+		mLight			= mScene.FindObject<Light>			("Default Light");
+		mStage			= mScene.FindObject<Object>			("Stage");
+		mInst			= mScene.FindObject<ModelInstance>	("Default Instance");
+		mSbHighlight	= mUI->FindWidget<UIHighlight>		("Status Highlight");
+		mSbLabel		= mUI->FindWidget<UILabel>			("Status Label");
 
 		// Model viewer deals with only one model
 		mModel = mCore->GetModel("Default Model");
@@ -185,7 +185,7 @@ uint ModelViewer::OnDeferredDraw (const Deferred::TechniqueList& techs, bool ins
 
 float ModelViewer::UpdateFPS()
 {
-	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
+	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
 	if (fps != 0) fps->SetText( String("%u", Time::GetFPS()) );
 	return 0.25f;
 }

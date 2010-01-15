@@ -37,6 +37,6 @@ public:
 	void Regenerate();
 
 	bool Generate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
-	bool UpdateTooltips (UIWidget* widget);
+	bool UpdateTooltips (UIWidget* widget, uint state, bool isSet);
 };
 };

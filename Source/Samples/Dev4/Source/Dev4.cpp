@@ -29,7 +29,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev4.txt")
 	{
-		mCam = FindObject<Camera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<Camera>("Default Camera");
 
 		if (mCam != 0)
 		{
@@ -49,9 +49,9 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
-	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
-	static UILabel* inf = FindWidget<UILabel>(mUI, "Info");
+	static UILabel* tri = mUI->FindWidget<UILabel>("Triangles");
+	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
+	static UILabel* inf = mUI->FindWidget<UILabel>("Info");
 
 	mScene.Cull(mCam);
 

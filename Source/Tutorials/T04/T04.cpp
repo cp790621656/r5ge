@@ -4,7 +4,8 @@
 //============================================================================================================
 // Tutorial 04: User Interface (Part 2)
 //------------------------------------------------------------------------------------------------------------
-// This tutorial shows how to do the same thing as the previous tutorial, but via the resource file.
+// This tutorial shows how to do the same thing as the previous tutorial, but by loading a resource file
+// containing the UI Layout information. The slider is also driven by a custom script rather than a callback.
 //------------------------------------------------------------------------------------------------------------
 // Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, UI
 //============================================================================================================
@@ -15,6 +16,57 @@
 using namespace R5;
 
 //============================================================================================================
+// UI Script that can be attached to a slider to update its label's text
+//------------------------------------------------------------------------------------------------------------
+// Instead of attaching a listener script to the slider that was forwarding the value change event
+// to our function delegate, we'll attach a custom script instead that will not only update the slider's
+// label, but will actually create it to begin with. Then all we have to do is attach it to our slider.
+//============================================================================================================
+
+class SliderCaption : public UIScript
+{
+	UISlider*	mSlider;
+	UILabel*	mLabel;
+
+public:
+
+	SliderCaption() : mSlider(0), mLabel(0) {}
+
+	// Declare this script type
+	R5_DECLARE_INHERITED_CLASS("SliderCaption", SliderCaption, UIScript, UIScript);
+
+	// Init function gets called when the script is first being initialized
+	virtual void Init()
+	{
+		// This script only works if it's attached to a slider
+		mSlider = R5_CAST(UISlider, mWidget);
+
+		if (mSlider != 0)
+		{
+			// Add a label to the slider and mark it as not serializable, so it's not saved out
+			mLabel = mWidget->AddWidget<UILabel>(mWidget->GetName() + " value");
+			mLabel->SetSerializable(false);
+			mLabel->SetReceivesEvents(false);
+			mLabel->SetAlignment(UILabel::Alignment::Center);
+		}
+		else
+		{
+			// This script was not attached to a slider -- destroy it
+			DestroySelf();
+		}
+	}
+
+	// Overwrite the callback function that gets triggered when the owner's value changes
+	virtual bool OnValueChange()
+	{
+		// Get the slider's value and set the child label's text
+		mLabel->SetText( String("Value: %.2f", mSlider->GetValue()) );
+		return true;
+	}
+};
+//============================================================================================================
+// Main class for our tutorial
+//============================================================================================================
 
 class TestApp
 {
@@ -24,7 +76,6 @@ class TestApp
 	UI*				mUI;
 	DebugCamera*	mCam;
 	Scene			mScene;
-	UILabel*		mLabel;
 
 public:
 
@@ -32,17 +83,19 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	bool OnSliderChange(UIWidget* widget);
 };
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mLabel(0)
+TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics);
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+
+	// Register our UI script so that it can be created via the UIWidget::AddScript<> template
+	UIScript::Register<SliderCaption>();
 }
 
 //============================================================================================================
@@ -61,19 +114,22 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	// R5::UI has the ability to bind callbacks to widgets even before they get created.
-	mUI->SetOnValueChange( "First Slider", bind(&TestApp::OnSliderChange, this) );
-
 	// The bulk of the config for this tutorial takes place inside "T04.txt" file. Previous tutorial was
 	// simply saved to a file, and this file is used by this tutorial. You can uncomment the ">>" line at the
 	// end of this function to enable persistent behavior (slider's value will be saved for next time).
+	// Note though that the label that was on top of the slider has been removed for this tutorial as it's
+	// now being added by the script we're attaching to the slider.
 
 	if ((*mCore << "Config/T04.txt") && (*mCore << "Config/Default UI Skin.txt"))
 	{
-		// Find the UI widget defined inside the "T04" resource file
-		mLabel = FindWidget<UILabel>(mUI, "Slider Value");
+		// Find the UISlider defined inside the "T04" resource file
+		UISlider* slider = mUI->FindWidget<UISlider>("First Slider");
 
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		// Add a script to the slider that we've created above. This will in turn create a label on top
+		// of our slider and will later trigger the script's OnValueChange function, updating tha label's value.
+		slider->AddScript<SliderCaption>();
+
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -95,17 +151,6 @@ void TestApp::OnDraw()
 	mGraphics->Clear();
 	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-}
-
-//============================================================================================================
-// The callback is identical to the one in the previous tutorial
-//============================================================================================================
-
-bool TestApp::OnSliderChange (UIWidget* widget)
-{
-	UISlider* sld = R5_CAST(UISlider, area);
-	if (sld != 0 && mLabel != 0) mLabel->SetText( String("Value: %.2f", sld->GetValue()) );
-	return true;
 }
 
 //============================================================================================================

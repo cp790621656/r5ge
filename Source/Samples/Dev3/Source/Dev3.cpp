@@ -40,7 +40,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mObjects(
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	// Register a new script type that can be created via AddScript<> template
-	RegisterScript<SpinScript>();
+	Script::Register<SpinScript>();
 	mCore->SetSleepDelay(0);
 }
 
@@ -62,21 +62,21 @@ void TestApp::Init()
 {
 	Object* obj[4];
 
-	obj[0] = AddObject<Object>(mScene, "Lights 0");
+	obj[0] = mScene.AddObject<Object>("Lights 0");
 	obj[0]->SetSerializable(false);
-	AddScript<SpinScript>(obj[0])->Set(0.0f, 0.01f, 1.0f, 0.93f);
+	obj[0]->AddScript<SpinScript>()->Set(0.0f, 0.01f, 1.0f, 0.93f);
 
-	obj[1] = AddObject<Object>(mScene, "Lights 1");
+	obj[1] = mScene.AddObject<Object>("Lights 1");
 	obj[1]->SetSerializable(false);
-	AddScript<SpinScript>(obj[1])->Set(0.01f, 0.0f, 1.0f, -0.68f);
+	obj[1]->AddScript<SpinScript>()->Set(0.01f, 0.0f, 1.0f, -0.68f);
 
-	obj[2] = AddObject<Object>(mScene, "Lights 2");
+	obj[2] = mScene.AddObject<Object>("Lights 2");
 	obj[2]->SetSerializable(false);
-	AddScript<SpinScript>(obj[2])->Set(0.01f, -0.01f, 1.0f, 0.47f);
+	obj[2]->AddScript<SpinScript>()->Set(0.01f, -0.01f, 1.0f, 0.47f);
 
-	obj[3] = AddObject<Object>(mScene, "Lights 3");
+	obj[3] = mScene.AddObject<Object>("Lights 3");
 	obj[3]->SetSerializable(false);
-	AddScript<SpinScript>(obj[3])->Set(-0.005f, 0.015f, 1.0f, -1.8f);
+	obj[3]->AddScript<SpinScript>()->Set(-0.005f, 0.015f, 1.0f, -1.8f);
 
 	const ITexture* glowTex = mGraphics->GetTexture("Billboards/light.jpg");
 	const ITexture* glareTex = mGraphics->GetTexture("Billboards/glare_rgb.jpg");
@@ -88,7 +88,7 @@ void TestApp::Init()
 
 	for (uint i = 0; i < 64; ++i)
 	{
-		PointLight* light = AddObject<PointLight>(obj[i%4], String("Light %u", i));
+		PointLight* light = obj[i%4]->AddObject<PointLight>(String("Light %u", i));
 
 		if (light != 0)
 		{
@@ -105,7 +105,7 @@ void TestApp::Init()
 			light->SetDiffuse(clr);
 			light->SetSpecular(clr);
 
-			Billboard* bb = AddObject<Billboard>(light, String("Glow %u", i));
+			Billboard* bb = light->AddObject<Billboard>(String("Glow %u", i));
 			bb->SetColor(clr);
 			bb->SetTexture(glowTex);
 			bb->SetTechnique(glow);
@@ -130,7 +130,7 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev3.txt")
 	{
-		mCam = FindObject<Camera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<Camera>("Default Camera");
 
 		if (mCam != 0)
 		{
@@ -177,11 +177,11 @@ void TestApp::OnDraw()
 
 float TestApp::UpdateStats()
 {
-	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
-	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
-	static UILabel* obj = FindWidget<UILabel>(mUI, "Objects");
-	static UILabel* db0 = FindWidget<UILabel>(mUI, "Debug 0");
-	static UILabel* db1 = FindWidget<UILabel>(mUI, "Debug 1");
+	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
+	static UILabel* tri = mUI->FindWidget<UILabel>("Triangles");
+	static UILabel* obj = mUI->FindWidget<UILabel>("Objects");
+	static UILabel* db0 = mUI->FindWidget<UILabel>("Debug 0");
+	static UILabel* db1 = mUI->FindWidget<UILabel>("Debug 1");
 
 	if (tri) tri->SetText( String("TRI: %u", mStats.mTriangles) );
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );

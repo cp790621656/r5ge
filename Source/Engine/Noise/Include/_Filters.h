@@ -60,5 +60,6 @@ namespace R5
 		FILTER(Round);
 		FILTER(Clamp);
 		FILTER(Mirror);
+		FILTER(Erode);
 	};
 };

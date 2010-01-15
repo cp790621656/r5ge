@@ -93,7 +93,14 @@ public:
 		return true;
 	}
 
-	// Finds a widget child of specified type
+	// Finds a child widget at the specified position
+	template <typename Type> Type* FindWidget (const Vector2i& pos)
+	{
+		UIWidget* obj = _FindWidget(pos);
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
+
+	// Finds a child widget of specified type
 	template <typename Type> Type* FindWidget (const String& name, bool recursive = true)
 	{
 		UIWidget* obj = _FindWidget(name, recursive);

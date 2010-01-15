@@ -85,7 +85,7 @@ void TestApp::Run()
 		noise.ApplyFilter("Fractal", "2 0.65");
 
 		// Now that we have our heightmap, we should create our terrain.
-		mTerrain = AddObject<Terrain>(mScene, "First Terrain");
+		mTerrain = mScene.AddObject<Terrain>("First Terrain");
 
 		// We want to partition our terrain into an 8 by 8 grid. This will create 64 subdivisions
 		// that the terrain will use together with frustum culling to automatically discard portions
@@ -158,10 +158,10 @@ void TestApp::Run()
 		// part of the configuration file that we've loaded at the top of this function, it's already
 		// in memory and all we have to do is find it using this handy template:
 
-		mLabel = FindWidget<UILabel>(mUI, "Status");
+		mLabel = mUI->FindWidget<UILabel>("Status");
 
 		// The rest of the Update function should be quite familiar to you.
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );

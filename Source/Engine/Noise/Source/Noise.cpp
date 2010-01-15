@@ -52,6 +52,7 @@ void _RegisterAll()
 		_Register("Round",		&Round);
 		_Register("Clamp",		&Clamp);
 		_Register("Mirror",		&Mirror);
+		_Register("Erode",		&Erode);
 	}
 }
 

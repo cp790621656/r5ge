@@ -172,8 +172,8 @@ UIScript* UIWidget::_AddScript (const String& type)
 	if (ptr == 0 && 0 != (ptr = UIScript::_Create(type)))
 	{
 		ptr->mWidget = this;
-		ptr->Init();
 		mScripts.Expand() = ptr;
+		ptr->Init();
 	}
 	return ptr;
 }

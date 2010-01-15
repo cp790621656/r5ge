@@ -67,7 +67,7 @@ Root
 					Bottom = 0.000000 16.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "Time: 8"
+					Text = "Time: 19"
 					Shadow = true
 					Alignment = "Center"
 					Receives Events = false
@@ -123,6 +123,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -181,6 +182,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -239,6 +241,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -297,6 +300,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -355,6 +359,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -413,6 +418,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -452,6 +458,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -491,6 +498,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -697,6 +705,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true
@@ -736,6 +745,7 @@ Root
 						"Round"
 						"Clamp"
 						"Mirror"
+						"Erode"
 					}
 
 					Receives Events = true

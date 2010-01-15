@@ -78,8 +78,8 @@ TestApp::TestApp() : mCam(0)
 	mUI			= new UI(mGraphics);
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
-	RegisterScript<SlightRotation>();
-	RegisterScript<SlowTwirl>();
+	Script::Register<SlightRotation>();
+	Script::Register<SlowTwirl>();
 
 	mCore->SetSleepDelay(0);
 }
@@ -100,7 +100,7 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/Dev8.txt")
 	{
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
@@ -119,7 +119,7 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 	mScene.DrawAllDeferred(1);
 
-	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
+	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
 	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );
 }
 

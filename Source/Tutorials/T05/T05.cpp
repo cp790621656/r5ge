@@ -60,13 +60,13 @@ void TestApp::Run()
 
 	// Add and position the camera -- future tutorials will be setting
 	// this up in the resource files, so I hope you understand what's going on!
-	mCam = AddObject<DebugCamera>(mScene, "Default Camera");
+	mCam = mScene.AddObject<DebugCamera>("Default Camera");
 	mCam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
 	mCam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
 	mCam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
 
 	// Let's attach a directional light source to the camera just so that we can see the scene.
-	DirectionalLight* light = AddObject<DirectionalLight>(mCam, "First Light");
+	DirectionalLight* light = mCam->AddObject<DirectionalLight>("First Light");
 
 	// Faint ambient color
 	light->SetAmbient( Color3f(0.15f, 0.15f, 0.15f) );
@@ -95,7 +95,7 @@ void TestApp::Run()
 	// In order to keep it simple we just add it to the scene as-is, and won't even bother changing
 	// its default orientation.
 
-	ModelInstance* instance = AddObject<ModelInstance>(mScene, "First Instance");
+	ModelInstance* instance = mScene.AddObject<ModelInstance>("First Instance");
 	instance->SetModel(model);
 
 	// And that's all there is to it! You can play additional animations by using the Model::PlayAnimation

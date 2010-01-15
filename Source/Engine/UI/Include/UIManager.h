@@ -90,6 +90,12 @@ public:
 		return mRoot.FindWidget<Type>(name, recursive);
 	}
 
+	// Convenience function: Finds a widget child of specified type
+	template <typename Type> Type* FindWidget (const Vector2i& pos)
+	{
+		return mRoot.FindWidget<Type>(pos);
+	}
+
 	// Convenience function: Adds a new widget of specified type
 	template <typename Type> Type* AddWidget (const String& name, bool unique = true)
 	{

@@ -88,7 +88,7 @@ void TestApp::Run()
 		method->SetTexture(0, mGraphics->GetTexture("Skybox"));
 
 		// The rest of this function hasn't changed
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );

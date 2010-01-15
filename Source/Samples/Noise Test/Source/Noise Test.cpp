@@ -36,7 +36,7 @@ TestApp::~TestApp()
 
 void TestApp::InitUI()
 {
-	UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
+	UIWindow* parent = mUI->FindWidget<UIWindow>("Options");
 	UISkin*	skin	 = mUI->GetSkin("Default");
 	IFont*	font	 = mUI->GetFont("Arial");
 
@@ -52,8 +52,8 @@ void TestApp::InitUI()
 			String listName  ("Filter ");
 			String inputName ("Input " );
 
-			UIList*  list  = AddWidget<UIList> (parent, listName  << i);
-			UIInput* input = AddWidget<UIInput>(parent, inputName << i);
+			UIList*  list  = parent->AddWidget<UIList> (listName  << i);
+			UIInput* input = parent->AddWidget<UIInput>(inputName << i);
 
 			if (list != 0)
 			{
@@ -72,7 +72,8 @@ void TestApp::InitUI()
 					list->AddEntry(filters[f]);
 
 				// Every selection means tooltips might need to change as well
-				list->SetOnStateChange( bind(&TestApp::UpdateTooltips, this) );
+				USEventListener* listener = list->AddScript<USEventListener>();
+				listener->SetOnStateChange( bind(&TestApp::UpdateTooltips, this) );
 			}
 
 			if (input != 0)
@@ -105,9 +106,9 @@ void TestApp::Run()
 
 		// Generate the noise and update the tooltips
 		Generate(0, Vector2i(), Key::MouseLeft, false);
-		UpdateTooltips(0);
+		UpdateTooltips(0, 0, false);
 
-		mCam = FindObject<Camera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<Camera>("Default Camera");
 
 		if (mCam != 0)
 		{
@@ -141,10 +142,9 @@ void TestApp::Regenerate()
 	// Get the noise texture
 	static ITexture*	noiseTex	= mGraphics->GetTexture("Noise");
 	static ITexture*	nmapTex		= mGraphics->GetTexture("Normal Map");
-
-	static UILabel*		seedLabel	= FindWidget<UILabel> (mUI, "Seed");
-	static UILabel*		timeLabel	= FindWidget<UILabel> (mUI, "Time");
-	static UIWindow*	window		= FindWidget<UIWindow>(mUI, "Texture Window");
+	static UILabel*		seedLabel	= mUI->FindWidget<UILabel> ("Seed");
+	static UILabel*		timeLabel	= mUI->FindWidget<UILabel> ("Time");
+	static UIWindow*	window		= mUI->FindWidget<UIWindow>("Texture Window");
 
 	if (mNoise.GetWidth() > 0 && mNoise.GetHeight() > 0)
 	{
@@ -215,10 +215,10 @@ bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 {
 	if (!isDown && key == Key::MouseLeft)
 	{
-		static UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
+		static UIWindow* parent = mUI->FindWidget<UIWindow>("Options");
 
 		ushort dimension (256);
-		UIButton* btn = R5_CAST(UIButton, area);
+		UIButton* btn = R5_CAST(UIButton, widget);
 		if (btn != 0) btn->GetText() >> dimension;
 
 		if (parent != 0)
@@ -232,8 +232,8 @@ bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 				String listName  ("Filter ");
 				String inputName ("Input " );
 
-				UIList*  list  = FindWidget<UIList> (parent, listName  << i, false);
-				UIInput* input = FindWidget<UIInput>(parent, inputName << i, false);
+				UIList*  list  = parent->FindWidget<UIList> (listName  << i, false);
+				UIInput* input = parent->FindWidget<UIInput>(inputName << i, false);
 
 				if (list != 0 && input != 0)
 				{
@@ -256,9 +256,9 @@ bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 // Triggered when filters change
 //============================================================================================================
 
-bool TestApp::UpdateTooltips (UIWidget* widget)
+bool TestApp::UpdateTooltips (UIWidget* widget, uint state, bool isSet)
 {
-	static UIWindow* parent = FindWidget<UIWindow>(mUI, "Options");
+	static UIWindow* parent = mUI->FindWidget<UIWindow>("Options");
 	ASSERT(parent != NULL, "Missing parameter window");
 
 	// Retrieve the current filters and fill the noise
@@ -267,8 +267,8 @@ bool TestApp::UpdateTooltips (UIWidget* widget)
 		String listName  ("Filter ");
 		String inputName ("Input " );
 
-		UIList*  list  = FindWidget<UIList> (parent, listName  << i, false);
-		UIInput* input = FindWidget<UIInput>(parent, inputName << i, false);
+		UIList*  list  = parent->FindWidget<UIList> (listName  << i, false);
+		UIInput* input = parent->FindWidget<UIInput>(inputName << i, false);
 
 		if (list != 0 && input != 0)
 		{

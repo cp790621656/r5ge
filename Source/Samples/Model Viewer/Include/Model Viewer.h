@@ -106,8 +106,8 @@ private: // Numerous callback functions triggered by the UI elements
 	bool OnFileDialogOK			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	bool OnConfirmDialogOK		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
-	bool ToggleBoth				(UIWidget* widget);
-	bool ToggleOff				(UIWidget* widget);
+	bool ToggleBoth				(UIWidget* widget, uint state, bool isSet);
+	bool ToggleOff				(UIWidget* widget, uint state, bool isSet);
 
 	bool OnFillModelMenu		(UIWidget* widget, bool hasFocus);
 	bool OnFillLimbMenu			(UIWidget* widget, bool hasFocus);
@@ -124,19 +124,19 @@ private: // Numerous callback functions triggered by the UI elements
 	bool OnTexMenuSelection		(UIWidget* widget);
 	bool OnAnimMenuSelection	(UIWidget* widget);
 
-	bool OnDrawMode				(UIWidget* widget);
-	bool OnBackground			(UIWidget* widget);
-	bool OnBloomToggle			(UIWidget* widget);
+	bool OnDrawMode				(UIWidget* widget, uint state, bool isSet);
+	bool OnBackground			(UIWidget* widget, uint state, bool isSet);
+	bool OnBloomToggle			(UIWidget* widget, uint state, bool isSet);
 	bool OnBloomChange			(UIWidget* widget);
 
 	bool OnModelBake			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
-	bool OnModelChange			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateModelData();	return true; }
-	bool OnModelToggle			(UIWidget* widget)					{ _UpdateModelData();					return true; }
-	bool OnModelSpin			(UIWidget* widget);
-	bool OnModelBounds			(UIWidget* widget);
+	bool OnModelChange			(UIWidget* widget, bool hasFocus) { if (!hasFocus) _UpdateModelData(); return true; }
+	bool OnModelToggle			(UIWidget* widget, uint state, bool isSet) { _UpdateModelData(); return true; }
+	bool OnModelSpin			(UIWidget* widget, uint state, bool isSet);
+	bool OnModelBounds			(UIWidget* widget, uint state, bool isSet);
 
-	bool OnLimbSelect			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateLimbData();		return true; }
-	bool OnLimbChange			(UIWidget* widget)					{ _UpdateLimbData();					return true; }
+	bool OnLimbSelect			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateLimbData(); return true; }
+	bool OnLimbChange			(UIWidget* widget)					{ _UpdateLimbData(); return true; }
 
 	bool OnMatNameSelect		(UIWidget* widget, bool hasFocus);
 	bool OnMatNameValue			(UIWidget* widget);
@@ -159,7 +159,7 @@ private: // Numerous callback functions triggered by the UI elements
 	bool OnAnimNameSelect		(UIWidget* widget, bool hasFocus);
 	bool OnAnimNameValue		(UIWidget* widget);
 	bool OnAnimProperties		(UIWidget* widget, bool hasFocus);
-	bool OnAnimLoop				(UIWidget* widget);
+	bool OnAnimLoop				(UIWidget* widget, uint state, bool isSet);
 	bool OnAnimPlay				(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 	// List selection callbacks -- they fill their appropriate lists with all the relevant entries

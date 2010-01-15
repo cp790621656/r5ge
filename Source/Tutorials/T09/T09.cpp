@@ -70,7 +70,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T09.txt")
 	{
 		// Find our terrain -- it's now loaded from the resource file
-		Terrain* terrain = FindObject<Terrain>(mScene, "First Terrain");
+		Terrain* terrain = mScene.FindObject<Terrain>("First Terrain");
 
 		if (terrain != 0)
 		{
@@ -86,6 +86,7 @@ void TestApp::Run()
 			noise.SetSize(2048, 2048);
 			noise.SetSeamless(false);
 			noise.ApplyFilter("Fractal");
+			//noise.ApplyFilter("Erode");
 
 			// Our desired mesh size remains at 32x32
 			Terrain::Heightmap hm (noise.GetBuffer(), noise.GetWidth(), noise.GetHeight());
@@ -139,7 +140,7 @@ void TestApp::Run()
 		}
 
 		// The rest of the Update function remains unchanged
-		mCam = FindObject<DebugCamera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
 		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );

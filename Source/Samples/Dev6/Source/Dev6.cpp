@@ -31,7 +31,7 @@ void TestApp::Run()
 
     if (*mCore << "Config/Dev6.txt")
 	{
-		mCam = FindObject<Camera>(mScene, "Default Camera");
+		mCam = mScene.FindObject<Camera>("Default Camera");
 
 		if (mCam != 0)
 		{
@@ -39,7 +39,7 @@ void TestApp::Run()
 			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
 			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 
-			for (uint i = 0; i < 7; ++i) mDebug[i] = FindWidget<UILabel>(mUI, String("Debug %u", i));
+			for (uint i = 0; i < 7; ++i) mDebug[i] = mUI->FindWidget<UILabel>(String("Debug %u", i));
 
 			Model* model0 = mCore->GetModel("First Model");
 			Model* model1 = mCore->GetModel("Second Model");
@@ -51,7 +51,7 @@ void TestApp::Run()
 			{
 				for (int x = -10; x < 11; ++x)
 				{
-					ModelInstance* inst = AddObject<ModelInstance>(mScene, String("Instance %dx%d", x, y));
+					ModelInstance* inst = mScene.AddObject<ModelInstance>(String("Instance %dx%d", x, y));
 					inst->SetModel( (((x + y) & 1) == 0) ? model0 : model1 );
 					inst->SetRelativePosition( Vector3f(2.0f * x, 2.0f * y, 0.0f) );
 					inst->SetRelativeRotation( Vector3f(0.0f, -1.0f, 0.0f) );
@@ -72,8 +72,8 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static UILabel* fps = FindWidget<UILabel>(mUI, "FPS");
-	static UILabel* tri = FindWidget<UILabel>(mUI, "Triangles");
+	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
+	static UILabel* tri = mUI->FindWidget<UILabel>("Triangles");
 
 	mScene.Cull(mCam);
 
@@ -130,13 +130,13 @@ void TestApp::OnDraw()
 // Toggles the current technique from GPU to CPU and vice versa
 //============================================================================================================
 
-bool TestApp::OnTechnique (UIWidget* widget)
+bool TestApp::OnTechnique (UIWidget* widget, uint state, bool isSet)
 {
-	UICheckbox* chk = R5_CAST(UICheckbox, area);
+	UICheckbox* chk = R5_CAST(UICheckbox, widget);
 
-	if (chk != 0)
+	if (chk != 0 && (state & UICheckbox::State::Checked) != 0)
 	{
-		if ((chk->GetState() & UICheckbox::State::Checked) != 0)
+		if (isSet)
 		{
 			mTech = mGraphics->GetTechnique("GPU");
 			chk->SetText(" Skinning on [55FF55]GPU");
