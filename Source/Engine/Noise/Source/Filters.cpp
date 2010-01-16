@@ -858,72 +858,98 @@ FILTER(Mirror)
 // Helper function used below
 //============================================================================================================
 
-inline void ChooseMin (float* buffer, float& height, int& current, int target)
+void ErodePoint (float* buffer, float* water, int x, int y, int width, int height, bool seamless)
 {
-	float f = buffer[target];
+	int yw = y * width;
+	int index = yw + x;
 
-	if (f < height)
+	if (water[index] > 0.0f)
 	{
-		height = f;
-		current = target;
-	}
-}
+		// 1 2 3
+		// 4 0 5
+		// 6 7 8
 
-//============================================================================================================
-// Helper function used below
-//============================================================================================================
+		int indices[9], xm, xp, ym, yp;
+		indices[0] = index;
 
-void ErodePoint (float* buffer, int* water, int x, int y, int width, int height, bool seamless)
-{
-	int y0w, y1w = y * width, y2w, x0, x2;
-	int index = y1w + x;
-	int& precip (water[index]);
-
-	if (precip != 0)
-	{
 		if (seamless)
 		{
-			x0  = ::Wrap(x - 1, width);
-			x2  = ::Wrap(x + 1, width);
-			y0w = ::Wrap(y - 1, height) * width;
-			y2w = ::Wrap(y + 1, height) * width;
+			xm = ::Wrap(x - 1, width);
+			xp = ::Wrap(x + 1, width);
+			ym = ::Wrap(y - 1, height) * width;
+			yp = ::Wrap(y + 1, height) * width;
 		}
 		else
 		{
-			x0  = ::Clamp(x - 1, width);
-			x2  = ::Clamp(x + 1, width);
-			y0w = ::Clamp(y - 1, height) * width;
-			y2w = ::Clamp(y + 1, height) * width;
+			xm = ::Clamp(x - 1, width);
+			xp = ::Clamp(x + 1, width);
+			ym = ::Clamp(y - 1, height) * width;
+			yp = ::Clamp(y + 1, height) * width;
 		}
 
-		float origin = buffer[index];
-		float lowest = origin;
-		int dest = index;
+		indices[1] = yp + xm;
+		indices[2] = yp + x;
+		indices[3] = yp + xp;
+		indices[4] = yw + xm;
+		indices[5] = yw + xp;
+		indices[6] = ym + xm;
+		indices[7] = ym + x;
+		indices[8] = ym + xp;
 
-		// Choose the lowest nearby point
-		ChooseMin(buffer, lowest, dest, y0w + x0);
-		ChooseMin(buffer, lowest, dest, y1w + x0);
-		ChooseMin(buffer, lowest, dest, y2w + x0);
-		ChooseMin(buffer, lowest, dest, y0w + x2);
-		ChooseMin(buffer, lowest, dest, y1w + x2);
-		ChooseMin(buffer, lowest, dest, y2w + x2);
-		ChooseMin(buffer, lowest, dest, y0w + x);
-		ChooseMin(buffer, lowest, dest, y2w + x);
+		// Calculate the total height difference
+		float total = 0.0f, currentGround = buffer[index], currentWater = water[index];
+		float current = currentGround + currentWater;
+		float diff[9];
+		diff[0] = 0.0f;
 
-		// If the water can't move anywhere, don't do anything else
-		if (index != dest)
+		for (uint i = 1; i < 9; ++i)
 		{
-			// Move one unit of water from source to destination
-			--precip;
-			++water[dest];
+			int pixel = indices[i];
 
-			// Height difference
-			lowest -= origin;
+			// Combined height of the current pixel
+			diff[i] = current - (buffer[pixel] + water[pixel]);
 
-			// Move a part of the sediment to the destination
-			lowest *= 0.25f;
-			buffer[index] += lowest;
-			buffer[dest]  -= lowest;
+			// If the pixel is below the current, count it
+			if (diff[i] > 0.0f) total += diff[i];
+		}
+
+		// If we are above some pixel
+		if (total > 0.0f)
+		{
+			// Only half the total amount can be moved: this will put all pixels at equilibrium.
+			float flow = total * 0.5f;
+
+			// No more than the current amount of water can be moved
+			if (flow > currentWater) flow = currentWater;
+
+			// Run through all surrounding pixels again
+			for (int i = 1; i < 9; ++i)
+			{
+				int pixel = indices[i];
+
+				if (diff[i] > 0.0f)
+				{
+					// Percentage of sediment moved to this pixel
+					float factor = diff[i] / total;
+
+					// Difference in ground should determine whether sediment actually moves
+					float groundDiff = currentGround - buffer[pixel];
+
+					if (groundDiff > 0.0f)
+					{
+						// The amount of moved sediment depends on the ground height difference.
+						// The lower the pixel we're moving to, the easier it is to move sediments.
+						groundDiff *= factor;
+						buffer[index] -= groundDiff;
+						buffer[pixel] += groundDiff * 0.5f;
+					}
+
+					// Move the water
+					float factoredFlow = flow * factor;
+					water[index] -= factoredFlow;
+					water[pixel] += factoredFlow;
+				}
+			}
 		}
 	}
 }
@@ -937,44 +963,43 @@ FILTER(Erode)
 	uint allocated = (uint)size.x * size.y;
 
 	// Number of raindrops, width and height of the noise
-	uint rain = (params.GetCount() > 0) ? (uint)params[0] : 10;
+	float precipitation = (params.GetCount() > 0) ? params[0] : 0.001f;
+	//uint iterations = (params.GetCount() > 0) ? Float::RoundToUInt(params[0]) : 1;
+
+	if (precipitation < 0.001f) precipitation = 0.001f;
+	//if (iterations < 1) iterations = 1;
 
 	int width  = size.x;
 	int height = size.y;
+	float step = precipitation / 4.0f;
 
-	int* water = new int[allocated];
-	memset(water, 0, sizeof(int) * allocated);
+	memset(aux, 0, sizeof(float) * allocated);
 
-	// Add some rainfall
-	for (uint i = 0; i < allocated; ++i) water[i] += rain;
-
-	// Keep going until all water evaporates
-	bool keepGoing (true);
-
-	while (keepGoing)
+	for (uint b = 0; b < 10; ++b)
 	{
-		keepGoing = false;
+		// Add some initial precipitation
+		for (uint i = 0; i < allocated; ++i) aux[i] += precipitation;
 
 		// Run through the map, eroding each point
 		for (int y = 0; y < height; ++y)
 		{
 			for (int x = 0; x < width; ++x)
 			{
-				ErodePoint(data, water, x, y, width, height, false);
+				ErodePoint(data, aux, x, y, width, height, false);
 			}
 		}
 
 		// Evaporate one layer of water
 		for (uint i = 0; i < allocated; ++i)
 		{
-			if (water[i] > 0)
+			aux[i] -= step;
+
+			if (aux[i] > 0.0f)
 			{
-				--water[i];
-				keepGoing = true;
+				aux[i] = 0.0f;
 			}
 		}
 	}
-	delete [] water;
 }
 
 } // namespace Filter
