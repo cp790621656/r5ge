@@ -860,8 +860,9 @@ FILTER(Mirror)
 
 FILTER(Erode)
 {
-	int passes = (params.GetCount() > 0) ? Float::RoundToUInt(params[0]) : 10;
-	float strength = (params.GetCount() > 1) ? params[1] : 0.5f;
+	int		passes		= (params.GetCount() > 0) ? Float::RoundToUInt(params[0]) : 10;
+	float	strength	= (params.GetCount() > 1) ? params[1] : 0.5f;
+	float	deposit		= (params.GetCount() > 2) ? params[2] : 0.0f;
 
 	Vector2i neighbor[8];
 	neighbor[0] = Vector2i( 0,  1);
@@ -929,8 +930,12 @@ FILTER(Erode)
 				{
 					// Move some percentage from one pixel to another
 					max *= strength;
+
+					// Remove the full deposit
 					current -= max;
-					data[target] += max;
+
+					// Deposit the adjusted amount
+					data[target] += max * deposit;
 				}
 			}
 		}

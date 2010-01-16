@@ -76,7 +76,7 @@ void TestApp::Run()
 		{
 			// Remember the offset and scale values so we can pass them to the shader later
 			mOffset.Set(-10.0f, -10.0f, -3.0f);
-			mScale.Set(20.0f, 20.0f, 4.0f);
+			mScale.Set(20.0f, 20.0f, 6.0f);
 
 			// We will be generating a much higher quality terrain this time. Before we used 256x256, but
 			// this time our heightmap will be 2048x2048 -- much more detailed! In addition we will be
@@ -86,9 +86,6 @@ void TestApp::Run()
 			noise.SetSize(2048, 2048);
 			noise.SetSeamless(false);
 			noise.ApplyFilter("Fractal");
-			//noise.ApplyFilter("Blur", 10);
-			//noise.ApplyFilter("Erode");
-			//noise.ApplyFilter("Normalize");
 
 			// Our desired mesh size remains at 32x32
 			Terrain::Heightmap hm (noise.GetBuffer(), noise.GetWidth(), noise.GetHeight());
