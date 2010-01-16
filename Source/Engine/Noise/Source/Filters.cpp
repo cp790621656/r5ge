@@ -855,159 +855,84 @@ FILTER(Mirror)
 }
 
 //============================================================================================================
-// Helper function used below
-//============================================================================================================
-
-void ErodePoint (float* buffer, float* water, int x, int y, int width, int height, bool seamless)
-{
-	int yw = y * width;
-	int index = yw + x;
-
-	if (water[index] > 0.0f)
-	{
-		// 1 2 3
-		// 4 0 5
-		// 6 7 8
-
-		int indices[9], xm, xp, ym, yp;
-		indices[0] = index;
-
-		if (seamless)
-		{
-			xm = ::Wrap(x - 1, width);
-			xp = ::Wrap(x + 1, width);
-			ym = ::Wrap(y - 1, height) * width;
-			yp = ::Wrap(y + 1, height) * width;
-		}
-		else
-		{
-			xm = ::Clamp(x - 1, width);
-			xp = ::Clamp(x + 1, width);
-			ym = ::Clamp(y - 1, height) * width;
-			yp = ::Clamp(y + 1, height) * width;
-		}
-
-		indices[1] = yp + xm;
-		indices[2] = yp + x;
-		indices[3] = yp + xp;
-		indices[4] = yw + xm;
-		indices[5] = yw + xp;
-		indices[6] = ym + xm;
-		indices[7] = ym + x;
-		indices[8] = ym + xp;
-
-		// Calculate the total height difference
-		float total = 0.0f, currentGround = buffer[index], currentWater = water[index];
-		float current = currentGround + currentWater;
-		float diff[9];
-		diff[0] = 0.0f;
-
-		for (uint i = 1; i < 9; ++i)
-		{
-			int pixel = indices[i];
-
-			// Combined height of the current pixel
-			diff[i] = current - (buffer[pixel] + water[pixel]);
-
-			// If the pixel is below the current, count it
-			if (diff[i] > 0.0f) total += diff[i];
-		}
-
-		// If we are above some pixel
-		if (total > 0.0f)
-		{
-			// Only half the total amount can be moved: this will put all pixels at equilibrium.
-			float flow = total * 0.5f;
-
-			// No more than the current amount of water can be moved
-			if (flow > currentWater) flow = currentWater;
-
-			// Run through all surrounding pixels again
-			for (int i = 1; i < 9; ++i)
-			{
-				int pixel = indices[i];
-
-				if (diff[i] > 0.0f)
-				{
-					// Percentage of sediment moved to this pixel
-					float factor = diff[i] / total;
-
-					// Move the water
-					float factoredFlow = flow * factor;
-
-					// Difference in ground should determine whether sediment actually moves
-					float groundDiff = currentGround - buffer[pixel];
-
-					// Move the water
-					water[index] -= factoredFlow;
-					water[pixel] += factoredFlow;
-
-					if (groundDiff > 0.0f)
-					{
-						// Move the sediment
-						factoredFlow *= 0.1f;
-						buffer[index] -= factoredFlow;
-						buffer[pixel] += factoredFlow;
-					}
-				}
-			}
-		}
-	}
-}
-
-//============================================================================================================
-// Hydraulic erosion of the terrain
+// Thermal erosion filter
 //============================================================================================================
 
 FILTER(Erode)
 {
-	uint allocated = (uint)size.x * size.y;
+	int passes = (params.GetCount() > 0) ? Float::RoundToUInt(params[0]) : 10;
+	float strength = (params.GetCount() > 1) ? params[1] : 0.5f;
 
-	// Number of raindrops, width and height of the noise
-	float precipitation = (params.GetCount() > 0) ? params[0] : 0.001f;
-	//uint iterations = (params.GetCount() > 0) ? Float::RoundToUInt(params[0]) : 1;
-
-	//if (precipitation < 0.001f) precipitation = 0.001f;
-	//if (iterations < 1) iterations = 1;
+	Vector2i neighbor[8];
+	neighbor[0] = Vector2i( 0,  1);
+	neighbor[1] = Vector2i(-1,  1);	// Top-left
+	neighbor[2] = Vector2i(-1,  0);
+	neighbor[3] = Vector2i( 1,  1);	// Top-right
+	neighbor[4] = Vector2i( 1,  0);
+	neighbor[5] = Vector2i(-1, -1);	// Bottom-left
+	neighbor[6] = Vector2i( 0, -1);
+	neighbor[7] = Vector2i( 1, -1);	// Bottom-right
 
 	int width  = size.x;
 	int height = size.y;
-	float step = precipitation / 40.0f;
 
-	memset(aux, 0, sizeof(float) * allocated);
+	// Only 50% should be transferred as this will even out the 2 pixels.
+	// As such, we can't transfer more than 50%.
+	strength = Float::Min(strength * 0.5f, 0.5f);
 
-	//bool keepGoing = true;
+	int yw, index, target, idx;
+	float max, diff;
 
-	// while (keepGoing)
-	for (uint b = 0; b < 10; ++b)
+	for (int i = 0; i < passes; ++i)
 	{
-		//keepGoing = false;
-
-		// Add some initial precipitation
-		for (uint i = 0; i < allocated; ++i) aux[i] += precipitation;
-
-		// Run through the map, eroding each point
 		for (int y = 0; y < height; ++y)
 		{
+			yw = y * width;
+
 			for (int x = 0; x < width; ++x)
 			{
-				ErodePoint(data, aux, x, y, width, height, false);
-			}
-		}
+				index = yw + x;
+				target = index;
+				max = 0.0f;
 
-		// Evaporate one layer of water
-		for (uint i = 0; i < allocated; ++i)
-		{
-			aux[i] -= step;
+				float& current = data[index];
 
-			if (aux[i] < 0.0f)
-			{
-				aux[i] = 0.0f;
+				for (int n = 0; n < 8; ++n)
+				{
+					if (seamless)
+					{
+						idx =	::Wrap(y + neighbor[n].y, height) * width +
+								::Wrap(x + neighbor[n].x, width);
+					}
+					else
+					{
+						idx =	::Clamp(y + neighbor[n].y, height) * width +
+								::Clamp(x + neighbor[n].x, width);
+					}
+
+					// Difference in height between the two pixels
+					diff = current - data[idx];
+
+					// Diagonal pixels are farther away, so take that into consideration
+					if ((n & 1) != 0) diff *= 0.7071f;
+
+					// Choose the lowest
+					if (diff > max)
+					{
+						max = diff;
+						target = idx;
+					}
+				}
+
+				// If we found a lower pixel to move to
+				if (target != index)
+				{
+					// Move some percentage from one pixel to another
+					max *= strength;
+					current -= max;
+					data[target] += max;
+				}
 			}
-			//else
-			//{
-			//	keepGoing = true;
-			//}
 		}
 	}
 }

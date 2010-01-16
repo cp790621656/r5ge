@@ -35,6 +35,9 @@
 // - Mirror		-- Mirrors all values that exceed the specified range (bounce effect)
 //				   Parameter 0: Lowest boundary
 //				   Parameter 1: Highest boundary
+// - Erode		-- Thermal erosion filter
+//				   Parameter 0: Number of iterations (default: 10)
+//				   Parameter 1: Strength of erosion (default: 0.5)
 //============================================================================================================
 
 #define FILTER(name)	void name(	Random&						r,			\
