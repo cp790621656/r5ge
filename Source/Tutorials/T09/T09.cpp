@@ -87,8 +87,8 @@ void TestApp::Run()
 			noise.SetSeamless(false);
 			noise.ApplyFilter("Fractal");
 			//noise.ApplyFilter("Blur", 10);
-			noise.ApplyFilter("Erode");
-			noise.ApplyFilter("Normalize");
+			//noise.ApplyFilter("Erode");
+			//noise.ApplyFilter("Normalize");
 
 			// Our desired mesh size remains at 32x32
 			Terrain::Heightmap hm (noise.GetBuffer(), noise.GetWidth(), noise.GetHeight());

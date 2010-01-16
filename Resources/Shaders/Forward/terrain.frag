@@ -66,7 +66,7 @@ void main()
     mixer = mix(mixer, grassRock, grassToMoss);
 
     // Add a moving shadow to the terrain
-    color       *= mixer;
+    color       *= mixer; //0.75;
     color.rgb    = mix(color.rgb, gl_Fog.color.rgb, _fogFactor);
     color.a      = min(color.a, 1.0);
     gl_FragColor = color;

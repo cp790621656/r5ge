@@ -932,22 +932,23 @@ void ErodePoint (float* buffer, float* water, int x, int y, int width, int heigh
 					// Percentage of sediment moved to this pixel
 					float factor = diff[i] / total;
 
+					// Move the water
+					float factoredFlow = flow * factor;
+
 					// Difference in ground should determine whether sediment actually moves
 					float groundDiff = currentGround - buffer[pixel];
 
-					if (groundDiff > 0.0f)
-					{
-						// The amount of moved sediment depends on the ground height difference.
-						// The lower the pixel we're moving to, the easier it is to move sediments.
-						groundDiff *= factor;
-						buffer[index] -= groundDiff;
-						buffer[pixel] += groundDiff * 0.5f;
-					}
-
 					// Move the water
-					float factoredFlow = flow * factor;
 					water[index] -= factoredFlow;
 					water[pixel] += factoredFlow;
+
+					if (groundDiff > 0.0f)
+					{
+						// Move the sediment
+						factoredFlow *= 0.1f;
+						buffer[index] -= factoredFlow;
+						buffer[pixel] += factoredFlow;
+					}
 				}
 			}
 		}
@@ -966,17 +967,22 @@ FILTER(Erode)
 	float precipitation = (params.GetCount() > 0) ? params[0] : 0.001f;
 	//uint iterations = (params.GetCount() > 0) ? Float::RoundToUInt(params[0]) : 1;
 
-	if (precipitation < 0.001f) precipitation = 0.001f;
+	//if (precipitation < 0.001f) precipitation = 0.001f;
 	//if (iterations < 1) iterations = 1;
 
 	int width  = size.x;
 	int height = size.y;
-	float step = precipitation / 4.0f;
+	float step = precipitation / 40.0f;
 
 	memset(aux, 0, sizeof(float) * allocated);
 
+	//bool keepGoing = true;
+
+	// while (keepGoing)
 	for (uint b = 0; b < 10; ++b)
 	{
+		//keepGoing = false;
+
 		// Add some initial precipitation
 		for (uint i = 0; i < allocated; ++i) aux[i] += precipitation;
 
@@ -994,10 +1000,14 @@ FILTER(Erode)
 		{
 			aux[i] -= step;
 
-			if (aux[i] > 0.0f)
+			if (aux[i] < 0.0f)
 			{
 				aux[i] = 0.0f;
 			}
+			//else
+			//{
+			//	keepGoing = true;
+			//}
 		}
 	}
 }
