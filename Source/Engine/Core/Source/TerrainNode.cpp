@@ -38,6 +38,11 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 
 			float fx, fy, wx, wy, wz;
 
+			// If the sampling buffer is not as finely detailed as our mesh, use bicubic filtering
+			uint myWidth  = Float::RoundToUInt(mSize.x * bufferWidth);
+			uint myHeight = Float::RoundToUInt(mSize.y * bufferHeight);
+			bool upsample  = (meshWidth > myWidth && meshHeight > myHeight);
+
 			// Fill the buffer with vertices
 			for (unsigned int y = 0; y < meshHeight; ++y)
 			{
@@ -49,8 +54,10 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 					fx = mOffset.x + iterToRelative.x * x;
 					wx = terrainOffset.x + fx * terrainScale.x;
 
-					// Sample the buffer using bilinear filtering
-					wz = Interpolation::BicubicClamp(buffer, bufferWidth, bufferHeight, fx, fy);
+					// Sample the buffer using hermite filtering if upsampling
+					wz = upsample ?
+						Interpolation::HermiteClamp(buffer, bufferWidth, bufferHeight, fx, fy) :
+						Interpolation::BilinearClamp(buffer, bufferWidth, bufferHeight, fx, fy);
 
 					// Set the vertex
 					v->Set(wx, wy, wz * terrainScale.z);

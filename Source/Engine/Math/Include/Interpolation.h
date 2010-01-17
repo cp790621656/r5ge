@@ -51,32 +51,95 @@ Real Linear (const Real& start, const Real& end, float factor)
 //============================================================================================================
 
 template <typename Real>
-Real Cosine (const Real &from, const Real &to, float factor)
+Real Cosine (const Real& current, const Real& next, float factor)
 {
 	factor = (1.0f - Float::Cos(factor * PI)) * 0.5f;
-	return (from * (1.0f - factor) + to * factor);
+	return (current * (1.0f - factor) + next * factor);
 }
 
 //============================================================================================================
-// Simplified cosine interpolation for when 'from' is 0, and 'to' is 1
+// Simplified cosine interpolation for when 'current' is 0, and 'to' is 1
 //============================================================================================================
 
 inline float Cosine (float val) { return (1.0f - Float::Cos(val * PI)) * 0.5f; }
 
 //============================================================================================================
 // Cubic interpolation
+// 13 operations for floats
 //============================================================================================================
 
 template <typename Real>
-Real Cubic (const Real &past, const Real &from, const Real &to, const Real &future, float factor)
+Real Cubic (const Real& previous, const Real& current, const Real& next, const Real& future, float factor)
 {
-	Real v1((future - to) - (past - from));
-	Real v2((past - from) - v1);
-	Real v3(to - past);
+	float f2(factor * factor);
 
-	return	v1 * (factor * factor * factor) +
-			v2 * (factor * factor) +
-			v3 *  factor + from;
+	Real v0 (future - next - previous + current);
+	Real v1 (previous - current - v0);
+	Real v2 (next - previous);
+
+	return	v0 * (f2 * factor) +
+			v1 * f2 +
+			v2 * factor +
+			current;
+}
+
+//============================================================================================================
+// Simplified Hermite interpolation
+// 22 operations for floats
+//============================================================================================================
+
+template <typename Real>
+Real Hermite (const Real& previous, const Real& current, const Real& next, const Real& future, float factor)
+{
+	float f2 = factor * factor;
+	float f3 = f2 * factor;
+
+	Real tan0 (next - previous);
+	Real tan1 (future - current);
+
+	float f32 = f3 * 2.0f;
+	float f23 = f2 * 3.0f;
+
+	float a0  = f32 - f23 + 1.0f;
+	float a1  = f23 - f32;
+	float a2  = (f3 - f2 * 2.0f + factor) * 0.5f;
+	float a3  = (f3 - f2) * 0.5f;
+
+	return current * a0 + next * a1 + tan0 * a2 + tan1 * a3;
+}
+
+//============================================================================================================
+// Full Hermite interpolation
+//============================================================================================================
+
+template <typename Real>
+Real Hermite (const Real& previous, const Real& current, const Real& next, const Real& future,
+   float factor, float tension, float bias)
+{
+	float f2 = factor * factor;
+	float f3 = f2 * factor;
+
+	Real tan0
+	(
+		(current - previous) * ((1.0f + bias) * (1.0f - tension)) +
+		(next - current)	 * ((1.0f - bias) * (1.0f - tension))
+	);
+	
+	Real tan1
+	(
+		(next - current) * ((1.0f + bias) * (1.0f - tension)) +
+		(future - next)  * ((1.0f - bias) * (1.0f - tension))
+	);
+
+	float f32 = f3 * 2.0f;
+	float f23 = f2 * 3.0f;
+
+	float a0  = f32 - f23 + 1.0f;
+	float a1  = f23 - f32;
+	float a2  = (f3 - f2 * 2.0f + factor) * 0.5f;
+	float a3  = (f3 - f2) * 0.5f;
+
+	return current * a0 + next * a1 + tan0 * a2 + tan1 * a3;
 }
 
 //============================================================================================================
@@ -120,10 +183,10 @@ float Hermite (float tan0,  float tan1, float factor, float duration);
 // Uniform keyframe Catmull-Rom spline interpolation
 //============================================================================================================
 
-Vector3f CatmullRom (const Vector3f &past, const Vector3f &start, const Vector3f &end, const Vector3f& future, float factor);
+Vector3f CatmullRom (const Vector3f &previous, const Vector3f &start, const Vector3f &end, const Vector3f& future, float factor);
 
 //============================================================================================================
-// Uniform keyframe spline interpolation that's missing a past point
+// Uniform keyframe spline interpolation that's missing a previous point
 //============================================================================================================
 
 Vector3f CatmullRomStart (const Vector3f &start, const Vector3f &end, const Vector3f& future, float factor);
@@ -132,7 +195,7 @@ Vector3f CatmullRomStart (const Vector3f &start, const Vector3f &end, const Vect
 // Uniform keyframe spline interpolation without the future point
 //============================================================================================================
 
-Vector3f CatmullRomEnd (const Vector3f &past, const Vector3f &start, const Vector3f &end, float factor);
+Vector3f CatmullRomEnd (const Vector3f &previous, const Vector3f &start, const Vector3f &end, float factor);
 
 //============================================================================================================
 // Returns a point along a 1 control point bezier curve
@@ -150,9 +213,9 @@ Vector3f Bezier (const Vector3f& vStart, const Vector3f& vControl1, const Vector
 // Linear interpolation for quaternions -- in most cases use SLERP instead
 //============================================================================================================
 
-inline Quaternion Lerp (const Quaternion& from, const Quaternion& to, float factor)
+inline Quaternion Lerp (const Quaternion& current, const Quaternion& to, float factor)
 {
-	Quaternion q ( from + (to - from) * factor );
+	Quaternion q ( current + (to - current) * factor );
 	q.Normalize();
 	return q;
 }
@@ -167,13 +230,13 @@ Quaternion Slerp (const Quaternion& q0, const Quaternion& q1, float factor);
 // Finds the control quaternion for the specified quaternion to be used in SQUAD
 //============================================================================================================
 
-Quaternion GetSquadControlRotation (const Quaternion& past, const Quaternion& current, const Quaternion& future);
+Quaternion GetSquadControlRotation (const Quaternion& previous, const Quaternion& current, const Quaternion& future);
 
 //============================================================================================================
 // Spherical Cubic interpolation -- ctrlFrom and ctrlTo are control quaternions
 //============================================================================================================
 
-Quaternion Squad (const Quaternion &from, const Quaternion &to, const Quaternion &ctrlFrom, const Quaternion &ctrlTo, float factor);
+Quaternion Squad (const Quaternion &current, const Quaternion &to, const Quaternion &ctrlFrom, const Quaternion &ctrlTo, float factor);
 
 //============================================================================================================
 // Bilinear texture filtering with tiled behavior
@@ -307,5 +370,77 @@ Real BicubicClamp (const Real* buffer, uint width, uint height, float x, float y
 	Real v3 = Interpolation::Cubic(buffer[x0 + y3w], buffer[x1 + y3w], buffer[x2 + y3w], buffer[x3 + y3w], x);
 
 	return Interpolation::Cubic(v0, v1, v2, v3, y);
+}
+
+//============================================================================================================
+// Hermite texture filtering with tiled behavior
+//============================================================================================================
+
+template <typename Real>
+Real HermiteTile (const Real* buffer, uint width, uint height, float x, float y)
+{
+	x *= (width  - 1);
+	y *= (height - 1);
+
+	float fx = Float::Floor(x);
+	float fy = Float::Floor(y);
+
+	x -= fx;
+	y -= fy;
+
+	int ix = Float::RoundToInt(fx);
+	int iy = Float::RoundToInt(fy);
+
+	uint x0  = Wrap( ix - 1, width  );
+	uint x1  = Wrap( ix,	 width  );
+	uint x2  = Wrap( ix + 1, width  );
+	uint x3  = Wrap( ix + 2, width  );
+	uint y0w = Wrap( iy - 1, height ) * width;
+	uint y1w = Wrap( iy,	 height ) * width;
+	uint y2w = Wrap( iy + 1, height ) * width;
+	uint y3w = Wrap( iy + 2, height ) * width;
+
+	Real v0 = Interpolation::Hermite(buffer[x0 + y0w], buffer[x1 + y0w], buffer[x2 + y0w], buffer[x3 + y0w], x);
+	Real v1 = Interpolation::Hermite(buffer[x0 + y1w], buffer[x1 + y1w], buffer[x2 + y1w], buffer[x3 + y1w], x);
+	Real v2 = Interpolation::Hermite(buffer[x0 + y2w], buffer[x1 + y2w], buffer[x2 + y2w], buffer[x3 + y2w], x);
+	Real v3 = Interpolation::Hermite(buffer[x0 + y3w], buffer[x1 + y3w], buffer[x2 + y3w], buffer[x3 + y3w], x);
+
+	return Interpolation::Hermite(v0, v1, v2, v3, y);
+}
+
+//============================================================================================================
+// Hermite texture filtering with the clamp-to-edge behavior
+//============================================================================================================
+
+template <typename Real>
+Real HermiteClamp (const Real* buffer, uint width, uint height, float x, float y)
+{
+	x *= (width  - 1);
+	y *= (height - 1);
+
+	float fx = Float::Floor(x);
+	float fy = Float::Floor(y);
+
+	x -= fx;
+	y -= fy;
+
+	int ix = Float::RoundToInt(fx);
+	int iy = Float::RoundToInt(fy);
+
+	uint x0  = Clamp( ix - 1, width  );
+	uint x1  = Clamp( ix,	  width  );
+	uint x2  = Clamp( ix + 1, width  );
+	uint x3  = Clamp( ix + 2, width  );
+	uint y0w = Clamp( iy - 1, height ) * width;
+	uint y1w = Clamp( iy,	  height ) * width;
+	uint y2w = Clamp( iy + 1, height ) * width;
+	uint y3w = Clamp( iy + 2, height ) * width;
+
+	Real v0 = Interpolation::Hermite(buffer[x0 + y0w], buffer[x1 + y0w], buffer[x2 + y0w], buffer[x3 + y0w], x);
+	Real v1 = Interpolation::Hermite(buffer[x0 + y1w], buffer[x1 + y1w], buffer[x2 + y1w], buffer[x3 + y1w], x);
+	Real v2 = Interpolation::Hermite(buffer[x0 + y2w], buffer[x1 + y2w], buffer[x2 + y2w], buffer[x3 + y2w], x);
+	Real v3 = Interpolation::Hermite(buffer[x0 + y3w], buffer[x1 + y3w], buffer[x2 + y3w], buffer[x3 + y3w], x);
+
+	return Interpolation::Hermite(v0, v1, v2, v3, y);
 }
 }; // namespace Interpolation

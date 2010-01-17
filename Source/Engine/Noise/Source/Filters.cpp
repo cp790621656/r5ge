@@ -38,35 +38,6 @@ inline float MirrorOver(float val, float threshold)
 }
 
 //============================================================================================================
-// Normalization is used in the GenerateSeamlessFractal function below, as well as by the Normalize filter
-//============================================================================================================
-
-void Normalize (float* data, uint allocated)
-{
-	float min(1000.0f), max(-1000.0f);
-
-	for (uint i = 0; i < allocated; ++i)
-	{
-		float val = data[i];
-		if (val < min) min = val;
-		if (val > max) max = val;
-	}
-
-	float center = (max + min) * 0.5f;
-	float diff   = (max - min);
-	
-	if ( Float::IsNotZero(diff) )
-	{
-		float scale = 1.0f / diff;
-	
-		for (uint i = 0; i < allocated; ++i)
-		{
-			data[i] = Float::Clamp(0.5f + (data[i] - center) * scale, 0.0f, 1.0f);
-		}
-	}
-}
-
-//============================================================================================================
 // Generates a non-seamless fractal field of specified size
 //============================================================================================================
 
@@ -153,13 +124,13 @@ void GenerateFractal (Random& r, float* out, uint width, uint height, float thre
 
 	// Fractal fields should be normalized at the end as they're not in 0-1 range
 	size = width * height;
-	Normalize(out, size);
+	R5::Normalize(out, size);
 
 	// If there is a mirror threshold, create some ridges
 	if (threshold != 1.0f)
 	{
 		for (uint i = 0; i < size; ++i) out[i] = MirrorOver(out[i], threshold);
-		Normalize(out, size);
+		R5::Normalize(out, size);
 	}
 }
 
@@ -323,13 +294,13 @@ void GenerateSeamlessFractal (Random& r, float* out, uint width, uint height, fl
 	delete [] done;
 
 	// Fractal fields should be normalized at the end as they're not in 0-1 range
-	Normalize(out, size);
+	R5::Normalize(out, size);
 
 	// If there is a mirror threshold, create some ridges
 	if (threshold != 1.0f)
 	{
 		for (uint i = 0; i < size; ++i) out[i] = MirrorOver(out[i], threshold);
-		Normalize(out, size);
+		R5::Normalize(out, size);
 	}
 }
 
@@ -428,8 +399,8 @@ FILTER(Fractal)
 		}
 	}
 
-	// Normalize the final result
-	if (octaves > 1) Normalize(data, allocated);
+	// R5::Normalize the final result
+	if (octaves > 1) R5::Normalize(data, allocated);
 }
 
 //============================================================================================================
@@ -535,8 +506,8 @@ FILTER(Perlin)
 	delete [] sample;
 	Swap(data, aux);
 
-	// Normalize the final result
-	Normalize(data, allocated);
+	// R5::Normalize the final result
+	R5::Normalize(data, allocated);
 }
 
 //============================================================================================================
@@ -546,7 +517,7 @@ FILTER(Perlin)
 FILTER(Normalize)
 {
 	uint allocated = (uint)size.x * size.y;
-	Normalize(data, allocated);
+	R5::Normalize(data, allocated);
 }
 
 //============================================================================================================

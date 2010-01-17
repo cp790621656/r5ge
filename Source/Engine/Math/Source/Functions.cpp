@@ -3,6 +3,35 @@
 namespace R5
 {
 //============================================================================================================
+// Normalization is used in the GenerateSeamlessFractal function below, as well as by the Normalize filter
+//============================================================================================================
+
+void Normalize (float* data, uint allocated)
+{
+	float min(1000.0f), max(-1000.0f);
+
+	for (uint i = 0; i < allocated; ++i)
+	{
+		float val = data[i];
+		if (val < min) min = val;
+		if (val > max) max = val;
+	}
+
+	float center = (max + min) * 0.5f;
+	float diff   = (max - min);
+	
+	if ( Float::IsNotZero(diff) )
+	{
+		float scale = 1.0f / diff;
+	
+		for (uint i = 0; i < allocated; ++i)
+		{
+			data[i] = Float::Clamp(0.5f + (data[i] - center) * scale, 0.0f, 1.0f);
+		}
+	}
+}
+
+//============================================================================================================
 // Find rotation angle and arbitrary axis that would rotate two vectors to match another set of vectors
 //============================================================================================================
 

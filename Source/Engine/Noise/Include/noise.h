@@ -44,6 +44,7 @@ private:
 	float*			mData;			// Primary buffer -- should always have the latest data
 	float*			mAux;			// Secondary buffer -- should be used primarily for writing before swapping it for 'mData'
 	float*			mTemp;			// Temporary buffer used to downsample/upsample the noise if GetBuffer() function requested a different size
+	Vector2i		mTempSize;		// Size of the temporary buffer
 	uint			mBufferSize;	// Current allocated buffer size (width*height)
 	bool			mSeamless;		// Whether the noise should be seamless or cut at the edges
 	bool			mIsDirty;		// Whether the noise needs to be regenerated

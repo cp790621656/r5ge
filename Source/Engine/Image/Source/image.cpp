@@ -144,12 +144,20 @@ void Image::HeightMapToNormalMap (	const float*		buffer,
 	c.Clear();
 	c.Reserve(size);
 
+	// The "magic number" 0.5 * ((1.4142 * 4) + 8) = 6.8284.
+	// There are 4 coordinates that are worth the most but get considered only once,
+	// and there are 4 coordinates that get considered twice (vertical+horizontal), but are worth less.
+
 	float fracX = scale.x / width;
 	float fracY = scale.y / height;
-	float fracZ = (fracX * fracY * 6.0f) / scale.z;
+	float fracZ = (fracX * fracY * 6.8284f) / scale.z;
+
+	fracX /= fracZ;
+	fracY /= fracZ;
 
 	int y0w, y1w, y2w, x0, x1, x2;
-	float left, right, bottom, top;
+	float myHeight, left, right, bottom, top;
+	float temp[8];
 
 	for (uint y = 0; y < height; ++y)
 	{
@@ -181,27 +189,39 @@ void Image::HeightMapToNormalMap (	const float*		buffer,
 				x2 = Clamp(x + 1, width);
 			}
 
-			left =	 buffer[y0w + x0] +
-					 buffer[y1w + x0] +
-					 buffer[y2w + x0];
-			right =	 buffer[y0w + x2] +
-					 buffer[y1w + x2] +
-					 buffer[y2w + x2];
-			bottom = buffer[y0w + x0] +
-					 buffer[y0w + x1] +
-					 buffer[y0w + x2];
-			top	=	 buffer[y2w + x0] +
-					 buffer[y2w + x1] +
-					 buffer[y2w + x2];
+			// 0 1 2
+			// 3   4
+			// 5 6 7
 
-			Vector3f cross ( fracY * (left - right),
-							 fracX * (bottom - top),
-							 fracZ );
+			myHeight = buffer[y1w + x1];
 
-			cross.Normalize();
+			temp[0] =  myHeight - buffer[y0w + x0];
+			temp[1] = (myHeight - buffer[y0w + x1]) * 1.4142f;
+			temp[2] =  myHeight - buffer[y0w + x2];
+			temp[3] = (myHeight - buffer[y1w + x0]) * 1.4142f;
+			temp[4] = (myHeight - buffer[y1w + x2]) * 1.4142f;
+			temp[5] =  myHeight - buffer[y2w + x0];
+			temp[6] = (myHeight - buffer[y2w + x1]) * 1.4142f;
+			temp[7] =  myHeight - buffer[y2w + x2];
+
+			left	= temp[0] + temp[3] + temp[5];
+			right	= temp[2] + temp[4] + temp[7];
+			bottom	= temp[0] + temp[1] + temp[2];
+			top		= temp[5] + temp[6] + temp[7];
+
+			Vector3f cross ( fracY * (right - left),
+							 fracX * (top - bottom),
+							 1.0f );
+
+			// Normalize the result
+			float mag = 1.0f / Float::Sqrt(1.0f + cross.x * cross.x + cross.y * cross.y);
+			cross.x *= mag;
+			cross.y *= mag;
+			cross.z  = mag;
+
 			Color4ub& clr (c.Expand());
 			clr = cross;
-			clr.a = Float::ToRangeByte(buffer[y1w + x1]);
+			clr.a = Float::ToRangeByte(myHeight);
 		}
 	}
 }

@@ -199,10 +199,10 @@ void Noise::ApplyFilter (const String& filterName, const Parameters& params)
 	
 float* Noise::GetBuffer(const Vector2i& size)
 {
+	if (mSize.x < 1 || mSize.y < 1) return 0;
+
 	if (mIsDirty)
 	{
-		if (mSize.x < 1 || mSize.y < 1) return 0;
-	
 		mFilters.Lock();
 		{
 			mIsDirty = false;
@@ -234,39 +234,48 @@ float* Noise::GetBuffer(const Vector2i& size)
 			}
 		}
 		mFilters.Unlock();
+	}
 
-		// Downsample or upsample the noise, depending on the requested dimensions
-		if (size != mSize && size.x > 0 && size.y > 0)
+	// If no special size was requested, return the data
+	if (size == 0) return mData;
+
+	// Just in case...
+	ASSERT(size.x > 0 && size.y > 0, "Invalid dimensions!");
+
+	// If the temporary size has changed, we need to re-sample the noise
+	if (mTempSize != size)
+	{
+		mTempSize = size;
+
+		uint width	 = size.x;
+		uint height	 = size.y;
+		uint outSize = (uint)width * height;
+
+		if (mTemp != 0) delete [] mTemp;
+		mTemp = new float[outSize];
+
+		for (uint y = 0; y < height; ++y)
 		{
-			uint width	 = size.x;
-			uint height	 = size.y;
-			uint outSize = (uint)width * height;
+			uint yw = y * width;
+			float fy = (float)y / height;
 
-			if (mTemp) delete [] mTemp;
-			mTemp = new float[outSize];
-
-			for (uint y = 0; y < height; ++y)
+			for (uint x = 0; x < width; ++x)
 			{
-				uint yw = y * width;
-				float fy = (float)y / height;
+				uint index = yw + x;
+				float fx = (float)x / width;
 
-				for (uint x = 0; x < width; ++x)
+				if (mSeamless)
 				{
-					uint index = yw + x;
-					float fx = (float)x / width;
-
 					mTemp[index] = Interpolation::BilinearTile(mData, mSize.x, mSize.y, fx, fy);
 				}
+				else
+				{
+					mTemp[index] = Interpolation::BilinearClamp(mData, mSize.x, mSize.y, fx, fy);
+				}
 			}
-			return mTemp;
-		}
-		else if (mTemp != 0)
-		{
-			delete [] mTemp;
-			mTemp = 0;
 		}
 	}
-	return (mTemp == 0) ? mData : mTemp;
+	return mTemp;
 }
 
 //============================================================================================================
