@@ -27,8 +27,6 @@ Root
 			{
 				Shader = "Deferred/Material"
 			}
-
-			Technique = "Opaque"
 		}
 	}
 
