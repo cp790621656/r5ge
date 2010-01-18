@@ -733,7 +733,7 @@ void R5MaxExporter::_CreateLimbs (  MultiMesh&		myMultiMesh,
 			myLimb->mMat	= _ConvertMaterial(maxMtl, i);
 
 			// Special case: "faceted" marked meshes get exported as billboard clouds instead
-			myLimb->mMesh->mClouds = myLimb->mMat->mClouds;
+			myLimb->mMesh->mClouds = (myLimb->mMat != 0) && myLimb->mMat->mClouds;
 		}
 	}
 }
@@ -953,7 +953,7 @@ void R5MaxExporter::ExportGeometry (::INode* node, ::Object* object, ::TimeValue
 
 			// Every Max mesh can support sub-materials, essentially making us split the meshes up into sub-meshes
 			_FillMultiMesh( myMultiMesh, maxMesh, maxMtl, tm, skin, skinData,
-				(maxMtl->Requirements(0) & MTLREQ_FACETED) != 0 );
+				(maxMtl != 0) && (maxMtl->Requirements(0) & MTLREQ_FACETED) != 0 );
 
 			// Convert submeshes to actual R5 meshes
 			_CreateLimbs( myMultiMesh, maxMtl, time, node->GetName() );
@@ -1181,7 +1181,7 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 			TreeNode& node	= model.AddChild("Limb", limb->mName);
 
 			node.AddChild(limb->mMesh->mClouds ? "Cloud" : "Mesh", limb->mMesh->mName);
-			node.AddChild("Material", limb->mMat->mName);
+			if (limb->mMat != 0) node.AddChild("Material", limb->mMat->mName);
 		}
 
 		// Save the file
