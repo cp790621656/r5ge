@@ -2,7 +2,7 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Tutorial 05: Lights, Models and Animations
+// Dev10: Phil's Torch
 //------------------------------------------------------------------------------------------------------------
 // The torch on display
 //------------------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	if (*mCore << "Config/T10.txt")
+	if (*mCore << "Config/Dev10.txt")
 	{
 		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
@@ -70,7 +70,7 @@ void TestApp::Run()
 			while (mCore->Update());
 		}
 	}
-	*mCore >> "Config/TT10.txt";
+	//*mCore >> "Config/Dev10.txt";
 }
 
 //============================================================================================================
@@ -79,15 +79,9 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	// Cull our scene
 	mScene.Cull(mCam);
-
-	// Draw our scene
-	mScene.DrawAllDeferred();
-	//mScene.DrawAllForward();
-
-	// Add the grid.
-	mGraphics->Draw( IGraphics::Drawable::Grid );
+	//mScene.DrawAllDeferred();
+	mScene.DrawAllForward();
 }
 
 //============================================================================================================

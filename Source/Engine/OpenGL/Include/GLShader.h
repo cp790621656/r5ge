@@ -64,8 +64,8 @@ private:
 		mutable Array<UniformEntry>	mUniforms;	// Array of registered uniform variables for this program
 
 		void RegisterUniform (const String& name, const SetUniformDelegate& fnct);
-		bool UpdateUniform (const String& name, const Uniform& uniform) const;
-		bool UpdateUniform (uint id, const SetUniformDelegate& fnct) const;
+		bool SetUniform (const String& name, const Uniform& uniform) const;
+		bool SetUniform (uint id, const SetUniformDelegate& fnct) const;
 	};
 
 private:
@@ -119,7 +119,7 @@ public: // The following functions are meant to be called only from the graphics
 	virtual void Deactivate() const;
 
 	// Force-updates the value of the specified uniform
-	virtual bool UpdateUniform (const String& name, const Uniform& uniform) const;
+	virtual bool SetUniform (const String& name, const Uniform& uniform) const;
 
 public:
 

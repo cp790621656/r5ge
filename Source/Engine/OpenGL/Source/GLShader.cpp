@@ -1103,13 +1103,13 @@ void GLShader::ProgramEntry::RegisterUniform (const String& name, const SetUnifo
 // Force-updates the value of the specified uniform
 //============================================================================================================
 
-bool GLShader::UpdateUniform (const String& name, const Uniform& uniform) const
+bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 {
 	if (g_activeProgram != 0)
 	{
 		if (mPrograms[g_activeLightCount].mProgram.mGlID == g_activeProgram)
 		{
-			return mPrograms[g_activeLightCount].UpdateUniform(name, uniform);
+			return mPrograms[g_activeLightCount].SetUniform(name, uniform);
 		}
 	}
 	return false;
@@ -1117,7 +1117,7 @@ bool GLShader::UpdateUniform (const String& name, const Uniform& uniform) const
 
 //============================================================================================================
 
-bool GLShader::ProgramEntry::UpdateUniform (const String& name, const Uniform& uniform) const
+bool GLShader::ProgramEntry::SetUniform (const String& name, const Uniform& uniform) const
 {
 	mUniforms.Lock();
 	{

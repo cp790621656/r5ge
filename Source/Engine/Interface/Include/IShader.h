@@ -78,7 +78,7 @@ public: // The following functions are meant to be called only from the graphics
 	virtual void Deactivate() const=0;
 
 	// Force-updates the value of the specified uniform
-	virtual bool UpdateUniform (const String& name, const Uniform& uniform) const=0;
+	virtual bool SetUniform (const String& name, const Uniform& uniform) const=0;
 
 public:
 

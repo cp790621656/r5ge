@@ -79,7 +79,7 @@ uint Cloud::Draw (IGraphics* graphics)
 	const IShader* shader = graphics->GetActiveShader();
 
 	// Update the active shader's uniform for the origin of the mesh
-	if (shader != 0 && shader->UpdateUniform("R5_origin", mOrigin))
+	if (shader != 0 && shader->SetUniform("R5_origin", mOrigin))
 	{
 		Lock();
 		{

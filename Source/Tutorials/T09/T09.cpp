@@ -79,8 +79,8 @@ void TestApp::Run()
 			mScale.Set(20.0f, 20.0f, 6.0f);
 
 			// We will be generating a much higher quality terrain this time. Before we used 256x256, but
-			// this time our heightmap will be 2048x2048 -- much more detailed! In addition we will be
-			// generating a non-seamless heightmap this time, and it will only have one octave.
+			// this time our height map will be 2048x2048 -- much more detailed! In addition we will be
+			// generating a non-seamless height map this time, and it will only have one octave.
 
 			Noise noise;
 			noise.SetSize(2048, 2048);
@@ -93,7 +93,7 @@ void TestApp::Run()
 			hm.mTerrainOffset = mOffset;
 			hm.mTerrainScale = mScale;
 
-			// Here's a kicker. Although our heightmap is extremely highly detailed, let's only use one
+			// Here's a kicker. Although our height map is extremely highly detailed, let's only use one
 			// partition to draw it. You might ask, "but won't that make our entire terrain only
 			// 32 by 32 vertices?" The answer is yes. Yes it will.
 
@@ -111,7 +111,7 @@ void TestApp::Run()
 
 			// Use the Image utility to generate a normal map
 			Array<Color4ub> c;
-			Image::HeightMapToNormalMap(noise.GetBuffer(), noise.GetWidth(), noise.GetHeight(), c, false);
+			Image::HeightMapToNormalMap(noise.GetBuffer(), noise.GetWidth(), noise.GetHeight(), c, false, mScale);
 
 			// Create a new texture called "Terrain"
 			ITexture* tex = mGraphics->GetTexture("Terrain");

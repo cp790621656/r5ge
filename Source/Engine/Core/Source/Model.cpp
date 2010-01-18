@@ -237,7 +237,7 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 								uniform.mElements	= mMatrices.GetSize();
 
 								// Update the transform matrix
-								shader->UpdateUniform("R5_boneTransforms", uniform);
+								shader->SetUniform("R5_boneTransforms", uniform);
 
 								// If we're skinning on the GPU, we don't need transformed vertices
 								mesh->DiscardTransforms();

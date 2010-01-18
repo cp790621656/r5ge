@@ -8,7 +8,7 @@ Root
 
 		Material = "Torch"
 		{
-			Diffuse = 0.588235 0.588235 0.588235 1.000000
+			Diffuse = 1 1 1 1
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
 

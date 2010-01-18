@@ -4,7 +4,7 @@ Root
 {
 	Window
 	{
-		Title = "Tutorial 9: Better Terrain"
+		Title = "Dev2: Terrain"
 		Position = 100 100
 		Size = 900 600
 		Full Screen = false
@@ -13,8 +13,8 @@ Root
 	Graphics
 	{
 		Default AF = 4
-		Background Color = 0.000000 0.000000 0.000000 0.000000
-		Fog Range = 30.000000 75.000000
+		Background Color = 1.000000 1.000000 1.000000 1.000000
+		Fog Range = 25.000000 50.000000
 
 		Material = "Terrain"
 		{
@@ -25,13 +25,13 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/Terrain"
-				Texture 0 = "Textures/Sand/beach.jpg"
-				Texture 1 = "Textures/Grass/green.jpg"
-				Texture 2 = "Textures/Grass/wild.jpg"
-				Texture 3 = "Textures/Stone/broken.jpg"
+				Shader = "Forward/dev2terrain"
+				Texture 0 = "Terrain Normal Map"
+				Texture 1 = "Terrain Gradient Map"
+				Texture 2 = "Textures/Stone/grey.jpg"
+				Texture 3 = "Textures/Stone/grey_ns.png"
 				Texture 4 = "Textures/Other/snow.jpg"
-				Texture 5 = "Terrain"
+				Texture 5 = "Textures/Other/snow_ns.png"
 			}
 		}
 	}
@@ -47,11 +47,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.038171 0.296486 -0.946463 -0.121849
+			Position = -4.983280 5.764418 5.024240
+			Rotation = -0.048338 0.158947 -0.943439 0.286919
 			Scale = 1.000000
+			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 20.000088 30.000000
+			Dolly = 0.000000 14.000118 30.000000
 		}
 
 		Directional Light = "First Light"
@@ -59,6 +60,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.240526 0.154892 -0.518793 0.805611
 			Scale = 1.000000
+			Layer = 10
 			Ambient = 0.250000 0.250000 0.250000
 			Diffuse = 1.250000 1.250000 1.250000
 			Specular = 1.000000 1.000000 1.000000
@@ -70,6 +72,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Layer = 0
 			Material = "Terrain"
 		}
 	}
