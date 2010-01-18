@@ -186,15 +186,15 @@
 			Name="Source Files"
 			>
 			<File
+				RelativePath=".\Source\Dev10.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\FireEmitter.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\SmokeEmitter.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\T10.cpp"
 				>
 			</File>
 		</Filter>

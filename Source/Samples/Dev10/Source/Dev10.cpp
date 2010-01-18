@@ -70,7 +70,7 @@ void TestApp::Run()
 			while (mCore->Update());
 		}
 	}
-	//*mCore >> "Config/Dev10.txt";
+	*mCore >> "Config/Dev10.txt";
 }
 
 //============================================================================================================
@@ -83,7 +83,7 @@ void TestApp::OnDraw()
 	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
 	mGraphics->ResetModelViewMatrix();
 	mScene.DrawAllForward(false);
-	PostProcess::None(mGraphics, result.mColor);
+	PostProcess::Bloom(mGraphics, result.mColor,0.75f);
 }
 
 //============================================================================================================
