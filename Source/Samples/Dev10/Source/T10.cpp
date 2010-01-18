@@ -80,7 +80,6 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	mGraphics->ResetModelViewMatrix();
 	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
 	mGraphics->ResetModelViewMatrix();
 	mScene.DrawAllForward(false);
