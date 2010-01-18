@@ -1,0 +1,94 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "Torch"
+		Position = 100 100
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 01.000000 1.000000 1.000000 1.000000
+		Fog Range = 100.000000 200.000000
+
+		Material = "Torch"
+		{
+			Diffuse = 1 1 1 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Material"
+			}
+
+			Technique = "Opaque"
+		}
+	}
+
+	Core
+	{
+		Model = "Torch Model"
+		{
+			Source = "Models/tourch.r5a"
+			Material = "Torch"
+		}
+	}
+
+	Scene
+	{
+		Model Instance = "First Instance"
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Layer = 10
+			Model = "Torch Model"
+
+			Fire Emitter = "Fire 0"
+			{
+				Position = 0.000000 0.000000 0.200000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 0.15
+				Texture = "Textures/Billboards/fire.jpg"
+
+				Smoke Emitter = "Smoke 0"
+				{
+					Position = 0.000000 0.000000 0.000000
+					Rotation = 0.000000 0.000000 0.000000 1.000000
+					Scale = 1.000000
+					Texture = "Textures/Billboards/whitefire.png"
+				}
+				Point Light = "First Light"
+				{
+					Position = 0.000000 0.000000 1.000000
+					Rotation = 0.000000 0.000000 0.000000 1.000000
+					Scale = 10.000000
+					Layer = 1
+					Ambient = 0.150000 0.150000 0.150000
+					Diffuse = 1.250000 1.250000 1.250000
+					Specular = 1.000000 1.000000 1.000000
+					Brightness = 10.000000
+					Range = 10.000000
+					Power = 2.000000
+				}
+			}
+		}
+
+		Debug Camera = "Default Camera"
+		{
+			Position = -0.086384 1.429030 0.841654
+			Rotation = -0.004145 0.221593 -0.974960 0.018240
+			Scale = 1.000000
+			Layer = 10
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 0.000000 30.000000
+		}
+	}
+}

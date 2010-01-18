@@ -4,13 +4,15 @@
 //============================================================================================================
 // Tutorial 05: Lights, Models and Animations
 //------------------------------------------------------------------------------------------------------------
-// This tutorial shows how to set up basic lighting, load and animate a model.
+// The torch on display
 //------------------------------------------------------------------------------------------------------------
 // Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image
 //============================================================================================================
 
 #include "../Include/_All.h"
 using namespace R5;
+
+R5::Random randomGen;
 
 //============================================================================================================
 
@@ -52,56 +54,44 @@ TestApp::~TestApp()
 	if (mWin)		delete mWin;
 }
 
-//============================================================================================================
-// Creates a window, sets the camera, adds a light, and creates/animates the model.
-//============================================================================================================
-
 void TestApp::Run()
 {
-	// Create the window, Tutorial 1 style
-	mWin->Create("Tutorial 5: Lights, models, and animations", 100, 100, 900, 600);
+	if (*mCore << "Config/T10.txt")
+	{
+		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
-	// Add and position the camera -- future tutorials will be setting
-	// this up in the resource files, so I hope you understand what's going on!
-	mCam = mScene.AddObject<DebugCamera>("Default Camera");
-	mCam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
-	mCam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
-	mCam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
+		if(mCam != 0)
+		{
+			//Binds the camera controls to the camera instance
+			mCore->SetListener( bind(&TestApp::OnDraw, this) );
+			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
+			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
 
-	
-
-	Model* model = mCore->GetModel("First Model", true);
-	model->Load("Models/tourch.r5a");
-	model->PlayAnimation("Run");
-	ModelInstance* instance = mScene.AddObject<ModelInstance>("First Instance");
-	instance->SetModel(model);
-
-	mCore->SetListener( bind(&TestApp::OnDraw, this) );
-	mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
-	mCore->SetListener( bind(&Camera::OnScroll, mCam) );
-
-	while (mCore->Update());
+			while (mCore->Update());
+		}
+	}
+	*mCore >> "Config/TT10.txt";
 }
 
 //============================================================================================================
-// We add a new function call here: Scene::Draw()
+// Scene::Draw()
 //============================================================================================================
 
 void TestApp::OnDraw()
 {
-	// Cull our scene like before
+	// Cull our scene
 	mScene.Cull(mCam);
 
-	// Draw our scene using all forward rendering techniques. This function exists for convenience
-	// reasons, and it automatically changes projection back to perspective and clears the screen.
-	mScene.DrawAllForward();
+	// Draw our scene
+	mScene.DrawAllDeferred();
+	//mScene.DrawAllForward();
 
-	// Add the grid at the end, just to show that we can still do manual rendering afterwards.
+	// Add the grid.
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================
-// Application entry point hasn't changed
+// Application entry point
 //============================================================================================================
 
 R5_MAIN_FUNCTION
