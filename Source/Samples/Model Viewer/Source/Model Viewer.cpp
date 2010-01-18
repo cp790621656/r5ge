@@ -12,7 +12,7 @@ ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbL
 
 	// Event listeners
 	mCore->SetListener( bind(&ModelViewer::OnDraw,			this) );
-	mCore->SetListener( bind(&ModelViewer::OnKey,			this) );
+	mCore->SetListener( bind(&ModelViewer::OnKeyPress,			this) );
 	mCore->SetListener( bind(&ModelViewer::OnMouseMove,		this) );
 	mCore->SetListener( bind(&ModelViewer::OnScroll,		this) );
 	mCore->SetListener( bind(&ModelViewer::SerializeFrom,	this) );
@@ -213,7 +213,7 @@ void ModelViewer::SetStatusText (const String& text, const Color3f& color)
 // Responds to keypresses
 //============================================================================================================
 
-bool ModelViewer::OnKey(const Vector2i& pos, byte key, bool isDown)
+bool ModelViewer::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown)
 	{
@@ -282,9 +282,9 @@ bool ModelViewer::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 					mStage->SetRelativeRotation( hori * rot * vert );
 				}
 			}
-			else mCam->OnMouseMove(pos, delta);
+			else mCam->MouseMove(pos, delta);
 		}
-		else mCam->OnMouseMove(pos, delta);
+		else mCam->MouseMove(pos, delta);
 	}
 	return true;
 }
@@ -295,7 +295,7 @@ bool ModelViewer::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 
 bool ModelViewer::OnScroll(const Vector2i& pos, float delta)
 {
-	if (mCam) mCam->OnScroll(pos, delta * 0.5f);
+	if (mCam) mCam->Scroll(pos, delta * 0.5f);
 	return true;
 }
 

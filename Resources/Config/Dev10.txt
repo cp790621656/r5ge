@@ -41,50 +41,54 @@ Root
 			Scale = 0.250000
 			Layer = 10
 			Model = "Models/peasant.r5a"
-
-			Model Instance = "First Instance"
+			
+			Object = "Attachment - Left Hand"
 			{
 				Position = 0.200000 0.000000 -0.500000
 				Rotation = 0.000000 1.000000 0.000000 0.000000
-				Scale = 3.000000
-				Layer = 10
-				Model = "Models/torch.r5a"
 
 				Script = "Bone Attachment"
 				{
 					Bone = "Bip01 L Hand"
 				}
 
-				Point Light = "First Light"
+				Model Instance = "First Instance"
 				{
-					Position = 0.000000 0.000000 0.100000
-					Rotation = 0.000000 0.000000 0.000000 1.000000
-					Scale = 1.000000
-					Layer = 1
-					Ambient = 0.150000 0.050000 0.000000
-					Diffuse = 1.000000 0.750000 0.250000
-					Specular = 1.000000 1.000000 1.000000
-					Brightness = 1.000000
-					Range = 20.000000
-					Power = 2.000000
+					Scale = 3.000000
+					Layer = 10
+					Model = "Models/torch.r5a"
 
-					Fire Emitter = "Fire 0"
+					Point Light = "First Light"
 					{
-						Position = 0.000000 0.000000 0.000000
+						Position = 0.000000 0.000000 0.100000
 						Rotation = 0.000000 0.000000 0.000000 1.000000
-						Scale = 0.333330
-						Layer = 10
-						Texture = "Textures/Billboards/fire.jpg"
-						Technique = "Particle"
-
-						Smoke Emitter = "Smoke 0"
+						Scale = 1.000000
+						Layer = 1
+						Ambient = 0.150000 0.050000 0.000000
+						Diffuse = 1.000000 0.750000 0.250000
+						Specular = 1.000000 1.000000 1.000000
+						Brightness = 1.000000
+						Range = 20.000000
+						Power = 2.000000
+	
+						Fire Emitter = "Fire 0"
 						{
 							Position = 0.000000 0.000000 0.000000
 							Rotation = 0.000000 0.000000 0.000000 1.000000
-							Scale = 1.000000
+							Scale = 0.333330
 							Layer = 10
-							Texture = "Textures/Billboards/whitefire.png"
+							Texture = "Textures/Billboards/fire.jpg"
 							Technique = "Particle"
+	
+							Smoke Emitter = "Smoke 0"
+							{
+								Position = 0.000000 0.000000 0.000000
+								Rotation = 0.000000 0.000000 0.000000 1.000000
+								Scale = 1.000000
+								Layer = 10
+								Texture = "Textures/Billboards/whitefire.png"
+								Technique = "Particle"
+							}
 						}
 					}
 				}

@@ -76,8 +76,8 @@ public:
 	virtual void OnSerializeTo (TreeNode& root) const;
 
 	// Events
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ mLabel.OnMouseMove(pos, delta);	UIWidget::OnMouseMove(pos, delta);	return true; }
-	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown)	{ mLabel.OnKey(pos, key, isDown);	UIWidget::OnKey(pos, key, isDown);	return true; }
-	virtual bool OnFocus	(bool selected)									{ mLabel.OnFocus(selected);			UIWidget::OnFocus(selected);			return true; }
-	virtual bool OnChar		(byte character)								{ mLabel.OnChar(character);			UIWidget::OnChar(character);			return true; }
+	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ mLabel.OnMouseMove(pos, delta);		UIWidget::OnMouseMove(pos, delta);		return true; }
+	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown)	{ mLabel.OnKeyPress(pos, key, isDown);	UIWidget::OnKeyPress(pos, key, isDown);	return true; }
+	virtual bool OnFocus	(bool selected)									{ mLabel.OnFocus(selected);				UIWidget::OnFocus(selected);			return true; }
+	virtual bool OnChar		(byte character)								{ mLabel.OnChar(character);				UIWidget::OnChar(character);			return true; }
 };

@@ -46,13 +46,11 @@ private:
 	// Updates the position and rotation based on the movement and returns the dolly-offset position
 	Vector3f _UpdateOffsetPosition();
 
-public:
+protected:
 
 	// Respond to mouse movement
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual bool OnScroll	(const Vector2i& pos, float delta);
-
-protected:
 
 	// Update functions differ as they need to use the dolly-offset relative position
 	virtual void OnPreUpdate();

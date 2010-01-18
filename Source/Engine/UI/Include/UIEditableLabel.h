@@ -56,7 +56,7 @@ public:
 
 	// Events
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
-	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown);
+	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
 	virtual bool OnFocus	(bool selected);
 	virtual bool OnChar		(byte character);
 };

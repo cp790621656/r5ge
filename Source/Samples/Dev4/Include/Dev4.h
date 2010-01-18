@@ -29,6 +29,6 @@ public:
 
 	void Run();
 	void OnDraw();
-	bool OnKey (const Vector2i& pos, byte key, bool isDown);
+	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
 };
 }

@@ -234,7 +234,7 @@ bool UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 // Depending on where in the window the click happens, the window may be moved or resized
 //============================================================================================================
 
-bool UIWindow::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIWindow::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft)
 	{
@@ -267,5 +267,5 @@ bool UIWindow::OnKey (const Vector2i& pos, byte key, bool isDown)
 	if (mMovement != Movement::None) return true;
 
 	// Inform the children and intercept all mouse events
-	return UIWidget::OnKey(pos, key, isDown) || (key > Key::MouseFirst && key < Key::MouseLast);
+	return UIWidget::OnKeyPress(pos, key, isDown) || (key > Key::MouseFirst && key < Key::MouseLast);
 }

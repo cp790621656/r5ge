@@ -207,7 +207,7 @@ bool UIButton::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 // Event handling -- left mouse button presses the button
 //============================================================================================================
 
-bool UIButton::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	bool retVal = false;
 
@@ -252,7 +252,7 @@ bool UIButton::OnKey (const Vector2i& pos, byte key, bool isDown)
 				}
 			}
 		}
-		UIWidget::OnKey(pos, key, isDown);
+		UIWidget::OnKeyPress(pos, key, isDown);
 	}
 	return retVal;
 }

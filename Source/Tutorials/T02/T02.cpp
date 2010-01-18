@@ -69,8 +69,8 @@ void TestApp::Run()
 
 		// Register our listeners and enter the message processing loop, same as in the previous tutorial
 		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
-		mCore->SetListener( bind(&Camera::OnScroll, mCam) );
+		mCore->SetListener( bind(&Object::MouseMove, mCam) );
+		mCore->SetListener( bind(&Object::Scroll, mCam) );
 
 		while (mCore->Update());
 

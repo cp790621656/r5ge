@@ -506,11 +506,11 @@ bool UIWidget::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 
 //============================================================================================================
 
-bool UIWidget::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIWidget::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnKey(pos, key, isDown);
+		handled |= mScripts[--i]->OnKeyPress(pos, key, isDown);
 	return handled;
 }
 

@@ -46,7 +46,7 @@ struct TestWindow : public IEventReceiver
 		return true;
 	}
 
-	virtual bool OnKey (const Vector2i& pos, byte key, bool isDown)
+	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 	{
 		printf("Key: 0x%x (%s)\n", key, isDown ? "true" : "false");
 	

@@ -209,7 +209,7 @@ Object* Scene::Select (const Vector3f& pos)
 
 	//for (uint i = mObjects.GetSize(); i > 0; )
 	//{
-	//	mObjects[--i].mObject->_Select(pos, ptr, radius);
+	//	mObjects[--i].mObject->Select(pos, ptr, radius);
 	//}
 	return ptr;
 }
@@ -222,6 +222,6 @@ void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& 
 {
 	mQueue.Clear();
 	Object::FillParams params (mQueue, frustum, pos, dir);
-	mRoot->_Fill(params);
+	mRoot->Fill(params);
 	mQueue.Sort();
 }

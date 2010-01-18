@@ -79,6 +79,6 @@ public:
 
 	// Respond to selection and ignore keys and mouse movement
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ return true; }
-	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown)	{ return true; }
+	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown)	{ return true; }
 	virtual bool OnFocus	(bool hasFocus);
 };

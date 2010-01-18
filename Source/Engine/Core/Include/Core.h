@@ -104,7 +104,7 @@ public:
 
 	// IEventReceiver functions
 	virtual bool OnChar		(byte key);
-	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown);
+	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual bool OnScroll	(const Vector2i& pos, float delta);
 	virtual void OnResize	(const Vector2i& size);

@@ -241,7 +241,7 @@ public:
 		mGraphics->SetViewport( mWindow->GetSize() );
 	}
 
-    virtual bool OnKey(const Vector2i& pos, byte key, bool isDown)
+    virtual bool OnKeyPress(const Vector2i& pos, byte key, bool isDown)
     {
 		if (isDown)
 		{

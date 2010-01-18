@@ -423,7 +423,7 @@ bool UIManager::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 // Handle keys
 //============================================================================================================
 
-bool UIManager::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIManager::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	bool retVal (false);
 	Lock();
@@ -446,7 +446,7 @@ bool UIManager::OnKey (const Vector2i& pos, byte key, bool isDown)
 		}
 
 		// Inform the hovering widget of the key event
-		if (mFocus != 0) retVal = mFocus->OnKey(pos, key, isDown);
+		if (mFocus != 0) retVal = mFocus->OnKeyPress(pos, key, isDown);
 	}
 	Unlock();
 	return retVal;

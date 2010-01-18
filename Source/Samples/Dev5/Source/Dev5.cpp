@@ -249,7 +249,7 @@ TestApp::TestApp()
 	
 	mGraphics->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
-	mCore->SetListener( bind(&TestApp::OnKey, this) );
+	mCore->SetListener( bind(&TestApp::OnKeyPress, this) );
 
 	IFont* font0 = mGraphics->GetFont("Arial 12");
 	IFont* font1 = mGraphics->GetFont("Arial 15");
@@ -450,7 +450,7 @@ bool TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2
 // Application keypress callback
 //============================================================================================================
 
-bool TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown)
 	{

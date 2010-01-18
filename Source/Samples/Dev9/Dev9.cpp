@@ -138,8 +138,8 @@ void TestApp::Run()
 
 			if (mCam != 0)
 			{
-				mCore->SetListener( bind(&Camera::OnScroll, mCam) );
-				mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
+				mCore->SetListener( bind(&Object::Scroll, mCam) );
+				mCore->SetListener( bind(&Object::MouseMove, mCam) );
 			}
 
 			// Off-screen camera is not serialized, but is rather created here

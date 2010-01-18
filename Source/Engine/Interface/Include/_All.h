@@ -13,7 +13,7 @@
 
 namespace R5
 {
-	#include "IEventReceiver.h"			// Struct with OnMouseMove, OnKey, etc -- basic event handler interface
+	#include "IEventReceiver.h"			// Struct with OnMouseMove, OnKeyPress, etc -- basic event receiver interface
 	#include "IWindow.h"				// Base class for the application window
 	#include "IUI.h"					// User Interface
 

@@ -241,13 +241,13 @@ bool UISlider::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 // Respond to key events -- namely the left mouse button
 //============================================================================================================
 
-bool UISlider::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UISlider::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if ( key == Key::MouseLeft )
 	{
 		if (isDown) SetValue(pos);
-		UIWidget::OnKey(pos, key, isDown);
+		UIWidget::OnKeyPress(pos, key, isDown);
 		return true;
 	}
-	return UIWidget::OnKey(pos, key, isDown);
+	return UIWidget::OnKeyPress(pos, key, isDown);
 }

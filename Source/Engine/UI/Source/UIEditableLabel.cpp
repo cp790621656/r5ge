@@ -267,7 +267,7 @@ bool UIEditableLabel::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 // Respond to key events
 //============================================================================================================
 
-bool UIEditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)
+bool UIEditableLabel::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if (isDown)
 	{
@@ -294,7 +294,7 @@ bool UIEditableLabel::OnKey (const Vector2i& pos, byte key, bool isDown)
 		mUI->_SetFocusArea(0);
 	}
 
-	UIWidget::OnKey(pos, key, isDown);
+	UIWidget::OnKeyPress(pos, key, isDown);
 	return true;
 }
 

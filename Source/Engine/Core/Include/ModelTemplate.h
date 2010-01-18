@@ -47,7 +47,7 @@ protected:
 private:
 
 	// Updates the technique mask and the bounding volume
-	void _Update();
+	void Update();
 
 public:
 
@@ -61,8 +61,8 @@ public:
 	void Unlock()	const { mLock.Unlock(); }
 
 	// These functions may need to recalculate the values if something has changed
-	const Bounds&	GetBounds()		{ if (mIsDirty) _Update(); return mBounds;		}
-	uint			GetMask()		{ if (mIsDirty) _Update(); return mMask;		}
+	const Bounds&	GetBounds()		{ if (mIsDirty) Update(); return mBounds;		}
+	uint			GetMask()		{ if (mIsDirty) Update(); return mMask;		}
 
 	// Standard retrieval functions
 	bool					IsValid()			const	{ return mLimbs.IsValid();	}

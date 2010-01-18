@@ -124,7 +124,7 @@ void ModelTemplate::GetRegisteredCodecs (Array<String>& list)
 // Updates the technique mask and the bounding volume
 //============================================================================================================
 
-void ModelTemplate::_Update()
+void ModelTemplate::Update()
 {
 	mIsDirty = false;
 	mMask = 0;

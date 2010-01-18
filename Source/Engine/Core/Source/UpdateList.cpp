@@ -2,7 +2,7 @@
 using namespace R5;
 
 //============================================================================================================
-// Adds a new OnKey event listener
+// Adds a new OnKeyPress event listener
 //============================================================================================================
 
 void UpdateList::Add (const Callback& callback, float delay)

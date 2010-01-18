@@ -63,7 +63,7 @@ public:
 	// Virtual functions forward all events to bound delegates
 	virtual bool OnMouseOver	(bool isMouseOver)								{ return mOnMouseOver ? mOnMouseOver(mWidget, isMouseOver) : false; }
 	virtual bool OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{ return mOnMouseMove ? mOnMouseMove(mWidget, pos, delta) : false; }
-	virtual bool OnKey			(const Vector2i& pos, byte key, bool isDown)	{ return mOnKey ? mOnKey(mWidget, pos, key, isDown) : false; }
+	virtual bool OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{ return mOnKey ? mOnKey(mWidget, pos, key, isDown) : false; }
 	virtual bool OnScroll		(const Vector2i& pos, float delta)				{ return mOnScroll ? mOnScroll(mWidget, pos, delta) : false; }
 	virtual bool OnFocus		(bool gotFocus)									{ return mOnFocus ? mOnFocus(mWidget, gotFocus) : false; }
 	virtual bool OnStateChange	(uint state, bool isSet)						{ return mOnStateChange ? mOnStateChange(mWidget, state, isSet) : false; }

@@ -71,12 +71,11 @@ void TestApp::Run()
 			model->PlayAnimation("Torch");
 		}
 
-		if(mCam != 0)
+		if (mCam != 0)
 		{
-			//Binds the camera controls to the camera instance
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
-			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
+			mCore->SetListener( bind(&Object::MouseMove, mCam) );
+			mCore->SetListener( bind(&Object::Scroll, mCam) );
 
 			while (mCore->Update());
 		}

@@ -374,10 +374,82 @@ void Object::SetAbsoluteScale (float scale)
 }
 
 //============================================================================================================
+// OnKeyPress event notifier
+//============================================================================================================
+
+bool Object::KeyPress (const Vector2i& pos, byte key, bool isDown)
+{
+	bool retVal (false);
+
+	if (mFlags.Get(Flag::Enabled))
+	{
+		Lock();
+		{
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnKeyPress(pos, key, isDown);
+			}
+			retVal |= OnKeyPress(pos, key, isDown);
+		}
+		Unlock();
+	}
+	return retVal;
+}
+
+//============================================================================================================
+// Mouse movement event notification
+//============================================================================================================
+
+bool Object::MouseMove (const Vector2i& pos, const Vector2i& delta)
+{
+	bool retVal (false);
+
+	if (mFlags.Get(Flag::Enabled))
+	{
+		Lock();
+		{
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnMouseMove(pos, delta);
+			}
+			retVal |= OnMouseMove(pos, delta);
+		}
+		Unlock();
+	}
+	return retVal;
+}
+
+//============================================================================================================
+// Mouse scrolling event notification
+//============================================================================================================
+
+bool Object::Scroll (const Vector2i& pos, float delta)
+{
+	bool retVal (false);
+
+	if (mFlags.Get(Flag::Enabled))
+	{
+		Lock();
+		{
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnScroll(pos, delta);
+			}
+			retVal |= OnScroll(pos, delta);
+		}
+		Unlock();
+	}
+	return retVal;
+}
+
+//============================================================================================================
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
-bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
+bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
 {
 	bool retVal (false);
 
@@ -437,7 +509,7 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 
 					if (obj != 0 && obj->GetFlag(Flag::Enabled))
 					{
-						mIsDirty |= obj->_Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved);
+						mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved);
 					}
 				}
 			}
@@ -503,7 +575,7 @@ bool Object::_Update (const Vector3f& pos, const Quaternion& rot, float scale, b
 // INTERNAL: Fills the render queues
 //============================================================================================================
 
-void Object::_Fill (FillParams& params)
+void Object::Fill (FillParams& params)
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
@@ -525,7 +597,7 @@ void Object::_Fill (FillParams& params)
 					// Recurse through all children
 					for (uint i = 0; i < mChildren.GetSize(); ++i)
 					{
-						mChildren[i]->_Fill(params);
+						mChildren[i]->Fill(params);
 					}
 				}
 			}
@@ -538,7 +610,7 @@ void Object::_Fill (FillParams& params)
 // INTERNAL: Recursive Object::OnSelect caller
 //============================================================================================================
 
-void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& distance)
+void Object::Select (const Vector3f& pos, ObjectPtr& ptr, float& distance)
 {
 	if (mFlags.Get(Flag::Visible) && mCompleteBounds.Contains(pos))
 	{
@@ -566,7 +638,7 @@ void Object::_Select (const Vector3f& pos, ObjectPtr& ptr, float& distance)
 			if (considerChildren)
 			{
 				for (uint i = mChildren.GetSize(); i > 0; )
-					mChildren[--i]->_Select(pos, ptr, distance);
+					mChildren[--i]->Select(pos, ptr, distance);
 			}
 		}
 		Unlock();

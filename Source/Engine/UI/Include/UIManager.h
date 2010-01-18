@@ -162,7 +162,7 @@ protected:
 	// IEventReceiver functions
 	virtual void OnResize	(const Vector2i& size);
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
-	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown);
+	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
 	virtual bool OnScroll	(const Vector2i& pos, float delta);
 	virtual bool OnChar		(byte character);
 

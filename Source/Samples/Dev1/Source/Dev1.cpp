@@ -38,9 +38,9 @@ void TestApp::Run()
 		if (mCam != 0)
 		{
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&TestApp::OnKey, this) );
-			mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
-			mCore->SetListener( bind(&Camera::OnScroll, mCam) );
+			mCore->SetListener( bind(&TestApp::OnKeyPress, this) );
+			mCore->SetListener( bind(&Object::MouseMove, mCam) );
+			mCore->SetListener( bind(&Object::Scroll, mCam) );
 
 			while (mCore->Update());
 
@@ -59,7 +59,7 @@ void TestApp::OnDraw()
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnKey(const Vector2i& pos, byte key, bool isDown)
+bool TestApp::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown)
 	{

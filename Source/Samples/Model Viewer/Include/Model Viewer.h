@@ -56,7 +56,7 @@ public:
 	float UpdateFPS();
 	void  SetStatusText (const String& text, const Color3f& color = Color3f(1.0f));
 
-	bool OnKey			(const Vector2i& pos, byte key, bool isDown);
+	bool OnKeyPress		(const Vector2i& pos, byte key, bool isDown);
 	bool OnMouseMove	(const Vector2i& pos, const Vector2i& delta);
 	bool OnScroll		(const Vector2i& pos, float delta);
 	bool SerializeFrom	(const TreeNode& root);

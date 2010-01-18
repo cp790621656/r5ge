@@ -65,43 +65,43 @@ long R5::GlobalEventHandler(HWND hWnd, UINT eventId, UINT first, UINT second)
 			break;
 		
 		case SysWindow::Event::KeyDown:
-			if (handler != 0) handler->OnKey(mousePos, GetKeyCode(first, second), true);
+			if (handler != 0) handler->OnKeyPress(mousePos, GetKeyCode(first, second), true);
 			break;
 		
 		case SysWindow::Event::KeyUp:
-			if (handler != 0) handler->OnKey(mousePos, GetKeyCode(first, second), false);
+			if (handler != 0) handler->OnKeyPress(mousePos, GetKeyCode(first, second), false);
 			break;
 
 		case SysWindow::Event::LeftButtonDown:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseLeft, true);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseLeft, true);
 			break;
 
 		case SysWindow::Event::LeftButtonUp:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseLeft, false);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseLeft, false);
 			break;
 
 		case SysWindow::Event::RightButtonDown:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseRight, true);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseRight, true);
 			break;
 
 		case SysWindow::Event::RightButtonUp:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseRight, false);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseRight, false);
 			break;
 
 		case SysWindow::Event::MiddleButtonDown:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseMiddle, true);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseMiddle, true);
 			break;
 
 		case SysWindow::Event::MiddleButtonUp:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseMiddle, false);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseMiddle, false);
 			break;
 
 		case SysWindow::Event::XButtonDown:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseFour, true);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseFour, true);
 			break;
 
 		case SysWindow::Event::XButtonUp:
-			if (handler != 0) handler->OnKey(mousePos, Key::MouseFour, false);
+			if (handler != 0) handler->OnKeyPress(mousePos, Key::MouseFour, false);
 			break;
 
 		case SysWindow::Event::MouseWheel:

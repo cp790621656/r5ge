@@ -105,7 +105,7 @@ bool QuadTree::OnFill (FillParams& params)
 	// Cull the hierarchy, filling the list with renderable objects
 	if (mRootNode != 0)
 	{
-		mRootNode->_Fill(mRenderable, params);
+		mRootNode->Fill(mRenderable, params);
 
 		if (mRenderable.IsValid())
 		{

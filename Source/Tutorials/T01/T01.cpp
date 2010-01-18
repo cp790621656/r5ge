@@ -78,8 +78,8 @@ void TestApp::Run()
 	mCore->SetListener( bind(&TestApp::OnDraw, this) );
 
 	// We want all mouse movement and scroll events to go directly to the camera
-	mCore->SetListener( bind(&Camera::OnMouseMove, mCam) );
-	mCore->SetListener( bind(&Camera::OnScroll, mCam) );
+	mCore->SetListener( bind(&Object::MouseMove, mCam) );
+	mCore->SetListener( bind(&Object::Scroll, mCam) );
 
 	// Enter the message processing loop
 	while (mCore->Update());

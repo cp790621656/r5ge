@@ -223,7 +223,7 @@ void QuadNode::_FillGeometry (void* ptr, float padding)
 // Called when the object is being considered for rendering
 //============================================================================================================
 
-void QuadNode::_Fill (Array<QuadNode*>& tiles, Object::FillParams& params)
+void QuadNode::Fill (Array<QuadNode*>& tiles, Object::FillParams& params)
 {
 	// Root level is always considered to be visible for the sake of object culling.
 	// If the node is visible, either render it or cull its subdivisions.
@@ -235,17 +235,17 @@ void QuadNode::_Fill (Array<QuadNode*>& tiles, Object::FillParams& params)
 		}
 		else
 		{
-			if (mPart[0] != 0) mPart[0]->_Fill(tiles, params);
-			if (mPart[1] != 0) mPart[1]->_Fill(tiles, params);
-			if (mPart[2] != 0) mPart[2]->_Fill(tiles, params);
-			if (mPart[3] != 0) mPart[3]->_Fill(tiles, params);
+			if (mPart[0] != 0) mPart[0]->Fill(tiles, params);
+			if (mPart[1] != 0) mPart[1]->Fill(tiles, params);
+			if (mPart[2] != 0) mPart[2]->Fill(tiles, params);
+			if (mPart[3] != 0) mPart[3]->Fill(tiles, params);
 		}
 
 		// Run through all children and cull them in turn
 		for (uint i = 0; i < mChildren.GetSize(); ++i)
 		{
 			Object* obj = mChildren[i];
-			if (obj != 0) obj->_Fill(params);
+			if (obj != 0) obj->Fill(params);
 		}
 	}
 }

@@ -177,7 +177,7 @@ bool Core::Update()
 			// Update the entire scene
 			if (mRoot.GetFlag(Object::Flag::Enabled))
 			{
-				mRoot._Update(Vector3f(), Quaternion(), 1.0f, false);
+				mRoot.Update(Vector3f(), Quaternion(), 1.0f, false);
 			}
 
 			// Post-update callbacks
@@ -350,10 +350,10 @@ bool Core::OnChar(byte key)
 // Triggered by IWindow -- responds to key events
 //============================================================================================================
 
-bool Core::OnKey(const Vector2i& pos, byte key, bool isDown)
+bool Core::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 {
 	mIsKeyDown[key] = isDown;
-	if (mUI && mUI->OnKey(pos, key, isDown)) return true;
+	if (mUI && mUI->OnKeyPress(pos, key, isDown)) return true;
 
 	// If we have a key event listener, let it respond
 	if (mOnKey) return mOnKey(pos, key, isDown);

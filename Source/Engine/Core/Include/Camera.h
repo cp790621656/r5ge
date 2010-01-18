@@ -27,13 +27,6 @@ public:
 	void SetRelativeRange (const Vector3f& range) { mRelativeRange = range; }
 	void SetAbsoluteRange (const Vector3f& range);
 
-public:
-
-	// Event receiver functions -- should return whether the event was handled
-	virtual bool OnKey		(const Vector2i& pos, byte key, bool isDown) { return false; }
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta) { return false; }
-	virtual bool OnScroll	(const Vector2i& pos, float delta)			 { return false; }
-
 protected:
 
 	// Custom overrideable function called after the node's absolute coordinates have been calculated
