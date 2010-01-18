@@ -54,11 +54,22 @@ TestApp::~TestApp()
 	if (mWin)		delete mWin;
 }
 
+//============================================================================================================
+
 void TestApp::Run()
 {
 	if (*mCore << "Config/Dev10.txt")
 	{
 		mCam = mScene.FindObject<DebugCamera>("Default Camera");
+
+		ModelInstance* ins = mScene.FindObject<ModelInstance>("Peasant");
+
+		if (ins != 0)
+		{
+			Model* model = ins->GetModel();
+			model->PlayAnimation("Walk");
+			model->PlayAnimation("Torch");
+		}
 
 		if(mCam != 0)
 		{

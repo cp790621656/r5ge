@@ -38,14 +38,14 @@ void SmokeEmitter::UpdateParticle (Particle& particle)
 {
 	float time			= (float)(mLifetime - particle.mRemaining);
 	float progress		= Interpolation::Linear( 0.0f, 1.0f, Float::Clamp(time / mLifetime, 0.0f, 1.0f ) );
-	float movement		= pow(progress, 0.75f);
+	float movement		= pow(progress * 2.0f, 0.75f);
 	particle.mPos		= particle.mSpawnPos + particle.mSpawnDir * movement;
 	particle.mRadius	= mAbsoluteScale * (1.0f + movement * 2.0f);
 	particle.mRotation	= (particle.mParam == 0 ? PI : -PI) * Float::Sin( Float::Sqrt(progress) );
 	particle.mColor.r	= 0;
 	particle.mColor.g	= 0;
 	particle.mColor.b	= 0;
-	particle.mColor.a	= Float::ToRangeByte( 1.0f - Float::Abs((progress - 0.5f) * 2.0f) );
+	particle.mColor.a	= Float::ToRangeByte( 0.5f - Float::Abs(progress - 0.5f) );
 }
 
 //============================================================================================================
