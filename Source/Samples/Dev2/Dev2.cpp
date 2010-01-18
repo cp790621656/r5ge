@@ -100,7 +100,8 @@ void TestApp::GenerateTerrain()
 
 	// Generate the terrain from mixed noise
 	{
-		uint erodedSize = finalSize / 4;
+		uint erodedSize		= finalSize / 4;
+		uint valleySize	= finalSize / 16;
 
 		Noise fractal;
 		fractal.SetSize(finalSize, finalSize);
@@ -111,19 +112,42 @@ void TestApp::GenerateTerrain()
 		eroded.SetSize(erodedSize, erodedSize);
 		eroded.SetSeamless(final.IsSeamless());
 
+		Noise carved;
+		carved.SetSize(erodedSize, erodedSize);
+		carved.SetSeamless(final.IsSeamless());
+
+		Noise valley;
+		valley.SetSize(valleySize, valleySize);
+		valley.SetSeamless(final.IsSeamless());
+
 		// Copy the fractal terrain into the eroded noise, downsampling it in the process
 		memcpy(eroded.GetBuffer(), fractal.GetBuffer(eroded.GetSize()),
 			sizeof(float) * erodedSize * erodedSize);
 
-		// Apply erosion
-		eroded.ApplyFilter("Erode", "30 0.5 0.0");
-		eroded.ApplyFilter("Normalize");
-		eroded.ApplyFilter("Multiply", 1.05f);
-		eroded.ApplyFilter("Add", 0.015f);
+		// Downsample the noise further
+		memcpy(carved.GetBuffer(), eroded.GetBuffer(),
+			sizeof(float) * erodedSize * erodedSize);
+
+		// Downsample the noise further
+		memcpy(valley.GetBuffer(), carved.GetBuffer(valley.GetSize()),
+			sizeof(float) * valleySize * valleySize);
+
+		// Apply thermal erosion with full sediment deposition
+		eroded.ApplyFilter("Erode", "30 0.5 1.0");
+
+		// Carve out the terrain using a different erosion filter
+		carved.ApplyFilter("Erode", "30 0.5 0.0");
+		carved.ApplyFilter("Normalize");
+		carved.ApplyFilter("Multiply", 1.05f);
+
+		// Just like the eroded noise, valley noise uses full sediment deposition
+		valley.ApplyFilter("Erode", "30 0.5 1.0");
 
 		// Mix the two together
 		float* fractalData	= fractal.GetBuffer();
 		float* erodedData	= eroded.GetBuffer();
+		float* carvedData	= carved.GetBuffer();
+		float* valleyData	= valley.GetBuffer();
 		float* finalData	= final.GetBuffer();
 		const float invSize = 1.0f / (finalSize - 1);
 
@@ -136,17 +160,29 @@ void TestApp::GenerateTerrain()
 			{
 				uint index = yw + x;
 				float fx = x * invSize;
-				float erodedPoint = Interpolation::HermiteClamp(erodedData, erodedSize, erodedSize, fx, fy);
+
 				float fractalPoint = fractalData[index];
 
-				if (erodedPoint > fractalPoint)
+				float carvedPoint = Interpolation::HermiteClamp(carvedData, erodedSize, erodedSize, fx, fy);
+				float erodedPoint = Interpolation::HermiteClamp(erodedData, erodedSize, erodedSize, fx, fy);
+				float valleyPoint = Interpolation::HermiteClamp(valleyData, valleySize, valleySize, fx, fy);
+
+				float carvedFactor = Float::Clamp(fractalPoint - 0.5f,	0.0f, 0.5f) / 0.5f;
+				float erodedFactor = Float::Clamp(fractalPoint - 0.3f,	0.0f, 0.4f) / 0.4f;
+				float valleyFactor = Float::Clamp(fractalPoint,			0.0f, 0.4f) / 0.4f;
+
+				float fullErosion = Interpolation::Linear(erodedPoint, carvedPoint, carvedFactor);
+				fullErosion = Interpolation::Linear(valleyPoint, fullErosion, valleyFactor);
+
+				if (fullErosion > fractalPoint)
 				{
-					finalData[index] = erodedPoint;
-					float f = (erodedPoint - fractalPoint) / 0.005f;
+					finalData[index] = fullErosion;
+					float f = (fullErosion - fractalPoint) / 0.005f;
 					f = Float::Clamp(f, 0.0f, 1.0f);
 					f = f * f * f;
-					gradientMap[index].Set(Float::ToNormalMapByte(f), 0, 0, 0);
+					gradientMap[index].Set(Float::ToRangeByte(f), 0, 0, 0);
 				}
+			
 				else
 				{
 					finalData[index] = fractalPoint;
