@@ -5,7 +5,7 @@ using namespace R5;
 // A list of all scripts that can be created
 //============================================================================================================
 
-Hash<UIScript::CreateDelegate> gScriptTypes;
+Hash<UIScript::CreateDelegate> gUIScriptTypes;
 
 //============================================================================================================
 // INTERNAL: Registers a new script of the specified type
@@ -13,9 +13,9 @@ Hash<UIScript::CreateDelegate> gScriptTypes;
 
 void UIScript::_Register(const String& type, const CreateDelegate& func)
 {
-	gScriptTypes.Lock();
-	gScriptTypes[type] = func;
-	gScriptTypes.Unlock();
+	gUIScriptTypes.Lock();
+	gUIScriptTypes[type] = func;
+	gUIScriptTypes.Unlock();
 }
 
 //============================================================================================================
@@ -25,12 +25,12 @@ void UIScript::_Register(const String& type, const CreateDelegate& func)
 UIScript* UIScript::_Create(const String& type)
 {
 	UIScript* ptr (0);
-	gScriptTypes.Lock();
+	gUIScriptTypes.Lock();
 	{
-		const CreateDelegate* callback = gScriptTypes.GetIfExists(type);
+		const CreateDelegate* callback = gUIScriptTypes.GetIfExists(type);
 		if (callback != 0) ptr = (*callback)();
 	}
-	gScriptTypes.Unlock();
+	gUIScriptTypes.Unlock();
 	return ptr;
 }
 

@@ -27,9 +27,9 @@ Root
 			{
 				Shader = "Forward/Terrain"
 				Texture 0 = "Textures/Sand/beach.jpg"
-				Texture 1 = "Textures/Grass/green.jpg"
+				Texture 1 = "Textures/Stone/lime.jpg"
 				Texture 2 = "Textures/Grass/wild.jpg"
-				Texture 3 = "Textures/Stone/broken.jpg"
+				Texture 3 = "Textures/Stone/rocky.jpg"
 				Texture 4 = "Textures/Other/snow.jpg"
 				Texture 5 = "Terrain"
 			}

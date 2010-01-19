@@ -170,7 +170,6 @@ void TestApp::GenerateTerrain()
 
 				// Mix the 3 noises using the pixel's original relative height
 				float carvedFactor	= Float::Clamp(fractalPoint - 0.5f,	0.0f, 0.5f) / 0.5f;
-				float erodedFactor	= Float::Clamp(fractalPoint - 0.3f,	0.0f, 0.4f) / 0.4f;
 				float valleyFactor	= Float::Clamp(fractalPoint,		0.0f, 0.4f) / 0.4f;
 				float fullErosion	= Interpolation::Linear(erodedPoint, carvedPoint, carvedFactor);
 				fullErosion			= Interpolation::Linear(valleyPoint, fullErosion, valleyFactor);

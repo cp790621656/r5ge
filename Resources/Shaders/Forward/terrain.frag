@@ -39,13 +39,13 @@ void main()
     vec4 snow  = texture2D(R5_texture4, _texCoord);
 
     // Where various textures should appear
-    float rockToSnow  = smoothstep(0.65,  1.0,  height);
-    float grassToRock = smoothstep(0.35,  0.65, height);
-    float grassToMoss = smoothstep(0.15,  0.3,  height);
+    float rockToSnow  = smoothstep(0.65,  0.95,  height);
+    float grassToRock = smoothstep(0.40,  0.65, height);
+    float grassToMoss = smoothstep(0.15,  0.40, height);
     float sandToGrass = smoothstep(0.075, 0.15, height);
 
     // Slope is based on the normal -- the more bent the normal, the rockier this pixel should be
-    float slope = pow(dot(normal, vec3(0.0, 0.0, 1.0)), 50.0);
+    float slope = pow(normal.z, 4.0);
 
     // Snow should appear only on really high or on flat surfaces
     rockToSnow = min(rockToSnow + rockToSnow * slope, 1.0);

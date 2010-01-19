@@ -246,7 +246,7 @@ bool HandleEvent (NSEvent* event)
 			 eventType == NSOtherMouseUp )
 		{
 			keys[Key::MouseLeft + button] = false;
-			if (handler) handler->OnKey(mouse, Key::MouseLeft + button, false);
+			if (handler) handler->OnKeyPress(mouse, Key::MouseLeft + button, false);
 		}
 		else if (inside)
 		{
@@ -260,7 +260,7 @@ bool HandleEvent (NSEvent* event)
 			else
 			{
 				keys[Key::MouseLeft + button] = true;
-				if (handler) handler->OnKey(mouse, Key::MouseLeft + button, true);
+				if (handler) handler->OnKeyPress(mouse, Key::MouseLeft + button, true);
 			}
 		}
 	}
@@ -279,7 +279,7 @@ bool HandleEvent (NSEvent* event)
 
 		if (handler)
 		{
-			handler->OnKey(mouse, key, true);
+			handler->OnKeyPress(mouse, key, true);
 			
 			NSString* chars	( [event characters] );
 			unsigned int length = [chars length];
@@ -298,7 +298,7 @@ bool HandleEvent (NSEvent* event)
 		unsigned char key ( GetKeyCode([event keyCode]) );
 		keys[key] = false;
 
-		if (handler) handler->OnKey(mouse, key, false);
+		if (handler) handler->OnKeyPress(mouse, key, false);
 	}
 	else if ( eventType == NSFlagsChanged )	// Modifier keys (Shift, Control, etc)
 	{
@@ -326,7 +326,7 @@ bool HandleEvent (NSEvent* event)
 
 		keys[key] = isDown;
 
-		if (handler) handler->OnKey(mouse, key, isDown);
+		if (handler) handler->OnKeyPress(mouse, key, isDown);
 	}
 
 	// Forward this event to the rest of the Cocoa application
