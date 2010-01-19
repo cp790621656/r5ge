@@ -163,24 +163,24 @@ void TestApp::GenerateTerrain()
 
 				float fractalPoint = fractalData[index];
 
-				float carvedPoint = Interpolation::HermiteClamp(carvedData, erodedSize, erodedSize, fx, fy);
-				float erodedPoint = Interpolation::HermiteClamp(erodedData, erodedSize, erodedSize, fx, fy);
-				float valleyPoint = Interpolation::HermiteClamp(valleyData, valleySize, valleySize, fx, fy);
+				// Hermite texture sampling of the 3 input noises
+				float carvedPoint	= Interpolation::HermiteClamp(carvedData, erodedSize, erodedSize, fx, fy);
+				float erodedPoint	= Interpolation::HermiteClamp(erodedData, erodedSize, erodedSize, fx, fy);
+				float valleyPoint	= Interpolation::HermiteClamp(valleyData, valleySize, valleySize, fx, fy);
 
-				float carvedFactor = Float::Clamp(fractalPoint - 0.5f,	0.0f, 0.5f) / 0.5f;
-				float erodedFactor = Float::Clamp(fractalPoint - 0.3f,	0.0f, 0.4f) / 0.4f;
-				float valleyFactor = Float::Clamp(fractalPoint,			0.0f, 0.4f) / 0.4f;
-
-				float fullErosion = Interpolation::Linear(erodedPoint, carvedPoint, carvedFactor);
-				fullErosion = Interpolation::Linear(valleyPoint, fullErosion, valleyFactor);
+				// Mix the 3 noises using the pixel's original relative height
+				float carvedFactor	= Float::Clamp(fractalPoint - 0.5f,	0.0f, 0.5f) / 0.5f;
+				float erodedFactor	= Float::Clamp(fractalPoint - 0.3f,	0.0f, 0.4f) / 0.4f;
+				float valleyFactor	= Float::Clamp(fractalPoint,		0.0f, 0.4f) / 0.4f;
+				float fullErosion	= Interpolation::Linear(erodedPoint, carvedPoint, carvedFactor);
+				fullErosion			= Interpolation::Linear(valleyPoint, fullErosion, valleyFactor);
 
 				if (fullErosion > fractalPoint)
 				{
 					finalData[index] = fullErosion;
-					float f = (fullErosion - fractalPoint) / 0.005f;
-					f = Float::Clamp(f, 0.0f, 1.0f);
-					f = f * f * f;
-					gradientMap[index].Set(Float::ToRangeByte(f), 0, 0, 0);
+					float r = (fullErosion - fractalPoint) / 0.0025f;
+					r = Float::Clamp(r, 0.0f, 1.0f);
+					gradientMap[index].Set(Float::ToRangeByte(r), 0, 0, 0);
 				}
 			
 				else

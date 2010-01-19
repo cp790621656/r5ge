@@ -3,8 +3,8 @@
 uniform sampler2D	R5_texture0; // Normal map (RGB) and height (A)
 uniform sampler2D	R5_texture1; // Gradient mix texture
 uniform sampler2D	R5_texture2; // Rocky texture
-uniform sampler2D	R5_texture3; // Smooth texture
-uniform sampler2D	R5_texture4; // Rocky normal map
+uniform sampler2D	R5_texture3; // Rocky normal map
+uniform sampler2D	R5_texture4; // Smooth texture
 uniform sampler2D	R5_texture5; // Smooth normal map
 
 varying float _fogFactor;
@@ -39,6 +39,9 @@ void main()
 
 	// Transform the updated normal by the TBN matrix
 	normal = normalize(TBN * (normalMap.rgb * 2.0 - 1.0));
+
+	// Darken the rock texture
+	tex0.rgb *= 0.6;
 
 	// Diffuse color
 	vec4 color = mix(tex0, tex2, gradient.r);

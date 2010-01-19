@@ -53,7 +53,6 @@ UIManager::UIManager() :
 		UIWidget::Register<UIAnimatedButton>();
 		UIWidget::Register<UIAnimatedCheckbox>();
 		UIWidget::Register<UIShadedArea>();
-
 		UIScript::Register<USEventListener>();
 	}
 }
@@ -401,7 +400,13 @@ bool UIManager::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 		{
 			// If some mouse key is held down, ignore mouse movement altogether
 			for (uint i = Key::MouseFirst + 1; i < Key::MouseLast; ++i)
-				if (mKey[i]) return false;
+			{
+				if (mKey[i])
+				{
+					Unlock();
+					return false;
+				}
+			}
 
 			// Hover over the widget
 			_SetHoverArea( mRoot._FindWidget(pos) );
