@@ -40,6 +40,7 @@
 		141712DF10FAF9F700BA7643 /* GLVBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 141712D610FAF9F700BA7643 /* GLVBO.cpp */; };
 		1417139910FAFCFF00BA7643 /* T08.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1417133710FAFB3200BA7643 /* T08.cpp */; };
 		141713CA10FAFD6400BA7643 /* T09.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1417133910FAFB5200BA7643 /* T09.cpp */; };
+		1427076C1107C72F0080A80E /* DrawGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1427076B1107C72F0080A80E /* DrawGroup.cpp */; };
 		1428A2A40F7B5B2D00CBE613 /* ActiveAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1428A2A30F7B5B2D00CBE613 /* ActiveAnimation.cpp */; };
 		1429C99C0E2C091700BD3B1A /* _HDR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1429C9980E2C091700BD3B1A /* _HDR.cpp */; };
 		1429C99D0E2C091700BD3B1A /* _JPG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1429C9990E2C091700BD3B1A /* _JPG.cpp */; };
@@ -1763,6 +1764,8 @@
 		1417133910FAFB5200BA7643 /* T09.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = T09.cpp; path = ../Tutorials/T09/T09.cpp; sourceTree = SOURCE_ROOT; };
 		1417139710FAFCE200BA7643 /* T08.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T08.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		141713C810FAFD5700BA7643 /* T09.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T09.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1427076A1107C71C0080A80E /* DrawGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawGroup.h; path = Core/Include/DrawGroup.h; sourceTree = "<group>"; };
+		1427076B1107C72F0080A80E /* DrawGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DrawGroup.cpp; path = Core/Source/DrawGroup.cpp; sourceTree = "<group>"; };
 		1428A2A10F7B5B0900CBE613 /* ActiveAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ActiveAnimation.h; path = Core/Include/ActiveAnimation.h; sourceTree = "<group>"; };
 		1428A2A20F7B5B0900CBE613 /* BoneTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoneTransform.h; path = Core/Include/BoneTransform.h; sourceTree = "<group>"; };
 		1428A2A30F7B5B2D00CBE613 /* ActiveAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ActiveAnimation.cpp; path = Core/Source/ActiveAnimation.cpp; sourceTree = "<group>"; };
@@ -2010,7 +2013,6 @@
 		14D6197F10FAF3CF00C41C13 /* Decal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Decal.h; path = Core/Include/Decal.h; sourceTree = "<group>"; };
 		14D6198010FAF3CF00C41C13 /* DirectionalBillboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DirectionalBillboard.h; path = Core/Include/DirectionalBillboard.h; sourceTree = "<group>"; };
 		14D6198110FAF3CF00C41C13 /* DirectionalGlare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DirectionalGlare.h; path = Core/Include/DirectionalGlare.h; sourceTree = "<group>"; };
-		14D6198210FAF3CF00C41C13 /* DrawEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawEntry.h; path = Core/Include/DrawEntry.h; sourceTree = "<group>"; };
 		14D6198310FAF3CF00C41C13 /* DrawLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawLayer.h; path = Core/Include/DrawLayer.h; sourceTree = "<group>"; };
 		14D6198410FAF3CF00C41C13 /* DrawList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawList.h; path = Core/Include/DrawList.h; sourceTree = "<group>"; };
 		14D6198510FAF3CF00C41C13 /* DrawQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawQueue.h; path = Core/Include/DrawQueue.h; sourceTree = "<group>"; };
@@ -3413,7 +3415,7 @@
 		14D619E310FAF5B700C41C13 /* Include */ = {
 			isa = PBXGroup;
 			children = (
-				14D6198210FAF3CF00C41C13 /* DrawEntry.h */,
+				1427076A1107C71C0080A80E /* DrawGroup.h */,
 				14D6198310FAF3CF00C41C13 /* DrawLayer.h */,
 				14D6198410FAF3CF00C41C13 /* DrawList.h */,
 				14D6198510FAF3CF00C41C13 /* DrawQueue.h */,
@@ -3424,6 +3426,7 @@
 		14D619E410FAF5C000C41C13 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				1427076B1107C72F0080A80E /* DrawGroup.cpp */,
 				14D6199110FAF3E800C41C13 /* DrawLayer.cpp */,
 				14D6199210FAF3E800C41C13 /* DrawList.cpp */,
 				14D6199310FAF3E800C41C13 /* DrawQueue.cpp */,
@@ -4972,6 +4975,7 @@
 				14D619A410FAF3E800C41C13 /* Resource.cpp in Sources */,
 				14D619A510FAF3E800C41C13 /* Terrain.cpp in Sources */,
 				14D619A610FAF3E800C41C13 /* TerrainNode.cpp in Sources */,
+				1427076C1107C72F0080A80E /* DrawGroup.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

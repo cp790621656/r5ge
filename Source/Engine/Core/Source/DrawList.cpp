@@ -8,7 +8,8 @@ using namespace R5;
 void DrawList::Add (const void* group, Object* object, float distance)
 {
 	typedef DrawGroup* DrawGroupPtr;
-	DrawGroupPtr& ptr = mGroups[(uint)group];
+	uint index = (uint)(ulong)group;
+	DrawGroupPtr& ptr = mGroups[index];
 	if (ptr == 0) ptr = new DrawGroup();
 	ptr->Add(object, distance);
 }
