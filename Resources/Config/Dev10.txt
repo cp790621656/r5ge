@@ -75,7 +75,7 @@ Root
 
 					Point Light = "First Light"
 					{
-						Position = 0.000000 0.000000 2.0000
+						Position = 0.000000 0.000000 4.0000
 						Rotation = 0.000000 0.000000 0.000000 1.000000
 						Scale = 1.000000
 						Layer = 1
