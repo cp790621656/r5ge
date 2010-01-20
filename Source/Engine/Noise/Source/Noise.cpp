@@ -165,32 +165,24 @@ Noise::~Noise()
 
 void Noise::Release(bool clearFilters)
 {
-	mFilters.Lock();
-	{
-		if (mTemp != 0) { delete [] mTemp; mTemp = 0; }
-		if (mAux  != 0) { delete [] mAux;  mAux  = 0; }
-		if (mData != 0) { delete [] mData; mData = 0; }
-		mBufferSize = 0;
-		mIsDirty = true;
-		if (clearFilters) mFilters.Clear();
-	}
-	mFilters.Unlock();
+	if (mTemp != 0) { delete [] mTemp; mTemp = 0; }
+	if (mAux  != 0) { delete [] mAux;  mAux  = 0; }
+	if (mData != 0) { delete [] mData; mData = 0; }
+	mBufferSize = 0;
+	mIsDirty = true;
+	if (clearFilters) mFilters.Clear();
 }
 
 //============================================================================================================
 // Applies a new filter to the noise
 //============================================================================================================
 
-void Noise::ApplyFilter (const String& filterName, const Parameters& params)
+Noise::Parameters& Noise::ApplyFilter (const String& filterName)
 {
-	mFilters.Lock();
-	{
-		mIsDirty = true;
-		AppliedFilter& filter = mFilters.Expand();
-		filter.mName = filterName;
-		filter.mParams = params;
-	}
-	mFilters.Unlock();
+	mIsDirty = true;
+	AppliedFilter& filter = mFilters.Expand();
+	filter.mName = filterName;
+	return filter.mParams;
 }
 
 //============================================================================================================
@@ -203,37 +195,33 @@ float* Noise::GetBuffer(const Vector2i& size)
 
 	if (mIsDirty)
 	{
-		mFilters.Lock();
+		mIsDirty = false;
+		mRand.SetSeed(mSeed);
+		
+		uint needed = (uint)mSize.x * mSize.y;
+
+		// Not enough allocated memory? Grab some more.
+		if (mBufferSize < needed)
 		{
-			mIsDirty = false;
-			mRand.SetSeed(mSeed);
-			
-			uint needed = (uint)mSize.x * mSize.y;
+			if (mAux  != 0) delete [] mAux;
+			if (mData != 0) delete [] mData;
 
-			// Not enough allocated memory? Grab some more.
-			if (mBufferSize < needed)
-			{
-				if (mAux  != 0) delete [] mAux;
-				if (mData != 0) delete [] mData;
+			mBufferSize = needed;
 
-				mBufferSize = needed;
+			mData = new float[mBufferSize];
+			mAux  = new float[mBufferSize];
 
-				mData = new float[mBufferSize];
-				mAux  = new float[mBufferSize];
-
-				memset(mData, 0, sizeof(float) * mBufferSize);
-				memset(mAux,  0, sizeof(float) * mBufferSize);
-			}
-
-			// Go through all applied filters
-			for (uint i = 0; i < mFilters.GetSize(); ++i)
-			{
-				AppliedFilter& mf = mFilters[i];
-				OnApplyFilterDelegate fnc = _GetFilter(mf.mName);
-				if (fnc) fnc(mRand, mData, mAux, mSize, mf.mParams, mSeamless);
-			}
+			memset(mData, 0, sizeof(float) * mBufferSize);
+			memset(mAux,  0, sizeof(float) * mBufferSize);
 		}
-		mFilters.Unlock();
+
+		// Go through all applied filters
+		for (uint i = 0; i < mFilters.GetSize(); ++i)
+		{
+			AppliedFilter& mf = mFilters[i];
+			OnApplyFilterDelegate fnc = _GetFilter(mf.mName);
+			if (fnc) fnc(mRand, mData, mAux, mSize, mf.mParams, mSeamless);
+		}
 	}
 
 	// If no special size was requested, return the data
@@ -297,33 +285,29 @@ bool Noise::SerializeFrom (const TreeNode& root)
 		else if (tag == "Seamless")	value >> mSeamless;
 		else if (tag == "Filters")
 		{
-			mFilters.Lock();
+			for (uint b = 0; b < node.mChildren.GetSize(); ++b)
 			{
-				for (uint b = 0; b < node.mChildren.GetSize(); ++b)
-				{
-					const TreeNode& child = node.mChildren[b];
-					AppliedFilter& f = mFilters.Expand();
-					f.mName = child.mTag;
+				const TreeNode& child = node.mChildren[b];
+				AppliedFilter& f = mFilters.Expand();
+				f.mName = child.mTag;
 
-					if (child.mValue.IsQuaternion())
-					{
-						f.mParams = child.mValue.AsQuaternion();
-					}
-					else if (child.mValue.IsVector3f())
-					{
-						f.mParams = child.mValue.AsVector3f();
-					}
-					else if (child.mValue.IsVector2f())
-					{
-						f.mParams = child.mValue.AsVector2f();
-					}
-					else if (child.mValue.IsFloat())
-					{
-						f.mParams = child.mValue.AsFloat();
-					}
+				if (child.mValue.IsQuaternion())
+				{
+					f.mParams = child.mValue.AsQuaternion();
+				}
+				else if (child.mValue.IsVector3f())
+				{
+					f.mParams = child.mValue.AsVector3f();
+				}
+				else if (child.mValue.IsVector2f())
+				{
+					f.mParams = child.mValue.AsVector2f();
+				}
+				else if (child.mValue.IsFloat())
+				{
+					f.mParams = child.mValue.AsFloat();
 				}
 			}
-			mFilters.Unlock();
 		}
 	}
 	return true;
@@ -343,26 +327,22 @@ bool Noise::SerializeTo (TreeNode& root) const
 	
 	TreeNode& child = node.AddChild("Filters");
 
-	mFilters.Lock();
+	for (uint i = 0; i < mFilters.GetSize(); ++i)
 	{
-		for (uint i = 0; i < mFilters.GetSize(); ++i)
+		const AppliedFilter& f = mFilters[i];
+		
+		TreeNode& filter = child.AddChild(f.mName);
+		uint count = f.mParams.GetCount();
+		const Parameters& p = f.mParams;
+		
+		switch (count)
 		{
-			const AppliedFilter& f = mFilters[i];
-			
-			TreeNode& filter = child.AddChild(f.mName);
-			uint count = f.mParams.GetCount();
-			const Parameters& p = f.mParams;
-			
-			switch (count)
-			{
-				case 0:		break;
-				case 1:		filter.mValue = p[0];								break;
-				case 2:		filter.mValue = Vector2f(p[0], p[1]);				break;
-				case 3:		filter.mValue = Vector3f(p[0], p[1], p[2]);			break;
-				default:	filter.mValue = Quaternion(p[0], p[1], p[2], p[3]); break;
-			};			
-		}
+			case 0:		break;
+			case 1:		filter.mValue = p[0];								break;
+			case 2:		filter.mValue = Vector2f(p[0], p[1]);				break;
+			case 3:		filter.mValue = Vector3f(p[0], p[1], p[2]);			break;
+			default:	filter.mValue = Quaternion(p[0], p[1], p[2], p[3]); break;
+		};			
 	}
-	mFilters.Unlock();
 	return true;
 }

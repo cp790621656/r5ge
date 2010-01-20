@@ -242,7 +242,7 @@ bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 
 					if (filter.IsValid())
 					{
-						mNoise.ApplyFilter(filter, params);
+						mNoise.ApplyFilter(filter) = params;
 					}
 				}
 			}

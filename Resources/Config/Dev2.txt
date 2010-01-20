@@ -16,7 +16,7 @@ Root
 		Background Color = 1.000000 1.000000 1.000000 1.000000
 		Fog Range = 25.000000 50.000000
 
-		Material = "Terrain"
+		Material = "Mountains"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 1.000000 1.000000 1.000000 0.200000
@@ -32,6 +32,25 @@ Root
 				Texture 3 = "Textures/Stone/grey_ns.png"
 				Texture 4 = "Textures/Other/snow.jpg"
 				Texture 5 = "Textures/Other/snow_ns.png"
+			}
+		}
+		
+		Material = "Test"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 0.9500000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Opaque"
+			{
+				Shader = "Forward/dev2terrain"
+				Texture 0 = "Terrain Normal Map"
+				Texture 1 = "Terrain Gradient Map"
+				Texture 2 = "Textures/Sand/beach.jpg"
+				Texture 3 = "Textures/Sand/beach_ns.png"
+				Texture 4 = "Textures/Grass/wild.jpg"
+				Texture 5 = "Textures/Grass/wild_ns.png"
 			}
 		}
 	}
@@ -73,7 +92,6 @@ Root
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
 			Layer = 0
-			Material = "Terrain"
 		}
 	}
 }

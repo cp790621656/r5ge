@@ -18,14 +18,16 @@ varying vec3 _eyeDir, _tangent;
 void main()
 {
 	vec4 normalMap	= texture2D(R5_texture0, _mapCoord);
-	vec4 gradient	= texture2D(R5_texture1, _mapCoord);
+	vec4 colorMap	= texture2D(R5_texture1, _mapCoord);
 	vec4 tex0		= texture2D(R5_texture2, _texCoord);
 	vec4 tex1		= texture2D(R5_texture3, _texCoord);
 	vec4 tex2		= texture2D(R5_texture4, _texCoord);
 	vec4 tex3		= texture2D(R5_texture5, _texCoord);
 	vec3 eyeDir		= normalize(_eyeDir);
 	vec3 tangent	= normalize(_tangent);
-	vec3 normal		= normalize(gl_NormalMatrix * (normalMap.xyz * 2.0 - 1.0));
+	vec3 normal		= normalMap.xyz * 2.0 - 1.0;
+	//float slope 	= normal.z;
+	normal			= normalize(gl_NormalMatrix * normal);
 	vec3 binormal	= cross(normal, tangent);
 
 	// Realign the tangent
@@ -35,19 +37,21 @@ void main()
 	mat3 TBN = mat3(tangent, binormal, normal);
 
 	// Update the normal map
-	normalMap = mix(tex1, tex3, gradient.r);
+	normalMap = mix(tex1, tex3, colorMap.r);
 
-	// Transform the updated normal by the TBN matrix
-	normal = normalize(TBN * (normalMap.rgb * 2.0 - 1.0));
+    // Transform the updated normal by the TBN matrix
+	normal = normalMap.rgb * 2.0 - 1.0;
+	normal = normalize(TBN * normal);
 
-	// Darken the rock texture
-	tex0.rgb *= 0.6;
+	// Tint the textures
+	tex0.rgb *= colorMap.g;
+	tex2.rgb *= colorMap.b;
 
 	// Diffuse color
-	vec4 color = mix(tex0, tex2, gradient.r);
+	vec4 color = vec4(colorMap.r * 0.5, colorMap.r, colorMap.r, 1.0); //mix(tex0, tex2, colorMap.a); //pow(slope, 20.0));
 
 	// Directional light
-	vec3  lightDir 			= normalize(gl_LightSource[0].position.xyz);
+	/*vec3  lightDir 			= normalize(gl_LightSource[0].position.xyz);
     vec3  reflected 		= reflect(lightDir, normal);
 	float diffuseFactor     = max( 0.0, dot(normal, lightDir) );
 	float reflectiveFactor  = max( 0.0, dot(reflected, eyeDir) );
@@ -59,7 +63,7 @@ void main()
 	color.rgb  += gl_FrontLightProduct[0].specular.rgb * specularFactor;
 
 	// Adjust by the fog
-	color.rgb = mix(color.rgb, gl_Fog.color.rgb, _fogFactor);
+	color.rgb = mix(color.rgb, gl_Fog.color.rgb, _fogFactor);*/
 
 	// Final color
 	gl_FragColor = color;

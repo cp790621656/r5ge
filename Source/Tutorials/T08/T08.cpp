@@ -82,7 +82,7 @@ void TestApp::Run()
 		// with values above 0.65 will be mirrored, turning high peaks into volcano-like crevices.
 		// This type of noise is also known as ridged multifractal due to the ridges it tends to produce.
 
-		noise.ApplyFilter("Fractal", "2 0.65");
+		noise.ApplyFilter("Fractal").Set(2.0f, 0.65f);
 
 		// Now that we have our heightmap, we should create our terrain.
 		mTerrain = mScene.AddObject<Terrain>("First Terrain");

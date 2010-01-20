@@ -81,7 +81,7 @@ public:
 	void SetSize (const Vector2i& size)	{ mSize = size; mIsDirty = true; }
 
 	// Applies a new filter to the noise
-	void ApplyFilter (const String& filterName, const Parameters& params = Parameters());
+	Parameters& ApplyFilter (const String& filterName);
 
 	// Returns a pointer to the noise buffer (blocks until the noise is generated)
 	float* GetBuffer (const Vector2i& size = 0);

@@ -24,6 +24,11 @@ public:
 	Parameters (float f0, float f1, float f2, float f3)	: mCount(4) { mF[0] = f0;  mF[1] = f1;   mF[2] = f2;   mF[3] = f3;   }
 	Parameters (const String& text)						{ memset(mF, 0, sizeof(float) * 4); *this = text; }
 	Parameters (const char* text)						{ memset(mF, 0, sizeof(float) * 4); *this = text; }
+
+	void Set (float f0)									{ mCount = 1; mF[0] = f0; }
+	void Set (float f0, float f1)						{ mCount = 2; mF[0] = f0; mF[1] = f1; }
+	void Set (float f0, float f1, float f2)				{ mCount = 3; mF[0] = f0; mF[1] = f1; mF[2] = f2; }
+	void Set (float f0, float f1, float f2, float f3)	{ mCount = 4; mF[0] = f0; mF[1] = f1; mF[2] = f2; mF[3] = f3; }
 	
 	uint GetCount() const								{ return mCount; }
 	float operator [] (uint val) const					{ return val < mCount ? mF[val] : 0.0f; }
