@@ -3772,7 +3772,6 @@
 				141713AB10FAFD5700BA7643 /* PBXTargetDependency */,
 				141713AD10FAFD5700BA7643 /* PBXTargetDependency */,
 				141713AF10FAFD5700BA7643 /* PBXTargetDependency */,
-				141713B110FAFD5700BA7643 /* PBXTargetDependency */,
 				141713B310FAFD5700BA7643 /* PBXTargetDependency */,
 				141713B510FAFD5700BA7643 /* PBXTargetDependency */,
 				141713B710FAFD5700BA7643 /* PBXTargetDependency */,
@@ -3780,6 +3779,7 @@
 				141713BB10FAFD5700BA7643 /* PBXTargetDependency */,
 				141713BD10FAFD5700BA7643 /* PBXTargetDependency */,
 				141713BF10FAFD5700BA7643 /* PBXTargetDependency */,
+				141713B110FAFD5700BA7643 /* PBXTargetDependency */,
 			);
 			name = T09;
 			productName = "Cocoa Window";
@@ -4094,7 +4094,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				14ACB416110679ED00258C54 /* PBXTargetDependency */,
 				14ACB3EC1106798500258C54 /* PBXTargetDependency */,
 				14ACB3EE1106798500258C54 /* PBXTargetDependency */,
 				14ACB3F01106798500258C54 /* PBXTargetDependency */,
@@ -4104,6 +4103,7 @@
 				14ACB3F81106798500258C54 /* PBXTargetDependency */,
 				14ACB3FA1106798500258C54 /* PBXTargetDependency */,
 				14ACB3FC1106798500258C54 /* PBXTargetDependency */,
+				14ACB416110679ED00258C54 /* PBXTargetDependency */,
 			);
 			name = Dev10;
 			productName = "Cocoa Window";

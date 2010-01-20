@@ -524,7 +524,11 @@ void GLGraphics::BeginFrame()
 
 void GLGraphics::EndFrame()
 {
-	// Nothing for now
+	// NOTE: Intel driver seems to have a bug in it where it resets the blending mode to its default
+	// value when the frame finishes the draw process (src_alpha, one_minus_src_alpha).
+	// This call here effectively fixes the issue, but it's obviously a work-around rather than a true fix.
+	SetBlending(IGraphics::Blending::Normal);
+	mTechnique = 0;
 }
 
 //============================================================================================================

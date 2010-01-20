@@ -1,6 +1,4 @@
 uniform vec4 R5_clipRange;
-
-varying vec2 _texCoord;
 varying vec3 _normal;
 
 void main()
