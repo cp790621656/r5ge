@@ -39,7 +39,8 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Material"
+				Shader = "Deferred/DG"
+				Texture 0 = "Textures/Wood/WoodTorch.jpg"
 			}
 		}
 	}
@@ -58,7 +59,7 @@ Root
 			
 			Object = "Attachment - Left Hand"
 			{
-				Position = 0.200000 0.000000 -0.500000
+				Position = 0.200000 0.000000 0
 				Rotation = 0.000000 1.000000 0.000000 0.000000
 
 				Script = "Bone Attachment"
@@ -68,13 +69,13 @@ Root
 
 				Model Instance = "First Instance"
 				{
-					Scale = 3.000000
+					Scale = 1.000000
 					Layer = 10
 					Model = "Models/torch.r5a"
 
 					Point Light = "First Light"
 					{
-						Position = 0.000000 0.000000 0.100000
+						Position = 0.000000 0.000000 2.0000
 						Rotation = 0.000000 0.000000 0.000000 1.000000
 						Scale = 1.000000
 						Layer = 1
@@ -89,7 +90,7 @@ Root
 						{
 							Position = 0.000000 0.000000 0.000000
 							Rotation = 0.000000 0.000000 0.000000 1.000000
-							Scale = 0.333330
+							Scale = 0.666660
 							Layer = 10
 							Texture = "Textures/Billboards/fire.jpg"
 							Technique = "Particle"
