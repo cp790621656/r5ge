@@ -26,7 +26,6 @@ void main()
 	vec3 eyeDir		= normalize(_eyeDir);
 	vec3 tangent	= normalize(_tangent);
 	vec3 normal		= normalMap.xyz * 2.0 - 1.0;
-	//float slope 	= normal.z;
 	normal			= normalize(gl_NormalMatrix * normal);
 	vec3 binormal	= cross(normal, tangent);
 
@@ -48,10 +47,10 @@ void main()
 	tex2.rgb *= colorMap.b;
 
 	// Diffuse color
-	vec4 color = vec4(colorMap.r * 0.5, colorMap.r, colorMap.r, 1.0); //mix(tex0, tex2, colorMap.a); //pow(slope, 20.0));
+	vec4 color = mix(tex0, tex2, colorMap.r);
 
 	// Directional light
-	/*vec3  lightDir 			= normalize(gl_LightSource[0].position.xyz);
+	vec3  lightDir 			= normalize(gl_LightSource[0].position.xyz);
     vec3  reflected 		= reflect(lightDir, normal);
 	float diffuseFactor     = max( 0.0, dot(normal, lightDir) );
 	float reflectiveFactor  = max( 0.0, dot(reflected, eyeDir) );
@@ -63,7 +62,7 @@ void main()
 	color.rgb  += gl_FrontLightProduct[0].specular.rgb * specularFactor;
 
 	// Adjust by the fog
-	color.rgb = mix(color.rgb, gl_Fog.color.rgb, _fogFactor);*/
+	color.rgb = mix(color.rgb, gl_Fog.color.rgb, _fogFactor);
 
 	// Final color
 	gl_FragColor = color;

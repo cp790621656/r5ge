@@ -161,8 +161,8 @@ IMaterial* TestApp::GenerateTest (Noise& heightMap, Array<Color4ub>& normalMap, 
 
 		Vector3f normal (nm);
 		normal.Normalize();
-		float slope = pow(normal.z, 20);
-		cm.Set(Float::ToNormalMapByte(slope), 255, 255, 255);
+		float slope = pow(normal.z, 10);
+		cm.Set(Float::ToRangeByte(slope), 255, 255, 255);
 	}
 
 	// Use the test material

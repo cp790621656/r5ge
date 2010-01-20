@@ -173,22 +173,16 @@ namespace Float
 
 	inline byte ToRangeByte (float val)
 	{
-		int iv = Float::RoundToInt(val * 255.0f);
-		if		(iv <   0) return 0;
-		else if (iv > 255) return 255;
-		return (byte)iv;
+		return Float::RoundToByte(val * 255.0f);
 	}
 
 	inline byte ToNormalMapByte (float val)
 	{
-		int iv = Float::RoundToInt(0.5f + (val + 1.0f) * 127.5f);
-		if		(iv <   0) return 0;
-		else if (iv > 255) return 255;
-		return (byte)iv;
+		return Float::RoundToByte(val * 127.5f + 127.5f);
 	}
 
 	inline float FromRangeByte		(byte in)	{ return Float::Clamp(0.003921568627451f * in, 0.0f, 1.0f); }
-	inline float FromNormalMapByte	(byte in)	{ return Float::Clamp(0.0078431372549f * in - 1.0f, 0.0f, 1.0f); }
+	inline float FromNormalMapByte	(byte in)	{ return Float::Clamp(0.0078431372549f * in - 1.0f, -1.0f, 1.0f); }
 
 	// Rounds the float down to a specific precision, so 0.39 with precision of 0.25 becomes 0.5
 	float Round (float val, float precision);
