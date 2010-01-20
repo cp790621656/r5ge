@@ -13,7 +13,7 @@ class Object
 	friend class Script;	// Script needs access to 'mScripts' so it can remove itself
 	friend class Scene;		// Scene needs to be able to use 'mCore'
 	friend class Core;		// Core needs to be able to set 'mCore'
-	friend struct DrawList;	// DrawList needs access to 'OnDraw'
+	friend class DrawGroup;	// DrawGroup needs access to 'OnDraw'
 
 public:
 

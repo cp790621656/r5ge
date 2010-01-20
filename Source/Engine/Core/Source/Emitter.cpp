@@ -124,7 +124,13 @@ bool Emitter::OnFill (FillParams& params)
 		// If no special technique was specified, assume the default value
 		if (mTech == 0) mTech = mCore->GetGraphics()->GetTechnique("Particle", true);
 		float dist = (params.mCamPos - mAbsoluteBounds.GetCenter()).Dot();
-		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), 0, dist);
+
+		// If we're writing to depth, use the texture for grouping. If not -- don't. This is done so because
+		// different billboards still need to blend correctly and the only way to do that is to sort all of
+		// them together, which wouldn't be possible if they ended up in different groups.
+
+		const void* group = mTech->GetDepthWrite() ? mTex : 0;
+		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), group, dist);
 	}
 	return true;
 }

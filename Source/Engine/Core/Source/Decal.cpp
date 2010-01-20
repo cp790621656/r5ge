@@ -87,7 +87,7 @@ bool Decal::OnFill (FillParams& params)
 
 	if (mShader != 0)
 	{
-		const void* group = mTextures.IsValid() ? mTextures.Back() : 0;
+		const void* group = mTextures.IsValid() ? (const void*)mTextures.Back() : (const void*)mShader;
 		params.mDrawQueue.Add(mLayer, this, myMask, group, 0.0f);
 	}
 	return true;

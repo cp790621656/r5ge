@@ -11,7 +11,7 @@ void DrawLayer::Clear()
 
 	for (uint i = mList.GetSize(); i > 0; )
 	{
-		mList[--i].mEntries.Clear();
+		mList[--i].Clear();
 	}
 }
 
@@ -23,7 +23,7 @@ void DrawLayer::Sort()
 {
 	for (uint i = mList.GetSize(); i > 0; )
 	{
-		mList[--i].mEntries.Sort();
+		mList[--i].Sort();
 	}
 }
 
@@ -47,11 +47,7 @@ void DrawLayer::Add (Object* obj, uint mask, const void* group, float distSquare
 		if ((flag & 0x1) != 0)
 		{
 			mList.ExpandTo(i + 1);
-
-			DrawEntry& drawable = mList[i].mEntries.Expand();
-			drawable.mObject = obj;
-			drawable.mGroup = group;
-			drawable.mDistSquared = distSquared;
+			mList[i].Add(group, obj, distSquared);
 		}
 	}
 }
@@ -62,16 +58,11 @@ void DrawLayer::Add (Object* obj, uint mask, const void* group, float distSquare
 
 uint DrawLayer::Draw (const ITechnique* tech, bool insideOut)
 {
-	uint index = tech->GetIndex();
+	uint index (tech->GetIndex()), retVal (0);
 
 	if (index < mList.GetSize())
 	{
-		DrawList& list = mList[index];
-		
-		if (list.mEntries.IsValid())
-		{
-			return list.Draw(tech, insideOut);
-		}
+		retVal += mList[index].Draw(tech, insideOut);
 	}
-	return 0;
+	return retVal;
 }

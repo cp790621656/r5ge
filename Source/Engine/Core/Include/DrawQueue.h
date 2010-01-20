@@ -4,7 +4,18 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// All drawable objects are separated by layers into different draw sets
+// All drawable objects are separated by layers into different draw sets.
+//------------------------------------------------------------------------------------------------------------
+// The draw hierarchy is as follows:
+//------------------------------------------------------------------------------------------------------------
+// - DrawQueue contains up to 32 DrawLayers, as objects can be placed on different layers.
+//   This allows you to manually control the draw order of certain objects.
+// - Each layer is split up into multiple DrawLists by their associated draw techniques.
+//   This minimizes the number of state switches between draw operations.
+// - Each DrawList is in turn split up into different DrawGroups by the group identifier.
+//   This allows batching of similar objects together -- instanced models, particles, etc.
+// - Each DrawGroup contains a list of objects that belong to it along with their distance to the camera.
+//   Distance allows objects to be drawn back-to-front or front-to-back as needed.
 //============================================================================================================
 
 class DrawQueue
@@ -24,19 +35,20 @@ private:
 public:
 
 	// Clear the draw queue
-	inline void Clear() { mLights.Clear(); for (uint i = 0; i < 32; ++i) mLayers[i].Clear(); }
+	void Clear() { mLights.Clear(); for (uint i = 0; i < 32; ++i) mLayers[i].Clear(); }
 
 	// Adds a new light to the draw queue
-	inline void Add (Light* light) { mLights.Expand() = light; }
+	void Add (Light* light) { mLights.Expand() = light; }
 
-	// Add a new object to the draw queue
-	inline void Add (uint layer, Object* obj, uint mask, const void* group, float distSquared)
+	// Add a new object to the draw queue. The 'group' parameter can be a material,
+	// a texture, or anything else you might want to group similar objects by.
+	void Add (uint layer, Object* obj, uint mask, const void* group, float distSquared)
 	{
 		mLayers[layer & 31].Add(obj, mask, group, distSquared);
 	}
 
 	// Sort all objects by group and distance to camera
-	inline void Sort() { for (uint i = 0; i < 32; ++i) mLayers[i].Sort(); }
+	void Sort() { for (uint i = 0; i < 32; ++i) mLayers[i].Sort(); }
 
 	// Draw the scene
 	uint Draw (IGraphics* graphics, const Techniques& techniques, bool insideOut);

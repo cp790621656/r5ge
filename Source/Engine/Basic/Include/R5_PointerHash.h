@@ -57,7 +57,7 @@ public:
 				mIndices.GetSizeInMemory();
 	}
 
-public:
+private:
 
 	inline uint _KeyToID	(uint key)	const	{ return (mIndices.GetSize() - 1) & key;	}
 	inline uint _IDToIndex	(uint id)	const	{ return mIndices[id] - 1;					}
@@ -190,6 +190,41 @@ public:
 		TypePtr& ptr = mValues.Expand();
 		ptr = 0;
 		return ptr;
+	}
+
+	// Sorts the hash by sorting the values and adjusting the keys to match
+	void Sort()
+	{
+		if (mValues.IsValid())
+		{
+			bool sorted = false;
+
+			uint*		startI	= mIndices.GetBuffer();
+			uint*		endI	= startI + mIndices.GetSize();
+			TypePtr*	start	= mValues.GetBuffer();
+			TypePtr*	end		= start + mValues.GetSize();
+
+			// Run through the arrays and sort them front-to-back
+			for (TypePtr* last = end; last > start && !sorted; )
+			{
+				--last;
+				sorted = true;
+
+				uint*	 currI	= startI;
+				TypePtr* curr	= start;
+				TypePtr* next	= curr + 1;
+
+				for (; curr < last; ++currI, ++curr, ++next )
+				{
+					if ( *(*next) < *(*curr) )
+					{
+						Swap<TypePtr>(*curr, *next);
+						Swap<uint>(*currI, *(currI+1));
+						sorted = false;
+					}
+				}
+			}
+		}
 	}
 
 public:

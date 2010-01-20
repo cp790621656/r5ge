@@ -22,7 +22,7 @@ namespace R5
 {
 	class Object;
 
-	#include "DrawEntry.h"			// Draw entry struct is used to sort drawable objects
+	#include "DrawGroup.h"			// Class managing an array of drawable objects
 	#include "DrawList.h"			// All drawable objects are separated by techniques into different lists
 	#include "DrawLayer.h"			// Drawable objects can be placed on different layers
 	#include "DrawQueue.h"			// Draw queue contains all 32 possible draw layers
@@ -46,7 +46,7 @@ namespace R5
 	#include "CameraController.h"	// Camera Controller provides a way to blend together different cameras
 
 	#include "Mesh.h"				// Complete drawable mesh
-	#include "Cloud.h"		// Mesh made up of screen-facing billboards (tree canopy, for example)
+	#include "Cloud.h"				// Mesh made up of screen-facing billboards (tree canopy, for example)
 	#include "Animatable.h"			// Animatable placeable
 	#include "Bone.h"				// Single bone for skeletal animation
 	#include "Animation.h"			// Keyframed animation

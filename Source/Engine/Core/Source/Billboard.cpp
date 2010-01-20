@@ -22,7 +22,12 @@ bool Billboard::OnFill (FillParams& params)
 {
 	if (mTex != 0 && mTech != 0)
 	{
-		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), mTex, params.GetDist(mAbsolutePos));
+		// If we're writing to depth, use the texture for grouping. If not -- don't. This is done so because
+		// different billboards still need to blend correctly and the only way to do that is to sort all of
+		// them together, which wouldn't be possible if they ended up in different groups.
+
+		const void* group = mTech->GetDepthWrite() ? mTex : 0;
+		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), group, params.GetDist(mAbsolutePos));
 	}
 	return true;
 }

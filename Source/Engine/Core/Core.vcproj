@@ -479,7 +479,7 @@
 				Name="Include"
 				>
 				<File
-					RelativePath=".\Include\DrawEntry.h"
+					RelativePath=".\Include\DrawGroup.h"
 					>
 				</File>
 				<File
@@ -498,6 +498,10 @@
 			<Filter
 				Name="Source"
 				>
+				<File
+					RelativePath=".\Source\DrawGroup.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Source\DrawLayer.cpp"
 					>
