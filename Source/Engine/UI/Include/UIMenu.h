@@ -16,10 +16,13 @@ public:
 
 protected:
 
-	String	mMenuFace;	// Face used by the menu
-	Entries	mEntries;	// Menu of drop-down menu entries
+	String	mMenuFace;			// Face used by the menu
+	Entries	mEntries;			// Menu of drop-down menu entries
+	bool	mSetTextOnSelect;	// If 'true', the text property will be updated on drop-down selection
 
 public:
+
+	UIMenu() : mSetTextOnSelect(false) {}
 
 	// Drop-down list entry manipulation
 	const Entries& GetAllEntries() const	{ return mEntries; }
@@ -36,14 +39,13 @@ protected:
 private:
 
 	// Context menu callbacks
-	bool _OnContextFocus (UIWidget* widget, bool hasFocus);
-	bool _OnContextValue (UIWidget* widget);
+	void _OnContextFocus (UIWidget* widget, bool hasFocus);
+	void _OnContextValue (UIWidget* widget);
 
 public:
 
 	// Respond to state changes
-	virtual bool SetState	(uint state, bool val);
-	//virtual bool OnFocus	(bool hasFocus);
+	virtual bool SetState (uint state, bool val);
 
 protected:
 

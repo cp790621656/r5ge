@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-UIWindow::UIWindow() : mTitleHeight(0), mMovement(Movement::None), mResizable(true)
+UIWindow::UIWindow() : mPrefix(ClassID()), mTitleHeight(0), mMovement(Movement::None), mResizable(true)
 {
 	mBackground._SetParentPtr(this);
 	mTitlebar._SetParentPtr(this);
@@ -20,8 +20,18 @@ UIWindow::UIWindow() : mTitleHeight(0), mMovement(Movement::None), mResizable(tr
 
 void UIWindow::SetSkin (const UISkin* skin, bool setDirty)
 {
-	mBackground.Set(skin, "Window: Background", setDirty);
-	mTitlebar.Set(skin, "Window: Titlebar", setDirty);
+	mBackground.Set(skin, mPrefix + ": Background", setDirty);
+	mTitlebar.Set(skin, mPrefix + ": Titlebar", setDirty);
+}
+
+//============================================================================================================
+// Sets the prefix used by the window so that multiple windows can be created inside the same skin
+//============================================================================================================
+
+void UIWindow::SetPrefix (const String& prefix, bool setDirty)
+{
+	mPrefix = prefix;
+	SetSkin(mBackground.GetSkin(), setDirty);
 }
 
 //============================================================================================================
@@ -171,6 +181,11 @@ bool UIWindow::OnSerializeFrom (const TreeNode& node)
 		SetSkin( mUI->GetSkin(value.IsString() ? value.AsString() : value.GetString()) );
 		return true;
 	}
+	else if (node.mTag == "Prefix")
+	{
+		SetPrefix( node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString() );
+		return true;
+	}
 	else if (node.mTag == "Titlebar Height")
 	{
 		uint height;
@@ -196,6 +211,7 @@ void UIWindow::OnSerializeTo (TreeNode& node) const
 	if (skin != 0 && skin != mUI->GetDefaultSkin())
 		node.AddChild("Skin", skin->GetName());
 
+	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
 	node.AddChild("Titlebar Height", mTitleHeight);
 	node.AddChild("Resizable", mResizable);
 

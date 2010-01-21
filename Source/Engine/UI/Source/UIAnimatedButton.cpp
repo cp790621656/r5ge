@@ -60,12 +60,12 @@ void UIAnimatedButton::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer == mLayer && queue->mWidget == 0 && queue->mTex	== mImage.GetTexture())
 	{
-		static String faceName[] =
+		static String suffix[] =
 		{
-			"Button: Disabled",
-			"Button: Enabled",
-			"Button: Highlighted",
-			"Button: Pressed"
+			": Disabled",
+			": Enabled",
+			": Highlighted",
+			": Pressed"
 		};
 
 		UIRegion& rgn = mImage.GetRegion();
@@ -73,7 +73,7 @@ void UIAnimatedButton::OnFill (UIQueue* queue)
 		if (mState & State::Enabled)
 		{
 			// Fill the normal face
-			mImage.SetFace(faceName[1], false);
+			mImage.SetFace(mPrefix + suffix[1], false);
 			rgn.SetAlpha(1.0f);
 			rgn.Update(mRegion);
 			mImage.OnFill(queue);
@@ -93,7 +93,7 @@ void UIAnimatedButton::OnFill (UIQueue* queue)
 				// If the secondary face is visible, draw it
 				if (mCurrentAlpha[i] > 0.0f)
 				{
-					mImage.SetFace(faceName[i+2], false);
+					mImage.SetFace(mPrefix + suffix[i+2], false);
 					rgn.SetAlpha(mCurrentAlpha[i]);
 					rgn.Update(mRegion);
 					mImage.OnFill(queue);
@@ -106,7 +106,7 @@ void UIAnimatedButton::OnFill (UIQueue* queue)
 		}
 		else
 		{
-			mImage.SetFace(faceName[0], false);
+			mImage.SetFace(mPrefix + suffix[0], false);
 			rgn.SetAlpha(1.0f);
 			rgn.Update(mRegion);
 			mImage.OnFill(queue);

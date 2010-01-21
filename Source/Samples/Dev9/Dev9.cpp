@@ -45,8 +45,8 @@ public:
 	void DrawLeaves(void* param);
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
 
-	bool OnShowTexture(UIWidget* widget, uint state, bool isSet);
-	bool OnStateChange(UIWidget* widget, uint state, bool isSet);
+	void OnShowTexture(UIWidget* widget, uint state, bool isSet);
+	void OnStateChange(UIWidget* widget, uint state, bool isSet);
 	bool OnGenerate(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
 	void OnSerializeTo (TreeNode& node) const;
@@ -93,18 +93,6 @@ void TestApp::Run()
 	mCore->SetListener( bind(&TestApp::OnSerializeTo,	this) );
 	mCore->SetListener( bind(&TestApp::OnSerializeFrom, this) );
 	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
-
-	// NOTE: Positive changes so far:
-	// - Changed all UI classes to have UI<> filenames.
-	// - Changed one of the UI classes to have a UI class name. Basic Label?
-	// - Added OnStateChange parameters (uint, bool).
-	// - Adding USEventListener helped to reduce clutter.
-
-	// NOTE: Missing functionality: Set<> functions for UI Root.
-
-	// Other changes are questionable. Why add scripts when I can simply derive from the widget and
-	// add functionality right inside? If going forward, it would make sense to rewrite some of the
-	// existing widgets to use the script approach. Button, for example. But this is a major task...
 
 	// UI callbacks can be bound even before the actual widgets are loaded
 	mUI->SetOnKey		 ("Generate",		bind(&TestApp::OnGenerate,		this));
@@ -373,21 +361,20 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 // Callback triggered when the user clicks the "Show" button
 //============================================================================================================
 
-bool TestApp::OnShowTexture(UIWidget* widget, uint state, bool isSet)
+void TestApp::OnShowTexture(UIWidget* widget, uint state, bool isSet)
 {
 	if (mFinal != 0 && (state & UIButton::State::Pressed) != 0)
 	{
 		mFinal->GetParent()->SetAlpha(isSet ? 1.0f : 0.0f, 0.25f );
 		OnStateChange(mFinal, 0, false);
 	}
-	return true;
 }
 
 //============================================================================================================
 // Callback triggered when the state of N, A and F buttons changes
 //============================================================================================================
 
-bool TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
+void TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 {
 	if (mFinal != 0)
 	{
@@ -440,7 +427,6 @@ bool TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 			}
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

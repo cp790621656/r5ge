@@ -483,7 +483,12 @@ bool UIManager::OnChar (byte character)
 	Lock();
 	{
 		_HideTooltip();
-		if (mFocus != 0) retVal = mFocus->OnChar(character);
+
+		if (mFocus != 0)
+		{
+			mFocus->OnChar(character);
+			retVal = true;
+		}
 	}
 	Unlock();
 	return retVal;

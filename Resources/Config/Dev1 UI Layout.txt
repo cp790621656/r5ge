@@ -4,7 +4,7 @@ Root
 {
 	UI
 	{
-        Serializable = false
+		Serializable = false
 		Default Skin = Default
 		Default Font = Arial 15
 		Tooltip Delay = 1.000
@@ -163,8 +163,8 @@ Root
 					}
 				}
 			}
-	
-	 Window = First Window
+
+	 		Window = First Window
 			{
 				Left = 0.000 5 // 5
 				Right = 0.000 328 // 328
@@ -228,8 +228,17 @@ Root
 					Face = Dark Area
 					Color = 1.000 1.000 1.000
 					Font = Arial 15
-					Text = Testing my typing skills! One, two, three, four, five... And it's now off-screen.
-					Tooltip = Try typing here
+					Text = "Testing my typing skills! One, two, three, four, five... And it's now off-screen."
+					History Size = 10
+					
+					History = String[]
+					{
+						"This one time, at band camp..."
+						"Short line"
+						"Very long line that just keeps on going and going, and going, and going..."
+					}
+
+					Tooltip = "Try typing here"
 					Shadow = true
 					Selection Color = 1.000 0.667 0.161 0.500
 					Receives Events = true

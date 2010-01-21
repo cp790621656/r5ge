@@ -474,24 +474,20 @@ void UIWidget::OnStateChange(uint state, bool isSet)
 // Should notify the listeners of value changes
 //============================================================================================================
 
-bool UIWidget::OnValueChange()
+void UIWidget::OnValueChange()
 {
-	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnValueChange();
-	return handled;
+		mScripts[--i]->OnValueChange();
 }
 
 //============================================================================================================
 // Standard event virtual functions that inform all scripts
 //============================================================================================================
 
-bool UIWidget::OnMouseOver (bool inside)
+void UIWidget::OnMouseOver (bool inside)
 {
-	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnMouseOver(inside);
-	return handled;
+		mScripts[--i]->OnMouseOver(inside);
 }
 
 //============================================================================================================
@@ -526,10 +522,8 @@ bool UIWidget::OnScroll (const Vector2i& pos, float delta)
 
 //============================================================================================================
 
-bool UIWidget::OnFocus (bool selected)
+void UIWidget::OnFocus (bool selected)
 {
-	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnFocus(selected);
-	return handled;
+		mScripts[--i]->OnFocus(selected);
 }

@@ -48,9 +48,9 @@ private:
 
 	// Private callbacks
 	bool _OnLabelKey		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
-	bool _OnLabelFocus		(UIWidget* widget, bool hasFocus);
-	bool _OnLabelValue		(UIWidget* widget);
-	bool _OnContextValue	(UIWidget* widget);
+	void _OnLabelFocus		(UIWidget* widget, bool hasFocus);
+	void _OnLabelValue		(UIWidget* widget) { OnValueChange(); }
+	void _OnContextValue	(UIWidget* widget);
 
 	UIContext* _ShowHistory();
 	UIContext* _HideHistory();
@@ -78,6 +78,6 @@ public:
 	// Events
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ mLabel.OnMouseMove(pos, delta);		UIWidget::OnMouseMove(pos, delta);		return true; }
 	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown)	{ mLabel.OnKeyPress(pos, key, isDown);	UIWidget::OnKeyPress(pos, key, isDown);	return true; }
-	virtual bool OnFocus	(bool selected)									{ mLabel.OnFocus(selected);				UIWidget::OnFocus(selected);			return true; }
-	virtual bool OnChar		(byte character)								{ mLabel.OnChar(character);				UIWidget::OnChar(character);			return true; }
+	virtual void OnFocus	(bool selected)									{ mLabel.OnFocus(selected);				UIWidget::OnFocus(selected); }
+	virtual void OnChar		(byte character)								{ mLabel.OnChar(character);				UIWidget::OnChar(character); }
 };

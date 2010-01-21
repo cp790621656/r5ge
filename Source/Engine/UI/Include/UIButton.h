@@ -25,6 +25,7 @@ protected:
 
 	UISubPicture	mImage;
 	UILabel			mLabel;
+	String			mPrefix;
 	uint			mState;
 	bool			mSticky;
 	bool			mIgnoreMouseKey;
@@ -34,6 +35,7 @@ public:
 	UIButton();
 
 	const UISkin*	GetSkin()		const	{ return mImage.GetSkin();			}
+	const String&	GetPrefix()		const	{ return mPrefix;					}
 	const Color3f&	GetColor()		const	{ return mLabel.GetColor();			}
 	const String&	GetText()		const	{ return mLabel.GetText();			}
 	const IFont*	GetFont()		const	{ return mLabel.GetFont();			}
@@ -43,6 +45,7 @@ public:
 	uint			GetState()		const	{ return mState;					}
 
 	void SetSkin	  (const UISkin* skin)	{ mImage.SetSkin(skin);				}
+	void SetPrefix	  (const String& pref)	{ mPrefix = pref; mImage.SetDirty();}
 	void SetColor	  (const Color3f& color){ mLabel.SetColor(color);			}
 	void SetText	  (const String& text)	{ mLabel.SetText(text);				}
 	void SetFont	  (const IFont* font)	{ mLabel.SetFont(font);				}
@@ -79,7 +82,7 @@ protected:
 	virtual void OnSerializeTo (TreeNode& root) const;
 
 	// Events
-	virtual bool OnMouseOver(bool inside);
+	virtual void OnMouseOver(bool inside);
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
 };

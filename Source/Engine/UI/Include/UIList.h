@@ -15,6 +15,9 @@ protected:
 
 public:
 
+	// Drop-down list should always update its own text value on selection
+	UIList() { mSetTextOnSelect = true; }
+
 	const UIFace* GetSymbol() const { return mSymbol.GetFace();}
 
 	void SetSymbol	(const String& face)	{ mSymbol.SetFace(face);	}

@@ -302,19 +302,18 @@ bool UIEditableLabel::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 // Select the widget
 //============================================================================================================
 
-bool UIEditableLabel::OnFocus (bool selected)
+void UIEditableLabel::OnFocus (bool selected)
 {
 	mHasFocus = selected;
 	OnDirty(0, mLayer+1);
 	UIWidget::OnFocus(selected);
-	return true;
 }
 
 //============================================================================================================
 // Add typed characters to the label's text
 //============================================================================================================
 
-bool UIEditableLabel::OnChar (byte character)
+void UIEditableLabel::OnChar (byte character)
 {
 	uint left, right;
 
@@ -373,5 +372,4 @@ bool UIEditableLabel::OnChar (byte character)
 
 	SetDirty();
 	UIWidget::OnChar(character);
-	return true;
 }

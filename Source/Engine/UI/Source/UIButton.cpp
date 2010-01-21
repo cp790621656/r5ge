@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-UIButton::UIButton() : mState(State::Enabled), mSticky(false), mIgnoreMouseKey(false)
+UIButton::UIButton() : mPrefix(ClassID()), mState(State::Enabled), mSticky(false), mIgnoreMouseKey(false)
 {
 	mLabel.SetAlignment(UILabel::Alignment::Center);
 	mImage.SetLayer(0, false);
@@ -89,34 +89,26 @@ void UIButton::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer == mLayer && queue->mWidget == 0 && queue->mTex == mImage.GetTexture())
 	{
-		static String faceName[] =
-		{
-			"Button: Disabled",
-			"Button: Enabled",
-			"Button: Highlighted",
-			"Button: Pressed"
-		};
-
 		if (mState & State::Enabled)
 		{
-			mImage.SetFace(faceName[1], false);
+			mImage.SetFace(mPrefix + ": Enabled", false);
 			mImage.OnFill(queue);
 
 			if (mState & State::Highlighted)
 			{
-				mImage.SetFace(faceName[2], false);
+				mImage.SetFace(mPrefix + ": Highlighted", false);
 				mImage.OnFill(queue);
 			}
 
 			if (mState & State::Pressed)
 			{
-				mImage.SetFace(faceName[3], false);
+				mImage.SetFace(mPrefix + ": Pressed", false);
 				mImage.OnFill(queue);
 			}
 		}
 		else
 		{
-			mImage.SetFace(faceName[0], false);
+			mImage.SetFace(mPrefix + ": Disabled", false);
 			mImage.OnFill(queue);
 		}
 	}
@@ -131,6 +123,11 @@ bool UIButton::OnSerializeFrom (const TreeNode& node)
 {
 	if ( mImage.OnSerializeFrom(node) )
 	{
+		return true;
+	}
+	else if (node.mTag == "Prefix")
+	{
+		mPrefix = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
 		return true;
 	}
 	else if (node.mTag == "State")
@@ -167,6 +164,9 @@ void UIButton::OnSerializeTo (TreeNode& node) const
 	if (skin != 0 && skin != mUI->GetDefaultSkin())
 		node.AddChild("Skin", skin->GetName());
 
+	// Add the optional prefix if it's different from its default value
+	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
+
 	// Label settings are saved fully
 	mLabel.OnSerializeTo (node);
 
@@ -183,14 +183,13 @@ void UIButton::OnSerializeTo (TreeNode& node) const
 // Event handling -- mouse hovering over the button should highlight it
 //============================================================================================================
 
-bool UIButton::OnMouseOver (bool inside)
+void UIButton::OnMouseOver (bool inside)
 {
 	if (mState & State::Enabled)
 	{
 		SetState (State::Highlighted, inside);
 		UIWidget::OnMouseOver(inside);
 	}
-	return true;
 }
 
 //============================================================================================================

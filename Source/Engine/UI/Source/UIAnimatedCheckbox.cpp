@@ -60,20 +60,22 @@ void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer == mLayer && queue->mWidget == 0 && queue->mTex == mImage.GetTexture())
 	{
-		static String faceName[] =
+		static String suffix[] =
 		{
-			"Checkbox: Disabled",
-			"Checkbox: Unchecked",
-			"Checkbox: Highlighted",
-			"Checkbox: Checked"
+			": Disabled",
+			": Unchecked",
+			": Highlighted",
+			": Checked"
 		};
+
+		UIRegion& rgn = mImage.GetRegion();
 
 		if (mState & State::Enabled)
 		{
 			// Fill the normal face
-			mImage.SetFace(faceName[1], false);
-			mImage.GetRegion().SetAlpha(1.0f);
-			mImage.GetRegion().Update(mRegion);
+			mImage.SetFace(mPrefix + suffix[1], false);
+			rgn.SetAlpha(1.0f);
+			rgn.Update(mRegion);
 			mImage.OnFill(queue);
 
 			// Get the current time for animation
@@ -91,18 +93,22 @@ void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 				// If the secondary face is visible, draw it
 				if (mCurrentAlpha[i] > 0.0f)
 				{
-					mImage.SetFace(faceName[i+2], false);
-					mImage.GetRegion().SetAlpha(mCurrentAlpha[i]);
-					mImage.GetRegion().Update(mRegion);
+					mImage.SetFace(mPrefix + suffix[i+2], false);
+					rgn.SetAlpha(mCurrentAlpha[i]);
+					rgn.Update(mRegion);
 					mImage.OnFill(queue);
 				}
 			}
+
+			// Always finish with region alpha set to 1
+			rgn.SetAlpha(1.0f);
+			rgn.Update(mRegion);
 		}
 		else
 		{
-			mImage.SetFace(faceName[0], false);
-			mImage.GetRegion().SetAlpha(1.0f);
-			mImage.GetRegion().Update(mRegion);
+			mImage.SetFace(mPrefix + suffix[0], false);
+			rgn.SetAlpha(1.0f);
+			rgn.Update(mRegion);
 			mImage.OnFill(queue);
 		}
 	}

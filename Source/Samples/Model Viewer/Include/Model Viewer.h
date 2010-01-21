@@ -26,7 +26,7 @@ public:
 
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
-	UIManager*			mUI;
+	UIManager*		mUI;
 	Core*			mCore;
 	Scene			mScene;
 	DebugCamera*	mCam;
@@ -81,10 +81,10 @@ public: // All of the functions below this line can be found in UILayout.cpp
 	void ShowConfirmClearAnimDialog();
 
 	// Functions that update UI values based on their respective graphics/scene counterparts
-	void UpdateMatPanel			(const IMaterial* mat);
-	void UpdateTexPanel			(const ITexture* tex);
-	void UpdateAnimPanel		(const Animation* anim);
-	void UpdateTechPanel		(const DrawMethod* method);
+	void UpdateMatPanel	(const IMaterial* mat);
+	void UpdateTexPanel	(const ITexture* tex);
+	void UpdateAnimPanel(const Animation* anim);
+	void UpdateTechPanel(const DrawMethod* method);
 
 protected: // Functions that facilitate widget creation with common properties already set up
 
@@ -102,71 +102,71 @@ protected: // Functions that facilitate widget creation with common properties a
 
 private: // Numerous callback functions triggered by the UI elements
 
-	bool OnFileInputValue		(UIWidget* widget) { _ConfirmFileDialog(); return true; }
+	void OnFileInputValue		(UIWidget* widget) { _ConfirmFileDialog(); }
 	bool OnFileDialogOK			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	bool OnConfirmDialogOK		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
-	bool ToggleBoth				(UIWidget* widget, uint state, bool isSet);
-	bool ToggleOff				(UIWidget* widget, uint state, bool isSet);
+	void ToggleBoth				(UIWidget* widget, uint state, bool isSet);
+	void ToggleOff				(UIWidget* widget, uint state, bool isSet);
 
-	bool OnFillModelMenu		(UIWidget* widget, bool hasFocus);
-	bool OnFillLimbMenu			(UIWidget* widget, bool hasFocus);
-	bool OnFillMeshMenu			(UIWidget* widget, bool hasFocus);
-	bool OnFillMatMenu			(UIWidget* widget, bool hasFocus);
-	bool OnFillTexMenu			(UIWidget* widget, bool hasFocus);
-	bool OnFillAnimMenu			(UIWidget* widget, bool hasFocus);
+	void OnFillModelMenu		(UIWidget* widget, bool hasFocus);
+	void OnFillLimbMenu			(UIWidget* widget, bool hasFocus);
+	void OnFillMeshMenu			(UIWidget* widget, bool hasFocus);
+	void OnFillMatMenu			(UIWidget* widget, bool hasFocus);
+	void OnFillTexMenu			(UIWidget* widget, bool hasFocus);
+	void OnFillAnimMenu			(UIWidget* widget, bool hasFocus);
 
-	bool OnFileMenuSelection	(UIWidget* widget);
-	bool OnViewMenuSelection	(UIWidget* widget);
-	bool OnLimbMenuSelection	(UIWidget* widget);
-	bool OnMeshMenuSelection	(UIWidget* widget);
-	bool OnMatMenuSelection		(UIWidget* widget);
-	bool OnTexMenuSelection		(UIWidget* widget);
-	bool OnAnimMenuSelection	(UIWidget* widget);
+	void OnFileMenuSelection	(UIWidget* widget);
+	void OnViewMenuSelection	(UIWidget* widget);
+	void OnLimbMenuSelection	(UIWidget* widget);
+	void OnMeshMenuSelection	(UIWidget* widget);
+	void OnMatMenuSelection		(UIWidget* widget);
+	void OnTexMenuSelection		(UIWidget* widget);
+	void OnAnimMenuSelection	(UIWidget* widget);
 
-	bool OnDrawMode				(UIWidget* widget, uint state, bool isSet);
-	bool OnBackground			(UIWidget* widget, uint state, bool isSet);
-	bool OnBloomToggle			(UIWidget* widget, uint state, bool isSet);
-	bool OnBloomChange			(UIWidget* widget);
+	void OnDrawMode				(UIWidget* widget, uint state, bool isSet);
+	void OnBackground			(UIWidget* widget, uint state, bool isSet);
+	void OnBloomToggle			(UIWidget* widget, uint state, bool isSet);
+	void OnBloomChange			(UIWidget* widget);
 
 	bool OnModelBake			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
-	bool OnModelChange			(UIWidget* widget, bool hasFocus) { if (!hasFocus) _UpdateModelData(); return true; }
-	bool OnModelToggle			(UIWidget* widget, uint state, bool isSet) { _UpdateModelData(); return true; }
-	bool OnModelSpin			(UIWidget* widget, uint state, bool isSet);
-	bool OnModelBounds			(UIWidget* widget, uint state, bool isSet);
+	void OnModelChange			(UIWidget* widget, bool hasFocus) { if (!hasFocus) _UpdateModelData(); }
+	void OnModelToggle			(UIWidget* widget, uint state, bool isSet) { _UpdateModelData(); }
+	void OnModelSpin			(UIWidget* widget, uint state, bool isSet);
+	void OnModelBounds			(UIWidget* widget, uint state, bool isSet);
 
-	bool OnLimbSelect			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateLimbData(); return true; }
-	bool OnLimbChange			(UIWidget* widget)					{ _UpdateLimbData(); return true; }
+	void OnLimbSelect			(UIWidget* widget, bool hasFocus)	{ if (!hasFocus) _UpdateLimbData(); }
+	void OnLimbChange			(UIWidget* widget)					{ _UpdateLimbData(); }
 
-	bool OnMatNameSelect		(UIWidget* widget, bool hasFocus);
-	bool OnMatNameValue			(UIWidget* widget);
-	bool OnMatProperties		(UIWidget* widget);
-	bool OnMatTech				(UIWidget* widget);
-	bool OnMatShaderList		(UIWidget* widget);
-	bool OnMatShaderInput		(UIWidget* widget, bool hasFocus);
-	bool OnMatShaderValue		(UIWidget* widget);
-	bool OnMatTexList			(UIWidget* widget);
-	bool OnMatTexInput			(UIWidget* widget, bool hasFocus);
-	bool OnMatTexValue			(UIWidget* widget);
-	bool OnMatColor				(UIWidget* widget, bool hasFocus);
+	void OnMatNameSelect		(UIWidget* widget, bool hasFocus);
+	void OnMatNameValue			(UIWidget* widget);
+	void OnMatProperties		(UIWidget* widget);
+	void OnMatTech				(UIWidget* widget);
+	void OnMatShaderList		(UIWidget* widget);
+	void OnMatShaderInput		(UIWidget* widget, bool hasFocus);
+	void OnMatShaderValue		(UIWidget* widget);
+	void OnMatTexList			(UIWidget* widget);
+	void OnMatTexInput			(UIWidget* widget, bool hasFocus);
+	void OnMatTexValue			(UIWidget* widget);
+	void OnMatColor				(UIWidget* widget, bool hasFocus);
 
-	bool OnColor				(UIWidget* widget);
-	bool OnColorSelect			(UIWidget* widget, bool hasFocus);
+	void OnColor				(UIWidget* widget);
+	void OnColorSelect			(UIWidget* widget, bool hasFocus);
 
-	bool OnTexReload			(UIWidget* widget, bool hasFocus);
-	bool OnTexChange			(UIWidget* widget);
+	void OnTexReload			(UIWidget* widget, bool hasFocus);
+	void OnTexChange			(UIWidget* widget);
 
-	bool OnAnimNameSelect		(UIWidget* widget, bool hasFocus);
-	bool OnAnimNameValue		(UIWidget* widget);
-	bool OnAnimProperties		(UIWidget* widget, bool hasFocus);
-	bool OnAnimLoop				(UIWidget* widget, uint state, bool isSet);
+	void OnAnimNameSelect		(UIWidget* widget, bool hasFocus);
+	void OnAnimNameValue		(UIWidget* widget);
+	void OnAnimProperties		(UIWidget* widget, bool hasFocus);
+	void OnAnimLoop				(UIWidget* widget, uint state, bool isSet);
 	bool OnAnimPlay				(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 	// List selection callbacks -- they fill their appropriate lists with all the relevant entries
-	bool OnMeshListFocus		(UIWidget* widget, bool hasFocus);
-	bool OnMatListFocus			(UIWidget* widget, bool hasFocus);
-	bool OnTexListFocus			(UIWidget* widget, bool hasFocus);
-	bool OnShaderListFocus		(UIWidget* widget, bool hasFocus);
+	void OnMeshListFocus		(UIWidget* widget, bool hasFocus);
+	void OnMatListFocus			(UIWidget* widget, bool hasFocus);
+	void OnTexListFocus			(UIWidget* widget, bool hasFocus);
+	void OnShaderListFocus		(UIWidget* widget, bool hasFocus);
 
 private:
 

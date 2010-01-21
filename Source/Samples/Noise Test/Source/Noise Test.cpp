@@ -256,7 +256,7 @@ bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 // Triggered when filters change
 //============================================================================================================
 
-bool TestApp::UpdateTooltips (UIWidget* widget, uint state, bool isSet)
+void TestApp::UpdateTooltips (UIWidget* widget, uint state, bool isSet)
 {
 	static UIWindow* parent = mUI->FindWidget<UIWindow>("Options");
 	ASSERT(parent != NULL, "Missing parameter window");
@@ -294,7 +294,6 @@ bool TestApp::UpdateTooltips (UIWidget* widget, uint state, bool isSet)
 			input->SetTooltip(tooltip);
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

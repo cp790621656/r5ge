@@ -14,7 +14,9 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 	mUI->SetOnValueChange ("Range",			bind(&TestApp::OnRangeChange,		this));
 	mUI->SetOnValueChange ("Power",			bind(&TestApp::OnPowerChange,		this));
 	mUI->SetOnValueChange ("Brightness",	bind(&TestApp::OnBrightnessChange,	this));
-	mUI->SetOnValueChange ("First Button",	bind(&TestApp::OnButtonStateChange,	this));
+	mUI->SetOnStateChange ("First Button",	bind(&TestApp::OnButtonStateChange,	this));
+	mUI->SetOnStateChange ("Second Button",	bind(&TestApp::OnButtonStateChange,	this));
+	mUI->SetOnStateChange ("Third Button",	bind(&TestApp::OnButtonStateChange,	this));
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -88,7 +90,7 @@ bool TestApp::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnChangeDelegate (UIWidget* widget)
+void TestApp::OnChangeDelegate (UIWidget* widget)
 {
 	UISlider* slider = R5_CAST(UISlider, widget);
 
@@ -100,12 +102,11 @@ bool TestApp::OnChangeDelegate (UIWidget* widget)
 
 		slider->SetColor( Color3f(redFactor, greenFactor, greenFactor * 0.15f) );
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnBrightnessChange (UIWidget* widget)
+void TestApp::OnBrightnessChange (UIWidget* widget)
 {
 	UISlider* slider = R5_CAST(UISlider, widget);
 
@@ -119,12 +120,11 @@ bool TestApp::OnBrightnessChange (UIWidget* widget)
 		PointLight* light = mScene.FindObject<PointLight>("First Light");
 		if (light) light->SetBrightness(val);
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnRangeChange (UIWidget* widget)
+void TestApp::OnRangeChange (UIWidget* widget)
 {
 	UISlider* slider = R5_CAST(UISlider, widget);
 
@@ -138,12 +138,11 @@ bool TestApp::OnRangeChange (UIWidget* widget)
 		PointLight* light = mScene.FindObject<PointLight>("First Light");
 		if (light) light->SetRange(val);
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnPowerChange (UIWidget* widget)
+void TestApp::OnPowerChange (UIWidget* widget)
 {
 	UISlider* slider = R5_CAST(UISlider, widget);
 
@@ -157,29 +156,27 @@ bool TestApp::OnPowerChange (UIWidget* widget)
 		PointLight* light = mScene.FindObject<PointLight>("First Light");
 		if (light) light->SetPower(val);
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------
 
-bool TestApp::OnButtonStateChange (UIWidget* widget)
+void TestApp::OnButtonStateChange (UIWidget* widget, uint state, bool isSet)
 {
 	UIButton* btn = R5_CAST(UIButton, widget);
 
 	if (btn)
 	{
-		String state;
+		String str;
 
-		if (btn->GetState() & UIButton::State::Enabled)		state = "Enabled";
-		else												state = "Disabled";
-		if (btn->GetState() & UIButton::State::Pressed)		state << ", Pressed";
-		if (btn->GetState() & UIButton::State::Highlighted)	state << ", Highlighted";
+		if (btn->GetState() & UIButton::State::Enabled)		str = "Enabled";
+		else												str = "Disabled";
+		if (btn->GetState() & UIButton::State::Pressed)		str << ", Pressed";
+		if (btn->GetState() & UIButton::State::Highlighted)	str << ", Highlighted";
 
-		state << " - ";
-		state << Time::GetTime();
-		btn->SetText(state);
+		str << " - ";
+		str << Time::GetTime();
+		btn->SetText(str);
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------

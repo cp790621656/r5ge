@@ -194,7 +194,7 @@ protected:
 	void OnStateChange(uint state, bool isSet);
 
 	// Should notify the listeners of value changes
-	bool OnValueChange();
+	void OnValueChange();
 
 	// Functions overwritten by the Frame class
 	virtual void OnDirty (const ITexture* tex, int layer, const UIWidget* widget = 0) { if (mParent != 0) mParent->OnDirty(tex, layer, widget); }
@@ -243,10 +243,10 @@ public:
 protected:
 
 	// Events
-	virtual bool OnMouseOver(bool inside);
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
 	virtual bool OnScroll	(const Vector2i& pos, float delta);
-	virtual bool OnFocus	(bool selected);
-	virtual bool OnChar		(byte character) { return false; }
+	virtual void OnMouseOver(bool inside);
+	virtual void OnFocus	(bool selected);
+	virtual void OnChar		(byte character) {}
 };

@@ -160,7 +160,7 @@ bool UIContext::_OnMouseOverItem (UIWidget* widget, bool inside)
 // Triggered when an item is selected from the list
 //============================================================================================================
 
-bool UIContext::_OnItemFocus (UIWidget* widget, bool hasFocus)
+void UIContext::_OnItemFocus (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
@@ -176,7 +176,6 @@ bool UIContext::_OnItemFocus (UIWidget* widget, bool hasFocus)
 	{
 		OnFocus(false);
 	}
-	return true;
 }
 
 //============================================================================================================
@@ -226,12 +225,12 @@ void UIContext::SetAlpha (float val, float animTime)
 // OnFocus callback should take menu items into account
 //============================================================================================================
 
-bool UIContext::OnFocus (bool hasFocus)
+void UIContext::OnFocus (bool hasFocus)
 {
 	if (!hasFocus)
 	{
 		const UIWidget* focus = mUI->GetFocusArea();
 		hasFocus = (focus != 0 && focus->IsChildOf(this));
 	}
-	return UIAnimatedFrame::OnFocus(hasFocus);
+	UIAnimatedFrame::OnFocus(hasFocus);
 }

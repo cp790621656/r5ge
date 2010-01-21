@@ -27,6 +27,7 @@ protected:
 	UISubPicture	mTitlebar;
 	UILabel			mTitle;
 	UIRegion		mContent;
+	String			mPrefix;
 	byte			mTitleHeight;
 	byte			mMovement;
 	bool			mResizable;
@@ -35,7 +36,11 @@ public:
 
 	UIWindow();
 
+	// Area creation
+	R5_DECLARE_INHERITED_CLASS("Window", UIWindow, UIAnimatedFrame, UIWidget);
+
 	const UISkin*	GetSkin()			const		{ return mBackground.GetSkin();	}
+	const String&	GetPrefix()			const		{ return mPrefix;				}
 	const Color3f&	GetColor()			const		{ return mTitle.GetColor();		}
 	const String&	GetText()			const		{ return mTitle.GetText();		}
 	const IFont*	GetFont()			const		{ return mTitle.GetFont();		}
@@ -44,6 +49,7 @@ public:
 	bool			IsResizable()		const		{ return mResizable;			}
 
 	void SetSkin			(const UISkin* skin, bool setDirty = true);
+	void SetPrefix			(const String& prefix, bool setDirty = true);
 	void SetColor			(const Color3f& color)	{ mTitle.SetColor(color);		}
 	void SetText			(const String& text)	{ mTitle.SetText(text);			}
 	void SetFont			(const IFont* font)		{ mTitle.SetFont(font);			}
@@ -58,9 +64,6 @@ public:
 	Vector2i GetSizeForContent (const Vector2i& size);
 
 public:
-
-	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Window", UIWindow, UIAnimatedFrame, UIWidget);
 
 	// Internal functions. These values are normally set by Root::CreateArea
 	virtual void _SetParentPtr (UIWidget* ptr);

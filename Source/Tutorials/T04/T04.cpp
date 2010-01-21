@@ -57,13 +57,13 @@ public:
 	}
 
 	// Overwrite the callback function that gets triggered when the owner's value changes
-	virtual bool OnValueChange()
+	virtual void OnValueChange()
 	{
 		// Get the slider's value and set the child label's text
 		mLabel->SetText( String("Value: %.2f", mSlider->GetValue()) );
-		return true;
 	}
 };
+
 //============================================================================================================
 // Main class for our tutorial
 //============================================================================================================

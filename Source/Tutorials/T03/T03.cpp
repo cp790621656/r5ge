@@ -33,7 +33,7 @@ public:
 	void Run();
 	void OnDraw();
 	void CreateWindow();
-	bool OnSliderChange(UIWidget* widget);
+	void OnSliderChange(UIWidget* widget);
 };
 
 //============================================================================================================
@@ -202,14 +202,13 @@ void TestApp::CreateWindow()
 // Callback triggered when the slider's value changes
 //============================================================================================================
 
-bool TestApp::OnSliderChange (UIWidget* widget)
+void TestApp::OnSliderChange (UIWidget* widget)
 {
 	// The passed area is actually a slider
 	UISlider* sld = R5_CAST(UISlider, widget);
 	
 	// Set the label's text, mirroring the slider's value
 	if (sld != 0 && mLabel != 0) mLabel->SetText( String("Value: %.2f", sld->GetValue()) );
-	return true;
 }
 
 //============================================================================================================

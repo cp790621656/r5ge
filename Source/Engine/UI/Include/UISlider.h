@@ -57,5 +57,5 @@ public:
 	// Events
 	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
-	virtual bool OnFocus	(bool selected)	{ UIWidget::OnFocus(selected); return true; }
+	virtual void OnFocus	(bool selected)	{ UIWidget::OnFocus(selected); }
 };

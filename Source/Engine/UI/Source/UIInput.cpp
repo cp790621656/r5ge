@@ -19,7 +19,7 @@ UIInput::UIInput() : mMaxHistorySize(0), mShowHistory(true)
 // Sets the maximum number of lines in the history list
 //============================================================================================================
 
-void UIInput::SetMaxHistorySize (uint	lines)
+void UIInput::SetMaxHistorySize (uint lines)
 {
 	if (lines < mMaxHistorySize)
 	{
@@ -92,7 +92,7 @@ bool UIInput::_OnLabelKey (UIWidget* widget, const Vector2i& pos, byte key, bool
 // Private callback triggered when the label gains or loses focus
 //============================================================================================================
 
-bool UIInput::_OnLabelFocus (UIWidget* widget, bool hasFocus)
+void UIInput::_OnLabelFocus (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -104,24 +104,13 @@ bool UIInput::_OnLabelFocus (UIWidget* widget, bool hasFocus)
 			_HideHistory();
 		}
 	}
-	return true;
-}
-
-//============================================================================================================
-// Private callback triggered when the label's value changes
-//============================================================================================================
-
-bool UIInput::_OnLabelValue (UIWidget* widget)
-{
-	OnValueChange();
-	return true;
 }
 
 //============================================================================================================
 // Triggered when the context menu was clicked on, choosing a value
 //============================================================================================================
 
-bool UIInput::_OnContextValue	(UIWidget* widget)
+void UIInput::_OnContextValue (UIWidget* widget)
 {
 	UIContext* menu = _HideHistory();
 
@@ -134,7 +123,6 @@ bool UIInput::_OnContextValue	(UIWidget* widget)
 		mLabel.SetFocus(true);
 		mShowHistory = true;
 	}
-	return true;
 }
 
 //============================================================================================================
@@ -143,13 +131,11 @@ bool UIInput::_OnContextValue	(UIWidget* widget)
 
 UIContext* UIInput::_ShowHistory()
 {
-	UIContext* menu = mUI->GetContextMenu();
+	UIContext* menu = mUI->GetContextMenu(true);
 
 	if (mShowHistory && mMaxHistorySize > 0 && mHistory.GetSize() > 0 && menu != 0)
 	{
-		USEventListener* listener = AddScript<USEventListener>();
-		ASSERT(listener != 0, "Missing listener?");
-
+		USEventListener* listener = menu->AddScript<USEventListener>();
 		listener->SetOnFocus(0);
 		listener->SetOnValueChange( bind(&UIInput::_OnContextValue, this) );
 
@@ -188,8 +174,7 @@ UIContext* UIInput::_HideHistory()
 	if (menu != 0 && menu->GetAlpha() > 0.0f)
 	{
 		mShowHistory = true;
-
-		USEventListener* listener = GetScript<USEventListener>();
+		USEventListener* listener = menu->GetScript<USEventListener>();
 
 		if (listener != 0)
 		{
@@ -248,9 +233,16 @@ bool UIInput::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "History")
 	{
-		for (uint i = 0; i < node.mChildren.GetSize(); ++i)
+		if (node.mValue.IsStringArray())
 		{
-			AddToHistory(node.mChildren[i].mTag);
+			mHistory = node.mValue.AsStringArray();
+		}
+		else // Legacy format support, will be removed
+		{
+			for (uint i = 0; i < node.mChildren.GetSize(); ++i)
+			{
+				AddToHistory(node.mChildren[i].mTag);
+			}
 		}
 		return true;
 	}
@@ -270,11 +262,6 @@ void UIInput::OnSerializeTo (TreeNode& node) const
 
 	if (mMaxHistorySize > 0 && mHistory.IsValid())
 	{
-		TreeNode& child = node.AddChild("History");
-
-		uint max = (mHistory.GetSize() > mMaxHistorySize ? mHistory.GetSize() - mMaxHistorySize : 0);
-
-		for (uint i = mHistory.GetSize(); i > max; )
-			child.AddChild(mHistory[--i]);
+		node.AddChild("History", mHistory);
 	}
 }

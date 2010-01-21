@@ -130,7 +130,7 @@ void TestApp::OnDraw()
 // Toggles the current technique from GPU to CPU and vice versa
 //============================================================================================================
 
-bool TestApp::OnTechnique (UIWidget* widget, uint state, bool isSet)
+void TestApp::OnTechnique (UIWidget* widget, uint state, bool isSet)
 {
 	UICheckbox* chk = R5_CAST(UICheckbox, widget);
 
@@ -147,7 +147,6 @@ bool TestApp::OnTechnique (UIWidget* widget, uint state, bool isSet)
 			chk->SetText(" Skinning on [FFFF55]CPU");
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

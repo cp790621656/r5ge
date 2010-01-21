@@ -101,7 +101,7 @@ UIContext* UIMenu::_HideMenu()
 // Delegate functions triggered by the context menu
 //============================================================================================================
 
-bool UIMenu::_OnContextFocus (UIWidget* widget, bool hasFocus)
+void UIMenu::_OnContextFocus (UIWidget* widget, bool hasFocus)
 {
 	if (!hasFocus)
 	{
@@ -113,12 +113,11 @@ bool UIMenu::_OnContextFocus (UIWidget* widget, bool hasFocus)
 			mIgnoreMouseKey = false;
 		}
 	}
-	return true;
 }
 
 //============================================================================================================
 
-bool UIMenu::_OnContextValue (UIWidget* widget)
+void UIMenu::_OnContextValue (UIWidget* widget)
 {
 	UIContext* context = _HideMenu();
 
@@ -129,17 +128,20 @@ bool UIMenu::_OnContextValue (UIWidget* widget)
 
 		// Save the previous selection
 		String previous (mLabel.GetText());
+		String current (context->GetText());
 
 		// Set the current selection
-		mLabel.SetText(context->GetText());
+		mLabel.SetText(current);
 
-		// If the value change gets handled by something else, restore the previous value
-		if (OnValueChange()) mLabel.SetText(previous);
+		// Inform all listeners of this change
+		OnValueChange();
+
+		// Restore the previous text value if we should and the text hasn't changed
+		if (!mSetTextOnSelect && mLabel.GetText() == current) mLabel.SetText(previous);
 
 		// Turn off the button's "pressed" state
 		if (!mSticky) SetState( State::Pressed, false );
 	}
-	return true;
 }
 
 //============================================================================================================

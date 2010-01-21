@@ -37,34 +37,26 @@ void UICheckbox::OnFill (UIQueue* queue)
 	{
 		if (queue->mTex != 0 && queue->mTex == mImage.GetTexture())
 		{
-			static String faceName[] =
-			{
-				"Checkbox: Disabled",
-				"Checkbox: Unchecked",
-				"Checkbox: Highlighted",
-				"Checkbox: Checked"
-			};
-
 			if (mState & State::Enabled)
 			{
-				mImage.SetFace(faceName[1], false);
+				mImage.SetFace(mPrefix + ": Unchecked", false);
 				mImage.OnFill(queue);
 
 				if (mState & State::Highlighted)
 				{
-					mImage.SetFace(faceName[2], false);
+					mImage.SetFace(mPrefix + ": Highlighted", false);
 					mImage.OnFill(queue);
 				}
 
 				if (mState & State::Checked)
 				{
-					mImage.SetFace(faceName[3], false);
+					mImage.SetFace(mPrefix + ": Checked", false);
 					mImage.OnFill(queue);
 				}
 			}
 			else
 			{
-				mImage.SetFace(faceName[0], false);
+				mImage.SetFace(mPrefix + ": Disabled", false);
 				mImage.OnFill(queue);
 			}
 		}
@@ -80,6 +72,11 @@ bool UICheckbox::OnSerializeFrom (const TreeNode& node)
 {
 	if ( mImage.OnSerializeFrom(node) )
 	{
+		return true;
+	}
+	else if (node.mTag == "Prefix")
+	{
+		mPrefix = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
 		return true;
 	}
 	else if (node.mTag == "State")
@@ -109,6 +106,9 @@ void UICheckbox::OnSerializeTo (TreeNode& node) const
 	// Only save the skin if it's something other than the default one
 	if (skin != 0 && skin != mUI->GetDefaultSkin())
 		node.AddChild("Skin", skin->GetName());
+
+	// Add the optional prefix if it's different from its default value
+	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
 
 	mLabel.OnSerializeTo(node);
 

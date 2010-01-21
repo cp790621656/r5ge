@@ -24,10 +24,10 @@ public:
 	void OnDraw();
 	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
 
-	bool OnChangeDelegate	 (UIWidget* widget);
-	bool OnBrightnessChange	 (UIWidget* widget);
-	bool OnRangeChange		 (UIWidget* widget);
-	bool OnPowerChange		 (UIWidget* widget);
-	bool OnButtonStateChange (UIWidget* widget);
+	void OnChangeDelegate	 (UIWidget* widget);
+	void OnBrightnessChange	 (UIWidget* widget);
+	void OnRangeChange		 (UIWidget* widget);
+	void OnPowerChange		 (UIWidget* widget);
+	void OnButtonStateChange (UIWidget* widget, uint state, bool isSet);
 };
 }
