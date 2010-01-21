@@ -16,6 +16,36 @@ R5::Random randomGen;
 
 //============================================================================================================
 
+//============================================================================================================
+// Script that will rotate and scale the platforms
+//============================================================================================================
+
+class Torchlight : public Script
+{
+private:
+	PointLight* mLight;
+
+public:
+
+	R5_DECLARE_INHERITED_CLASS("Torchlight", Torchlight, Script, Script);
+
+	virtual void Init()
+	{
+		mLight = R5_CAST(PointLight,mObject);
+		
+		if(mLight == 0) DestroySelf();
+	}
+
+	virtual void OnUpdate()
+	{
+		float mTime = Time::GetTime();
+		float brightness = (float)sin(25.58213 * mTime) + (float)sin(9.4624 * mTime);
+		brightness *= 0.25f;
+		brightness += 0.5f;
+		mLight->SetBrightness(0.75f + 0.25f * brightness);
+	}
+};
+
 class TestApp
 {
 	IWindow*		mWin;
@@ -43,6 +73,7 @@ TestApp::TestApp() : mCam(0)
 	// Register the new fire and smoke emitters
 	Object::Register<FireEmitter>();
 	Object::Register<SmokeEmitter>();
+	Script::Register<Torchlight>();
 }
 
 //============================================================================================================
