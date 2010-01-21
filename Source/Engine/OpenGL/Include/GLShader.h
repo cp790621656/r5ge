@@ -7,6 +7,46 @@
 // Vertex and fragment shader management
 //============================================================================================================
 
+/*class GLShader : public IShader
+{
+	struct UniformEntry
+	{
+		String				mName;		// Name of the uniform variable (ie: "R5_eyePos")
+		SetUniformDelegate	mDelegate;	// Delegate function that will set the data for that uniform
+		int					mGlID;		// OpenGL resource ID in the shader, once found (-2 if not checked, -1 if not found)
+
+		UniformEntry() : mGlID(-2) {}
+	};
+
+private:
+
+	// Allow the graphics class to set 'mGraphics'
+	friend class GLGraphics;
+
+	GLGraphics*	mGraphics;
+	bool		mSerializable;
+
+public:
+
+	GLShader() : mGraphics(0) {}
+	~GLShader(const String& name) : mSerializable(false) { mName = name; _Release(); }
+
+	// Returns whether the shader is in a usable state
+	virtual bool IsValid() const;
+
+	// Force-updates the value of the specified uniform
+	virtual bool SetUniform (const String& name, const Uniform& uniform) const;
+
+	// Registers a uniform variable that's updated once per frame
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct);
+
+	// Serialization
+	virtual bool IsSerializable() const		{ return mSerializable; }
+	virtual void SetSerializable(bool val)	{ mSerializable = val;  }
+	virtual bool SerializeFrom (const TreeNode& root, bool forceUpdate = false)=0;
+	virtual bool SerializeTo (TreeNode& root) const=0;
+};*/
+
 class GLShader : public IShader
 {
 public:

@@ -56,7 +56,7 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
-		Material = "Peasant"
+		Material = "Torch"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
@@ -65,13 +65,13 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Skinned_D"
+				Shader = "Deferred/D"
 				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/Skinned_D"
+				Shader = "Forward/D"
 				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 		}
@@ -260,7 +260,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "504"
+					Text = "540"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -286,7 +286,7 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "All unused materials were cleared away"
+						Text = "R5 Model Viewer v.1.3.7. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
 						Shadow = true
 						Alignment = "Center"
 						Receives Events = false
@@ -303,7 +303,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/peasant.r5a"
+			Source = "Models/torch.r5a"
 		}
 	}
 
@@ -311,12 +311,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.032215 0.184958 6.250441
-			Rotation = -0.047330 0.174410 -0.949205 0.257587
+			Position = 0.008815 0.047899 1.655771
+			Rotation = -0.028814 0.169545 -0.971176 0.165047
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 19.725687 50.000000
+			Dolly = 0.000000 6.994230 50.000000
 
 			Directional Light = "Default Light"
 			{
@@ -373,7 +373,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/mill.r5b"
 		"Models/building.r5b"
 		"Models/fern.r5b"
 		"Models/peasant.r5a"
@@ -383,5 +382,6 @@ Root
 		"Models/sponza.r5b"
 		"Models/egg.r5a"
 		"Models/box.r5a"
+		"Models/torch.r5a"
 	}
 }

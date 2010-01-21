@@ -40,7 +40,7 @@ Root
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/DG"
-				Texture 0 = "Textures/Wood/torch.jpg"
+				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 		}
 	}
@@ -59,15 +59,15 @@ Root
 			
 			Object = "Attachment - Left Hand"
 			{
-				Position = 0.1500000 0.000000 0.0
-				Rotation = 0.000000 1.000000 0.000000 0.000000
+				Position = 0.15 0 0
+				Rotation = 0 1 0 0
 
 				Script = "Bone Attachment"
 				{
 					Bone = "Bip01 L Hand"
 				}
 
-				Model Instance = "First Instance"
+				Model Instance = "Torch"
 				{
 					Scale = 1.000000
 					Layer = 10
@@ -75,7 +75,7 @@ Root
 
 					Point Light = "First Light"
 					{
-						Position = 0.000000 0.000000 3.8000
+						Position = 0.000000 0.000000 3.5
 						Rotation = 0.000000 0.000000 0.000000 1.000000
 						Scale = 1.000000
 						Layer = 1
