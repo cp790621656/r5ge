@@ -76,9 +76,9 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 							const ITexture*	normal )
 {
 	static ITechnique*		post		= graphics->GetTechnique("Post Process");
-	static IShader*			ssao		= graphics->GetShader("Deferred/Process/SSAO");
-	static IShader*			blurH		= graphics->GetShader("PostProcess/Blur/depthH");
-	static IShader*			blurV		= graphics->GetShader("PostProcess/Blur/depthV");
+	static IShader*			ssao		= graphics->GetShader("_BuiltIn/Deferred/SSAO");
+	static IShader*			blurH		= graphics->GetShader("_BuiltIn/Blur/depthH");
+	static IShader*			blurV		= graphics->GetShader("_BuiltIn/Blur/depthV");
 	static IRenderTarget*	ssaoTarget	= graphics->CreateRenderTarget();
 	static IRenderTarget*	blurTarget0	= graphics->CreateRenderTarget();
 	static IRenderTarget*	blurTarget1	= graphics->CreateRenderTarget();
@@ -170,9 +170,9 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 							 const ITexture*	normal )
 {
 	static ITechnique*		post		= graphics->GetTechnique("Post Process");
-	static IShader*			ssao		= graphics->GetShader("Deferred/Process/SSAO");
-	static IShader*			blurH		= graphics->GetShader("PostProcess/Blur/depthH");
-	static IShader*			blurV		= graphics->GetShader("PostProcess/Blur/depthV");
+	static IShader*			ssao		= graphics->GetShader("_BuiltIn/Deferred/SSAO");
+	static IShader*			blurH		= graphics->GetShader("_BuiltIn/Blur/depthH");
+	static IShader*			blurV		= graphics->GetShader("_BuiltIn/Blur/depthV");
 	static IRenderTarget*	ssaoTarget	= graphics->CreateRenderTarget();
 	static IRenderTarget*	blurTarget	= graphics->CreateRenderTarget();
 	static ITexture*		blurTex		= graphics->GetTexture("[Generated] SSAO Blur High");

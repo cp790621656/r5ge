@@ -60,8 +60,8 @@ void BlurDownsample (IGraphics*			graphics,
 					 const IShader*		postprocess )
 {
 	static const ITechnique* technique  = graphics->GetTechnique("Post Process");
-	static IShader*			blurH		= graphics->GetShader("PostProcess/Blur/evenH");
-	static IShader*			blurV		= graphics->GetShader("PostProcess/Blur/evenV");
+	static IShader*			blurH		= graphics->GetShader("_BuiltIn/Blur/evenH");
+	static IShader*			blurV		= graphics->GetShader("_BuiltIn/Blur/evenV");
 	static IRenderTarget*	target00	= 0;
 	static IRenderTarget*	target01	= 0;
 	static IRenderTarget*	target10	= 0;
@@ -187,8 +187,8 @@ void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float thres
 
 	if (final == 0)
 	{
-		final = graphics->GetShader("PostProcess/Bloom");
-		replacement = graphics->GetShader("PostProcess/Blur/evenHStart");
+		final = graphics->GetShader("_BuiltIn/PostProcess/Bloom");
+		replacement = graphics->GetShader("_BuiltIn/Blur/evenHStart");
 		replacement->RegisterUniform("threshold", &SetThreshold);
 	}
 
@@ -215,7 +215,7 @@ void PostProcess::DepthOfField (IGraphics*		graphics,
 
 	if (dof == 0)
 	{
-		dof = graphics->GetShader("PostProcess/DOF");
+		dof = graphics->GetShader("_BuiltIn/PostProcess/DOF");
 		dof->RegisterUniform("focusRange", &SetFocusRange);
 	}
 
