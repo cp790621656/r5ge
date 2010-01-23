@@ -51,7 +51,7 @@ void UIContext::_Rebuild()
 	mUI->_SetEventArea(mouseKeyDown ? this : 0);
 
 	// Delete all children as we want to recreate them here
-	DeleteAllChildren();
+	DestroyAllWidgets();
 
 	// Figure out the border sizes
 	const UIFace* background	= mSkin->GetFace(mFace);

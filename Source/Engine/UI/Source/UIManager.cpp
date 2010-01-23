@@ -319,7 +319,7 @@ bool UIManager::_FillTooltip (UIWidget* widget)
 {
 	if (widget)
 	{
-		mTooltip.DeleteAllChildren();
+		mTooltip.DestroyAllWidgets();
 		UIRegion& rgn = mTooltip.GetRegion();
 		rgn.SetRect(0, 0, 0, 0);
 

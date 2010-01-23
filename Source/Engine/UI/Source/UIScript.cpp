@@ -51,4 +51,11 @@ UIScript::~UIScript()
 // Destroys this script. The script is never deleted immediately, but is rather scheduled for deletion.
 //============================================================================================================
 
-void UIScript::DestroySelf() { mWidget->_RemoveScript(this); }
+void UIScript::DestroySelf()
+{
+	if (mWidget != 0)
+	{
+		mWidget->_DelayedDelete(this);
+		mWidget = 0;
+	}
+}

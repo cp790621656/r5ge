@@ -26,8 +26,8 @@ Root
 			Technique = "Opaque"
 			{
 				Shader = "Forward/Terrain"
-				Texture 0 = "Textures/Sand/beach.jpg"
-				Texture 1 = "Textures/Stone/lime.jpg"
+				Texture 0 = "Textures/Stone/lime.jpg"
+				Texture 1 = "Textures/Sand/beach.jpg"
 				Texture 2 = "Textures/Grass/wild.jpg"
 				Texture 3 = "Textures/Stone/rocky.jpg"
 				Texture 4 = "Textures/Other/snow.jpg"
@@ -59,8 +59,8 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.240526 0.154892 -0.518793 0.805611
 			Scale = 1.000000
-			Ambient = 0.250000 0.250000 0.250000
-			Diffuse = 1.250000 1.250000 1.250000
+			Ambient = 0.50000 0.50000 0.50000
+			Diffuse = 1.0000 1.0000 1.0000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
 		}

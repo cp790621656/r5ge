@@ -34,8 +34,9 @@ protected:
 	int			mLayer;				// Layer used by this widget
 	bool		mSerializable;		// Whether the widget is saved along with everything else
 
-	// Scripts slated for removal
-	Array<UIScript*> mDestroy;
+	// Widgets and scripts slated for removal
+	PointerArray<UIWidget> mDeletedWidgets;
+	PointerArray<UIScript> mDeletedScripts;
 
 public:
 
@@ -46,7 +47,7 @@ public:
 					mLayer			(0),
 					mSerializable	(true) {}
 
-	virtual ~UIWidget() { RemoveAllScripts(); }
+	virtual ~UIWidget() { DestroyAllScripts(); }
 
 public:
 
@@ -89,7 +90,7 @@ public:
 	{
 		UIScript* script = _GetScript(Type::ClassID());
 		if (script == 0) return false;
-		_RemoveScript(script);
+		_DelayedDelete(script);
 		return true;
 	}
 
@@ -114,6 +115,13 @@ public:
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 	}
 
+	// Adds the specified widget as a child of this one. The widget will be removed from its current parent.
+	void AddWidget (UIWidget* widget);
+
+	// Removes the specified widget from the list of children.
+	// NOTE: Doing this does not release the widget. 'delete' the widget if you mean to destroy it.
+	bool RemoveWidget (UIWidget* widget);
+
 private:
 
 	// INTERNAL: Registers a new widget type
@@ -129,8 +137,11 @@ private:
 	UIScript* _GetScript(const String& type);
 	UIScript* _AddScript(const String& type);
 
+	// INTERNAL: Schedules the specified widget for deletion
+	void _DelayedDelete (UIWidget* ptr) { mChildren.Remove(ptr); mDeletedWidgets.Expand() = ptr; }
+
 	// INTERNAL: Schedules the specified script for deletion
-	void _RemoveScript (UIScript* ptr);
+	void _DelayedDelete (UIScript* ptr) { mScripts.Remove(ptr); mDeletedScripts.Expand() = ptr; }
 
 public:
 
@@ -140,11 +151,15 @@ public:
 	void SetTooltip	(const String& text)	{ mTooltip = text;		}
 	void SetLayer	(int layer, bool setDirty = true);
 
-	// Deletes all child areas
-	void DeleteAllChildren();
+	// Destroys this widget. The widget is only deleted immediately if it has no parent.
+	// If it does have a parent, as in the case of most widgets, it gets scheduled for deletion instead.
+	void DestroySelf();
 
-	// Removes all attached scripts
-	void RemoveAllScripts();
+	// Deletes all child widgets
+	void DestroyAllWidgets();
+
+	// Deletes all attached scripts
+	void DestroyAllScripts();
 
 	// Brings the widget to the foreground
 	void BringToFront (UIWidget* child = 0);

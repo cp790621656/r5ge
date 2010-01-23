@@ -35,6 +35,33 @@ UIWidget* _Create(const String& type)
 }
 
 //============================================================================================================
+// Adds the specified widget as a child of this one. The widget will be removed from its current parent.
+//============================================================================================================
+
+void UIWidget::AddWidget (UIWidget* widget)
+{
+	UIWidget* parent = widget->GetParent();
+	if (parent != 0) parent->RemoveWidget(widget);
+	mChildren.Expand() = widget;
+	widget->_SetParentPtr(this);
+}
+
+//============================================================================================================
+// Removes the specified widget from the list of children.
+// NOTE: Doing this does not release the widget. 'delete' the widget if you mean to destroy it.
+//============================================================================================================
+
+bool UIWidget::RemoveWidget (UIWidget* widget)
+{
+	if (mChildren.Remove(widget))
+	{
+		widget->_SetParentPtr(0);
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
 // Find an widget by position that will respond to events
 //============================================================================================================
 
@@ -179,16 +206,6 @@ UIScript* UIWidget::_AddScript (const String& type)
 }
 
 //============================================================================================================
-// INTERNAL: Schedules the specified script for deletion
-//============================================================================================================
-
-void UIWidget::_RemoveScript (UIScript* ptr)
-{
-	if (mScripts.Remove(ptr))
-		mDestroy.Expand() = ptr;
-}
-
-//============================================================================================================
 // Layer manipulation
 //============================================================================================================
 
@@ -207,11 +224,31 @@ void UIWidget::SetLayer (int layer, bool setDirty)
 }
 
 //============================================================================================================
-// Deletes all child areas
+// Destroys this widget. The widget is only deleted immediately if it has no parent.
+// If it does have a parent, as in the case of most widgets, it gets scheduled for deletion instead.
 //============================================================================================================
 
-void UIWidget::DeleteAllChildren()
+void UIWidget::DestroySelf()
 {
+	if (mParent != 0)
+	{
+		// Ensure that the parent knows that the draw queues should be updated
+		SetDirty();
+
+		// Schedule this widget for deletion
+		mParent->_DelayedDelete(this);
+		mParent = 0;
+	}
+}
+
+//============================================================================================================
+// Deletes all child widgets
+//============================================================================================================
+
+void UIWidget::DestroyAllWidgets()
+{
+	mDeletedWidgets.Release();
+
 	if (mChildren.IsValid())
 	{
 		SetDirty();
@@ -230,12 +267,12 @@ void UIWidget::DeleteAllChildren()
 }
 
 //============================================================================================================
-// Removes all attached scripts
+// Deletes all attached scripts
 //============================================================================================================
 
-void UIWidget::RemoveAllScripts()
+void UIWidget::DestroyAllScripts()
 {
-	mDestroy.Release();
+	mDeletedScripts.Release();
 
 	if (mScripts.IsValid())
 	{
@@ -320,7 +357,8 @@ bool UIWidget::_Update (bool areaChanged)
 {
 	bool childrenChanged (false);
 
-	mDestroy.Release();
+	mDeletedWidgets.Release();
+	mDeletedScripts.Release();
 
 	areaChanged |= OnPreUpdate(areaChanged);
 	areaChanged |= OnUpdate(areaChanged);
