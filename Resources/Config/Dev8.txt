@@ -152,7 +152,7 @@ Root
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
 			Scale = 4.0
 			Script = "Slow Twirl"
-			Shader = "Deferred/Decal/Fade_D_N"
+			Shader = "Decal/Fade_D_N"
 
 			Textures = String[]
 			{
@@ -171,7 +171,7 @@ Root
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
 			Scale = 4.0
 			Script = "Slow Twirl"
-			Shader = "Deferred/Decal/Project_D"
+			Shader = "Decal/Project_D"
 
 			Textures = String[]
 			{
