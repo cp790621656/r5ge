@@ -15,7 +15,6 @@ Root
 		Default AF = 8
 		Background Color = 0.000000 0.000000 0.000000 1.000000
 		Fog Range = 50.000000 150.000000
-		Skybox = "LDR Skybox 0"
 
 		Texture = "LDR Skybox 0"
 		{
@@ -56,23 +55,18 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
-		Material = "Torch"
+		Material = "Magma"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
+			Specular = 1.000000 0.648961 0.325635 1.000000
+			Glow = 0.635104
 			ADT = 0.003922
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D"
-				Texture 0 = "Textures/Skins/peasant.jpg"
-			}
-
-			Technique = "Opaque"
-			{
-				Shader = "Forward/D"
-				Texture 0 = "Textures/Skins/peasant.jpg"
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/magma.hdr"
+				Texture 1 = "Textures/Stone/lime_ns.png"
 			}
 		}
 	}
@@ -151,36 +145,6 @@ Root
 						Layer = 1
 					}
 
-					List = "Background"
-					{
-						Left = 0.400000 3.000000
-						Right = 1.000000 -3.000000
-						Top = 0.000000 26.000000
-						Bottom = 0.000000 46.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "LDR Skybox 0"
-						Shadow = true
-						Alignment = "Left"
-						State = "Enabled"
-						Sticky = false
-						Animation Time = 0.150000
-						Menu
-
-						Entries = String[]
-						{
-							"Black Color"
-							"Grey Color"
-							"White Color"
-							"Test Skybox"
-							"LDR Skybox 0"
-							"LDR Skybox 1"
-						}
-
-						Receives Events = true
-						Layer = 0
-					}
-
 					List = "Rendering Method"
 					{
 						Left = 0.400000 3.000000
@@ -208,20 +172,6 @@ Root
 						Layer = 0
 					}
 
-					Slider = "Bloom Slider"
-					{
-						Left = 0.400000 24.000000
-						Right = 1.000000 -5.000000
-						Top = 0.000000 50.000000
-						Bottom = 0.000000 66.000000
-						Alpha = 1.000000
-						Value = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Animation Time = 0.000000
-						Receives Events = true
-						Layer = 0
-					}
-
 					Checkbox = "Bloom Checkbox"
 					{
 						Left = 0.400000 5.000000
@@ -233,10 +183,54 @@ Root
 						Text
 						Shadow = false
 						Alignment = "Left"
-						State = "Enabled"
+						State = "Checked"
 						Animation Time = 0.150000
 						Receives Events = true
 						Tooltip = "Turning this on will make bright areas glow"
+						Layer = 0
+					}
+
+					List = "Background"
+					{
+						Left = 0.400000 3.000000
+						Right = 1.000000 -3.000000
+						Top = 0.000000 26.000000
+						Bottom = 0.000000 46.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "Black Color"
+						Shadow = true
+						Alignment = "Left"
+						State = "Enabled"
+						Sticky = false
+						Animation Time = 0.150000
+						Menu
+
+						Entries = String[]
+						{
+							"Black Color"
+							"Grey Color"
+							"White Color"
+							"Test Skybox"
+							"LDR Skybox 0"
+							"LDR Skybox 1"
+						}
+
+						Receives Events = true
+						Layer = 0
+					}
+
+					Slider = "Bloom Slider"
+					{
+						Left = 0.400000 24.000000
+						Right = 1.000000 -5.000000
+						Top = 0.000000 50.000000
+						Bottom = 0.000000 66.000000
+						Alpha = 1.000000
+						Value = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Animation Time = 0.000000
+						Receives Events = true
 						Layer = 0
 					}
 				}
@@ -260,7 +254,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "540"
+					Text = "480"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -273,7 +267,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.850000
+					Alpha = 0.000000
 					Color = 0.000000 0.000000 0.000000 1.000000
 					Receives Events = true
 					Layer = 0
@@ -303,7 +297,13 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/torch.r5a"
+			Source = "Models/peasant.r5a"
+
+			Limb = "Peasant"
+			{
+				Mesh = "Peasant"
+				Material = "Magma"
+			}
 		}
 	}
 
@@ -311,17 +311,17 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.008815 0.047899 1.655771
-			Rotation = -0.028814 0.169545 -0.971176 0.165047
+			Position = 0.192536 0.228311 6.250441
+			Rotation = -0.021175 0.159781 -0.978371 0.129660
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 6.994230 50.000000
+			Dolly = 0.000000 17.000000 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.016471 -0.985999 -0.168443 0.002814
+				Rotation = -0.087426 0.000577 0.006571 -0.996597
 				Scale = 1.000000
 				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
@@ -373,7 +373,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/building.r5b"
 		"Models/fern.r5b"
 		"Models/peasant.r5a"
 		"Models/tree.r5a"
@@ -383,5 +382,6 @@ Root
 		"Models/egg.r5a"
 		"Models/box.r5a"
 		"Models/torch.r5a"
+		"Models/fern.r5a"
 	}
 }

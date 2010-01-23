@@ -16,7 +16,7 @@ Root
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/D"
-				Texture 0 = "Textures/fern.png"
+				Texture 0 = "Textures/Plants/fern.png"
 			}
 
 			Technique = "Transparent"
@@ -29,8 +29,6 @@ Root
 
 	Core
 	{
-		Serializable = false
-
 		Skeleton = "Fern Root"
 		{
 			Bone = 0
@@ -151,12 +149,13 @@ Root
 					}
 				}
 			}
-			
+
 			Animation = "Idle"
 			{
 				Frames = 0 6
-				Duration = 0.0 9.0 0.0
-				Loop = true
+				Duration = 0.000000 9.000000 0.000000
+				Looping = true
+				Layer = 0
 			}
 		}
 
