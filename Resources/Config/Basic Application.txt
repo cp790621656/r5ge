@@ -80,7 +80,7 @@ Root
 				Scale = 1.000000
 				Layer = 10
 				Color = 0xffffffff
-				Texture = "light.jpg"
+				Texture = "Textures/Billboards/light.jpg"
 				Technique = "Glow"
 			}
 		}

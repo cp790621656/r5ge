@@ -22,7 +22,7 @@ Root
 			Technique = "Transparent"
 			{
 				Shader = "Forward/D"
-				Texture 0 = "Textures/fern.png"
+				Texture 0 = "Textures/Plants/fern.png"
 			}
 		}
 	}
