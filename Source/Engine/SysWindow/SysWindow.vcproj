@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
-			IntermediateDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
 			ConfigurationType="4"
 			>
 			<Tool
@@ -59,8 +59,8 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/IGNORE:4221"
-				OutputFile="$(SolutionDir)..\..\$(ConfigurationName)\Win\lib\R5_$(ProjectName).lib"
-				AdditionalLibraryDirectories="$(SolutionDir)..\..\$(ConfigurationName)\Win\lib"
+				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\lib\R5_$(ProjectName).lib"
+				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -80,8 +80,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
-			IntermediateDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
 			ConfigurationType="4"
 			WholeProgramOptimization="1"
 			>
@@ -117,8 +117,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)..\..\$(ConfigurationName)\Win\lib\R5_$(ProjectName).lib"
-				AdditionalLibraryDirectories="$(SolutionDir)..\..\$(ConfigurationName)\Win\lib"
+				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\lib\R5_$(ProjectName).lib"
+				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

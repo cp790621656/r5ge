@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
-			IntermediateDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="0"
 			>
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)..\..\$(ConfigurationName)\Win\bin\$(ProjectName).exe"
+				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\bin\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)..\..\$(ConfigurationName)\Win\lib"
+				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				ProgramDatabaseFile="$(IntDir)\$(TargetName).pdb"
@@ -93,8 +93,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
-			IntermediateDirectory="$(SolutionDir)..\..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)..\$(ConfigurationName)\Win\obj\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="0"
 			WholeProgramOptimization="1"
@@ -131,8 +131,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)..\..\$(ConfigurationName)\Win\bin\$(ProjectName).exe"
-				AdditionalLibraryDirectories="$(SolutionDir)..\..\$(ConfigurationName)\Win\lib"
+				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\bin\$(ProjectName).exe"
+				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				LinkTimeCodeGeneration="0"
