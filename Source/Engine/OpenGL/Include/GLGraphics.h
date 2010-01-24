@@ -18,6 +18,7 @@ private:
 	};
 
 	typedef Array<DelegateEntry> Delegates;
+	typedef ResourceArray<GLSubShader> SubShaders;
 
 protected:
 
@@ -35,11 +36,12 @@ protected:
 	Textures			mTextures;
 	Shaders				mShaders;
 	Fonts				mFonts;
+	SubShaders			mSubShaders;
 
 public:
 
 	GLGraphics();
-	~GLGraphics();
+	virtual ~GLGraphics();
 
 private:
 
@@ -55,6 +57,12 @@ private:
 	void SetUniform_WRM			(const String& name, Uniform& uniform);
 
 public:
+
+	// Finds the specified sub-shader's source
+	String FindSubShaderSource (const String& file);
+
+	// Gets the specified sub-shader entry
+	GLSubShader* GetSubShader (const String& filename, byte type = GLSubShader::Type::Invalid, bool createIfMissing = true);
 
 	// Returns whether the specified point would be visible if rendered
 	virtual bool IsPointVisible (const Vector3f& v);

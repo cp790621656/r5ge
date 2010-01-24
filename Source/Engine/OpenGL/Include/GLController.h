@@ -92,7 +92,7 @@ protected:
 	const IRenderTarget*	mTarget;		// Active rendering target
 	const ITechnique*		mTechnique;		// Active rendering technique
 	const IMaterial*		mMaterial;		// Active material
-	const IShader*			mShader;		// Active shader
+	const GLShader*			mShader;		// Active shader
 	const ITexture*			mSkybox;		// Active skybox cubemap texture
 
 	Array<TextureUnit>		mTu;			// Texture units
@@ -200,7 +200,7 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false );
 	virtual bool SetActiveMaterial			( const IMaterial* ptr );
 	virtual bool SetActiveMaterial			( const ITexture* ptr );
-	virtual uint SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false );
+	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false );
 	virtual void SetActiveSkybox			( const ITexture* ptr ) { mSkybox = ptr; }
 	virtual void SetActiveColor				( const Color& c );
 	virtual void SetActiveProjection		( uint projection );

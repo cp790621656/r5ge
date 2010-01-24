@@ -64,7 +64,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_NS"
+				Shader = "Deferred/Skinned_D_NS"
 				Texture 0 = "Textures/Stone/magma.hdr"
 				Texture 1 = "Textures/Stone/lime_ns.png"
 			}
@@ -254,7 +254,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "480"
+					Text = "488"
 					Shadow = true
 					Alignment = "Right"
 					Receives Events = false
@@ -312,11 +312,11 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.192536 0.228311 6.250441
-			Rotation = -0.021175 0.159781 -0.978371 0.129660
+			Rotation = -0.012642 0.080875 -0.984686 0.153928
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 17.000000 50.000000
+			Dolly = 0.000000 18.000010 50.000000
 
 			Directional Light = "Default Light"
 			{

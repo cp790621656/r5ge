@@ -2750,7 +2750,6 @@ void ModelViewer::_SetMatShader (const String& name)
 		if (shader != 0 && !shader->IsValid())
 		{
 			SetStatusText("Unable to load the requested shader", Color3f(1.0f, 0.0f, 0.0f));
-			shader->Release();
 			shader = 0;
 		}
 

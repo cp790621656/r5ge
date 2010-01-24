@@ -1,3 +1,5 @@
+// R5_INCLUDE Shaders/Deferred/D.frag
+
 varying vec2 _texCoord;
 varying vec3 _normal;
 

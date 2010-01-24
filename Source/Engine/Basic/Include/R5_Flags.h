@@ -16,8 +16,10 @@ protected:
 public:
 	Flags() : mVal(0) {}
 
-	inline void Set (uint flags)				{ mVal = flags; }
-	inline void Set (uint flags, bool value)	{ if (value) mVal |= flags; else mVal &= ~flags; }
-	inline uint Get () const					{ return mVal; }
-	inline bool Get (uint flags) const			{ return (mVal & flags) != 0; }
+	void Set (uint flags)				{ mVal = flags; }
+	void Set (uint flags, bool value)	{ if (value) mVal |= flags; else mVal &= ~flags; }
+	uint Get () const					{ return mVal; }
+	bool Get (uint flags) const			{ return (mVal & flags) != 0; }
+	void Include (const Flags& flags)	{ mVal |= flags.mVal; }
+	void Clear()						{ mVal = 0; }
 };

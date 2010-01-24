@@ -1,3 +1,5 @@
+// R5_INCLUDE Shaders/Forward/D_NS.frag
+
 attribute vec3 R5_tangent;
 
 varying vec2 _texCoord;
@@ -17,10 +19,10 @@ void main()
 	// R5_IMPLEMENT_SKINNING vertex normal tangent
     // R5_IMPLEMENT_INSTANCING vertex normal tangent
 
-	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
-    _texCoord   	= gl_MultiTexCoord0.xy;
-    _eyeDir     	= (gl_ModelViewMatrix * vertex).xyz;
-    _normal     	= gl_NormalMatrix * normal;
-    _tangent    	= gl_NormalMatrix * tangent;
-    _fogFactor  	= clamp((gl_Position.z - gl_Fog.start) * gl_Fog.scale, 0.0, 1.0);
+	gl_Position = gl_ModelViewProjectionMatrix * vertex;
+    _texCoord   = gl_MultiTexCoord0.xy;
+    _eyeDir     = (gl_ModelViewMatrix * vertex).xyz;
+    _normal     = gl_NormalMatrix * normal;
+    _tangent    = gl_NormalMatrix * tangent;
+    _fogFactor  = clamp((gl_Position.z - gl_Fog.start) * gl_Fog.scale, 0.0, 1.0);
 }

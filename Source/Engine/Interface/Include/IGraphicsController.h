@@ -196,7 +196,7 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false )=0;
 	virtual bool SetActiveMaterial			( const IMaterial* ptr )=0;
 	virtual bool SetActiveMaterial			( const ITexture* ptr )=0;
-	virtual uint SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false )=0;
+	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false )=0;
 	virtual void SetActiveSkybox			( const ITexture* ptr )=0;
 	virtual void SetActiveColor				( const Color& c )=0;
 	virtual void SetActiveProjection		( uint projection )=0;

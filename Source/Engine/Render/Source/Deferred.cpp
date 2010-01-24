@@ -14,34 +14,13 @@ void AddDirectionalLights (IGraphics* graphics, const Light::List& lights, const
 		// No depth test as directional light has no volume
 		graphics->SetDepthTest(false);
 		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		graphics->SetActiveShader(shader);
 
-		// Run through all point lights
-		for (uint i = 0, count = 0; i < lights.GetSize(); ++i)
+		// Run through all directional lights
+		for (uint i = 0; i < lights.GetSize(); ++i)
 		{
-			graphics->SetActiveLight( count++, lights[i].mLight );
-
-			// If we're at the end of the array, there's additional work to be done
-			bool theEnd = (i + 1) == lights.GetSize();
-
-			// If we're at max number of lights, or at the end of the lights array
-			if (count == maxLights || theEnd)
-			{
-				// Deactivate any trailing lights
-				if (theEnd)
-				{
-					for (uint b = count; b < maxLights; ++b)
-						graphics->SetActiveLight( b, 0 );
-				}
-
-				// Shader returns the true maximum number of lights it supports
-				maxLights = graphics->SetActiveShader(shader);
-				if (maxLights == 0) maxLights = 1;
-				i -= count - maxLights;
-
-				// Draw a full screen quad, effectively rendering the lights using the active shader
-				graphics->Draw( IGraphics::Drawable::InvertedQuad );
-				count = 0;
-			}
+			graphics->SetActiveLight(i, lights[i].mLight);
+			graphics->Draw( IGraphics::Drawable::InvertedQuad );
 		}
 	}
 }
@@ -121,11 +100,11 @@ void AddPointLights (IGraphics* graphics, const Light::List& lights, const IShad
 			// fact that OpenGL transforms light coordinates by the current ModelView matrix.
 			light.mPos = Vector3f();
 
-			// Activate the light at the matrix-transformed origin
-			graphics->SetActiveLight(0, &light);
-
 			// First light activates the shader
 			if (i == 0) graphics->SetActiveShader(shader);
+
+			// Activate the light at the matrix-transformed origin
+			graphics->SetActiveLight(0, &light);
 
 			if (dist)
 			{

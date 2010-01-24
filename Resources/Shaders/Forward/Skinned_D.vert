@@ -1,3 +1,5 @@
+// R5_INCLUDE Shaders/Forward/D.frag
+
 varying vec2 _texCoord;
 varying vec3 _eyeDir, _normal;
 varying float _fogFactor;

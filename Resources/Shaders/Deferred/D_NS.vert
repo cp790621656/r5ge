@@ -6,7 +6,7 @@ varying vec3 _tangent;
 
 void main()
 {
-    gl_Position = ftransform();
+    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
     _texCoord   = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     _normal     = gl_NormalMatrix * gl_Normal;
     _tangent    = gl_NormalMatrix * R5_tangent;

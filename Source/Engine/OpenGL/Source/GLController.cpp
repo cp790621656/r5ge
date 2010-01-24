@@ -952,27 +952,30 @@ bool GLController::SetActiveMaterial (const ITexture* ptr)
 // Changes the currently active shader
 //============================================================================================================
 
-uint GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms)
+bool GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms)
 {
-	IShader::ActivationResult result;
-
 	// Which shader is currently active is kept inside the Shader.cpp file,
 	// so we don't check for inequality here.
 	if (ptr != 0)
 	{
+		GLShader* shader = (GLShader*)ptr;
 		mMaterial = (const IMaterial*)(-1);
-		mShader = ptr;
-		result = mShader->Activate(mActiveLightCount, forceUpdateUniforms);
-		CHECK_GL_ERROR;
-		if (!result.mReused) ++mStats.mShaderSwitches;
+		mShader = shader;
+
+		if (shader->Activate(forceUpdateUniforms))
+		{
+			++mStats.mShaderSwitches;
+		}
+		return true;
 	}
 	else if (mShader != 0)
 	{
 		mShader->Deactivate();
 		mShader = 0;
 		mMaterial = (const IMaterial*)(-1);
+		return true;
 	}
-	return result.mCount;
+	return false;
 }
 
 //============================================================================================================

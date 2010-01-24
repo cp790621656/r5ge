@@ -170,6 +170,54 @@ void GLGraphics::SetUniform_WRM (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
+// Finds the specified sub-shader's source
+//============================================================================================================
+
+String GLGraphics::FindSubShaderSource (const String& file)
+{
+	String path (file);
+
+	if (System::FileExists(path)) return path;
+
+	if (!path.BeginsWith("Shaders/")) path = String("Shaders/") + path;
+	if (System::FileExists(path)) return path;
+
+	return "";
+}
+
+//============================================================================================================
+// Gets the specified sub-shader entry
+//============================================================================================================
+
+GLSubShader* GLGraphics::GetSubShader (const String& filename, byte type, bool createIfMissing)
+{
+	GLSubShader* sub (0);
+
+	for (uint i = mSubShaders.GetSize(); i > 0; )
+	{
+		sub = mSubShaders[--i];
+		if (sub->mSource == filename) return sub;
+	}
+
+	if (createIfMissing)
+	{
+		// Create a new sub-shader entry
+		sub				= new GLSubShader();
+		sub->mGraphics	= this;
+		sub->mSource	= FindSubShaderSource(filename);
+		sub->mType		= type;
+
+		// Add this shader to the managed list
+		mSubShaders.Expand() = sub;
+
+		// If the shader loads successfully, preprocess it
+		if (sub->mSource.IsValid() && sub->mCode.Load(sub->mSource)) sub->Preprocess();
+		return sub;
+	}
+	return 0;
+}
+
+//============================================================================================================
 // Returns whether the specified point would be visible if rendered
 //============================================================================================================
 
@@ -360,6 +408,7 @@ void GLGraphics::Release()
 
 		mFonts.Release();
 		mShaders.Release();
+		mSubShaders.Release();
 		mTextures.Release();
 		mMaterials.Release();
 		mTechs.Release();
@@ -1012,7 +1061,7 @@ ITexture* GLGraphics::GetTexture (const String& name, bool createIfMissing)
 
 IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 {
-	IShader* shader = 0;
+	GLShader* shader = 0;
 
 	if (name.IsValid())
 	{
@@ -1020,9 +1069,9 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 		{
 			for (uint i = 0; i < mShaders.GetSize(); ++i)
 			{
-				shader = mShaders[i];
+				shader = (GLShader*)mShaders[i];
 
-				if (shader != 0 && shader->GetName() == name)
+				if (shader != 0 && shader->mName == name)
 				{
 					mShaders.Unlock();
 					return shader;
@@ -1031,18 +1080,23 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 
 			if (createIfMissing)
 			{
-				shader = new GLShader(name);
-				shader->RegisterUniform( "R5_time",						 &SetUniform_Time );
-				shader->RegisterUniform( "R5_worldEyePosition",			 bind(&GLGraphics::SetUniform_EyePos,		this) );
-				shader->RegisterUniform( "R5_pixelSize",				 bind(&GLGraphics::SetUniform_PixelSize,	this) );
-				shader->RegisterUniform( "R5_clipRange",				 bind(&GLGraphics::SetUniform_ClipRange,	this) );
-				shader->RegisterUniform( "R5_projectionMatrix",			 bind(&GLGraphics::SetUniform_PM,			this) );
-				shader->RegisterUniform( "R5_inverseViewMatrix",		 bind(&GLGraphics::SetUniform_IVM,			this) );
-				shader->RegisterUniform( "R5_inverseProjMatrix",		 bind(&GLGraphics::SetUniform_IPM,			this) );
-				shader->RegisterUniform( "R5_inverseViewRotationMatrix", bind(&GLGraphics::SetUniform_IVRM,			this) );
-				shader->RegisterUniform( "R5_worldTransformMatrix",		 bind(&GLGraphics::SetUniform_WTM,			this) );
-				shader->RegisterUniform( "R5_worldRotationMatrix",		 bind(&GLGraphics::SetUniform_WRM,			this) );
-				mShaders.Expand() = shader;
+				// Add this new shader
+				mShaders.Expand() = (shader = new GLShader());
+
+				// Initialize it
+				if (shader->Init(this, name))
+				{
+					shader->RegisterUniform( "R5_time",						 &SetUniform_Time );
+					shader->RegisterUniform( "R5_worldEyePosition",			 bind(&GLGraphics::SetUniform_EyePos,		this) );
+					shader->RegisterUniform( "R5_pixelSize",				 bind(&GLGraphics::SetUniform_PixelSize,	this) );
+					shader->RegisterUniform( "R5_clipRange",				 bind(&GLGraphics::SetUniform_ClipRange,	this) );
+					shader->RegisterUniform( "R5_projectionMatrix",			 bind(&GLGraphics::SetUniform_PM,			this) );
+					shader->RegisterUniform( "R5_inverseViewMatrix",		 bind(&GLGraphics::SetUniform_IVM,			this) );
+					shader->RegisterUniform( "R5_inverseProjMatrix",		 bind(&GLGraphics::SetUniform_IPM,			this) );
+					shader->RegisterUniform( "R5_inverseViewRotationMatrix", bind(&GLGraphics::SetUniform_IVRM,			this) );
+					shader->RegisterUniform( "R5_worldTransformMatrix",		 bind(&GLGraphics::SetUniform_WTM,			this) );
+					shader->RegisterUniform( "R5_worldRotationMatrix",		 bind(&GLGraphics::SetUniform_WRM,			this) );
+				}
 			}
 			else shader = 0;
 		}
@@ -1186,7 +1240,6 @@ bool GLGraphics::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		else if (tag == ITexture::ClassID())	EXECUTE(ITexture,	GetTexture)
 		else if (tag == IMaterial::ClassID())	EXECUTE(IMaterial,	GetMaterial)
 		else if (tag == IFont::ClassID())		EXECUTE(IFont,		GetFont)
-		else if (tag == IShader::ClassID())		EXECUTE(IShader,	GetShader)
 	}
 
 	// If a skybox was found at some point, set it now
@@ -1217,7 +1270,6 @@ bool GLGraphics::SerializeTo (TreeNode& root) const
 	SAVE(mTextures);
 	SAVE(mMaterials);
 	SAVE(mFonts);
-	SAVE(mShaders);
 
 	return true;
 }
