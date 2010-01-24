@@ -9,8 +9,6 @@ void AddDirectionalLights (IGraphics* graphics, const Light::List& lights, const
 {
 	if (lights.IsValid())
 	{
-		uint maxLights = 8;
-
 		// No depth test as directional light has no volume
 		graphics->SetDepthTest(false);
 		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
