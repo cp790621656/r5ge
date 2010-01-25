@@ -52,6 +52,9 @@ private:
 	// INTERNAL: Updates registered uniforms bound to the shader
 	void _UpdateUniforms();
 
+	// INTERNAL: Updates a single uniform entry
+	bool _UpdateUniform (uint glID, const Uniform& uni) const;
+
 public:
 
 	GLShader() : mGraphics(0), mProgram(0) {}

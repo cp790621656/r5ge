@@ -25,6 +25,7 @@ DeviceInfo::DeviceInfo() :
 	mMixedAttachments		(false),
 	mOcclusion				(false),
 	mShaders				(false),
+	mGeometryShaders		(false),
 	mMaxTextureUnits_FFP	(0),
 	mMaxTextureUnits_Shader	(0),
 	mMaxTextureCoords		(0),
@@ -113,7 +114,7 @@ uint glGetInteger(uint id)
 }
 
 //===============================================================================================================
-// Retrieves some descriptive information about an OpenGL error, if it occured
+// Retrieves some descriptive information about an OpenGL error, if it occurred
 //===============================================================================================================
 
 const char* glGetErrorString()
@@ -297,6 +298,12 @@ bool InitOpenGL (float requiredVersion)
 							if (supported = g_caps.mShaders)
 							{
 								g_caps.mVersion = 2.0f;
+								g_caps.mGeometryShaders = CheckExtension("GL_ARB_geometry_shader4", false);
+
+								if (g_caps.mGeometryShaders)
+								{
+									g_caps.mVersion = 3.2f;
+								}
 							}
 						}
 					}

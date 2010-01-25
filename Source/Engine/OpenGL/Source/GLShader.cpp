@@ -15,16 +15,17 @@ uint g_activeProgram = 0;
 String FindShader (const String& file, const char* extension)
 {
 	String path (file);
-
+	path << extension;
 	if (System::FileExists(path)) return path;
 
-	path = file + extension;
-	if (System::FileExists(path)) return path;
+	if (!path.BeginsWith("Shaders/"))
+	{
+		path = String("Shaders/") + path;
+		if (System::FileExists(path)) return path;
+	}
 
-	if (!path.BeginsWith("Shaders/")) path = String("Shaders/") + path;
-	if (System::FileExists(path)) return path;
-
-	path = String("Shaders/") + System::GetFilenameFromPath(file);
+	path = String("Shaders/");
+	path << System::GetFilenameFromPath(file);
 	if (System::FileExists(path)) return path;
 
 	path << extension;
@@ -72,62 +73,6 @@ uint GetUniformID (const String& name)
 }
 
 //============================================================================================================
-// Updates a uniform entry
-//============================================================================================================
-
-bool UpdateUniform (uint glID, const Uniform& uni)
-{
-	if (glID >= 0)
-	{
-		switch (uni.mType)
-		{
-		case Uniform::Type::Float1:
-			glUniform1f(glID, uni.mVal[0]);
-			break;
-		case Uniform::Type::Float2:
-			glUniform2f(glID, uni.mVal[0], uni.mVal[1]);
-			break;
-		case Uniform::Type::Float3:
-			glUniform3f(glID, uni.mVal[0], uni.mVal[1], uni.mVal[2]);
-			break;
-		case Uniform::Type::Float4:
-			glUniform4f(glID, uni.mVal[0], uni.mVal[1], uni.mVal[2], uni.mVal[3]);
-			break;
-		case Uniform::Type::Float9:
-			glUniformMatrix3fv(glID, 1, 0, uni.mVal);
-			break;
-		case Uniform::Type::Float16:
-			glUniformMatrix4fv(glID, 1, 0, uni.mVal);
-			break;
-		case Uniform::Type::ArrayFloat1:
-			glUniform1fv(glID, uni.mElements, (float*)uni.mPtr);
-			break;
-		case Uniform::Type::ArrayFloat2:
-			glUniform2fv(glID, uni.mElements, (float*)uni.mPtr);
-			break;
-		case Uniform::Type::ArrayFloat3:
-			glUniform3fv(glID, uni.mElements, (float*)uni.mPtr);
-			break;
-		case Uniform::Type::ArrayFloat4:
-			glUniform4fv(glID, uni.mElements, (float*)uni.mPtr);
-			break;
-		case Uniform::Type::ArrayFloat9:
-			glUniformMatrix3fv(glID, uni.mElements, 0, (float*)uni.mPtr);
-			break;
-		case Uniform::Type::ArrayFloat16:
-			glUniformMatrix4fv(glID, uni.mElements, 0, (float*)uni.mPtr);
-			break;
-		case Uniform::Type::ArrayInt:
-			glUniform1iv(glID, uni.mElements, (int*)uni.mPtr);
-			break;
-		}
-		CHECK_GL_ERROR;
-		return true;
-	}
-	return false;
-}
-
-//============================================================================================================
 // Deleting the shader should also detach all sub-shaders and delete the GLSL program
 //============================================================================================================
 
@@ -158,21 +103,40 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	mGraphics	= graphics;
 	mName		= name;
 
-	String vert	(::FindShader(name, ".vert"));
-	String frag (::FindShader(name, ".frag"));
-
-	if (vert.IsValid())
+	if (System::FileExists(name))
 	{
-		GLSubShader* sub = mGraphics->GetSubShader(vert);
+		// Exact match -- use this shader
+		GLSubShader* sub = mGraphics->GetSubShader(name);
 		mSubShaders.Expand() = sub;
 		sub->AppendDependenciesTo(mSubShaders);
 	}
-
-	if (frag.IsValid())
+	else
 	{
-		GLSubShader* sub = mGraphics->GetSubShader(frag);
-		mSubShaders.Expand() = sub;
-		sub->AppendDependenciesTo(mSubShaders);
+		// No exact match -- try to find the common shader types
+		String vert	(::FindShader(name, ".vert"));
+		String frag (::FindShader(name, ".frag"));
+		String geom (::FindShader(name, ".geom"));
+
+		if (vert.IsValid())
+		{
+			GLSubShader* sub = mGraphics->GetSubShader(vert);
+			mSubShaders.Expand() = sub;
+			sub->AppendDependenciesTo(mSubShaders);
+		}
+
+		if (frag.IsValid() && frag != vert)
+		{
+			GLSubShader* sub = mGraphics->GetSubShader(frag);
+			mSubShaders.Expand() = sub;
+			sub->AppendDependenciesTo(mSubShaders);
+		}
+
+		if (geom.IsValid() && geom != vert && geom != frag)
+		{
+			GLSubShader* sub = mGraphics->GetSubShader(geom);
+			mSubShaders.Expand() = sub;
+			sub->AppendDependenciesTo(mSubShaders);
+		}
 	}
 	return mSubShaders.IsValid();
 }
@@ -308,7 +272,7 @@ bool GLShader::_Link()
 		for (uint i = 0; i < mSubShaders.GetSize(); ++i)
 		{
 			GLSubShader* sub = mSubShaders[i];
-			const char* type = sub->mType == GLSubShader::Type::Vertex ? "Vertex" : "Fragment";
+			const char* type = (sub->mType == GLSubShader::Type::Vertex) ? "Vertex" : "Fragment";
 			if (sub->mType == GLSubShader::Type::Geometry) type = "Geometry";
 			System::Log("          - Using '%s' (%s)", sub->mSource.GetBuffer(), type);
 		}
@@ -340,6 +304,7 @@ bool GLShader::_Link()
 
 	// Use this program
 	glUseProgram(g_activeProgram = mProgram);
+	CHECK_GL_ERROR;
 
 	// Set the constant values of texture units in the shader
 	::SetUniform1i(mProgram, "R5_texture0", 0);
@@ -350,6 +315,7 @@ bool GLShader::_Link()
 	::SetUniform1i(mProgram, "R5_texture5", 5);
 	::SetUniform1i(mProgram, "R5_texture6", 6);
 	::SetUniform1i(mProgram, "R5_texture7", 7);
+	CHECK_GL_ERROR;
 
 	// Update the uniforms
 	_UpdateUniforms();
@@ -378,10 +344,66 @@ void GLShader::_UpdateUniforms()
 			{
 				uni.mType = Uniform::Type::Invalid;
 				entry.mDelegate(entry.mName, uni);
-				::UpdateUniform(entry.mGLID, uni);
+				_UpdateUniform(entry.mGLID, uni);
 			}
 		}
 	}
+}
+
+//============================================================================================================
+// INTERNAL: Updates a single uniform entry
+//============================================================================================================
+
+bool GLShader::_UpdateUniform (uint glID, const Uniform& uni) const
+{
+	if (glID >= 0)
+	{
+		switch (uni.mType)
+		{
+		case Uniform::Type::Float1:
+			glUniform1f(glID, uni.mVal[0]);
+			break;
+		case Uniform::Type::Float2:
+			glUniform2f(glID, uni.mVal[0], uni.mVal[1]);
+			break;
+		case Uniform::Type::Float3:
+			glUniform3f(glID, uni.mVal[0], uni.mVal[1], uni.mVal[2]);
+			break;
+		case Uniform::Type::Float4:
+			glUniform4f(glID, uni.mVal[0], uni.mVal[1], uni.mVal[2], uni.mVal[3]);
+			break;
+		case Uniform::Type::Float9:
+			glUniformMatrix3fv(glID, 1, 0, uni.mVal);
+			break;
+		case Uniform::Type::Float16:
+			glUniformMatrix4fv(glID, 1, 0, uni.mVal);
+			break;
+		case Uniform::Type::ArrayFloat1:
+			glUniform1fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat2:
+			glUniform2fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat3:
+			glUniform3fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat4:
+			glUniform4fv(glID, uni.mElements, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat9:
+			glUniformMatrix3fv(glID, uni.mElements, 0, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayFloat16:
+			glUniformMatrix4fv(glID, uni.mElements, 0, (float*)uni.mPtr);
+			break;
+		case Uniform::Type::ArrayInt:
+			glUniform1iv(glID, uni.mElements, (int*)uni.mPtr);
+			break;
+		}
+		CHECK_GL_ERROR;
+		return true;
+	}
+	return false;
 }
 
 //============================================================================================================
@@ -390,6 +412,8 @@ void GLShader::_UpdateUniforms()
 
 bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 {
+	ASSERT(g_activeProgram == mProgram, "Setting a uniform on an incorrect program?");
+
 	for (uint i = mUniforms.GetSize(); i > 0; )
 	{
 		UniformEntry& entry = mUniforms[--i];
@@ -399,7 +423,7 @@ bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 			if (entry.mGLID == -2) entry.mGLID = ::GetUniformID(name);
 			if (entry.mGLID != -1)
 			{
-				::UpdateUniform(entry.mGLID, uniform);
+				_UpdateUniform(entry.mGLID, uniform);
 				return true;
 			}
 		}
@@ -413,7 +437,7 @@ bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 		
 		if (entry.mGLID != -1)
 		{
-			::UpdateUniform(entry.mGLID, uniform);
+			_UpdateUniform(entry.mGLID, uniform);
 			return true;
 		}
 	}

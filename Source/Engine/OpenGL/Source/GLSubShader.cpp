@@ -266,7 +266,8 @@ GLSubShader::~GLSubShader()
 void GLSubShader::Preprocess()
 {
 	// Figure out what type of shader this is
-	if (mCode.Contains("gl_FragData") || mCode.Contains("gl_FragColor")) mType = Type::Fragment;
+	if (mCode.Contains("EndPrimitive();")) mType = Type::Geometry;
+	else if (mCode.Contains("gl_FragData") || mCode.Contains("gl_FragColor")) mType = Type::Fragment;
 	else if (mCode.Contains("gl_Position")) mType = Type::Vertex;
 
 	// Preprocess all macros
@@ -338,6 +339,7 @@ bool GLSubShader::_Compile()
 {
 	ASSERT(mGLID == -1, "Trying to compile a valid shader?");
 	uint type = (mType == Type::Fragment) ? GL_FRAGMENT_SHADER : GL_VERTEX_SHADER;
+	if (mType == Type::Geometry) type = GL_GEOMETRY_SHADER;
 
 	// Create the shader
 	mGLID = glCreateShader(type);

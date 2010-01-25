@@ -25,6 +25,10 @@
 #define GL_DEPTH_STENCIL 0x84F9
 #endif
 
+#ifndef GL_GEOMETRY_SHADER
+#define GL_GEOMETRY_SHADER 0x8DD9
+#endif
+
 //==========================================================================================================
 // Retrieves some descriptive information about an OpenGL error, if it occured
 //==========================================================================================================
@@ -68,6 +72,7 @@ struct DeviceInfo
 	bool	mAlphaAttachments;			// Support for alpha textures assigned to FBO as color attachments
 	bool	mOcclusion;					// Support for occlusion queries
 	bool	mShaders;					// Support for GLSL shaders
+	bool	mGeometryShaders;			// Support for geometry shaders (GeForce 8+)
 	uint	mMaxTextureUnits_FFP;		// Maximum number of texture units that can be used with the fixed-function pipeline
 	uint	mMaxTextureUnits_Shader;	// Maximum number of texture units that can be used in shaders
 	uint	mMaxTextureCoords;			// Maximum number of texture coordinate arrays
