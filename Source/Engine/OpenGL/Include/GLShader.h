@@ -39,6 +39,17 @@ private:
 	friend class GLGraphics;
 	friend class GLController;
 
+	// Delegate functions for common shader uniforms
+	void SetUniform_EyePos		(const String& name, Uniform& uniform);
+	void SetUniform_PixelSize	(const String& name, Uniform& uniform);
+	void SetUniform_ClipRange	(const String& name, Uniform& uniform);
+	void SetUniform_PM			(const String& name, Uniform& uniform);
+	void SetUniform_IVM			(const String& name, Uniform& uniform);
+	void SetUniform_IPM			(const String& name, Uniform& uniform);
+	void SetUniform_IVRM		(const String& name, Uniform& uniform);
+	void SetUniform_WTM			(const String& name, Uniform& uniform);
+	void SetUniform_WRM			(const String& name, Uniform& uniform);
+
 	// Should only be accessible through GLGraphics
 	bool Init (GLGraphics* graphics, const String& name);
 
@@ -73,6 +84,9 @@ private:
 
 	// INTERNAL: Updates a single uniform entry
 	bool _UpdateUniform (uint glID, const Uniform& uni) const;
+
+	// INTERNAL: Adds a new registered uniform value without checking to see if it already exists
+	void _InsertUniform (const String& name, const SetUniformDelegate& fnct);
 
 public:
 

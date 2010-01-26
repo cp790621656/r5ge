@@ -34,143 +34,6 @@ GLGraphics::~GLGraphics()
 }
 
 //============================================================================================================
-// Shader callback function for R5_time uniform
-//------------------------------------------------------------------------------------------------------------
-// R5_time.x = Current time in seconds
-// R5_time.y = Irregular wavy sin(time), used for wind
-// R5_time.z = sin(R5_time.z) gives a 360 degree rotation every 1000 seconds
-//============================================================================================================
-
-void SetUniform_Time (const String& name, Uniform& uniform)
-{
-	uniform.mType = Uniform::Type::Float3;
-	uniform.mVal[0] = Time::GetTime();
-	uniform.mVal[1] = (0.6f * Float::Sin(uniform.mVal[0] * 0.421f) +
-					   0.3f * Float::Sin(uniform.mVal[0] * 1.737f) +
-					   0.1f * Float::Cos(uniform.mVal[0] * 2.786f)) * 0.5f + 0.5f;
-	uniform.mVal[2] = Float::Fract(uniform.mVal[0] * 0.001f) * TWOPI;
-}
-
-//============================================================================================================
-// Shader callback function for R5_eyePos
-//============================================================================================================
-
-void GLGraphics::SetUniform_EyePos (const String& name, Uniform& uniform)
-{
-	uniform = mEye;
-}
-
-//============================================================================================================
-// Shader callback function for R5_pixelSize
-//------------------------------------------------------------------------------------------------------------
-// Can be used to figure out 0-1 range full-screen texture coordinates in the fragment shader:
-// gl_FragCoord.xy * R5_pixelSize
-//============================================================================================================
-
-void GLGraphics::SetUniform_PixelSize (const String& name, Uniform& uniform)
-{
-	Vector2f size ( mTarget ? mTarget->GetSize() : mSize );
-	uniform.mType = Uniform::Type::Float2;
-	uniform.mVal[0] = 1.0f / size.x;
-	uniform.mVal[1] = 1.0f / size.y;
-}
-
-//============================================================================================================
-// Shader callback function for R5_clipRange
-//------------------------------------------------------------------------------------------------------------
-// R5_clipRange.x = near
-// R5_clipRange.y = far
-// R5_clipRange.z = near * far
-// R5_clipRange.w = far - near
-//------------------------------------------------------------------------------------------------------------
-// Formula used to calculate fragment's linear depth:
-//------------------------------------------------------------------------------------------------------------
-// (R5_clipRange.z / (R5_clipRange.y - gl_FragCoord.z * R5_clipRange.w) - R5_clipRange.x) / R5_clipRange.w;
-//============================================================================================================
-
-void GLGraphics::SetUniform_ClipRange (const String& name, Uniform& uniform)
-{
-	uniform = Quaternion(mClipRange.x,
-						 mClipRange.y,
-						 mClipRange.x * mClipRange.y,
-						 mClipRange.y - mClipRange.x);
-}
-
-//============================================================================================================
-// Shader callback for R5_projectionMatrix
-//============================================================================================================
-
-void GLGraphics::SetUniform_PM (const String& name, Uniform& uniform)
-{
-	uniform = GetProjectionMatrix();
-}
-
-//============================================================================================================
-// Shader callback for R5_inverseViewMatrix
-//============================================================================================================
-
-void GLGraphics::SetUniform_IVM (const String& name, Uniform& uniform)
-{
-	uniform = GetInverseModelViewMatrix();
-}
-
-//============================================================================================================
-// Shader callback for R5_inverseProjMatrix
-//============================================================================================================
-
-void GLGraphics::SetUniform_IPM (const String& name, Uniform& uniform)
-{
-	uniform = GetInverseProjMatrix();
-}
-
-//============================================================================================================
-// Shader callback function for R5_inverseViewRotationMatrix
-//============================================================================================================
-
-void GLGraphics::SetUniform_IVRM (const String& name, Uniform& uniform)
-{
-	const Matrix43& mv = GetModelViewMatrix();
-	uniform.mType = Uniform::Type::Float9;
-	uniform.mVal[0] = mv[0];
-	uniform.mVal[1] = mv[4];
-	uniform.mVal[2] = mv[8];
-	uniform.mVal[3] = mv[1];
-	uniform.mVal[4] = mv[5];
-	uniform.mVal[5] = mv[9];
-	uniform.mVal[6] = mv[2];
-	uniform.mVal[7] = mv[6];
-	uniform.mVal[8] = mv[10];
-}
-
-//============================================================================================================
-// Shader callback function for R5_worldTransformMatrix
-//============================================================================================================
-
-void GLGraphics::SetUniform_WTM (const String& name, Uniform& uniform)
-{
-	uniform = GetModelMatrix();
-}
-
-//============================================================================================================
-// Shader callback function for R5_worldRotationMatrix
-//============================================================================================================
-
-void GLGraphics::SetUniform_WRM (const String& name, Uniform& uniform)
-{
-	const Matrix43& model = GetModelMatrix();
-	uniform.mType = Uniform::Type::Float9;
-	uniform.mVal[0] = model[0];
-	uniform.mVal[1] = model[1];
-	uniform.mVal[2] = model[2];
-	uniform.mVal[3] = model[4];
-	uniform.mVal[4] = model[5];
-	uniform.mVal[5] = model[6];
-	uniform.mVal[6] = model[8];
-	uniform.mVal[7] = model[9];
-	uniform.mVal[8] = model[10];
-}
-
-//============================================================================================================
 // Gets the specified sub-shader entry
 //============================================================================================================
 
@@ -1056,23 +919,9 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 
 			if (createIfMissing)
 			{
-				// Add this new shader
+				// Add this new shader and initialize it
 				mShaders.Expand() = (shader = new GLShader());
-
-				// Initialize it
-				if (shader->Init(this, name))
-				{
-					shader->RegisterUniform( "R5_time",						 &SetUniform_Time );
-					shader->RegisterUniform( "R5_worldEyePosition",			 bind(&GLGraphics::SetUniform_EyePos,		this) );
-					shader->RegisterUniform( "R5_pixelSize",				 bind(&GLGraphics::SetUniform_PixelSize,	this) );
-					shader->RegisterUniform( "R5_clipRange",				 bind(&GLGraphics::SetUniform_ClipRange,	this) );
-					shader->RegisterUniform( "R5_projectionMatrix",			 bind(&GLGraphics::SetUniform_PM,			this) );
-					shader->RegisterUniform( "R5_inverseViewMatrix",		 bind(&GLGraphics::SetUniform_IVM,			this) );
-					shader->RegisterUniform( "R5_inverseProjMatrix",		 bind(&GLGraphics::SetUniform_IPM,			this) );
-					shader->RegisterUniform( "R5_inverseViewRotationMatrix", bind(&GLGraphics::SetUniform_IVRM,			this) );
-					shader->RegisterUniform( "R5_worldTransformMatrix",		 bind(&GLGraphics::SetUniform_WTM,			this) );
-					shader->RegisterUniform( "R5_worldRotationMatrix",		 bind(&GLGraphics::SetUniform_WRM,			this) );
-				}
+				shader->Init(this, name);
 			}
 			else shader = 0;
 		}
