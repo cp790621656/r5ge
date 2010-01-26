@@ -28,6 +28,7 @@ namespace R5
 	#include "DrawQueue.h"			// Draw queue contains all 32 possible draw layers
 
 	#include "Resource.h"			// TreeNode-based resource
+	#include "FillParams.h"			// Struct containing parameters passed during the 'fill visible geometry' stage
 	#include "Script.h"				// Scripts can be attached to game objects
 	#include "Object.h"				// Most basic game object
 	#include "Decal.h"				// Projected texture object

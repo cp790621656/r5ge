@@ -589,6 +589,17 @@ void Object::Fill (FillParams& params)
 		{
 			Lock();
 			{
+				// Inform script listeners of this event
+				for (uint i = mScripts.GetSize(); i > 0; )
+				{
+					Script* script = mScripts[--i];
+
+					if (!script->mIgnore.Get(Script::Ignore::Fill))
+					{
+						script->OnFill(params);
+					}
+				}
+
 				// Trigger the virtual function if it's available
 				bool considerChildren = mIgnore.Get(Ignore::Fill) ? true : OnFill(params);
 

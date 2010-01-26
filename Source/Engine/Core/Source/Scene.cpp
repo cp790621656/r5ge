@@ -221,7 +221,7 @@ Object* Scene::Select (const Vector3f& pos)
 void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
 {
 	mQueue.Clear();
-	Object::FillParams params (mQueue, frustum, pos, dir);
+	FillParams params (mQueue, frustum, pos, dir);
 	mRoot->Fill(params);
 	mQueue.Sort();
 }

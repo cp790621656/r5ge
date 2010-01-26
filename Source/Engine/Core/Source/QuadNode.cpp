@@ -223,7 +223,7 @@ void QuadNode::_FillGeometry (void* ptr, float padding)
 // Called when the object is being considered for rendering
 //============================================================================================================
 
-void QuadNode::Fill (Array<QuadNode*>& tiles, Object::FillParams& params)
+void QuadNode::Fill (Array<QuadNode*>& tiles, FillParams& params)
 {
 	// Root level is always considered to be visible for the sake of object culling.
 	// If the node is visible, either render it or cull its subdivisions.

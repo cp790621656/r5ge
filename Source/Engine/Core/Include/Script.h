@@ -26,6 +26,7 @@ protected:
 			PreUpdate		= 1 << 1,
 			Update			= 1 << 2,
 			PostUpdate		= 1 << 3,
+			Fill			= 1 << 4,
 		};
 	};
 
@@ -80,6 +81,9 @@ public:
 
 	// Called after the object has updated all of its children
 	virtual void OnPostUpdate() { mIgnore.Set(Ignore::PostUpdate, true); }
+
+	// Called when the scene draw queue is being filled
+	virtual void OnFill (FillParams& params) { mIgnore.Set(Ignore::Fill, true); }
 
 	// Serialization
 	virtual bool SerializeTo	(TreeNode& root) const { return false; }

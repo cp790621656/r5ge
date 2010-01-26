@@ -37,20 +37,6 @@ public:
 	typedef PointerArray<Script>	Scripts;
 	typedef Thread::Lockable		Lockable;
 
-	// Needed parameters passed from one object to the next during the culling stage
-	struct FillParams
-	{
-		DrawQueue&		 mDrawQueue;	// Draw queue
-		const Frustum&	 mFrustum;		// Frustum used to cull the scene
-		const Vector3f&	 mCamPos;		// Current camera position, used to sort objects
-		const Vector3f&	 mCamDir;		// Current camera direction
-
-		FillParams (DrawQueue& q, const Frustum& f, const Vector3f& pos, const Vector3f& dir)
-			: mDrawQueue(q), mFrustum(f), mCamPos(pos), mCamDir(dir) {}
-
-		inline float GetDist(const Vector3f& pos) const { return (mCamPos - pos).Dot(); }
-	};
-
 protected:
 
 	String		mName;				// Name of this object
@@ -304,7 +290,7 @@ protected:
 
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in
-	// OnCull. It should return the number of triangles rendered.
+	// OnFill. It should return the number of triangles rendered.
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut) { return 0; }
 
 	// Called when the object is being selected -- should return 'true' to consider children as well
