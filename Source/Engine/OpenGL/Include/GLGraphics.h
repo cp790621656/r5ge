@@ -18,7 +18,6 @@ private:
 	};
 
 	typedef Array<DelegateEntry> Delegates;
-	typedef ResourceArray<GLSubShader> SubShaders;
 
 protected:
 
@@ -58,11 +57,8 @@ private:
 
 public:
 
-	// Finds the specified sub-shader's source
-	String FindSubShaderSource (const String& file);
-
 	// Gets the specified sub-shader entry
-	GLSubShader* GetSubShader (const String& filename, byte type = GLSubShader::Type::Invalid, bool createIfMissing = true);
+	GLSubShader* GetGLSubShader (const String& filename, bool createIfMissing, byte type);
 
 	// Returns whether the specified point would be visible if rendered
 	virtual bool IsPointVisible (const Vector3f& v);
@@ -96,6 +92,7 @@ public:
 	virtual Techniques&	GetAllTechniques()	{ return mTechs;		}
 	virtual Materials&	GetAllMaterials()	{ return mMaterials;	}
 	virtual Textures&	GetAllTextures()	{ return mTextures;		}
+	virtual SubShaders&	GetAllSubShaders()	{ return mSubShaders;	}
 	virtual Shaders&	GetAllShaders()		{ return mShaders;		}
 	virtual Fonts&		GetAllFonts()		{ return mFonts;		}
 
@@ -111,6 +108,7 @@ public:
 	virtual ITechnique*		GetTechnique	(const String& name, bool createIfMissing = true);
 	virtual IMaterial*		GetMaterial		(const String& name, bool createIfMissing = true);
 	virtual ITexture*		GetTexture		(const String& name, bool createIfMissing = true);
+	virtual ISubShader*		GetSubShader	(const String& name, bool createIfMissing = true) { return GetGLSubShader(name, createIfMissing, ISubShader::Type::Invalid); }
 	virtual IShader*		GetShader		(const String& name, bool createIfMissing = true);
 	virtual IFont*			GetFont			(const String& name, bool createIfMissing = true);
 

@@ -40,10 +40,22 @@ public:
 
 	R5_DECLARE_INTERFACE_CLASS("Shader");
 
-	virtual ~IShader() {};
+	virtual ~IShader() {}
 
 	// All shaders should have unique names
 	const String& GetName() const { return mName; }
+
+	// Clears the shader, making it invalid
+	virtual void Clear()=0;
+
+	// Marks the shader as needing to be relinked
+	virtual void SetDirty()=0;
+
+	// Adds the specified sub-shader to this program
+	virtual void AddSubShader (ISubShader* sub)=0;
+
+	// Returns whether this shader program is using the specified shader
+	virtual bool IsUsingSubShader (const ISubShader* sub) const=0;
 
 	// Returns whether the shader is in a usable state
 	virtual bool IsValid() const=0;

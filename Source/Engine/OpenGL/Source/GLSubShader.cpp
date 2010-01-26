@@ -247,12 +247,27 @@ void PreprocessDependencies (String& source, Array<String>& dependencies)
 }
 
 //============================================================================================================
-// Delete the OpenGL shader when the SubShader is destroyed
+// Only the GLGraphics class should be creating new shaders
 //============================================================================================================
 
-GLSubShader::~GLSubShader()
+GLSubShader::GLSubShader (GLGraphics* graphics, const String& name, byte type) :
+	mGraphics	(graphics),
+	mType		(type),
+	mGLID		(0),
+	mIsDirty	(false)
 {
-	if (mGLID != -1)
+	mName = name;
+}
+
+//============================================================================================================
+// Release the shader
+//============================================================================================================
+
+void GLSubShader::_Release()
+{
+	mType = Type::Invalid;
+
+	if (mGLID != 0)
 	{
 		glDeleteShader(mGLID);
 		mGLID = 0;
@@ -263,8 +278,11 @@ GLSubShader::~GLSubShader()
 // Preprocess the shader's source code
 //============================================================================================================
 
-void GLSubShader::Preprocess()
+void GLSubShader::_Preprocess()
 {
+	mFlags.Clear();
+	mDependencies.Clear();
+
 	// Figure out what type of shader this is
 	if (mCode.Contains("EndPrimitive();")) mType = Type::Geometry;
 	else if (mCode.Contains("gl_FragData") || mCode.Contains("gl_FragColor")) mType = Type::Fragment;
@@ -287,7 +305,7 @@ void GLSubShader::Preprocess()
 		for (uint i = 0; i < list.GetSize(); ++i)
 		{
 			// Try to find the shader as-is
-			GLSubShader* sub = mGraphics->GetSubShader(list[i], mType, false);
+			GLSubShader* sub = mGraphics->GetGLSubShader(list[i], false, mType);
 
 			if (sub != 0)
 			{
@@ -297,7 +315,7 @@ void GLSubShader::Preprocess()
 			else
 			{
 				// Create a new sub-shader entry and add it to the list of dependencies
-				GLSubShader* sub = mGraphics->GetSubShader(list[i], mType, true);
+				GLSubShader* sub = mGraphics->GetGLSubShader(list[i], true, mType);
 				mDependencies.Expand() = sub;
 #ifdef _DEBUG
 				if (sub->mCode.IsEmpty())
@@ -314,35 +332,21 @@ void GLSubShader::Preprocess()
 }
 
 //============================================================================================================
-// Adds its own dependencies and dependencies of dependencies to the list
-//============================================================================================================
-
-void GLSubShader::AppendDependenciesTo (Array<GLSubShader*>& list)
-{
-	for (uint i = mDependencies.GetSize(); i > 0; )
-	{
-		GLSubShader* sub = mDependencies[--i];
-
-		if (!list.Contains(sub))
-		{
-			list.Expand() = sub;
-			sub->AppendDependenciesTo(list);
-		}
-	}
-}
-
-//============================================================================================================
 // Compile the shader
 //============================================================================================================
 
 bool GLSubShader::_Compile()
 {
-	ASSERT(mGLID == -1, "Trying to compile a valid shader?");
-	uint type = (mType == Type::Fragment) ? GL_FRAGMENT_SHADER : GL_VERTEX_SHADER;
-	if (mType == Type::Geometry) type = GL_GEOMETRY_SHADER;
+	ASSERT(mType != Type::Invalid, "Compiling an invalid shader type?");
+
+	if (mType == Type::Invalid) return false;
+
+	uint type = GL_VERTEX_SHADER;
+	if		(mType == Type::Fragment) type = GL_FRAGMENT_SHADER;
+	else if (mType == Type::Geometry) type = GL_GEOMETRY_SHADER;
 
 	// Create the shader
-	mGLID = glCreateShader(type);
+	if (mGLID == 0) mGLID = glCreateShader(type);
 	ASSERT( mGLID != 0, glGetErrorString() );
 
 	// Set the shader source
@@ -367,7 +371,7 @@ bool GLSubShader::_Compile()
 		int logLength (0);
 		glGetShaderiv (mGLID, GL_INFO_LOG_LENGTH, &logLength);
 
-		if (logLength > 0)
+		if (logLength > 1)
 		{
 			log.Resize(logLength);
 			int charsWritten (0);
@@ -376,11 +380,11 @@ bool GLSubShader::_Compile()
 
 		if (retVal == GL_TRUE)
 		{
-			System::Log( "[SHADER]  '%s' has compiled successfully", mSource.GetBuffer() );
+			System::Log( "[SHADER]  '%s' has compiled successfully", mName.GetBuffer() );
 		}
 		else
 		{
-			System::Log( "[SHADER]  '%s' has FAILED to compile!", mSource.GetBuffer() );
+			System::Log( "[SHADER]  '%s' has FAILED to compile!", mName.GetBuffer() );
 
 			// Print the debug log if there is something to print
 			R5::PrintDebugLog(log);
@@ -388,16 +392,79 @@ bool GLSubShader::_Compile()
 #ifdef _DEBUG
 			// Trigger an assert
 			String errMsg ("Failed to compile '");
-			errMsg << mSource;
+			errMsg << mName;
 			errMsg << "'!";
 			ASSERT(false, errMsg.GetBuffer());
 #endif
 			// Delete the shader and release the code, making this sub-shader invalid
 			glDeleteShader(mGLID);
-			mGLID = -1;
+			mGLID = 0;
 			mCode.Clear();
 			CHECK_GL_ERROR;
 		}
+		//System::Log(mCode);
 	}
 	return (retVal == GL_TRUE);
+}
+
+//============================================================================================================
+// Changes the code for the current shader
+//============================================================================================================
+
+void GLSubShader::SetCode (const String& code, bool notifyShaders)
+{
+	if (mCode != code)
+	{
+		mIsDirty = true;
+		mCode	 = code;
+
+		// Preprocess the source code
+		_Preprocess();
+
+		if (notifyShaders)
+		{
+			// Retrieve all current shaders from the graphics manager
+			GLGraphics::Shaders& shaders = mGraphics->GetAllShaders();
+
+			// Run through all shaders and mark those using this shader as needing to be relinked
+			for (uint i = shaders.GetSize(); i > 0; )
+			{
+				GLShader* shader = (GLShader*)shaders[--i];
+				if (shader->IsUsingSubShader(this)) shader->SetDirty();
+			}
+		}
+	}
+}
+
+//============================================================================================================
+// Validates the shader, compiling it if necessary
+//============================================================================================================
+
+bool GLSubShader::IsValid()
+{
+	if (!mIsDirty)
+	{
+		if (mGLID != 0) return true;
+		if (mCode.IsEmpty()) return false;
+	}
+	mIsDirty = false;
+	return _Compile();
+}
+
+//============================================================================================================
+// Adds its own dependencies and dependencies of dependencies to the list
+//============================================================================================================
+
+void GLSubShader::AppendDependenciesTo (Array<GLSubShader*>& list)
+{
+	for (uint i = mDependencies.GetSize(); i > 0; )
+	{
+		GLSubShader* sub = mDependencies[--i];
+
+		if (!list.Contains(sub))
+		{
+			list.Expand() = sub;
+			sub->AppendDependenciesTo(list);
+		}
+	}
 }

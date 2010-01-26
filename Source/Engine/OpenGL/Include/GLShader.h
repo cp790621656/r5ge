@@ -22,11 +22,13 @@ private:
 
 private:
 
-	GLGraphics*		mGraphics;
-	uint			mProgram;
+	GLGraphics*	mGraphics;
+	uint		mProgram;
+	bool		mIsDirty;
 
-	// Array of shaders used to compile this program
-	Array<GLSubShader*> mSubShaders;
+	Array<GLSubShader*> mAdded;		// Array of shaders that will be attached on the next Activate()
+	Array<GLSubShader*> mDepended;	// Array of shaders the current list of shaders depends on
+	Array<GLSubShader*> mAttached;	// Array of shaders currently attached to the program
 
 	// Registered values
 	mutable Array<UniformEntry> mUniforms;
@@ -46,6 +48,23 @@ private:
 	// Deactivates the current shader
 	void Deactivate() const;
 
+private:
+
+	// INTERNAL: Appends the specified shader to the list
+	void _Append (const String& filename);
+
+	// INTERNAL: Detaches the attached shaders
+	void _Detach();
+
+	// INTERNAL: Releases all resources used by the shader
+	void _Release();
+
+	// INTERNAL: Validate the specified list of shaders
+	bool _Validate (Array<GLSubShader*>& list);
+
+	// INTERNAL: Attach all GLSL shaders to this shader program
+	void _Attach (Array<GLSubShader*>& list);
+
 	// INTERNAL: Link all shaders
 	bool _Link();
 
@@ -57,11 +76,23 @@ private:
 
 public:
 
-	GLShader() : mGraphics(0), mProgram(0) {}
-	virtual ~GLShader();
+	GLShader() : mGraphics(0), mProgram(0), mIsDirty(false) {}
+	virtual ~GLShader() {}
+
+	// Clears the shader, making it invalid
+	virtual void Clear() { mAdded.Clear(); mIsDirty = true; }
+
+	// Marks the shader as needing to be relinked
+	virtual void SetDirty() { mIsDirty = true; }
+
+	// Adds the specified sub-shader to this program
+	virtual void AddSubShader (ISubShader* sub);
+
+	// Returns whether this shader program is using the specified shader
+	virtual bool IsUsingSubShader (const ISubShader* sub) const;
 
 	// Returns whether the shader is in a usable state
-	virtual bool IsValid() const { return mSubShaders.IsValid(); }
+	virtual bool IsValid() const { return mAdded.IsValid(); }
 
 	// Force-updates the value of the specified uniform
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const;

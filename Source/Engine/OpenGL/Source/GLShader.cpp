@@ -73,24 +73,16 @@ uint GetUniformID (const String& name)
 }
 
 //============================================================================================================
-// Deleting the shader should also detach all sub-shaders and delete the GLSL program
+// INTERNAL: Appends the specified shader to the list
 //============================================================================================================
 
-GLShader::~GLShader()
+void GLShader::_Append (const String& filename)
 {
-	if (mProgram != 0)
+	if (filename.IsValid())
 	{
-		for (uint i = mSubShaders.GetSize(); i > 0; )
-		{
-			GLSubShader* sub = mSubShaders[--i];
-
-			if (sub->mGLID != -1)
-			{
-				glDetachShader(mProgram, sub->mGLID);
-			}
-		}
-		glDeleteProgram(mProgram);
-		mProgram = 0;
+		GLSubShader* sub = mGraphics->GetGLSubShader(filename, true, ISubShader::Type::Invalid);
+		mAdded.AddUnique(sub);
+		mIsDirty = true;
 	}
 }
 
@@ -106,39 +98,16 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	if (System::FileExists(name))
 	{
 		// Exact match -- use this shader
-		GLSubShader* sub = mGraphics->GetSubShader(name);
-		mSubShaders.Expand() = sub;
-		sub->AppendDependenciesTo(mSubShaders);
+		_Append(name);
 	}
 	else
 	{
 		// No exact match -- try to find the common shader types
-		String vert	(::FindShader(name, ".vert"));
-		String frag (::FindShader(name, ".frag"));
-		String geom (::FindShader(name, ".geom"));
-
-		if (vert.IsValid())
-		{
-			GLSubShader* sub = mGraphics->GetSubShader(vert);
-			mSubShaders.Expand() = sub;
-			sub->AppendDependenciesTo(mSubShaders);
-		}
-
-		if (frag.IsValid() && frag != vert)
-		{
-			GLSubShader* sub = mGraphics->GetSubShader(frag);
-			mSubShaders.Expand() = sub;
-			sub->AppendDependenciesTo(mSubShaders);
-		}
-
-		if (geom.IsValid() && geom != vert && geom != frag)
-		{
-			GLSubShader* sub = mGraphics->GetSubShader(geom);
-			mSubShaders.Expand() = sub;
-			sub->AppendDependenciesTo(mSubShaders);
-		}
+		_Append(::FindShader(name, ".vert"));
+		_Append(::FindShader(name, ".frag"));
+		_Append(::FindShader(name, ".geom"));
 	}
-	return mSubShaders.IsValid();
+	return mAdded.IsValid();
 }
 
 //============================================================================================================
@@ -147,6 +116,28 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 
 bool GLShader::Activate (bool resetUniforms)
 {
+	if (mIsDirty)
+	{
+		mIsDirty = false;
+		_Detach();
+
+		if (mAdded.IsValid())
+		{
+			for (uint i = mAdded.GetSize(); i > 0; )
+			{
+				GLSubShader* sub = mAdded[--i];
+				sub->AppendDependenciesTo(mDepended);
+			}
+			return _Link();
+		}
+	}
+
+	if (mAdded.IsEmpty())
+	{
+		if (g_activeProgram != 0) glUseProgram(g_activeProgram = 0);
+		return false;
+	}
+
 	if (mProgram != 0)
 	{
 		if (g_activeProgram != mProgram)
@@ -161,14 +152,6 @@ bool GLShader::Activate (bool resetUniforms)
 		}
 		return false;
 	}
-	else if (mSubShaders.IsEmpty())
-	{
-		if (g_activeProgram != 0)
-		{
-			glUseProgram(g_activeProgram = 0);
-		}
-		return false;
-	}
 	return _Link();
 }
 
@@ -178,9 +161,87 @@ bool GLShader::Activate (bool resetUniforms)
 
 void GLShader::Deactivate() const
 {
-	if (g_activeProgram != 0)
+	if (g_activeProgram != 0) glUseProgram(g_activeProgram = 0);
+}
+
+//============================================================================================================
+// INTERNAL: Detaches the attached shaders
+//============================================================================================================
+
+void GLShader::_Detach()
+{
+	for (uint i = mAttached.GetSize(); i > 0; )
 	{
-		glUseProgram(g_activeProgram = 0);
+		GLSubShader* sub = mAttached[--i];
+
+		if (sub->mGLID != -1)
+		{
+			glDetachShader(mProgram, sub->mGLID);
+			CHECK_GL_ERROR;
+		}
+	}
+	mAttached.Clear();
+	mDepended.Clear();
+}
+
+//============================================================================================================
+// INTERNAL: Releases all resources used by the shader
+//============================================================================================================
+
+void GLShader::_Release()
+{
+	mIsDirty = false;
+
+	if (mProgram != 0)
+	{
+		// If this program is currently active, deactivate it
+		if (g_activeProgram == mProgram)
+		{
+			glUseProgram(g_activeProgram = 0);
+		}
+
+		// Detach all attached shaders
+		_Detach();
+
+		// Delete this GLSL program
+		glDeleteProgram(mProgram);
+		CHECK_GL_ERROR;
+		mProgram = 0;
+	}
+}
+
+//============================================================================================================
+// INTERNAL: Validate the specified list of shaders
+//============================================================================================================
+
+bool GLShader::_Validate (Array<GLSubShader*>& list)
+{
+	for (uint i = list.GetSize(); i > 0; )
+	{
+		GLSubShader* sub = list[--i];
+
+		if (!sub->IsValid())
+		{
+			ASSERT(false, "Attempting to use a missing shader!");
+			Deactivate();
+			return false;
+		}
+	}
+	return true;
+}
+
+//============================================================================================================
+// INTERNAL: Attach all GLSL shaders to this shader program
+//============================================================================================================
+
+void GLShader::_Attach (Array<GLSubShader*>& list)
+{
+	for (uint i = list.GetSize(); i > 0; )
+	{
+		GLSubShader* sub = list[--i];
+		glAttachShader(mProgram, sub->mGLID);
+		mFlags.Include(sub->mFlags);
+		mAttached.Expand() = sub;
 	}
 }
 
@@ -190,31 +251,27 @@ void GLShader::Deactivate() const
 
 bool GLShader::_Link()
 {
-	// Ensure that all the sub-shaders are present first
-	for (uint i = mSubShaders.GetSize(); i > 0; )
-	{
-		GLSubShader* sub = mSubShaders[--i];
+	mIsDirty = false;
 
-		if (!sub->IsValid())
-		{
-			ASSERT(false, "Attempting to use a missing shader!");
-			Deactivate();
-			return false;
-		}
-	}
+	// Ensure that both shader lists pass validation
+	if (!_Validate(mAdded) || !_Validate(mDepended)) return false;
 
 	// Create the GLSL program
-	mProgram = glCreateProgram();
-	ASSERT( mProgram != 0, glGetErrorString() );
-	CHECK_GL_ERROR;
-
-	// Attach all GLSL shaders to this shader program
-	for (uint i = mSubShaders.GetSize(); i > 0; )
+	if (mProgram == 0)
 	{
-		GLSubShader* sub = mSubShaders[--i];
-		glAttachShader(mProgram, sub->mGLID);
-		mFlags.Include(sub->mFlags);
+		mProgram = glCreateProgram();
+		ASSERT( mProgram != 0, glGetErrorString() );
+		CHECK_GL_ERROR;
 	}
+	else
+	{
+		// Detach all currently attached shaders
+		_Detach();
+	}
+
+	// Attach all shaders to this shader program
+	_Attach(mAdded);
+	_Attach(mDepended);
 	CHECK_GL_ERROR;
 
 	// Bind all one-time attributes prior to linking the program
@@ -269,12 +326,12 @@ bool GLShader::_Link()
 		}
 
 		// List all the shaders used by this GLSL program
-		for (uint i = 0; i < mSubShaders.GetSize(); ++i)
+		for (uint i = 0; i < mAttached.GetSize(); ++i)
 		{
-			GLSubShader* sub = mSubShaders[i];
+			GLSubShader* sub = mAttached[i];
 			const char* type = (sub->mType == GLSubShader::Type::Vertex) ? "Vertex" : "Fragment";
 			if (sub->mType == GLSubShader::Type::Geometry) type = "Geometry";
-			System::Log("          - Using '%s' (%s)", sub->mSource.GetBuffer(), type);
+			System::Log("          - Using '%s' (%s)", sub->mName.GetBuffer(), type);
 		}
 
 		if (retVal == GL_TRUE)
@@ -293,10 +350,8 @@ bool GLShader::_Link()
 			errMsg << "'!";
 			ASSERT(false, errMsg.GetBuffer());
 #endif
-			// Delete the shader and release the list of sub-shaders so it's not created again
-			glDeleteProgram(mProgram);
-			mProgram = 0;
-			mSubShaders.Clear();
+			// Release this shader
+			_Release();
 			CHECK_GL_ERROR;
 			return false;
 		}
@@ -404,6 +459,26 @@ bool GLShader::_UpdateUniform (uint glID, const Uniform& uni) const
 		return true;
 	}
 	return false;
+}
+
+//============================================================================================================
+// Adds the specified sub-shader to this program
+//============================================================================================================
+
+void GLShader::AddSubShader (ISubShader* sub)
+{
+	GLSubShader* gls = (GLSubShader*)sub;
+	if (mAdded.AddUnique(gls)) mIsDirty = true;
+}
+
+//============================================================================================================
+// Returns whether this shader program is using the specified shader
+//============================================================================================================
+
+bool GLShader::IsUsingSubShader (const ISubShader* sub) const
+{
+	GLSubShader* gls = (GLSubShader*)sub;
+	return mAttached.Contains(gls) || mDepended.Contains(gls);
 }
 
 //============================================================================================================

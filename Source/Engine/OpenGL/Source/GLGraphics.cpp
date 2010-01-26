@@ -18,12 +18,13 @@ GLGraphics::~GLGraphics()
 {
 #ifdef _DEBUG
 	System::Log("[OPENGL]  Shutting down. Summary of all managed resources:");
-	System::Log("          - VBOs:      %u",	mVbos.GetSize());
-	System::Log("          - FBOs:      %u",	mFbos.GetSize());
-	System::Log("          - Textures:  %u",	mTextures.GetSize());
-	System::Log("          - Shaders:   %u",	mShaders.GetSize());
-	System::Log("          - Fonts:     %u",	mFonts.GetSize());
-	System::Log("          - Materials: %u",	mMaterials.GetSize());
+	System::Log("          - VBOs:       %u",	mVbos.GetSize());
+	System::Log("          - FBOs:       %u",	mFbos.GetSize());
+	System::Log("          - Textures:   %u",	mTextures.GetSize());
+	System::Log("          - SubShaders: %u",	mSubShaders.GetSize());
+	System::Log("          - Shaders:    %u",	mShaders.GetSize());
+	System::Log("          - Fonts:      %u",	mFonts.GetSize());
+	System::Log("          - Materials:  %u",	mMaterials.GetSize());
 #endif
 
 	Release();
@@ -170,51 +171,26 @@ void GLGraphics::SetUniform_WRM (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
-// Finds the specified sub-shader's source
-//============================================================================================================
-
-String GLGraphics::FindSubShaderSource (const String& file)
-{
-	String path (file);
-
-	if (System::FileExists(path)) return path;
-
-	if (!path.BeginsWith("Shaders/")) path = String("Shaders/") + path;
-	if (System::FileExists(path)) return path;
-
-	return "";
-}
-
-//============================================================================================================
 // Gets the specified sub-shader entry
 //============================================================================================================
 
-GLSubShader* GLGraphics::GetSubShader (const String& filename, byte type, bool createIfMissing)
+GLSubShader* GLGraphics::GetGLSubShader (const String& filename, bool createIfMissing, byte type)
 {
-	GLSubShader* sub (0);
+	GLSubShader* sub = (GLSubShader*)mSubShaders.Find(filename, false);
 
-	for (uint i = mSubShaders.GetSize(); i > 0; )
-	{
-		sub = mSubShaders[--i];
-		if (sub->mSource == filename) return sub;
-	}
-
-	if (createIfMissing)
+	if (sub == 0 && createIfMissing)
 	{
 		// Create a new sub-shader entry
-		sub				= new GLSubShader();
-		sub->mGraphics	= this;
-		sub->mSource	= FindSubShaderSource(filename);
-		sub->mType		= type;
+		sub	= new GLSubShader(this, filename, type);
 
 		// Add this shader to the managed list
 		mSubShaders.Expand() = sub;
 
-		// If the shader loads successfully, preprocess it
-		if (sub->mSource.IsValid() && sub->mCode.Load(sub->mSource)) sub->Preprocess();
-		return sub;
+		// Load and set the source code
+		String code;
+		if (code.Load(filename)) sub->SetCode(code, false);
 	}
-	return 0;
+	return sub;
 }
 
 //============================================================================================================
