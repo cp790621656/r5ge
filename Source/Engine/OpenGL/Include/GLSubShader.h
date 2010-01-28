@@ -28,6 +28,9 @@ protected:
 
 private:
 
+	// INTERNAL: Initialize the sub-shader, try to load its source code if possible
+	void _Init();
+
 	// INTERNAL: Releases the shader
 	void _Release();
 

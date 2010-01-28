@@ -219,7 +219,8 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	mGraphics	= graphics;
 	mName		= name;
 
-	if (System::FileExists(name))
+	// Shaders that begin with [R5] are built-in shaders
+	if (name.BeginsWith("[R5]") || System::FileExists(name))
 	{
 		// Exact match -- use this shader
 		_Append(name);

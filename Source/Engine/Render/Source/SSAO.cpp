@@ -76,9 +76,9 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 							const ITexture*	normal )
 {
 	static ITechnique*		post		= graphics->GetTechnique("Post Process");
-	static IShader*			ssao		= graphics->GetShader("_BuiltIn/Deferred/SSAO");
-	static IShader*			blurH		= graphics->GetShader("_BuiltIn/Blur/depthH");
-	static IShader*			blurV		= graphics->GetShader("_BuiltIn/Blur/depthV");
+	static IShader*			ssao		= graphics->GetShader("[R5] SSAO/Sample");
+	static IShader*			blurH		= graphics->GetShader("[R5] SSAO/Horizontal Blur");
+	static IShader*			blurV		= graphics->GetShader("[R5] SSAO/Vertical Blur");
 	static IRenderTarget*	ssaoTarget	= graphics->CreateRenderTarget();
 	static IRenderTarget*	blurTarget0	= graphics->CreateRenderTarget();
 	static IRenderTarget*	blurTarget1	= graphics->CreateRenderTarget();
@@ -89,7 +89,7 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 
 	if (!ssaoTarget->HasColor())
 	{
-		ssao->RegisterUniform("properties", &SetSSAOProperties);
+		ssao->RegisterUniform ("properties", &SetSSAOProperties);
 		blurH->RegisterUniform("properties", &SetSSAOProperties);
 		blurV->RegisterUniform("properties", &SetSSAOProperties);
 
@@ -170,9 +170,9 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 							 const ITexture*	normal )
 {
 	static ITechnique*		post		= graphics->GetTechnique("Post Process");
-	static IShader*			ssao		= graphics->GetShader("_BuiltIn/Deferred/SSAO");
-	static IShader*			blurH		= graphics->GetShader("_BuiltIn/Blur/depthH");
-	static IShader*			blurV		= graphics->GetShader("_BuiltIn/Blur/depthV");
+	static IShader*			ssao		= graphics->GetShader("[R5] SSAO/Sample");
+	static IShader*			blurH		= graphics->GetShader("[R5] SSAO/Horizontal Blur");
+	static IShader*			blurV		= graphics->GetShader("[R5] SSAO/Vertical Blur");
 	static IRenderTarget*	ssaoTarget	= graphics->CreateRenderTarget();
 	static IRenderTarget*	blurTarget	= graphics->CreateRenderTarget();
 	static ITexture*		blurTex		= graphics->GetTexture("[Generated] SSAO Blur High");
@@ -181,7 +181,7 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 
 	if (!ssaoTarget->HasColor())
 	{
-		ssao->RegisterUniform("properties", &SetSSAOProperties);
+		ssao->RegisterUniform ("properties", &SetSSAOProperties);
 		blurH->RegisterUniform("properties", &SetSSAOProperties);
 		blurV->RegisterUniform("properties", &SetSSAOProperties);
 

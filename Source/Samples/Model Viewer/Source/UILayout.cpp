@@ -2702,10 +2702,7 @@ void ModelViewer::OnShaderListFocus (UIWidget* widget, bool hasFocus)
 					{
 						const String& name (shader->GetName());
 
-						if ( !name.BeginsWith("SSAO/") &&
-							 !name.BeginsWith("PostProcess/") &&
-							 !name.BeginsWith("Deferred/Light/") &&
-							 !name.BeginsWith("Deferred/Process/"))
+						if (!name.BeginsWith("[R5]"))
 						{
 							list->AddEntry( shader->GetName() );
 						}

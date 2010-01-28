@@ -1,5 +1,14 @@
 #include "../Include/_All.h"
 #include "../Include/_OpenGL.h"
+
+// Built-in shaders
+#include "../Shaders/Deferred.h"
+#include "../Shaders/Lights.h"
+#include "../Shaders/SSAO.h"
+#include "../Shaders/Blur.h"
+#include "../Shaders/Bloom.h"
+#include "../Shaders/DOF.h"
+
 using namespace R5;
 
 //============================================================================================================
@@ -257,6 +266,66 @@ GLSubShader::GLSubShader (GLGraphics* graphics, const String& name, byte type) :
 	mIsDirty	(false)
 {
 	mName = name;
+}
+
+//============================================================================================================
+// INTERNAL: Initialize the sub-shader, try to load its source code if possible
+//============================================================================================================
+
+void GLSubShader::_Init()
+{
+	// Shaders that begin with [R5] are built-in
+	if (mName.BeginsWith("[R5]"))
+	{
+		if		(mName == "[R5] Deferred/Combine")		mCode = g_deferredCombine;
+		else if (mName == "[R5] Horizontal Blur")		mCode = g_blurH;
+		else if (mName == "[R5] Vertical Blur")			mCode = g_blurV;
+		else if (mName == "[R5] Bloom/Blur")			mCode = g_bloomBlur;
+		else if (mName == "[R5] Bloom/Apply")			mCode = g_bloomApply;
+		else if (mName == "[R5] Depth of Field")		mCode = g_dof;
+		else if (mName == "[R5] SSAO/Sample")			mCode = g_ssaoSample;
+		else if (mName == "[R5] SSAO/Vertical Blur")
+		{
+			mCode  = g_ssaoBlur;
+			mCode << g_ssaoBlurV;
+		}
+		else if (mName == "[R5] SSAO/Horizontal Blur")
+		{
+			mCode  = g_ssaoBlur;
+			mCode << g_ssaoBlurH;
+		}
+		else if (mName.BeginsWith("[R5] Light"))
+		{
+			// Light shaders are compiled from multiple sources in order to reduce code repetition
+			bool ao = mName.EndsWith("AO");
+			mCode = (ao ? g_lightPrefixAO : g_lightPrefix);
+			mCode << g_lightCommon;
+
+			// Light-specific code
+			if (mName.BeginsWith("[R5] Light/Directional"))
+			{
+				mCode << g_lightDirectional;
+				mCode << g_lightBody;
+				mCode << (ao ? g_lightEndDirAO : g_lightEndDir);
+			}
+			else
+			{
+				mCode << g_lightPoint;
+				mCode << g_lightBody;
+				mCode << (ao ? g_lightEndPointAO : g_lightEndPoint);
+			}
+		}
+#ifdef _DEBUG
+		else ASSERT(false, "Unrecognized internal shader request");
+#endif
+	}
+	else
+	{
+		// Try to load the code from a file
+		mCode.Load(mName);
+	}
+
+	if (mCode.IsValid()) _Preprocess();
 }
 
 //============================================================================================================

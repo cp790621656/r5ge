@@ -49,9 +49,8 @@ GLSubShader* GLGraphics::GetGLSubShader (const String& filename, bool createIfMi
 		// Add this shader to the managed list
 		mSubShaders.Expand() = sub;
 
-		// Load and set the source code
-		String code;
-		if (code.Load(filename)) sub->SetCode(code, false);
+		// Initialize the shader
+		sub->_Init();
 	}
 	return sub;
 }

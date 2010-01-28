@@ -284,6 +284,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Shaders"
+			>
+			<File
+				RelativePath=".\Shaders\Bloom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\Blur.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\Deferred.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\DOF.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\Lights.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\SSAO.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

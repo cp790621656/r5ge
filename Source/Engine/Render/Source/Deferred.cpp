@@ -199,10 +199,10 @@ void DrawLights (
 		}
 	}
 
-	static IShader* dirShader0	 = graphics->GetShader("_BuiltIn/Light/Directional");
-	static IShader* pointShader0 = graphics->GetShader("_BuiltIn/Light/Point");
-	static IShader* dirShader1	 = graphics->GetShader("_BuiltIn/Light/DirectionalAO");
-	static IShader* pointShader1 = graphics->GetShader("_BuiltIn/Light/PointAO");
+	static IShader* dirShader0	 = graphics->GetShader("[R5] Light/Directional");
+	static IShader* pointShader0 = graphics->GetShader("[R5] Light/Point");
+	static IShader* dirShader1	 = graphics->GetShader("[R5] Light/DirectionalAO");
+	static IShader* pointShader1 = graphics->GetShader("[R5] Light/PointAO");
 
 	AddDirectionalLights(graphics, directional, (lightmap != 0) ? dirShader1   : dirShader0  ); 
 	AddPointLights		(graphics, point,		(lightmap != 0) ? pointShader1 : pointShader0);
@@ -219,7 +219,7 @@ void Combine (
 	const ITexture*	lightDiff,
 	const ITexture*	lightSpec )
 {
-	static IShader* shader = graphics->GetShader("_BuiltIn/Deferred/Combine");
+	static IShader* shader = graphics->GetShader("[R5] Deferred/Combine");
 
 	graphics->SetDepthWrite(false);
 	graphics->SetDepthTest(false);
