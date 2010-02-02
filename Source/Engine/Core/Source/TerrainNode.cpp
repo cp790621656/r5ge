@@ -60,7 +60,7 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 						Interpolation::BilinearClamp(buffer, bufferWidth, bufferHeight, fx, fy);
 
 					// Set the vertex
-					v->Set(wx, wy, wz * terrainScale.z);
+					v->Set(wx, wy, wz * terrainScale.z + terrainOffset.z);
 
 					// Include this vertex in the node's bounds
 					mBounds.Include(*v);
