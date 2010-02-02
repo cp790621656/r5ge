@@ -19,6 +19,8 @@ void SplineQ::AddKey (float time, const Quaternion& rot)
 
 	if (sort)
 	{
+		mLastSample	= 0.0f;
+		mLastIndex	= 0;
 		index = mCp.AddSorted(ctrl);
 	}
 	else
@@ -113,36 +115,47 @@ void SplineQ::Smoothen()
 Quaternion SplineQ::Sample (float time, bool smooth) const
 {
 	// No point in proceeding if there is nothing available
-	if ( mCp.IsValid() )
+	if (mCp.IsValid())
 	{
 		// If the time is past the first frame
-		if ( time > mCp.Front().mTime )
+		if (time > mCp.Front().mTime)
 		{
 			// If the requested time is before the last entry
-			if ( time < mCp.Back().mTime )
+			if (time < mCp.Back().mTime)
 			{
 				// Smoothen the spline if it hasn't been done yet
 				if (!mIsSmooth) ((SplineQ*)this)->Smoothen();
 
-				// Run through all control points until the proper time is encountered
-				for ( const CtrlPoint *key = &mCp.Front(), *end = &mCp.Back(); key != end; ++key )
-				{
-					const CtrlPoint *nextKey (key + 1);
+				// Start at the last sampled keyframe if we're sampling forward
+				uint current = (mLastSample > time) ? 0 : mLastIndex;
 
-					if ( time < nextKey->mTime )
+				// Cache the current sampling time for the next execution
+				mLastSample = time;
+				mLastIndex = mCp.GetSize() - 1;
+
+				// Run through all control points until the proper time is encountered
+				while (current < mLastIndex)
+				{
+					const CtrlPoint& key (mCp[current]);
+					const CtrlPoint& next (mCp[++current]);
+
+					if (time < next.mTime)
 					{
-						float duration (nextKey->mTime - key->mTime);
-						float factor   ((time - key->mTime) / duration);
+						// Remember the current location
+						mLastIndex = current - 1;
+
+						float duration (next.mTime - key.mTime);
+						float factor   ((time - key.mTime) / duration);
 
 						if (smooth)
 						{
-							factor = Interpolation::Hermite(key->mTan, nextKey->mTan, factor, duration);
+							factor = Interpolation::Hermite(key.mTan, next.mTan, factor, duration);
 
-							return Interpolation::Squad(key->mVal,	nextKey->mVal,
-														key->mCp,	nextKey->mCp,
+							return Interpolation::Squad(key.mVal,	next.mVal,
+														key.mCp,	next.mCp,
 														factor );
 						}
-						return Interpolation::Slerp(key->mVal, nextKey->mVal, factor);
+						return Interpolation::Slerp(key.mVal, next.mVal, factor);
 					}
 				}
 			}

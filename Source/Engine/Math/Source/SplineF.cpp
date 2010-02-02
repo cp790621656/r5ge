@@ -15,7 +15,12 @@ void SplineF::AddKey (float time, float val)
 	ctrl.mTan		= 0.0f;
 	mIsSmooth		= false;
 
-	if (sort) mCp.Sort();
+	if (sort)
+	{
+		mLastSample	= 0.0f;
+		mLastIndex	= 0;
+		mCp.Sort();
+	}
 }
 
 //============================================================================================================
@@ -35,10 +40,10 @@ void SplineF::Smoothen()
 			future	= current + 1;
 
 			current->mTan = Interpolation::GetHermiteTangent(
-				current->mVal  - past->mVal,
-				future->mVal   - current->mVal,
-				current->mTime - past->mTime,
-				future->mTime  - current->mTime);
+				current->mVal	- past->mVal,
+				future->mVal	- current->mVal,
+				current->mTime	- past->mTime,
+				future->mTime	- current->mTime);
 		}
 
 		// For splines that should be seamless, wrap the first and last values around
@@ -75,34 +80,45 @@ void SplineF::Smoothen()
 float SplineF::Sample (float time, bool smooth) const
 {
 	// No point in proceeding if there is nothing available
-	if ( mCp.IsValid() )
+	if (mCp.IsValid())
 	{
 		// If the time is past the first frame
-		if ( time > mCp.Front().mTime )
+		if (time > mCp.Front().mTime)
 		{
 			// If the requested time is before the last entry
-			if ( time < mCp.Back().mTime )
+			if (time < mCp.Back().mTime)
 			{
 				// Smoothen the spline if it hasn't been done yet
 				if (!mIsSmooth) ((SplineF*)this)->Smoothen();
 
+				// Start at the last sampled keyframe if we're sampling forward
+				uint current = (mLastSample > time) ? 0 : mLastIndex;
+
+				// Cache the current sampling time for the next execution
+				mLastSample = time;
+				mLastIndex = mCp.GetSize() - 1;
+
 				// Run through all control points until the proper time is encountered
-				for ( const CtrlPoint *key = &mCp.Front(), *end = &mCp.Back(); key != end; ++key )
+				while (current < mLastIndex)
 				{
-					const CtrlPoint *nextKey (key + 1);
+					const CtrlPoint& key (mCp[current]);
+					const CtrlPoint& next (mCp[++current]);
 
-					if ( time < nextKey->mTime )
+					if (time < next.mTime)
 					{
-						float duration (nextKey->mTime - key->mTime);
-						float factor   ((time - key->mTime) / duration);
+						// Remember the current location
+						mLastIndex = current - 1;
 
-						if (false && smooth)
+						float duration (next.mTime - key.mTime);
+						float factor   ((time - key.mTime) / duration);
+
+						if (smooth)
 						{
-							return Interpolation::Hermite(key->mVal,	nextKey->mVal,
-														key->mTan,	nextKey->mTan,
-														factor,		duration);
+							return Interpolation::Hermite(	key.mVal,	next.mVal,
+															key.mTan,	next.mTan,
+															factor,		duration );
 						}
-						return Interpolation::Linear(key->mVal, nextKey->mVal, factor);
+						return Interpolation::Linear(key.mVal, next.mVal, factor);
 					}
 				}
 			}

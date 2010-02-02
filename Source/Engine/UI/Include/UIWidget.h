@@ -52,7 +52,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_BASE_CLASS("Area", UIWidget);
+	R5_DECLARE_BASE_CLASS("Widget", UIWidget);
 
 	// Property retrieval functions
 	const String&	GetName()		 const	{ return mName;			}

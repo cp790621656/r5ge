@@ -26,9 +26,13 @@ private:
 	bool mIsSmooth;
 	bool mSeamless;
 
+	// For caching purposes we'll remember the last sampling values
+	mutable float mLastSample;
+	mutable uint mLastIndex;
+
 public:
 
-	SplineV() : mIsSmooth(false), mSeamless(false) {}
+	SplineV() : mIsSmooth(false), mSeamless(false), mLastSample(0.0f), mLastIndex(0) {}
 
 	void Release() { mCp.Release(); }
 
@@ -38,7 +42,7 @@ public:
 	bool	IsValid()	const	{ return mCp.IsValid(); }
 	bool	IsEmpty()	const	{ return mCp.IsEmpty(); }
 	uint	GetSize()	const	{ return mCp.GetSize(); }
-	void	Clear()				{ mCp.Clear(); mIsSmooth = false; }
+	void	Clear()				{ mCp.Clear(); mIsSmooth = false; mLastIndex = 0; mLastSample = 0.0f; }
 
 	const	CtrlPoint& operator [](uint index) const	{ return mCp[index]; }
 			CtrlPoint& operator [](uint index)			{ return mCp[index]; }
