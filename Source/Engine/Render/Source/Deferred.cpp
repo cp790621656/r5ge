@@ -267,7 +267,7 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 		target0->AttachStencilTexture( depth );
 		target0->AttachColorTexture( 0, matDiff, ITexture::Format::RGB16F );
 		target0->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
-		target0->AttachColorTexture( 2, normal,  ITexture::Format::RGBA16F );
+		target0->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
 		target0->UseSkybox(true);
 
 		// Scene Light contribution target
