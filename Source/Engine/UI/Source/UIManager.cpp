@@ -320,8 +320,7 @@ bool UIManager::_FillTooltip (UIWidget* widget)
 	if (widget)
 	{
 		mTooltip.DestroyAllWidgets();
-		UIRegion& rgn = mTooltip.GetRegion();
-		rgn.SetRect(0, 0, 0, 0);
+		mTooltip.GetRegion().SetRect(0, 0, 0, 0);
 
 		return (mTtDelegate ? mTtDelegate(mTooltip, widget) :
 			CreateDefaultTooltip(widget) && AlignDefaultTooltip());

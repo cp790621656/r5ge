@@ -22,7 +22,7 @@ void UIWidget::_Register(const String& type, const CreateDelegate& callback)
 // Creates a new widget of the specified type
 //============================================================================================================
 
-UIWidget* _Create(const String& type)
+UIWidget* _Create (const String& type)
 {
 	UIWidget* ptr (0);
 	gWidgetTypes.Lock();
@@ -44,17 +44,19 @@ void UIWidget::AddWidget (UIWidget* widget)
 	if (parent != 0) parent->RemoveWidget(widget);
 	mChildren.Expand() = widget;
 	widget->_SetParentPtr(this);
+	widget->SetDirty();
 }
 
 //============================================================================================================
 // Removes the specified widget from the list of children.
-// NOTE: Doing this does not release the widget. 'delete' the widget if you mean to destroy it.
+// NOTE: Doing this does not release the widget. 'delete' the widget yourself, or call DestroySelf() instead.
 //============================================================================================================
 
 bool UIWidget::RemoveWidget (UIWidget* widget)
 {
 	if (mChildren.Remove(widget))
 	{
+		widget->SetDirty();
 		widget->_SetParentPtr(0);
 		return true;
 	}
@@ -238,54 +240,6 @@ void UIWidget::DestroySelf()
 		// Schedule this widget for deletion
 		mParent->_DelayedDelete(this);
 		mParent = 0;
-	}
-}
-
-//============================================================================================================
-// Deletes all child widgets
-//============================================================================================================
-
-void UIWidget::DestroyAllWidgets()
-{
-	mDeletedWidgets.Release();
-
-	if (mChildren.IsValid())
-	{
-		SetDirty();
-
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
-		{
-			UIWidget* widget = mChildren[i];
-
-			if (widget != 0)
-			{
-				mUI->RemoveAllReferencesTo(widget);
-			}
-		}
-		mChildren.Release();
-	}
-}
-
-//============================================================================================================
-// Deletes all attached scripts
-//============================================================================================================
-
-void UIWidget::DestroyAllScripts()
-{
-	mDeletedScripts.Release();
-
-	if (mScripts.IsValid())
-	{
-		// Run through all scripts
-		for (uint i = mScripts.GetSize(); i > 0; )
-		{
-			// Remove the reference to this widget
-			if (mScripts[--i] != 0)
-			{
-				mScripts[i]->mWidget = 0;
-			}
-		}
-		mScripts.Release();
 	}
 }
 
@@ -495,6 +449,54 @@ void UIWidget::Fill (UIQueue* queue)
 				mChildren[i]->Fill(queue);
 			}
 		}
+	}
+}
+
+//============================================================================================================
+// Immediately deletes all child widgets
+//============================================================================================================
+
+void UIWidget::DestroyAllWidgets()
+{
+	mDeletedWidgets.Release();
+
+	if (mChildren.IsValid())
+	{
+		SetDirty();
+
+		for (uint i = mChildren.GetSize(); i > 0; )
+		{
+			UIWidget* widget = mChildren[--i];
+
+			if (widget != 0)
+			{
+				mUI->RemoveAllReferencesTo(widget);
+			}
+		}
+		mChildren.Release();
+	}
+}
+
+//============================================================================================================
+// Immediately deletes all attached scripts
+//============================================================================================================
+
+void UIWidget::DestroyAllScripts()
+{
+	mDeletedScripts.Release();
+
+	if (mScripts.IsValid())
+	{
+		// Run through all scripts
+		for (uint i = mScripts.GetSize(); i > 0; )
+		{
+			// Remove the reference to this widget
+			if (mScripts[--i] != 0)
+			{
+				mScripts[i]->mWidget = 0;
+			}
+		}
+		mScripts.Release();
 	}
 }
 

@@ -155,12 +155,6 @@ public:
 	// If it does have a parent, as in the case of most widgets, it gets scheduled for deletion instead.
 	void DestroySelf();
 
-	// Deletes all child widgets
-	void DestroyAllWidgets();
-
-	// Deletes all attached scripts
-	void DestroyAllScripts();
-
 	// Brings the widget to the foreground
 	void BringToFront (UIWidget* child = 0);
 
@@ -178,12 +172,12 @@ public:
 	UIRegion& GetRegion() { return mRegion; }
 	void SetRegion (float left, float top, float width, float height) { mRegion.SetRect(left, top, width, height); }
 
-	// Calls OnTextureChanged() and recurses through children
-	void _TextureChanged (const ITexture* ptr);
-
 	// Forwards the event to _Update()
 	bool Update (const Vector2i& size,   bool parentChanged = false) { return _Update( mRegion.Update(size,   parentChanged) ); }
 	bool Update (const UIRegion& parent, bool parentChanged = false) { return _Update( mRegion.Update(parent, parentChanged) ); }
+
+	// Calls OnTextureChanged() and recurses through children
+	void _TextureChanged (const ITexture* ptr);
 
 private:
 
@@ -201,6 +195,12 @@ protected:
 
 	// Calls OnFill() on itself then recurses through all non-UIFrame children.
 	void Fill (UIQueue* queue);
+
+	// Immediately deletes all child widgets
+	void DestroyAllWidgets();
+
+	// Immediately deletes all attached scripts
+	void DestroyAllScripts();
 
 	// Convenience function, seeing as most areas will use the built-in layer
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
