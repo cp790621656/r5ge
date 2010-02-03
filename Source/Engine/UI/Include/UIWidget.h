@@ -68,53 +68,6 @@ public:
 		return (parent == this || (mParent == 0 ? false : mParent->IsChildOf(parent)));
 	}
 
-	// Registers a new widget type or script
-	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
-
-	// Returns an existing script of given type
-	template <typename Type> Type* GetScript()
-	{
-		UIScript* script = _GetScript(Type::ClassID());
-		return (script != 0) ? (Type*)script : 0;
-	}
-
-	// Adds a new or returns an existing script of given type
-	template <typename Type> Type* AddScript()
-	{
-		UIScript* script = _AddScript(Type::ClassID());
-		return (script != 0) ? (Type*)script : 0;
-	}
-
-	// Adds a new or returns an existing script of given type
-	template <typename Type> bool RemoveScript()
-	{
-		UIScript* script = _GetScript(Type::ClassID());
-		if (script == 0) return false;
-		_DelayedDelete(script);
-		return true;
-	}
-
-	// Finds a child widget at the specified position
-	template <typename Type> Type* FindWidget (const Vector2i& pos)
-	{
-		UIWidget* obj = _FindWidget(pos);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
-	}
-
-	// Finds a child widget of specified type
-	template <typename Type> Type* FindWidget (const String& name, bool recursive = true)
-	{
-		UIWidget* obj = _FindWidget(name, recursive);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
-	}
-
-	// Adds a new widget of specified type
-	template <typename Type> Type* AddWidget (const String& name, bool unique = true)
-	{
-		UIWidget* obj = _AddWidget(Type::ClassID(), name, unique);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
-	}
-
 	// Adds the specified widget as a child of this one. The widget will be removed from its current parent.
 	void AddWidget (UIWidget* widget);
 
@@ -264,4 +217,53 @@ protected:
 	virtual void OnMouseOver(bool inside);
 	virtual void OnFocus	(bool selected);
 	virtual void OnChar		(byte character) {}
+
+public:
+
+	// Registers a new widget type or script
+	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
+
+	// Returns an existing script of given type
+	template <typename Type> Type* GetScript()
+	{
+		UIScript* script = _GetScript(Type::ClassID());
+		return (script != 0) ? (Type*)script : 0;
+	}
+
+	// Adds a new or returns an existing script of given type
+	template <typename Type> Type* AddScript()
+	{
+		UIScript* script = _AddScript(Type::ClassID());
+		return (script != 0) ? (Type*)script : 0;
+	}
+
+	// Adds a new or returns an existing script of given type
+	template <typename Type> bool RemoveScript()
+	{
+		UIScript* script = _GetScript(Type::ClassID());
+		if (script == 0) return false;
+		_DelayedDelete(script);
+		return true;
+	}
+
+	// Finds a child widget at the specified position
+	template <typename Type> Type* FindWidget (const Vector2i& pos)
+	{
+		UIWidget* obj = _FindWidget(pos);
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
+
+	// Finds a child widget of specified type
+	template <typename Type> Type* FindWidget (const String& name, bool recursive = true)
+	{
+		UIWidget* obj = _FindWidget(name, recursive);
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
+
+	// Adds a new widget of specified type
+	template <typename Type> Type* AddWidget (const String& name, bool unique = true)
+	{
+		UIWidget* obj = _AddWidget(Type::ClassID(), name, unique);
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
 };

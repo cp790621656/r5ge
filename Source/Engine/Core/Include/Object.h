@@ -98,54 +98,6 @@ public:
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
 
-	// Registers a new object of the specified type
-	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
-
-	// Finds a child object of the specified name and type
-	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
-	{
-		Lock();
-		Object* obj = _FindObject(name, recursive);
-		Unlock();
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
-	}
-
-	// Creates a new child of specified type and name
-	template <typename Type> Type* AddObject (const String& name)
-	{
-		Lock();
-		Object* obj = _AddObject(Type::ClassID(), name);
-		Unlock();
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
-	}
-
-	// Retrieves an existing script on the object
-	template <typename Type> Type* GetScript()
-	{
-		Lock();
-		Script* script = _GetScript(Type::ClassID());
-		Unlock();
-		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
-	}
-
-	// Adds a new script to the object (only one script of each type can be active on the object)
-	template <typename Type> Type* AddScript()
-	{
-		Lock();
-		Script* script = _AddScript(Type::ClassID());
-		Unlock();
-		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
-	}
-
-	// Removes the specified script from the game object
-	template <typename Type> void RemoveScript()
-	{
-		Lock();
-		Script* script = _GetScript(Type::ClassID());
-		if (script != 0) delete script;
-		Unlock();
-	}
-
 private:
 
 	// INTERNAL Registers a new object of specified type
@@ -301,4 +253,54 @@ protected:
 
 	// Called when the object is being loaded
 	virtual bool OnSerializeFrom (const TreeNode& root);
+
+public:
+
+	// Registers a new object of the specified type
+	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
+
+	// Finds a child object of the specified name and type
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
+	{
+		Lock();
+		Object* obj = _FindObject(name, recursive);
+		Unlock();
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
+
+	// Creates a new child of specified type and name
+	template <typename Type> Type* AddObject (const String& name)
+	{
+		Lock();
+		Object* obj = _AddObject(Type::ClassID(), name);
+		Unlock();
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
+
+	// Retrieves an existing script on the object
+	template <typename Type> Type* GetScript()
+	{
+		Lock();
+		Script* script = _GetScript(Type::ClassID());
+		Unlock();
+		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+	}
+
+	// Adds a new script to the object (only one script of each type can be active on the object)
+	template <typename Type> Type* AddScript()
+	{
+		Lock();
+		Script* script = _AddScript(Type::ClassID());
+		Unlock();
+		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+	}
+
+	// Removes the specified script from the game object
+	template <typename Type> void RemoveScript()
+	{
+		Lock();
+		Script* script = _GetScript(Type::ClassID());
+		if (script != 0) delete script;
+		Unlock();
+	}
 };
