@@ -87,32 +87,6 @@ struct IGraphicsController
 		};
 	};
 
-	struct FrameStats
-	{
-		uint mTriangles;
-		uint mDrawCalls;
-		uint mMatSwitches;
-		uint mTexSwitches;
-		uint mBufferBinds;
-		uint mShaderSwitches;
-		uint mLightSwitches;
-		uint mTechSwitches;
-
-		FrameStats() { Clear(); }
-
-		void Clear()
-		{
-			mTriangles		= 0;
-			mDrawCalls		= 0;
-			mMatSwitches	= 0;
-			mTexSwitches	= 0;
-			mBufferBinds	= 0;
-			mShaderSwitches	= 0;
-			mLightSwitches	= 0;
-			mTechSwitches	= 0;
-		}
-	};
-
 public:
 
 	// Should finish all drawing operations

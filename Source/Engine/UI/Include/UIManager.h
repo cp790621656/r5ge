@@ -47,6 +47,9 @@ protected:
 	OnTooltipDelegate	mTtDelegate;	// It's possible to overwrite the function that creates the tooltip
 	Listeners			mListeners;		// List of listeners created prior to actual widgets
 
+	mutable FrameStats	mGameStats;		// Statistics reported at the time the UI manager gets called
+	mutable FrameStats	mUIStats;		// Statistics reported during the UI manager's execution
+
 public:
 
 	UIManager();
@@ -83,6 +86,12 @@ public:
 
 	// Retrieves a pointer to the context menu
 	UIContext* GetContextMenu (bool createIfMissing = false);
+
+	// Rendering statistics for the game and for the user interface
+	const FrameStats& GetGameStats() const { return mGameStats; }
+	const FrameStats& GetUIStats() const { return mUIStats; }
+
+public:
 
 	// Convenience function: Finds a widget child of specified type
 	template <typename Type> Type* FindWidget (const String& name, bool recursive = true)

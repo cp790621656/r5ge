@@ -266,6 +266,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\UIStats.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UISubPicture.cpp"
 				>
 			</File>
@@ -397,6 +401,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\UISlider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\UIStats.h"
 				>
 			</File>
 			<File

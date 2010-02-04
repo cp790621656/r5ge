@@ -14,12 +14,12 @@ void UIHighlight::OnFill (UIQueue* queue)
 		Array<IUI::Vertex>& v (queue->mVertices);
 
 		float left	 ( mRegion.GetCalculatedLeft()	);
-		float top	 ( mRegion.GetCalculatedTop()		);
+		float top	 ( mRegion.GetCalculatedTop()	);
 		float right	 ( mRegion.GetCalculatedRight()	);
-		float bottom ( mRegion.GetCalculatedBottom()	);
+		float bottom ( mRegion.GetCalculatedBottom());
 
-		Color4ub upper ( mColor, mRegion.GetCalculatedAlpha() );
-		Color4ub lower ( upper.r, upper.g, upper.b, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) );
+		Color4ub upper ( mTopColor, mRegion.GetCalculatedAlpha() );
+		Color4ub lower ( mBottomColor, mRegion.GetCalculatedAlpha() );
 
 		v.Expand().Set( left,  top,		0.0f, 0.0f, upper );
 		v.Expand().Set( left,  bottom,	0.0f, 1.0f, lower );
@@ -34,14 +34,17 @@ void UIHighlight::OnFill (UIQueue* queue)
 
 bool UIHighlight::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == "Color")
-	{
-		Color4f color4 (1.0f);
+	Color4f color4 (1.0f);
 
-		if (node.mValue >> color4)
-		{
-			SetColor(color4);
-		}
+	// Legacy support
+	if (node.mTag == "Color" || node.mTag == "Top Color")
+	{
+		if (node.mValue >> color4) SetTopColor(color4);
+		return true;
+	}
+	else if (node.mTag == "Bottom Color")
+	{
+		if (node.mValue >> color4) SetBottomColor(color4);
 		return true;
 	}
 	return false;
@@ -53,5 +56,6 @@ bool UIHighlight::OnSerializeFrom (const TreeNode& node)
 
 void UIHighlight::OnSerializeTo (TreeNode& node) const
 {
-	node.AddChild("Color", mColor);
+	node.AddChild("Top Color", mTopColor);
+	node.AddChild("Bottom Color", mBottomColor);
 }

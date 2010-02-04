@@ -75,6 +75,9 @@ uint UI::DrawQueue (UIQueue* queue)
 
 void UI::OnPreDraw() const
 {
+	mGameStats = mGraphics->GetFrameStats();
+	mUIStats.Clear();
+
 	mGraphics->SetFog					( false );
 	mGraphics->SetDepthTest				( false );
 	mGraphics->SetDepthWrite			( false );
@@ -99,6 +102,9 @@ void UI::OnPreDraw() const
 
 void UI::OnPostDraw() const
 {
+	mUIStats  = mGraphics->GetFrameStats();
+	mUIStats -= mGameStats;
+
 	mGraphics->SetActiveTexture			( 0, 0 );
 	mGraphics->SetActiveShader			( 0 );
 	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord0, 0 );

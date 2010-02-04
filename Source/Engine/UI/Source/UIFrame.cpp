@@ -89,11 +89,7 @@ uint UIFrame::OnDraw()
 				if (tex == 0 || tex->IsValid())
 				{
 					sorted = false;
-					OnFill(queue);
-
-					for (uint c = 0; c < mChildren.GetSize(); ++c)
-						if (mChildren[c])
-							mChildren[c]->Fill(queue);
+					Fill(queue);
 
 #ifdef _DEBUG
 	//System::Log("[UI]      [Layer %u] Frame '%s' is updating queue for texture '%s'", queue->mLayer,

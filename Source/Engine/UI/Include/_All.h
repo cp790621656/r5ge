@@ -46,6 +46,7 @@ namespace R5
 	#include "UIContext.h"			// Context menu
 	#include "UIMenu.h"				// Drop-down menu, animated button + context menu
 	#include "UIList.h"				// Slightly extended menu class that updates the button's text
+	#include "UIStats.h"			// Debugger widget -- contains various run-time statistics
 
 	#include "UIWindow.h"			// Window is a complex widget based on Animated Frame, using several other widgets
 	#include "UIManager.h"			// User interface manager

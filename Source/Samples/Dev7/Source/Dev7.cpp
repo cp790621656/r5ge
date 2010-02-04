@@ -56,10 +56,6 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static UILabel*	fps		= mUI->FindWidget<UILabel>("FPS");
-	static UILabel*	tri		= mUI->FindWidget<UILabel>("Triangles");
-	static Object*	place	= mScene.FindObject<Object>("Stage");
-
 	mScene.Cull(mCam);
 
 	mGraphics->Clear();
@@ -68,13 +64,8 @@ void TestApp::OnDraw()
 
 	mScene.DrawAllForward(false);
 
-	if (fps) fps->SetText( String("%u", Time::GetFPS()) );
-	if (tri) tri->SetText( String("%u", mGraphics->GetFrameStats().mTriangles) );
-
-	if (place != 0)
-	{
-		place->SetRelativeRotation( Quaternion(0.0f, 0.0f, Time::GetTime()) );
-	}
+	static Object* place = mScene.FindObject<Object>("Stage");
+	if (place != 0) place->SetRelativeRotation( Quaternion(0.0f, 0.0f, Time::GetTime()) );
 }
 
 //============================================================================================================

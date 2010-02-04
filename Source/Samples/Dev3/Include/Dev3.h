@@ -24,9 +24,9 @@ class TestApp
 	bool		mFlag;
 	String		mDebug;
 	uint		mObjects;
+	FrameStats	mStats;
 
-	IGraphics::FrameStats	mStats;
-	Scene::Techniques		mForward;
+	Scene::Techniques mForward;
 
 public:
 

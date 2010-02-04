@@ -139,8 +139,10 @@ UIWidget* UIWidget::_AddWidget (const String& type, const String& name, bool uni
 		ptr->SetName(name);
 		ptr->_SetRootPtr(mUI);
 		ptr->_SetParentPtr(this);
-		if (mRegion.IsVisible()) ptr->Update(mRegion);
 		mChildren.Expand() = ptr;
+
+		// Update the region
+		if (mRegion.IsVisible()) ptr->Update(mRegion);
 
 		// Copy over the event listener
 		USEventListener* listener = mUI->_GetListener(name);
@@ -150,6 +152,9 @@ UIWidget* UIWidget::_AddWidget (const String& type, const String& name, bool uni
 			ptr->mScripts.Expand() = listener;
 			listener->mWidget = ptr;
 		}
+
+		// Call the virtual initialization
+		ptr->OnInit();
 	}
 	return ptr;
 }
@@ -446,7 +451,7 @@ void UIWidget::Fill (UIQueue* queue)
 
 			if (child != 0 && !child->IsOfClass(UIFrame::ClassID()))
 			{
-				mChildren[i]->Fill(queue);
+				child->Fill(queue);
 			}
 		}
 	}

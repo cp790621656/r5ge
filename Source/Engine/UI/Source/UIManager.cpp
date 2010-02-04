@@ -54,6 +54,7 @@ UIManager::UIManager() :
 		UIWidget::Register<UIAnimatedCheckbox>();
 		UIWidget::Register<UIShadedArea>();
 		UIScript::Register<USEventListener>();
+		UIWidget::Register<UIStats>();
 	}
 }
 

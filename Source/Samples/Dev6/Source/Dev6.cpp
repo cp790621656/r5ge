@@ -84,46 +84,6 @@ void TestApp::OnDraw()
 	mScene.Draw(techs);
 
 	mGraphics->Draw( IGraphics::Drawable::Grid );
-	
-	if (fps != 0) fps->SetText( String("%u", Time::GetFPS()) );
-	if (tri != 0) tri->SetText( String("%u", mGraphics->GetFrameStats().mTriangles) );
-
-	const IGraphics::FrameStats& stats = mGraphics->GetFrameStats();
-
-	if (mDebug[0] != 0)
-	{
-		mDebug[0]->SetText( String("[FF5555]%u[FFFFFF] draw calls", stats.mDrawCalls) );
-	}
-
-	if (mDebug[1] != 0)
-	{
-		mDebug[1]->SetText( String("[FF5555]%u[FFFFFF] buffer binds", stats.mBufferBinds) );
-	}
-
-	if (mDebug[2] != 0)
-	{
-		mDebug[2]->SetText( String("[FF5555]%u[FFFFFF] matrix switches", stats.mMatSwitches) );
-	}
-
-	if (mDebug[3] != 0)
-	{
-		mDebug[3]->SetText( String("[FF5555]%u[FFFFFF] texture switches", stats.mTexSwitches) );
-	}
-
-	if (mDebug[4] != 0)
-	{
-		mDebug[4]->SetText( String("[FF5555]%u[FFFFFF] shader switches", stats.mShaderSwitches) );
-	}
-
-	if (mDebug[5] != 0)
-	{
-		mDebug[5]->SetText( String("[FF5555]%u[FFFFFF] technique switches", stats.mTechSwitches) );
-	}
-
-	if (mDebug[6] != 0)
-	{
-		mDebug[6]->SetText( String("[FF5555]%u[FFFFFF] light switches", stats.mLightSwitches) );
-	}
 }
 
 //============================================================================================================

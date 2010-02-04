@@ -185,6 +185,9 @@ public:
 	// Marks this specific widget as needing to be rebuilt
 	virtual void SetDirty() {}
 
+	// Function called after the parent and root have been set
+	virtual void OnInit() {}
+
 	// Called when something changes in the texture
 	virtual void OnTextureChanged (const ITexture* ptr) {}
 

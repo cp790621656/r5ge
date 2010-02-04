@@ -11,14 +11,20 @@ class UIHighlight : public UIWidget
 {
 protected:
 
-	Color4f	mColor;
+	Color4f	mTopColor;
+	Color4f	mBottomColor;
 
 public:
 
-	UIHighlight() : mColor(1.0f) {}
+	UIHighlight() : mTopColor(1.0f), mBottomColor(1.0f) {}
 
-	const Color4f& GetColor() const			{ return mColor; }
-	void SetColor (const Color4f& color)	{ mColor = color; OnDirty(0); }
+	void SetColor (const Color4f& color) { mTopColor = color; mBottomColor = color; OnDirty(0); }
+
+	const Color4f& GetTopColor() const			{ return mTopColor; }
+	void SetTopColor (const Color4f& color)		{ mTopColor = color; OnDirty(0); }
+
+	const Color4f& GetBottomColor() const		{ return mBottomColor; }
+	void SetBottomColor (const Color4f& color)	{ mBottomColor = color; OnDirty(0); }
 
 public:
 

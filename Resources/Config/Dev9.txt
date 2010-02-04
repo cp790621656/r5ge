@@ -119,6 +119,21 @@ Root
 
 		Layout
 		{
+			Stats = "Game Stats"
+			{
+				Bottom = 0 142
+				Left = 1 -150
+				Font = "Arial 15"
+				Receives Events = false
+				Layer = 1
+
+				Highlight = "Backdrop"
+				{
+					Top Color = 0 0 0 0.7
+					Bottom Color = 0 0 0 0.3
+				}
+			}
+
 			Window = "Final Window"
 			{
 				Left = 0.000000 230.000000

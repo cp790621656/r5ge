@@ -15,6 +15,7 @@ namespace R5
 {
 	#include "IEventReceiver.h"			// Struct with OnMouseMove, OnKeyPress, etc -- basic event receiver interface
 	#include "IWindow.h"				// Base class for the application window
+	#include "FrameStats.h"				// Frame statistics struct -- used by both UI as well as Graphics
 	#include "IUI.h"					// User Interface
 
 	#include "ITechnique.h"				// Rendering technique is used to batch objects of similar properties together
