@@ -65,32 +65,22 @@ bool UIStats::OnUpdate (bool dimensionsChanged)
 		}
 	}
 
-	// This widget only works with the R5 UI
-	UI* ui = R5_CAST(UI, mUI);
+	const FrameStats& stats = (mName.BeginsWith("Game")) ? mUI->GetGameStats() : mUI->GetUIStats();
 
-	if (ui == 0)
+	mLabels[0]->SetText( String("[FF5555]%u[FFFFFF] FPS", Time::GetFPS()) );
+	mLabels[1]->SetText( String("[FF5555]%u[FFFFFF] triangles", stats.mTriangles) );
+	mLabels[2]->SetText( String("[FF5555]%u[FFFFFF] draw calls", stats.mDrawCalls) );
+	mLabels[3]->SetText( String("[FF5555]%u[FFFFFF] buffer binds", stats.mBufferBinds) );
+	mLabels[4]->SetText( String("[FF5555]%u[FFFFFF] matrix switches", stats.mMatSwitches) );
+	mLabels[5]->SetText( String("[FF5555]%u[FFFFFF] texture switches", stats.mTexSwitches) );
+	mLabels[6]->SetText( String("[FF5555]%u[FFFFFF] shader switches", stats.mShaderSwitches) );
+	mLabels[7]->SetText( String("[FF5555]%u[FFFFFF] technique switches", stats.mTechSwitches) );
+	mLabels[8]->SetText( String("[FF5555]%u[FFFFFF] light switches", stats.mLightSwitches) );
+
+	if (mIsDirty)
 	{
-		DestroySelf();
-	}
-	else
-	{
-		const FrameStats& stats = (mName.BeginsWith("Game")) ? ui->GetGameStats() : ui->GetUIStats();
-
-		mLabels[0]->SetText( String("[FF5555]%u[FFFFFF] FPS", Time::GetFPS()) );
-		mLabels[1]->SetText( String("[FF5555]%u[FFFFFF] triangles", stats.mTriangles) );
-		mLabels[2]->SetText( String("[FF5555]%u[FFFFFF] draw calls", stats.mDrawCalls) );
-		mLabels[3]->SetText( String("[FF5555]%u[FFFFFF] buffer binds", stats.mBufferBinds) );
-		mLabels[4]->SetText( String("[FF5555]%u[FFFFFF] matrix switches", stats.mMatSwitches) );
-		mLabels[5]->SetText( String("[FF5555]%u[FFFFFF] texture switches", stats.mTexSwitches) );
-		mLabels[6]->SetText( String("[FF5555]%u[FFFFFF] shader switches", stats.mShaderSwitches) );
-		mLabels[7]->SetText( String("[FF5555]%u[FFFFFF] technique switches", stats.mTechSwitches) );
-		mLabels[8]->SetText( String("[FF5555]%u[FFFFFF] light switches", stats.mLightSwitches) );
-
-		if (mIsDirty)
-		{
-			mIsDirty = false;
-			return true;
-		}
+		mIsDirty = false;
+		return true;
 	}
 	return false;
 }

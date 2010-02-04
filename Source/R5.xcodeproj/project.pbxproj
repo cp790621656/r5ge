@@ -166,6 +166,7 @@
 		14F0F8460ED60FBF0034CF84 /* Shapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8450ED60FBF0034CF84 /* Shapes.cpp */; };
 		14F0F8620ED611F00034CF84 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */; };
 		14F0F8630ED611F00034CF84 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8610ED611F00034CF84 /* PointLight.cpp */; };
+		14F82D2B111A897E001DDF69 /* UIStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F82D2A111A897E001DDF69 /* UIStats.cpp */; };
 		14F8E6880F89D889005431C6 /* ModelTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F8E6870F89D889005431C6 /* ModelTemplate.cpp */; };
 /* End PBXBuildFile section */
 
@@ -2080,6 +2081,14 @@
 		14F0F85F0ED611BD0034CF84 /* PointLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointLight.h; path = Engine/Core/Include/PointLight.h; sourceTree = "<group>"; };
 		14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DirectionalLight.cpp; path = Engine/Core/Source/DirectionalLight.cpp; sourceTree = "<group>"; };
 		14F0F8610ED611F00034CF84 /* PointLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointLight.cpp; path = Engine/Core/Source/PointLight.cpp; sourceTree = "<group>"; };
+		14F82D23111A8938001DDF69 /* Bloom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bloom.h; path = Engine/OpenGL/Shaders/Bloom.h; sourceTree = "<group>"; };
+		14F82D24111A8938001DDF69 /* Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blur.h; path = Engine/OpenGL/Shaders/Blur.h; sourceTree = "<group>"; };
+		14F82D25111A8938001DDF69 /* Deferred.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Deferred.h; path = Engine/OpenGL/Shaders/Deferred.h; sourceTree = "<group>"; };
+		14F82D26111A8938001DDF69 /* DOF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DOF.h; path = Engine/OpenGL/Shaders/DOF.h; sourceTree = "<group>"; };
+		14F82D27111A8938001DDF69 /* Lights.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Lights.h; path = Engine/OpenGL/Shaders/Lights.h; sourceTree = "<group>"; };
+		14F82D28111A8938001DDF69 /* SSAO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSAO.h; path = Engine/OpenGL/Shaders/SSAO.h; sourceTree = "<group>"; };
+		14F82D29111A8966001DDF69 /* UIStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIStats.h; path = Engine/UI/Include/UIStats.h; sourceTree = "<group>"; };
+		14F82D2A111A897E001DDF69 /* UIStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIStats.cpp; path = Engine/UI/Source/UIStats.cpp; sourceTree = "<group>"; };
 		14F8E6860F89D875005431C6 /* ModelTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModelTemplate.h; path = Engine/Core/Include/ModelTemplate.h; sourceTree = "<group>"; };
 		14F8E6870F89D889005431C6 /* ModelTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelTemplate.cpp; path = Engine/Core/Source/ModelTemplate.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3155,6 +3164,7 @@
 				14ACB370110674A300258C54 /* UIShadedArea.cpp */,
 				14ACB371110674A300258C54 /* UISkin.cpp */,
 				14ACB372110674A300258C54 /* UISlider.cpp */,
+				14F82D2A111A897E001DDF69 /* UIStats.cpp */,
 				14ACB373110674A300258C54 /* UISubPicture.cpp */,
 				14ACB374110674A300258C54 /* UITextArea.cpp */,
 				14ACB375110674A300258C54 /* UITextLine.cpp */,
@@ -3194,6 +3204,7 @@
 				14ACB3511106748C00258C54 /* UIShadedArea.h */,
 				14ACB3521106748C00258C54 /* UISkin.h */,
 				14ACB3531106748C00258C54 /* UISlider.h */,
+				14F82D29111A8966001DDF69 /* UIStats.h */,
 				14ACB3541106748C00258C54 /* UISubPicture.h */,
 				14ACB3551106748C00258C54 /* UITextArea.h */,
 				14ACB3561106748C00258C54 /* UITextLine.h */,
@@ -3216,6 +3227,7 @@
 		14CE106A0D90617D0027155A /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				14F82D22111A891F001DDF69 /* Shaders */,
 				147540F50DA3C9E1000D05A5 /* Include */,
 				147540F40DA3C9DA000D05A5 /* Source */,
 			);
@@ -3521,6 +3533,19 @@
 				14DFD21D0D901A2B00A81978 /* R5_Time.h */,
 			);
 			name = Include;
+			sourceTree = "<group>";
+		};
+		14F82D22111A891F001DDF69 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				14F82D23111A8938001DDF69 /* Bloom.h */,
+				14F82D24111A8938001DDF69 /* Blur.h */,
+				14F82D25111A8938001DDF69 /* Deferred.h */,
+				14F82D26111A8938001DDF69 /* DOF.h */,
+				14F82D27111A8938001DDF69 /* Lights.h */,
+				14F82D28111A8938001DDF69 /* SSAO.h */,
+			);
+			name = Shaders;
 			sourceTree = "<group>";
 		};
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
@@ -5020,6 +5045,7 @@
 				14ACB393110674A300258C54 /* UITextLine.cpp in Sources */,
 				14ACB394110674A300258C54 /* UIWidget.cpp in Sources */,
 				14ACB395110674A300258C54 /* UIWindow.cpp in Sources */,
+				14F82D2B111A897E001DDF69 /* UIStats.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
