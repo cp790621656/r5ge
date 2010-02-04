@@ -245,8 +245,8 @@ Quaternion Squad (const Quaternion &current, const Quaternion &to, const Quatern
 template <typename Real>
 Real BilinearTile (const Real* buffer, uint width, uint height, float x, float y)
 {
-	x *= (width  - 1);
-	y *= (height - 1);
+	x *= width;
+	y *= height;
 
 	float fx = Float::Floor(x);
 	float fy = Float::Floor(y);
@@ -307,8 +307,8 @@ Real BilinearClamp (const Real* buffer, uint width, uint height, float x, float 
 template <typename Real>
 Real BicubicTile (const Real* buffer, uint width, uint height, float x, float y)
 {
-	x *= (width  - 1);
-	y *= (height - 1);
+	x *= width;
+	y *= height;
 
 	float fx = Float::Floor(x);
 	float fy = Float::Floor(y);
@@ -379,8 +379,8 @@ Real BicubicClamp (const Real* buffer, uint width, uint height, float x, float y
 template <typename Real>
 Real HermiteTile (const Real* buffer, uint width, uint height, float x, float y)
 {
-	x *= (width  - 1);
-	y *= (height - 1);
+	x *= width;
+	y *= height;
 
 	float fx = Float::Floor(x);
 	float fy = Float::Floor(y);

@@ -39,7 +39,7 @@ public:
 
 	R5_DECLARE_INHERITED_CLASS("Slight Rotation", SlightRotation, Script, Script);
 
-	virtual void Init() { mOriginal = mObject->GetRelativeRotation(); }
+	virtual void OnInit() { mOriginal = mObject->GetRelativeRotation(); }
 
 	virtual void OnPreUpdate()
 	{

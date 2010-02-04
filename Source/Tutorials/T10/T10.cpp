@@ -50,8 +50,8 @@ public:
 		}
 	}
 
-	// Init function is called when the script has been created and all internal parameters have been set
-	virtual void Init()
+	// OnInit function is called when the script has been created and all internal parameters have been set
+	virtual void OnInit()
 	{
 		// Every script belongs to an object, and all objects are aware of the engine's Core
 		mCore = mObject->GetCore();
@@ -78,7 +78,7 @@ public:
 		}
 
 		// Although there is no way "mLabel" will be zero here, it's worth mentioning
-		// that you can destroy the script in the Init() function -- or even the object
+		// that you can destroy the script in the OnInit() function -- or even the object
 		// that owns the script. All DestroySelf calls are queued -- they are never executed
 		// immediately, so it's perfectly safe to do anywhere except the constructor.
 		if (mLabel == 0) DestroySelf();

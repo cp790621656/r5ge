@@ -318,8 +318,8 @@ struct PerlinBuffer
 
 	float Sample (float x, float y, float threshold, bool seamless)
 	{
-		float f = seamless ? Interpolation::BicubicTile(mBuffer, mWidth, mHeight, x, y) :
-							 Interpolation::BicubicClamp(mBuffer, mWidth, mHeight, x, y);
+		float f = seamless ? Interpolation::HermiteTile (mBuffer, mWidth, mHeight, x, y) :
+							 Interpolation::HermiteClamp(mBuffer, mWidth, mHeight, x, y);
 		return mFactor * MirrorOver(f, threshold);
 	}
 };

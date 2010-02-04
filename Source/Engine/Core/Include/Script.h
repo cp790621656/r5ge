@@ -62,7 +62,7 @@ public:
 	virtual ~Script();
 
 	// Initialization function is called once the script has been created
-	virtual void Init() {}
+	virtual void OnInit() {}
 
 	// Key event notification
 	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { return false; }

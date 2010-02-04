@@ -187,7 +187,7 @@ Script* Object::_AddScript (const String& type)
 		{
 			ptr->mObject = this;
 			mScripts.Expand() = ptr;
-			ptr->Init();
+			ptr->OnInit();
 		}
 	}
 	return ptr;

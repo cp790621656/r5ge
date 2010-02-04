@@ -26,7 +26,7 @@ public:
 
 	R5_DECLARE_INHERITED_CLASS("Torchlight", Torchlight, Script, Script);
 
-	virtual void Init()
+	virtual void OnInit()
 	{
 		mLight = R5_CAST(PointLight, mObject);
 		if (mLight == 0) DestroySelf();

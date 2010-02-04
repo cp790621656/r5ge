@@ -117,7 +117,7 @@ void TestApp::Run()
 			mCore->SetListener( bind(&Object::Scroll, mCam) );
 
 			while (mCore->Update());
-			*mCore >> "Config/Noise Test.txt";
+			//*mCore >> "Config/Noise Test.txt";
 		}
 	}
 }
@@ -155,7 +155,7 @@ void TestApp::Regenerate()
 		ulong startTime = Time::GetMilliseconds();
 
 		// Use the timestamp as the seed
-		mNoise.SetSeed(startTime);
+		//mNoise.SetSeed(startTime);
 		//mNoise.SetSeamless(false);
 
 		// Generate the noise
