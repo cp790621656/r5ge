@@ -4,6 +4,21 @@ Root
 {
 	Graphics
 	{
+		Material = "Magma"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 0.648961 0.325635 1.000000
+			Glow = 0.635104
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_NS"
+				Texture 0 = "Textures/Stone/magma.hdr"
+				Texture 1 = "Textures/Stone/lime_ns.png"
+			}
+		}
+
 		Material = "Lizard"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000

@@ -82,8 +82,10 @@ protected:
 	Mat44		mIP;				// Inverse Projection matrix
 	Mat44		mIMVP;				// Inverse ModelView*Projection matrix
 
-	bool		mResetView;			// Whether to reset the view matrix next time we draw
-	bool		mResetProj;			// Whether to reset the projection matrix next time we draw
+	bool		mResetModel;		// Whether to reset the world matrix (set to 'true' when SetModelMatrix() is called)
+	bool		mResetView;			// Whether to reset the view matrix
+	bool		mResetProj;			// Whether to reset the projection matrix before drawing the next object
+	bool		mInstancing;		// Whether instancing is currently active
 
 	Color		mMatDiff;			// Active diffuse and ambient color
 	Color		mMatSpec;			// Active specular color
@@ -240,7 +242,7 @@ protected:
 	bool _BindTexture (uint glType, uint glID);
 
 	// Marks all view-affected matrices as needing to be recalculated
-	void _ViewHasChanged();
+	void _WorldHasChanged();
 
 	// Marks all projection-affected matrices as needing to be recalculated
 	void _ProjHasChanged();

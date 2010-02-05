@@ -48,6 +48,10 @@ public:
 	Object* GetRoot() { return mRoot; }
 	void SetRoot (Object* root) { mRoot = root; }
 
+	// Retrieves the default draw parameters for modification
+	Techniques& GetDeferredTechniques() { return mParams.mTechniques; }
+	Techniques& GetForwardTechniques()  { return mForward; }
+
 	// These functions are valid after Cull() has been called
 	const Frustum&		GetFrustum()		const { return mFrustum; }
 	const Light::List&	GetVisibleLights()	const { return mQueue.mLights;  }

@@ -112,8 +112,10 @@ GLController::GLController() :
 	mSimpleMaterial		(false),
 	mActiveLightCount	(0),
 	mProjection			(Projection::Orthographic),
+	mResetModel			(false),
 	mResetView			(false),
 	mResetProj			(false),
+	mInstancing			(false),
 	mMatGlow			(0.0f),
 	mTarget				(0),
 	mTechnique			(0),
@@ -441,6 +443,7 @@ void GLController::SetViewport(const Vector2i& size)
 		mSize = size;
 		glViewport(0, 0, mSize.x, mSize.y);
 		mProj.mRecalculate = true;
+		mResetProj = true;
 		_ProjHasChanged();
 	}
 }
@@ -613,7 +616,8 @@ void GLController::SetModelMatrix (const Matrix43& mat)
 	mModel.mRecalculate	= false;
 	mModel.mOverwritten	= true;
 	mMV.mOverwritten	= false;
-	_ViewHasChanged();
+	mResetModel			= true;
+	_WorldHasChanged();
 }
 
 //============================================================================================================
@@ -626,7 +630,8 @@ void GLController::ResetModelMatrix()
 	{
 		mModel.mOverwritten	= false;
 		mModel.mRecalculate = true;
-		_ViewHasChanged();
+		mResetModel			= true;
+		_WorldHasChanged();
 	}
 }
 
@@ -642,7 +647,7 @@ void GLController::SetModelViewMatrix (const Matrix43& mat)
 	mMV.mRecalculate	= false;
 
 	// The view has changed
-	mResetView			= true;
+	mResetModel			= true;
 	mMVP.mRecalculate	= true;
 	mIMV.mRecalculate	= true;
 	mIMVP.mRecalculate	= true;
@@ -656,9 +661,10 @@ void GLController::ResetModelViewMatrix()
 {
 	if (mMV.mOverwritten)
 	{
-		mMV.mOverwritten = false;
-		mMV.mRecalculate = true;
-		_ViewHasChanged();
+		mMV.mOverwritten	= false;
+		mMV.mRecalculate	= true;
+		mResetView			= true;
+		_WorldHasChanged();
 	}
 
 	// Ensure that the model matrix is reset to identity
@@ -678,8 +684,9 @@ void GLController::SetCameraOrientation (const Vector3f& eye, const Vector3f& di
 		mUp	 = up;
 
 		// View matrix needs to be recalculated
-		mView.mRecalculate = true;
-		_ViewHasChanged();
+		mView.mRecalculate	= true;
+		mResetView			= true;
+		_WorldHasChanged();
 	}
 
 	// Ensure that the model matrix is reset to identity
@@ -704,6 +711,7 @@ void GLController::SetCameraRange (const Vector3f& range)
 		{
 			mClipRange = copy;
 			mProj.mRecalculate = true;
+			mResetProj = true;
 			_ProjHasChanged();
 		}
 	}
@@ -714,6 +722,7 @@ void GLController::SetCameraRange (const Vector3f& range)
 	{
 		mFov = deg;
 		mProj.mRecalculate = true;
+		mResetProj = true;
 		_ProjHasChanged();
 	}
 }
@@ -741,6 +750,7 @@ void GLController::SetActiveRenderTarget (const IRenderTarget* tar)
 			{
 				glViewport(0, 0, size.x, size.y);
 				mProj.mRecalculate = true;
+				mResetProj = true;
 				_ProjHasChanged();
 			}
 		}
@@ -755,6 +765,7 @@ void GLController::SetActiveRenderTarget (const IRenderTarget* tar)
 			{
 				glViewport(0, 0, mSize.x, mSize.y);
 				mProj.mRecalculate = true;
+				mResetProj = true;
 				_ProjHasChanged();
 			}
 		}
@@ -1006,11 +1017,15 @@ void GLController::SetActiveProjection (uint projection)
 
 		if ( projection == Projection::Orthographic )
 		{
+			mResetView = true;
+			mResetProj = true;
 			SetActiveVertexAttribute(Attribute::Normal, 0, 0, 0, 0, 0);
 		}
-
-		mResetProj = true;
-		mResetView = true;
+		else
+		{
+			mResetView = true;
+			mResetProj = true;
+		}
 	}
 }
 
@@ -1355,7 +1370,7 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 
 void GLController::_ActivateMatrices()
 {
-	if (mResetView || mResetProj)
+	if (mResetModel || mResetView || mResetProj)
 	{
 		if (mProjection == Projection::Orthographic)
 		{
@@ -1371,45 +1386,54 @@ void GLController::_ActivateMatrices()
 		}
 		else
 		{
-			bool reset (false);
-
 			if (mResetProj)
 			{
-				reset = true;
 				glMatrixMode(GL_PROJECTION);
 				glLoadMatrixf(GetProjectionMatrix().mF);
 				++mStats.mMatSwitches;
 			}
 
-			if (mResetView)
+			// Resetting the world matrix usually implies resetting the view as well
+			if (mResetModel || mResetView)
 			{
 				// If the active shader supports pseudo-instancing, take advantage of that
-				if (mShader != 0 && mShader->GetFlag(IShader::Flag::Instanced))
+				if ( mResetModel && (mShader != 0 && mShader->GetFlag(IShader::Flag::Instanced)))
 				{
 					const Matrix43& mat = GetModelMatrix();
 
+					// When a shader supporting instancing is enabled, feed it the world matrix
 					glMultiTexCoord4fv(GL_TEXTURE2, mat.mColumn0);
 					glMultiTexCoord4fv(GL_TEXTURE3, mat.mColumn1);
 					glMultiTexCoord4fv(GL_TEXTURE4, mat.mColumn2);
 					glMultiTexCoord4fv(GL_TEXTURE5, mat.mColumn3);
+
+					// If the view has changed, or we haven't been using instancing before, set the MV
+					if (mResetView || !mInstancing)
+					{
+						glMatrixMode(GL_MODELVIEW);
+						glLoadMatrixf(GetViewMatrix().mF);
+						++mStats.mMatSwitches;
+						mInstancing = true;
+					}
 				}
 				else
 				{
+					// No pseudo-instancing support -- just use the ModelView matrix
 					glMatrixMode(GL_MODELVIEW);
 					glLoadMatrixf(GetModelViewMatrix().mF);
 					++mStats.mMatSwitches;
-					reset = false;
+					mInstancing = false;
 				}
 			}
-			
-			if (reset)
+			else if (mResetProj)
 			{
 				// Always end with ModelView
 				glMatrixMode(GL_MODELVIEW);
 			}
 		}
-		mResetView = false;
-		mResetProj = false;
+		mResetModel = false;
+		mResetView	= false;
+		mResetProj	= false;
 	}
 }
 
@@ -1476,12 +1500,11 @@ bool GLController::_BindTexture (uint glType, uint glID)
 }
 
 //============================================================================================================
-// Marks all view-affected matrices as needing to be recalculated
+// Marks all world-affected matrices as needing to be recalculated
 //============================================================================================================
 
-void GLController::_ViewHasChanged()
+void GLController::_WorldHasChanged()
 {
-	mResetView			= true;
 	mMV.mRecalculate	= true;
 	mMVP.mRecalculate	= true;
 	mIMV.mRecalculate	= true;
@@ -1494,7 +1517,6 @@ void GLController::_ViewHasChanged()
 
 void GLController::_ProjHasChanged()
 {
-	mResetProj			= true;
 	mIP.mRecalculate	= true;
 	mMVP.mRecalculate	= true;
 	mIMVP.mRecalculate	= true;

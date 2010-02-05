@@ -77,13 +77,12 @@ void TestApp::OnDraw()
 
 	mScene.Cull(mCam);
 
-	Array<const ITechnique*> techs;
+	Array<const ITechnique*>& techs = mScene.GetForwardTechniques();
+	techs.Clear();
 	techs.Expand() = mTech;
-
 	mScene.DrawAllForward();
-	mScene.Draw(techs);
 
-	mGraphics->Draw( IGraphics::Drawable::Grid );
+	//mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

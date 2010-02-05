@@ -202,11 +202,11 @@ bool GLGraphics::Init()
 		SetAlphaTest	(true);
 		SetADT			(0.003921568627451f);
 		SetBlending		(true);
-		SetFog			(true);
 		SetBlending		(Blending::Normal);
 		SetCulling		(Culling::Back);
-		SetFogRange		( Vector2f(30.0f, 75.0f) );
-		SetCameraRange	( Vector3f(0.3f, 100.0f, 90.0f) );
+		SetFogRange		(Vector2f(50.0f, 100.0f));
+		SetCameraRange	(Vector3f(0.3f, 100.0f, 90.0f));
+		SetFog			(true);
 
 		// For simplicity  purposes, only linear type fog is supported as it's very easy to create
 		// a much nicer, animated fog using post-processing effects, especially with the deferred approach.
@@ -566,7 +566,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetAlphaTest(false);
 		SetColorWrite(true);
 		SetLighting(Lighting::None);
-		SetBlending(Blending::Normal);
+		SetBlending(Blending::None);
 		SetActiveMaterial((const IMaterial*)0);
 
 		ResetModelViewMatrix();

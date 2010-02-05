@@ -10,7 +10,6 @@ void main()
 	vec3 normal = gl_Normal;
 
     // R5_IMPLEMENT_SKINNING vertex normal
-    // R5_IMPLEMENT_INSTANCING vertex normal
 
 	gl_Position = gl_ModelViewProjectionMatrix * vertex;
     _texCoord   = gl_MultiTexCoord0.xy;

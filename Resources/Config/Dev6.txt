@@ -24,7 +24,7 @@ Root
 			Color Write = true
 			Alpha Test = false
 			Wireframe = false
-			Lighting = "One-sided"
+			Lighting = "One-Sided"
 			Blending = "None"
 			Culling = "Back"
 			Sorting = "Front to Back"
@@ -38,7 +38,7 @@ Root
 			Color Write = true
 			Alpha Test = false
 			Wireframe = false
-			Lighting = "One-sided"
+			Lighting = "One-Sided"
 			Blending = "None"
 			Culling = "Back"
 			Sorting = "Front to Back"
