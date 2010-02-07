@@ -1,3 +1,5 @@
+// R5_INCLUDE Shaders/Deferred/D_N.vert
+
 uniform sampler2D   R5_texture0;    // Diffuse (RGBA)
 uniform sampler2D   R5_texture1;    // Normal (RGB) + Specularity (A)
 

@@ -1,4 +1,3 @@
-uniform vec4 R5_clipRange;
 varying vec3 _normal;
 
 void main()
