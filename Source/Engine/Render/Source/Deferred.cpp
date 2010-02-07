@@ -12,6 +12,7 @@ void AddDirectionalLights (IGraphics* graphics, const Light::List& lights, const
 		// No depth test as directional light has no volume
 		graphics->SetDepthTest(false);
 		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		graphics->ResetModelViewMatrix();
 		graphics->SetActiveShader(shader);
 
 		// Run through all directional lights
