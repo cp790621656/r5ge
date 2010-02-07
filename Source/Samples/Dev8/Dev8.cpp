@@ -22,7 +22,7 @@ public:
 	{
 		Quaternion rot = mObject->GetRelativeRotation();
 		Vector3f axis (0.0f, 1.0f, 0.0f);
-		rot.Rotate(axis, Time::GetDelta() * 0.0002f);
+		rot.Rotate(axis, Time::GetDelta() * 0.2f);
 		mObject->SetRelativeRotation(rot);
 	}
 };

@@ -74,7 +74,7 @@ void ModelViewer::OnDraw()
 	// Animate the model if requested
 	if (mAnimate)
 	{
-		ulong delta = Time::GetDelta();
+		ulong delta = Time::GetDeltaMS();
 
 		if (delta > 0)
 		{
