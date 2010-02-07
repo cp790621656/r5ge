@@ -132,7 +132,7 @@ void CameraController::Update()
 {
 	if (mCameras.IsEmpty()) return;
 
-	ulong delta = Time::GetDelta();
+	ulong delta = Time::GetDeltaMS();
 	if (delta == 0) return;
 
 	float remain = 1.0f;

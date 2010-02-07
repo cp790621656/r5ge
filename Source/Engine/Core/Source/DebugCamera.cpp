@@ -70,7 +70,7 @@ Vector3f DebugCamera::_UpdateOffsetPosition()
 	else if (mHasMovement)
 	{
 		mHasMovement = false;
-		uint delta = (uint)Time::GetDelta();
+		uint delta = (uint)Time::GetDeltaMS();
 
 		Vector3f mov;
 		Vector2f rot;

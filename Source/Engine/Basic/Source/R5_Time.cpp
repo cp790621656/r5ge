@@ -19,13 +19,15 @@ using namespace R5;
 //======================================================================================================
 
 float	g_time			= 0.0f;
+float	g_delta			= 0.0f;
 ulong	g_currentTime	= 0;
-ulong	g_timeDelta		= 0;
+ulong	g_deltaMS		= 0;
 uint	g_fps			= 0;
 
 float	Time::GetTime()			{ return g_time; }
+float	Time::GetDelta()		{ return g_delta; }
 ulong	Time::GetMilliseconds()	{ return g_currentTime; }
-ulong	Time::GetDelta()		{ return g_timeDelta; }
+ulong	Time::GetDeltaMS()		{ return g_deltaMS; }
 uint	Time::GetFPS()			{ return g_fps; }
 
 //======================================================================================================
@@ -38,11 +40,13 @@ void Time::Update()
 {
 	static ulong startTime = ::timeGetTime();
 	g_currentTime = ::timeGetTime() - startTime;
-	g_time = 0.001f * g_currentTime;
 	
 	static ulong lastTime = g_currentTime;
-	g_timeDelta = g_currentTime - lastTime;
+	g_deltaMS = g_currentTime - lastTime;
 	lastTime = g_currentTime;
+
+	g_time  = 0.001f * g_currentTime;
+	g_delta = 0.001f * g_deltaMS;
 }
 
 //======================================================================================================

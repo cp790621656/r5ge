@@ -35,7 +35,7 @@ void Emitter::OnUpdate()
 	if (mActiveTime == -1 && !mIsDirty && (Time::GetMilliseconds() - mLastVisible > 500) ) return;
 
 	// Delay since last frame
-	ulong delta = Time::GetDelta();
+	ulong delta = Time::GetDeltaMS();
 
 	// Recalculate the number of active particles
 	mActiveParts = 0;

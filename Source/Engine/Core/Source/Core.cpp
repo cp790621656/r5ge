@@ -153,7 +153,7 @@ bool Core::Update()
 		}
 
 		// If some time has passed, update the scene
-		if (Time::GetDelta() != 0) mIsDirty = true;
+		if (Time::GetDeltaMS() != 0) mIsDirty = true;
 
 		// Do not update anything unless some time has passed
 		if (mIsDirty)
