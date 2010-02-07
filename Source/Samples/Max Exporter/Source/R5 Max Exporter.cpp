@@ -99,7 +99,7 @@ public:
         normal = rVert.rn.getNormal();
     }
     // If normal is not specified it's only available if the face belongs to a smoothing group
-    else if ((normalCount = rVert.rFlags & NORCT_MASK) && face.smGroup)
+    else if ((normalCount = (rVert.rFlags & NORCT_MASK)) && face.smGroup)
     {
         // If there is only one vertex, the normal is found in the rn member
         if (normalCount == 1)
@@ -115,6 +115,7 @@ public:
                 if (rVert.ern[j].getSmGroup() & face.smGroup)
                 {
                     normal = rVert.ern[j].getNormal();
+					break;
                 }
             }
         }
