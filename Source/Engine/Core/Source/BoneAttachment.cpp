@@ -32,7 +32,7 @@ void BoneAttachment::OnUpdate()
 	Quaternion rot (parent->GetAbsoluteRotation(), tm->mAbsoluteRot);
 
 	// Use the absolute bone orientation as the parent of this object
-	mObject->OverrideAbsolutePosition( pos + mObject->GetRelativePosition() * rot );
+	mObject->OverrideAbsolutePosition( pos + (mObject->GetRelativePosition() * parent->GetAbsoluteScale()) * rot );
 	mObject->OverrideAbsoluteRotation( rot * mObject->GetRelativeRotation() );
 	mObject->SetDirty();
 }
@@ -41,18 +41,17 @@ void BoneAttachment::OnUpdate()
 // Serialization -- Save
 //============================================================================================================
 
-bool BoneAttachment::SerializeTo (TreeNode& root) const
+void BoneAttachment::SerializeTo (TreeNode& root) const
 {
 	TreeNode& node = root.AddChild( Script::ClassID(), GetClassID() );
 	node.AddChild("Bone", mName);
-	return true;
 }
 
 //============================================================================================================
 // Serialization -- Load
 //============================================================================================================
 
-bool BoneAttachment::SerializeFrom (const TreeNode& root)
+void BoneAttachment::SerializeFrom (const TreeNode& root)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -64,5 +63,4 @@ bool BoneAttachment::SerializeFrom (const TreeNode& root)
 			mBoneIndex = -1;
 		}
 	}
-	return true;
 }

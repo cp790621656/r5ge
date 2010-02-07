@@ -170,7 +170,7 @@ Script* Object::_AddScript (const String& type)
 
 	for (uint i = mScripts.GetSize(); i > 0; )
 	{
-		Script* script = mScripts[i];
+		Script* script = mScripts[--i];
 
 		if ( script != 0 && type == script->GetClassID() )
 		{

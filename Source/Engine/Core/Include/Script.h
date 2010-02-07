@@ -86,6 +86,6 @@ public:
 	virtual void OnFill (FillParams& params) { mIgnore.Set(Ignore::Fill, true); }
 
 	// Serialization
-	virtual bool SerializeTo	(TreeNode& root) const { return false; }
-	virtual bool SerializeFrom	(const TreeNode& root) { return false; }
+	virtual void SerializeTo	(TreeNode& root) const {}
+	virtual void SerializeFrom	(const TreeNode& root) {}
 };
