@@ -712,8 +712,9 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			}
 			else if (tag == Script::ClassID())
 			{
+				// The 'contains' check is here because scripts can self-destruct inside OnInit()
 				Script* ptr = _AddScript(value.IsString() ? value.AsString() : value.GetString());
-				if (ptr != 0) ptr->SerializeFrom(node);
+				if (ptr != 0 && mScripts.Contains(ptr)) ptr->SerializeFrom(node);
 			}
 			else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
 			{
