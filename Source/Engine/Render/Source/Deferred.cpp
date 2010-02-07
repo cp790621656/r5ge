@@ -32,6 +32,8 @@ void AddPointLights (IGraphics* graphics, const Light::List& lights, const IShad
 {
 	if (lights.IsValid())
 	{
+		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
+
 		float nearClip = graphics->GetCameraRange().x;
 		const Vector3f& camPos = graphics->GetCameraPosition();
 		
@@ -168,7 +170,6 @@ void DrawLights (
 	graphics->SetActiveTexture( 2, lightmap );
 
 	// Set up the stencil buffer to allow rendering only where pixels are '1'
-	graphics->SetActiveProjection( IGraphics::Projection::Perspective );
 	graphics->SetActiveStencilFunction( IGraphics::Condition::Equal, 0x1, 0x1 );
 	graphics->SetActiveStencilOperation(IGraphics::Operation::Keep,
 										IGraphics::Operation::Keep,
