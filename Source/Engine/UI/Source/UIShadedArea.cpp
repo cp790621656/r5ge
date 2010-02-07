@@ -78,7 +78,17 @@ bool UIShadedArea::OnSerializeFrom (const TreeNode& node)
 		SetShader( mUI->GetShader( value.IsString() ? value.AsString() : value.GetString() ) );
 		return true;
 	}
-	else
+	else if (node.mTag == "Textures")
+	{
+		if (node.mValue.IsStringArray())
+		{
+			const Array<String>& sa = node.mValue.AsStringArray();
+			for (uint i = 0; i < sa.GetSize(); ++i) SetTexture(i, mUI->GetTexture(sa[i]));
+		}
+		return true;
+	}
+	// LEGACY FORMAT SUPPORT, WILL BE REMOVED
+	else if (node.mTag.BeginsWith(ITexture::ClassID()))
 	{
 		String left, right;
 		
@@ -109,13 +119,15 @@ void UIShadedArea::OnSerializeTo (TreeNode& node) const
 	TreeNode& shader = node.AddChild("Shader");
 	if (mShader != 0) shader.mValue = mShader->GetName();
 
-	for (uint i = 0; i < mTex.GetSize(); ++i)
-	{
-		const ITexture* tex = mTex[i];
+	TreeNode& child = node.AddChild("Textures");
 
-		if (tex != 0)
+	if (mTex.IsValid())
+	{
+		Array<String>& sa = child.mValue.ToStringArray();
+
+		for (uint i = 0; i < mTex.GetSize(); ++i)
 		{
-			node.AddChild( String("Texture %u", i), tex->GetName() );
+			sa.Expand() = mTex[i]->GetName();
 		}
 	}
 }

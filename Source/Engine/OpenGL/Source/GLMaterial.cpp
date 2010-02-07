@@ -128,7 +128,7 @@ void GLMaterial::ClearAllDrawMethods()
 // Serialization -- Load
 //============================================================================================================
 
-bool SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraphics* graphics)
+void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraphics* graphics)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -136,52 +136,65 @@ bool SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if ( tag == IShader::ClassID() )
+		if (tag == IShader::ClassID())
 		{
-			m.SetShader( (value.IsValid()) ? graphics->GetShader(value.IsString() ? value.AsString() : value.GetString()) : 0 );
+			m.SetShader( (value.IsValid()) ? graphics->GetShader(
+				value.IsString() ? value.AsString() : value.GetString()) : 0 );
 		}
-		else
+		else if (tag == "Textures")
+		{
+			if (value.IsStringArray())
+			{
+				const Array<String>& sa = value.AsStringArray();
+				for (uint i = 0; i < sa.GetSize(); ++i) m.SetTexture(i, graphics->GetTexture(sa[i]));
+			}
+		}
+		// LEGACY SUPPORT, WILL BE REMOVED
+		else if (tag.BeginsWith(ITexture::ClassID()))
 		{
 			String left, right;
 			uint textureUnit = 0;
 
 			if ( tag.Split(left, ' ', right) && left == ITexture::ClassID() && right >> textureUnit )
 			{
-				m.SetTexture( textureUnit, graphics->GetTexture(value.IsString() ? value.AsString() : value.GetString()) );
+				m.SetTexture( textureUnit, graphics->GetTexture(
+					value.IsString() ? value.AsString() : value.GetString()) );
 			}
 		}
 	}
-	return true;
 }
 
 //============================================================================================================
 // Serialization -- Save
 //============================================================================================================
 
-bool SerializeMethodTo (const IMaterial::DrawMethod& m, TreeNode& root)
+void SerializeMethodTo (const IMaterial::DrawMethod& m, TreeNode& root)
 {
 	const ITechnique* tech = m.GetTechnique();
-	if (tech == 0) return false;
 
-	TreeNode& node = root.AddChild( ITechnique::ClassID(), tech->GetName() );
-
-	const IShader* shader = m.GetShader();
-	if (shader != 0) node.AddChild( IShader::ClassID(), shader->GetName() );
-
-	const IMaterial::Textures& list = m.GetAllTextures();
-
-	list.Lock();
+	if (tech != 0)
 	{
-		for (uint i = 0; i < list.GetSize(); ++i)
+		TreeNode& node = root.AddChild( ITechnique::ClassID(), tech->GetName() );
+
+		const IShader* shader = m.GetShader();
+		if (shader != 0) node.AddChild( IShader::ClassID(), shader->GetName() );
+
+		const IMaterial::Textures& list = m.GetAllTextures();
+
+		if (list.IsValid())
 		{
-			if (list[i] != 0)
+			Array<String>& sa = node.AddChild("Textures").mValue.ToStringArray();
+
+			list.Lock();
 			{
-				node.AddChild( String("%s %u", ITexture::ClassID(), i), list[i]->GetName() );
+				for (uint i = 0; i < list.GetSize(); ++i)
+				{
+					if (list[i] != 0) sa.Expand() = list[i]->GetName();
+				}
 			}
+			list.Unlock();
 		}
 	}
-	list.Unlock();
-	return true;
 }
 
 //============================================================================================================

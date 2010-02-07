@@ -211,18 +211,21 @@ void Mesh::_RecalculateBounds()
 
 void Mesh::_CalculateNormalsAndTangents()
 {
-	if (mT.IsValid() || mV.IsEmpty() || mV.GetSize() != mTc.GetSize()) return;
+	if (mT.IsValid() || mV.IsEmpty()) return;
 
 	// Don't bother with points or lines
-	if (mPrimitive == IGraphics::Primitive::Point		||
-		mPrimitive == IGraphics::Primitive::Line		||
+	if (mPrimitive == IGraphics::Primitive::Point	||
+		mPrimitive == IGraphics::Primitive::Line	||
 		mPrimitive == IGraphics::Primitive::LineStrip) return;
 
 	// Allocate a temporary buffer to store binormals
 	Array<Vector3f> binormals (mV.GetSize());
 
 	// Remember whether we already have normals to work with
-	bool calculateNormals = ( mN.GetSize() != mV.GetSize() );
+	bool calculateNormals  = (mV.GetSize() != mN.GetSize());
+
+	// We can only calculate tangents if the texture coordinates are available
+	bool calculateTangents = (mV.GetSize() == mTc.GetSize());
 
 	// If we should calculate normals, clear the existing normal array
 	if (calculateNormals)
@@ -232,7 +235,7 @@ void Mesh::_CalculateNormalsAndTangents()
 	}
 
 	// Expand the tangent array
-	mT.ExpandTo(mV.GetSize());
+	if (calculateTangents) mT.ExpandTo(mV.GetSize());
 
 	// The number of indices
 	uint size = mIndices.IsValid() ? mIndices.GetSize() : GetNumberOfVertices();
@@ -264,14 +267,8 @@ void Mesh::_CalculateNormalsAndTangents()
 			const Vector3f& v1 ( mV[i1] );
 			const Vector3f& v2 ( mV[i2] );
 
-			const Vector2f& t0 ( mTc[i0] );
-			const Vector2f& t1 ( mTc[i1] );
-			const Vector2f& t2 ( mTc[i2] );
-
 			Vector3f v10 (v1 - v0);
 			Vector3f v20 (v2 - v0);
-			Vector2f t10 (t1 - t0);
-			Vector2f t20 (t2 - t0);
 
 			if (calculateNormals)
 			{
@@ -282,27 +279,37 @@ void Mesh::_CalculateNormalsAndTangents()
 				mN[i2] += normal;
 			}
 
-			float denominator = t10.x * t20.y - t20.x * t10.y;
-
-			if ( Float::IsNotZero(denominator) )
+			if (calculateTangents)
 			{
-				float scale = 1.0f / denominator;
+				const Vector2f& t0 ( mTc[i0] );
+				const Vector2f& t1 ( mTc[i1] );
+				const Vector2f& t2 ( mTc[i2] );
 
-				Vector3f tangent ((v10.x * t20.y - v20.x * t10.y) * scale,
-								  (v10.y * t20.y - v20.y * t10.y) * scale,
-								  (v10.z * t20.y - v20.z * t10.y) * scale);
+				Vector2f t10 (t1 - t0);
+				Vector2f t20 (t2 - t0);
 
-				Vector3f binormal((v20.x * t10.x - v10.x * t20.x) * scale,
-								  (v20.y * t10.x - v10.y * t20.x) * scale,
-								  (v20.z * t10.x - v10.z * t20.x) * scale);
+				float denominator = t10.x * t20.y - t20.x * t10.y;
 
-				mT[i0] += tangent;
-				mT[i1] += tangent;
-				mT[i2] += tangent;
+				if ( Float::IsNotZero(denominator) )
+				{
+					float scale = 1.0f / denominator;
 
-				binormals[i0] += binormal;
-				binormals[i1] += binormal;
-				binormals[i2] += binormal;
+					Vector3f tangent ((v10.x * t20.y - v20.x * t10.y) * scale,
+									  (v10.y * t20.y - v20.y * t10.y) * scale,
+									  (v10.z * t20.y - v20.z * t10.y) * scale);
+
+					Vector3f binormal((v20.x * t10.x - v10.x * t20.x) * scale,
+									  (v20.y * t10.x - v10.y * t20.x) * scale,
+									  (v20.z * t10.x - v10.z * t20.x) * scale);
+
+					mT[i0] += tangent;
+					mT[i1] += tangent;
+					mT[i2] += tangent;
+
+					binormals[i0] += binormal;
+					binormals[i1] += binormal;
+					binormals[i2] += binormal;
+				}
 			}
 
 			if (mPrimitive == IGraphics::Primitive::Triangle)
@@ -350,20 +357,23 @@ void Mesh::_CalculateNormalsAndTangents()
 		}
 	}
 
-	// Normalize all tangents
-	for (uint i = 0; i < mV.GetSize(); ++i)
+	if (calculateTangents)
 	{
-		Vector3f&  T (mT[i]);
-		Vector3f&  B (binormals[i]);
-		Vector3f&  N (mN[i]);
+		// Normalize all tangents
+		for (uint i = 0; i < mV.GetSize(); ++i)
+		{
+			Vector3f&  T (mT[i]);
+			Vector3f&  B (binormals[i]);
+			Vector3f&  N (mN[i]);
 
-		// In order to avoid visible seams, the tangent should be 90 degrees to the normal
-		// Note to self: Gram-Schmidt formula for the cross product below: T = T - N * Dot(N, T);
-		T = Cross(B, N);
-		T.Normalize();
+			// In order to avoid visible seams, the tangent should be 90 degrees to the normal
+			// Note to self: Gram-Schmidt formula for the cross product below: T = T - N * Dot(N, T);
+			T = Cross(B, N);
+			T.Normalize();
 
-		// Flip the tangent if the handedness is incorrect
-		if (Dot(Cross(T, B), N) < 0.0f) T.Flip();
+			// Flip the tangent if the handedness is incorrect
+			if (Dot(Cross(T, B), N) < 0.0f) T.Flip();
+		}
 	}
 }
 
