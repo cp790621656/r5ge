@@ -15,7 +15,7 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 		char ch = s[from];
 
 		// If we haven't reached the end and have a valid character to work with
-		if ( (from != to) && (ch < '{') && (ch != '=') )
+		if ( (from != to) && (ch <= '~') && (ch != '{') && (ch != '}') && (ch != '=') )
 		{
 			uint phraseEnd = from + 1;
 			uint lastChar = from;
@@ -43,7 +43,7 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 					}
 
 					// If it's an end-of-phrase character, stop
-					if (ch < ' ' || ch == '=' || ch > 'z' || ch == '}') break;
+					if (ch < ' ' || ch == '=' || ch > '~' || ch == '{' || ch == '}') break;
 
 					// Remember the last valid character
 					lastChar = phraseEnd;
