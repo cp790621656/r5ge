@@ -29,7 +29,7 @@ public:
 
 	Bounds() : mRadius(0.0f), mIsValid(false), mIsDirty(true) {}
 
-	inline void Set (const Vector3f& min, const Vector3f& max)
+	void Set (const Vector3f& min, const Vector3f& max)
 	{
 		mMin = min;
 		mMax = max;
@@ -46,19 +46,24 @@ public:
 		mIsDirty = true;
 	}
 
-	inline void				Reset()				{ mIsValid = false; }
-	inline bool				IsValid()	const	{ return mIsValid; }
-	inline const Vector3f&	GetMin()	const	{ return mMin; }
-	inline const Vector3f&	GetMax()	const	{ return mMax; }
-	inline const Vector3f&	GetCenter() const	{ if (mIsDirty) _Update(); return mCenter; }
-	inline float			GetRadius() const	{ if (mIsDirty) _Update(); return mRadius; }
-	inline bool Contains (const Vector3f& pos)	{ return (mIsValid && (pos > mMin) && (pos < mMax)); }
-	inline bool Contains (const Bounds& b)
+	void			Reset()				{ mIsValid = false; }
+	bool			IsValid()	const	{ return mIsValid; }
+	const Vector3f&	GetMin()	const	{ return mMin; }
+	const Vector3f&	GetMax()	const	{ return mMax; }
+	const Vector3f&	GetCenter() const	{ if (mIsDirty) _Update(); return mCenter; }
+	float			GetRadius() const	{ if (mIsDirty) _Update(); return mRadius; }
+	bool Contains (const Vector3f& pos)	{ return (mIsValid && (pos > mMin) && (pos < mMax)); }
+	bool Contains (const Bounds& b)		{ return Contains(b.GetMin()) && Contains(b.GetMax()); }
+
+	bool Matches (const Bounds& b)
 	{
-		return Contains(b.GetMin()) && Contains(b.GetMax());
+		if (!IsValid()) return !b.IsValid();
+		float dot0 = (mMin - b.GetMin()).Dot();
+		float dot1 = (mMax - b.GetMax()).Dot();
+		return (dot0 < 0.0001f) && (dot1 < 0.0001f);
 	}
 
-	inline void Include (const Bounds& b)
+	void Include (const Bounds& b)
 	{
 		if (b.IsValid())
 		{
@@ -71,7 +76,7 @@ public:
 		}
 	}
 
-	inline void Include (const Vector3f& center, float radius)
+	void Include (const Vector3f& center, float radius)
 	{
 		radius *= 0.577350258827f;
 		Include(center - radius);
