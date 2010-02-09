@@ -137,6 +137,7 @@ public:
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
 	bool				IsSerializable()		const	{ return mSerializable;		}
 	bool				IsDirty()				const	{ return mIsDirty;			}
+	Children&			GetChildren()					{ return mChildren;			}
 	const Children&		GetChildren()			const	{ return mChildren;			}
 	const Scripts&		GetScripts()			const	{ return mScripts;			}
 
