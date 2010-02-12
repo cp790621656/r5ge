@@ -200,6 +200,7 @@ void ModelInstance::OnSerializeTo (TreeNode& root) const
 			node.AddChild("Min", mCullBounds.GetMin());
 			node.AddChild("Max", mCullBounds.GetMax());
 		}
+		if (mShowOutline) root.AddChild("Show Outline", mShowOutline);
 	}
 }
 
@@ -250,6 +251,10 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& root)
 
 		mCullBounds.Set(vMin, vMax);
 		return true;
+	}
+	else if (tag == "Show Outline")
+	{
+		mShowOutline = value.IsBool() ? value.AsBool() : true;
 	}
 	return false;
 }
