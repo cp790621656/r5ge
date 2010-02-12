@@ -132,15 +132,29 @@ void AddMaterial (TreeNode& root)
 
 void AdjustNormal (Vector3f& vertex, Vector3f& normal, const Array<Vector3f>& vertices, const Array<Vector3f>& normals)
 {
+	uint bestMatch = 0;
+	float bestDot = 0.0f;
+
 	for (uint i = vertices.GetSize(); i > 0; )
 	{
 		const Vector3f& match = vertices[--i];
 
-		if ((vertex - match).Dot() < 0.00001f && normal.Dot(normals[i]) > 0.5f)
+		if ((vertex - match).Dot() < 0.00001f)
 		{
-			vertex = match;
-			normal = normals[i];
+			float dot = normal.Dot(normals[i]);
+
+			if (dot > bestDot)
+			{
+				bestDot = dot;
+				bestMatch = i;
+			}
 		}
+	}
+
+	if (bestDot > 0.5f)
+	{
+		vertex = vertices[bestMatch];
+		normal = normals[bestMatch];
 	}
 }
 
