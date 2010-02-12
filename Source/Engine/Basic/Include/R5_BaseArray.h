@@ -119,6 +119,19 @@ namespace Unfinished
 			return false;
 		}
 
+		// Returns the index of the specified value within the array, or '0xFFFFFFFF' if not found
+		uint Find (const Type& val, uint start = 0) const
+		{
+			if (mSize != 0)
+			{
+				for (uint i = start; i < mSize; ++i)
+				{
+					if (mArray[i] == val) return i;
+				}
+			}
+			return 0xFFFFFFFF;
+		}
+
 		// Adds a unique entry to the array, or returns an existing one
 		Type& AddUnique (const Type& val)
 		{
