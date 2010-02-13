@@ -157,16 +157,16 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 	}
 	else if (ignoreX)
 	{
-		if (IsOnXBorder(v0, min, max))
+		if (Float::Abs(v1.x - v0.x) < 0.001f)
 		{
 			// v1 and v0 both lie on the edge. Replace v2 with an X-axis vector
 			v21.Set(1.0f, 0.0f, 0.0f);
 			Vector3f newNormal (Cross(v01, v21));
 			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
 		}
-		else if (IsOnXBorder(v2, min, max))
+		else if (Float::Abs(v1.x - v2.x) < 0.001f)
 		{
-			// v1 and v2 lie on the edge
+			// v1 and v2 lie on the same edge
 			v01.Set(1.0f, 0.0f, 0.0f);
 			Vector3f newNormal (Cross(v01, v21));
 			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
@@ -175,16 +175,16 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 	}
 	else if (ignoreY)
 	{
-		if (IsOnYBorder(v0, min, max))
+		if (Float::Abs(v1.y - v0.y) < 0.001f)
 		{
 			// v1 and v0 both lie on the edge. Replace v2 with a Y-axis vector
 			v21.Set(0.0f, 1.0f, 0.0f);
 			Vector3f newNormal (Cross(v21, v01));
 			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
 		}
-		else if (IsOnYBorder(v2, min, max))
+		else if (Float::Abs(v1.y - v2.y) < 0.001f)
 		{
-			// v1 and v2 lie on the edge
+			// v1 and v2 lie on the same edge
 			v01.Set(0.0f, 1.0f, 0.0f);
 			Vector3f newNormal (Cross(v21, v01));
 			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
