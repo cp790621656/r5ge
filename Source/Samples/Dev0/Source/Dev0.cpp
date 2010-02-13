@@ -1,85 +1,12 @@
+//============================================================================================================
+//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//											www.nextrevision.com
+//============================================================================================================
+// Dev0 is a temporary testing application. Its source code and purpose change frequently.
+//============================================================================================================
+
 #include "../../../Engine/Serialization/Include/_All.h"
 using namespace R5;
-
-//============================================================================================================
-// Certain points are used as "edge points", and their normals need to be adjusted to identical values
-// in order to eliminate any and all visible seams.
-//============================================================================================================
-
-void FillAdjustmentArrays (const char* filename, Array<Vector3f>& vertices, Array<Vector3f>& normals)
-{
-	TreeNode root;
-	
-	if (!root.Load(filename))
-	{
-		printf("Adjustment file not found (%s)\n", filename);
-	}
-	else
-	{
-		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
-		{
-			const TreeNode& node = root.mChildren[i];
-
-			if (node.mValue.IsVector3fArray())
-			{
-				if		(node.mTag == "Vertices")	vertices	= node.mValue.AsVector3fArray();
-				else if (node.mTag == "Normals")	normals		= node.mValue.AsVector3fArray();
-			}
-		}
-
-		if (vertices.IsValid() && vertices.GetSize() == normals.GetSize())
-		{
-			// Normalize all normals
-			for (uint i = normals.GetSize(); i > 0; ) normals[--i].Normalize();
-
-			// We should now run through all vertices in this group
-			for (uint i = vertices.GetSize(); i > 0; )
-			{
-				Vector3f vertex (vertices[--i]);
-				Vector3f normal (normals[i]);
-
-				for (uint c = 0; c < 2; ++c)
-				{
-					// We want to take the specified vertex and add its
-					// 90, 180, and 270 degree rotated versions
-					for (uint b = 0; b < 3; ++b)
-					{
-						// Rotate the vertex 90 degrees
-						vertex.Set(-vertex.y, vertex.x, vertex.z);
-						normal.Set(-normal.y, normal.x, normal.z);
-
-						// If this vertex doesn't exist yet, add it
-						if (!vertices.Contains(vertex))
-						{
-							vertices.Expand() = vertex;
-							normals.Expand()  = normal;
-						}
-					}
-
-					// We now want to flip the X, mirroring this coordinate and repeat the process
-					vertex	 = vertices[i];
-					normal	 = normals[i];
-					vertex.x = -vertex.x;
-					normal.x = -normal.x;
-
-					// Don't forget the current vertex
-					if (!vertices.Contains(vertex))
-					{
-						vertices.Expand() = vertex;
-						normals.Expand()  = normal;
-					}
-				}
-			}
-			return;
-		}
-		else
-		{
-			printf("Error: Invalid or mis-matched vertex/normal set in '%s'!\n", filename);
-		}
-	}
-	vertices.Clear();
-	normals.Clear();
-}
 
 //============================================================================================================
 // Note to self: Reading filenames and directories:
@@ -107,6 +34,8 @@ const TreeNode* FindNode (const TreeNode& root, const String& tag)
 }
 
 //============================================================================================================
+// Adds the material section to the TreeNode
+//============================================================================================================
 
 void AddMaterial (TreeNode& root)
 {
@@ -127,43 +56,29 @@ void AddMaterial (TreeNode& root)
 }
 
 //============================================================================================================
-// Adjust the specified vertex' normal, if the vertex is present within the specified list
+// Adjust the specified vertex' normal if it lies on the edge of the bounds
 //============================================================================================================
 
-void AdjustNormal (Vector3f& vertex, Vector3f& normal, const Array<Vector3f>& vertices, const Array<Vector3f>& normals)
+Vector3f AdjustNormal (const Vector3f& min, const Vector3f& max, const Vector3f& vertex, Vector3f normal)
 {
-	uint bestMatch = 0;
-	float bestDot = 0.0f;
-
-	for (uint i = vertices.GetSize(); i > 0; )
-	{
-		const Vector3f& match = vertices[--i];
-
-		if ((vertex - match).Dot() < 0.00001f)
-		{
-			float dot = normal.Dot(normals[i]);
-
-			if (dot > bestDot)
-			{
-				bestDot = dot;
-				bestMatch = i;
-			}
-		}
-	}
-
-	if (bestDot > 0.5f)
-	{
-		vertex = vertices[bestMatch];
-		normal = normals[bestMatch];
-	}
+	float mag = normal.Magnitude();
+	if (Float::Abs(vertex.x - min.x) < 0.0001f || Float::Abs(vertex.x - max.x) < 0.0001f) normal.x = 0.0f;
+	if (Float::Abs(vertex.y - min.y) < 0.0001f || Float::Abs(vertex.y - max.y) < 0.0001f) normal.y = 0.0f;
+	normal.Normalize();
+	return normal * mag;
 }
 
 //============================================================================================================
 // Add a new unique vertex to the lists, provided it's not already present
 //============================================================================================================
 
-void AddUnique (Array<Vector3f>& vertices, Array<Vector3f>& normals, Array<Color4ub>& colors, Array<ushort>& indices,
-				const Vector3f& vertex, const Vector3f& normal, const Color4ub& color)
+void AddUnique (Array<Vector3f>&	vertices,
+				Array<Vector3f>&	normals,
+				Array<Color4ub>&	colors,
+				Array<ushort>&		indices,
+				const Vector3f&		vertex,
+				const Vector3f&		normal,
+				const Color4ub&		color)
 {
 	uint index = 0;
 
@@ -197,18 +112,103 @@ void AddUnique (Array<Vector3f>& vertices, Array<Vector3f>& normals, Array<Color
 }
 
 //============================================================================================================
+// Helper function that returns a 'true' if the vertex lies too close to the X boundary
+//============================================================================================================
+
+inline bool IsOnXBorder (const Vector3f& v, const Vector3f& min, const Vector3f& max)
+{
+	return (Float::Abs(v.x - min.x) < 0.001f) || (Float::Abs(v.x - max.x) < 0.001f);
+}
+
+//============================================================================================================
+// Helper function that returns a 'true' if the vertex lies too close to the Y boundary
+//============================================================================================================
+
+inline bool IsOnYBorder (const Vector3f& v, const Vector3f& min, const Vector3f& max)
+{
+	return (Float::Abs(v.y - min.y) < 0.001f) || (Float::Abs(v.y - max.y) < 0.001f);
+}
+
+//============================================================================================================
+// In order to eliminate all visible seams, the normals need to be aligned on the edges of the bounds.
+//============================================================================================================
+
+Vector3f GetAdjustedNormal (const Vector3f& v0,
+							const Vector3f& v1,
+							const Vector3f& v2,
+							const Vector3f& min,
+							const Vector3f& max)
+{
+	Vector3f v21 (v2 - v1);
+	Vector3f v01 (v0 - v1);
+
+	// Default normal
+	Vector3f normal (Cross(v01, v21));
+
+	// Check to see if the vertex pies on the edge of the bounding box.
+	// If it does, we should ignore the axis the boundary of which the vertex got too close to.
+	bool ignoreX = IsOnXBorder(v1, min, max);
+	bool ignoreY = IsOnYBorder(v1, min, max);
+
+	if (ignoreX && ignoreY)
+	{
+		// If both X and Y lie on the edge, the normal should be pointing straight up
+		normal.Set(0.0f, 0.0f, normal.Magnitude());
+	}
+	else if (ignoreX)
+	{
+		if (IsOnXBorder(v0, min, max))
+		{
+			// v1 and v0 both lie on the edge. Replace v2 with an X-axis vector
+			v21.Set(1.0f, 0.0f, 0.0f);
+			Vector3f newNormal (Cross(v01, v21));
+			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+		}
+		else if (IsOnXBorder(v2, min, max))
+		{
+			// v1 and v2 lie on the edge
+			v01.Set(1.0f, 0.0f, 0.0f);
+			Vector3f newNormal (Cross(v01, v21));
+			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+		}
+		else return Vector3f();
+	}
+	else if (ignoreY)
+	{
+		if (IsOnYBorder(v0, min, max))
+		{
+			// v1 and v0 both lie on the edge. Replace v2 with a Y-axis vector
+			v21.Set(0.0f, 1.0f, 0.0f);
+			Vector3f newNormal (Cross(v21, v01));
+			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+		}
+		else if (IsOnYBorder(v2, min, max))
+		{
+			// v1 and v2 lie on the edge
+			v01.Set(0.0f, 1.0f, 0.0f);
+			Vector3f newNormal (Cross(v21, v01));
+			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+		}
+		else return Vector3f();
+	}
+	// Taking the angle into account ensures that the normals come out equal even if one
+	// side has 2 triangles connected to this vertex while the other one has 50.
+	return normal * GetAngle(v21, v01);
+}
+
+//============================================================================================================
 // Save the specified TreeNode after parsing and processing its information
 //============================================================================================================
 
-void Save (const TreeNode& node, const String& name, uint pieces, const Array<Vector3f>& av, const Array<Vector3f>& an)
+void Save (TreeNode& node, const String& name, uint pieces)
 {
-	const TreeNode* vNode = FindNode(node, "Vertices");
+	TreeNode*		vNode = (TreeNode*)FindNode(node, "Vertices");
 	const TreeNode* iNode = FindNode(node, "Triangles");
 	const TreeNode* tNode = FindNode(node, "TexCoords 0");
 
 	if (vNode == 0 || iNode == 0 || tNode == 0 || pieces == 0) return;
 
-	const Array<Vector3f>&	vertices	= vNode->mValue.AsVector3fArray();
+	Array<Vector3f>&		vertices	= vNode->mValue.ToVector3fArray();
 	const Array<Vector2f>&	texCoords	= tNode->mValue.AsVector2fArray();
 	const Array<ushort>&	indices		= iNode->mValue.AsUShortArray();
 
@@ -221,15 +221,33 @@ void Save (const TreeNode& node, const String& name, uint pieces, const Array<Ve
 	for (uint i = vertices.GetSize(); i > 0; ) bounds.Include(vertices[--i]);
 
 	// Calculate the size of each piece
-	Vector3f size (bounds.GetMax() - bounds.GetMin());
-	size /= (float)pieces;
-	float offset = 0.0f;
+	Vector3f min (bounds.GetMin());
+	Vector3f max (bounds.GetMax());
+	Vector3f size (max - min);
 
+	// For horizontal offset, we want to the piece's center to be the origin point
+	Vector3f offset (min + size * 0.5f);
+
+	// For the vertical offset, we always want our piece to begin at 0
+	offset.z = min.z;
+
+	// Run through all vertices and make them centered at the origin
+	if (Float::Abs(offset.x) + Float::Abs(offset.y) + Float::Abs(offset.z) > 0.0001f)
+	{
+		for (uint i = vertices.GetSize(); i > 0; ) vertices[--i] -= offset;
+		min -= offset;
+		max -= offset;
+	}
+
+	// The reason behind the numerical operations below is as follows:
 	// index = ((v0.z + v1.z + v2.z) / 3.0f) / size.z
 	// index * size.z = v / 3;
 	// index * size.z * 3 = v
 	// index = v / (size.z * 3)
+
+	size /= (float)pieces;
 	float heightMultiplier = 1.0f / (size.z * 3.0f);
+	offset.z = 0.0f;
 
 	// Reserve the normals
 	normals.ExpandTo(vertices.GetSize());
@@ -245,14 +263,9 @@ void Save (const TreeNode& node, const String& name, uint pieces, const Array<Ve
 		const Vector3f& v1 ( vertices[i1] );
 		const Vector3f& v2 ( vertices[i2] );
 
-		Vector3f v10 (v1 - v0);
-		Vector3f v20 (v2 - v0);
-
-		Vector3f normal (Cross(v10, v20));
-
-		normals[i0] += normal;
-		normals[i1] += normal;
-		normals[i2] += normal;
+		normals[i0] += GetAdjustedNormal(v1, v0, v2, min, max);
+		normals[i1] += GetAdjustedNormal(v2, v1, v0, min, max);
+		normals[i2] += GetAdjustedNormal(v0, v2, v1, min, max);
 
 		if (pieces > 1)
 		{
@@ -326,11 +339,10 @@ void Save (const TreeNode& node, const String& name, uint pieces, const Array<Ve
 				Vector3f normal ( normals[index] );
 				byte color = Float::ToRangeByte(texCoords[index].x);
 
-				// Adjust by offset
-				if (p > 0) vertex.z -= offset;
+				// Adjust by verticalOffset
+				if (p > 0) vertex.z -= offset.z;
 
-				// Adjust the normal and add a unique vertex
-				AdjustNormal(vertex, normal, av, an);
+				// Add this vertex if it's unique
 				AddUnique(outV, outN, outC, outI, vertex, normal, Color4ub(color, color, color, 255));
 			}
 		}
@@ -356,17 +368,19 @@ void Save (const TreeNode& node, const String& name, uint pieces, const Array<Ve
 		}
 
 		// Next piece starts where the previous one left off
-		offset += size.z;
+		offset.z += size.z;
 	}
 }
 
 //============================================================================================================
+// Process the specified TreeNode containing model information with multiple meshes
+//============================================================================================================
 
-void Process (const TreeNode& root, const Array<Vector3f>& av, const Array<Vector3f>& an)
+void Process (TreeNode& root)
 {
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
-		const TreeNode& node = root.mChildren[i];
+		TreeNode& node = root.mChildren[i];
 
 		if (node.mTag == "Mesh")
 		{
@@ -383,17 +397,19 @@ void Process (const TreeNode& root, const Array<Vector3f>& av, const Array<Vecto
 				if (temp >> count)
 				{
 					name.GetString(temp, 0, index);
-					Save(node, temp, count, av, an);
+					Save(node, temp, count);
 				}
 			}
 			else
 			{
-				Save(node, name, 1, av, an);
+				Save(node, name, 1);
 			}
 		}
 	}
 }
 
+//============================================================================================================
+// Application entry point
 //============================================================================================================
 
 int main (int argc, char* argv[])
@@ -412,9 +428,6 @@ int main (int argc, char* argv[])
 	{
 		String source;
 
-		Array<Vector3f> vertices, normals;
-		FillAdjustmentArrays("_Adjustments.txt", vertices, normals);
-
 #ifndef _DEBUG
 		for (int i = 1; i < argc; ++i)
 #endif
@@ -429,11 +442,11 @@ int main (int argc, char* argv[])
 			if (tree.Load("terrain.r5a"))
 			{
 #endif
-				const TreeNode* core = FindNode(tree, "Core");
+				TreeNode* core = (TreeNode*)FindNode(tree, "Core");
 				
 				if (core != 0)
 				{
-					Process(*core, vertices, normals);
+					Process(*core);
 #ifndef _DEBUG
 					printf("Processed '%s'\n", argv[i]);
 #endif
