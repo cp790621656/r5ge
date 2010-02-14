@@ -261,47 +261,47 @@ public:
 	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
 
 	// Finds a child object of the specified name and type
-	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
 	{
-		Lock();
+		if (threadSafe) Lock();
 		Object* obj = _FindObject(name, recursive);
-		Unlock();
+		if (threadSafe) Unlock();
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 	}
 
 	// Creates a new child of specified type and name
-	template <typename Type> Type* AddObject (const String& name)
+	template <typename Type> Type* AddObject (const String& name, bool threadSafe = true)
 	{
-		Lock();
+		if (threadSafe) Lock();
 		Object* obj = _AddObject(Type::ClassID(), name);
-		Unlock();
+		if (threadSafe) Unlock();
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 	}
 
 	// Retrieves an existing script on the object
-	template <typename Type> Type* GetScript()
+	template <typename Type> Type* GetScript(bool threadSafe = true)
 	{
-		Lock();
+		if (threadSafe) Lock();
 		Script* script = _GetScript(Type::ClassID());
-		Unlock();
+		if (threadSafe) Unlock();
 		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
 	}
 
 	// Adds a new script to the object (only one script of each type can be active on the object)
-	template <typename Type> Type* AddScript()
+	template <typename Type> Type* AddScript(bool threadSafe = true)
 	{
-		Lock();
+		if (threadSafe) Lock();
 		Script* script = _AddScript(Type::ClassID());
-		Unlock();
+		if (threadSafe) Unlock();
 		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
 	}
 
 	// Removes the specified script from the game object
-	template <typename Type> void RemoveScript()
+	template <typename Type> void RemoveScript(bool threadSafe = true)
 	{
-		Lock();
+		if (threadSafe) Lock();
 		Script* script = _GetScript(Type::ClassID());
 		if (script != 0) delete script;
-		Unlock();
+		if (threadSafe) Unlock();
 	}
 };
