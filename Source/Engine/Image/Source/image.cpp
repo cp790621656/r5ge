@@ -165,13 +165,13 @@ void Image::HeightMapToNormalMap (	const float*		buffer,
 
 		if (seamless)
 		{
-			y0w = width * Wrap(y - 1, height);
-			y2w = width * Wrap(y + 1, height);
+			y0w = width * WrapIndex(y - 1, height);
+			y2w = width * WrapIndex(y + 1, height);
 		}
 		else
 		{
-			y0w = width * Clamp(y - 1, height);
-			y2w = width * Clamp(y + 1, height);
+			y0w = width * ClampIndex(y - 1, height);
+			y2w = width * ClampIndex(y + 1, height);
 		}
 
 		for (uint x = 0; x < width; ++x)
@@ -180,13 +180,13 @@ void Image::HeightMapToNormalMap (	const float*		buffer,
 
 			if (seamless)
 			{
-				x0 = Wrap(x - 1, width);
-				x2 = Wrap(x + 1, width);
+				x0 = WrapIndex(x - 1, width);
+				x2 = WrapIndex(x + 1, width);
 			}
 			else
 			{
-				x0 = Clamp(x - 1, width);
-				x2 = Clamp(x + 1, width);
+				x0 = ClampIndex(x - 1, width);
+				x2 = ClampIndex(x + 1, width);
 			}
 
 			// 0 1 2

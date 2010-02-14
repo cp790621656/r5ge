@@ -260,10 +260,10 @@ Real BilinearTile (const Real* buffer, uint width, uint height, float x, float y
 	float invX = 1.0f - x;
 	float invY = 1.0f - y;
 
-	uint x0  = Wrap( ix,	 width );
-	uint x1  = Wrap( ix + 1, width );
-	uint y0w = Wrap( iy,	 height ) * width;
-	uint y1w = Wrap( iy + 1, height ) * width;
+	uint x0  = WrapIndex( ix,	 width );
+	uint x1  = WrapIndex( ix + 1, width );
+	uint y0w = WrapIndex( iy,	 height ) * width;
+	uint y1w = WrapIndex( iy + 1, height ) * width;
 	
 	return	(buffer[x0 + y0w] * invX + buffer[x1 + y0w] * x) * invY +
 			(buffer[x0 + y1w] * invX + buffer[x1 + y1w] * x) * y;
@@ -291,10 +291,10 @@ Real BilinearClamp (const Real* buffer, uint width, uint height, float x, float 
 	float invX = 1.0f - x;
 	float invY = 1.0f - y;
 
-	uint x0  = Clamp( ix,	  width  );
-	uint x1  = Clamp( ix + 1, width  );
-	uint y0w = Clamp( iy,	  height ) * width;
-	uint y1w = Clamp( iy + 1, height ) * width;
+	uint x0  = ClampIndex( ix,	  width  );
+	uint x1  = ClampIndex( ix + 1, width  );
+	uint y0w = ClampIndex( iy,	  height ) * width;
+	uint y1w = ClampIndex( iy + 1, height ) * width;
 	
 	return	(buffer[x0 + y0w] * invX + buffer[x1 + y0w] * x) * invY +
 			(buffer[x0 + y1w] * invX + buffer[x1 + y1w] * x) * y;
@@ -319,14 +319,14 @@ Real BicubicTile (const Real* buffer, uint width, uint height, float x, float y)
 	int ix = Float::RoundToInt(fx);
 	int iy = Float::RoundToInt(fy);
 
-	uint x0  = Wrap( ix - 1, width  );
-	uint x1  = Wrap( ix,	 width  );
-	uint x2  = Wrap( ix + 1, width  );
-	uint x3  = Wrap( ix + 2, width  );
-	uint y0w = Wrap( iy - 1, height ) * width;
-	uint y1w = Wrap( iy,	 height ) * width;
-	uint y2w = Wrap( iy + 1, height ) * width;
-	uint y3w = Wrap( iy + 2, height ) * width;
+	uint x0  = WrapIndex( ix - 1, width  );
+	uint x1  = WrapIndex( ix,	 width  );
+	uint x2  = WrapIndex( ix + 1, width  );
+	uint x3  = WrapIndex( ix + 2, width  );
+	uint y0w = WrapIndex( iy - 1, height ) * width;
+	uint y1w = WrapIndex( iy,	 height ) * width;
+	uint y2w = WrapIndex( iy + 1, height ) * width;
+	uint y3w = WrapIndex( iy + 2, height ) * width;
 
 	Real v0 = Interpolation::Cubic(buffer[x0 + y0w], buffer[x1 + y0w], buffer[x2 + y0w], buffer[x3 + y0w], x);
 	Real v1 = Interpolation::Cubic(buffer[x0 + y1w], buffer[x1 + y1w], buffer[x2 + y1w], buffer[x3 + y1w], x);
@@ -355,14 +355,14 @@ Real BicubicClamp (const Real* buffer, uint width, uint height, float x, float y
 	int ix = Float::RoundToInt(fx);
 	int iy = Float::RoundToInt(fy);
 
-	uint x0  = Clamp( ix - 1, width  );
-	uint x1  = Clamp( ix,	  width  );
-	uint x2  = Clamp( ix + 1, width  );
-	uint x3  = Clamp( ix + 2, width  );
-	uint y0w = Clamp( iy - 1, height ) * width;
-	uint y1w = Clamp( iy,	  height ) * width;
-	uint y2w = Clamp( iy + 1, height ) * width;
-	uint y3w = Clamp( iy + 2, height ) * width;
+	uint x0  = ClampIndex( ix - 1, width  );
+	uint x1  = ClampIndex( ix,	  width  );
+	uint x2  = ClampIndex( ix + 1, width  );
+	uint x3  = ClampIndex( ix + 2, width  );
+	uint y0w = ClampIndex( iy - 1, height ) * width;
+	uint y1w = ClampIndex( iy,	  height ) * width;
+	uint y2w = ClampIndex( iy + 1, height ) * width;
+	uint y3w = ClampIndex( iy + 2, height ) * width;
 
 	Real v0 = Interpolation::Cubic(buffer[x0 + y0w], buffer[x1 + y0w], buffer[x2 + y0w], buffer[x3 + y0w], x);
 	Real v1 = Interpolation::Cubic(buffer[x0 + y1w], buffer[x1 + y1w], buffer[x2 + y1w], buffer[x3 + y1w], x);
@@ -391,14 +391,14 @@ Real HermiteTile (const Real* buffer, uint width, uint height, float x, float y)
 	int ix = Float::RoundToInt(fx);
 	int iy = Float::RoundToInt(fy);
 
-	uint x0  = Wrap( ix - 1, width  );
-	uint x1  = Wrap( ix,	 width  );
-	uint x2  = Wrap( ix + 1, width  );
-	uint x3  = Wrap( ix + 2, width  );
-	uint y0w = Wrap( iy - 1, height ) * width;
-	uint y1w = Wrap( iy,	 height ) * width;
-	uint y2w = Wrap( iy + 1, height ) * width;
-	uint y3w = Wrap( iy + 2, height ) * width;
+	uint x0  = WrapIndex( ix - 1, width  );
+	uint x1  = WrapIndex( ix,	 width  );
+	uint x2  = WrapIndex( ix + 1, width  );
+	uint x3  = WrapIndex( ix + 2, width  );
+	uint y0w = WrapIndex( iy - 1, height ) * width;
+	uint y1w = WrapIndex( iy,	 height ) * width;
+	uint y2w = WrapIndex( iy + 1, height ) * width;
+	uint y3w = WrapIndex( iy + 2, height ) * width;
 
 	Real v0 = Interpolation::Hermite(buffer[x0 + y0w], buffer[x1 + y0w], buffer[x2 + y0w], buffer[x3 + y0w], x);
 	Real v1 = Interpolation::Hermite(buffer[x0 + y1w], buffer[x1 + y1w], buffer[x2 + y1w], buffer[x3 + y1w], x);
@@ -427,14 +427,14 @@ Real HermiteClamp (const Real* buffer, uint width, uint height, float x, float y
 	int ix = Float::RoundToInt(fx);
 	int iy = Float::RoundToInt(fy);
 
-	uint x0  = Clamp( ix - 1, width  );
-	uint x1  = Clamp( ix,	  width  );
-	uint x2  = Clamp( ix + 1, width  );
-	uint x3  = Clamp( ix + 2, width  );
-	uint y0w = Clamp( iy - 1, height ) * width;
-	uint y1w = Clamp( iy,	  height ) * width;
-	uint y2w = Clamp( iy + 1, height ) * width;
-	uint y3w = Clamp( iy + 2, height ) * width;
+	uint x0  = ClampIndex( ix - 1, width  );
+	uint x1  = ClampIndex( ix,	  width  );
+	uint x2  = ClampIndex( ix + 1, width  );
+	uint x3  = ClampIndex( ix + 2, width  );
+	uint y0w = ClampIndex( iy - 1, height ) * width;
+	uint y1w = ClampIndex( iy,	  height ) * width;
+	uint y2w = ClampIndex( iy + 1, height ) * width;
+	uint y3w = ClampIndex( iy + 2, height ) * width;
 
 	Real v0 = Interpolation::Hermite(buffer[x0 + y0w], buffer[x1 + y0w], buffer[x2 + y0w], buffer[x3 + y0w], x);
 	Real v1 = Interpolation::Hermite(buffer[x0 + y1w], buffer[x1 + y1w], buffer[x2 + y1w], buffer[x3 + y1w], x);

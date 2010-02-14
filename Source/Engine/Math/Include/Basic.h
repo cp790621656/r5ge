@@ -27,10 +27,10 @@ inline bool IsPowerOfTwo(uint iVal)
 }
 
 //============================================================================================================
-// Takes an XY position and width of the array and returns the wrapped index inside the array
+// Takes an index as well as the upper bound of the array and returns a wrapped index
 //============================================================================================================
 
-inline uint Wrap(int val, int maximum)
+inline uint WrapIndex (int val, int maximum)
 {
 	while (val >= maximum)	val -= maximum;
 	while (val < 0)			val += maximum;
@@ -38,12 +38,21 @@ inline uint Wrap(int val, int maximum)
 }
 
 //============================================================================================================
-// Takes an XY position and width of the array and returns the clamped index inside the array
+// Takes an index as well as the upper bound of the array and returns a clamped index
 //============================================================================================================
 
-inline uint Clamp(int val, int maximum)
+inline uint ClampIndex (int val, int maximum)
 {
 	return (val < 0) ? 0 : (val < maximum ? val : maximum - 1);
+}
+
+//============================================================================================================
+// Generic templated clamp function
+//============================================================================================================
+
+template <typename Type> Type Clamp (Type val, Type min, Type max)
+{
+	return (val < min) ? min : (val < max ? val : max);
 }
 
 //============================================================================================================

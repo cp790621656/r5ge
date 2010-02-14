@@ -181,11 +181,11 @@ void GenerateSeamlessFractal (Random& r, float* out, uint width, uint height, fl
 
 		for (uint iy = 0; iy < splits; ++iy)
 		{
-			botY = R5::Wrap(Float::RoundToInt(strideY *  iy		- halfY ),	height);
-			minY = R5::Wrap(Float::RoundToInt(strideY *  iy				),	height);
-			midY = R5::Wrap(Float::RoundToInt(strideY *  iy		+ halfY ),	height);
-			maxY = R5::Wrap(Float::RoundToInt(strideY * (iy+1)			),	height);
-			topY = R5::Wrap(Float::RoundToInt(strideY * (iy+1)	+ halfY ),	height);
+			botY = WrapIndex(Float::RoundToInt(strideY *  iy	- halfY ),	height);
+			minY = WrapIndex(Float::RoundToInt(strideY *  iy			),	height);
+			midY = WrapIndex(Float::RoundToInt(strideY *  iy	+ halfY ),	height);
+			maxY = WrapIndex(Float::RoundToInt(strideY * (iy+1)			),	height);
+			topY = WrapIndex(Float::RoundToInt(strideY * (iy+1)	+ halfY ),	height);
 
 			botYW = botY * width;
 			minYW = minY * width;
@@ -195,11 +195,11 @@ void GenerateSeamlessFractal (Random& r, float* out, uint width, uint height, fl
 
 			for (uint ix = 0; ix < splits; ++ix)
 			{
-				botX = R5::Wrap(Float::RoundToInt(strideX *  ix		- halfX ), width);
-				minX = R5::Wrap(Float::RoundToInt(strideX *  ix				), width);
-				midX = R5::Wrap(Float::RoundToInt(strideX *  ix		+ halfX ), width);
-				maxX = R5::Wrap(Float::RoundToInt(strideX * (ix+1)			), width);
-				topX = R5::Wrap(Float::RoundToInt(strideX * (ix+1)	+ halfX ), width);
+				botX = WrapIndex(Float::RoundToInt(strideX *  ix	- halfX ), width);
+				minX = WrapIndex(Float::RoundToInt(strideX *  ix			), width);
+				midX = WrapIndex(Float::RoundToInt(strideX *  ix	+ halfX ), width);
+				maxX = WrapIndex(Float::RoundToInt(strideX * (ix+1)			), width);
+				topX = WrapIndex(Float::RoundToInt(strideX * (ix+1)	+ halfX ), width);
 
 				index	= midYW + midX;
 				left	= midYW + minX;
@@ -545,17 +545,17 @@ FILTER(GaussianBlur)
 
 				if (seamless)
 				{
-					val += 0.169811f * ( data[yw + R5::Wrap(x-1, width)] +
-										 data[yw + R5::Wrap(x+1, width)] );
-					val += 0.075472f * ( data[yw + R5::Wrap(x-2, width)] +
-										 data[yw + R5::Wrap(x+2, width)] );
+					val += 0.169811f * ( data[yw + WrapIndex(x-1, width)] +
+										 data[yw + WrapIndex(x+1, width)] );
+					val += 0.075472f * ( data[yw + WrapIndex(x-2, width)] +
+										 data[yw + WrapIndex(x+2, width)] );
 				}
 				else
 				{
-					val += 0.169811f * ( data[yw + R5::Clamp(x-1, width)] +
-										 data[yw + R5::Clamp(x+1, width)] );
-					val += 0.075472f * ( data[yw + R5::Clamp(x-2, width)] +
-										 data[yw + R5::Clamp(x+2, width)] );
+					val += 0.169811f * ( data[yw + ClampIndex(x-1, width)] +
+										 data[yw + ClampIndex(x+1, width)] );
+					val += 0.075472f * ( data[yw + ClampIndex(x-2, width)] +
+										 data[yw + ClampIndex(x+2, width)] );
 				}
 
 				aux[index] = val;
@@ -569,17 +569,17 @@ FILTER(GaussianBlur)
 
 			if (seamless)
 			{
-				y0 = R5::Wrap(y-1, height) * width;
-				y1 = R5::Wrap(y+1, height) * width;
-				y2 = R5::Wrap(y-2, height) * width;
-				y3 = R5::Wrap(y+2, height) * width;
+				y0 = WrapIndex(y-1, height) * width;
+				y1 = WrapIndex(y+1, height) * width;
+				y2 = WrapIndex(y-2, height) * width;
+				y3 = WrapIndex(y+2, height) * width;
 			}
 			else
 			{
-				y0 = R5::Clamp(y-1, height) * width;
-				y1 = R5::Clamp(y+1, height) * width;
-				y2 = R5::Clamp(y-2, height) * width;
-				y3 = R5::Clamp(y+2, height) * width;
+				y0 = ClampIndex(y-1, height) * width;
+				y1 = ClampIndex(y+1, height) * width;
+				y2 = ClampIndex(y-2, height) * width;
+				y3 = ClampIndex(y+2, height) * width;
 			}
 
 			for (uint x = 0; x < width; ++x)
@@ -643,17 +643,17 @@ FILTER(Blur)
 
 					if (seamless)
 					{
-						val += 0.169811f * ( data[yw + R5::Wrap(x-1, width)] +
-											 data[yw + R5::Wrap(x+1, width)] );
-						val += 0.075472f * ( data[yw + R5::Wrap(x-2, width)] +
-											 data[yw + R5::Wrap(x+2, width)] );
+						val += 0.169811f * ( data[yw + WrapIndex(x-1, width)] +
+											 data[yw + WrapIndex(x+1, width)] );
+						val += 0.075472f * ( data[yw + WrapIndex(x-2, width)] +
+											 data[yw + WrapIndex(x+2, width)] );
 					}
 					else
 					{
-						val += 0.169811f * ( data[yw + R5::Clamp(x-1, width)] +
-											 data[yw + R5::Clamp(x+1, width)] );
-						val += 0.075472f * ( data[yw + R5::Clamp(x-2, width)] +
-											 data[yw + R5::Clamp(x+2, width)] );
+						val += 0.169811f * ( data[yw + ClampIndex(x-1, width)] +
+											 data[yw + ClampIndex(x+1, width)] );
+						val += 0.075472f * ( data[yw + ClampIndex(x-2, width)] +
+											 data[yw + ClampIndex(x+2, width)] );
 					}
 
 					aux[index] = val * (1.0f - factor) + height * factor;
@@ -669,17 +669,17 @@ FILTER(Blur)
 
 			if (seamless)
 			{
-				y0 = R5::Wrap((int)y-1, height) * width;
-				y1 = R5::Wrap((int)y+1, height) * width;
-				y2 = R5::Wrap((int)y-2, height) * width;
-				y3 = R5::Wrap((int)y+2, height) * width;
+				y0 = WrapIndex((int)y-1, height) * width;
+				y1 = WrapIndex((int)y+1, height) * width;
+				y2 = WrapIndex((int)y-2, height) * width;
+				y3 = WrapIndex((int)y+2, height) * width;
 			}
 			else
 			{
-				y0 = R5::Clamp((int)y-1, height) * width;
-				y1 = R5::Clamp((int)y+1, height) * width;
-				y2 = R5::Clamp((int)y-2, height) * width;
-				y3 = R5::Clamp((int)y+2, height) * width;
+				y0 = ClampIndex((int)y-1, height) * width;
+				y1 = ClampIndex((int)y+1, height) * width;
+				y2 = ClampIndex((int)y-2, height) * width;
+				y3 = ClampIndex((int)y+2, height) * width;
 			}
 
 			for (uint x = 0; x < width; ++x)
@@ -873,13 +873,13 @@ FILTER(Erode)
 				{
 					if (seamless)
 					{
-						idx =	::Wrap(y + neighbor[n].y, height) * width +
-								::Wrap(x + neighbor[n].x, width);
+						idx =	WrapIndex(y + neighbor[n].y, height) * width +
+								WrapIndex(x + neighbor[n].x, width);
 					}
 					else
 					{
-						idx =	::Clamp(y + neighbor[n].y, height) * width +
-								::Clamp(x + neighbor[n].x, width);
+						idx =	ClampIndex(y + neighbor[n].y, height) * width +
+								ClampIndex(x + neighbor[n].x, width);
 					}
 
 					// Difference in height between the two pixels
