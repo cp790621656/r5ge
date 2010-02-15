@@ -130,6 +130,25 @@ inline bool IsOnYBorder (const Vector3f& v, const Vector3f& min, const Vector3f&
 }
 
 //============================================================================================================
+// Helper function that returns a 'true' if the vertex lies too close to the Z boundary
+//============================================================================================================
+
+inline bool IsOnZBorder (const Vector3f& v, const Vector3f& min, const Vector3f& max)
+{
+	return (Float::Abs(v.z - min.z) < 0.001f) || (Float::Abs(v.z - max.z) < 0.001f);
+}
+
+//============================================================================================================
+// Calculates the normal for the triangle specified by the two edges
+//============================================================================================================
+
+inline Vector3f GetAdjustedNormal (const Vector3f& normal, const Vector3f& v0, const Vector3f& v1)
+{
+	Vector3f newNormal (Cross(v0, v1));
+	return (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+}
+
+//============================================================================================================
 // In order to eliminate all visible seams, the normals need to be aligned on the edges of the bounds.
 //============================================================================================================
 
@@ -144,16 +163,51 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 
 	// Default normal
 	Vector3f normal (Cross(v01, v21));
+	float mag = normal.Magnitude();
+	normal /= mag;
 
 	// Check to see if the vertex pies on the edge of the bounding box.
 	// If it does, we should ignore the axis the boundary of which the vertex got too close to.
 	bool ignoreX = IsOnXBorder(v1, min, max);
 	bool ignoreY = IsOnYBorder(v1, min, max);
 
+	// Z-axis should only be considered if the normal is not facing up or down
+	bool ignoreZ = IsOnZBorder(v1, min, max) && Float::Abs(normal.z) < 0.5f;
+
+	// Special case: on pieces that take up 2 levels we still want to ensure that their
+	// would-be corner normals line up with single level pieces.
+	// NOTE: This implies a hard-coded assumption that a height of 1 == full level!
+
+	if (!ignoreZ && (ignoreX || ignoreY) && max.z - 1.0f > 0.001f &&
+		Float::Abs(v1.z - 1.0f) < 0.001f &&
+		Float::Abs(normal.z) < 0.5f) ignoreZ = true;
+
 	if (ignoreX && ignoreY)
 	{
-		// If both X and Y lie on the edge, the normal should be pointing straight up
-		normal.Set(0.0f, 0.0f, normal.Magnitude());
+		// If both X and Y lie on the edge, the normal should be pointing straight up or down
+		normal.Set(0.0f, 0.0f, (normal.z < 0.0f) ? -mag : mag);
+	}
+	else if (ignoreZ)
+	{
+		if (ignoreX)
+		{
+			normal.Set(0.0f, (normal.y < 0.0f) ? -mag : mag, 0.0f);
+		}
+		else if (ignoreY)
+		{
+			normal.Set((normal.x < 0.0f) ? -mag : mag, 0.0f, 0.0f);
+		}
+		else if (Float::Abs(v1.z - v0.z) < 0.001f)
+		{
+			v21.Set(0.0f, 0.0f, 1.0f);
+			normal = GetAdjustedNormal(normal, v01, v21);
+		}
+		else if (Float::Abs(v1.z - v2.z) < 0.001f)
+		{
+			v01.Set(0.0f, 0.0f, 1.0f);
+			normal = GetAdjustedNormal(normal, v01, v21);
+		}
+		else return Vector3f();
 	}
 	else if (ignoreX)
 	{
@@ -161,15 +215,13 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 		{
 			// v1 and v0 both lie on the edge. Replace v2 with an X-axis vector
 			v21.Set(1.0f, 0.0f, 0.0f);
-			Vector3f newNormal (Cross(v01, v21));
-			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+			normal = GetAdjustedNormal(normal, v01, v21);
 		}
 		else if (Float::Abs(v1.x - v2.x) < 0.001f)
 		{
 			// v1 and v2 lie on the same edge
 			v01.Set(1.0f, 0.0f, 0.0f);
-			Vector3f newNormal (Cross(v01, v21));
-			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+			normal = GetAdjustedNormal(normal, v01, v21);
 		}
 		else return Vector3f();
 	}
@@ -179,15 +231,13 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 		{
 			// v1 and v0 both lie on the edge. Replace v2 with a Y-axis vector
 			v21.Set(0.0f, 1.0f, 0.0f);
-			Vector3f newNormal (Cross(v21, v01));
-			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+			normal = GetAdjustedNormal(normal, v01, v21);
 		}
 		else if (Float::Abs(v1.y - v2.y) < 0.001f)
 		{
 			// v1 and v2 lie on the same edge
 			v01.Set(0.0f, 1.0f, 0.0f);
-			Vector3f newNormal (Cross(v21, v01));
-			normal = (newNormal.Dot(normal) > 0.0f) ? newNormal : -newNormal;
+			normal = GetAdjustedNormal(normal, v01, v21);
 		}
 		else return Vector3f();
 	}
@@ -200,21 +250,17 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 // Save the specified TreeNode after parsing and processing its information
 //============================================================================================================
 
-void Save (TreeNode& node, const String& name, uint pieces)
+void Save (TreeNode& node, const String& name, bool split)
 {
 	TreeNode*		vNode = (TreeNode*)FindNode(node, "Vertices");
 	const TreeNode* iNode = FindNode(node, "Triangles");
 	const TreeNode* tNode = FindNode(node, "TexCoords 0");
 
-	if (vNode == 0 || iNode == 0 || tNode == 0 || pieces == 0) return;
+	if (vNode == 0 || iNode == 0 || tNode == 0) return;
 
 	Array<Vector3f>&		vertices	= vNode->mValue.ToVector3fArray();
 	const Array<Vector2f>&	texCoords	= tNode->mValue.AsVector2fArray();
 	const Array<ushort>&	indices		= iNode->mValue.AsUShortArray();
-
-	// We calculate piece indices and normals
-	Array<uint>		pieceIndex;
-	Array<Vector3f>	normals;
 
 	// Calculate the bounds of this mesh
 	Bounds bounds;
@@ -239,34 +285,50 @@ void Save (TreeNode& node, const String& name, uint pieces)
 		max -= offset;
 	}
 
+	// Reset the offset
+	offset.Set(0.0f, 0.0f, 0.0f);
+
+	// By default we only want a single piece
+	uint pieces = 1;
+
+	// If we want to split the mesh, however, we should calculate how many pieces we'll need
+	if (split)
+	{
+		// The pieces are always 1 unit tall and 2 units wide, which makes it easy to calculate
+		// the number of splits we need regardless of their size.
+		pieces = Float::RoundToUInt( size.z / (Float::Max(size.x, size.y) * 0.5) );
+	}
+
 	// The reason behind the numerical operations below is as follows:
 	// index = ((v0.z + v1.z + v2.z) / 3.0f) / size.z
 	// index * size.z = v / 3;
 	// index * size.z * 3 = v
 	// index = v / (size.z * 3)
 
-	size /= (float)pieces;
+	size.z /= (float)pieces;
 	float heightMultiplier = 1.0f / (size.z * 3.0f);
-	offset.z = 0.0f;
 
-	// Reserve the normals
+	// We will now be dealing with individual pieces
+	max = min + size;
+	Array<uint>	pieceIndex;
+
+	// We'll need an array to store normals
+	Array<Vector3f>	normals;
 	normals.ExpandTo(vertices.GetSize());
 
-	// Calculate the normals
+	if (pieces > 1) pieceIndex.Reserve(indices.GetSize());
+
 	for (uint i = 0; i + 2 < indices.GetSize(); )
 	{
 		uint i0 = indices[i++];
 		uint i1 = indices[i++];
 		uint i2 = indices[i++];
 
-		const Vector3f& v0 ( vertices[i0] );
-		const Vector3f& v1 ( vertices[i1] );
-		const Vector3f& v2 ( vertices[i2] );
+		Vector3f v0 ( vertices[i0] );
+		Vector3f v1 ( vertices[i1] );
+		Vector3f v2 ( vertices[i2] );
 
-		normals[i0] += GetAdjustedNormal(v1, v0, v2, min, max);
-		normals[i1] += GetAdjustedNormal(v2, v1, v0, min, max);
-		normals[i2] += GetAdjustedNormal(v0, v2, v1, min, max);
-
+		// Determine which pieces the triangles belong to
 		if (pieces > 1)
 		{
 			// Calculate which section the piece belongs to
@@ -283,15 +345,17 @@ void Save (TreeNode& node, const String& name, uint pieces)
 			pieceIndex.Expand() = index;
 			pieceIndex.Expand() = index;
 
-			// If the height is on the threshold, the point should be added to both sides
-			if (Float::Abs(height) < 0.0001f && height > 1.0f)
-			{
-				index = Float::FloorToUInt(height + 1.0f);
-				pieceIndex.Expand() = index;
-				pieceIndex.Expand() = index;
-				pieceIndex.Expand() = index;
-			}
+			// Adjust this triangle's height
+			float verticalOffset = size.z * index;
+			v0.z -= verticalOffset;
+			v1.z -= verticalOffset;
+			v2.z -= verticalOffset;
 		}
+
+		// Calculate the normal for this triangle
+		normals[i0] += GetAdjustedNormal(v1, v0, v2, min, max);
+		normals[i1] += GetAdjustedNormal(v2, v1, v0, min, max);
+		normals[i2] += GetAdjustedNormal(v0, v2, v1, min, max);
 	}
 
 	// Normalize all normals
@@ -336,7 +400,7 @@ void Save (TreeNode& node, const String& name, uint pieces)
 			{
 				uint index = indices[i];
 				Vector3f vertex ( vertices[index] );
-				Vector3f normal ( normals[index] );
+				const Vector3f& normal ( normals[index] );
 				byte color = Float::ToRangeByte(texCoords[index].x);
 
 				// Adjust by verticalOffset
@@ -385,25 +449,8 @@ void Process (TreeNode& root)
 		if (node.mTag == "Mesh")
 		{
 			String name ( node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString() );
-
-			uint index = name.Find(" - Split");
-
-			if (index < name.GetLength())
-			{
-				String temp;
-				uint count = 0;
-				name.GetWord(temp, index + 9);
-
-				if (temp >> count)
-				{
-					name.GetString(temp, 0, index);
-					Save(node, temp, count);
-				}
-			}
-			else
-			{
-				Save(node, name, 1);
-			}
+			if (name.Contains("Ignore Me")) continue;
+			Save(node, name, name.EndsWith(" - Split"));
 		}
 	}
 }
