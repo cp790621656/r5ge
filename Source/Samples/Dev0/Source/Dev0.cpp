@@ -450,7 +450,16 @@ void Process (TreeNode& root)
 		{
 			String name ( node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString() );
 			if (name.Contains("Ignore Me")) continue;
-			Save(node, name, name.EndsWith(" - Split"));
+
+			if (name.EndsWith(" - Split"))
+			{
+				name.Erase(name.GetLength() - 8);
+				Save(node, name, true);
+			}
+			else
+			{
+				Save(node, name, false);
+			}
 		}
 	}
 }
