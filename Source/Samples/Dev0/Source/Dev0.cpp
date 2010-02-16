@@ -166,21 +166,22 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 	float mag = normal.Magnitude();
 	normal /= mag;
 
-	// Check to see if the vertex pies on the edge of the bounding box.
+	// Check to see if the vertex lies on the edge of the bounding box.
 	// If it does, we should ignore the axis the boundary of which the vertex got too close to.
 	bool ignoreX = IsOnXBorder(v1, min, max);
 	bool ignoreY = IsOnYBorder(v1, min, max);
 
 	// Z-axis should only be considered if the normal is not facing up or down
-	bool ignoreZ = IsOnZBorder(v1, min, max) && Float::Abs(normal.z) < 0.5f;
+	bool ignoreZ = IsOnZBorder(v1, min, max) && Float::Abs(normal.z) < 0.85f;
 
-	// Special case: on pieces that take up 2 levels we still want to ensure that their
+	// Special case: on pieces that take up 2 or 3 levels we still want to ensure that their
 	// would-be corner normals line up with single level pieces.
 	// NOTE: This implies a hard-coded assumption that a height of 1 == full level!
 
-	if (!ignoreZ && (ignoreX || ignoreY) && max.z - 1.0f > 0.001f &&
-		Float::Abs(v1.z - 1.0f) < 0.001f &&
-		Float::Abs(normal.z) < 0.5f) ignoreZ = true;
+	if (!ignoreZ && (ignoreX || ignoreY) &&
+		(Float::Abs(v1.z - 1.0f) < 0.001f ||
+		 Float::Abs(v1.z - 2.0f) < 0.001f) &&
+		 Float::Abs(normal.z) < 0.5f) ignoreZ = true;
 
 	if (ignoreX && ignoreY)
 	{
