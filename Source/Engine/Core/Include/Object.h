@@ -200,8 +200,11 @@ public:
 	// Mouse scrolling event notification
 	bool Scroll (const Vector2i& pos, float delta);
 
+	// Convenience function -- force-updates the object based on the parent's absolute values
+	void Update (bool threadSafe = true);
+
 	// Updates the object, calling appropriate virtual functions
-	bool Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved);
+	bool Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved, bool threadSafe = true);
 
 	// Fills the render queues and updates the visibility mask
 	void Fill (FillParams& params);

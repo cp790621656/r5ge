@@ -446,16 +446,35 @@ bool Object::Scroll (const Vector2i& pos, float delta)
 }
 
 //============================================================================================================
+// Convenience function -- force-updates the object based on the parent's absolute values
+//============================================================================================================
+
+void Object::Update (bool threadSafe)
+{
+	if (mParent != 0 && mFlags.Get(Flag::Enabled))
+	{
+		if (threadSafe) Lock();
+		{
+			Update(
+				mParent->GetAbsolutePosition(),
+				mParent->GetAbsoluteRotation(),
+				mParent->GetAbsoluteScale(), false, false);
+		}
+		if (threadSafe) Unlock();
+	}
+}
+
+//============================================================================================================
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
-bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
+bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved, bool threadSafe)
 {
 	bool retVal (false);
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		Lock();
+		if (threadSafe) Lock();
 		{
 			// If the parent has moved then we need to recalculate the absolute values
 			if (parentMoved) mIsDirty = true;
@@ -509,7 +528,7 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 
 					if (obj != 0 && obj->GetFlag(Flag::Enabled))
 					{
-						mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved);
+						mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved, threadSafe);
 					}
 				}
 			}
@@ -566,7 +585,7 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			// All absolute values have now been calculated
 			mIsDirty = false;
 		}
-		Unlock();
+		if (threadSafe) Unlock();
 	}
 	return retVal;
 }
@@ -714,12 +733,26 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			{
 				// The 'contains' check is here because scripts can self-destruct inside OnInit()
 				Script* ptr = _AddScript(value.IsString() ? value.AsString() : value.GetString());
-				if (ptr != 0 && mScripts.Contains(ptr)) ptr->SerializeFrom(node);
+
+				if (ptr != 0 && mScripts.Contains(ptr))
+				{
+					// The object should not remain locked during script serialization
+					Unlock();
+					ptr->SerializeFrom(node);
+					Lock();
+				}
 			}
 			else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
 			{
 				Object* ptr = _AddObject(tag, value.IsString() ? value.AsString() : value.GetString());
-				if (ptr != 0) ptr->SerializeFrom(node, forceUpdate);
+
+				if (ptr != 0)
+				{
+					// The object should not remain locked during child serialization
+					Unlock();
+					ptr->SerializeFrom(node, forceUpdate);
+					Lock();
+				}
 			}
 		}
 	}
