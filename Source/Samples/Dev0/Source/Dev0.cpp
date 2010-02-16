@@ -247,6 +247,24 @@ Vector3f GetAdjustedNormal (const Vector3f& v0,
 }
 
 //============================================================================================================
+// Helper function used in the Save() function below
+//============================================================================================================
+
+void Replace4 (String& s, char match, char replace)
+{
+	uint max = s.GetLength();
+	if (max > 4) max = 4;
+
+	for (uint i = 0; i < max; ++i)
+	{
+		if (s[i] == match)
+		{
+			s[i] = replace;
+		}
+	}
+}
+
+//============================================================================================================
 // Save the specified TreeNode after parsing and processing its information
 //============================================================================================================
 
@@ -366,21 +384,29 @@ void Save (TreeNode& node, const String& name, bool split)
 	{
 		String filename (name);
 
-		if (pieces > 3)
+		if (pieces > 3 || filename.GetLength() < 4)
 		{
+			filename.Clear();
+			filename << "0000 - ";
+			filename << name;
 			filename << " ";
 			filename << pieces;
 		}
-		else if (pieces == 3)
+		else
 		{
-			if		(p == 0) filename << " - Bottom";
-			else if (p == 1) filename << " - Middle";
-			else if (p == 2) filename << " - Top";
-		}
-		else if (pieces == 2)
-		{
-			if		(p == 0) filename << " - Bottom";
-			else if (p == 1) filename << " - Top";
+			if (pieces > 1)
+			{
+				if (p == 0)
+				{
+					Replace4(filename, '0', '1');
+				}
+				else if (p == pieces - 1)
+				{
+					Replace4(filename, '4', '2');
+				}
+			}
+			// Default filename is just the 4-digit identifier
+			filename.Erase(4);
 		}
 
 		// R5 model file structure
@@ -451,15 +477,20 @@ void Process (TreeNode& root)
 			String name ( node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString() );
 			if (name.Contains("Ignore Me")) continue;
 
-			if (name.EndsWith(" - Split"))
+			bool split = true;
+
+			// Piece names usually begin with 4 digits
+			for (uint b = 0; b < 4; ++b)
 			{
-				name.Erase(name.GetLength() - 8);
-				Save(node, name, true);
+				if (b < name.GetLength())
+				{
+					char ch = name[b];
+					if (ch == '0' || ch == '4') continue;
+				}
+				split = false;
+				break;
 			}
-			else
-			{
-				Save(node, name, false);
-			}
+			Save(node, name, split);
 		}
 	}
 }
