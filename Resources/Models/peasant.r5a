@@ -16,13 +16,21 @@ Root
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Skinned_D"
-				Texture 0 = "Textures/Skins/peasant.jpg"
+
+				Texture = String[]
+				{
+					"Textures/Skins/peasant.jpg"
+				}
 			}
 
 			Technique = "Opaque"
 			{
                 Shader = "Forward/Skinned_D"
-                Texture 0 = "Textures/Skins/peasant.jpg"
+
+                Texture = String[]
+				{
+					"Textures/Skins/peasant.jpg"
+				}
 			}
 		}
 	}

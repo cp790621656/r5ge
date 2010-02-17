@@ -501,8 +501,8 @@ bool Variable::SerializeFrom (ConstBytePtr& buffer, uint& size)
 								// Adjust the size by the amount of bytes that were used up
 								size -= start - bytes;
 								
-								// If the length of the array is more than 1, loading has been successful
-								if (a.GetSize() > 1) return true;
+								// If the length of the array is more than 0, loading has been successful
+								if (a.GetSize() > 0) return true;
 
 								// Otherwise something has gone wrong
 								ASSERT(false, "String array loading has failed!");
