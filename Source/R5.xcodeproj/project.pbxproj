@@ -166,6 +166,7 @@
 		14F0F8460ED60FBF0034CF84 /* Shapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8450ED60FBF0034CF84 /* Shapes.cpp */; };
 		14F0F8620ED611F00034CF84 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */; };
 		14F0F8630ED611F00034CF84 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8610ED611F00034CF84 /* PointLight.cpp */; };
+		14F68046112B8021001C7CED /* Compression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F68045112B8021001C7CED /* Compression.cpp */; };
 		14F82D2B111A897E001DDF69 /* UIStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F82D2A111A897E001DDF69 /* UIStats.cpp */; };
 		14F8E6880F89D889005431C6 /* ModelTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F8E6870F89D889005431C6 /* ModelTemplate.cpp */; };
 /* End PBXBuildFile section */
@@ -2081,6 +2082,10 @@
 		14F0F85F0ED611BD0034CF84 /* PointLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointLight.h; path = Engine/Core/Include/PointLight.h; sourceTree = "<group>"; };
 		14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DirectionalLight.cpp; path = Engine/Core/Source/DirectionalLight.cpp; sourceTree = "<group>"; };
 		14F0F8610ED611F00034CF84 /* PointLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointLight.cpp; path = Engine/Core/Source/PointLight.cpp; sourceTree = "<group>"; };
+		14F68042112B7FE6001C7CED /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zconf.h; path = Engine/Serialization/Include/zconf.h; sourceTree = "<group>"; };
+		14F68043112B7FE6001C7CED /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = Engine/Serialization/Include/zlib.h; sourceTree = "<group>"; };
+		14F68044112B800A001C7CED /* Compression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Compression.h; path = Engine/Serialization/Include/Compression.h; sourceTree = "<group>"; };
+		14F68045112B8021001C7CED /* Compression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Compression.cpp; path = Engine/Serialization/Source/Compression.cpp; sourceTree = "<group>"; };
 		14F82D23111A8938001DDF69 /* Bloom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bloom.h; path = Engine/OpenGL/Shaders/Bloom.h; sourceTree = "<group>"; };
 		14F82D24111A8938001DDF69 /* Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blur.h; path = Engine/OpenGL/Shaders/Blur.h; sourceTree = "<group>"; };
 		14F82D25111A8938001DDF69 /* Deferred.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Deferred.h; path = Engine/OpenGL/Shaders/Deferred.h; sourceTree = "<group>"; };
@@ -2426,6 +2431,7 @@
 		1412DBE210ACD21F00BBA8F4 /* Serialization */ = {
 			isa = PBXGroup;
 			children = (
+				14F68041112B7FC8001C7CED /* zlib */,
 				1412DBE410ACD23100BBA8F4 /* Include */,
 				1412DBE310ACD22B00BBA8F4 /* Source */,
 			);
@@ -2436,6 +2442,7 @@
 			isa = PBXGroup;
 			children = (
 				1412DC0610ACD36400BBA8F4 /* _All.cpp */,
+				14F68045112B8021001C7CED /* Compression.cpp */,
 				1412DC0710ACD36400BBA8F4 /* Conversion.cpp */,
 				1412DC0810ACD36400BBA8F4 /* TreeNode.cpp */,
 				1412DC0910ACD36400BBA8F4 /* Variable.cpp */,
@@ -2447,6 +2454,7 @@
 			isa = PBXGroup;
 			children = (
 				1412DC0110ACD34E00BBA8F4 /* _All.h */,
+				14F68044112B800A001C7CED /* Compression.h */,
 				1412DC0210ACD34E00BBA8F4 /* Conversion.h */,
 				1412DC0310ACD34E00BBA8F4 /* TreeNode.h */,
 				1412DC0410ACD34E00BBA8F4 /* Variable.h */,
@@ -3533,6 +3541,15 @@
 				14DFD21D0D901A2B00A81978 /* R5_Time.h */,
 			);
 			name = Include;
+			sourceTree = "<group>";
+		};
+		14F68041112B7FC8001C7CED /* zlib */ = {
+			isa = PBXGroup;
+			children = (
+				14F68042112B7FE6001C7CED /* zconf.h */,
+				14F68043112B7FE6001C7CED /* zlib.h */,
+			);
+			name = zlib;
 			sourceTree = "<group>";
 		};
 		14F82D22111A891F001DDF69 /* Shaders */ = {
@@ -4743,6 +4760,7 @@
 				1412DC0B10ACD36400BBA8F4 /* Conversion.cpp in Sources */,
 				1412DC0C10ACD36400BBA8F4 /* TreeNode.cpp in Sources */,
 				1412DC0D10ACD36400BBA8F4 /* Variable.cpp in Sources */,
+				14F68046112B8021001C7CED /* Compression.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
