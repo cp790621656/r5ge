@@ -142,17 +142,24 @@ bool GetSegment (const String& s, uint& from, uint to, String& out)
 bool TreeNode::Save (const char* filename) const
 {
 	String s(filename);
-	bool ascii = s.EndsWith(".r5a") || s.EndsWith(".txt");
-	return Save(filename, !ascii);
+	if (s.EndsWith(".r5c")) return Save(filename, SaveFlag::Compressed);
+	if (s.EndsWith(".r5a") || s.EndsWith(".txt")) return Save(filename, SaveFlag::ASCII);
+	return Save(filename, SaveFlag::Binary);
 }
 
 //============================================================================================================
 // Serialization to a file
 //============================================================================================================
 
-bool TreeNode::Save (const char* filename, bool binary) const
+bool TreeNode::Save (const char* filename, uint saveFlag) const
 {
-	if (binary)
+	if (saveFlag == SaveFlag::Compressed)
+	{
+		Memory bin, comp;
+		comp.Append("//R5C", 5);
+		return SerializeTo(bin) && Compress(bin, comp) && comp.Save(filename);
+	}
+	else if (saveFlag == SaveFlag::Binary)
 	{
 		Memory m;
 		m.Append("//R5B", 5);
@@ -208,6 +215,20 @@ bool TreeNode::Load (const byte* buffer, uint size)
 		{
 			// Serialize directly from memory
 			return SerializeFrom(buffer, size);
+		}
+		else if (type == 'C')
+		{
+			// Compressed binary format
+			Memory mem;
+
+			// Decompress the data
+			if (Decompress(buffer, size, mem))
+			{
+				// Continue processing the data as binary
+				buffer	= mem.GetBuffer();
+				size	= mem.GetSize();
+				return SerializeFrom(buffer, size);
+			}
 		}
 	}
 	return false;

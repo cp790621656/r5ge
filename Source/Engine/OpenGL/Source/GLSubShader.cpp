@@ -533,7 +533,9 @@ void GLSubShader::AppendDependenciesTo (Array<GLSubShader*>& list)
 		if (!list.Contains(sub))
 		{
 			list.Expand() = sub;
-			sub->AppendDependenciesTo(list);
+
+			// NOTE: Disabling nested includes for now (Feb 16, 2010)
+			//sub->AppendDependenciesTo(list);
 		}
 	}
 }

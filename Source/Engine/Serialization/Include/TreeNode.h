@@ -9,6 +9,16 @@
 
 struct TreeNode
 {
+	struct SaveFlag
+	{
+		enum
+		{
+			ASCII		= 0,
+			Binary		= 1,
+			Compressed	= 3,
+		};
+	};
+
 	String			mTag;
 	Variable		mValue;
 	Array<TreeNode>	mChildren;
@@ -55,7 +65,7 @@ struct TreeNode
 	bool Save (const char* filename) const;
 
 	// Saves the file, ensuring that it has a proper header
-	bool Save (const char* filename, bool binary) const;
+	bool Save (const char* filename, uint saveFlag) const;
 
 	// Loads a file, ensures that it's of proper format, then continues loading the structure from memory
 	bool Load (const char* filename);

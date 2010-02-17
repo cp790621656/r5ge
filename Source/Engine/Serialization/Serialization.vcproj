@@ -168,6 +168,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\Compression.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Conversion.cpp"
 				>
 			</File>
@@ -188,6 +192,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\Compression.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\Conversion.h"
 				>
 			</File>
@@ -201,6 +209,18 @@
 			</File>
 			<File
 				RelativePath=".\Include\VariableMacros.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="zlib"
+			>
+			<File
+				RelativePath=".\Include\zconf.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\zlib.h"
 				>
 			</File>
 		</Filter>
