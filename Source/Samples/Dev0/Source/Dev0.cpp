@@ -20,9 +20,9 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath("../../../");
 #endif
 	System::SetCurrentPath("../../../Resources/");
-	Memory c, u;
 
-	u.Load("Models/peasant.r5b");
+	Memory c, u;
+	u.Load("Models/peasant.r5a");
 
 	if (Compress(u, c))
 	{
@@ -31,13 +31,12 @@ int main (int argc, char* argv[])
 
 		if (Decompress(c, u))
 		{
-			printf("Uncompressed %u bytes up to %u bytes\n", c.GetSize(), u.GetSize());
-
-			u.Save("out.txt");
+			printf("Decompressed %u bytes up to %u bytes\n", c.GetSize(), u.GetSize());
+			u.Save("Models/peasant_out.r5a");
 		}
 		else
 		{
-			printf("Uncompression failed!\n");
+			printf("Decompression failed!\n");
 		}
 	}
 	else

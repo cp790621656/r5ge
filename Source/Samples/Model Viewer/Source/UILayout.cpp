@@ -2841,6 +2841,9 @@ void ModelViewer::_UpdateLimbData()
 			const String& name = _limbMat->GetText();
 			limb->SetMaterial( (name.IsEmpty() ? 0 : mGraphics->GetMaterial(name, false)) );
 		}
+
+		// Mark the model as having changed
+		mModel->SetDirty();
 	}
 }
 

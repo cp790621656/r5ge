@@ -101,6 +101,9 @@ protected:
 	void _Increment() { Thread::Increment(mCounter); }
 	void _Decrement() { Thread::Decrement(mCounter); }
 
+	// When the model is being updated it should also update its animations
+	virtual void _OnUpdate() { mAnimUpdated = true; Prop::_OnUpdate(); }
+
 	// Triggered when the skeleton has changed
 	virtual void _OnSkeletonChanged();
 

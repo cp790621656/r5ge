@@ -40,10 +40,10 @@ String FindModel (const String& file, const char* extension)
 }
 
 //============================================================================================================
-// Only one codec is supported out-of-the-box: R5 Ascii file format
+// Only one codec is supported out-of-the-box: R5 TreeNode file format
 //============================================================================================================
 
-bool LoadTXT (const byte*		buffer,
+bool LoadR5 (const byte*		buffer,
 			  uint				size,
 			  const String&		extension,
 			  ModelTemplate*	model,
@@ -121,36 +121,6 @@ void ModelTemplate::GetRegisteredCodecs (Array<String>& list)
 }
 
 //============================================================================================================
-// Updates the technique mask and the bounding volume
-//============================================================================================================
-
-void ModelTemplate::_Update()
-{
-	mIsDirty = false;
-	mMask = 0;
-	mBounds.Reset();
-
-	if (mLimbs.IsValid())
-	{
-		Lock();
-		{
-			for (uint i = mLimbs.GetSize(); i > 0; )
-			{
-				const Limb* limb = mLimbs[--i];
-
-				if (limb->IsValid())
-				{
-					if (limb->mMesh != 0) mBounds.Include(limb->mMesh->GetBounds());
-					else if (limb->mCloud != 0) mBounds.Include(limb->mCloud->GetBounds());
-					mMask |= limb->mMat->GetTechniqueMask();
-				}
-			}
-		}
-		Unlock();
-	}
-}
-
-//============================================================================================================
 // Constructor registers the default codecs
 //============================================================================================================
 
@@ -168,7 +138,7 @@ ModelTemplate::ModelTemplate (const String& name) :
 	if (doOnce)
 	{
 		doOnce = false;
-		RegisterCodec("TXT", &LoadTXT);
+		RegisterCodec("R5", &LoadR5);
 	}
 }
 
@@ -420,7 +390,7 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 				limb->SetName(name);
 				if (mesh != 0) limb->Set(mesh, mat);
 				else limb->Set(bm, mat);
-				mIsDirty = true;
+				SetDirty();
 			}
 		}
 		Unlock();
@@ -457,6 +427,36 @@ void ModelTemplate::_SaveLimbs (TreeNode& node, bool forceSave) const
 		}
 	}
 	Unlock();
+}
+
+//============================================================================================================
+// Updates the technique mask and the bounding volume
+//============================================================================================================
+
+void ModelTemplate::_OnUpdate()
+{
+	mIsDirty = false;
+	mMask = 0;
+	mBounds.Reset();
+
+	if (mLimbs.IsValid())
+	{
+		Lock();
+		{
+			for (uint i = mLimbs.GetSize(); i > 0; )
+			{
+				const Limb* limb = mLimbs[--i];
+
+				if (limb->IsValid())
+				{
+					if (limb->mMesh != 0) mBounds.Include(limb->mMesh->GetBounds());
+					else if (limb->mCloud != 0) mBounds.Include(limb->mCloud->GetBounds());
+					mMask |= limb->mMat->GetTechniqueMask();
+				}
+			}
+		}
+		Unlock();
+	}
 }
 
 //============================================================================================================

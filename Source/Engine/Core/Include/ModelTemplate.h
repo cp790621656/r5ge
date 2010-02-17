@@ -44,11 +44,6 @@ protected:
 	Bounds				mBounds;		// Calculated local bounding volume
 	uint				mMask;			// Calculated combined technique mask
 
-private:
-
-	// Updates the technique mask and the bounding volume
-	void _Update();
-
 public:
 
 	ModelTemplate (const String& name);
@@ -61,8 +56,8 @@ public:
 	void Unlock()	const { mLock.Unlock(); }
 
 	// These functions may need to recalculate the values if something has changed
-	const Bounds&	GetBounds()		{ if (mIsDirty) _Update(); return mBounds;		}
-	uint			GetMask()		{ if (mIsDirty) _Update(); return mMask;		}
+	const Bounds&	GetBounds()		{ if (mIsDirty) _OnUpdate(); return mBounds;	}
+	uint			GetMask()		{ if (mIsDirty) _OnUpdate(); return mMask;		}
 
 	// Standard retrieval functions
 	bool					IsValid()			const	{ return mLimbs.IsValid();	}
@@ -104,6 +99,9 @@ protected:
 	// Limb Serialization
 	bool _LoadLimb ( const TreeNode& root, bool forceUpdate );
 	void _SaveLimbs ( TreeNode& node, bool forceSave ) const;
+
+	// Updates the technique mask and the bounding volume
+	virtual void _OnUpdate();
 
 	// Triggered when the skeleton has changed
 	virtual void _OnSkeletonChanged() {}
