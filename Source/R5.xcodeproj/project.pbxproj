@@ -123,6 +123,8 @@
 		14ACB411110679D300258C54 /* Dev10.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14ACB40E110679D300258C54 /* Dev10.cpp */; };
 		14ACB412110679D300258C54 /* FireEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14ACB40F110679D300258C54 /* FireEmitter.cpp */; };
 		14ACB413110679D300258C54 /* SmokeEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14ACB410110679D300258C54 /* SmokeEmitter.cpp */; };
+		14B42523112CF9F50063BD8F /* _R5T.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B42521112CF9F50063BD8F /* _R5T.cpp */; };
+		14B42524112CF9F50063BD8F /* _TGA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B42522112CF9F50063BD8F /* _TGA.cpp */; };
 		14B467140F1B9A670085BEFD /* _CocoaClasses.mm in Sources */ = {isa = PBXBuildFile; fileRef = 14B467120F1B9A670085BEFD /* _CocoaClasses.mm */; };
 		14B467150F1B9A670085BEFD /* _CocoaWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 14B467130F1B9A670085BEFD /* _CocoaWindow.mm */; };
 		14B467330F1B9C580085BEFD /* Color4ub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B467320F1B9C580085BEFD /* Color4ub.cpp */; };
@@ -1236,6 +1238,13 @@
 			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
 			remoteInfo = Render;
 		};
+		14B42536112CFA910063BD8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteInfo = Serialization;
+		};
 		14B48F1110FAFDE100C22373 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1937,6 +1946,8 @@
 		14ACB40E110679D300258C54 /* Dev10.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dev10.cpp; sourceTree = "<group>"; };
 		14ACB40F110679D300258C54 /* FireEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FireEmitter.cpp; sourceTree = "<group>"; };
 		14ACB410110679D300258C54 /* SmokeEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SmokeEmitter.cpp; sourceTree = "<group>"; };
+		14B42521112CF9F50063BD8F /* _R5T.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = _R5T.cpp; path = Engine/Image/Source/_R5T.cpp; sourceTree = "<group>"; };
+		14B42522112CF9F50063BD8F /* _TGA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = _TGA.cpp; path = Engine/Image/Source/_TGA.cpp; sourceTree = "<group>"; };
 		14B4670C0F1B9A4C0085BEFD /* _All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _All.h; path = Engine/SysWindow/Include/_All.h; sourceTree = "<group>"; };
 		14B4670D0F1B9A4C0085BEFD /* _CocoaClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _CocoaClasses.h; path = Engine/SysWindow/Include/_CocoaClasses.h; sourceTree = "<group>"; };
 		14B4670E0F1B9A4C0085BEFD /* _CocoaWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _CocoaWindow.h; path = Engine/SysWindow/Include/_CocoaWindow.h; sourceTree = "<group>"; };
@@ -2494,6 +2505,8 @@
 				1429C9980E2C091700BD3B1A /* _HDR.cpp */,
 				1429C9990E2C091700BD3B1A /* _JPG.cpp */,
 				1429C99A0E2C091700BD3B1A /* _PNG.cpp */,
+				14B42521112CF9F50063BD8F /* _R5T.cpp */,
+				14B42522112CF9F50063BD8F /* _TGA.cpp */,
 				1429C99B0E2C091700BD3B1A /* Image.cpp */,
 			);
 			name = Source;
@@ -4424,6 +4437,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				14B42537112CFA910063BD8F /* PBXTargetDependency */,
 				14753D180D9C2BCE000D05A5 /* PBXTargetDependency */,
 			);
 			name = Image;
@@ -5083,6 +5097,8 @@
 				1429C99D0E2C091700BD3B1A /* _JPG.cpp in Sources */,
 				1429C99E0E2C091700BD3B1A /* _PNG.cpp in Sources */,
 				1429C99F0E2C091700BD3B1A /* Image.cpp in Sources */,
+				14B42523112CF9F50063BD8F /* _R5T.cpp in Sources */,
+				14B42524112CF9F50063BD8F /* _TGA.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5892,6 +5908,11 @@
 			isa = PBXTargetDependency;
 			target = 1434863C10B4E9A600FD9B41 /* Render */;
 			targetProxy = 14ACB415110679ED00258C54 /* PBXContainerItemProxy */;
+		};
+		14B42537112CFA910063BD8F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			targetProxy = 14B42536112CFA910063BD8F /* PBXContainerItemProxy */;
 		};
 		14B48F1010FAFDE100C22373 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
