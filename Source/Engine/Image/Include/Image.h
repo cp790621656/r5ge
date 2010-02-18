@@ -45,11 +45,14 @@ protected:
 
 public:
 
-	// Codec functions accept the input data buffer, size of the buffer, and the output image buffer
+	// Read codec functions accept the input data buffer, size of the buffer, and the output image buffer
 	typedef FastDelegate<bool (const byte* in, uint inSize, const String& extension, Image::Buffer& out)> ReadDelegate;
 
+	// Write codec functions accept the memory buffer to write to as well as the image data to encode
+	typedef FastDelegate<bool (Memory& out, const byte* buffer, uint width, uint height, uint format)> WriteDelegate;
+
 	// STATIC: Registeres a new codec
-	static void RegisterCodec (const String& name, const ReadDelegate& fnct);
+	static void RegisterCodec (const String& name, const ReadDelegate& read, const WriteDelegate& write);
 
 	// STATIC: Retrieves the names of all registered codecs
 	static void GetRegisteredCodecs (Array<String>& out);
@@ -61,6 +64,13 @@ public:
 										Array<Color4ub>&	c,
 										bool				seamless,
 										const Vector3f&		scale = Vector3f(1.0f, 1.0f, 0.1f) );
+
+	// STATIC: Saves the specified texture buffer into the specified memory buffer as if saving to a file
+	static bool Save (Memory& out, const String& extension, const byte* buff, uint width, uint height, uint format);
+
+	// STATIC: Saves the specified texture buffer into the specified file
+	static bool Save (const String& file, const byte* buff, uint width, uint height, uint format);
+
 public:
 
 	~Image() { Release(); }
@@ -84,4 +94,7 @@ public:
 
 	// Decode a previously loaded buffer
 	bool Load (const void* buffer, uint size);
+
+	// Saves the texture into the specified file
+	bool Save (const String& file) const { return Save(file, (const byte*)GetBuffer(), GetWidth(), GetHeight(), GetFormat()); }
 };

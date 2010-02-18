@@ -11,21 +11,33 @@ namespace Codec
 {
 struct RegisteredCodec
 {
-	String				mName;		// Name of the registered codec
-	Image::ReadDelegate	mDelegate;	// Delegate function that decodes the buffer using this codec
+	String					mName;	// Name of the registered codec
+	Image::ReadDelegate		mRead;	// Delegate function that decodes the buffer using this codec
+	Image::WriteDelegate	mWrite;	// Delegate function that can encode the image data using this codec
 };
 
 Array<RegisteredCodec> g_allCodecs;
 
 //============================================================================================================
+// While read functionality is always supported, write is optional
+//============================================================================================================
+
+bool Unsupported (Memory& out, const byte* buffer, uint width, uint height, uint format)
+{
+	WARNING("Write functionality has not been implemented for this file format");
+	return false;
+}
+
+//============================================================================================================
 // Registers a codec (used in the _RegisterAll() function below)
 //============================================================================================================
 
-inline void _Register (const String& name, const Image::ReadDelegate& fnct)
+inline void _Register (const String& name, const Image::ReadDelegate& read, const Image::WriteDelegate& write)
 {
 	RegisteredCodec& codec = g_allCodecs.Expand();
-	codec.mName = name;
-	codec.mDelegate = fnct;
+	codec.mName		= name;
+	codec.mRead		= read;
+	codec.mWrite	= write;
 }
 
 //============================================================================================================
@@ -39,9 +51,11 @@ void _RegisterAll()
 	if (doOnce)
 	{
 		doOnce = false;
-		_Register("JPG", &JPG);
-		_Register("PNG", &PNG);
-		_Register("HDR", &HDR);
+		_Register("JPG", &ReadJPG, &Unsupported);
+		_Register("PNG", &ReadPNG, &Unsupported);
+		_Register("HDR", &ReadHDR, &Unsupported);
+		_Register("TGA", &ReadTGA, &WriteTGA);
+		_Register("R5T", &ReadR5T, &WriteR5T);
 	}
 }
 }; // namespace Codec
@@ -51,38 +65,10 @@ using namespace R5;
 using namespace Codec;
 
 //============================================================================================================
-// Retrieves a registered codec callback
-//============================================================================================================
-
-Image::ReadDelegate _GetCodec (const String& name)
-{
-	Image::ReadDelegate fnct;
-
-	g_allCodecs.Lock();
-	{
-		_RegisterAll();
-
-		for (uint b = 0; b < g_allCodecs.GetSize(); ++b)
-		{
-			RegisteredCodec& rf = g_allCodecs[b];
-
-			// Match the names
-			if (rf.mName == name)
-			{
-				fnct = rf.mDelegate;
-				break;
-			}
-		}
-	}
-	g_allCodecs.Unlock();
-	return fnct;
-}
-
-//============================================================================================================
 // STATIC: Registers a new filter
 //============================================================================================================
 
-void Image::RegisterCodec (const String& name, const Image::ReadDelegate& fnct)
+void Image::RegisterCodec (const String& name, const Image::ReadDelegate& read, const Image::WriteDelegate& write)
 {
 	g_allCodecs.Lock();
 	{
@@ -92,14 +78,16 @@ void Image::RegisterCodec (const String& name, const Image::ReadDelegate& fnct)
 		{
 			if (g_allCodecs[i].mName == name)
 			{
-				g_allCodecs[i].mDelegate = fnct;
+				g_allCodecs[i].mRead  = read;
+				g_allCodecs[i].mWrite = write;
 				g_allCodecs.Unlock();
 				return;
 			}
 		}
 		RegisteredCodec& codec = g_allCodecs.Expand();
-		codec.mName = name;
-		codec.mDelegate = fnct;
+		codec.mName		= name;
+		codec.mRead		= read;
+		codec.mWrite	= write;
 	}
 	g_allCodecs.Unlock();
 }
@@ -120,7 +108,7 @@ void Image::GetRegisteredCodecs (Array<String>& list)
 		{
 			RegisteredCodec& rf = g_allCodecs[i];
 
-			if (rf.mName.IsValid() && rf.mDelegate != 0)
+			if (rf.mName.IsValid() && rf.mRead != 0)
 			{
 				list.Expand() = rf.mName;
 			}
@@ -224,6 +212,49 @@ void Image::HeightMapToNormalMap (	const float*		buffer,
 			clr.a = Float::ToRangeByte(myHeight);
 		}
 	}
+}
+
+//============================================================================================================
+// STATIC: Saves the specified texture buffer into the specified file
+//============================================================================================================
+
+bool Image::Save (Memory& out, const String& extension, const byte* buffer, uint width, uint height, uint format)
+{
+	// Sanity check
+	if (buffer != 0 && (width * height) > 0)
+	{
+		g_allCodecs.Lock();
+		{
+			for (uint i = 0; i < g_allCodecs.GetSize(); ++i)
+			{
+				RegisteredCodec& rf = g_allCodecs[i];
+
+				// Match codecs by extension
+				if (rf.mName == extension)
+				{
+					// We want to execute the codec while the arrays remain unlocked
+					WriteDelegate write = rf.mWrite;
+					g_allCodecs.Unlock();
+
+					// Execute the codec
+					return (write != 0) && write(out, buffer, width, height, format);
+				}
+			}
+		}
+		g_allCodecs.Unlock();
+	}
+	return false;
+}
+
+//============================================================================================================
+// STATIC: Saves the specified texture buffer into the specified file
+//============================================================================================================
+
+bool Image::Save (const String& file, const byte* buff, uint width, uint height, uint format)
+{
+	Memory out;
+	String extension (System::GetExtensionFromFilename(file));
+	return Save(out, extension, buff, width, height, format) && out.Save(file);
 }
 
 //============================================================================================================
@@ -335,7 +366,7 @@ bool Image::Load (const void* buffer, uint size)
 			RegisteredCodec& rf = g_allCodecs[i];
 
 			// If the callback returns 'true', it means the image has loaded successfully
-			if (rf.mDelegate != 0 && rf.mDelegate(ptr, size, extension, mBuffer))
+			if (rf.mRead != 0 && rf.mRead(ptr, size, extension, mBuffer))
 			{
 				g_allCodecs.Unlock();
 #ifdef _DEBUG

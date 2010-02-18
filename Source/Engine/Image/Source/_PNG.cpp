@@ -20,7 +20,7 @@ namespace Codec
 struct IOBuffer
 {
 	const byte* mBuffer;
-	uint		 mSize;
+	uint mSize;
 };
 
 //========================================================================================================
@@ -62,7 +62,7 @@ static void OnRead (png_structp pngStruct, png_bytep data, png_size_t length)
 // Portable Network Graphics format codec (.png)
 //========================================================================================================
 
-R5_IMAGE_CODEC(PNG)
+R5_READ_IMAGE_CODEC(PNG)
 {
 	// Ensure that the header is what's expected
 	uint header = *(const uint*)buff;

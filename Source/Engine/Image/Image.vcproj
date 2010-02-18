@@ -165,6 +165,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\_R5T.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\_TGA.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Image.cpp"
 				>
 			</File>

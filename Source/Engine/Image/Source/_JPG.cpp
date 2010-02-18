@@ -87,7 +87,7 @@ static void OnMsg (jpeg_common_struct* info)
 // Jpeg format codec (.jpg)
 //========================================================================================================
 
-R5_IMAGE_CODEC(JPG)
+R5_READ_IMAGE_CODEC(JPG)
 {
 	// Ensure that the header is what's expected
 	bool result = false;

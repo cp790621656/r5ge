@@ -10,7 +10,7 @@ struct RegisteredCodec
 	typedef ModelTemplate::CodecDelegate Delegate;
 
 	String		mName;		// Name of the registered codec specified on Prop::RegisterCodec
-	Delegate	mDelegate;	// Delegate function that gets triggered
+	Delegate	mRead;	// Delegate function that gets triggered
 };
 
 Array<RegisteredCodec> g_codecs;
@@ -85,14 +85,14 @@ void ModelTemplate::RegisterCodec (const String& name, const CodecDelegate& fnct
 		{
 			if (g_codecs[i].mName == name)
 			{
-				g_codecs[i].mDelegate = fnct;
+				g_codecs[i].mRead = fnct;
 				g_codecs.Unlock();
 				return;
 			}
 		}
 		RegisteredCodec& codec = g_codecs.Expand();
 		codec.mName = name;
-		codec.mDelegate = fnct;
+		codec.mRead = fnct;
 	}
 	g_codecs.Unlock();
 }
@@ -111,7 +111,7 @@ void ModelTemplate::GetRegisteredCodecs (Array<String>& list)
 		{
 			RegisteredCodec& codec = g_codecs[i];
 			
-			if (codec.mName.IsValid() && codec.mDelegate != 0)
+			if (codec.mName.IsValid() && codec.mRead != 0)
 			{
 				list.Expand() = codec.mName;
 			}
@@ -504,7 +504,7 @@ bool ModelTemplate::Load (const byte* buffer, uint size, const String& extension
 {
 	for (uint i = 0; i < g_codecs.GetSize(); ++i)
 	{
-		CodecDelegate& callback (g_codecs[i].mDelegate);
+		CodecDelegate& callback (g_codecs[i].mRead);
 			
 		if (callback != 0 && callback(buffer, size, extension, this, forceUpdate))
 		{

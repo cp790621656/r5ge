@@ -106,7 +106,7 @@ public:
 	void			StripTags();
 
 	uint	Find		( const String& phrase, bool caseSensitive = true, uint from = 0, uint to = 0xFFFFFFFF, bool reverse = false ) const;
-	uint	Replace		( const String& match, const String& replacement, bool caseSensitive = true );
+	uint	Replace		( const String& match, const String& replacement, bool caseSensitive = false );
 
 	void	Reserve		( uint newSize );
 	char*	Resize		( uint newSize );

@@ -5,7 +5,7 @@
 // Dev0 is a temporary testing application. Its source code and purpose change frequently.
 //============================================================================================================
 
-#include "../../../Engine/Serialization/Include/_All.h"
+#include "../../../Engine/Image/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -19,30 +19,51 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath(path.GetBuffer());
 	System::SetCurrentPath("../../../");
 #endif
-	System::SetCurrentPath("../../../Resources/");
 
-	Memory c, u;
-	u.Load("Models/peasant.r5a");
+	bool error = false;
 
-	if (Compress(u, c))
+	if (argc > 1)
 	{
-		printf("Compressed %u bytes down to %u bytes\n", u.GetSize(), c.GetSize());		
-		u.Clear();
+		Image img;
 
-		if (Decompress(c, u))
+		for (int i = 1; i < argc; ++i)
 		{
-			printf("Decompressed %u bytes up to %u bytes\n", c.GetSize(), u.GetSize());
-			u.Save("Models/peasant_out.r5a");
-		}
-		else
-		{
-			printf("Decompression failed!\n");
+			if (img.Load(argv[i]))
+			{
+				String name (argv[i]);
+				String extension (System::GetExtensionFromFilename(name));
+
+				if (extension == "r5t")
+				{
+					name.Replace(extension, "tga");
+				}
+				else
+				{
+					name.Replace(extension, "r5t");
+				}
+
+				if (img.Save(name))
+				{
+					printf("Saved '%s'\n", name.GetBuffer());
+				}
+			}
+			else
+			{
+				error = true;
+				printf("Unable to load '%s'\n", argv[i]);
+			}
 		}
 	}
 	else
 	{
-		printf("Compression failed!\n");
+		error = true;
+		printf("Usage: Drag an image file you want to convert onto this executable\n");
 	}
-	getchar();
+
+	if (error)
+	{
+		printf("Press any key to exit...\n");
+		getchar();
+	}
 	return 0;
 }

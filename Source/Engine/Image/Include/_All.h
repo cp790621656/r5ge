@@ -8,6 +8,7 @@
 #ifndef _R5_IMAGE_INCLUDE_H
 #define _R5_IMAGE_INCLUDE_H
 
+#include "../../Serialization/Include/_All.h"
 #include "../../Interface/Include/_All.h"
 
 namespace R5
