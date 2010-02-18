@@ -103,7 +103,11 @@ public: //======================================================================
 	virtual ulong	GetLastUsedTime()	const=0;	// Returns the last timestamp when GetTextureID() was called
 
 	// Returns the valid path to the texture's source
-	virtual const String&	GetSource (uint index) const=0;
+	virtual const String& GetSource (uint index) const=0;
+
+	// Saves the image's color data into the specified memory buffer
+	// NOTE: Must be called from the graphics thread!
+	virtual bool GetBuffer (Memory& mem)=0;
 
 	// Wrapping mode and filtering
 	virtual void SetWrapMode  (uint wrapMode )=0;

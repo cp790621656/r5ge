@@ -12,6 +12,7 @@ class GLTexture : public ITexture
 protected:
 
 	String		mName;				// Every texture needs a name
+	String		mFilename;			// When the texture gets the Save request, this value is updated
 	IGraphics*	mGraphics;			// GLGraphics manager that has created this texture
 	Image		mTex[6];			// Up to 6 raw textures
 	bool		mCheckForSource;	// Whether the texture should be checked to see if it has a valid source
@@ -81,7 +82,11 @@ public:
 	virtual ulong	GetLastUsedTime()	const	{ return mTimestamp;	}
 
 	// Returns the valid path to the texture's source
-	virtual const String&	GetSource (uint index) const { return (index < 6 ? mTex[index].GetSource() : mTex[0].GetSource()); }
+	virtual const String& GetSource (uint index) const { return (index < 6 ? mTex[index].GetSource() : mTex[0].GetSource()); }
+
+	// Saves the image's color data into the specified memory buffer
+	// NOTE: Must be called from the graphics thread!
+	virtual bool GetBuffer (Memory& mem);
 
 	// Wrapping mode and filtering
 	virtual void SetWrapMode  (uint wrapMode);

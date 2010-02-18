@@ -655,6 +655,37 @@ bool GLTexture::IsValid() const
 }
 
 //============================================================================================================
+// Saves the image's color data into the specified memory buffer
+//============================================================================================================
+
+bool GLTexture::GetBuffer (Memory& mem)
+{
+	if (IsValid())
+	{
+		uint tex = GetTextureID();
+
+		if (mGlID != 0 && mGlType == GL_TEXTURE_2D)
+		{
+			uint bpp = GetBitsPerPixel(mFormat);
+			uint memSize = (bpp / 8) * mSize.x * mSize.y;
+
+			if (memSize > 0)
+			{
+				uint type = (mFormat >= ITexture::Format::Float) ? GL_FLOAT : GL_UNSIGNED_BYTE;
+
+				// Bind the current texture
+				_BindTexture(mGlType, mGlID);
+
+				// Read back the texture information
+				glGetTexImage(GL_TEXTURE_2D, 0, _GetGLFormat(mFormat), type, mem.Resize(memSize));
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//============================================================================================================
 // Changes the texture wrapping mode
 //============================================================================================================
 

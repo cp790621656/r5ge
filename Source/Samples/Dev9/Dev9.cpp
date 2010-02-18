@@ -43,14 +43,16 @@ public:
 	void Run();
 	void OnDraw();
 	void DrawLeaves(void* param);
+	void SaveTextures(void* param);
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
 
-	void OnShowTexture(UIWidget* widget, uint state, bool isSet);
-	void OnStateChange(UIWidget* widget, uint state, bool isSet);
-	bool OnGenerate(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnShowTexture	(UIWidget* widget, uint state, bool isSet);
+	void OnStateChange	(UIWidget* widget, uint state, bool isSet);
+	bool OnGenerate		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	bool OnSave			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
-	void OnSerializeTo (TreeNode& node) const;
-	bool OnSerializeFrom (const TreeNode& node);
+	void OnSerializeTo	(TreeNode& node) const;
+	bool OnSerializeFrom(const TreeNode& node);
 };
 
 //============================================================================================================
@@ -95,6 +97,7 @@ void TestApp::Run()
 	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
 
 	// UI callbacks can be bound even before the actual widgets are loaded
+	mUI->SetOnKey		 ("Save",			bind(&TestApp::OnSave,			this));
 	mUI->SetOnKey		 ("Generate",		bind(&TestApp::OnGenerate,		this));
 	mUI->SetOnStateChange("Show",			bind(&TestApp::OnShowTexture,	this));
 	mUI->SetOnStateChange("Normal Toggle",	bind(&TestApp::OnStateChange,	this));
@@ -235,6 +238,35 @@ void TestApp::DrawLeaves(void* param)
 		mFinalD->SetWrapMode(ITexture::WrapMode::Repeat);
 		mFinalN->SetWrapMode(ITexture::WrapMode::Repeat);
 	}
+}
+
+//============================================================================================================
+// Callback executed on the graphics thread, saves the leaf textures
+//============================================================================================================
+
+void TestApp::SaveTextures(void* param)
+{
+	Memory diffuse, normal;
+
+	const Vector2i& d = mFinalD->GetSize();
+	const Vector2i& n = mFinalN->GetSize();
+
+	static uint counter = 0;
+
+	if (mFinalD->GetBuffer(diffuse))
+	{
+		String filename ("leaves%3u.tga", counter);
+		filename.Replace(" ", "0");
+		Image::Save(filename, diffuse.GetBuffer(), d.x, d.y, mFinalD->GetFormat());
+	}
+	
+	if (mFinalN->GetBuffer(normal))
+	{
+		String filename ("leaves%3u_nm.tga", counter);
+		filename.Replace(" ", "0");
+		Image::Save(filename, normal.GetBuffer(), n.x, n.y, mFinalN->GetFormat());
+	}
+	++counter;
 }
 
 //============================================================================================================
@@ -427,6 +459,19 @@ void TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 			}
 		}
 	}
+}
+
+//============================================================================================================
+// Triggered when the "Save" button gets clicked on
+//============================================================================================================
+
+bool TestApp::OnSave (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+{
+	if (key == Key::MouseLeft && !isDown)
+	{
+		mGraphics->ExecuteBeforeNextFrame( bind(&TestApp::SaveTextures, this) );
+	}
+	return true;
 }
 
 //============================================================================================================

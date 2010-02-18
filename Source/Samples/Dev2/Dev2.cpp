@@ -151,6 +151,14 @@ IMaterial* TestApp::GenerateTest (Noise& heightMap, Array<Color4ub>& normalMap, 
 	// Normalize the heightMap result
 	Normalize(heightMap.GetBuffer(), finalSize * finalSize);
 
+	float* buffer = heightMap.GetBuffer();
+
+	for (uint i = finalSize * finalSize; i > 0; )
+	{
+		float val = buffer[--i];
+		buffer[i] = Float::Round(val, 0.05f);
+	}
+
 	// Create the normal map
 	Image::HeightMapToNormalMap(heightMap.GetBuffer(), finalSize, finalSize, normalMap, false, mScale);
 
