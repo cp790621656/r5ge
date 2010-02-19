@@ -22,7 +22,7 @@
 			CharacterSet="0"
 			>
 			<Tool
-				Name="$(SolutionDir)..\"
+				Name="VCPreBuildEventTool"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -99,7 +99,7 @@
 			WholeProgramOptimization="1"
 			>
 			<Tool
-				Name="$(SolutionDir)..\"
+				Name="VCPreBuildEventTool"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -194,6 +194,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\..\Resources\Config\Model Viewer.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

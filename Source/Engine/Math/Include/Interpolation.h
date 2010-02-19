@@ -171,13 +171,36 @@ inline Vector3f GetHermiteTangent (const Vector3f& distance0, const Vector3f& di
 // Hermite spline interpolation with the provided tangents
 //============================================================================================================
 
-Vector3f Hermite (const Vector3f &pos0, const Vector3f &pos1, const Vector3f& tan0, const Vector3f& tan1, float factor, float duration);
+template <typename Real>
+Real Hermite (const Real &pos0, const Real &pos1, const Real& tan0, const Real& tan1, float factor, float duration)
+{
+	float f2  = factor * factor;
+	float f3  = f2 * factor;
+	float f32 = f3 * 2.0f;
+	float f23 = f2 * 3.0f;
+
+	float a0  = f32 - f23 + 1.0f;
+	float a1  = f23 - f32;
+	float a2  = f3 - f2 * 2.0f + factor;
+	float a3  = f3 - f2;
+
+	return   pos0 * a0 +
+			 pos1 * a1 +
+			(tan0 * a2 +
+			 tan1 * a3) * duration;
+}
 
 //============================================================================================================
 // Optimized function for cases where val0 = 0, and val1 = 1
 //============================================================================================================
 
-float Hermite (float tan0,  float tan1, float factor, float duration);
+template <typename Real>
+Real Hermite (const Real& tan0, const Real& tan1, float factor, float duration)
+{
+	float f2 = factor * factor;
+	float f3 = f2 * factor;
+	return (f2 * 3.0f - f3 * 2.0f) + (tan0 * (f3 - f2 * 2.0f + factor) + tan1 * (f3 - f2)) * duration;
+}
 
 //============================================================================================================
 // Uniform keyframe Catmull-Rom spline interpolation

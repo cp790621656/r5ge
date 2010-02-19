@@ -14,24 +14,55 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Material"
+				Shader = "Deferred/TreeTrunk"
+				
+				Textures = String[]
+				{
+					"Plants/bark.jpg"
+					"Plants/bark_n.png"
+				}
 			}
 
 			Technique = "Opaque"
+			{
+				Shader = "Forward/TreeTrunk"
+				
+				Textures = String[]
+				{
+					"Plants/bark.jpg"
+					"Plants/bark_n.png"
+				}
+			}
 		}
 
 		Material = "Canopy"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
+			Specular = 0.099307 0.048499 0.053118 0.100000
 			Glow = 0.000000
+			ADT = 0.713626
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Material"
+				Shader = "Deferred/TreeCanopy"
+
+				Textures = String[]
+				{
+					"Billboards/leaves2.r5t"
+					"Billboards/leaves2_n.r5t"
+				}
 			}
 
 			Technique = "Opaque"
+			{
+				Shader = "Forward/TreeCanopy"
+
+				Textures = String[]
+				{
+					"Billboards/leaves2.r5t"
+					"Billboards/leaves2_n.r5t"
+				}
+			}
 		}
 	}
 

@@ -61,7 +61,8 @@ Vector3f DebugCamera::_UpdateOffsetPosition()
 		float time		= Time::GetTime();
 		mRelativePos	= mSplineV.Sample(time);
 		mRelativeRot	= mSplineQ.Sample(time);
-		mDolly.y		= Float::Clamp( mSplineF.Sample(time), mDolly.x, mDolly.z );
+		mDolly.y		= mSplineF.Sample(time);
+		mDolly.y		= Float::Clamp(mDolly.y, mDolly.x, mDolly.z );
 		mIsDirty		= true;
 
 		// Stop the animation once the animation reaches the end

@@ -428,7 +428,7 @@ void TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 					{
 						title = "Generated Normal Map";
 						mFinal->SetTexture(mFinalN);
-						mFinal->IgnoreAlpha(true);
+						mFinal->IgnoreAlpha(a->GetState(UIButton::State::Pressed));
 					}
 					else
 					{
@@ -443,7 +443,7 @@ void TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 					{
 						title = "Original Normal Map";
 						mFinal->SetTexture(mOriginalN);
-						mFinal->IgnoreAlpha(true);
+						mFinal->IgnoreAlpha(a->GetState(UIButton::State::Pressed));
 					}
 					else
 					{
