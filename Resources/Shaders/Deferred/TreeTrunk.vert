@@ -3,6 +3,7 @@
 attribute vec3 R5_tangent;
 
 uniform vec3 R5_time;
+uniform float R5_worldScale;
 
 varying vec2 _texCoord;
 varying vec3 _normal;
@@ -15,7 +16,7 @@ varying vec3 _tangent;
 void main()
 {
 	// Wind direction
-	const vec3 wind = vec3(-0.783, -0.535, -0.07);
+	const vec3 wind = vec3(-0.783, 0.535, -0.07);
 
 	// Start with the world space vertex
 	vec4 vertex = gl_Vertex;
@@ -29,11 +30,11 @@ void main()
 	// R5_IMPLEMENT_INSTANCING vertex _normal _tangent
 	
 	// Wind offset should take the vertex position into account
- 	float vertexOffset = dot(vertex.xyz, wind) * 0.15;
+ 	float vertexOffset = dot(vertex.xyz, wind / R5_worldScale) * 0.15;
  	float windOffset = sin(R5_time.x - vertexOffset);
 
  	// Offset the vertex in world space
-	vertex.xyz += wind * ((windOffset * 0.025 + 0.025) * windStrength);
+	vertex.xyz += wind * ((windOffset * 0.025 + 0.025) * windStrength * R5_worldScale);
 
 	// Calculate the remaining values
 	gl_Position = gl_ModelViewProjectionMatrix * vertex;
