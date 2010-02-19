@@ -143,7 +143,7 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 		graphics->SetActiveTexture(i, mTextures[i]);
 
 	// Distance from the center to the farthest corner of the box before it starts getting clipped
-	float range = mAbsoluteScale * 1.415f + graphics->GetCameraRange().x * 2.0f;
+	float range = mAbsoluteScale * 1.732f + graphics->GetCameraRange().x;
 
 	// Invert the depth testing and culling if the camera is inside the box
 	bool invert = mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) < range;

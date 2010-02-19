@@ -111,6 +111,9 @@ public:
 	void FlipTranslation()										{ x = -x;  y = -y;  z = -z; }
 	void ClearTranslation()										{ x = 0.0f; y = 0.0f; z = 0.0f; }
 
+	// Returns the uniform scaling component (since uniform scale is used, this is quite simple)
+	float GetScale() const { return Vector3f(mF[0], mF[1], mF[2]).Magnitude(); }
+
 	// Replaces scaling and rotation component with the specified uniform scale
 	void ReplaceScaling (float scale = 1.0f);
 

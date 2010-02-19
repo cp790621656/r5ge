@@ -199,11 +199,12 @@ bool PreprocessBillboarding (String& source)
 		// View-space offset is calculated based on texture coordinates, enlarged by the size (texCoord's Z)
 		left << "\n{\n";
 		left << "vec3 offset = gl_MultiTexCoord0.xyz;\n";
-	    left << "offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;\n";
+		left << "offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;\n";
 		left << "offset.z *= 0.25;\n";
+		left << "offset *= R5_worldScale;\n";
 		
 		// Calculate the view-transformed vertex
-	    left << vertex;
+		left << vertex;
 		left << " = gl_ModelViewMatrix * ";
 		left << vertex;
 		left << ";\n";
@@ -214,7 +215,7 @@ bool PreprocessBillboarding (String& source)
 		
 		if (normal.IsValid())
 		{
-			left << "vec3 diff = gl_Vertex.xyz - R5_origin;\n";
+			left << "vec3 diff = gl_Vertex.xyz - R5_origin.xyz;\n";
 			left << normal;
 			left << " = normalize(gl_NormalMatrix * diff);\n";
 
@@ -230,6 +231,7 @@ bool PreprocessBillboarding (String& source)
 
 		// Copy the result back into the Source
 		source = "uniform vec3 R5_origin;\n";
+		source << "uniform float R5_worldScale;\n";
 		source << left;
 		source << right;
 		return true;

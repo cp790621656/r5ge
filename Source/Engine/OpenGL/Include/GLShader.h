@@ -40,6 +40,7 @@ private:
 	friend class GLController;
 
 	// Delegate functions for common shader uniforms
+	void SetUniform_WorldScale	(const String& name, Uniform& uniform);
 	void SetUniform_EyePos		(const String& name, Uniform& uniform);
 	void SetUniform_PixelSize	(const String& name, Uniform& uniform);
 	void SetUniform_ClipRange	(const String& name, Uniform& uniform);

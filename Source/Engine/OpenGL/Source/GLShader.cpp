@@ -91,6 +91,15 @@ void SetUniform_Time (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
+// Sets the world matrix scale component
+//============================================================================================================
+
+void GLShader::SetUniform_WorldScale (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetModelMatrix().GetScale();
+}
+
+//============================================================================================================
 // Shader callback function for R5_eyePos
 //============================================================================================================
 
@@ -235,6 +244,7 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 
 	// Register common uniforms that remain identical in all shaders
 	_InsertUniform( "R5_time",						&SetUniform_Time );
+	_InsertUniform( "R5_worldScale",				bind(&GLShader::SetUniform_WorldScale,	this) );
 	_InsertUniform( "R5_worldEyePosition",			bind(&GLShader::SetUniform_EyePos,		this) );
 	_InsertUniform( "R5_pixelSize",					bind(&GLShader::SetUniform_PixelSize,	this) );
 	_InsertUniform( "R5_clipRange",					bind(&GLShader::SetUniform_ClipRange,	this) );
