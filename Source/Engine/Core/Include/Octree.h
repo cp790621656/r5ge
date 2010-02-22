@@ -47,7 +47,7 @@ protected:
 
 public:
 
-	Octree() : mDepth(0), mPartitioned(true), mCustomFill(true) { mRootNode.mOctree = this; }
+	Octree();
 
 	R5_DECLARE_INHERITED_CLASS("Octree", Octree, Object, Object);
 

@@ -109,6 +109,17 @@ void Octree::Node::Fill (FillParams& params)
 }
 
 //============================================================================================================
+// Octree's constructor: don't include child bounds as children already get added to proper nodes.
+//============================================================================================================
+
+Octree::Octree() : mDepth(0), mPartitioned(true), mCustomFill(true)
+{
+	mCalcAbsBounds		= false;
+	mIncChildBounds		= false;
+	mRootNode.mOctree	= this;
+}
+
+//============================================================================================================
 // Repartitions the Octree then re-adds all children to sub-nodes
 //============================================================================================================
 
@@ -170,8 +181,21 @@ void Octree::OnPostUpdate()
 			sub->mChildren.Remove(child);
 
 			// If the child can't fit into its previous node, re-add it starting at the root.
-			if (!sub->Add(child)) Octree::OnAddChild(child);
+			if (!sub->Add(child)) OnAddChild(child);
 		}
+	}
+
+	// Absolute bounds should be the root node's bounds
+	mAbsoluteBounds = mRootNode.mBounds;
+	mRelativeBounds = mAbsoluteBounds;
+	mCompleteBounds = mAbsoluteBounds;
+
+	// Include all children that currently reside on the root node. Other children don't need to be included
+	// as they belong to one of the internal nodes which is guaranteed to be inside the root's bounds.
+	for (uint i = mRootNode.mChildren.GetSize(); i > 0; )
+	{
+		const Bounds& bounds = mRootNode.mChildren[--i]->GetCompleteBounds();
+		mCompleteBounds.Include(bounds);
 	}
 }
 

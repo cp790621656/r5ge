@@ -57,6 +57,7 @@ protected:
 	Bounds		mAbsoluteBounds;	// Calculated bounds that include only this object
 	Bounds		mCompleteBounds;	// Calculated bounds that include the bounds of all children
 	bool		mCalcAbsBounds;		// Whether absolute bounds will be auto-calculated ('true' in most cases)
+	bool		mIncChildBounds;	// Whether to include children when re-calculating the bounds ('true' in most cases)
 
 	bool		mIsDirty;			// Whether the object's absolute coordinates should be recalculated
 	bool		mHasMoved;			// Whether the object has moved since last update

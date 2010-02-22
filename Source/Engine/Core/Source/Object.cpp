@@ -44,6 +44,7 @@ Object::Object() :
 	mRelativeScale	(1.0f),
 	mAbsoluteScale	(1.0f),
 	mCalcAbsBounds	(true),
+	mIncChildBounds	(true),
 	mIsDirty		(false),
 	mHasMoved		(true),
 	mSerializable	(true)
@@ -570,13 +571,16 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 				mCompleteBounds = mAbsoluteBounds;
 
 				// Run through all children and include their bounds as well
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
+				if (mIncChildBounds)
 				{
-					Object* obj = mChildren[i];
-
-					if (obj != 0 && obj->GetFlag(Flag::Enabled))
+					for (uint i = 0; i < mChildren.GetSize(); ++i)
 					{
-						mCompleteBounds.Include(obj->GetCompleteBounds());
+						Object* obj = mChildren[i];
+
+						if (obj != 0 && obj->GetFlag(Flag::Enabled))
+						{
+							mCompleteBounds.Include(obj->GetCompleteBounds());
+						}
 					}
 				}
 			}
