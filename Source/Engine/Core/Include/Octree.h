@@ -53,6 +53,9 @@ public:
 
 protected:
 
+	// Repartitions the Octree then re-adds all children to sub-nodes
+	void Repartition();
+
 	// Function called when a new child object has been added
 	virtual void OnAddChild (Object* obj);
 

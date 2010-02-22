@@ -109,24 +109,24 @@ void Octree::Node::Fill (FillParams& params)
 }
 
 //============================================================================================================
+// Repartitions the Octree then re-adds all children to sub-nodes
+//============================================================================================================
+
+void Octree::Repartition()
+{
+	mPartitioned = true;
+	mRootNode.Partition(this, mAbsolutePos.x, mAbsolutePos.y, mAbsolutePos.z, mSize * mAbsoluteScale, 0, mDepth);
+	for (uint i = mChildren.GetSize(); i > 0;) mRootNode.Add(mChildren[--i]);
+}
+
+//============================================================================================================
 // Function called when a new child object has been added
 //============================================================================================================
 
 void Octree::OnAddChild (Object* obj)
 {
-	if (!mPartitioned)
-	{
-		mPartitioned = true;
-		mRootNode.Partition(this, mAbsolutePos.x, mAbsolutePos.y, mAbsolutePos.z, mSize * mAbsoluteScale, 0, mDepth);
-
-		// Re-add all children
-		for (uint i = mChildren.GetSize(); i > 0;) mRootNode.Add(mChildren[--i]);
-	}
-	else
-	{
-		// Add it to the root, which propagates down to where the child should be
-		mRootNode.Add(obj);
-	}
+	if (!mPartitioned) Repartition();
+	else mRootNode.Add(obj);
 }
 
 //============================================================================================================
@@ -151,6 +151,10 @@ void Octree::OnRemoveChild (Object* obj)
 
 void Octree::OnPostUpdate()
 {
+	// Update partitioning if needed
+	if (!mPartitioned) Repartition();
+
+	// Run through all children and find ones that have moved
 	for (uint i = mChildren.GetSize(); i > 0; )
 	{
 		Object* child = mChildren[--i];
@@ -158,8 +162,15 @@ void Octree::OnPostUpdate()
 		// If the child has moved, re-add it to the list (this places it into an appropriate node)
 		if (child->HasMoved())
 		{
-			Octree::OnRemoveChild(child);
-			Octree::OnAddChild(child);
+			Node* sub = (Node*)child->GetSubParent();
+			ASSERT(sub != 0, "How is sub-node set to null?");
+
+			// Save time by re-adding the child to the same node.
+			// This automatically recurses through the smaller child nodes.
+			sub->mChildren.Remove(child);
+
+			// If the child can't fit into its previous node, re-add it starting at the root.
+			if (!sub->Add(child)) Octree::OnAddChild(child);
 		}
 	}
 }
