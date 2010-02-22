@@ -15,8 +15,10 @@ protected:
 	IShader*	mShader;
 	Color4ub	mColor;
 
+	// Textures passed to the decal
 	Array<const ITexture*> mTextures;
 
+	// Constructor is protected -- it should never be created using 'new'
 	Decal();
 
 public:
@@ -27,13 +29,13 @@ public:
 	// Changes the default drawing layer that will be used by decals
 	static void SetDefaultLayer(byte layer);
 
-	const IShader*	GetShader()	const { return mShader;	}
-	const Color4ub&	GetColor()	const { return mColor;	}
+	const IShader*		GetShader()		const	{ return mShader;		}
+	const Color4ub&		GetColor()		const	{ return mColor;		}
 
 	void SetShader	 (IShader* shader);
-	void SetColor	 (const Color4ub& val) { mColor = val; }
-
-	Array<const ITexture*>& GetTextureArray() { return mTextures; }
+	void SetColor	 (const Color4ub& val)		{ mColor	 = val;		}
+	
+	Array<const ITexture*>& GetTextureArray()	{ return mTextures;		}
 
 protected:
 
@@ -47,6 +49,6 @@ protected:
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
 	// Serialization
-	virtual void OnSerializeTo	  (TreeNode& root) const;
-	virtual bool OnSerializeFrom  (const TreeNode& root);
+	virtual void OnSerializeTo	  (TreeNode& node) const;
+	virtual bool OnSerializeFrom  (const TreeNode& node);
 };

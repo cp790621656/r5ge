@@ -34,14 +34,6 @@ protected:
 	Flags		mIgnore;
 	bool		mEnabled;
 
-protected:
-
-	// It's not possible to create just plain scripts -- they need to be derived from
-	Script() : mEnabled(true) {}
-
-	// Destroys this script, deleting it from memory and from its owner
-	void DestroySelf() { delete this; }
-
 private:
 
 	// INTERNAL: Registers a new script of the specified type
@@ -49,6 +41,14 @@ private:
 
 	// INTERNAL: Creates a new script of the specified type
 	static Script* _Create (const String& type);
+
+protected:
+
+	// It's not possible to create just plain scripts -- they need to be derived from
+	Script() : mEnabled(true) {}
+
+	// Destroys this script - this action is queued until next update
+	void DestroySelf();
 
 public:
 

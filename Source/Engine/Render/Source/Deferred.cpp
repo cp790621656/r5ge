@@ -245,111 +245,109 @@ void Combine (
 
 Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List& lights, const DrawParams& params)
 {
-	static bool				firstTime	= true;
-	static IRenderTarget*	target0		= graphics->CreateRenderTarget();
-	static IRenderTarget*	target1		= graphics->CreateRenderTarget();
-	static IRenderTarget*	target2		= graphics->CreateRenderTarget();
-	static ITexture*		normal		= graphics->GetTexture("[Generated] Normal");
-	static ITexture*		depth		= graphics->GetTexture("[Generated] Depth");
-	static ITexture*		matDiff		= graphics->GetTexture("[Generated] Diffuse Material");
-	static ITexture*		matSpec		= graphics->GetTexture("[Generated] Specular Material");
-	static ITexture*		lightDiff	= graphics->GetTexture("[Generated] Diffuse Light");
-	static ITexture*		lightSpec	= graphics->GetTexture("[Generated] Specular Light");
-	static ITexture*		final		= graphics->GetTexture("[Generated] Final");
+	static ITexture*	normal		= graphics->GetTexture("[Generated] Normal");
+	static ITexture*	depth		= graphics->GetTexture("[Generated] Depth");
+	static ITexture*	matDiff		= graphics->GetTexture("[Generated] Diffuse Material");
+	static ITexture*	matSpec		= graphics->GetTexture("[Generated] Specular Material");
+	static ITexture*	lightDiff	= graphics->GetTexture("[Generated] Diffuse Light");
+	static ITexture*	lightSpec	= graphics->GetTexture("[Generated] Specular Light");
+	static ITexture*	final		= graphics->GetTexture("[Generated] Final");
 
+	// Use the specified size if possible, viewport size otherwise
+	Vector2i size (params.mSize == 0 ? graphics->GetActiveViewport() : params.mSize);
 	const ITexture* lightmap (0);
 	DrawResult result;
 
-	if (firstTime)
+	// Deferred rendering target
 	{
-		firstTime = false;
+		static IRenderTarget* target = 0;
 
-		// Deferred rendering target
-		target0->AttachDepthTexture( depth );
-		target0->AttachStencilTexture( depth );
-		target0->AttachColorTexture( 0, matDiff, ITexture::Format::RGB16F );
-		target0->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
-		target0->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
-		target0->UseSkybox(true);
-
-		// Scene Light contribution target
-		target1->AttachDepthTexture( depth );
-		target1->AttachStencilTexture( depth );
-		target1->AttachColorTexture( 0, lightDiff, ITexture::Format::RGB16F );
-		target1->AttachColorTexture( 1, lightSpec, ITexture::Format::RGB16F );
-		target1->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
-		target1->UseSkybox(false);
-
-		// Final color target
-		target2->AttachDepthTexture( depth );
-		target2->AttachStencilTexture( depth );
-		target2->AttachColorTexture( 0, final, ITexture::Format::RGB16F );
-		target2->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
-		target2->UseSkybox(false);
-	}
-
-	// Setting size only changes it if it's different
-	Vector2i size (params.mSize == 0 ? graphics->GetActiveViewport() : params.mSize);
-	target0->SetSize( size );
-	target1->SetSize( size );
-	target2->SetSize( size );
-
-	// Active background color
-	if (params.mUseColor)
-	{
-		target0->SetBackgroundColor(params.mColor);
-		target0->UseSkybox(false);
-	}
-	else
-	{
-		Color4f color (graphics->GetBackgroundColor());
-		color.a = 1.0f;
-		target0->SetBackgroundColor(color);
-		target0->UseSkybox(true);
-	}
-
-	// Deferred rendering -- encoding pass
-	if (params.mDrawCallback)
-	{
-		graphics->SetCulling( IGraphics::Culling::Back );
-		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
-
-		graphics->SetStencilTest(false);
-		graphics->SetActiveRenderTarget( target0 );
-		graphics->Clear(true, true, true);
-
-		// Set up the stencil test
-		graphics->SetStencilTest(true);
-		graphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
-		graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
-											 IGraphics::Operation::Keep,
-											 IGraphics::Operation::Replace );
-
-		// Draw the scene using the deferred approach
-		result.mObjects += params.mDrawCallback(params.mTechniques, params.mInsideOut);
-	}
-
-	// Screen-space ambient occlusion pass
-	if (params.mAOLevel > 0)
-	{
-		graphics->SetStencilTest(true);
-		graphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
-		graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
-											 IGraphics::Operation::Keep,
-											 IGraphics::Operation::Keep );
-		if (params.mAOLevel == 1)
+		if (target == 0)
 		{
-			lightmap = SSAO::Low(graphics, depth, normal);
+			target = graphics->CreateRenderTarget();
+			target->AttachDepthTexture( depth );
+			target->AttachStencilTexture( depth );
+			target->AttachColorTexture( 0, matDiff, ITexture::Format::RGB16F );
+			target->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
+			target->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
+			target->UseSkybox(true);
+		}
+
+		// Setting size only changes it if it's different
+		target->SetSize( size );
+
+		// Active background color
+		if (params.mUseColor)
+		{
+			target->SetBackgroundColor(params.mColor);
+			target->UseSkybox(false);
 		}
 		else
 		{
-			lightmap = SSAO::High(graphics, depth, normal);
+			Color4f color (graphics->GetBackgroundColor());
+			color.a = 1.0f;
+			target->SetBackgroundColor(color);
+			target->UseSkybox(true);
+		}
+
+		// Deferred rendering -- encoding pass
+		if (params.mDrawCallback && params.mDrawTechniques.IsValid())
+		{
+			graphics->SetCulling( IGraphics::Culling::Back );
+			graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+
+			graphics->SetStencilTest(false);
+			graphics->SetActiveRenderTarget( target );
+			graphics->Clear(true, true, true);
+
+			// Set up the stencil test
+			graphics->SetStencilTest(true);
+			graphics->SetActiveStencilFunction ( IGraphics::Condition::Always, 0x1, 0x1 );
+			graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
+												 IGraphics::Operation::Keep,
+												 IGraphics::Operation::Replace );
+
+			// Draw the scene using the deferred approach
+			result.mObjects += params.mDrawCallback(params.mDrawTechniques, params.mInsideOut);
+		}
+
+		// Screen-space ambient occlusion pass
+		if (params.mAOLevel > 0)
+		{
+			graphics->SetStencilTest(true);
+			graphics->SetActiveStencilFunction ( IGraphics::Condition::Equal, 0x1, 0x1 );
+			graphics->SetActiveStencilOperation( IGraphics::Operation::Keep,
+												 IGraphics::Operation::Keep,
+												 IGraphics::Operation::Keep );
+			if (params.mAOLevel == 1)
+			{
+				lightmap = SSAO::Low(graphics, depth, normal);
+			}
+			else
+			{
+				lightmap = SSAO::High(graphics, depth, normal);
+			}
 		}
 	}
 
 	// Light contribution
 	{
-		graphics->SetActiveRenderTarget( target1 );
+		static IRenderTarget* target = 0;
+
+		// Scene Light contribution target
+		if (target == 0)
+		{
+			target = graphics->CreateRenderTarget();
+			target->AttachDepthTexture( depth );
+			target->AttachStencilTexture( depth );
+			target->AttachColorTexture( 0, lightDiff, ITexture::Format::RGB16F );
+			target->AttachColorTexture( 1, lightSpec, ITexture::Format::RGB16F );
+			target->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+			target->UseSkybox(false);
+		}
+		
+		target->SetSize( size );
+		graphics->SetActiveRenderTarget( target );
 		graphics->Clear(true, false, false);
 		DrawLights(graphics, depth, normal, lightmap, lights);
 		result.mObjects += lights.GetSize();
@@ -357,7 +355,21 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 
 	// Combine the light contribution with material
 	{
-		graphics->SetActiveRenderTarget( target2 );
+		static IRenderTarget* target = 0;
+
+		// Final color target
+		if (target == 0)
+		{
+			target = graphics->CreateRenderTarget();
+			target->AttachDepthTexture( depth );
+			target->AttachStencilTexture( depth );
+			target->AttachColorTexture( 0, final, ITexture::Format::RGB16F );
+			target->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+			target->UseSkybox(false);
+		}
+
+		target->SetSize( size );
+		graphics->SetActiveRenderTarget( target );
 		Combine(graphics, matDiff, matSpec, lightDiff, lightSpec);
 	}
 

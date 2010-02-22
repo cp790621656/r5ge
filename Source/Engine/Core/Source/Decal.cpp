@@ -66,10 +66,10 @@ void Decal::OnUpdate()
 	if (mIsDirty)
 	{
 		// Recalculate absolute bounds directly as it's faster than having to transform relative bounds.
-		// 1.415 multiplication is here because we draw a cube, but its corners are sqrt(2) farther away
+		// 1.732f multiplication is here because we draw a cube, but its corners are sqrt(3) farther away
 		// than the sides. In order to cull it properly we treat it as a maximum range sphere instead.
 		mAbsoluteBounds.Reset();
-		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.415f);
+		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.732f);
 
 		// Transform matrix uses calculates absolute values
 		mMatrix.SetToTransform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
@@ -82,13 +82,11 @@ void Decal::OnUpdate()
 
 bool Decal::OnFill (FillParams& params)
 {
-	// Save the mask as it doesn't change
-	static uint myMask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
-
 	if (mShader != 0)
 	{
+		static uint mask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
 		const void* group = mTextures.IsValid() ? (const void*)mTextures.Back() : (const void*)mShader;
-		params.mDrawQueue.Add(mLayer, this, myMask, group, 0.0f);
+		params.mDrawQueue.Add(mLayer, this, mask, group, 0.0f);
 	}
 	return true;
 }
@@ -176,7 +174,11 @@ uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
 	graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
 
 	// Restore the depth function
-	if (invert) graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+	if (invert)
+	{
+		graphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
+		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+	}
 	return 1;
 }
 

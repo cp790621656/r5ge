@@ -123,7 +123,12 @@ Object* Object::_AddObject (const String& type, const String& name)
 			ptr->mParent = this;
 			ptr->mIsDirty = true;
 			mChildren.Expand() = ptr;
+
+			// Inform the listeners that a new child has been added
 			OnAddChild(ptr);
+
+			// Initialize the object
+			ptr->OnInit();
 		}
 	}
 	return ptr;
@@ -264,12 +269,30 @@ void Object::_Remove (Object* obj)
 }
 
 //============================================================================================================
+// Destroys the object
+//============================================================================================================
+
+void Object::DestroySelf (bool threadSafe)
+{
+	if (mParent != 0)
+	{
+		if (threadSafe) Lock();
+		{
+			mParent->_Remove(this);
+			mParent->mDeletedObjects.Expand() = this;
+			mParent = 0;
+		}
+		if (threadSafe) Unlock();
+	}
+}
+
+//============================================================================================================
 // Releases the object and all its children
 //============================================================================================================
 
-void Object::Release()
+void Object::Release (bool threadSafe)
 {
-	Lock();
+	if (threadSafe) Lock();
 	{
 		mRelativeBounds.Reset();
 		mCompleteBounds.Reset();
@@ -312,7 +335,7 @@ void Object::Release()
 			mChildren.Release();
 		}
 	}
-	Unlock();
+	if (threadSafe) Unlock();
 }
 
 //============================================================================================================
@@ -464,6 +487,9 @@ bool Object::Scroll (const Vector2i& pos, float delta)
 
 void Object::Update (bool threadSafe)
 {
+	if (mDeletedObjects.IsValid()) mDeletedObjects.Clear();
+	if (mDeletedScripts.IsValid()) mDeletedScripts.Clear();
+
 	if (mParent != 0 && mFlags.Get(Flag::Enabled))
 	{
 		if (threadSafe) Lock();

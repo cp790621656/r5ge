@@ -727,6 +727,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					// Solid material group -- no alpha testing or blending needed
 					tech->SetAlphaTest(false);
 					tech->SetBlending(ITechnique::Blending::None);
+					tech->SetSorting(ITechnique::Sorting::FrontToBack);
 				}
 				else if (name == "Transparent")
 				{
@@ -741,6 +742,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetAlphaTest(false);
 					tech->SetBlending(ITechnique::Blending::Add);
 					tech->SetLighting(ITechnique::Lighting::None);
+					tech->SetSorting(ITechnique::Sorting::BackToFront);
 				}
 				else if (name == "Glare")
 				{
@@ -751,27 +753,13 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetAlphaTest(false);
 					tech->SetBlending(ITechnique::Blending::Add);
 					tech->SetLighting(ITechnique::Lighting::None);
+					tech->SetSorting(ITechnique::Sorting::BackToFront);
 				}
 				else if (name == "Particle")
 				{
 					tech->SetDepthWrite(false);
 					tech->SetLighting(ITechnique::Lighting::None);
 					tech->SetSorting(ITechnique::Sorting::BackToFront);
-				}
-				else if (name == "Opaque Depth")
-				{
-					tech->SetFog(false);
-					tech->SetColorWrite(false);
-					tech->SetAlphaTest(false);
-					tech->SetBlending(ITechnique::Blending::None);
-					tech->SetLighting(ITechnique::Lighting::None);
-				}
-				else if (name == "Transparent Depth")
-				{
-					tech->SetFog(false);
-					tech->SetColorWrite(false);
-					tech->SetBlending(ITechnique::Blending::None);
-					tech->SetLighting(ITechnique::Lighting::None);
 				}
 				else if (name == "Post Process")
 				{
@@ -787,12 +775,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetFog(false);
 					tech->SetLighting(IGraphics::Lighting::None);
 					tech->SetBlending(IGraphics::Blending::None);
-				}
-				else if (name == "Post-Deferred")
-				{
-					tech->SetFog(false);
-					tech->SetLighting(IGraphics::Lighting::None);
-					tech->SetBlending(IGraphics::Blending::None);
+					tech->SetSorting(ITechnique::Sorting::FrontToBack);
 				}
 				else if (name == "Wireframe")
 				{

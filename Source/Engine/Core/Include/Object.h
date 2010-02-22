@@ -65,7 +65,9 @@ protected:
 
 	Lockable	mLock;
 	Children	mChildren;
+	Children	mDeletedObjects;
 	Scripts		mScripts;
+	Scripts		mDeletedScripts;
 
 private:
 
@@ -96,7 +98,7 @@ protected:
 
 public:
 
-	virtual ~Object() { Release(); }
+	virtual ~Object() { Release(false); }
 
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
@@ -119,8 +121,11 @@ private:
 
 public:
 
+	// Destroys the object -- this action is queued until next update
+	void DestroySelf (bool threadSafe = true);
+
 	// Release all resources associated with this object
-	void Release();
+	void Release (bool threadSafe = true);
 
 	// Thread-safe locking functionality
 	void Lock()		const	{ mLock.Lock(); }
@@ -229,6 +234,9 @@ protected:
 
 	// NOTE: Don't forget to set 'mIsDirty' to 'true' if you modify relative coordinates
 	// in your virtual functions, or absolute coordinates won't be recalculated!
+
+	// The very first function called on the object -- called after the object's parent and root have been set
+	virtual void OnInit() {}
 
 	// Function called when a new child object has been added
 	virtual void OnAddChild (Object* obj) {}

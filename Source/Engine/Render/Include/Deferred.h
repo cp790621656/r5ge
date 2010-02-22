@@ -35,13 +35,13 @@ namespace Deferred
 	// Parameters used by the DrawScene functions
 	struct DrawParams
 	{
-		TechniqueList	mTechniques;	// List of techniques used to draw the scene
-		DrawCallback	mDrawCallback;	// Actual draw callback -- will receive the list of techniques
-		Vector2i		mSize;			// Size that the final textures should be using (default: screen)
-		byte			mAOLevel;		// Ambient Occlusion level: 0 = none, 1 = low, 2 = high
-		bool			mInsideOut;		// Whether to draw inside out (useful for reflections)
-		Color4ub		mColor;			// Background color
-		bool			mUseColor;		// Whether to use the background color (overrides the skybox)
+		DrawCallback	mDrawCallback;		// Actual draw callback -- will receive the list of techniques
+		TechniqueList	mDrawTechniques;	// List of techniques used to draw the scene
+		Vector2i		mSize;				// Size that the final textures should be using (default: screen)
+		byte			mAOLevel;			// Ambient Occlusion level: 0 = none, 1 = low, 2 = high
+		bool			mInsideOut;			// Whether to draw inside out (useful for reflections)
+		Color4ub		mColor;				// Background color
+		bool			mUseColor;			// Whether to use the background color (overrides the skybox)
 
 		DrawParams() : mAOLevel(0), mInsideOut(false), mUseColor(false) {}
 	};

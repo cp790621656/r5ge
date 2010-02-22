@@ -123,10 +123,10 @@ Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 		}
 
 		// Set the list of techniques used to draw the scene
-		if (mParams.mTechniques.IsEmpty())
+		if (mParams.mDrawTechniques.IsEmpty())
 		{
-			mParams.mTechniques.Expand() = graphics->GetTechnique("Deferred");
-			mParams.mTechniques.Expand() = graphics->GetTechnique("Decal");
+			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
+			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
 		}
 
 		// Update the potentially changed parameters
