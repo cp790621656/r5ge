@@ -727,7 +727,6 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					// Solid material group -- no alpha testing or blending needed
 					tech->SetAlphaTest(false);
 					tech->SetBlending(ITechnique::Blending::None);
-					tech->SetSorting(ITechnique::Sorting::FrontToBack);
 				}
 				else if (name == "Transparent")
 				{
@@ -775,7 +774,6 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetFog(false);
 					tech->SetLighting(IGraphics::Lighting::None);
 					tech->SetBlending(IGraphics::Blending::None);
-					tech->SetSorting(ITechnique::Sorting::FrontToBack);
 				}
 				else if (name == "Wireframe")
 				{
