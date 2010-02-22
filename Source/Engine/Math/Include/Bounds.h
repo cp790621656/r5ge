@@ -52,8 +52,9 @@ public:
 	const Vector3f&	GetMax()	const	{ return mMax; }
 	const Vector3f&	GetCenter() const	{ if (mIsDirty) _Update(); return mCenter; }
 	float			GetRadius() const	{ if (mIsDirty) _Update(); return mRadius; }
+
 	bool Contains (const Vector3f& pos)	{ return (mIsValid && (pos > mMin) && (pos < mMax)); }
-	bool Contains (const Bounds& b)		{ return Contains(b.GetMin()) && Contains(b.GetMax()); }
+	bool Contains (const Bounds& b);
 
 	bool Matches (const Bounds& b)
 	{

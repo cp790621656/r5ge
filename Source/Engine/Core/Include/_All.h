@@ -60,10 +60,11 @@ namespace R5
 	#include "Model.h"				// Model created from the template, contains its own animations
 	#include "ModelInstance.h"		// Instantiated model that can be placed into the scenegraph
 
-	#include "QuadNode.h"			// Quad-tree subdivided node, can be extended to create terrains
-	#include "QuadTree.h"			// Quad-tree subdivisioned scene object
+	#include "QuadNode.h"			// Quadtree subdivided node, can be extended to create terrains
+	#include "QuadTree.h"			// Quadtree subdivisioned scene object
 	#include "TerrainNode.h"		// Subdivisioned child of the Terrain class
 	#include "Terrain.h"			// Simple terrain implementation using QuadTree
+	#include "Octree.h"				// Octree-partitioned space
 
 	#include "BoneAttachment.h"		// Script that binds its owner to the specified bone of the owner's parent
 

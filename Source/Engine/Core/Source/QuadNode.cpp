@@ -54,19 +54,14 @@ QuadNode::~QuadNode()
 
 bool QuadNode::_Remove (Object* obj)
 {
-	for (uint i = mChildren.GetSize(); i > 0; )
-	{
-		if (mChildren[--i] == obj)
-		{
-			mChildren.RemoveAt(i);
-			return true;
-		}
-	}
+	QuadNode* node = (QuadNode*)obj->GetSubParent();
 
-	if (mPart[0] != 0 && mPart[0]->_Remove(obj)) return true;
-	if (mPart[1] != 0 && mPart[1]->_Remove(obj)) return true;
-	if (mPart[2] != 0 && mPart[2]->_Remove(obj)) return true;
-	if (mPart[3] != 0 && mPart[3]->_Remove(obj)) return true;
+	if (node != 0)
+	{
+		obj->SetSubParent(0);
+		node->mChildren.Remove(obj);
+		return true;
+	}
 	return false;
 }
 
@@ -77,7 +72,11 @@ bool QuadNode::_Remove (Object* obj)
 bool QuadNode::_Add (Object* obj)
 {
 	const Bounds& bounds = obj->GetCompleteBounds();
-	return bounds.IsValid() ? _Add(obj, bounds) : _Add(obj, obj->GetAbsolutePosition());
+	if (bounds.IsValid()) return _Add(obj, bounds);
+
+	Bounds temp;
+	temp.Include(obj->GetAbsolutePosition());
+	return _Add(obj, temp);
 }
 
 //============================================================================================================
@@ -93,35 +92,13 @@ bool QuadNode::_Add (Object* obj, const Bounds& bounds)
 		if (mPart[2] != 0 && mPart[2]->_Add(obj, bounds)) return true;
 		if (mPart[3] != 0 && mPart[3]->_Add(obj, bounds)) return true;
 
+		obj->SetSubParent(this);
 		mChildren.Expand() = obj;
 		return true;
 	}
 	else if (mLevel == 0)
 	{
-		mChildren.Expand() = obj;
-		return true;
-	}
-	return false;
-}
-
-//============================================================================================================
-// Adds the specified object to its proper place in the hierarchy using the specified position
-//============================================================================================================
-
-bool QuadNode::_Add (Object* obj, const Vector3f& pos)
-{
-	if (mBounds.Contains(pos))
-	{
-		if (mPart[0] != 0 && mPart[0]->_Add(obj, pos)) return true;
-		if (mPart[1] != 0 && mPart[1]->_Add(obj, pos)) return true;
-		if (mPart[2] != 0 && mPart[2]->_Add(obj, pos)) return true;
-		if (mPart[3] != 0 && mPart[3]->_Add(obj, pos)) return true;
-
-		mChildren.Expand() = obj;
-		return true;
-	}
-	else if (mLevel == 0)
-	{
+		obj->SetSubParent(this);
 		mChildren.Expand() = obj;
 		return true;
 	}

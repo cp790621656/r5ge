@@ -554,6 +554,10 @@
 					RelativePath=".\Include\Object.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Include\Octree.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source"
@@ -588,6 +592,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\Object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Octree.cpp"
 					>
 				</File>
 			</Filter>

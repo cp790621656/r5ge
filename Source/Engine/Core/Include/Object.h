@@ -42,6 +42,7 @@ protected:
 	String		mName;				// Name of this object
 	Flags		mFlags;				// Internal flags associated with this object
 	Object*		mParent;			// Object's parent
+	void*		mSubParent;			// Optional abstract sub-parent the object belongs to (such as a QuadTree node)
 	Core*		mCore;				// Engine's core that the object was created with
 	byte		mLayer;				// Draw layer on which this object resides
 
@@ -58,6 +59,7 @@ protected:
 	bool		mCalcAbsBounds;		// Whether absolute bounds will be auto-calculated ('true' in most cases)
 
 	bool		mIsDirty;			// Whether the object's absolute coordinates should be recalculated
+	bool		mHasMoved;			// Whether the object has moved since last update
 	bool		mSerializable;		// Whether the object will be serialized out
 
 	Lockable	mLock;
@@ -132,11 +134,14 @@ public:
 	// Name and flag field retrieval
 	const String&		GetName()				const	{ return mName;				}
 	const Object*		GetParent()				const	{ return mParent;			}
+	void*				GetSubParent()					{ return mSubParent;		}
+	const void*			GetSubParent()			const	{ return mSubParent;		}
 	byte				GetLayer()				const	{ return mLayer;			}
 	const Flags&		GetFlags()				const	{ return mFlags;			}
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
-	bool				IsSerializable()		const	{ return mSerializable;		}
 	bool				IsDirty()				const	{ return mIsDirty;			}
+	bool				HasMoved()				const	{ return mHasMoved;			}
+	bool				IsSerializable()		const	{ return mSerializable;		}
 	Children&			GetChildren()					{ return mChildren;			}
 	const Children&		GetChildren()			const	{ return mChildren;			}
 	const Scripts&		GetScripts()			const	{ return mScripts;			}
@@ -169,6 +174,9 @@ public:
 
 	// It's possible to switch object's parents
 	void SetParent (Object* ptr);
+
+	// Sets the optional sub-parent
+	void SetSubParent (void* ptr) { mSubParent = ptr; }
 
 	// Changes this object's draw layer
 	void SetLayer (byte layer) { mLayer = (byte)(layer & 31); }
@@ -221,6 +229,12 @@ protected:
 	// NOTE: Don't forget to set 'mIsDirty' to 'true' if you modify relative coordinates
 	// in your virtual functions, or absolute coordinates won't be recalculated!
 
+	// Function called when a new child object has been added
+	virtual void OnAddChild (Object* obj) {}
+
+	// Function called just before the child gets removed
+	virtual void OnRemoveChild (Object* obj) {}
+
 	// Called by a manually triggered function: key press event notification
 	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { return false; }
 
@@ -253,10 +267,10 @@ protected:
 	virtual bool OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);
 
 	// Called when the object is being saved
-	virtual void OnSerializeTo (TreeNode& root) const;
+	virtual void OnSerializeTo (TreeNode& node) const;
 
 	// Called when the object is being loaded
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 
 public:
 

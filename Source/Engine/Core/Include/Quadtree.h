@@ -51,6 +51,12 @@ protected:
 	// Should retrieve the technique mask that the terrain can be rendered with (should not include children)
 	virtual uint GetMask() const=0;
 
+	// Function called when a new child object has been added
+	virtual void OnAddChild (Object* obj) { mRootNode->_Add(obj); }
+
+	// Function called just before the child gets removed
+	virtual void OnRemoveChild (Object* obj) { mRootNode->_Remove(obj); }
+
 	// QuadTree often needs to reposition the child objects in its hierarchy
 	virtual void OnPostUpdate();
 

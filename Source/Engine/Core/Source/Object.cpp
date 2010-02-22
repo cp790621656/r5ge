@@ -15,6 +15,7 @@ void RegisterDefaultObjects()
 	Object::Register<DirectionalLight>();
 	Object::Register<PointLight>();
 	Object::Register<Terrain>();
+	Object::Register<Octree>();
 	Object::Register<Decal>();
 	Object::Register<Billboard>();
 	Object::Register<Glare>();
@@ -37,12 +38,14 @@ void RegisterDefaultScripts()
 
 Object::Object() :
 	mParent			(0),
+	mSubParent		(0),
 	mCore			(0),
 	mLayer			(10),
 	mRelativeScale	(1.0f),
 	mAbsoluteScale	(1.0f),
 	mCalcAbsBounds	(true),
 	mIsDirty		(false),
+	mHasMoved		(true),
 	mSerializable	(true)
 {
 	mFlags.Set(Flag::Enabled);
@@ -117,7 +120,9 @@ Object* Object::_AddObject (const String& type, const String& name)
 			ptr->mCore = mCore;
 			ptr->SetName(name);
 			ptr->mParent = this;
+			ptr->mIsDirty = true;
 			mChildren.Expand() = ptr;
+			OnAddChild(ptr);
 		}
 	}
 	return ptr;
@@ -232,6 +237,8 @@ void Object::_Add (Object* obj)
 
 		mChildren.Expand() = obj;
 		mIsDirty = true;
+
+		OnAddChild(obj);
 	}
 }
 
@@ -241,11 +248,12 @@ void Object::_Add (Object* obj)
 
 void Object::_Remove (Object* obj)
 {
-	if (obj != 0)
+	if (obj != 0 && mChildren.Remove(obj))
 	{
-		mChildren.Remove(obj);
+		OnRemoveChild(obj);
 
 		obj->mIsDirty		= true;
+		obj->mSubParent		= 0;
 		obj->mRelativePos	= obj->mAbsolutePos;
 		obj->mRelativeRot	= obj->mAbsoluteRot;
 		obj->mRelativeScale	= obj->mAbsoluteScale;
@@ -316,9 +324,13 @@ void Object::SetParent (Object* ptr)
     {
         Lock();
 		{
-			if (mParent) mParent->_Remove(this);
-			mParent = ptr;
-			if (mParent) mParent->_Add(this);
+			if (mParent != 0) mParent->_Remove(this);
+
+			mParent		= ptr;
+			mSubParent	= 0;
+			mIsDirty	= true;
+
+			if (mParent != 0) mParent->_Add(this);
 		}
         Unlock();
     }
@@ -470,6 +482,7 @@ void Object::Update (bool threadSafe)
 
 bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved, bool threadSafe)
 {
+	mHasMoved = false;
 	bool retVal (false);
 
 	if (mFlags.Get(Flag::Enabled))
@@ -497,6 +510,7 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			// If something has changed, update the absolute values
 			if (mIsDirty)
 			{
+				mHasMoved = true;
 				mAbsolutePos = (mRelativePos * scale) * rot + pos;
 				mAbsoluteScale = mRelativeScale * scale;
 				mAbsoluteRot.Combine(rot, mRelativeRot);
@@ -727,7 +741,12 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			else if (tag == "Layer")
 			{
 				uint temp;
-				if (value >> temp) mLayer = (byte)(temp & 31);
+
+				if (value >> temp)
+				{
+					mLayer = (byte)(temp & 31);
+					mIsDirty = true;
+				}
 			}
 			else if (tag == Script::ClassID())
 			{
@@ -811,7 +830,7 @@ bool Object::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
 // Called when the object is being loaded
 //============================================================================================================
 
-bool Object::OnSerializeFrom (const TreeNode& root)
+bool Object::OnSerializeFrom (const TreeNode& node)
 {
 	mIgnore.Set(Ignore::SerializeFrom, true);
 	return false;
@@ -821,7 +840,7 @@ bool Object::OnSerializeFrom (const TreeNode& root)
 // Called when the object is being saved
 //============================================================================================================
 
-void Object::OnSerializeTo (TreeNode& root) const
+void Object::OnSerializeTo (TreeNode& node) const
 {
 	mIgnore.Set(Ignore::SerializeTo, true);
 }

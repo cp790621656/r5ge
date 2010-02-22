@@ -43,12 +43,11 @@ private:
 	// Adds the specified object to the hierarchy, returning 'true' if the object has been added
 	bool _Add (Object* obj);
 	bool _Add (Object* obj, const Bounds& bounds);
-	bool _Add (Object* obj, const Vector3f& pos);
 
 	// Subdivides the node further
 	void _Partition (const OnCreateCallback& onCreate, float horizontal, float vertical);
 
-	// Calls 'OnCreate' on appropriate nodes
+	// Calls 'OnFill' on appropriate nodes
 	void _FillGeometry (void* ptr, float bboxPadding);
 
 	// Called when the object is being considered for rendering
