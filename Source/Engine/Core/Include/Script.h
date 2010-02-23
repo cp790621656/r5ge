@@ -13,6 +13,7 @@ public:
 
 	// Allow Object class to create scripts and access internal memebers in order to simplify code
 	friend class Object;
+	friend class Core;
 
 	// Script creation function delegate
 	typedef FastDelegate<Script* (void)>  CreateDelegate;
@@ -61,6 +62,8 @@ public:
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();
 
+protected:
+
 	// Initialization function is called once the script has been created
 	virtual void OnInit() {}
 
@@ -86,6 +89,6 @@ public:
 	virtual void OnFill (FillParams& params) { mIgnore.Set(Ignore::Fill, true); }
 
 	// Serialization
-	virtual void SerializeTo	(TreeNode& root) const {}
+	virtual void SerializeTo	(TreeNode& node) const {}
 	virtual void SerializeFrom	(const TreeNode& root) {}
 };
