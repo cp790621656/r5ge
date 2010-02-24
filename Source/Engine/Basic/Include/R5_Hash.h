@@ -192,7 +192,7 @@ public:
 					// Find the next best size for the has that would make both keys unique
 					if ( (mask & key) != (mask & oldKey) )
 					{
-						ASSERT(newSize < 4097, "Hash is getting large... intentional?");
+						ASSERT(newSize < 16385, "Hash is getting large... intentional?");
 						mIndices.Release();
 						mIndices.ExpandTo(newSize);
 						_RebuildIndices();
