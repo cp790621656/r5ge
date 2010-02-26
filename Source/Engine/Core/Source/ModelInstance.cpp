@@ -100,7 +100,7 @@ bool ModelInstance::OnFill (FillParams& params)
 	if (mModel != 0)
 	{
 		float dist = (mAbsolutePos - params.mCamPos).Dot();
-		params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel, dist);
+		params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel->GetUID(), dist);
 	}
 	return true;
 }

@@ -13,8 +13,6 @@ struct IMaterial
 
 	typedef Array<const ITexture*> Textures;
 
-public:
-
 	// Material options differ for every rendering technique
 	class DrawMethod
 	{
@@ -41,9 +39,18 @@ public:
 		const Textures&		GetAllTextures() const								{ return mTextures; }
 	};
 
+	typedef Array<DrawMethod> DrawMethods;
+
+protected:
+
+	uint mUID;
+
+	IMaterial() : mUID(GenerateUID()) {}
+
 public:
 
-	typedef Array<DrawMethod> DrawMethods;
+	// Retrieves a unique identifier for this texture
+	uint GetUID() const { return mUID; }
 
 	virtual ~IMaterial() {};
 

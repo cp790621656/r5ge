@@ -42,7 +42,7 @@ public:
 
 	// Add a new object to the draw queue. The 'group' parameter can be a material,
 	// a texture, or anything else you might want to group similar objects by.
-	void Add (uint layer, Object* obj, uint mask, const void* group, float distSquared)
+	void Add (uint layer, Object* obj, uint mask, uint group, float distSquared)
 	{
 		mLayers[layer & 31].Add(obj, mask, group, distSquared);
 	}

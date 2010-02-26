@@ -31,7 +31,7 @@ void DrawLayer::Sort()
 // Add the specified object to this layer
 //============================================================================================================
 
-void DrawLayer::Add (Object* obj, uint mask, const void* group, float distSquared)
+void DrawLayer::Add (Object* obj, uint mask, uint group, float distSquared)
 {
 	mMask |= mask;
 

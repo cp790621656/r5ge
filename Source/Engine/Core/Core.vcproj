@@ -309,6 +309,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\FillParams.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\Resource.h"
 					>
 				</File>

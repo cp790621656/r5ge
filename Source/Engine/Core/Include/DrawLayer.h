@@ -19,7 +19,7 @@ struct DrawLayer
 	void Sort();
 
 	// Add the specified object to this layer
-	void Add (Object* obj, uint mask, const void* group, float distSquared);
+	void Add (Object* obj, uint mask, uint group, float distSquared);
 
 	// Draw the scene
 	uint Draw (const ITechnique* tech, bool insideOut);

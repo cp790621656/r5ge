@@ -129,7 +129,7 @@ bool Emitter::OnFill (FillParams& params)
 		// different billboards still need to blend correctly and the only way to do that is to sort all of
 		// them together, which wouldn't be possible if they ended up in different groups.
 
-		const void* group = mTech->GetDepthWrite() ? mTex : 0;
+		uint group = (mTex != 0 && mTech->GetDepthWrite()) ? mTex->GetUID() : 0;
 		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), group, dist);
 	}
 	return true;

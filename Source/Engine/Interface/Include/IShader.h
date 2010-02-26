@@ -27,6 +27,9 @@ protected:
 
 	Flags	mFlags;
 	String	mName;
+	uint	mUID;
+
+	IShader() : mUID(GenerateUID()) {}
 
 public:
 
@@ -39,6 +42,9 @@ public:
 public:
 
 	R5_DECLARE_INTERFACE_CLASS("Shader");
+
+	// Retrieves a unique identifier for this shader
+	uint GetUID() const { return mUID; }
 
 	virtual ~IShader() {}
 

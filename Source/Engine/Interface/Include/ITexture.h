@@ -9,8 +9,6 @@
 
 struct ITexture
 {
-	R5_DECLARE_INTERFACE_CLASS("Texture");
-
 	// Texture format
 	struct Format
 	{
@@ -81,7 +79,18 @@ struct ITexture
 		};
 	};
 
+protected:
+
+	uint mUID;
+
+	ITexture() : mUID(GenerateUID()) {}
+
 public: //============================================================================================================
+
+	R5_DECLARE_INTERFACE_CLASS("Texture");
+
+	// Retrieves a unique identifier for this texture
+	uint GetUID() const { return mUID; }
 
 	virtual ~ITexture() {};
 

@@ -19,7 +19,7 @@ public:
 	DrawList() : mNeedsSorting(false) {}
 
 	// Add a new entry
-	void Add (const void* group, Object* object, float distance);
+	void Add (uint group, Object* object, float distance);
 
 	// Sorts the array
 	void Sort() { mNeedsSorting = true; }

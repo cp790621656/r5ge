@@ -85,7 +85,16 @@ bool Decal::OnFill (FillParams& params)
 	if (mShader != 0)
 	{
 		static uint mask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
-		const void* group = mTextures.IsValid() ? (const void*)mTextures.Back() : (const void*)mShader;
+		uint group (0);
+
+		if (mTextures.IsValid() && mTextures.Back() != 0)
+		{
+			group = mTextures.Back()->GetUID();
+		}
+		else if (mShader != 0)
+		{
+			group = mShader->GetUID();
+		}
 		params.mDrawQueue.Add(mLayer, this, mask, group, 0.0f);
 	}
 	return true;
