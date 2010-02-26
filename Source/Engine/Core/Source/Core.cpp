@@ -255,13 +255,15 @@ Model* Core::GetModel (const String& name, bool createIfMissing)
 {
 	if (name.IsEmpty()) return 0;
 
-	if (createIfMissing)
+	Model* model = mModels.Find(name);
+	
+	if (model == 0 && createIfMissing)
 	{
-		Model* model = mModels.AddUnique(name);
+		model = mModels.AddUnique(name);
 		model->mCore = this;
-		return model;
+		if (model->Load(name)) model->SetSerializable(false);
 	}
-	return mModels.Find(name);
+	return model;
 }
 
 //============================================================================================================
@@ -413,22 +415,6 @@ void Core::OnResize(const Vector2i& size)
 }
 
 //============================================================================================================
-// Loads the resources node
-//============================================================================================================
-
-void Core::ParseResources(const TreeNode& root)
-{
-	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
-	{
-		const TreeNode& node  = root.mChildren[i];
-		const String&	tag   = node.mTag;
-
-		Resource* resource = GetResource(tag);
-		resource->SerializeFrom(node);
-	}
-}
-
-//============================================================================================================
 // Serialization -- Load
 //============================================================================================================
 
@@ -483,16 +469,6 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		{
 			Skeleton* skel = GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true);
 			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
-		}
-		else if ( tag == Resource::ClassID() )
-		{
-			Resource* res = GetResource(value.IsString() ? value.AsString() : value.GetString(), true);
-
-			if (res != 0)
-			{
-				res->SerializeFrom(node, forceUpdate);
-				if (!serializable) res->SetSerializable(false);
-			}
 		}
 		else if ( tag == ModelTemplate::ClassID() )
 		{
@@ -630,7 +606,12 @@ bool Core::SerializeTo (TreeNode& root) const
 				scripts[i]->SerializeTo(node);
 
 			for (uint i = 0; i < children.GetSize(); ++i)
-				children[i]->SerializeTo(node);
+				if (children[i]->IsSerializable())
+					children[i]->SerializeTo(node);
+
+			// If nothing was saved, don't keep the node around
+			if (node.mChildren.IsEmpty())
+				root.mChildren.Shrink();
 		}
 	}
 	mRoot.Unlock();

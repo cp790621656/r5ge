@@ -109,11 +109,6 @@ public:
 	virtual bool OnScroll	(const Vector2i& pos, float delta);
 	virtual void OnResize	(const Vector2i& size);
 
-private:
-
-	// Serialization for resources
-	void ParseResources (const TreeNode& root);
-
 public:
 
 	// Serialization functions -- 'false' is returned only if the application should exit immediately

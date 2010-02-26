@@ -688,34 +688,42 @@ void Object::Select (const Vector3f& pos, ObjectPtr& ptr, float& distance)
 {
 	if (mFlags.Get(Flag::Visible) && mCompleteBounds.Contains(pos))
 	{
-		Lock();
+		ObjectPtr outPtr (0);
+
+		bool considerChildren = true;
+
+		// Trigger the callback function first
+		if (!mIgnore.Get(Ignore::Select))
 		{
-			// If this object is marked as 'selectable', try to select it
-			if (mFlags.Get(Flag::Selectable))
-			{
-				float current = mAbsolutePos.GetDistanceTo(pos);
+			considerChildren = OnSelect(pos, outPtr, distance);
+		}
 
-				if (current < distance)
-				{
-					distance = current;
-					ptr = this;
-				}
-			}
-
-			bool considerChildren = true;
-
-			if (!mIgnore.Get(Ignore::Select))
-			{
-				considerChildren = OnSelect(pos, ptr, distance);
-			}
-
-			if (considerChildren)
+		// If the callback function says we should consider children, do that
+		if (considerChildren)
+		{
+			Lock();
 			{
 				for (uint i = mChildren.GetSize(); i > 0; )
-					mChildren[--i]->Select(pos, ptr, distance);
+					mChildren[--i]->Select(pos, outPtr, distance);
+			}
+			Unlock();
+		}
+
+		// If no child has been chosen and this object is marked as 'selectable', try to select it
+		if (outPtr == 0 && mFlags.Get(Flag::Selectable))
+		{
+			float current = pos.GetDistanceTo( mCompleteBounds.IsValid() ?
+				mCompleteBounds.GetCenter() : mAbsolutePos );
+
+			if (current < distance)
+			{
+				distance = current;
+				outPtr = this;
 			}
 		}
-		Unlock();
+
+		// Keep the result
+		if (outPtr != 0) ptr = outPtr;
 	}
 }
 
@@ -758,13 +766,19 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
 	Lock();
 	{
+		bool serializable = true;
+
 		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 		{
 			const TreeNode& node  = root.mChildren[i];
 			const String&	tag   = node.mTag;
 			const Variable&	value = node.mValue;
 
-			if		(tag == "Serializable")		  value >> mSerializable;
+			if (tag == "Serializable")
+			{
+				value >> serializable;
+				mSerializable = serializable;
+			}
 			else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
 			else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
 			else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
@@ -800,6 +814,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 					// The object should not remain locked during child serialization
 					Unlock();
 					ptr->SerializeFrom(node, forceUpdate);
+					if (!serializable) ptr->SetSerializable(false);
 					Lock();
 				}
 			}

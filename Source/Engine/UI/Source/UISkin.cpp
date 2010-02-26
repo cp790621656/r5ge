@@ -118,11 +118,10 @@ bool UISkin::SerializeFrom (const TreeNode& root)
 
 bool UISkin::SerializeTo (TreeNode& root) const
 {
-	if (mSerializable)
+	if (mSerializable && mTex != 0)
 	{
 		TreeNode& node = root.AddChild("Skin", mName);
-		TreeNode& tex = node.AddChild("Texture");
-		if (mTex != 0) tex.mValue = mTex->GetName();
+		node.AddChild("Texture", mTex->GetName());
 		for (uint i = 0; i < mFaces.GetSize(); ++i) mFaces[i]->SerializeTo(node);
 		return true;
 	}
