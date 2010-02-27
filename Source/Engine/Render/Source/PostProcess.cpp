@@ -57,7 +57,8 @@ void BlurDownsample (IGraphics*			graphics,
 					 const ITexture*	color,
 					 const ITexture*	depth,
 					 const IShader*		replacement,
-					 const IShader*		postprocess )
+					 const IShader*		postprocess,
+					 IRenderTarget*		target)
 {
 	static const ITechnique* technique  = graphics->GetTechnique("Post Process");
 	static IShader*			blurH		= graphics->GetShader("[R5] Horizontal Blur");
@@ -143,9 +144,12 @@ void BlurDownsample (IGraphics*			graphics,
 	BlurCommon(graphics, target10, target11, texture01, texture10, blurH, blurV);
 	BlurCommon(graphics, target20, target21, texture11, texture20, blurH, blurV);
 
-	// Draw to screen
-	graphics->SetActiveRenderTarget(0);
+	// Draw to the render target
+	graphics->SetActiveRenderTarget(target);
 	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+
+	// Clear the target
+	//if (target != 0) graphics->Clear(true, false, false);
 
 	// Activate all textures
 	graphics->SetActiveTexture(0, color);
@@ -178,21 +182,27 @@ void PostProcess::None (IGraphics* graphics, const ITexture* color)
 // Bloom post-processing effect
 //============================================================================================================
 
-void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float threshold)
+void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float threshold, IRenderTarget* target)
 {
-	static IShader*	final = 0;
-	static IShader*	replacement	= 0;
+	uint format = color->GetFormat();
 
-	g_threshold = threshold;
-
-	if (final == 0)
+	// Only apply bloom if the format is HDR or the threshold has been set below 1
+	if ((format & ITexture::Format::HDR) != 0 || threshold < 0.999f)
 	{
-		final = graphics->GetShader("[R5] Bloom/Apply");
-		replacement = graphics->GetShader("[R5] Bloom/Blur");
-		replacement->RegisterUniform("threshold", &SetThreshold);
-	}
+		g_threshold = threshold;
 
-	BlurDownsample (graphics, color, 0, replacement, final);
+		static IShader*	final = 0;
+		static IShader*	replacement	= 0;
+
+		if (final == 0)
+		{
+			final = graphics->GetShader("[R5] Bloom/Apply");
+			replacement = graphics->GetShader("[R5] Bloom/Blur");
+			replacement->RegisterUniform("threshold", &SetThreshold);
+		}
+
+		BlurDownsample (graphics, color, 0, replacement, final, target);
+	}
 }
 
 //============================================================================================================
@@ -204,7 +214,8 @@ void PostProcess::DepthOfField (IGraphics*		graphics,
 								const ITexture* depth,
 								float			focalDistance,
 								float			focalMin,
-								float			focalMax)
+								float			focalMax,
+								IRenderTarget*	target)
 {
 	static IShader* dof	= 0;
 
@@ -219,5 +230,51 @@ void PostProcess::DepthOfField (IGraphics*		graphics,
 		dof->RegisterUniform("focusRange", &SetFocusRange);
 	}
 
-	BlurDownsample (graphics, color, depth, 0, dof);
+	BlurDownsample (graphics, color, depth, 0, dof, target);
+}
+
+//============================================================================================================
+// Both depth-of-field as well as bloom effects
+//============================================================================================================
+
+void PostProcess::Both (IGraphics*		graphics,
+						const ITexture*	color,
+						const ITexture*	depth,
+						float			threshold,
+						float			focalDistance,
+						float			focalMin,
+						float			focalMax)
+{
+	uint format = color->GetFormat();
+	if (format == ITexture::Format::Invalid) format = ITexture::Format::RGB16F;
+
+	// Only apply bloom if the format is HDR or the threshold has been set below 1
+	if ((format & ITexture::Format::HDR) != 0 || threshold < 0.999f)
+	{
+		// We want to reuse the specular light texture as it's no longer needed at this point, and it happens
+		// to be the least useful texture in general. Reusing it saves the need to create another one.
+		static ITexture* intrimColor = graphics->GetTexture("[Generated] Specular Light");
+		static IRenderTarget* target = 0;
+
+		if (target == 0)
+		{
+			target = graphics->CreateRenderTarget();
+			target->AttachColorTexture(0, intrimColor, format);
+			target->UseSkybox(false);
+		}
+
+		// The target's size should match the color texture's size
+		target->SetSize(color->GetSize());
+
+		// Apply depth of field first
+		DepthOfField(graphics, color, depth, focalDistance, focalMin, focalMax, target);
+
+		// Bloom follows afterwards
+		Bloom(graphics, intrimColor, threshold, 0);
+	}
+	else
+	{
+		// Only apply depth of field
+		DepthOfField(graphics, color, depth, focalDistance, focalMin, focalMax, 0);
+	}
 }

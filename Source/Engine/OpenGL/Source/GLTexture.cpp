@@ -310,7 +310,7 @@ uint GLTexture::_GetOrCreate()
 			{
 				mWrapMode = WrapMode::ClampToOne;
 			}
-			else if (mFormat & Format::HDR || !isPowerOfTwo || mType == Type::EnvironmentCubeMap)
+			else if (!isPowerOfTwo || mType == Type::EnvironmentCubeMap)
 			{
 				mWrapMode = WrapMode::ClampToEdge;
 			}

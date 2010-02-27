@@ -258,6 +258,9 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 	const ITexture* lightmap (0);
 	DrawResult result;
 
+	// Made constant so it can be quickly changed for testing purposes
+	const uint HDRFormat = ITexture::Format::RGB16F;
+
 	// Deferred rendering target
 	{
 		static IRenderTarget* target = 0;
@@ -267,7 +270,7 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 			target = graphics->CreateRenderTarget();
 			target->AttachDepthTexture( depth );
 			target->AttachStencilTexture( depth );
-			target->AttachColorTexture( 0, matDiff, ITexture::Format::RGB16F );
+			target->AttachColorTexture( 0, matDiff, HDRFormat );
 			target->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
 			target->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
 			target->UseSkybox(true);
@@ -340,8 +343,8 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 			target = graphics->CreateRenderTarget();
 			target->AttachDepthTexture( depth );
 			target->AttachStencilTexture( depth );
-			target->AttachColorTexture( 0, lightDiff, ITexture::Format::RGB16F );
-			target->AttachColorTexture( 1, lightSpec, ITexture::Format::RGB16F );
+			target->AttachColorTexture( 0, lightDiff, HDRFormat );
+			target->AttachColorTexture( 1, lightSpec, HDRFormat );
 			target->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
 			target->UseSkybox(false);
 		}
@@ -363,7 +366,7 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 			target = graphics->CreateRenderTarget();
 			target->AttachDepthTexture( depth );
 			target->AttachStencilTexture( depth );
-			target->AttachColorTexture( 0, final, ITexture::Format::RGB16F );
+			target->AttachColorTexture( 0, final, HDRFormat );
 			target->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
 			target->UseSkybox(false);
 		}
