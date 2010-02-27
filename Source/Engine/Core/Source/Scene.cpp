@@ -205,12 +205,8 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 Object* Scene::Select (const Vector3f& pos)
 {
 	Object* ptr = 0;
-	//float radius = 65535.0f;
-
-	//for (uint i = mObjects.GetSize(); i > 0; )
-	//{
-	//	mObjects[--i].mObject->Select(pos, ptr, radius);
-	//}
+	float radius = 65535.0f;
+	mRoot->Select(pos, ptr, radius);
 	return ptr;
 }
 

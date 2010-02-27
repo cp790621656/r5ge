@@ -11,7 +11,7 @@ class Script
 {
 public:
 
-	// Allow Object class to create scripts and access internal memebers in order to simplify code
+	// Allow Object class to create scripts and access internal members in order to simplify code
 	friend class Object;
 	friend class Core;
 

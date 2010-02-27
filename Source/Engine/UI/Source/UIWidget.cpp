@@ -207,7 +207,8 @@ UIScript* UIWidget::_AddScript (const String& type)
 	{
 		ptr->mWidget = this;
 		mScripts.Expand() = ptr;
-		ptr->Init();
+		ptr->OnInit();
+		if (!mScripts.Contains(ptr)) ptr = 0;
 	}
 	return ptr;
 }

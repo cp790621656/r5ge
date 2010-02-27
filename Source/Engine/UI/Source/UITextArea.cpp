@@ -17,8 +17,10 @@ void UITextArea::Clear()
 // Add a single paragraph
 //============================================================================================================
 
-void UITextArea::AddParagraph (const String& text, const IFont* font, const Color3f& color, bool shadow)
+void UITextArea::AddParagraph (const String& text, const Color3f& color, const IFont* font, bool shadow)
 {
+	if (font == 0) font = mUI->GetDefaultFont();
+
 	if (font != 0)
 	{
 		while (mParagraphs.GetSize() > mMaxParagraphs)

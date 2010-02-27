@@ -54,7 +54,7 @@ public:
 	UIWidget* GetWidget() { return mWidget; }
 
 	// Initialization function is called once the script has been created
-	virtual void Init() {}
+	virtual void OnInit() {}
 
 	// Virtual functions that should be overwritten to add functionality
 	virtual bool OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{ return false; }
