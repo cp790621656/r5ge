@@ -32,7 +32,7 @@ public:
 	R5_DECLARE_INHERITED_CLASS("Highlight", UIHighlight, UIWidget, UIWidget);
 
 	// Area functions
-	virtual void SetDirty()					{ OnDirty(0); }
+	virtual void SetDirty() { OnDirty(0); }
 	virtual void OnFill (UIQueue* queue);
 
 	// Serialization

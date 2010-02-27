@@ -48,8 +48,8 @@ public:
 
 	void OnShowTexture	(UIWidget* widget, uint state, bool isSet);
 	void OnStateChange	(UIWidget* widget, uint state, bool isSet);
-	bool OnGenerate		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
-	bool OnSave			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnGenerate		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnSave			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
 	void OnSerializeTo	(TreeNode& node) const;
 	bool OnSerializeFrom(const TreeNode& node);
@@ -465,27 +465,25 @@ void TestApp::OnStateChange(UIWidget* widget, uint state, bool isSet)
 // Triggered when the "Save" button gets clicked on
 //============================================================================================================
 
-bool TestApp::OnSave (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void TestApp::OnSave (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft && !isDown)
 	{
 		mGraphics->ExecuteBeforeNextFrame( bind(&TestApp::SaveTextures, this) );
 	}
-	return true;
 }
 
 //============================================================================================================
 // Callback triggered when the user clicks on the "Generate" button
 //============================================================================================================
 
-bool TestApp::OnGenerate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void TestApp::OnGenerate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft && !isDown)
 	{
 		mSeed = mRand.GenerateUint() + Time::GetMilliseconds();
 		Generate();
 	}
-	return true;
 }
 
 //============================================================================================================

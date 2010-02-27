@@ -66,7 +66,7 @@ protected:
 	void _Rebuild();
 
 	// Event callback for a visual highlight
-	bool _OnMouseOverItem (UIWidget* widget, bool inside);
+	void _OnMouseOverItem (UIWidget* widget, bool inside);
 	void _OnItemFocus (UIWidget* widget, bool hasFocus);
 
 public:
@@ -76,9 +76,5 @@ public:
 
 	// If alpha is set to '1', rebuild the entry list
 	virtual void SetAlpha (float val, float animTime = 0.0f);
-
-	// Respond to selection and ignore keys and mouse movement
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ return true; }
-	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown)	{ return true; }
-	virtual void OnFocus	(bool hasFocus);
+	virtual void OnFocus  (bool hasFocus);
 };

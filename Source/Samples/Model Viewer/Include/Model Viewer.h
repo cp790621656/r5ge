@@ -103,8 +103,8 @@ protected: // Functions that facilitate widget creation with common properties a
 private: // Numerous callback functions triggered by the UI elements
 
 	void OnFileInputValue		(UIWidget* widget) { _ConfirmFileDialog(); }
-	bool OnFileDialogOK			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
-	bool OnConfirmDialogOK		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnFileDialogOK			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnConfirmDialogOK		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 	void ToggleBoth				(UIWidget* widget, uint state, bool isSet);
 	void ToggleOff				(UIWidget* widget, uint state, bool isSet);
@@ -129,7 +129,7 @@ private: // Numerous callback functions triggered by the UI elements
 	void OnBloomToggle			(UIWidget* widget, uint state, bool isSet);
 	void OnBloomChange			(UIWidget* widget);
 
-	bool OnModelBake			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnModelBake			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void OnModelChange			(UIWidget* widget, bool hasFocus) { if (!hasFocus) _UpdateModelData(); }
 	void OnModelToggle			(UIWidget* widget, uint state, bool isSet) { _UpdateModelData(); }
 	void OnModelSpin			(UIWidget* widget, uint state, bool isSet);
@@ -160,7 +160,7 @@ private: // Numerous callback functions triggered by the UI elements
 	void OnAnimNameValue		(UIWidget* widget);
 	void OnAnimProperties		(UIWidget* widget, bool hasFocus);
 	void OnAnimLoop				(UIWidget* widget, uint state, bool isSet);
-	bool OnAnimPlay				(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void OnAnimPlay				(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 	// List selection callbacks -- they fill their appropriate lists with all the relevant entries
 	void OnMeshListFocus		(UIWidget* widget, bool hasFocus);

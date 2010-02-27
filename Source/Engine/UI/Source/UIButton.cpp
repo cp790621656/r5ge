@@ -196,33 +196,31 @@ void UIButton::OnMouseOver (bool inside)
 // Event handling -- mouse movement should be intercepted
 //============================================================================================================
 
-bool UIButton::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
+void UIButton::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 {
-	if (mState & State::Enabled) UIWidget::OnMouseMove(pos, delta);
-	return true;
+	if (mState & State::Enabled)
+	{
+		UIWidget::OnMouseMove(pos, delta);
+	}
 }
 
 //============================================================================================================
 // Event handling -- left mouse button presses the button
 //============================================================================================================
 
-bool UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+void UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
-	bool retVal = false;
-
 	if (mState & State::Enabled)
 	{
 		if (key == Key::MouseLeft)
 		{
-			retVal = true;
-
 			if (isDown)
 			{
 				// If we're ignoring this key, don't continue but don't ignore the next one (mouse up)
 				if (mIgnoreMouseKey)
 				{
 					mIgnoreMouseKey = false;
-					return true;
+					return;
 				}
 
 				// If this is a sticky button and it's not currently pressed, ignore the next mouse key
@@ -236,7 +234,7 @@ bool UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 				if (mRegion.Contains(pos))
 				{
 					// If we should ignore this key, don't continue
-					if (mIgnoreMouseKey) return true;
+					if (mIgnoreMouseKey) return;
 
 					// Otherwise set the button's state to be not pressed and continue
 					SetState(State::Pressed, false);
@@ -253,5 +251,4 @@ bool UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		}
 		UIWidget::OnKeyPress(pos, key, isDown);
 	}
-	return retVal;
 }

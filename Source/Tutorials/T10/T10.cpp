@@ -68,7 +68,7 @@ public:
 			mLabel->SetSerializable(false);
 
 			// We also don't want it to receive events -- all clicks should fall right through it
-			mLabel->SetReceivesEvents(false);
+			mLabel->SetEventHandling( UIWidget::EventHandling::None );
 
 			// It should start off being invisible
 			mLabel->SetAlpha(0.0f);

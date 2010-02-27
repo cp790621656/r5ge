@@ -222,7 +222,7 @@ void UIWindow::OnSerializeTo (TreeNode& node) const
 // Windows can be moved and resized
 //============================================================================================================
 
-bool UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+void UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if (mMovement == Movement::Move)
 	{
@@ -243,14 +243,13 @@ bool UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 		if (move.Dot() > 0.0f) mRegion.Adjust(0, 0, move.x, move.y);
 	}
 	if (mMovement == Movement::None) UIWidget::OnMouseMove(pos, delta);
-	return true;
 }
 
 //============================================================================================================
 // Depending on where in the window the click happens, the window may be moved or resized
 //============================================================================================================
 
-bool UIWindow::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+void UIWindow::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft)
 	{
@@ -280,8 +279,5 @@ bool UIWindow::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 	}
 
 	// If we're moving the window, don't inform the children of this key event
-	if (mMovement != Movement::None) return true;
-
-	// Inform the children and intercept all mouse events
-	return UIWidget::OnKeyPress(pos, key, isDown) || (key > Key::MouseFirst && key < Key::MouseLast);
+	if (mMovement == Movement::None) UIWidget::OnKeyPress(pos, key, isDown);
 }

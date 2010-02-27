@@ -227,27 +227,24 @@ void UISlider::OnSerializeTo (TreeNode& node) const
 // Respond to mouse movement
 //============================================================================================================
 
-bool UISlider::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+void UISlider::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if ( mUI->IsKeyDown(Key::MouseLeft) )
 	{
 		SetValue(pos);
 	}
 	UIWidget::OnMouseMove(pos, delta);
-	return true;
 }
 
 //============================================================================================================
 // Respond to key events -- namely the left mouse button
 //============================================================================================================
 
-bool UISlider::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+void UISlider::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if ( key == Key::MouseLeft )
 	{
 		if (isDown) SetValue(pos);
-		UIWidget::OnKeyPress(pos, key, isDown);
-		return true;
 	}
-	return UIWidget::OnKeyPress(pos, key, isDown);
+	UIWidget::OnKeyPress(pos, key, isDown);
 }

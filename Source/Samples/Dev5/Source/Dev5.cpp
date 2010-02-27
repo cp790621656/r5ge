@@ -258,9 +258,10 @@ TestApp::TestApp()
 	mStatus->SetFont(font1);
 	mStatus->GetRegion().SetTop(1.0f, -20.0f);
 	mStatus->SetText("Keys: [S]tart, [E]nd, [A]dvance, [C]omplete, [O]verestimate, [B]acktrace");
+	mStatus->SetShadow(true);
 	mStatus->SetLayer(2);
 	mStatus->SetAlignment( UILabel::Alignment::Center );
-	mStatus->SetReceivesEvents(false);
+	mStatus->SetEventHandling( UIWidget::EventHandling::None );
 	
 	float fx = ((float)WIDTH  / XCOUNT) / WIDTH;
 	float fy = ((float)HEIGHT / YCOUNT) / HEIGHT;
@@ -287,7 +288,7 @@ TestApp::TestApp()
 			listener->SetOnMouseMove( bind(&TestApp::OnHighlightMove, this) );
 
 			lbl0->SetFont(font0);
-			lbl0->SetReceivesEvents(false);
+			lbl0->SetEventHandling( UIWidget::EventHandling::None );
 			lbl0->SetAlignment( UILabel::Alignment::Center );
 			lbl0->SetColor(0);
 			lbl0->SetShadow(false);
@@ -295,14 +296,14 @@ TestApp::TestApp()
 			lbl0->GetRegion().SetBottom(0.333f, 0.0f);
 
 			lbl1->SetFont(font1);
-			lbl1->SetReceivesEvents(false);
+			lbl1->SetEventHandling( UIWidget::EventHandling::None );
 			lbl1->SetAlignment( UILabel::Alignment::Center );
 			lbl1->SetColor(0);
 			lbl1->SetShadow(false);
 			lbl1->SetLayer(1, false);
 
 			lbl2->SetFont(font0);
-			lbl2->SetReceivesEvents(false);
+			lbl2->SetEventHandling( UIWidget::EventHandling::None );
 			lbl2->SetAlignment( UILabel::Alignment::Center );
 			lbl2->SetColor(0);
 			lbl2->SetShadow(false);
@@ -401,21 +402,19 @@ void TestApp::OnDraw()
 // Delegate triggered when a key is pressed over the grid
 //============================================================================================================
 
-bool TestApp::OnHighlightKey (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown)
+void TestApp::OnHighlightKey (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown)
 {
 	if (key == Key::MouseLeft || key == Key::MouseRight)
 	{
 		if (isDown) OnHighlightMove(ptr, pos, Vector2i(0, 0));
-		return true;
 	}
-	return false;
 }
 
 //============================================================================================================
 // Delegate triggered when mouse is moving over the grid
 //============================================================================================================
 
-bool TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta)
+void TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta)
 {
 	bool left  = mCore->IsKeyDown(Key::MouseLeft);
 	bool right = mCore->IsKeyDown(Key::MouseRight);
@@ -426,8 +425,8 @@ bool TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2
 
 		if (hlt != 0)
 		{
-			if (mStart != 0 && mStart->mHlt == hlt) return false;
-			if (mEnd   != 0 && mEnd->mHlt   == hlt) return false;
+			if (mStart != 0 && mStart->mHlt == hlt) return;
+			if (mEnd   != 0 && mEnd->mHlt   == hlt) return;
 
 			for (uint i = 0; i < mNodes.GetSize(); ++i)
 			{
@@ -438,12 +437,10 @@ bool TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2
 					node.mPassable = !left;
 					if (node.mActive) Restart();
 					Update();
-					return true;
 				}
 			}
 		}
 	}
-	return false;
 }
 
 //============================================================================================================

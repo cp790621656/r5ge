@@ -211,7 +211,7 @@ void TestApp::Regenerate()
 // Triggered when "Generate" button is clicked in the UI
 //============================================================================================================
 
-bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown && key == Key::MouseLeft)
 	{
@@ -249,7 +249,6 @@ bool TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 			mRegenerate = true;
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

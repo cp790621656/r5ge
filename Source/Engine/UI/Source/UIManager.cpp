@@ -25,11 +25,12 @@ UIManager::UIManager() :
 
 	mRoot._SetRootPtr(this);
 	mRoot.SetName("UI Root");
+	mRoot.SetEventHandling(UIWidget::EventHandling::Children);
 
 	mTooltip._SetRootPtr(this);
 	mTooltip.GetRegion().SetAlpha(0.0f);
 	mTooltip.SetName("Tooltip");
-	mTooltip.SetReceivesEvents(false);
+	mTooltip.SetEventHandling(UIWidget::EventHandling::None);
 
 	static bool doOnce = true;
 
@@ -139,8 +140,8 @@ void UIManager::_SetFocusArea (UIWidget* ptr)
 		mFocus = ptr;
 		
 		if (oldInput) oldInput->OnFocus(false);
-		if (mFocus) mFocus->OnFocus(true);
-		if (mFocus) mFocus->BringToFront();
+		if (mFocus != 0) mFocus->OnFocus(true);
+		if (mFocus != 0) mFocus->BringToFront();
 	}
 }
 
@@ -394,7 +395,8 @@ bool UIManager::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 		if (mSelected)
 		{
 			// If we have an widget that has focus (mouse key was held down on it), inform it of mouse movement
-			retVal = mSelected->OnMouseMove(pos, delta);
+			mSelected->OnMouseMove(pos, delta);
+			retVal = true;
 		}
 		else
 		{
@@ -417,7 +419,11 @@ bool UIManager::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 			mTtQueued = true;
 
 			// Inform the hovering widget of mouse movement
-			if (mHover != 0) retVal = mHover->OnMouseMove(pos, delta);
+			if (mHover != 0)
+			{
+				mHover->OnMouseMove(pos, delta);
+				retVal = true;
+			}
 		}
 	}
 	Unlock();
@@ -451,7 +457,21 @@ bool UIManager::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		}
 
 		// Inform the hovering widget of the key event
-		if (mFocus != 0) retVal = mFocus->OnKeyPress(pos, key, isDown);
+		if (mFocus != 0)
+		{
+			mFocus->OnKeyPress(pos, key, isDown);
+
+			if (mFocus == 0 || key > Key::MouseFirst && key < Key::MouseLast)
+			{
+				// Mouse events always get intercepted by widgets
+				retVal = true;
+			}
+			else
+			{
+				// Keyboard events only get intercepted by widgets that choose to intercept them
+				retVal = (mFocus->GetEventHandling() == UIWidget::EventHandling::Full);
+			}
+		}
 	}
 	Unlock();
 	return retVal;
@@ -467,7 +487,12 @@ bool UIManager::OnScroll (const Vector2i& pos, float delta)
 	Lock();
 	{
 		_HideTooltip();
-		if (mHover != 0) retVal = mHover->OnScroll(pos, delta);
+
+		if (mHover != 0)
+		{
+			mHover->OnScroll(pos, delta);
+			retVal = true;
+		}
 	}
 	Unlock();
 	return retVal;

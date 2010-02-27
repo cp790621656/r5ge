@@ -36,7 +36,7 @@ public:
 	R5_DECLARE_INHERITED_CLASS("SliderCaption", SliderCaption, UIScript, UIScript);
 
 	// Init function gets called when the script is first being initialized
-	virtual void Init()
+	virtual void OnInit()
 	{
 		// This script only works if it's attached to a slider
 		mSlider = R5_CAST(UISlider, mWidget);
@@ -46,8 +46,9 @@ public:
 			// Add a label to the slider and mark it as not serializable, so it's not saved out
 			mLabel = mWidget->AddWidget<UILabel>(mWidget->GetName() + " value");
 			mLabel->SetSerializable(false);
-			mLabel->SetReceivesEvents(false);
+			mLabel->SetEventHandling( UIWidget::EventHandling::None );
 			mLabel->SetAlignment(UILabel::Alignment::Center);
+			mLabel->SetShadow(true);
 		}
 		else
 		{

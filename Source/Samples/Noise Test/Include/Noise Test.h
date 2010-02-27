@@ -36,7 +36,7 @@ public:
 	uint DrawScene();
 	void Regenerate();
 
-	bool Generate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void Generate (UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void UpdateTooltips (UIWidget* widget, uint state, bool isSet);
 };
 };

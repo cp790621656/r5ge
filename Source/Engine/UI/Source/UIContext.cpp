@@ -129,7 +129,7 @@ void UIContext::_Rebuild()
 // Event callback for a visual highlight
 //============================================================================================================
 
-bool UIContext::_OnMouseOverItem (UIWidget* widget, bool inside)
+void UIContext::_OnMouseOverItem (UIWidget* widget, bool inside)
 {
 	if (inside)
 	{
@@ -149,11 +149,10 @@ bool UIContext::_OnMouseOverItem (UIWidget* widget, bool inside)
 				img->SetFace("Generic Highlight");
 				img->GetRegion().SetTop(0, top);
 				img->GetRegion().SetBottom(0, top + areaRegion.GetCalculatedHeight());
-				img->SetReceivesEvents(false);
+				img->SetEventHandling(EventHandling::None);
 			}
 		}
 	}
-	return true;
 }
 
 //============================================================================================================
@@ -212,7 +211,7 @@ void UIContext::SetAlpha (float val, float animTime)
 		}
 
 		// We want the frame to be responsive from here on
-		SetReceivesEvents(true);
+		SetEventHandling(EventHandling::Normal);
 	}
 	else if (val == 0.0f && alpha > 0.0f)
 	{

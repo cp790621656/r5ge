@@ -88,7 +88,7 @@ public:
 	// Area functions
 	virtual void SetDirty();
 	virtual void OnFill (UIQueue* queue);
-	virtual bool OnScroll (const Vector2i& pos, float delta);
+	virtual void OnScroll (const Vector2i& pos, float delta);
 
 	// Serialization
 	virtual bool OnSerializeFrom (const TreeNode& root);

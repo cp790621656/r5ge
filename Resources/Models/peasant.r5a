@@ -17,7 +17,7 @@ Root
 			{
 				Shader = "Deferred/Skinned_D"
 
-				Texture = String[]
+				Textures = String[]
 				{
 					"Textures/Skins/peasant.jpg"
 				}
@@ -27,7 +27,7 @@ Root
 			{
                 Shader = "Forward/Skinned_D"
 
-                Texture = String[]
+                Textures = String[]
 				{
 					"Textures/Skins/peasant.jpg"
 				}

@@ -63,7 +63,7 @@ void UIInput::AddToHistory (const String& text)
 // If any key is pressed on the label it should hide history
 //============================================================================================================
 
-bool UIInput::_OnLabelKey (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void UIInput::_OnLabelKey (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown && mLabel.GetRegion().Contains(pos))
 	{
@@ -85,7 +85,6 @@ bool UIInput::_OnLabelKey (UIWidget* widget, const Vector2i& pos, byte key, bool
 			_HideHistory();
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

@@ -20,13 +20,25 @@ public:
 	typedef PointerArray<UIWidget> Children;
 	typedef PointerArray<UIScript> Scripts;
 
+	struct EventHandling
+	{
+		enum
+		{
+			None		= 0,	// The widget will ignore all events
+			Self		= 1,	// The widget will process all events
+			Children	= 2,	// The widget will forward all events to children
+			Normal		= 3,	// The widget will process all events then forward them to children
+			Full		= 7,	// The widget will process/forward all events, including key events
+		};
+	};
+
 protected:
 
 	String		mName;				// Every widget needs a name
 	UIRegion	mRegion;			// As well as a region
 	String		mTooltip;			// All areas can have a tooltip
-	bool		mReceivesEvents;	// Whether the widget will receive events
-	bool		mIsFading;			// Whether the widget is fading (will not respond to events)
+	byte		mEventHandling;		// What widget will do with events
+	bool		mIgnoreEvents;		// Whether the widget is temporarily ignoring events
 	UIManager*	mUI;				// Pointer to the UI root that controls this widget
     UIWidget*	mParent;			// Pointer to the parent widget
 	Children	mChildren;			// Array of children nodes
@@ -40,8 +52,8 @@ protected:
 
 public:
 
-	UIWidget() :	mReceivesEvents (true),
-					mIsFading		(false),
+	UIWidget() :	mEventHandling	(EventHandling::Normal),
+					mIgnoreEvents	(false),
 					mUI				(0),
 					mParent			(0),
 					mLayer			(0),
@@ -117,9 +129,13 @@ public:
 	// Gives this widget keyboard focus
 	void SetKeyboardFocus();
 
+	// The widget will ignore all incoming events
+	bool IsIgnoringEvents() const   { return mIgnoreEvents; }
+	void SetIgnoreEvents (bool val) { mIgnoreEvents = val;  }
+
 	// Areas that don't receive events will not respond to anything
-	bool ReceivesEvents() const			{ return mReceivesEvents && !mIsFading; }
-	void SetReceivesEvents(bool val)	{ mReceivesEvents = val; }
+	byte GetEventHandling() const	{ return mEventHandling; }
+	void SetEventHandling(byte val)	{ mEventHandling = val; }
 
 	// Having access to the widget's dimensions can come in handy
 	UIRegion& GetRegion() { return mRegion; }
@@ -214,9 +230,9 @@ public:
 protected:
 
 	// Events
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
-	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
-	virtual bool OnScroll	(const Vector2i& pos, float delta);
+	virtual void OnMouseMove(const Vector2i& pos, const Vector2i& delta);
+	virtual void OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
+	virtual void OnScroll	(const Vector2i& pos, float delta);
 	virtual void OnMouseOver(bool inside);
 	virtual void OnFocus	(bool selected);
 	virtual void OnChar		(byte character) {}

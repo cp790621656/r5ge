@@ -88,7 +88,7 @@ void TestApp::Run()
 	// Load the peasant model and play the "Run" animation defined inside the model file.
 	// The model is saved in ASCII format on purpose -- you can open it up and see what's inside.
 
-	model->Load("Models/peasant.r5a");
+	model->Load("Models/peasant_out.r5a");
 	model->PlayAnimation("Run");
 
 	// Now comes the instancing part. We want to create an instance of this model inside our world.

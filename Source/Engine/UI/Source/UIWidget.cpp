@@ -71,14 +71,21 @@ UIWidget* UIWidget::_FindWidget (const Vector2i& pos)
 {
 	UIWidget* ptr (0);
 
-	if ( mReceivesEvents && mRegion.Contains(pos) && mRegion.IsVisible() )
+	if (mEventHandling != EventHandling::None && !mIgnoreEvents && mRegion.Contains(pos) && mRegion.IsVisible())
 	{
-		for (uint i = mChildren.GetSize(); i > 0; )
-			if (mChildren[--i] && (ptr = mChildren[i]->_FindWidget(pos)))
-				break;
+		// Run through children first
+		if ((mEventHandling & EventHandling::Children) != 0)
+		{
+			for (uint i = mChildren.GetSize(); i > 0; )
+				if (mChildren[--i] && (ptr = mChildren[i]->_FindWidget(pos)))
+					break;
+		}
 
 		// No child widget claims to own the position, but it's still inside this widget's
-		if (ptr == 0) ptr = this;
+		if (ptr == 0 && (mEventHandling & EventHandling::Self) != 0)
+		{
+			ptr = this;
+		}
 	}
 	return ptr;
 }
@@ -355,8 +362,17 @@ bool UIWidget::SerializeTo (TreeNode& root) const
 		mRegion.OnSerializeTo(node);
 		OnSerializeTo(node);
 
-		node.AddChild("Receives Events", mReceivesEvents);
-		if (mTooltip) node.AddChild("Tooltip", mTooltip);
+		const char* events = "None";
+
+		if		(mEventHandling == EventHandling::Children)	events = "Children";
+		else if (mEventHandling == EventHandling::Self)		events = "Self";
+		else if (mEventHandling == EventHandling::Normal)	events = "Normal";
+		else if (mEventHandling == EventHandling::Full)		events = "Full";
+
+		node.AddChild("Event Handling", events);
+
+		if (mTooltip.IsValid()) node.AddChild("Tooltip", mTooltip);
+
 		node.AddChild("Layer", mLayer);
 
 		for (uint i = 0; i < mScripts.GetSize();  ++i) mScripts [i]->SerializeTo(node);
@@ -373,6 +389,7 @@ bool UIWidget::SerializeTo (TreeNode& root) const
 bool UIWidget::SerializeFrom (const TreeNode& root)
 {
 	int layer (mLayer);
+	bool serializable = true;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -382,23 +399,45 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 
 		if ( (value.IsValid() || node.HasChildren()) && !mRegion.OnSerializeFrom(node) )
 		{
-			if ( tag == "Receives Events" )
+			if (tag == "Event Handling")
 			{
-				value >> mReceivesEvents;
+				if (value.IsString())
+				{
+					const String& temp = value.AsString();
+
+					if		(temp == "None")		mEventHandling = EventHandling::None;
+					else if (temp == "Normal")		mEventHandling = EventHandling::Normal;
+					else if (temp == "Children")	mEventHandling = EventHandling::Children;
+					else if (temp == "Self")		mEventHandling = EventHandling::Self;
+					else if (temp == "Full")		mEventHandling = EventHandling::Full;
+				}
 			}
-			else if ( tag == "Tooltip" )
+			else if (tag == "Tooltip")
 			{
 				value >> mTooltip;
 			}
-			else if ( tag == "Serializable" )
+			else if (tag == "Serializable")
 			{
-				value >> mSerializable;
+				if (value >> serializable)
+				{
+					mSerializable = serializable;
+				}
 			}
-			else if ( tag == "Layer" )
+			else if (tag == "Layer")
 			{
 				value >> layer;
 			}
-			else if ( tag == UIScript::ClassID() )
+			else if (tag == "Receives Events")
+			{
+				// LEGACY FUNCTIONALITY, WILL BE REMOVED
+				bool receive = false;
+
+				if (value >> receive)
+				{
+					mEventHandling = receive ? EventHandling::Normal : EventHandling::None;
+				}
+			}
+			else if (tag == UIScript::ClassID())
 			{
 				UIScript* script = _AddScript(value.IsString() ? value.AsString() : value.GetString());
 				if (script != 0) script->SerializeFrom(node);
@@ -407,7 +446,12 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 			{
 				// Try to find or add a child node
 				UIWidget* child = _AddWidget( tag, value.IsString() ? value.AsString() : value.GetString() );
-				if (child != 0) child->SerializeFrom(node);
+
+				if (child != 0)
+				{
+					child->SerializeFrom(node);
+					if (!serializable) child->SetSerializable(false);
+				}
 			}
 		}
 	}
@@ -538,32 +582,26 @@ void UIWidget::OnMouseOver (bool inside)
 
 //============================================================================================================
 
-bool UIWidget::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+void UIWidget::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
-	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnMouseMove(pos, delta);
-	return handled;
+		mScripts[--i]->OnMouseMove(pos, delta);
 }
 
 //============================================================================================================
 
-bool UIWidget::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+void UIWidget::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
-	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnKeyPress(pos, key, isDown);
-	return handled;
+		mScripts[--i]->OnKeyPress(pos, key, isDown);
 }
 
 //============================================================================================================
 
-bool UIWidget::OnScroll (const Vector2i& pos, float delta)
+void UIWidget::OnScroll (const Vector2i& pos, float delta)
 {
-	bool handled = false;
 	for (uint i = mScripts.GetSize(); i > 0;)
-		handled |= mScripts[--i]->OnScroll(pos, delta);
-	return handled;
+		mScripts[--i]->OnScroll(pos, delta);
 }
 
 //============================================================================================================

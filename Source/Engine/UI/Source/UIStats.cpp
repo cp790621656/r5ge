@@ -9,7 +9,7 @@ UILabel* UIStats::_AddLabel (const String& name)
 {
 	UILabel* lbl = AddWidget<UILabel>(name, false);
 	lbl->SetSerializable(false);
-	lbl->SetReceivesEvents(false);
+	lbl->SetEventHandling(EventHandling::None);
 
 	UIRegion& rgn = lbl->GetRegion();
 	rgn.SetLeft(0.0f, 2.0f);

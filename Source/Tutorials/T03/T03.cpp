@@ -137,7 +137,7 @@ void TestApp::CreateWindow()
 	// Note that you can easily embed colors in all strings used by the UI.
 	win->SetTooltip("Tutorial 3 window says [FFAA33]Hello!");
 
-	// By default, the window doesn't have a titlebar. Let's change that.
+	// By default, the window doesn't have a title bar. Let's change that.
 	win->SetTitlebarHeight(22);
 
 	// Since we created this widget programmatically, let's not bother saving it.
@@ -172,11 +172,15 @@ void TestApp::CreateWindow()
 			// We want to center the text inside the label
 			mLabel->SetAlignment( UILabel::Alignment::Center );
 
+			// In order to make text easier to read on both bright and dark backgrounds, it may be
+			// a good idea to have it automatically drop a dark shadow behind it.
+			mLabel->SetShadow(true);
+
 			// Note that we don't set the label's region at all. This means the label will use the full
 			// dimensions of the parent. The problem with this is that since the label covers the slider
 			// fully, it will intercept all of the mouse events. We don't want that -- we want the slider
 			// to get the mouse events. Solution? Tell the label to ignore all events.
-			mLabel->SetReceivesEvents(false);
+			mLabel->SetEventHandling( UIWidget::EventHandling::None );
 
 			// The layer should be higher so it's drawn on top of the slider. By default the layer is 0,
 			// and depending on which texture gets created first, the slider may be drawn *after* the

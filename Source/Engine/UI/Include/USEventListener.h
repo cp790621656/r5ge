@@ -11,10 +11,10 @@ class USEventListener : public UIScript
 {
 public:
 
-	typedef FastDelegate<bool (UIWidget*, bool)>								OnMouseOverDelegate;
-	typedef FastDelegate<bool (UIWidget*, const Vector2i&, const Vector2i&)>	OnMouseMoveDelegate;
-	typedef FastDelegate<bool (UIWidget*, const Vector2i&, byte, bool)>			OnKeyDelegate;
-	typedef FastDelegate<bool (UIWidget*, const Vector2i&, float)>				OnScrollDelegate;
+	typedef FastDelegate<void (UIWidget*, bool)>								OnMouseOverDelegate;
+	typedef FastDelegate<void (UIWidget*, const Vector2i&, const Vector2i&)>	OnMouseMoveDelegate;
+	typedef FastDelegate<void (UIWidget*, const Vector2i&, byte, bool)>			OnKeyDelegate;
+	typedef FastDelegate<void (UIWidget*, const Vector2i&, float)>				OnScrollDelegate;
 	typedef FastDelegate<void (UIWidget*, bool)>								OnFocusDelegate;
 	typedef FastDelegate<void (UIWidget*, uint, bool)>							OnStateDelegate;
 	typedef FastDelegate<void (UIWidget*)>										OnValueDelegate;
@@ -50,11 +50,11 @@ public:
 	const OnValueDelegate&		GetOnValueChange()	const { return mOnValueChange;	}
 
 	// Virtual functions forward all events to bound delegates
-	virtual bool OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{ return mOnMouseMove ? mOnMouseMove(mWidget, pos, delta) : false; }
-	virtual bool OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{ return mOnKey ? mOnKey(mWidget, pos, key, isDown) : false; }
-	virtual bool OnScroll		(const Vector2i& pos, float delta)				{ return mOnScroll ? mOnScroll(mWidget, pos, delta) : false; }
-	virtual void OnMouseOver	(bool isMouseOver)								{ if (mOnMouseOver) mOnMouseOver(mWidget, isMouseOver); }
-	virtual void OnFocus		(bool gotFocus)									{ if (mOnFocus) mOnFocus(mWidget, gotFocus); }
-	virtual void OnStateChange	(uint state, bool isSet)						{ if (mOnStateChange) mOnStateChange(mWidget, state, isSet); }
-	virtual void OnValueChange	()												{ if (mOnValueChange) mOnValueChange(mWidget); }
+	virtual void OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{ if (mOnMouseMove)		mOnMouseMove(mWidget, pos, delta);		}
+	virtual void OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{ if (mOnKey)			mOnKey(mWidget, pos, key, isDown);		}
+	virtual void OnScroll		(const Vector2i& pos, float delta)				{ if (mOnScroll)		mOnScroll(mWidget, pos, delta);			}
+	virtual void OnMouseOver	(bool isMouseOver)								{ if (mOnMouseOver)		mOnMouseOver(mWidget, isMouseOver);		}
+	virtual void OnFocus		(bool gotFocus)									{ if (mOnFocus)			mOnFocus(mWidget, gotFocus);			}
+	virtual void OnStateChange	(uint state, bool isSet)						{ if (mOnStateChange)	mOnStateChange(mWidget, state, isSet);	}
+	virtual void OnValueChange	()												{ if (mOnValueChange)	mOnValueChange(mWidget);				}
 };

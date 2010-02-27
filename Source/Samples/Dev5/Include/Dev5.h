@@ -76,8 +76,8 @@ public:
 	void Run();
 	void Update();
 	void OnDraw();
-	bool OnHighlightKey  (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown);
-	bool OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta);
+	void OnHighlightKey  (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown);
+	void OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta);
 	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
 };
 

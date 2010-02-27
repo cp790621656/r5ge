@@ -47,7 +47,7 @@ public:
 private:
 
 	// Private callbacks
-	bool _OnLabelKey		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void _OnLabelKey		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void _OnLabelFocus		(UIWidget* widget, bool hasFocus);
 	void _OnLabelValue		(UIWidget* widget) { OnValueChange(); }
 	void _OnContextValue	(UIWidget* widget);
@@ -76,8 +76,8 @@ public:
 	virtual void OnSerializeTo (TreeNode& root) const;
 
 	// Events
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ mLabel.OnMouseMove(pos, delta);		UIWidget::OnMouseMove(pos, delta);		return true; }
-	virtual bool OnKeyPress	(const Vector2i& pos, byte key, bool isDown)	{ mLabel.OnKeyPress(pos, key, isDown);	UIWidget::OnKeyPress(pos, key, isDown);	return true; }
+	virtual void OnMouseMove(const Vector2i& pos, const Vector2i& delta)	{ mLabel.OnMouseMove(pos, delta);		UIWidget::OnMouseMove(pos, delta); }
+	virtual void OnKeyPress	(const Vector2i& pos, byte key, bool isDown)	{ mLabel.OnKeyPress(pos, key, isDown);	UIWidget::OnKeyPress(pos, key, isDown); }
 	virtual void OnFocus	(bool selected)									{ mLabel.OnFocus(selected);				UIWidget::OnFocus(selected); }
 	virtual void OnChar		(byte character)								{ mLabel.OnChar(character);				UIWidget::OnChar(character); }
 };

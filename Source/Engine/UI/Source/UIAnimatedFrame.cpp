@@ -17,10 +17,10 @@ void UIAnimatedFrame::SetAlpha (float val, float animTime)
 {
 	if (mRegion.GetAlpha() != val)
 	{
-		mIsFading	= true;
-		mAnimTime	= animTime;
-		mStartAlpha	= mRegion.GetParentAlpha() * mCurrentAlpha;
-		mStartTime	= mUI->GetCurrentTime();
+		mIgnoreEvents	= true;
+		mAnimTime		= animTime;
+		mStartAlpha		= mRegion.GetParentAlpha() * mCurrentAlpha;
+		mStartTime		= mUI->GetCurrentTime();
 		mRegion.SetAlpha(val);
 	}
 }
@@ -46,7 +46,7 @@ bool UIAnimatedFrame::OnPreUpdate (bool dimensionsChanged)
 		mRegion.OverrideAlpha( mRegion.GetParentAlpha() * mCurrentAlpha );
 
 		// Enable events if the animation is finished
-		if (Float::IsEqual(factor, 1.0f)) mIsFading = false;
+		if (Float::IsEqual(factor, 1.0f)) mIgnoreEvents = false;
 		return true;
 	}
 	return false;

@@ -141,13 +141,6 @@ String			_currentTech;
 String			_currentAnim;
 
 //============================================================================================================
-// A pair of empty functions that are used to intercept keyboard and mouse events for frames
-//============================================================================================================
-
-bool OnIgnoreKey	(UIWidget* widget, const Vector2i& pos, byte key, bool isDown)	{ return true; }
-bool OnIgnoreMouse	(UIWidget* widget, const Vector2i& pos, const Vector2i& delta)	{ return true; }
-
-//============================================================================================================
 // Helper function used by widget creation functions
 //============================================================================================================
 
@@ -315,20 +308,12 @@ bool ModelViewer::CreateUI()
 			btn->SetTooltip("Non-model related options: rendering method, background, bloom");
 
 			_optFrame->SetAlpha(0.0f);
-			_optFrame->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-			_optFrame->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 
 			UISubPicture*	bnd = _optFrame->FindWidget<UISubPicture>	("Options Background", false);
 			UIList*			ren = _optFrame->FindWidget<UIList>			("Rendering Method");
 			UIList*			bgd = _optFrame->FindWidget<UIList>			("Background");
 			UICheckbox*		chk = _optFrame->FindWidget<UICheckbox>		("Bloom Checkbox");
 			UISlider*		sld = _optFrame->FindWidget<UISlider>		("Bloom Slider");
-
-			if (bnd != 0)
-			{
-				bnd->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-				bnd->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
-			}
 
 			if (ren != 0)
 			{
@@ -611,8 +596,7 @@ bool ModelViewer::CreateUI()
 		_texFormat->SetTooltip("DXT3 is the all-around best choice. RGB is for normal maps, RGBA is for UI textures.");
 
 		_texImage = _texFrame->AddWidget<UIPicture>("Texture Image");
-		_texImage->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-		_texImage->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
+		_texImage->SetEventHandling( UIWindow::EventHandling::Children );
 
 		UIRegion& tr = _texImage->GetRegion();
 		tr.SetLeft		(0.0f,  5.0f);
@@ -662,8 +646,6 @@ bool ModelViewer::CreateUI()
 			_fileDialog->SetSkin(_skin);
 			_fileDialog->SetFont(_font);
 			_fileDialog->SetTitlebarHeight(20);
-			_fileDialog->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-			_fileDialog->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 		}
 
 		// Caption label
@@ -672,7 +654,7 @@ bool ModelViewer::CreateUI()
 			_fileLabel->SetLayer(1, false);
 			_fileLabel->SetAlignment( UILabel::Alignment::Center );
 			_fileLabel->SetFont(_font);
-			_fileLabel->SetReceivesEvents(false);
+			_fileLabel->SetEventHandling( UIWindow::EventHandling::None );
 
 			UIRegion& rgn = _fileLabel->GetRegion();
 			rgn.SetLeft		(0.0f,   5.0f);
@@ -753,8 +735,6 @@ bool ModelViewer::CreateUI()
 			_confirmDialog->SetSkin(_skin);
 			_confirmDialog->SetFont(_font);
 			_confirmDialog->SetTitlebarHeight(20);
-			_confirmDialog->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-			_confirmDialog->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
 		}
 
 		// Caption label
@@ -763,7 +743,7 @@ bool ModelViewer::CreateUI()
 			_confirmLabel->SetLayer(1, false);
 			_confirmLabel->SetAlignment( UILabel::Alignment::Center );
 			_confirmLabel->SetFont(_font);
-			_confirmLabel->SetReceivesEvents(false);
+			_confirmLabel->SetEventHandling( UIWindow::EventHandling::None );
 
 			UIRegion& rgn = _confirmLabel->GetRegion();
 			rgn.SetLeft		(0.0f,   5.0f);
@@ -806,14 +786,13 @@ bool ModelViewer::CreateUI()
 	{
 		_loadFrame = mUI->AddWidget<UIFrame>("Loading Frame");
 		_loadFrame->SetSerializable(false);
-		_loadFrame->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-		_loadFrame->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
+		_loadFrame->SetEventHandling( UIWindow::EventHandling::Normal );
 		_loadFrame->SetAlpha(0.0f);
 
 		UIHighlight* hlt = _loadFrame->AddWidget<UIHighlight>("Loading Frame Background");
 		hlt->SetColor( Color4f(0.0f, 0.0f, 0.0f, 0.0f) );
 		hlt->SetAlpha(0.85f);
-		hlt->SetReceivesEvents(false);
+		hlt->SetEventHandling( UIWindow::EventHandling::None );
 
 		UIRegion& rgn = hlt->GetRegion();
 		rgn.SetBottom(1.0f, -20.0f);
@@ -1122,8 +1101,7 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 
 	frame->SetSerializable(false);
 	frame->SetAlpha(0.0f);
-	frame->AddScript<USEventListener>()->SetOnKey( &OnIgnoreKey );
-	frame->AddScript<USEventListener>()->SetOnMouseMove( &OnIgnoreMouse );
+	frame->SetEventHandling( UIWindow::EventHandling::Normal );
 
 	UIRegion& rgn = frame->GetRegion();
 	rgn.SetRight (0.0f, WIDTH);
@@ -1133,7 +1111,7 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 	UISubPicture* pic = frame->AddWidget<UISubPicture>(name + " Background");
 	pic->SetSkin(_skin, false);
 	pic->SetFace("Window: Background");
-	pic->SetReceivesEvents(false);
+	pic->SetEventHandling( UIWindow::EventHandling::None );
 	pic->SetSerializable(false);
 
 	return frame;
@@ -1146,7 +1124,7 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 UILabel* ModelViewer::AddCaption (UIWidget* parent, uint line, const String& text)
 {
 	UILabel* lbl = AddLabel(parent, line, String("Caption %u", line), 0);
-	lbl->SetReceivesEvents(false);
+	lbl->SetEventHandling( UIWindow::EventHandling::None );
 	lbl->SetSerializable(false);
 	lbl->SetText(text);
 	lbl->SetColor( 0x6ECEFF );
@@ -1164,7 +1142,7 @@ UILabel* ModelViewer::AddLabel (UIWidget* parent, uint line, const String& name,
 	SetRegion(lbl->GetRegion(), line, offset, 0, 0);
 
 	lbl->SetSerializable(false);
-	lbl->SetReceivesEvents(false);
+	lbl->SetEventHandling( UIWindow::EventHandling::None );
 	lbl->SetLayer(1, false);
 	lbl->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
 	lbl->SetFont(_font);
@@ -1281,21 +1259,20 @@ UIHighlight* ModelViewer::AddHighlight (UIWidget* parent, uint line, const Strin
 // Delegate function triggered when an "OK" button is clicked on the file dialog menu
 //============================================================================================================
 
-bool ModelViewer::OnFileDialogOK (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void ModelViewer::OnFileDialogOK (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
 	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
 	{
 		_ConfirmFileDialog();
 	}
-	return true;
 }
 
 //============================================================================================================
 // Delegate triggered when the "OK" button is pressed in a confirmation dialog window
 //============================================================================================================
 
-bool ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
 	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
@@ -1392,7 +1369,6 @@ bool ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte
 		// Hide the request frame
 		if (parent != 0) parent->Hide();
 	}
-	return true;
 }
 
 //============================================================================================================
@@ -1960,7 +1936,7 @@ void ModelViewer::OnBloomChange	(UIWidget* widget)
 // Force-applies all active transformations to all of the model's meshes
 //============================================================================================================
 
-bool ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	// Ensure that the click was on the button itself
 	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
@@ -2093,7 +2069,6 @@ bool ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 		// Update the model window
 		OnFillModelMenu(0, true);
 	}
-	return true;
 }
 
 //============================================================================================================
@@ -2547,7 +2522,7 @@ void OnAnimationEnd (Model* model, const Animation* anim, float timeToEnd)
 
 //============================================================================================================
 
-bool ModelViewer::OnAnimPlay (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+void ModelViewer::OnAnimPlay (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
 {
 	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
 	{
@@ -2567,7 +2542,6 @@ bool ModelViewer::OnAnimPlay (UIWidget* widget, const Vector2i& pos, byte key, b
 			}
 		}
 	}
-	return true;
 }
 
 //============================================================================================================

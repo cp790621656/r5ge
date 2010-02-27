@@ -57,14 +57,14 @@ public:
 	virtual void OnInit() {}
 
 	// Virtual functions that should be overwritten to add functionality
-	virtual bool OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{ return false; }
-	virtual bool OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{ return false; }
-	virtual bool OnScroll		(const Vector2i& pos, float delta)				{ return false; }
+	virtual void OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{}
+	virtual void OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{}
+	virtual void OnScroll		(const Vector2i& pos, float delta)				{}
 	virtual void OnMouseOver	(bool isMouseOver)								{}
 	virtual void OnFocus		(bool gotFocus)									{}
 	virtual void OnStateChange	(uint state, bool isSet)						{}
 	virtual void OnValueChange	()												{}
 	virtual void OnUpdate		()												{}
-	virtual bool SerializeTo	(TreeNode& node) const { return false; }
-	virtual bool SerializeFrom	(const TreeNode& node) { return false; }
+	virtual void SerializeTo	(TreeNode& node) const							{}
+	virtual void SerializeFrom	(const TreeNode& node)							{}
 };

@@ -259,10 +259,8 @@ void UITextArea::OnFill (UIQueue* queue)
 // Scrolling should affect the text view
 //============================================================================================================
 
-bool UITextArea::OnScroll (const Vector2i& pos, float delta)
+void UITextArea::OnScroll (const Vector2i& pos, float delta)
 {
-	if (UIWidget::OnScroll(pos, delta)) return true;
-
 	if (mLines.IsValid())
 	{
 		// Number of skipped lines
@@ -278,7 +276,7 @@ bool UITextArea::OnScroll (const Vector2i& pos, float delta)
 		// Set the new scrolling value
 		SetScroll( skip / mLines.GetSize() );
 	}
-	return true;
+	UIWidget::OnScroll(pos, delta);
 }
 
 //============================================================================================================
