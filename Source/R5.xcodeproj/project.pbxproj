@@ -47,6 +47,8 @@
 		1429C99E0E2C091700BD3B1A /* _PNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1429C99A0E2C091700BD3B1A /* _PNG.cpp */; };
 		1429C99F0E2C091700BD3B1A /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1429C99B0E2C091700BD3B1A /* Image.cpp */; };
 		1429C9A50E2C0B3600BD3B1A /* R5_Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1429C9A40E2C0B3600BD3B1A /* R5_Memory.cpp */; };
+		142BADAE1138F2D500424254 /* R5_Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 142BADAD1138F2D500424254 /* R5_Hash.cpp */; };
+		142BADB11138F32C00424254 /* Octree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 142BADB01138F32C00424254 /* Octree.cpp */; };
 		1432D50410B3638B00BE38E6 /* T05.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1432D50310B3638B00BE38E6 /* T05.cpp */; };
 		1432D50710B363B700BE38E6 /* T06.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1432D50610B363B700BE38E6 /* T06.cpp */; };
 		1434865E10B4EA1000FD9B41 /* Deferred.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1434865B10B4EA1000FD9B41 /* Deferred.cpp */; };
@@ -1242,7 +1244,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14B48F1110FAFDE100C22373 /* PBXContainerItemProxy */ = {
@@ -1791,6 +1793,9 @@
 		1429C99B0E2C091700BD3B1A /* Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Image.cpp; path = Engine/Image/Source/Image.cpp; sourceTree = "<group>"; };
 		1429C9A40E2C0B3600BD3B1A /* R5_Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = R5_Memory.cpp; path = Engine/Basic/Source/R5_Memory.cpp; sourceTree = "<group>"; };
 		1429C9A60E2C0B4B00BD3B1A /* R5_Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = R5_Memory.h; path = Engine/Basic/Include/R5_Memory.h; sourceTree = "<group>"; };
+		142BADAD1138F2D500424254 /* R5_Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = R5_Hash.cpp; path = Engine/Basic/Source/R5_Hash.cpp; sourceTree = "<group>"; };
+		142BADAF1138F30900424254 /* Octree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Octree.h; path = Engine/Core/Include/Octree.h; sourceTree = "<group>"; };
+		142BADB01138F32C00424254 /* Octree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Octree.cpp; path = Engine/Core/Source/Octree.cpp; sourceTree = "<group>"; };
 		1432D4E710B3633A00BE38E6 /* T05.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T05.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1432D50010B3634A00BE38E6 /* T06.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T06.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1432D50310B3638B00BE38E6 /* T05.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = T05.cpp; path = Tutorials/T05/T05.cpp; sourceTree = SOURCE_ROOT; };
@@ -2377,6 +2382,7 @@
 			isa = PBXGroup;
 			children = (
 				14DFD21F0D901A4000A81978 /* _All.cpp */,
+				142BADAD1138F2D500424254 /* R5_Hash.cpp */,
 				1429C9A40E2C0B3600BD3B1A /* R5_Memory.cpp */,
 				1475537B0E0B91A400D5641D /* R5_Random.cpp */,
 				14DFD2200D901A4000A81978 /* R5_String.cpp */,
@@ -3378,6 +3384,7 @@
 				14BA964E0F95C98B00E41525 /* Emitter.h */,
 				149250730F87F398009A6B70 /* ModelInstance.h */,
 				14CE0F8B0D904E830027155A /* Object.h */,
+				142BADAF1138F30900424254 /* Octree.h */,
 			);
 			name = Include;
 			sourceTree = "<group>";
@@ -3393,6 +3400,7 @@
 				14BA964F0F95C9A800E41525 /* Emitter.cpp */,
 				149250740F87F3B0009A6B70 /* ModelInstance.cpp */,
 				14CE0FA40D904EAB0027155A /* Object.cpp */,
+				142BADB01138F32C00424254 /* Octree.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -4885,6 +4893,7 @@
 				1475537C0E0B91A400D5641D /* R5_Random.cpp in Sources */,
 				1429C9A50E2C0B3600BD3B1A /* R5_Memory.cpp in Sources */,
 				14726B9B0ED7C87A0005A1B2 /* R5_Thread.cpp in Sources */,
+				142BADAE1138F2D500424254 /* R5_Hash.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5040,6 +5049,7 @@
 				14D619A510FAF3E800C41C13 /* Terrain.cpp in Sources */,
 				14D619A610FAF3E800C41C13 /* TerrainNode.cpp in Sources */,
 				1427076C1107C72F0080A80E /* DrawGroup.cpp in Sources */,
+				142BADB11138F32C00424254 /* Octree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

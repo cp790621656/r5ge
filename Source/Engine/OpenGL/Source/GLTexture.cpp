@@ -664,7 +664,7 @@ bool GLTexture::GetBuffer (Memory& mem)
 	{
 		uint tex = GetTextureID();
 
-		if (mGlID != 0 && mGlType == GL_TEXTURE_2D)
+		if (tex != 0 && mGlType == GL_TEXTURE_2D)
 		{
 			uint bpp = GetBitsPerPixel(mFormat);
 			uint memSize = (bpp / 8) * mSize.x * mSize.y;
