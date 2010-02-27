@@ -67,6 +67,8 @@ public:
 	R5_DECLARE_BASE_CLASS("Widget", UIWidget);
 
 	// Property retrieval functions
+	UIManager*		GetUI()					{ return mUI;			}
+	UIWidget*		GetRoot();
 	const String&	GetName()		 const	{ return mName;			}
 	const String&	GetTooltip()	 const	{ return mTooltip;		}
 	const Children& GetChildren()	 const	{ return mChildren;		}

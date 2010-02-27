@@ -9,7 +9,7 @@
 
 class UITextArea : public UIWidget
 {
-protected:
+public:
 
 	// Text drawing style
 	struct Style
@@ -20,6 +20,8 @@ protected:
 			Chat	= 1,
 		};
 	};
+
+protected:
 
 	// Single paragraph entry
 	struct Paragraph
@@ -64,7 +66,7 @@ public:
 	void SetMaxParagraphs (uint val) { mMaxParagraphs = val; }
 
 	// Adds a new paragraph of specified font and color
-	void AddParagraph (const String& text, const Color3f& color, const IFont* font = 0, bool shadow = true);
+	void AddParagraph (const String& text, const Color3f& color, bool shadow = true, const IFont* font = 0);
 
 	// Paragraph drawing style (normal being top-down, chatbox being bottom up, etc)
 	void SetStyle (uint style) { mStyle = style; _MarkTexturesAsDirty(); }

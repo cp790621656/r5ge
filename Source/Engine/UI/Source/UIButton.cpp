@@ -136,9 +136,19 @@ bool UIButton::OnSerializeFrom (const TreeNode& node)
 		{
 			const String& state = node.mValue.AsString();
 
-			if		(state == "Disabled")	SetState(State::Enabled, false);
-			else if (state == "Pressed")	SetState(State::Enabled | State::Pressed, true);
-			else if (state == "Enabled")	SetState(State::Enabled, true);
+			if (state == "Disabled")
+			{
+				SetState(State::Enabled, false);
+			}
+			else if (state == "Pressed")
+			{
+				SetState(State::Enabled, true);
+				SetState(State::Pressed, true);
+			}
+			else if (state == "Enabled")
+			{
+				SetState(State::Enabled, true);
+			}
 		}
 		return true;
 	}
@@ -226,8 +236,8 @@ void UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 				// If this is a sticky button and it's not currently pressed, ignore the next mouse key
 				mIgnoreMouseKey = (mSticky && !(mState & State::Pressed));
 
-				// Update the button's state to be pressed and highlighted
-				SetState(State::Pressed | State::Highlighted, true);
+				// Update the button's state to be pressed
+				SetState(State::Pressed, true);
 			}
 			else
 			{
@@ -245,7 +255,8 @@ void UIButton::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 					mIgnoreMouseKey = false;
 
 					// Not in region - the button is not pressed or highlighted
-					SetState(State::Pressed | State::Highlighted, false);
+					SetState(State::Highlighted, false);
+					SetState(State::Pressed, false);
 				}
 			}
 		}

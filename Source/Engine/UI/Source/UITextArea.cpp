@@ -17,7 +17,7 @@ void UITextArea::Clear()
 // Add a single paragraph
 //============================================================================================================
 
-void UITextArea::AddParagraph (const String& text, const Color3f& color, const IFont* font, bool shadow)
+void UITextArea::AddParagraph (const String& text, const Color3f& color, bool shadow, const IFont* font)
 {
 	if (font == 0) font = mUI->GetDefaultFont();
 

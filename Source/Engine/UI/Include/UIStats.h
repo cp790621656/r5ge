@@ -7,7 +7,7 @@
 // Debugger widget -- contains various run-time statistics
 //============================================================================================================
 
-class UIStats : public UIFrame
+class UIStats : public UIAnimatedFrame
 {
 private:
 

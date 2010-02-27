@@ -51,7 +51,9 @@ public:
 	void DestroySelf();
 
 	// Returns the widget this script belongs to
-	UIWidget* GetWidget() { return mWidget; }
+	UIWidget*	GetWidget()	{ return mWidget; }
+	UIManager*	GetUI();
+	UIWidget*	GetRoot();
 
 	// Initialization function is called once the script has been created
 	virtual void OnInit() {}
@@ -66,5 +68,5 @@ public:
 	virtual void OnValueChange	()												{}
 	virtual void OnUpdate		()												{}
 	virtual void SerializeTo	(TreeNode& node) const							{}
-	virtual void SerializeFrom	(const TreeNode& node)							{}
+	virtual void SerializeFrom	(const TreeNode& root)							{}
 };
