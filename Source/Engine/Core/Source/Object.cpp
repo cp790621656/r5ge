@@ -47,9 +47,10 @@ Object::Object() :
 	mIncChildBounds	(true),
 	mIsDirty		(false),
 	mHasMoved		(true),
-	mSerializable	(true)
+	mSerializable	(true),
+	mShowOutline	(false)
 {
-	mFlags.Set(Flag::Enabled);
+	mFlags.Set(Flag::Enabled | Flag::BoxCollider);
 }
 
 //============================================================================================================
@@ -266,6 +267,89 @@ void Object::_Remove (Object* obj)
 
 		mIsDirty = true;
 	}
+}
+
+//============================================================================================================
+// Debugging section used to show the actual bounding box itself
+//============================================================================================================
+
+void GetBoundingBoxLines (Array<Vector3f>& v, const Vector3f& min, const Vector3f& max)
+{
+	// Bottom X
+	v.Expand().Set(min.x, min.y, min.z);
+	v.Expand().Set(max.x, min.y, min.z);
+	v.Expand().Set(min.x, max.y, min.z);
+	v.Expand().Set(max.x, max.y, min.z);
+	
+	// Top X
+	v.Expand().Set(min.x, min.y, max.z);
+	v.Expand().Set(max.x, min.y, max.z);
+	v.Expand().Set(min.x, max.y, max.z);
+	v.Expand().Set(max.x, max.y, max.z);
+
+	// Bottom Y
+	v.Expand().Set(min.x, min.y, min.z);
+	v.Expand().Set(min.x, max.y, min.z);
+	v.Expand().Set(max.x, min.y, min.z);
+	v.Expand().Set(max.x, max.y, min.z);
+
+	// Top Y
+	v.Expand().Set(min.x, min.y, max.z);
+	v.Expand().Set(min.x, max.y, max.z);
+	v.Expand().Set(max.x, min.y, max.z);
+	v.Expand().Set(max.x, max.y, max.z);
+
+	// Bottom Z
+	v.Expand().Set(min.x, min.y, min.z);
+	v.Expand().Set(min.x, min.y, max.z);
+	v.Expand().Set(max.x, min.y, min.z);
+	v.Expand().Set(max.x, min.y, max.z);
+
+	// Top Z
+	v.Expand().Set(min.x, max.y, min.z);
+	v.Expand().Set(min.x, max.y, max.z);
+	v.Expand().Set(max.x, max.y, min.z);
+	v.Expand().Set(max.x, max.y, max.z);
+}
+
+//============================================================================================================
+// Draws the outline of the bounding box
+//============================================================================================================
+
+uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
+{
+	uint result(0);
+
+	// If the model's outline is requested, draw it now
+	if (tech->GetColorWrite())
+	{
+		graphics->ResetModelMatrix();
+
+		Array<Vector3f> v;
+		const Bounds& complete = GetCompleteBounds();
+		GetBoundingBoxLines(v, complete.GetMin(), complete.GetMax());
+
+		float factor = Float::Abs(Float::Cos(4.0f * Time::GetTime()));
+		bool stencil = graphics->GetStencilTest();
+
+		graphics->SetActiveMaterial (0);
+		graphics->SetActiveColor( Color4f(factor, 1.0f - factor, 0, 1) );
+
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Normal,	0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Color,		0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Tangent,	0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord0,	0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord1,	0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,	v);
+
+		result += graphics->DrawVertices( IGraphics::Primitive::Line, v.GetSize() );
+
+		// Restore the active technique
+		graphics->SetStencilTest(stencil);
+		graphics->SetActiveColor( Color4f(1.0f) );
+		graphics->SetActiveTechnique(tech);
+	}
+	return result;
 }
 
 //============================================================================================================
@@ -635,7 +719,7 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 }
 
 //============================================================================================================
-// INTERNAL: Fills the render queues
+// Fills the render queues
 //============================================================================================================
 
 void Object::Fill (FillParams& params)
@@ -674,10 +758,43 @@ void Object::Fill (FillParams& params)
 						mChildren[i]->Fill(params);
 					}
 				}
+
+				if (mShowOutline)
+				{
+					static ITechnique* wireframe = mCore->GetGraphics()->GetTechnique("Wireframe");
+					params.mDrawQueue.Add(mLayer, this, wireframe->GetMask(), 0, 0.0f);
+				}
 			}
 			Unlock();
 		}
 	}
+}
+
+//============================================================================================================
+// Draws the object with the specified technique
+//============================================================================================================
+
+uint Object::Draw (const ITechnique* tech, bool insideOut)
+{
+	uint result (0);
+
+	if (!mIgnore.Get(Ignore::Draw))
+	{
+		result += OnDraw(tech, insideOut);
+	}
+
+	// Debugging functionality
+	if (mShowOutline)
+	{
+		static IGraphics*  graphics  = mCore->GetGraphics();
+		static ITechnique* wireframe = graphics->GetTechnique("Wireframe");
+
+		if (tech == wireframe)
+		{
+			result += _DrawOutline(graphics, tech);
+		}
+	}
+	return result;
 }
 
 //============================================================================================================
@@ -686,15 +803,29 @@ void Object::Fill (FillParams& params)
 
 void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
 {
-	if (Intersect::RayBounds(pos, dir, mCompleteBounds))
+	if (mFlags.Get(Flag::BoxCollider) && Intersect::RayBounds(pos, dir, mCompleteBounds))
 	{
 		bool considerChildren = true;
 
+		// Try the custom virtual functionality first
 		if (!mIgnore.Get(Ignore::Raycast))
 		{
 			considerChildren = OnRaycast(pos, dir, hits);
 		}
 
+		// If we're ignoring virtual functionality and we have a collider flag set
+		if (mIgnore.Get(Ignore::Raycast) && mFlags.Get(Flag::BoxCollider))
+		{
+			// If the ray intersects with our bounds, join the hit list
+			if (Intersect::RayBounds(pos, dir, mAbsoluteBounds))
+			{
+				RaycastHit& hit = hits.Expand();
+				hit.mObject = this;
+				hit.mSqrCamDist = (pos - mAbsoluteBounds.GetCenter()).Dot();
+			}
+		}
+
+		// Continue on to children
 		if (considerChildren)
 		{
 			Lock();
@@ -722,6 +853,8 @@ bool Object::SerializeTo (TreeNode& root) const
 			node.AddChild("Rotation", mRelativeRot);
 			node.AddChild("Scale", mRelativeScale);
 			node.AddChild("Layer", mLayer);
+
+			if (mShowOutline) node.AddChild("Show Outline", mShowOutline);
 
 			if (!mIgnore.Get(Ignore::SerializeTo))
 				OnSerializeTo(node);
@@ -771,6 +904,10 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 					mLayer = (byte)(temp & 31);
 					mIsDirty = true;
 				}
+			}
+			else if (tag == "Show Outline")
+			{
+				mShowOutline = value.IsBool() ? value.AsBool() : true;
 			}
 			else if (tag == Script::ClassID())
 			{

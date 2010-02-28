@@ -28,9 +28,13 @@ public:
 
 	void Add (Object* object, float distance)
 	{
-		Entry& ent		= mEntries.Expand();
-		ent.mObject		= object;
-		ent.mDistance	= distance;
+		// Only add this object if it's not already a part of the list
+		if (mEntries.IsEmpty() || object != mEntries.Back().mObject)
+		{
+			Entry& ent		= mEntries.Expand();
+			ent.mObject		= object;
+			ent.mDistance	= distance;
+		}
 	}
 
 	void Sort()  { mEntries.Sort();  }

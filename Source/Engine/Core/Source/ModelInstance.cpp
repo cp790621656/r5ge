@@ -2,49 +2,6 @@
 using namespace R5;
 
 //============================================================================================================
-// Debugging section used to show the actual bounding box itself
-//============================================================================================================
-
-void GetBoundingBoxLines (Array<Vector3f>& v, const Vector3f& min, const Vector3f& max)
-{
-	// Bottom X
-	v.Expand().Set(min.x, min.y, min.z);
-	v.Expand().Set(max.x, min.y, min.z);
-	v.Expand().Set(min.x, max.y, min.z);
-	v.Expand().Set(max.x, max.y, min.z);
-	
-	// Top X
-	v.Expand().Set(min.x, min.y, max.z);
-	v.Expand().Set(max.x, min.y, max.z);
-	v.Expand().Set(min.x, max.y, max.z);
-	v.Expand().Set(max.x, max.y, max.z);
-
-	// Bottom Y
-	v.Expand().Set(min.x, min.y, min.z);
-	v.Expand().Set(min.x, max.y, min.z);
-	v.Expand().Set(max.x, min.y, min.z);
-	v.Expand().Set(max.x, max.y, min.z);
-
-	// Top Y
-	v.Expand().Set(min.x, min.y, max.z);
-	v.Expand().Set(min.x, max.y, max.z);
-	v.Expand().Set(max.x, min.y, max.z);
-	v.Expand().Set(max.x, max.y, max.z);
-
-	// Bottom Z
-	v.Expand().Set(min.x, min.y, min.z);
-	v.Expand().Set(min.x, min.y, max.z);
-	v.Expand().Set(max.x, min.y, min.z);
-	v.Expand().Set(max.x, min.y, max.z);
-
-	// Top Z
-	v.Expand().Set(min.x, max.y, min.z);
-	v.Expand().Set(min.x, max.y, max.z);
-	v.Expand().Set(max.x, max.y, min.z);
-	v.Expand().Set(max.x, max.y, max.z);
-}
-
-//============================================================================================================
 // Retrieves the world transformation matrix
 //============================================================================================================
 
@@ -114,87 +71,26 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 	uint result(0);
 	IGraphics* graphics = mCore->GetGraphics();
 
-	// Automatically normalize normals if the scale is not 1.0
-	graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
-
-	// Set the model's world matrix so the rendered objects show up in their proper place
-	graphics->SetModelMatrix( GetMatrix() );
-
 	if (mModel != 0)
 	{
-		// Draw the model
-		result += mModel->_Draw(graphics, tech);
+		if ((tech->GetMask() & mModel->GetMask()) != 0)
+		{
+			// Automatically normalize normals if the scale is not 1.0
+			graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
+
+			// Set the model's world matrix so the rendered objects show up in their proper place
+			graphics->SetModelMatrix( GetMatrix() );
+
+			// Draw the model
+			result += mModel->_Draw(graphics, tech);
+		}
 
 		if (mShowOutline)
 		{
 			// Draw the outline if requested
-			result += mModel->_DrawOutline(graphics, tech);
-			result += _DrawOutline(graphics, tech);
+			static ITechnique* wireframe = graphics->GetTechnique("Wireframe");
+			if (tech == wireframe) result += mModel->_DrawOutline(graphics, tech);
 		}
-	}
-	else if (mShowOutline)
-	{
-		// Draw only the outline
-		result += _DrawOutline(graphics, tech);
-	}
-	return result;
-}
-
-//============================================================================================================
-// Called when the object is being raycast into
-//============================================================================================================
-
-bool ModelInstance::OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
-{
-	if (Intersect::RayBounds(pos, dir, mAbsoluteBounds))
-	{
-		RaycastHit& hit = hits.Expand();
-		hit.mObject = this;
-		hit.mSqrCamDist = (pos - mAbsoluteBounds.GetCenter()).Dot();
-	}
-	return true;
-}
-
-//============================================================================================================
-// Draws the outline of the bounding box
-//============================================================================================================
-
-uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
-{
-	uint result(0);
-
-	// If the model's outline is requested, draw it now
-	if (tech->GetColorWrite())
-	{
-		graphics->ResetModelMatrix();
-
-		Array<Vector3f> v;
-		const Bounds& complete = GetCompleteBounds();
-		GetBoundingBoxLines(v, complete.GetMin(), complete.GetMax());
-
-		float factor = Float::Abs(Float::Cos(4.0f * Time::GetTime()));
-		bool stencil = graphics->GetStencilTest();
-
-		graphics->SetLighting   (false);
-		graphics->SetDepthWrite (true);
-		graphics->SetDepthTest	(true);
-		graphics->SetActiveTechnique(0);
-		graphics->SetActiveMaterial (0);
-		graphics->SetActiveColor( Color4f(factor, 1.0f - factor, 0, 1) );
-
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Normal,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Color,		0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Tangent,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord0,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord1,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,	v);
-
-		result += graphics->DrawVertices( IGraphics::Primitive::Line, v.GetSize() );
-
-		// Restore the active technique
-		graphics->SetStencilTest(stencil);
-		graphics->SetActiveColor( Color4f(1.0f) );
-		graphics->SetActiveTechnique(tech);
 	}
 	return result;
 }
@@ -203,19 +99,18 @@ uint ModelInstance::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 // Serialization -- Save
 //============================================================================================================
 
-void ModelInstance::OnSerializeTo (TreeNode& root) const
+void ModelInstance::OnSerializeTo (TreeNode& node) const
 {
 	if (mModel != 0)
 	{
-		root.AddChild( mModel->GetClassID(), mModel->GetName() );
+		node.AddChild( mModel->GetClassID(), mModel->GetName() );
 
 		if (mCullBounds.IsValid())
 		{
-			TreeNode& node = root.AddChild("Culling Bounds");
-			node.AddChild("Min", mCullBounds.GetMin());
-			node.AddChild("Max", mCullBounds.GetMax());
+			TreeNode& child = node.AddChild("Culling Bounds");
+			child.AddChild("Min", mCullBounds.GetMin());
+			child.AddChild("Max", mCullBounds.GetMax());
 		}
-		if (mShowOutline) root.AddChild("Show Outline", mShowOutline);
 	}
 }
 
@@ -266,10 +161,6 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& root)
 
 		mCullBounds.Set(vMin, vMax);
 		return true;
-	}
-	else if (tag == "Show Outline")
-	{
-		mShowOutline = value.IsBool() ? value.AsBool() : true;
 	}
 	return false;
 }

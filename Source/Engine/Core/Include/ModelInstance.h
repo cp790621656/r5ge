@@ -13,13 +13,12 @@ protected:
 
 	Model*			 mModel;		// Pointer to the model that was instanced
 	Bounds			 mCullBounds;	// Custom minimum bounds used for culling, set in local space
-	bool			 mShowOutline;	// Whether to show the bounding outline -- useful for debugging
 	mutable bool	 mRecalculate;	// Whether the matrix needs to be recalculated
 	mutable Matrix43 mMatrix;		// Calculated world transformation matrix
 
 public:
 
-	ModelInstance() : mModel(0), mShowOutline(false), mRecalculate(false) {}
+	ModelInstance() : mModel(0), mRecalculate(false) {}
 	~ModelInstance() { SetModel(0); }
 
 	// Object creation
@@ -31,11 +30,9 @@ public:
 	const Model*	GetModel()			const	{ return mModel;		}
 	const Bounds&	GetCullBounds()		const	{ return mCullBounds;	}
 	const Matrix43&	GetMatrix()			const;
-	bool			IsShowingOutline()	const	{ return mShowOutline;  }
 
 	void SetModel		(Model* model);
 	void SetCullBounds	(const Bounds& bounds)	{ mCullBounds = bounds;	mIsDirty = true; }
-	void SetShowOutline	(bool val)				{ mShowOutline = val;   }
 
 protected:
 
@@ -48,17 +45,7 @@ protected:
 	// Draw the object using the specified technique
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
-	// Called when the object is being raycast into
-	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
-
-private:
-
-	// Draws the outline of the bounding box
-	uint _DrawOutline (IGraphics* graphics, const ITechnique* tech);
-
-protected:
-
 	// Serialization to and from the scenegraph tree
-	virtual void OnSerializeTo	 (TreeNode& root) const;
+	virtual void OnSerializeTo	 (TreeNode& node) const;
 	virtual bool OnSerializeFrom (const TreeNode& root);
 };

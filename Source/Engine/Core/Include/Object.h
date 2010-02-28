@@ -13,7 +13,6 @@ class Object
 	friend class Script;	// Script needs access to 'mScripts' so it can remove itself
 	friend class Scene;		// Scene needs to be able to use 'mCore'
 	friend class Core;		// Core needs to be able to set 'mCore'
-	friend class DrawGroup;	// DrawGroup needs access to 'OnDraw'
 
 public:
 
@@ -27,7 +26,7 @@ public:
 		{
 			Enabled			= 1 << 1,
 			Visible			= 1 << 2,
-			Selectable		= 1 << 3,
+			BoxCollider		= 1 << 3,
 		};
 	};
 
@@ -62,6 +61,7 @@ protected:
 	bool		mIsDirty;			// Whether the object's absolute coordinates should be recalculated
 	bool		mHasMoved;			// Whether the object has moved since last update
 	bool		mSerializable;		// Whether the object will be serialized out
+	bool		mShowOutline;		// Whether to show the bounding outline -- useful for debugging
 
 	Lockable	mLock;
 	Children	mChildren;
@@ -84,8 +84,9 @@ private:
 			Update			= 1 << 3,
 			PostUpdate		= 1 << 4,
 			Raycast			= 1 << 5,
-			SerializeFrom	= 1 << 6,
-			SerializeTo		= 1 << 7,
+			Draw			= 1 << 6,
+			SerializeFrom	= 1 << 7,
+			SerializeTo		= 1 << 8,
 		};
 	};
 
@@ -119,6 +120,9 @@ private:
 	void _Add	(Object* ptr);
 	void _Remove(Object* ptr);
 
+	// Draws the outline of the bounding box
+	uint _DrawOutline (IGraphics* graphics, const ITechnique* tech);
+
 public:
 
 	// Destroys the object -- this action is queued until next update
@@ -146,6 +150,7 @@ public:
 	const Flags&		GetFlags()				const	{ return mFlags;			}
 	bool				GetFlag (uint flag)		const	{ return mFlags.Get(flag);	}
 	bool				IsDirty()				const	{ return mIsDirty;			}
+	bool				IsShowingOutline()		const	{ return mShowOutline;		}
 	bool				HasMoved()				const	{ return mHasMoved;			}
 	bool				IsSerializable()		const	{ return mSerializable;		}
 	Children&			GetChildren()					{ return mChildren;			}
@@ -190,10 +195,14 @@ public:
 	// Whether the object will be saved out
 	void SetSerializable (bool val) { mSerializable = val; }
 
+	// Whether to show the object's bounding box
+	void SetShowOutline	(bool val) { mShowOutline = val; }
+
 	// Sets all relative values
 	void SetRelativePosition ( const Vector3f& pos )	{ mRelativePos	  = pos;	mIsDirty = true; }
 	void SetRelativeRotation ( const Quaternion& rot )	{ mRelativeRot	  = rot;	mIsDirty = true; }
 	void SetRelativeScale	 ( float scale )			{ mRelativeScale  = scale;	mIsDirty = true; }
+	void SetRelativeBounds	 ( const Bounds& b )		{ mRelativeBounds = b;		mIsDirty = true; }
 
 	// Sets both relative and absolute values using provided absolute values
 	void SetAbsolutePosition ( const Vector3f& pos );
@@ -222,6 +231,9 @@ public:
 
 	// Fills the render queues and updates the visibility mask
 	void Fill (FillParams& params);
+
+	// Draws the object with the specified technique
+	uint Draw (const ITechnique* tech, bool insideOut);
 
 	// Cast a ray into space and fill the list with objects that it intersected with
 	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
@@ -270,7 +282,7 @@ protected:
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in
 	// OnFill. It should return the number of triangles rendered.
-	virtual uint OnDraw (const ITechnique* tech, bool insideOut) { return 0; }
+	virtual uint OnDraw (const ITechnique* tech, bool insideOut) { mIgnore.Set(Ignore::Draw, true); return 0; }
 
 	// Called when the object is being raycast into -- should return 'false' if children were already considered
 	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
