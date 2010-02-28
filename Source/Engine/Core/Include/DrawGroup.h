@@ -9,6 +9,8 @@
 
 class DrawGroup
 {
+public:
+
 	struct Entry
 	{
 		Object*		mObject;	// Pointer to the object that will be rendered
@@ -17,6 +19,8 @@ class DrawGroup
 		// Comparison operator for sorting
 		bool operator < (const Entry& obj) const { return (mDistance < obj.mDistance); }
 	};
+
+private:
 
 	Array<Entry> mEntries;
 

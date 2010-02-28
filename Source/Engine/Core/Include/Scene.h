@@ -19,6 +19,10 @@ private:
 	Frustum		mFrustum;	// Viewing frustum used for culling
 	DrawQueue	mQueue;		// Draw queue created by the culling process
 	Techniques	mTechs;		// Cached list of techniques, for convenience reasons
+	Vector2i	mLastRay;	// Last mouse position used to cast a ray into the screen
+
+	// List of raycast hits after running a raycast in the direction of the ray cast from the mouse
+	Array<RaycastHit> mHits;
 
 	// Deferred draw parameters. Saved for convenience and speed.
 	Deferred::DrawParams mParams;
@@ -64,6 +68,9 @@ public:
 	void Cull (const CameraController& cam);
 	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
 
+	// Casts a ray into the screen at the specified mouse position
+	Array<RaycastHit>& Raycast (const Vector2i& screenPos);
+
 	// Convenience function: draws the scene using default forward rendering techniques
 	uint DrawAllForward (bool clearScreen = true);
 
@@ -80,11 +87,8 @@ public:
 	// Draws the scene using the specified techniques
 	uint Draw (const Techniques& techniques, bool insideOut = false);
 
-	// Selects the closest visible object to the specified position
-	Object* Select (const Vector3f& pos);
-
 private:
 
 	// Culls the scene
-	void _Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir);
+	void _Cull (IGraphics* graphics, const Frustum& frustum, const Vector3f& pos, const Vector3f& dir);
 };

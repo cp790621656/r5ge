@@ -141,6 +141,21 @@ uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
 }
 
 //============================================================================================================
+// Called when the object is being raycast into
+//============================================================================================================
+
+bool ModelInstance::OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
+{
+	if (Intersect::RayBounds(pos, dir, mAbsoluteBounds))
+	{
+		RaycastHit& hit = hits.Expand();
+		hit.mObject = this;
+		hit.mSqrCamDist = (pos - mAbsoluteBounds.GetCenter()).Dot();
+	}
+	return true;
+}
+
+//============================================================================================================
 // Draws the outline of the bounding box
 //============================================================================================================
 

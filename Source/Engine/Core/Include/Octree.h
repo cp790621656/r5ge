@@ -25,6 +25,9 @@ protected:
 		// Partitions the node, subdividing it into smaller nodes as necessary
 		void Partition (Octree* tree, float x, float y, float z, const Vector3f& size, uint currentDepth, uint targetDepth);
 
+		// Raycast callback
+		void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
+
 		// Adds the specified object to the hierarchy, returning 'true' if the object has been added
 		bool Add (Object* obj);
 		bool Add (Object* obj, const Bounds& bounds);
@@ -67,6 +70,9 @@ protected:
 
 	// Called when the object is being culled
 	virtual bool OnFill (FillParams& params);
+
+	// Cast a ray into the Octree
+	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
 
 	// Overwrite this function with your own custom behavior if additional checks are required
 	// that may affect the decision of whether the object should be visible or not.

@@ -23,6 +23,7 @@ namespace R5
 	#include "IVBO.h"					// Interface for the videocard memory buffer
 	#include "IFont.h"					// Basic interface for the Font class
 	#include "Uniform.h"				// Uniform is a constant value in the shader that is set by the program
+	#include "Light.h"					// Basic light source-related data class
 	#include "ISubShader.h"				// Single shader -- vertex, fragment, or geometry
 	#include "IShader.h"				// Complete shader program
 	#include "IMaterial.h"				// Base class for the material

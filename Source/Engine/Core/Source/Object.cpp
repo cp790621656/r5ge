@@ -681,49 +681,29 @@ void Object::Fill (FillParams& params)
 }
 
 //============================================================================================================
-// INTERNAL: Recursive Object::OnSelect caller
+// Cast a ray into space and fill the list with objects that it intersected with
 //============================================================================================================
 
-void Object::Select (const Vector3f& pos, ObjectPtr& ptr, float& distance)
+void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
 {
-	if (mFlags.Get(Flag::Visible) && mCompleteBounds.Contains(pos))
+	if (Intersect::RayBounds(pos, dir, mCompleteBounds))
 	{
-		ObjectPtr outPtr (0);
-
 		bool considerChildren = true;
 
-		// Trigger the callback function first
-		if (!mIgnore.Get(Ignore::Select))
+		if (!mIgnore.Get(Ignore::Raycast))
 		{
-			considerChildren = OnSelect(pos, outPtr, distance);
+			considerChildren = OnRaycast(pos, dir, hits);
 		}
 
-		// If the callback function says we should consider children, do that
 		if (considerChildren)
 		{
 			Lock();
 			{
 				for (uint i = mChildren.GetSize(); i > 0; )
-					mChildren[--i]->Select(pos, outPtr, distance);
+					mChildren[--i]->Raycast(pos, dir, hits);
 			}
 			Unlock();
 		}
-
-		// If no child has been chosen and this object is marked as 'selectable', try to select it
-		if (outPtr == 0 && mFlags.Get(Flag::Selectable))
-		{
-			float current = pos.GetDistanceTo( mCompleteBounds.IsValid() ?
-				mCompleteBounds.GetCenter() : mAbsolutePos );
-
-			if (current < distance)
-			{
-				distance = current;
-				outPtr = this;
-			}
-		}
-
-		// Keep the result
-		if (outPtr != 0) ptr = outPtr;
 	}
 }
 
@@ -862,12 +842,12 @@ bool Object::OnFill (FillParams& params)
 }
 
 //============================================================================================================
-// Called when the object is being selected -- may update the referenced values
+// Called when the object is being raycast into -- should return 'false' if children were already considered
 //============================================================================================================
 
-bool Object::OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius)
+bool Object::OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
 {
-	mIgnore.Set(Ignore::Select, true);
+	mIgnore.Set(Ignore::Raycast, true);
 	return true;
 }
 

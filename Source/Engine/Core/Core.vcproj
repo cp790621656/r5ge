@@ -562,6 +562,10 @@
 					RelativePath=".\Include\Octree.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Include\RaycastHit.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source"

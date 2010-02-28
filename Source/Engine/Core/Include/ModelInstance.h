@@ -48,6 +48,9 @@ protected:
 	// Draw the object using the specified technique
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
 
+	// Called when the object is being raycast into
+	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
+
 private:
 
 	// Draws the outline of the bounding box

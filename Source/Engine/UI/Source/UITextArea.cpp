@@ -113,6 +113,8 @@ void UITextArea::_MarkAllTexturesAsDirty()
 
 void UITextArea::_MarkVisibleTexturesAsDirty()
 {
+	const ITexture* last = 0;
+
 	for (uint i = mLines.GetSize(); i > 0; )
 	{
 		const Line& entry = mLines[--i];
@@ -121,8 +123,9 @@ void UITextArea::_MarkVisibleTexturesAsDirty()
 		{
 			const ITexture* tex = entry.mLine->GetTexture();
 
-			if (tex != 0)
+			if (tex != 0 && tex != last)
 			{
+				last = tex;
 				OnDirty(tex);
 			}
 		}

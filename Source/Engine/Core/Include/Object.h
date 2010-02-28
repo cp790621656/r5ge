@@ -83,7 +83,7 @@ private:
 			PreUpdate		= 1 << 2,
 			Update			= 1 << 3,
 			PostUpdate		= 1 << 4,
-			Select			= 1 << 5,
+			Raycast			= 1 << 5,
 			SerializeFrom	= 1 << 6,
 			SerializeTo		= 1 << 7,
 		};
@@ -223,8 +223,8 @@ public:
 	// Fills the render queues and updates the visibility mask
 	void Fill (FillParams& params);
 
-	// Recursive Object::OnSelect caller
-	void Select (const Vector3f& pos, ObjectPtr& ptr, float& radius);
+	// Cast a ray into space and fill the list with objects that it intersected with
+	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
 
 	// Serialization
 	bool SerializeTo (TreeNode& root) const;
@@ -272,8 +272,8 @@ protected:
 	// OnFill. It should return the number of triangles rendered.
 	virtual uint OnDraw (const ITechnique* tech, bool insideOut) { return 0; }
 
-	// Called when the object is being selected -- should return 'true' to consider children as well
-	virtual bool OnSelect (const Vector3f& pos, ObjectPtr& ptr, float& radius);
+	// Called when the object is being raycast into -- should return 'false' if children were already considered
+	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
 
 	// Called when the object is being saved
 	virtual void OnSerializeTo (TreeNode& node) const;

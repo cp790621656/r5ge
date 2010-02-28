@@ -101,6 +101,11 @@ namespace Float
 	inline float	Acos		(float val)							{ return (val < -1.0f ? PI : (val > 1.0f ? 0.0f : ACOS(val))); }
 	inline float	Atan2		(float y, float x)					{ return ATAN2(y, x); }
 
+	inline bool	IsProductPositive (OrInt v0, OrInt v1)
+	{
+		return (v0.i & 0x80000000) == (v1.i & 0x80000000);
+	}
+
 	inline int FloorToInt (double val)
 	{
 		val += _floorfix;

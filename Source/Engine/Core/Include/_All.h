@@ -27,6 +27,7 @@ namespace R5
 	#include "DrawLayer.h"			// Drawable objects can be placed on different layers
 	#include "DrawQueue.h"			// Draw queue contains all 32 possible draw layers
 
+	#include "RaycastHit.h"			// Struct used for raycasts
 	#include "Resource.h"			// TreeNode-based resource
 	#include "FillParams.h"			// Struct containing parameters passed during the 'fill visible geometry' stage
 	#include "Script.h"				// Scripts can be attached to game objects

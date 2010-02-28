@@ -109,6 +109,22 @@ void Octree::Node::Fill (FillParams& params)
 }
 
 //============================================================================================================
+// Raycast callback
+//============================================================================================================
+
+void Octree::Node::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
+{
+	if (Intersect::RayBounds(pos, dir, mBounds))
+	{
+		// Run through all children and raycast them in turn
+		for (uint i = mChildren.GetSize(); i > 0; ) mChildren[--i]->Raycast(pos, dir, hits);
+
+		// Recurse through sub-divisions
+		for (uint i = mPart.GetSize(); i > 0; ) mPart[--i].Raycast(pos, dir, hits);
+	}
+}
+
+//============================================================================================================
 // Octree's constructor: don't include child bounds as children already get added to proper nodes.
 //============================================================================================================
 
@@ -209,6 +225,19 @@ bool Octree::OnFill (FillParams& params)
 	mRootNode.Fill(params);
 
 	// Don't fill the children as they should already be filled by the subdivided nodes
+	return false;
+}
+
+//============================================================================================================
+// Cast a ray into the Octree
+//============================================================================================================
+
+bool Octree::OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
+{
+	// Raycast into the sub-divisions
+	mRootNode.Raycast(pos, dir, hits);
+
+	// Don't consider children as we've already considered them
 	return false;
 }
 

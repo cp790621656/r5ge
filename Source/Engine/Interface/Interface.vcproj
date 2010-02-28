@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\Light.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\Uniform.h"
 				>
 			</File>

@@ -29,8 +29,8 @@ private:
 	// Only the Scene class should be touching 'mLayers' directly
 	friend class Scene;
 
-	Light::List mLights;
-	DrawLayer mLayers[32];
+	Light::List	mLights;
+	DrawLayer	mLayers[32];
 
 public:
 

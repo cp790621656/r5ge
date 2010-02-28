@@ -66,6 +66,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		IGraphics* graphics (mRoot->mCore->GetGraphics());
 		Vector3f dir (rot.GetForward());
 
+		// Set up the view and projection matrices
 		graphics->ResetModelViewMatrix();
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
@@ -73,9 +74,43 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		// Update the frustum
 		mFrustum.Update( graphics->GetModelViewProjMatrix() );
 
+		// Raycast hits are no longer valid
+		mHits.Clear();
+
 		// Cull the scene
-		_Cull(mFrustum, pos, dir);
+		_Cull(graphics, mFrustum, pos, dir);
 	}
+}
+
+//============================================================================================================
+// Casts a ray into the screen at the specified mouse position
+//============================================================================================================
+
+Array<RaycastHit>& Scene::Raycast (const Vector2i& screenPos)
+{
+	if (mRoot != 0 && (mHits.IsEmpty() || mLastRay != screenPos))
+	{
+		mLastRay = screenPos;
+
+		IGraphics* graphics (mRoot->mCore->GetGraphics());
+
+		// Get the inverse modelview-projection matrix and the viewport size
+		const Matrix44& imvp = graphics->GetInverseMVPMatrix();
+		const Vector2i& size = graphics->GetViewport();
+
+		Vector2f pos2 (mRoot->mCore->GetMousePos());
+		pos2 /= size;
+		pos2.y = 1.0f - pos2.y;
+
+		// Calculate the closest point on the near clippling plane
+		Vector3f near (imvp.Unproject(pos2, 0.0f));
+
+		// Populate the list
+		mHits.Clear();
+		mRoot->Raycast(near, Normalize(near - graphics->GetCameraPosition()), mHits);
+		mHits.Sort();
+	}
+	return mHits;
 }
 
 //============================================================================================================
@@ -199,25 +234,16 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 }
 
 //============================================================================================================
-// Selects the closest visible object to the specified position
-//============================================================================================================
-
-Object* Scene::Select (const Vector3f& pos)
-{
-	Object* ptr = 0;
-	float radius = 65535.0f;
-	mRoot->Select(pos, ptr, radius);
-	return ptr;
-}
-
-//============================================================================================================
 // Culls the scene using the specified frustum
 //============================================================================================================
 
-void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
+void Scene::_Cull (IGraphics* graphics, const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
 {
+	FillParams params (mQueue, frustum);
+	params.mCamPos = pos;
+	params.mCamDir = dir;
+
 	mQueue.Clear();
-	FillParams params (mQueue, frustum, pos, dir);
 	mRoot->Fill(params);
 	mQueue.Sort();
 }

@@ -9,13 +9,12 @@
 
 struct FillParams
 {
-	DrawQueue&		 mDrawQueue;	// Draw queue
-	const Frustum&	 mFrustum;		// Frustum used to cull the scene
-	const Vector3f&	 mCamPos;		// Current camera position, used to sort objects
-	const Vector3f&	 mCamDir;		// Current camera direction
+	DrawQueue&		mDrawQueue;		// Draw queue
+	const Frustum&	mFrustum;		// Frustum used to cull the scene
+	Vector3f		mCamPos;		// Current camera position, used to sort objects
+	Vector3f		mCamDir;		// Current camera direction
 
-	FillParams (DrawQueue& q, const Frustum& f, const Vector3f& pos, const Vector3f& dir)
-		: mDrawQueue(q), mFrustum(f), mCamPos(pos), mCamDir(dir) {}
+	FillParams (DrawQueue& q, const Frustum& f) : mDrawQueue(q), mFrustum(f) {}
 
 	inline float GetDist(const Vector3f& pos) const { return (mCamPos - pos).Dot(); }
 };
