@@ -71,7 +71,8 @@ public:
 	UIWidget*		GetRoot();
 	const String&	GetName()		 const	{ return mName;			}
 	const String&	GetTooltip()	 const	{ return mTooltip;		}
-	const Children& GetChildren()	 const	{ return mChildren;		}
+	const Children& GetAllChildren() const	{ return mChildren;		}
+	const Scripts&	GetAllScripts()	 const	{ return mScripts;		}
 	UIWidget*		GetParent()				{ return mParent;		}
 	int				GetLayer()		 const	{ return mLayer;		}
 	bool			IsSerializable() const	{ return mSerializable; }

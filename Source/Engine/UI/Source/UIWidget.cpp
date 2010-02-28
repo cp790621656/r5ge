@@ -384,7 +384,13 @@ bool UIWidget::SerializeTo (TreeNode& root) const
 
 		node.AddChild("Layer", mLayer);
 
-		for (uint i = 0; i < mScripts.GetSize();  ++i) mScripts [i]->SerializeTo(node);
+		for (uint i = 0; i < mScripts.GetSize(); ++i)
+		{
+			const UIScript* script = mScripts[i];
+			TreeNode& child = node.AddChild(UIScript::ClassID(), script->GetClassID());
+			script->OnSerializeTo(child);
+		}
+
 		for (uint i = 0; i < mChildren.GetSize(); ++i) mChildren[i]->SerializeTo(node);
 		return true;
 	}
@@ -449,7 +455,7 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 			else if (tag == UIScript::ClassID())
 			{
 				UIScript* script = _AddScript(value.IsString() ? value.AsString() : value.GetString());
-				if (script != 0) script->SerializeFrom(node);
+				if (script != 0) script->OnSerializeFrom(node);
 			}
 			else if (!OnSerializeFrom(node))
 			{

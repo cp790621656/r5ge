@@ -597,16 +597,27 @@ bool UIManager::SerializeTo (TreeNode& root) const
 			}
 
 			// Serialize all children
-			const UIWidget::Children& children = mRoot.GetChildren();
+			const UIWidget::Children&	children	= mRoot.GetAllChildren();
+			const UIWidget::Scripts&	scripts		= mRoot.GetAllScripts();
 
-			if (children.IsValid())
+			if (children.IsValid() || scripts.IsValid())
 			{
 				TreeNode& layout = node.AddChild("Layout");
+
+				for (uint i = 0; i < scripts.GetSize(); ++i)
+				{
+					const UIScript* script = scripts[i];
+					TreeNode& child = layout.AddChild(UIScript::ClassID(), script->GetClassID());
+					script->OnSerializeTo(child);
+				}
 
 				for (uint i = 0; i < children.GetSize(); ++i)
 				{
 					children[i]->SerializeTo(layout);
 				}
+
+				// Don't save empty nodes
+				if (!layout.HasChildren()) node.mChildren.Shrink();
 			}
 		}
 		Unlock();
@@ -624,7 +635,7 @@ uint UIManager::Draw()
 	mIsDirty = false;
 	uint triangles (0);
 
-	if (mRoot.GetChildren().IsValid())
+	if (mRoot.GetAllChildren().IsValid())
 	{
 		Lock();
 		{
