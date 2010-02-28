@@ -25,14 +25,31 @@ void UITextArea::AddParagraph (const String& text, const Color3f& color, bool sh
 	{
 		while (mParagraphs.GetSize() > mMaxParagraphs)
 		{
-			mNeedsRebuild = true;
+			Paragraph& para = mParagraphs[0];
 
+			const IFont* font = para.mFont;
+			const ITexture* tex = (font == 0) ? 0 : font->GetTexture();
+
+			if (tex != 0)
+			{
+				for (uint i = mLines.GetSize(); i > 0; )
+				{
+					// If this texture is currently in use, invalidate its draw queue
+					if (mLines[--i].mLine->GetTexture() == tex)
+					{
+						mNeedsRebuild = true;
+						OnDirty(tex);
+						break;
+					}
+				}
+			}
+			
 			// NOTE: This is a dangerous operation. Array::RemoveAt actually moves memory over,
 			// without doing any copying. The advantage is that it's quick. The obvious glaring
 			// disadvantage is being able to screw up *very* easily. Be *very* careful whenever
 			// modifying this part of the code in the future. Strings must be released manually.
 
-			mParagraphs[0].Release();
+			para.Release();
 			mParagraphs.RemoveAt(0);
 		}
 
@@ -41,15 +58,15 @@ void UITextArea::AddParagraph (const String& text, const Color3f& color, bool sh
 		par.mFont   = font;
 		par.mColor  = color;
 		par.mShadow = shadow;
+		par.mTime	= Time::GetMilliseconds();
 
 		// Only rebuild the very last paragraph if a full rebuild is not already needed
 		if (!mNeedsRebuild)
 		{
+			_MarkVisibleTexturesAsDirty();
 			_Rebuild(mParagraphs.GetSize() - 1);
+			OnDirty(font->GetTexture());
 		}
-
-		// Mark all associated textures as dirty
-		_MarkTexturesAsDirty();
 	}
 }
 
@@ -64,7 +81,7 @@ void UITextArea::SetScroll (float val)
 	if (mScroll != val && mLines.IsValid())
 	{
 		mScroll = val;
-		_MarkTexturesAsDirty();
+		mNeedsRebuild = true;
 	}
 }
 
@@ -72,15 +89,37 @@ void UITextArea::SetScroll (float val)
 // Mark all associated textures as dirty
 //============================================================================================================
 
-void UITextArea::_MarkTexturesAsDirty()
+void UITextArea::_MarkAllTexturesAsDirty()
 {
-	for (uint i = 0; i < mParagraphs.GetSize(); ++i)
+	for (uint i = mParagraphs.GetSize(); i > 0; )
 	{
-		Paragraph& par = mParagraphs[i];
+		const Paragraph& par = mParagraphs[--i];
 
 		if (par.mFont != 0)
 		{
 			const ITexture* tex = par.mFont->GetTexture();
+
+			if (tex != 0)
+			{
+				OnDirty(tex);
+			}
+		}
+	}
+}
+
+//============================================================================================================
+// Marks all visible textures as dirty
+//============================================================================================================
+
+void UITextArea::_MarkVisibleTexturesAsDirty()
+{
+	for (uint i = mLines.GetSize(); i > 0; )
+	{
+		const Line& entry = mLines[--i];
+
+		if (entry.mLine->GetFont() != 0)
+		{
+			const ITexture* tex = entry.mLine->GetTexture();
 
 			if (tex != 0)
 			{
@@ -96,8 +135,6 @@ void UITextArea::_MarkTexturesAsDirty()
 
 void UITextArea::_Rebuild (uint offset)
 {
-	mNeedsRebuild = false;
-
 	uint width = Float::FloorToUInt(mRegion.GetCalculatedWidth());
 	String currentText;
 
@@ -120,21 +157,24 @@ void UITextArea::_Rebuild (uint offset)
 				// Add this line's height to the total
 				mHeight += Float::RoundToUInt(1.15f * par.mFont->GetSize());
 
-				// Create a new line
-				UITextLine* line = (UITextLine*)UITextLine::_CreateNew();
+				Line& entry = mLines.Expand();
+				
+				if (entry.mLine == 0)
+				{
+					entry.mLine = (UITextLine*)UITextLine::_CreateNew();
+					entry.mLine->_SetRootPtr(mUI);
+				}
 
-				// Set the root first
-				line->_SetRootPtr(mUI);
+				// Set the time when the line was created
+				entry.mTime = par.mTime;
+				entry.mAlpha = 1.0f;
 
 				// Update the line's properties
-				line->SetText(currentText);
-				line->SetFont(par.mFont);
-				line->SetColor(color);
-				line->SetShadow(par.mShadow);
-				line->SetLayer(mLayer);
-
-				// Add the line, without ever setting the parent (on purpose)
-				mLines.Expand() = line;
+				entry.mLine->SetText(currentText);
+				entry.mLine->SetFont(par.mFont);
+				entry.mLine->SetColor(color);
+				entry.mLine->SetShadow(par.mShadow);
+				entry.mLine->SetLayer(mLayer);
 
 				// Update the font's final color
 				par.mFont->UpdateColor(par.mText, color, offset, blockEnd);
@@ -147,13 +187,52 @@ void UITextArea::_Rebuild (uint offset)
 }
 
 //============================================================================================================
-// Not only do textures get marked, but the lines have to be rebuilt
+// Runs through all visible lines and fades them out as necessary
 //============================================================================================================
 
-void UITextArea::SetDirty()
+bool UITextArea::OnUpdate (bool dimensionsChanged)
 {
-	mNeedsRebuild = true;
-	_MarkTexturesAsDirty();
+	// If dimensions have changed we need to rebuild all lines
+	if (dimensionsChanged) mNeedsRebuild = true;
+
+	// If we have a scheduled rebuild, clear all lines and re-create them
+	if (mNeedsRebuild)
+	{
+		mMinTime = Time::GetMilliseconds();
+		mNeedsRebuild = false;
+		mLines.Clear();
+		_MarkAllTexturesAsDirty();
+		_Rebuild(0);
+	}
+
+	// If the fade delay has been set, we need to run through all lines and fade them as needed
+	if (mFadeDelay != 0)
+	{
+		ulong ms = Time::GetMilliseconds();
+
+		for (uint i = mLines.GetSize(); i > 0; )
+		{
+			Line& line = mLines[--i];
+			ulong time = line.mTime;
+
+			// Adjust the time by the minimum and the delay
+			if (mMinTime > time) time = mMinTime;
+			time += mFadeDelay;
+
+			// Calculate the alpha
+			float alpha = (time > ms) ? 1.0f : 1.0f - (0.001f * (ms - time)) / mFadeDuration;
+			if (alpha < 0.0f) alpha = 0.0f;
+
+			// If dimensions or alpha have changed, mark the queue as dirty
+			if (dimensionsChanged || alpha != line.mAlpha)
+			{
+				line.mAlpha = alpha;
+				OnDirty(line.mLine->GetTexture());
+			}
+		}
+	}
+	// We handle our own SetDirty() calls above
+	return false;
 }
 
 //============================================================================================================
@@ -163,12 +242,6 @@ void UITextArea::SetDirty()
 void UITextArea::OnFill (UIQueue* queue)
 {
 	if (queue->mLayer != mLayer || queue->mWidget != 0) return;
-
-	if (mNeedsRebuild)
-	{
-		mLines.Clear();
-		_Rebuild(0);
-	}
 
 	if (mLines.IsValid())
 	{
@@ -188,11 +261,13 @@ void UITextArea::OnFill (UIQueue* queue)
 		{
 			for (uint i = skip; i < mLines.GetSize(); ++i)
 			{
-				UITextLine* line = mLines[mLines.GetSize() - 1 - i];
+				Line& entry = mLines[mLines.GetSize() - 1 - i];
+				UITextLine* line = entry.mLine;
+
 				uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
 				uint nextOffset = offset + lineHeight;
 
-				if (line->GetTexture() == queue->mTex)
+				if (line->GetTexture() == queue->mTex && entry.mAlpha > 0.0f)
 				{
 					if (nextOffset < maxHeight)
 					{
@@ -206,7 +281,7 @@ void UITextArea::OnFill (UIQueue* queue)
 						rgn.Update(mRegion);
 
 						// Override the alpha to make it consistent
-						rgn.OverrideAlpha(mRegion.GetCalculatedAlpha());
+						rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
 
 						// Fill the line
 						line->OnFill(queue);
@@ -222,11 +297,13 @@ void UITextArea::OnFill (UIQueue* queue)
 		{
 			for (uint i = skip; i < mLines.GetSize(); ++i)
 			{
-				UITextLine* line = mLines[i];
+				Line& entry = mLines[i];
+				UITextLine* line = entry.mLine;
+
 				uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
 				uint nextOffset = offset + lineHeight;
 
-				if (line->GetTexture() == queue->mTex)
+				if (line->GetTexture() == queue->mTex && entry.mAlpha > 0.0f)
 				{
 					if (nextOffset < maxHeight)
 					{
@@ -240,7 +317,7 @@ void UITextArea::OnFill (UIQueue* queue)
 						rgn.Update(mRegion);
 
 						// Override the alpha to make it consistent
-						rgn.OverrideAlpha(mRegion.GetCalculatedAlpha());
+						rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
 
 						// Fill the line
 						line->OnFill(queue);
@@ -285,13 +362,30 @@ void UITextArea::OnScroll (const Vector2i& pos, float delta)
 
 bool UITextArea::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == "Style" && node.mValue.IsString())
+	if (node.mTag == "Style")
 	{
-		if (node.mValue.AsString() == "Chat") mStyle = Style::Chat;
-		else mStyle = Style::Normal;
-		return true;
+		if (node.mValue.IsString())
+		{
+			if (node.mValue.AsString() == "Chat") mStyle = Style::Chat;
+			else mStyle = Style::Normal;
+		}
 	}
-	return false;
+	else if (node.mTag == "Fade Delay")
+	{
+		if (node.mValue.IsFloat())
+		{
+			SetFadeDelay(node.mValue.AsFloat());
+		}
+	}
+	else if (node.mTag == "Fade Duration")
+	{
+		if (node.mValue.IsFloat())
+		{
+			SetFadeDuration(node.mValue.AsFloat());
+		}
+	}
+	else return false;
+	return true;
 }
 
 //============================================================================================================
@@ -301,4 +395,10 @@ bool UITextArea::OnSerializeFrom (const TreeNode& node)
 void UITextArea::OnSerializeTo (TreeNode& node) const
 {
 	node.AddChild("Style", (mStyle == Style::Chat) ? "Chat" : "Normal");
+	
+	if (mFadeDelay != 0)
+	{
+		node.AddChild("Fade Delay", 0.001f * mFadeDelay);
+		node.AddChild("Fade Duration", mFadeDuration);
+	}
 }
