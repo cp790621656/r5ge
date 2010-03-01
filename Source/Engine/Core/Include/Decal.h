@@ -13,7 +13,7 @@ protected:
 
 	Matrix43	mMatrix;
 	IShader*	mShader;
-	Color4ub	mColor;
+	Color4f		mColor;
 
 	// Textures passed to the decal
 	Array<const ITexture*> mTextures;
@@ -30,10 +30,11 @@ public:
 	static void SetDefaultLayer(byte layer);
 
 	const IShader*		GetShader()		const	{ return mShader;		}
-	const Color4ub&		GetColor()		const	{ return mColor;		}
+	const Color4f&		GetColor()		const	{ return mColor;		}
 
-	void SetShader	 (IShader* shader);
-	void SetColor	 (const Color4ub& val)		{ mColor	 = val;		}
+	void SetShader	(const String& shader);
+	void SetShader	(IShader* shader);
+	void SetColor	(const Color4f& val)		{ mColor	 = val;		}
 	
 	Array<const ITexture*>& GetTextureArray()	{ return mTextures;		}
 

@@ -16,7 +16,7 @@ void Decal::SetDefaultLayer (byte layer)
 // Use the default decal layer by default
 //============================================================================================================
 
-Decal::Decal() : mShader(0), mColor(0xFFFFFFFF)
+Decal::Decal() : mShader(0), mColor(1.0f)
 {
 	mLayer = g_decalLayer;
 	mCalcAbsBounds = false;
@@ -52,6 +52,16 @@ void Decal::OnInit()
 	mTextures.Expand() = graphics->GetTexture("[Generated] Normal");
 	mTextures.Expand() = graphics->GetTexture("[Generated] Diffuse Material");
 	mTextures.Expand() = graphics->GetTexture("[Generated] Specular Material");
+}
+
+//============================================================================================================
+// Changes the shader to the specified one
+//============================================================================================================
+
+void Decal::SetShader (const String& shader)
+{
+	IGraphics* graphics = GetGraphics();
+	if (graphics != 0) SetShader( graphics->GetShader(shader) );
 }
 
 //============================================================================================================
@@ -246,7 +256,11 @@ bool Decal::OnSerializeFrom (const TreeNode& root)
 	}
 	else if (tag == "Color")
 	{
-		if (root.mValue.IsColor4ub())
+		if (root.mValue.IsColor4f())
+		{
+			SetColor(root.mValue.AsColor4f());
+		}
+		else if (root.mValue.IsColor4ub())
 		{
 			SetColor(root.mValue.AsColor4ub());
 		}
