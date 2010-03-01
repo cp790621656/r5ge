@@ -59,20 +59,30 @@ bool ModelInstance::OnFill (FillParams& params)
 		float dist = (mAbsolutePos - params.mCamPos).Dot();
 		ModelTemplate::Limbs& limbs = mModel->GetAllLimbs();
 
-		mModel->Lock();
+		// If we have more than one limb, we should group by material (example: tree is made up of
+		// trunk and canopy limbs). Doing this saves texture, matrix, and shader switches.
+		if (limbs.GetSize() > 1)
 		{
-			for (uint i = 0, imax = limbs.GetSize(); i < imax; ++i)
+			mModel->Lock();
 			{
-				Limb* limb = limbs[i];
-
-				if (limb->IsValid())
+				for (uint i = 0, imax = limbs.GetSize(); i < imax; ++i)
 				{
-					IMaterial* mat = limb->GetMaterial();
-					params.mDrawQueue.Add(mLayer, this, mat->GetTechniqueMask(), mat->GetUID(), dist);
+					Limb* limb = limbs[i];
+
+					if (limb->IsValid())
+					{
+						IMaterial* mat = limb->GetMaterial();
+						params.mDrawQueue.Add(mLayer, this, mat->GetTechniqueMask(), mat->GetUID(), dist);
+					}
 				}
 			}
+			mModel->Unlock();
 		}
-		mModel->Unlock();
+		else
+		{
+			// If we only have 1 limb, it makes sense to group by model instead
+			params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel->GetUID(), dist);
+		}
 	}
 	return true;
 }

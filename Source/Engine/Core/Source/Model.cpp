@@ -218,7 +218,7 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 				IMaterial*	mat		= limb->GetMaterial();
 
 				// Skip limbs that belong to different groups
-				if (mat->GetUID() != group) continue;
+				if (group != GetUID() && group != mat->GetUID()) continue;
 
 				IMaterial::DrawMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
 

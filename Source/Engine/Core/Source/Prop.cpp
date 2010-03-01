@@ -107,17 +107,20 @@ uint Prop::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 			Limb* limb (*start);
 
 			// Only draw limbs as long as they are visible with the current technique
-			if (limb->IsVisibleWith(mask) && limb->GetMaterial()->GetUID() == group)
+			if (limb->IsVisibleWith(mask))
 			{
-				if ( graphics->SetActiveMaterial(limb->mMat) )
+				if (group == GetUID() || group == limb->GetMaterial()->GetUID())
 				{
-					if (limb->mMesh != 0)
+					if ( graphics->SetActiveMaterial(limb->mMat) )
 					{
-						limb->mMesh->Draw(graphics);
-					}
-					else if (limb->mCloud != 0)
-					{
-						limb->mCloud->Draw(graphics);
+						if (limb->mMesh != 0)
+						{
+							limb->mMesh->Draw(graphics);
+						}
+						else if (limb->mCloud != 0)
+						{
+							limb->mCloud->Draw(graphics);
+						}
 					}
 				}
 			}
