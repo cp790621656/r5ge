@@ -157,9 +157,6 @@ UIWidget* UIWidget::_AddWidget (const String& type, const String& name, bool uni
 		ptr->_SetParentPtr(this);
 		mChildren.Expand() = ptr;
 
-		// Update the region
-		if (mRegion.IsVisible()) ptr->Update(mRegion);
-
 		// Copy over the event listener
 		USEventListener* listener = mUI->_GetListener(name);
 
@@ -171,6 +168,9 @@ UIWidget* UIWidget::_AddWidget (const String& type, const String& name, bool uni
 
 		// Call the virtual initialization
 		ptr->OnInit();
+
+		// Update the region
+		if (mRegion.IsVisible()) ptr->Update(mRegion);
 	}
 	return ptr;
 }
