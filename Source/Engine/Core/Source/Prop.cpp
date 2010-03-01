@@ -95,7 +95,7 @@ bool Prop::IsUsingTexture (const ITexture* ptr) const
 // Draw the object, called by the rendering queue this object was added to
 //============================================================================================================
 
-uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
+uint Prop::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 {
 	uint mask = tech->GetMask();
 
@@ -107,7 +107,7 @@ uint Prop::_Draw (IGraphics* graphics, const ITechnique* tech)
 			Limb* limb (*start);
 
 			// Only draw limbs as long as they are visible with the current technique
-			if ( limb != 0 && limb->IsVisibleWith(mask) )
+			if (limb->IsVisibleWith(mask) && limb->GetMaterial()->GetUID() == group)
 			{
 				if ( graphics->SetActiveMaterial(limb->mMat) )
 				{

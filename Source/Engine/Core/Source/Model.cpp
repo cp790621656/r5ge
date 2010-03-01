@@ -188,12 +188,12 @@ void Model::Update()
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
+uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 {
 	if ( mSkeleton == 0 || mMatrices.IsEmpty() )
 	{
 		// If this model has no skeleton, just render it as a static prop
-		return Prop::_Draw(graphics, tech);
+		return Prop::_Draw(group, graphics, tech);
 	}
 
 	// Last rendered model
@@ -212,10 +212,13 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 			Limb* limb (*start);
 
 			// Only draw the limbs that are visible with the current technique
-			if ( limb != 0 && limb->IsVisibleWith(mask) )
+			if (limb->IsVisibleWith(mask))
 			{
 				Mesh*		mesh	= limb->GetMesh();
 				IMaterial*	mat		= limb->GetMaterial();
+
+				// Skip limbs that belong to different groups
+				if (mat->GetUID() != group) continue;
 
 				IMaterial::DrawMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
 
@@ -251,14 +254,14 @@ uint Model::_Draw (IGraphics* graphics, const ITechnique* tech)
 
 						// Draw the mesh
 						mesh->Draw(graphics);
+
+						// Remember the current values
+						mAnimUpdated	= false;
+						lastModel		= this;
 					}
 				}
 			}
 		}
-
-		// Remember the current values
-		mAnimUpdated	= false;
-		lastModel		= this;
 	}
 	Unlock();
 	return 1;

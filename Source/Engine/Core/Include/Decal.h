@@ -49,7 +49,7 @@ protected:
 	virtual bool OnFill (FillParams& params);
 
 	// Draws the light on-screen if it's visible
-	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
 
 	// Serialization
 	virtual void OnSerializeTo	  (TreeNode& node) const;

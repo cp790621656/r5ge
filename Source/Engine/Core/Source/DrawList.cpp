@@ -9,7 +9,12 @@ void DrawList::Add (uint group, Object* object, float distance)
 {
 	typedef DrawGroup* DrawGroupPtr;
 	DrawGroupPtr& ptr = mGroups[group];
-	if (ptr == 0) ptr = new DrawGroup();
+
+	if (ptr == 0)
+	{
+		ptr = new DrawGroup();
+		ptr->Set(group);
+	}
 	ptr->Add(object, distance);
 }
 

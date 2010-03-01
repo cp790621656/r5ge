@@ -33,7 +33,7 @@ protected:
 
 	virtual void OnUpdate();
 	virtual bool OnFill (FillParams& params);
-	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
 
 	// Draws the actual billboard reusing the common buffers
 	void DrawBillboard();

@@ -29,5 +29,5 @@ protected:
 	virtual void OnUpdate();
 
 	// Draw the glare
-	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
 };

@@ -57,7 +57,22 @@ bool ModelInstance::OnFill (FillParams& params)
 	if (mModel != 0)
 	{
 		float dist = (mAbsolutePos - params.mCamPos).Dot();
-		params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel->GetUID(), dist);
+		ModelTemplate::Limbs& limbs = mModel->GetAllLimbs();
+
+		mModel->Lock();
+		{
+			for (uint i = 0, imax = limbs.GetSize(); i < imax; ++i)
+			{
+				Limb* limb = limbs[i];
+
+				if (limb->IsValid())
+				{
+					IMaterial* mat = limb->GetMaterial();
+					params.mDrawQueue.Add(mLayer, this, mat->GetTechniqueMask(), mat->GetUID(), dist);
+				}
+			}
+		}
+		mModel->Unlock();
 	}
 	return true;
 }
@@ -66,33 +81,19 @@ bool ModelInstance::OnFill (FillParams& params)
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint ModelInstance::OnDraw (const ITechnique* tech, bool insideOut)
+uint ModelInstance::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
 	uint result(0);
 	IGraphics* graphics = mCore->GetGraphics();
 
-	if (mModel != 0)
-	{
-		if ((tech->GetMask() & mModel->GetMask()) != 0)
-		{
-			// Automatically normalize normals if the scale is not 1.0
-			graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
+	// Automatically normalize normals if the scale is not 1.0
+	graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
 
-			// Set the model's world matrix so the rendered objects show up in their proper place
-			graphics->SetModelMatrix( GetMatrix() );
+	// Set the model's world matrix so the rendered objects show up in their proper place
+	graphics->SetModelMatrix( GetMatrix() );
 
-			// Draw the model
-			result += mModel->_Draw(graphics, tech);
-		}
-
-		if (mShowOutline)
-		{
-			// Draw the outline if requested
-			static ITechnique* wireframe = graphics->GetTechnique("Wireframe");
-			if (tech == wireframe) result += mModel->_DrawOutline(graphics, tech);
-		}
-	}
-	return result;
+	// Draw the model
+	return mModel->_Draw(group, graphics, tech);
 }
 
 //============================================================================================================

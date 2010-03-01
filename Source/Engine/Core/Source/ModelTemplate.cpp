@@ -125,7 +125,6 @@ void ModelTemplate::GetRegisteredCodecs (Array<String>& list)
 //============================================================================================================
 
 ModelTemplate::ModelTemplate (const String& name) :
-	mUID			(GenerateUID()),
 	mName			(name),
 	mTemplate		(0),
 	mSkeleton		(0),

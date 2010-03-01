@@ -32,7 +32,6 @@ public:
 
 protected:
 
-	uint				mUID;			// Unique identifier
 	String				mName;			// Every template needs a unique name
 	mutable String		mFilename;		// Source filename from which this template was loaded
 	Limbs				mLimbs;			// List of model's limbs
@@ -51,9 +50,6 @@ public:
 
 	// Object creation
 	R5_DECLARE_INTERFACE_CLASS("Model Template");
-
-	// Unique identifiers are meant to be used as hash keys
-	uint GetUID() const { return mUID; }
 
 	// Thread safety locking/unlocking
 	void Lock()		const { mLock.Lock();	}

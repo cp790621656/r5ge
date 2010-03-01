@@ -118,7 +118,7 @@ bool Decal::OnFill (FillParams& params)
 // Draws the decal
 //============================================================================================================
 
-uint Decal::OnDraw (const ITechnique* tech, bool insideOut)
+uint Decal::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
 	static IVBO* vbo = 0;
 	static IVBO* ibo = 0;

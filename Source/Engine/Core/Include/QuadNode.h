@@ -53,9 +53,6 @@ private:
 	// Called when the object is being considered for rendering
 	void Fill (Array<QuadNode*>& renderList, FillParams& params);
 
-	// Navigate down to the leaves and render them as necessary
-	uint _Draw (IGraphics* graphics, const ITechnique* tech, bool insideOut);
-
 protected:
 
 	// Should create the node's topology and update 'mBounds'

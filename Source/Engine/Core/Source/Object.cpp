@@ -783,17 +783,17 @@ void Object::Fill (FillParams& params)
 // Draws the object with the specified technique
 //============================================================================================================
 
-uint Object::Draw (const ITechnique* tech, bool insideOut)
+uint Object::Draw (uint group, const ITechnique* tech, bool insideOut)
 {
 	uint result (0);
 
 	if (!mIgnore.Get(Ignore::Draw))
 	{
-		result += OnDraw(tech, insideOut);
+		result += OnDraw(group, tech, insideOut);
 	}
 
 	// Debugging functionality
-	if (mShowOutline)
+	if (mShowOutline && group == 0)
 	{
 		static IGraphics*  graphics  = mCore->GetGraphics();
 		static ITechnique* wireframe = graphics->GetTechnique("Wireframe");

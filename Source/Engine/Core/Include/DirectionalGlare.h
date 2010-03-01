@@ -20,5 +20,5 @@ public:
 protected:
 
 	virtual void OnUpdate();
-	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
 };

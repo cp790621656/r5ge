@@ -23,12 +23,18 @@ public:
 private:
 
 	Array<Entry> mEntries;
+	uint mGroup;
 
 public:
 
+	DrawGroup() : mGroup(0) {}
+
+	// Self-identification
+	void Set (uint group) { mGroup = group; }
+
+	// Only add this object if it's not already a part of the list
 	void Add (Object* object, float distance)
 	{
-		// Only add this object if it's not already a part of the list
 		if (mEntries.IsEmpty() || object != mEntries.Back().mObject)
 		{
 			Entry& ent		= mEntries.Expand();
@@ -39,5 +45,5 @@ public:
 
 	void Sort()  { mEntries.Sort();  }
 	void Clear() { mEntries.Clear(); }
-	uint Draw(const ITechnique* tech, bool insideOut);
+	uint Draw (const ITechnique* tech, bool insideOut);
 };

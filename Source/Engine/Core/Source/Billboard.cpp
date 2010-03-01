@@ -36,7 +36,7 @@ bool Billboard::OnFill (FillParams& params)
 // Draw the billboard
 //============================================================================================================
 
-uint Billboard::OnDraw (const ITechnique* tech, bool insideOut)
+uint Billboard::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 	Matrix43 mat (graphics->GetViewMatrix());
