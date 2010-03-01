@@ -84,6 +84,17 @@ Real Cubic (const Real& previous, const Real& current, const Real& next, const R
 }
 
 //============================================================================================================
+// Hermite interpolation (ease in, ease out)
+//============================================================================================================
+
+template <typename Real>
+Real Hermite (const Real& v0, const Real& v1, float factor)
+{
+	factor = factor * factor * (3.0f - 2.0f * factor);
+	return v0 * (1.0f - factor) + v1 * factor;
+}
+
+//============================================================================================================
 // Simplified Hermite interpolation
 // 22 operations for floats
 //============================================================================================================
