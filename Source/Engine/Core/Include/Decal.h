@@ -39,6 +39,9 @@ public:
 
 protected:
 
+	// Initialize the starting textures
+	virtual void OnInit();
+
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 

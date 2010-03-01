@@ -41,6 +41,20 @@ void OnSetRight		(const String& name, Uniform& uni) { uni = g_right;		}
 void OnSetUp		(const String& name, Uniform& uni) { uni = g_up;		}
 
 //============================================================================================================
+// Initialize the starting textures
+//============================================================================================================
+
+void Decal::OnInit()
+{
+	IGraphics* graphics = mCore->GetGraphics();
+
+	mTextures.Expand() = graphics->GetTexture("[Generated] Depth");
+	mTextures.Expand() = graphics->GetTexture("[Generated] Normal");
+	mTextures.Expand() = graphics->GetTexture("[Generated] Diffuse Material");
+	mTextures.Expand() = graphics->GetTexture("[Generated] Specular Material");
+}
+
+//============================================================================================================
 // Changing the shader means having to re-register uniforms used by this shader
 //============================================================================================================
 

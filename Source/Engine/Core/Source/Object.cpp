@@ -215,7 +215,7 @@ Script* Object::_GetScript (const String& type)
 
 	for (uint i = mScripts.GetSize(); i > 0; )
 	{
-		Script* script = mScripts[i];
+		Script* script = mScripts[--i];
 
 		if ( script != 0 && type == script->GetClassID() )
 		{
@@ -420,6 +420,15 @@ void Object::Release (bool threadSafe)
 		}
 	}
 	if (threadSafe) Unlock();
+}
+
+//============================================================================================================
+// Convenience functionality
+//============================================================================================================
+
+IGraphics* Object::GetGraphics()
+{
+	return (mCore != 0) ? mCore->GetGraphics() : 0;
 }
 
 //============================================================================================================

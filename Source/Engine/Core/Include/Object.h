@@ -138,6 +138,9 @@ public:
 	// Retrieves the Core that was ultimately owns this object
 	inline Core* GetCore() { return mCore; }
 
+	// Convenience functionality
+	IGraphics* GetGraphics();
+
 	// Returns whether the object is currently visible
 	bool IsVisible() const { return mFlags.Get(Flag::Visible) && (mParent == 0 && mParent->IsVisible()); }
 
