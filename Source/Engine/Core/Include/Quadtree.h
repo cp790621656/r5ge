@@ -48,6 +48,9 @@ protected:
 	// Derived classes must override this function
 	virtual QuadNode* _CreateNode()=0;
 
+	// Should return a unique identifier used by the draw queue
+	virtual uint GetUID() const=0;
+
 	// Should retrieve the technique mask that the terrain can be rendered with (should not include children)
 	virtual uint GetMask() const=0;
 
@@ -64,5 +67,5 @@ protected:
 	virtual bool OnFill (FillParams& params);
 
 	// Run through all renderable nodes and draw them
-	virtual uint OnDraw (const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
 };

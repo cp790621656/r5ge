@@ -120,7 +120,7 @@ void TerrainNode::OnFill (void* ptr, float bboxPadding)
 // Draw the object using the specified technique
 //============================================================================================================
 
-void TerrainNode::OnDraw (const ITechnique* tech, bool insideOut)
+void TerrainNode::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mTree->GetCore()->GetGraphics();
 

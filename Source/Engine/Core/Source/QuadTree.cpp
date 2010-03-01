@@ -109,7 +109,7 @@ bool QuadTree::OnFill (FillParams& params)
 
 		if (mRenderable.IsValid())
 		{
-			params.mDrawQueue.Add(mLayer, this, GetMask(), 0, 0.0f);
+			params.mDrawQueue.Add(mLayer, this, GetMask(), GetUID(), 0.0f);
 		}
 	}
 	// Don't cull the children as they should already be culled by the subdivided nodes
@@ -120,11 +120,11 @@ bool QuadTree::OnFill (FillParams& params)
 // Run through all renderable nodes and draw them
 //============================================================================================================
 
-uint QuadTree::OnDraw (const ITechnique* tech, bool insideOut)
+uint QuadTree::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
 	for (uint i = 0, imax = mRenderable.GetSize(); i < imax; ++i)
 	{
-		mRenderable[i]->OnDraw(tech, insideOut);
+		mRenderable[i]->OnDraw(group, tech, insideOut);
 	}
 	return mRenderable.GetSize();
 }

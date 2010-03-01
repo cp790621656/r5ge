@@ -59,5 +59,5 @@ protected:
 	virtual void OnFill (void* ptr, float bboxPadding)=0;
 
 	// Draw the object using the specified technique
-	virtual void OnDraw (const ITechnique* tech, bool insideOut)=0;
+	virtual void OnDraw (uint group, const ITechnique* tech, bool insideOut)=0;
 };

@@ -5,9 +5,9 @@ using namespace R5;
 // Set up all render states and activate the material before moving down to QuadTree's OnDraw
 //============================================================================================================
 
-uint Terrain::OnDraw (const ITechnique* tech, bool insideOut)
+uint Terrain::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
-	if ( mMat != 0 && mMat->IsVisibleWith(tech) )
+	if ( mMat != 0 && group  == mMat->GetUID() && mMat->IsVisibleWith(tech) )
 	{
 		IGraphics* graphics = mCore->GetGraphics();
 
@@ -20,7 +20,7 @@ uint Terrain::OnDraw (const ITechnique* tech, bool insideOut)
 		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
 		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
 
-		return QuadTree::OnDraw(tech, insideOut);
+		return QuadTree::OnDraw(group, tech, insideOut);
 	}
 	return 0;
 }
