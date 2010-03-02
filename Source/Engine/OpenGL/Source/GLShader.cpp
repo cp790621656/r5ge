@@ -91,15 +91,6 @@ void SetUniform_Time (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
-// Sets the world matrix scale component
-//============================================================================================================
-
-void GLShader::SetUniform_WorldScale (const String& name, Uniform& uniform)
-{
-	uniform = mGraphics->GetModelMatrix().GetScale();
-}
-
-//============================================================================================================
 // Shader callback function for R5_eyePos
 //============================================================================================================
 
@@ -244,7 +235,6 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 
 	// Register common uniforms that remain identical in all shaders
 	_InsertUniform( "R5_time",						&SetUniform_Time );
-	_InsertUniform( "R5_worldScale",				bind(&GLShader::SetUniform_WorldScale,	this) );
 	_InsertUniform( "R5_worldEyePosition",			bind(&GLShader::SetUniform_EyePos,		this) );
 	_InsertUniform( "R5_pixelSize",					bind(&GLShader::SetUniform_PixelSize,	this) );
 	_InsertUniform( "R5_clipRange",					bind(&GLShader::SetUniform_ClipRange,	this) );
@@ -669,12 +659,15 @@ bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 
 		if (entry.mName == name)
 		{
+			// The uniform has not yet been located
 			if (entry.mGLID == -2) entry.mGLID = ::GetUniformID(name);
-			if (entry.mGLID != -1)
-			{
-				_UpdateUniform(entry.mGLID, uniform);
-				return true;
-			}
+
+			// The uniform does not exist
+			if (entry.mGLID == -1) return false;
+
+			// The uniform exists and can be updated
+			_UpdateUniform(entry.mGLID, uniform);
+			return true;
 		}
 	}
 

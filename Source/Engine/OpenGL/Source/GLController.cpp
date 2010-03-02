@@ -1401,6 +1401,12 @@ void GLController::_ActivateMatrices()
 				{
 					const Matrix43& mat = GetModelMatrix();
 
+					// Scale parameter needs to be updated each time the matrix changed
+					if (mShader->GetFlag(IShader::Flag::WorldScale))
+					{
+						mShader->SetUniform("R5_worldScale", mat.GetScale());
+					}
+
 					// When a shader supporting instancing is enabled, feed it the world matrix
 					glMultiTexCoord4fv(GL_TEXTURE2, mat.mColumn0);
 					glMultiTexCoord4fv(GL_TEXTURE3, mat.mColumn1);
@@ -1418,6 +1424,12 @@ void GLController::_ActivateMatrices()
 				}
 				else
 				{
+					// Scale parameter needs to be updated each time the matrix changed
+					if (mShader != 0 && mShader->GetFlag(IShader::Flag::WorldScale))
+					{
+						mShader->SetUniform("R5_worldScale", GetModelMatrix().GetScale());
+					}
+
 					// No pseudo-instancing support -- just use the ModelView matrix
 					glMatrixMode(GL_MODELVIEW);
 					glLoadMatrixf(GetModelViewMatrix().mF);

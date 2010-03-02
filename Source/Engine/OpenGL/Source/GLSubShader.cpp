@@ -365,6 +365,7 @@ void GLSubShader::_Preprocess()
 		if (::PreprocessSkinning(mCode))		mFlags.Set(IShader::Flag::Skinned,		true);
 		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
+		if (mCode.Contains("R5_worldScale"))	mFlags.Set(IShader::Flag::WorldScale,	true);
 	}
 
 	// Preprocess all dependencies
