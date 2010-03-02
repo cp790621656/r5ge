@@ -35,20 +35,6 @@ Script* Script::_Create(const String& type)
 }
 
 //============================================================================================================
-// Destroys this script - this action is queued until next update
-//============================================================================================================
-
-void Script::DestroySelf()
-{
-	if (mObject != 0)
-	{
-		mObject->mScripts.Remove(this);
-		mObject->mDeletedScripts.Expand() = this;
-		mObject = 0;
-	}
-}
-
-//============================================================================================================
 // Destructor removes this script from the owning object's list if possible
 //============================================================================================================
 
@@ -57,6 +43,21 @@ Script::~Script()
 	if (mObject != 0)
 	{
 		mObject->mScripts.Remove(this);
+		mObject = 0;
+	}
+}
+
+//============================================================================================================
+// Destroys this script - this action is queued until next update
+//============================================================================================================
+
+void Script::DestroySelf()
+{
+	if (mObject != 0)
+	{
+		OnDestroy();
+		mObject->mScripts.Remove(this);
+		mObject->mDeletedScripts.Expand() = this;
 		mObject = 0;
 	}
 }

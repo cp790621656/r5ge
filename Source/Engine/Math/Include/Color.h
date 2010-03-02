@@ -24,8 +24,8 @@ public:
 	void			operator = (const Color4ub& c)		{ mUb = c; mF = c; }
 	void			operator = (const Color4f&  c)		{ mUb = c; mF = c; }
 	const float*	operator = (const Color& c)			{ mUb = c.mUb; mF = c.mF; return mF; }
-	bool			operator ==(const Color& c) const	{ return mUb == c.mUb; }
-	bool			operator !=(const Color& c) const	{ return mUb != c.mUb; }
+	bool			operator ==(const Color& c) const	{ return mF == c.mF; }
+	bool			operator !=(const Color& c) const	{ return mF != c.mF; }
 
 	operator const Color4ub& ()	const	{ return mUb; }
 	operator const Color4f&  ()	const	{ return mF;  }

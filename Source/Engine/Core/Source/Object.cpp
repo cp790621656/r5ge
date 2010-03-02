@@ -580,9 +580,6 @@ bool Object::Scroll (const Vector2i& pos, float delta)
 
 void Object::Update (bool threadSafe)
 {
-	if (mDeletedObjects.IsValid()) mDeletedObjects.Clear();
-	if (mDeletedScripts.IsValid()) mDeletedScripts.Clear();
-
 	if (mParent != 0 && mFlags.Get(Flag::Enabled))
 	{
 		if (threadSafe) Lock();
@@ -604,6 +601,9 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 {
 	mHasMoved = false;
 	bool retVal (false);
+
+	if (mDeletedObjects.IsValid()) mDeletedObjects.Clear();
+	if (mDeletedScripts.IsValid()) mDeletedScripts.Clear();
 
 	if (mFlags.Get(Flag::Enabled))
 	{

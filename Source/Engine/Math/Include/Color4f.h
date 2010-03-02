@@ -26,14 +26,14 @@ struct Color4f
 	void operator  = (const Color4f& v)					{ r = v.r;	g = v.g;	b = v.b;	a = v.a;	}
 	void operator  = (const Color4ub& v);				// Inlined in Color4ub.h
 	void operator  = (float f)							{ r = f; g = f; b = f; a = f; }
-	void operator += (float f)							{ r += f; g += f; b += f; }
-	void operator *= (float f)							{ r *= f; g *= f; b *= f; }
+	void operator += (float f)							{ r += f; g += f; b += f; a *= f; }
+	void operator *= (float f)							{ r *= f; g *= f; b *= f; a *= f; }
 	bool operator == (const Color4f& v) const			{ return (r == v.r && g == v.g && b == v.b && a == v.a); }
 	bool operator != (const Color4f& v) const			{ return (r != v.r || g != v.g || b != v.b || a != v.a); }
 	
-	Color4f operator *(float f) const					{ return Color4f(r * f, g * f, b * f, a); }
+	Color4f operator *(float f) const					{ return Color4f(r * f, g * f, b * f, a * f); }
 	Color4f operator *(const Color4f& v) const			{ return Color4f(r * v.r, g * v.g, b * v.b, a * v.a); }
-	Color4f operator +(float f) const					{ return Color4f(r + f, g + f, b + f, a); }
+	Color4f operator +(float f) const					{ return Color4f(r + f, g + f, b + f, a * f); }
 	Color4f operator +(const Color4f& v) const			{ return Color4f(r + v.r, g + v.g, b + v.b, a + v.a); }
 
 	bool IsVisible()	const							{ return (a > 0.0f); }

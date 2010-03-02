@@ -64,9 +64,9 @@ struct Color4ub
 																  b = Float::ToRangeByte(c.b);
 																  a = Float::ToRangeByte(c.a);	}
 
-	void     operator *=(float f)								{ Set((byte)(f * r), (byte)(f * g), (byte)(f * b));				}
-	Color4ub operator  *(float f) const							{ return Color4ub((byte)(f * r), (byte)(f * g), (byte)(f * b));	}
-	Color4ub operator  *(const Color4ub& v) const				{ return Color4ub(r * v.r, g * v.g, b * v.b, a * v.a);			}
+	void     operator *=(float f)								{ Set((byte)(f * r), (byte)(f * g), (byte)(f * b), (byte)(f * a)); }
+	Color4ub operator  *(float f) const							{ return Color4ub((byte)(f * r), (byte)(f * g), (byte)(f * b), (byte)(f * a));	}
+	Color4ub operator  *(const Color4ub& v) const				{ return Color4ub(r * v.r, g * v.g, b * v.b, a * v.a); }
 	bool	 operator ==(const Color4ub& c) const				{ return c.mVal == mVal; }
 	bool	 operator !=(const Color4ub& c) const				{ return c.mVal != mVal; }
 	bool	 operator ==(uint iValue) const						{ return iValue == mVal; }
