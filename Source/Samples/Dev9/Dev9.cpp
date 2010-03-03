@@ -194,7 +194,7 @@ void TestApp::DrawLeaves(void* param)
 		{
 			diffuseTarget = mGraphics->CreateRenderTarget();
 			diffuseTarget->AttachColorTexture(0, mFinalD, ITexture::Format::RGBA);
-			diffuseTarget->SetBackgroundColor( Color4ub(36, 56, 10, 0) );
+			diffuseTarget->SetBackgroundColor( Color4ub(65, 90, 20, 0) );
 			diffuseTarget->SetSize( tex->GetSize() * 2 );
 		}
 
