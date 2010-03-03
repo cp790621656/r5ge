@@ -83,11 +83,14 @@ uint GetUniformID (const String& name)
 void SetUniform_Time (const String& name, Uniform& uniform)
 {
 	uniform.mType = Uniform::Type::Float3;
-	uniform.mVal[0] = Time::GetTime();
-	uniform.mVal[1] = (0.6f * Float::Sin(uniform.mVal[0] * 0.421f) +
-					   0.3f * Float::Sin(uniform.mVal[0] * 1.737f) +
-					   0.1f * Float::Cos(uniform.mVal[0] * 2.786f)) * 0.5f + 0.5f;
-	uniform.mVal[2] = Float::Fract(uniform.mVal[0] * 0.001f) * TWOPI;
+	double time = Time::GetSeconds();
+	uniform.mVal[0] = (float)time;
+	uniform.mVal[1] = (float)((0.6 * sin(time * 0.421) +
+					   0.3 * sin(time * 1.737) +
+					   0.1 * cos(time * 2.786)) * 0.5 + 0.5);
+
+	double temp = time * 0.001;
+	uniform.mVal[2] = (float)((temp - floor(temp)) * TWOPI);
 }
 
 //============================================================================================================
