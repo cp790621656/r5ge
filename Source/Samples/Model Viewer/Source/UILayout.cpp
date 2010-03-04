@@ -2533,7 +2533,7 @@ void ModelViewer::OnAnimPlay (UIWidget* widget, const Vector2i& pos, byte key, b
 			if (_animPlay->GetText() == "Play")
 			{
 				_animPlay->SetText("Stop");
-				mModel->PlayAnimation(anim, &OnAnimationEnd);
+				mModel->PlayAnimation(anim, 1.0f, &OnAnimationEnd);
 			}
 			else
 			{
