@@ -146,10 +146,10 @@ public:
 	Animation* GetAnimation (const String& name, bool createIfMissing = false);
 
 	// Finds and plays the requested animation
-	uint PlayAnimation (const String& name, const AnimationEnd& onAnimEnd = 0);
+	uint PlayAnimation (const String& name, float strength = 1.0f, const AnimationEnd& onAnimEnd = 0);
 
 	// Plays the requested animation
-	uint PlayAnimation (const Animation* anim, const AnimationEnd& onAnimEnd = 0);
+	uint PlayAnimation (const Animation* anim, float strength = 1.0f, const AnimationEnd& onAnimEnd = 0);
 
 	// Stops the specified animation, fading it out over the specified amount of time
 	bool StopAnimation (const Animation* anim, float duration = 0.25f, const AnimationEnd& onAnimEnd = 0);

@@ -46,7 +46,7 @@ Root
 
 		Texture = "Leaf Diffuse map"
 		{
-			Source = "Textures/Billboards/leaf2.r5t"
+			Source = "Textures/Billboards/leaf3.png"
 			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
@@ -54,7 +54,7 @@ Root
 
 		Texture = "Leaf Normal map"
 		{
-			Source = "Textures/Billboards/leaf2_ns.png"
+			Source = "Textures/Billboards/leaf3_ns.png"
 			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"

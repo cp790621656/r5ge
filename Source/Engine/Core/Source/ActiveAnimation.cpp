@@ -16,6 +16,7 @@ ActiveAnimation::ActiveAnimation() :
 	mOverrideFactor		(0.0f),
 	mPlaybackDuration	(0.0f),
 	mCurrentAlpha		(0.0f),
+	mStrength			(1.0f),
 	mIsActive			(false)
 {
 }
@@ -28,7 +29,8 @@ void ActiveAnimation::Activate (
 	float fadeInFactor,
 	float durationFactor,
 	float fadeOutFactor,
-	float totalDuration )
+	float totalDuration,
+	float strength)
 {
 	mPlaybackFactor		= 0.0f;
 	mSamplingFactor		= 0.0f;
@@ -41,6 +43,7 @@ void ActiveAnimation::Activate (
 	mOverrideFactor		= 0.0f;
 	mPlaybackDuration	= totalDuration;
 	mCurrentAlpha		= 0.0f;
+	mStrength			= strength;
 	mIsActive			= true;
 }
 
@@ -189,7 +192,7 @@ bool ActiveAnimation::AdvanceSample (float delta, const Skeleton::Bones& bones, 
 					if (needsPos && (result & 0x1) != 0)
 					{
 						// Interpolate the value between our current and what's already there
-						float factor		= mCurrentAlpha * (1.0f - trans.mCombinedPos);
+						float factor		= mCurrentAlpha * (1.0f - trans.mCombinedPos) * mStrength;
 						trans.mRelativePos  = Interpolation::Linear(trans.mRelativePos, pos, factor);
 						trans.mCombinedPos += mCurrentAlpha;
 					}
@@ -197,7 +200,7 @@ bool ActiveAnimation::AdvanceSample (float delta, const Skeleton::Bones& bones, 
 					// If we can contribute rotation
 					if (needsRot && (result & 0x2) != 0)
 					{
-						float factor		= mCurrentAlpha * (1.0f - trans.mCombinedRot);
+						float factor		= mCurrentAlpha * (1.0f - trans.mCombinedRot) * mStrength;
 						trans.mRelativeRot  = Interpolation::Slerp(trans.mRelativeRot, rot, factor);
 						trans.mCombinedRot += mCurrentAlpha;
 					}

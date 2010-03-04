@@ -594,17 +594,17 @@ Animation*	Model::GetAnimation (const String& name, bool createIfMissing)
 // Finds and plays the requested animation
 //============================================================================================================
 
-uint Model::PlayAnimation (const String& name, const AnimationEnd& onAnimEnd)
+uint Model::PlayAnimation (const String& name, float strength, const AnimationEnd& onAnimEnd)
 {
 	Animation* anim = (mSkeleton != 0 ? mSkeleton->GetAnimation(name, false) : 0);
-	return (anim != 0) ? PlayAnimation(anim, onAnimEnd) : PlayResponse::Failed;
+	return (anim != 0) ? PlayAnimation(anim, strength, onAnimEnd) : PlayResponse::Failed;
 }
 
 //============================================================================================================
 // Plays the requested animation
 //============================================================================================================
 
-uint Model::PlayAnimation (const Animation* anim, const AnimationEnd& onAnimEnd)
+uint Model::PlayAnimation (const Animation* anim, float strength, const AnimationEnd& onAnimEnd)
 {
 	if (anim == 0 || mSkeleton == 0) return PlayResponse::Failed;
 
@@ -630,6 +630,9 @@ uint Model::PlayAnimation (const Animation* anim, const AnimationEnd& onAnimEnd)
 						// Flip the duration, making the animation fade in instead
 						activeAnim->mOverrideDuration = -activeAnim->mOverrideDuration;
 					}
+
+					// Update the animation's strength, just in case it has changed
+					activeAnim->mStrength = strength;
 
 					// The animation is already active -- fade out all animations that are covering it
 					const Vector3f& duration = anim->GetDuration();
@@ -684,7 +687,7 @@ uint Model::PlayAnimation (const Animation* anim, const AnimationEnd& onAnimEnd)
 		activeAnim->Activate((totalDuration == 0.0f) ? 0.0f : (fadeInDuration	/ totalDuration),
 							 (totalDuration == 0.0f) ? 0.0f : (playDuration		/ totalDuration),
 							 (totalDuration == 0.0f) ? 0.0f : (fadeOutDuration	/ totalDuration),
-							  totalDuration);
+							  totalDuration, strength);
 
 		// Sync up looping animations
 		if (playingAnims->GetSize() > 1)

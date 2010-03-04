@@ -23,12 +23,13 @@ struct ActiveAnimation
 	float		mOverrideDuration;	// Duration of the user-triggered animation fading
 	float		mOverrideFactor;	// Current overriding fading out factor
 	float		mCurrentAlpha;		// Current fading factor when fading the frame in 0 to 1 range
+	float		mStrength;			// Strength of this animation at 100% (default 1.0 for 100%)
 	bool		mIsActive;			// Whether this animation is active (internal flag)
 
 	ActiveAnimation();
 
 	// Convenience function
-	void Activate (float fadeInFactor, float durationFactor, float fadeOutFactor, float totalDuration);
+	void Activate (float fadeInFactor, float durationFactor, float fadeOutFactor, float totalDuration, float strength);
 
 	// Advance the animation and update the 'mIsActive' flag
 	bool AdvanceSample (float delta, const Skeleton::Bones& bones, BoneTransforms& transforms);
