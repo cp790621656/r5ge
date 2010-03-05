@@ -111,60 +111,6 @@ Root
 
 		Layout
 		{
-			Frame = "Debug Frame"
-			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
-				Receives Events = false
-				Layer = 0
-
-				Label = "FPS"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 18.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "484"
-					Shadow = true
-					Alignment = "Right"
-					Receives Events = false
-					Layer = 1
-				}
-
-				Highlight = "Status Highlight"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
-					Top Color = 0.000000 0.000000 0.000000 1.000000
-					Bottom Color = 1.000000 1.000000 1.000000 1.000000
-					Receives Events = true
-					Layer = 0
-
-					Label = "Status Label"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "R5 Model Viewer v.1.3.7. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]"
-						Shadow = true
-						Alignment = "Center"
-						Receives Events = false
-						Layer = 1
-					}
-				}
-			}
-
 			Frame = "Options Frame"
 			{
 				Left = 0.000000 0.000000
@@ -172,7 +118,7 @@ Root
 				Top = 0.000000 24.000000
 				Bottom = 0.000000 101.000000
 				Alpha = 0.000000
-				Receives Events = true
+				Event Handling = "Normal"
 				Layer = 0
 
 				SubPicture = "Options Background"
@@ -183,7 +129,7 @@ Root
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
 					Face = "Window: Background"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 
 					Label = "Rendering Method Label"
@@ -197,7 +143,7 @@ Root
 						Text = "Rendering Method:"
 						Shadow = false
 						Alignment = "Right"
-						Receives Events = false
+						Event Handling = "None"
 						Layer = 1
 					}
 
@@ -212,7 +158,7 @@ Root
 						Text = "Background:"
 						Shadow = false
 						Alignment = "Right"
-						Receives Events = false
+						Event Handling = "None"
 						Layer = 1
 					}
 
@@ -227,7 +173,7 @@ Root
 						Text = "Bloom:"
 						Shadow = false
 						Alignment = "Right"
-						Receives Events = false
+						Event Handling = "None"
 						Layer = 1
 					}
 
@@ -254,8 +200,9 @@ Root
 							"High Quality SSAO"
 						}
 
-						Receives Events = true
+						Event Handling = "Normal"
 						Layer = 0
+						UIScript = "USEventListener"
 					}
 
 					Checkbox = "Bloom Checkbox"
@@ -271,9 +218,10 @@ Root
 						Alignment = "Left"
 						State = "Checked"
 						Animation Time = 0.150000
-						Receives Events = true
+						Event Handling = "Normal"
 						Tooltip = "Turning this on will make bright areas glow"
 						Layer = 0
+						UIScript = "USEventListener"
 					}
 
 					Slider = "Bloom Slider"
@@ -286,8 +234,9 @@ Root
 						Value = 1.000000
 						Color = 1.000000 1.000000 1.000000
 						Animation Time = 0.000000
-						Receives Events = true
+						Event Handling = "Normal"
 						Layer = 0
+						UIScript = "USEventListener"
 					}
 
 					List = "Background"
@@ -316,8 +265,63 @@ Root
 							"LDR Skybox 1"
 						}
 
-						Receives Events = true
+						Event Handling = "Normal"
 						Layer = 0
+						UIScript = "USEventListener"
+					}
+				}
+			}
+
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Event Handling = "None"
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "792"
+					Shadow = true
+					Alignment = "Right"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Highlight = "Status Highlight"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 0.000000
+					Top Color = 0.000000 0.000000 0.000000 0.000000
+					Bottom Color = 0.000000 0.000000 0.000000 1.000000
+					Event Handling = "Normal"
+					Layer = 0
+
+					Label = "Status Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "R5 Model Viewer v.1.4.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Shadow = true
+						Alignment = "Center"
+						Event Handling = "None"
+						Layer = 1
 					}
 				}
 			}
@@ -339,7 +343,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = -0.461957 -0.045749 8.193066
-			Rotation = -0.038871 0.228725 -0.958965 0.162972
+			Rotation = -0.030387 0.143734 -0.967760 0.204593
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000

@@ -48,7 +48,7 @@ public:
 	ModelViewer();
 	~ModelViewer();
 
-	const char* GetVersion() const { return "1.3.7"; }
+	const char* GetVersion() const { return "1.4.0"; }
 
 	void  Run();
 	void  OnDraw();
@@ -75,7 +75,7 @@ public: // All of the functions below this line can be found in UILayout.cpp
 	void OnFileSave();
 	void ShowOpenDialog();
 	void ShowSaveAsDialog();
-	void ShowAboutInfo() { SetStatusText( String("R5 Model Viewer v.%s. Copyright (c) 2009 Michael Lyashenko. [www.nextrevision.com]", GetVersion()) ); }
+	void ShowAboutInfo() { SetStatusText( String("R5 Model Viewer v.%s. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]", GetVersion()) ); }
 	void ShowConfirmClearMatsDialog();
 	void ShowConfirmClearTexDialog();
 	void ShowConfirmClearAnimDialog();

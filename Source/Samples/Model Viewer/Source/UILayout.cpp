@@ -2008,6 +2008,7 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 
 		// Get a list of meshes used by the model
 		Array<Mesh*> meshes;
+		Array<Cloud*> clouds;
 		{
 			Model::Limbs& limbs = mModel->GetAllLimbs();
 
@@ -2020,10 +2021,15 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 					if (limb != 0)
 					{
 						Mesh* mesh = limb->GetMesh();
+						Cloud* cloud = limb->GetCloud();
 
 						if (mesh != 0 && mesh->IsValid())
 						{
-							meshes.AddUnique(limb->GetMesh());
+							meshes.AddUnique(mesh);
+						}
+						else if (cloud != 0)
+						{
+							clouds.AddUnique(cloud);
 						}
 					}
 				}
@@ -2032,7 +2038,7 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 		}
 
 		// If there were meshes to work with, transform all of their vertices
-		if (meshes.IsValid())
+		if (meshes.IsValid() || clouds.IsValid())
 		{
 			Matrix43 mat (pos, rot, scale);
 
@@ -2053,6 +2059,25 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 					mesh->Update(true, false, false, false, false, false);
 				}
 				mesh->Unlock();
+			}
+
+			for (uint b = 0; b < clouds.GetSize(); ++b)
+			{
+				Cloud* cloud = clouds[b];
+
+				cloud->Lock();
+				{
+					Array<Vector4f>& list = cloud->GetInstanceArray();
+
+					for (uint i = list.GetSize(); i > 0; )
+					{
+						list[--i].xyz() *= mat;
+						list[i].w *= scale;
+					}
+					cloud->SetOrigin( cloud->GetOrigin() * mat );
+					cloud->SetDirty();
+				}
+				cloud->Unlock();
 			}
 		}
 

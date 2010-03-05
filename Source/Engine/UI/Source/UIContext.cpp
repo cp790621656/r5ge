@@ -56,8 +56,8 @@ void UIContext::_Rebuild()
 	// Figure out the border sizes
 	const UIFace* background	= mSkin->GetFace(mFace);
 	const UIFace* highlight		= mSkin->GetFace("Generic Highlight");
-	short backgroundBorder		= background->GetBorder();
-	short highlightBorder		= -highlight->GetBorder();
+	short backgroundBorder		= (background == 0) ? 0 : background->GetBorder();
+	short highlightBorder		= (highlight  == 0) ? 0 : -highlight->GetBorder();
 
 	// Limit the border to positive range
 	if (backgroundBorder < 0) backgroundBorder = 0;
