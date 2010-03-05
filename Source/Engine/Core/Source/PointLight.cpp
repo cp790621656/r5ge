@@ -14,8 +14,18 @@ PointLight::PointLight() :
 	mPower		(2.0f)
 {
 	mLight.mType = Light::Type::Point;
+	mLight.mSubtype = HashKey(ClassID());
+
 	_UpdateColors();
 	_UpdateAtten();
+
+	static bool doOnce = true;
+
+	if (doOnce)
+	{
+		doOnce = false;
+		Deferred::RegisterLight(mLight.mSubtype, Deferred::DrawPointLights);
+	}
 }
 
 //============================================================================================================

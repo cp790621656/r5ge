@@ -48,6 +48,6 @@ protected:
 protected:
 
 	// Serialization
-	virtual void OnSerializeTo	  (TreeNode& root) const;
-	virtual bool OnSerializeFrom  (const TreeNode& root);
+	virtual void OnSerializeTo	  (TreeNode& node) const;
+	virtual bool OnSerializeFrom  (const TreeNode& node);
 };

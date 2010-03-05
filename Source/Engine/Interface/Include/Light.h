@@ -14,8 +14,8 @@ struct Light
 	{
 		enum
 		{
-			Directional	= 0,
-			Point		= 1,
+			Directional	= 1,
+			Point		= 2,
 		};
 	};
 
@@ -34,7 +34,8 @@ struct Light
 
 public:
 
-	uint		mType;		// Type of this light
+	byte		mType;		// Registered light type (directional, point, or spotlight)
+	uint		mSubtype;	// Additional identifier that can be used for a more complex light type
 	Vector3f	mPos;		// This light's position
 	Vector3f	mDir;		// This light's direction
 	Color4f		mAmbient;	// Ambient color
@@ -43,5 +44,5 @@ public:
 	Vector3f	mAtten;		// Light's attenuation for point lights and spot lights
 	Vector3f	mSpot;		// Additional spotlight-only parameters
 
-	Light() : mType(Type::Directional) {}
+	Light() : mType(Type::Directional), mSubtype(0) {}
 };

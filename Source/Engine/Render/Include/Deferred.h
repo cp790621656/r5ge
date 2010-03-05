@@ -19,6 +19,9 @@ namespace Deferred
 		const ITexture* depth,
 		const ITexture* normal)> AOCallback;
 
+	// Delegate function for lights
+	typedef FastDelegate<void (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap)> DrawLightsDelegate;
+
 	// Deferred::DrawScene should return more than just the number of triangles drawn
 	struct DrawResult
 	{
@@ -45,6 +48,17 @@ namespace Deferred
 
 		DrawParams() : mAOLevel(0), mInsideOut(false), mUseColor(false) {}
 	};
+
+	// Registers a new light source type
+	void RegisterLight (uint subType, const DrawLightsDelegate& func);
+
+	// Callback function that will draw directional lights
+	// NOTE: By default this function is registered inside Core's DirectionalLight class constructor
+	void DrawDirectionalLights (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
+
+	// Callback function that will draw point lights
+	// NOTE: By default this function is registered inside Core's PointLight class constructor
+	void DrawPointLights (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
 
 	// Deferred rendering draw function -- does all the setup and rendering into off-screen buffers
 	DrawResult DrawScene (IGraphics* graphics, const Light::List& lights, const DrawParams& params);

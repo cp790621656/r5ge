@@ -12,7 +12,17 @@ DirectionalLight::DirectionalLight() :
 	mBrightness	(1.0f)
 {
 	mLight.mType = Light::Type::Directional;
+	mLight.mSubtype = HashKey(ClassID());
+
 	_UpdateColors();
+
+	static bool doOnce = true;
+
+	if (doOnce)
+	{
+		doOnce = false;
+		Deferred::RegisterLight(mLight.mSubtype, Deferred::DrawDirectionalLights);
+	}
 }
 
 //============================================================================================================
@@ -56,10 +66,10 @@ bool DirectionalLight::OnFill (FillParams& params)
 // Serialization -- Load
 //============================================================================================================
 
-bool DirectionalLight::OnSerializeFrom (const TreeNode& root)
+bool DirectionalLight::OnSerializeFrom (const TreeNode& node)
 {
-	const String&	tag   = root.mTag;
-	const Variable&	value = root.mValue;
+	const String&	tag   = node.mTag;
+	const Variable&	value = node.mValue;
 
 	float f;
 	Color3f color;
@@ -76,10 +86,10 @@ bool DirectionalLight::OnSerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-void DirectionalLight::OnSerializeTo (TreeNode& root) const
+void DirectionalLight::OnSerializeTo (TreeNode& node) const
 {
-	root.AddChild("Ambient",	mAmbient);
-	root.AddChild("Diffuse",	mDiffuse);
-	root.AddChild("Specular",	mSpecular);
-	root.AddChild("Brightness", mBrightness);
+	node.AddChild("Ambient",	mAmbient);
+	node.AddChild("Diffuse",	mDiffuse);
+	node.AddChild("Specular",	mSpecular);
+	node.AddChild("Brightness", mBrightness);
 }
