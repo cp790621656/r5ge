@@ -266,21 +266,25 @@ void Network::_Connect()
 	}
 	else
 	{
-		// On success, lock the sockets list and change the socket's action to 'Ready'
+		Socket* socket (0);
+
+		// Find the newly connected socket
 		mSockets.Lock();
 		{
-			Socket* socket = _GetSocket(cd.mId);
+			socket = _GetSocket(cd.mId);
+			ASSERT(socket != 0, "Socket not found");
 
 			if (socket != 0)
 			{
 				socket->mAddress = ip;
+				socket->mUserData = cd.mUserData;
 				socket->mAction = Socket::Action::Ready;
 			}
 		}
 		mSockets.Unlock();
 
-		// Trigger the OnConnect callback, signalling a successfully established connection
-		if (mOnConnect) mOnConnect(ip, cd.mId, cd.mUserData, cd.mAddress);
+		// Inform the listener
+		if (mOnConnect) mOnConnect(ip, cd.mId, socket->mUserData, cd.mAddress);
 
 		// In debug mode add an entry to the log file, logging the connection information
 		DEBUG_LOG( String("Connected to %s", cd.mAddress.GetBuffer()) );
@@ -833,6 +837,32 @@ void Network::Close (uint id)
 //}
 
 //============================================================================================================
+// Closes all active connections
+//============================================================================================================
+
+void Network::Disconnect()
+{
+	mSockets.Lock();
+	{
+		for (uint i = mSockets.GetSize(); i > 0; )
+		{
+			Socket& socket = mSockets[--i];
+			Address remote (socket.mAddress);
+			VoidPtr userData (socket.mUserData);
+			uint id (socket.mId);
+
+			// Close the socket
+			::CloseSocket(socket);
+
+			// Inform the callback that the socket has been closed
+			if (mOnClose) mOnClose(remote, id, userData);
+		}
+		mSockets.Clear();
+	}
+	mSockets.Unlock();
+}
+
+//============================================================================================================
 // Sends out data through the specified socket to the destination address
 //============================================================================================================
 
@@ -862,6 +892,34 @@ bool Network::Send (const void* data, uint length, uint id, const Address& desti
 				if (socket != 0)
 				{
 					retVal = Send(data, length, *socket, destination);
+				}
+			}
+		}
+		mSockets.Unlock();
+	}
+	return retVal;
+}
+
+//============================================================================================================
+// When sending data to a specific list of sockets, this function can do that with minimum overhead
+//============================================================================================================
+
+bool Network::Send (const void* data, uint length, const Array<uint>& sockets)
+{
+	bool retVal = false;
+	if (length > 0 && data != 0)
+	{
+		mSockets.Lock();
+		{
+			Address destination;
+
+			for (uint i = 0, imax = sockets.GetSize(); i < imax; ++i)
+			{
+				Socket* socket = _GetSocket(sockets[i]);
+
+				if ( socket != 0 && socket->IsReadyToSend() && socket->mType == Socket::Type::TCP )
+				{
+					retVal |= _Send(data, length, *socket, destination);
 				}
 			}
 		}

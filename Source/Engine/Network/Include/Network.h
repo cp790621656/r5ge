@@ -137,6 +137,9 @@ public: // Basic functionality section
 	void Close (uint id);
 	//void Close (const Socket& socket, bool threadSafe = true);
 
+	// Closes all active connections
+	void Disconnect();
+
 	// Sends out data through the specified socket to the destination address
 	bool Send (const void* data, uint length, uint id = 0, const Address& destination = Address());
 
@@ -146,6 +149,9 @@ public: // Basic functionality section
 	{
 		return (length > 0 && data != 0 && socket.IsReadyToSend()) ? _Send(data, length, socket, destination) : false;
 	}
+
+	// When sending data to a specific list of sockets, this function can do that with minimum overhead
+	bool Send (const void* data, uint length, const Array<uint>& sockets);
 
 	// Adds a new worker thread that will run in the background and process messages
 	void SpawnWorkerThread();
