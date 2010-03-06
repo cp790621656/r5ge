@@ -9,7 +9,9 @@ void UITextArea::Clear()
 {
 	SetDirty();
 	mParagraphs.Clear();
+	mLines.Lock();
 	mLines.Clear();
+	mLines.Unlock();
 	mHeight = 0;
 }
 
@@ -32,16 +34,20 @@ void UITextArea::AddParagraph (const String& text, const Color3f& color, bool sh
 
 			if (tex != 0)
 			{
-				for (uint i = mLines.GetSize(); i > 0; )
+				mLines.Lock();
 				{
-					// If this texture is currently in use, invalidate its draw queue
-					if (mLines[--i].mLine->GetTexture() == tex)
+					for (uint i = mLines.GetSize(); i > 0; )
 					{
-						mNeedsRebuild = true;
-						OnDirty(tex);
-						break;
+						// If this texture is currently in use, invalidate its draw queue
+						if (mLines[--i].mLine->GetTexture() == tex)
+						{
+							mNeedsRebuild = true;
+							OnDirty(tex);
+							break;
+						}
 					}
 				}
+				mLines.Unlock();
 			}
 			
 			// NOTE: This is a dangerous operation. Array::RemoveAt actually moves memory over,
@@ -203,9 +209,14 @@ bool UITextArea::OnUpdate (bool dimensionsChanged)
 	{
 		mMinTime = Time::GetMilliseconds();
 		mNeedsRebuild = false;
-		mLines.Clear();
-		_MarkAllTexturesAsDirty();
-		_Rebuild(0);
+
+		mLines.Lock();
+		{
+			mLines.Clear();
+			_MarkAllTexturesAsDirty();
+			_Rebuild(0);
+		}
+		mLines.Unlock();
 	}
 
 	// If the fade delay has been set, we need to run through all lines and fade them as needed
@@ -213,26 +224,30 @@ bool UITextArea::OnUpdate (bool dimensionsChanged)
 	{
 		ulong ms = Time::GetMilliseconds();
 
-		for (uint i = mLines.GetSize(); i > 0; )
+		mLines.Lock();
 		{
-			Line& line = mLines[--i];
-			ulong time = line.mTime;
-
-			// Adjust the time by the minimum and the delay
-			if (mMinTime > time) time = mMinTime;
-			time += mFadeDelay;
-
-			// Calculate the alpha
-			float alpha = (time > ms) ? 1.0f : 1.0f - (0.001f * (ms - time)) / mFadeDuration;
-			if (alpha < 0.0f) alpha = 0.0f;
-
-			// If dimensions or alpha have changed, mark the queue as dirty
-			if (dimensionsChanged || alpha != line.mAlpha)
+			for (uint i = mLines.GetSize(); i > 0; )
 			{
-				line.mAlpha = alpha;
-				OnDirty(line.mLine->GetTexture());
+				Line& line = mLines[--i];
+				ulong time = line.mTime;
+
+				// Adjust the time by the minimum and the delay
+				if (mMinTime > time) time = mMinTime;
+				time += mFadeDelay;
+
+				// Calculate the alpha
+				float alpha = (time > ms) ? 1.0f : 1.0f - (0.001f * (ms - time)) / mFadeDuration;
+				if (alpha < 0.0f) alpha = 0.0f;
+
+				// If dimensions or alpha have changed, mark the queue as dirty
+				if (dimensionsChanged || alpha != line.mAlpha)
+				{
+					line.mAlpha = alpha;
+					OnDirty(line.mLine->GetTexture());
+				}
 			}
 		}
+		mLines.Unlock();
 	}
 	// We handle our own SetDirty() calls above
 	return false;
@@ -248,90 +263,95 @@ void UITextArea::OnFill (UIQueue* queue)
 
 	if (mLines.IsValid())
 	{
-		// Visible region's height
-		uint maxHeight = Float::FloorToUInt(mRegion.GetCalculatedHeight());
-		uint offset = 0;
-
-		// How many lines to skip
-		uint skip = Float::RoundToUInt(mScroll * mLines.GetSize());
-		uint max = mLines.GetSize() - 1;
-
-		// Don't go past the last line
-		if (skip > max) skip = max;
-
-		// Go through visible lines starting at the offset
-		if (mStyle == Style::Chat)
+		mLines.Lock();
 		{
-			for (uint i = skip; i < mLines.GetSize(); ++i)
+			// Visible region's height
+			uint maxHeight = Float::FloorToUInt(mRegion.GetCalculatedHeight());
+			uint offset = 0;
+
+			// How many lines to skip
+			uint skip = Float::RoundToUInt(mScroll * mLines.GetSize());
+			uint max = mLines.GetSize() - 1;
+
+			// Don't go past the last line
+			if (skip > max) skip = max;
+
+			// Go through visible lines starting at the offset
+			if (mStyle == Style::Chat)
 			{
-				Line& entry = mLines[mLines.GetSize() - 1 - i];
-				UITextLine* line = entry.mLine;
-
-				uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
-				uint nextOffset = offset + lineHeight;
-
-				if (line->GetTexture() == queue->mTex && entry.mAlpha > 0.0f)
+				for (uint i = skip; i < mLines.GetSize(); ++i)
 				{
-					if (nextOffset < maxHeight)
+					Line& entry = mLines[mLines.GetSize() - 1 - i];
+					UITextLine* line = entry.mLine;
+					ASSERT(line != 0, "Null line?");
+
+					uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
+					uint nextOffset = offset + lineHeight;
+
+					if (line->GetTexture() == queue->mTex && entry.mAlpha > 0.0f)
 					{
-						UIRegion& rgn = line->GetRegion();
+						if (nextOffset < maxHeight)
+						{
+							UIRegion& rgn = line->GetRegion();
 
-						// Calculate the line's regional dimensions
-						rgn.SetTop(1.0f, -(float)nextOffset);
-						rgn.SetBottom(1.0f, -(float)offset);
+							// Calculate the line's regional dimensions
+							rgn.SetTop(1.0f, -(float)nextOffset);
+							rgn.SetBottom(1.0f, -(float)offset);
 
-						// Update the region
-						rgn.Update(mRegion);
+							// Update the region
+							rgn.Update(mRegion);
 
-						// Override the alpha to make it consistent
-						rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
+							// Override the alpha to make it consistent
+							rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
 
-						// Fill the line
-						line->OnFill(queue);
+							// Fill the line
+							line->OnFill(queue);
+						}
+						else break;
 					}
-					else break;
-				}
 
-				// Adjust the offset
-				offset = nextOffset;
+					// Adjust the offset
+					offset = nextOffset;
+				}
+			}
+			else
+			{
+				for (uint i = skip; i < mLines.GetSize(); ++i)
+				{
+					Line& entry = mLines[i];
+					UITextLine* line = entry.mLine;
+
+					uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
+					uint nextOffset = offset + lineHeight;
+
+					if (line->GetTexture() == queue->mTex && entry.mAlpha > 0.0f)
+					{
+						if (nextOffset < maxHeight)
+						{
+							UIRegion& rgn = line->GetRegion();
+
+							// Calculate the line's regional dimensions
+							rgn.SetTop(0.0f, (float)offset);
+							rgn.SetBottom(0.0f, (float)nextOffset);
+
+							// Update the region
+							rgn.Update(mRegion);
+
+							// Override the alpha to make it consistent
+							rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
+
+							// Fill the line
+							line->OnFill(queue);
+						}
+						else break;
+					}
+
+					// Adjust the offset
+					offset = nextOffset;
+				}
 			}
 		}
-		else
-		{
-			for (uint i = skip; i < mLines.GetSize(); ++i)
-			{
-				Line& entry = mLines[i];
-				UITextLine* line = entry.mLine;
-
-				uint lineHeight = Float::RoundToUInt(1.15f * line->GetFont()->GetSize());
-				uint nextOffset = offset + lineHeight;
-
-				if (line->GetTexture() == queue->mTex && entry.mAlpha > 0.0f)
-				{
-					if (nextOffset < maxHeight)
-					{
-						UIRegion& rgn = line->GetRegion();
-
-						// Calculate the line's regional dimensions
-						rgn.SetTop(0.0f, (float)offset);
-						rgn.SetBottom(0.0f, (float)nextOffset);
-
-						// Update the region
-						rgn.Update(mRegion);
-
-						// Override the alpha to make it consistent
-						rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
-
-						// Fill the line
-						line->OnFill(queue);
-					}
-					else break;
-				}
-
-				// Adjust the offset
-				offset = nextOffset;
-			}
-		}
+		mLines.Unlock();
 	}
 }
 
