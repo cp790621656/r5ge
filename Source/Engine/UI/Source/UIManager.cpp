@@ -134,6 +134,15 @@ void UIManager::_SetHoverArea (UIWidget* ptr)
 
 void UIManager::_SetFocusArea (UIWidget* ptr)
 {
+	// If the UI root is capable of handling events, then setting the focus to null should set it to root
+	if (ptr == 0)
+	{
+		if ( (mRoot.GetEventHandling() & UIWidget::EventHandling::Self) != 0 )
+		{
+			ptr = &mRoot;
+		}
+	}
+
 	if (mFocus != ptr)
 	{
 		UIWidget* oldInput = mFocus;

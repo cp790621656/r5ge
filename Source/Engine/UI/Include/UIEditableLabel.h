@@ -34,6 +34,10 @@ public:
 	virtual void SetText (const String& text);
 	virtual void SetFont (const IFont* font);
 
+	// Selects the entire text
+	void SelectAll();
+
+	// Retrieves the selected part of the text
 	String	  GetSelectedText() const;
 	void	  SetSelectionColor (const Color4f& color);
 	Color4ub  GetSelectionColor() const { return mSelColor; }

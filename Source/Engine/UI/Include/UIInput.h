@@ -44,6 +44,9 @@ public:
 	void ClearHistory()								{ mHistory.Lock(); mHistory.Clear(); mHistory.Unlock(); }
 	void AddToHistory (const String& text);
 
+	// Selects the entire text
+	void SelectAll() { mLabel.SelectAll(); }
+
 private:
 
 	// Private callbacks

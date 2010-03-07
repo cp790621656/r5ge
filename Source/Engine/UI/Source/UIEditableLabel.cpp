@@ -81,6 +81,17 @@ void  UIEditableLabel::_MoveCursorTo(uint index)
 }
 
 //============================================================================================================
+// Selects the entire text
+//============================================================================================================
+
+void UIEditableLabel::SelectAll()
+{
+	mSelectionStart = mText.GetLength();
+	mSelectionEnd = 0;
+	OnDirty(0, mLayer + 1);
+}
+
+//============================================================================================================
 // Retrieves the selected text
 //============================================================================================================
 
@@ -294,13 +305,13 @@ void UIEditableLabel::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		else if ( key == Key::ArrowRight )	_MoveCursorTo( commandKey ? 0xFFFFFFFF : mSelectionEnd + 1 );
 		else if ( key == Key::Backspace )	OnChar(key);
 		else if ( key == Key::Delete )		OnChar(key);
-		else if ( key == Key::Return )
-		{
-			OnValueChange();
+	}
+	else if ( key == Key::Return )
+	{
+		OnValueChange();
 
-			// Give up focus
-			mUI->_SetFocusArea(0);
-		}
+		// Give up focus
+		mUI->_SetFocusArea(0);
 	}
 	else if	( key == Key::Escape )
 	{
