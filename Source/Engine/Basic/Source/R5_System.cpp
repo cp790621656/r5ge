@@ -31,6 +31,20 @@ struct File
 };
 
 //============================================================================================================
+// Returns the OS type
+//============================================================================================================
+
+#ifdef _WINDOWS
+uint System::GetOS() { return System::OS::Windows; }
+#elif defined _MACOS
+uint System::GetOS() { return System::OS::MacOS; }
+#elif defined _LINUX
+uint System::GetOS() { return System::OS::Linux; }
+#else
+uint System::GetOS() { return System::OS::Unknown; }
+#endif
+
+//============================================================================================================
 // Changes the local working directory
 //============================================================================================================
 

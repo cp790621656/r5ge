@@ -14,13 +14,13 @@ DeviceInfo	g_caps;
 
 DeviceInfo::DeviceInfo() :
 	mInitialized			(false),
-	mOS						(OS::Unknown),
 	mVersion				(1.0f),
 	mFloat16Format			(false),
 	mFloat32Format			(false),
 	mBufferObjects			(false),
 	mDrawBuffers			(false),
 	mDepthStencil			(false),
+	mDXTCompression			(false),
 	mAlphaAttachments		(false),
 	mMixedAttachments		(false),
 	mOcclusion				(false),
@@ -36,17 +36,7 @@ DeviceInfo::DeviceInfo() :
 	mBufferMemory			(0),
 	mMaxTextureMemory		(0),
 	mMaxBufferMemory		(0),
-	mMaxMemory				(0)
-{
-	// Windows OS is subdivided into different versions and is set in "_Windows_OpenGL.cpp"
-#ifdef _WINDOWS
-	mOS = OS::Windows;
-#elif defined(_MACOS)
-	mOS = OS::MacOS;
-#elif defined(_LINUX)
-	mOS = OS::Linux;
-#endif
-}
+	mMaxMemory				(0) {}
 
 //===============================================================================================================
 
@@ -275,6 +265,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mBufferObjects	= CheckExtension("GL_ARB_vertex_buffer_object") && g_caps.mBufferObjects;
 					g_caps.mDrawBuffers		= CheckExtension("GL_ARB_draw_buffers");
 					g_caps.mDepthStencil	= CheckExtension("GL_EXT_packed_depth_stencil");
+					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc");
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
 
 					if (supported = g_caps.mBufferObjects)

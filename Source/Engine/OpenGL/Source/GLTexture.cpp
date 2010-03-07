@@ -34,19 +34,24 @@ void DeleteTexture(void* ptr)
 }
 
 //============================================================================================================
-// Helper function that returns the number of bits used per pixel by the given format
+// Not all formats may be supported -- this returns the format that is supported by the videocard
 //============================================================================================================
 
-inline uint _GetBitsPerPixel (uint format)
+inline uint _GetSupportedFormat (uint format)
 {
 	switch (format)
 	{
-	case ITexture::Format::RGB16F:		return g_caps.mFloat16Format ? 64  : (g_caps.mFloat32Format ? 128 : 32);
-	case ITexture::Format::RGBA16F:		return g_caps.mFloat16Format ? 64  : (g_caps.mFloat32Format ? 128 : 32);
-	case ITexture::Format::RGB32F:		return g_caps.mFloat32Format ? 128 : (g_caps.mFloat16Format ? 64  : 32);
-	case ITexture::Format::RGBA32F:		return g_caps.mFloat32Format ? 128 : (g_caps.mFloat16Format ? 64  : 32);
+	case ITexture::Format::DXT1:		return g_caps.mDXTCompression ? ITexture::Format::DXT1 : ITexture::Format::RGB;
+	case ITexture::Format::DXT3:		return g_caps.mDXTCompression ? ITexture::Format::DXT3 : ITexture::Format::RGB;
+	case ITexture::Format::DXTN:		return g_caps.mDXTCompression ? ITexture::Format::DXT5 : ITexture::Format::RGBA;
+	case ITexture::Format::DXT5:		return g_caps.mDXTCompression ? ITexture::Format::DXT5 : ITexture::Format::RGBA;
+	case ITexture::Format::Float:		return g_caps.mFloat32Format ? ITexture::Format::Float : ITexture::Format::Alpha;
+	case ITexture::Format::RGB16F:		return g_caps.mFloat16Format ? ITexture::Format::RGB16F  : (g_caps.mFloat32Format ? ITexture::Format::RGB32F  : ITexture::Format::RGB);
+	case ITexture::Format::RGBA16F:		return g_caps.mFloat16Format ? ITexture::Format::RGBA16F : (g_caps.mFloat32Format ? ITexture::Format::RGBA32F : ITexture::Format::RGBA);
+	case ITexture::Format::RGB32F:		return g_caps.mFloat32Format ? ITexture::Format::RGB32F  : (g_caps.mFloat16Format ? ITexture::Format::RGB16F  : ITexture::Format::RGB);
+	case ITexture::Format::RGBA32F:		return g_caps.mFloat32Format ? ITexture::Format::RGBA32F : (g_caps.mFloat16Format ? ITexture::Format::RGBA16F : ITexture::Format::RGBA);
 	}
-	return ITexture::GetBitsPerPixel(format);
+	return format;
 }
 
 //============================================================================================================
@@ -66,11 +71,11 @@ inline int _GetGLFormat (uint format)
 	case ITexture::Format::DXT3:			return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 	case ITexture::Format::DXTN:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 	case ITexture::Format::DXT5:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-	case ITexture::Format::Float:			return g_caps.mFloat32Format ? GL_INTENSITY32F_ARB : GL_RGB10_A2;
-	case ITexture::Format::RGB16F:			return g_caps.mFloat16Format ? GL_RGB16F_ARB  : (g_caps.mFloat32Format ? GL_RGB32F_ARB  : GL_RGB);
-	case ITexture::Format::RGBA16F:			return g_caps.mFloat16Format ? GL_RGBA16F_ARB : (g_caps.mFloat32Format ? GL_RGBA32F_ARB : GL_RGBA);
-	case ITexture::Format::RGB32F:			return g_caps.mFloat32Format ? GL_RGB32F_ARB  : (g_caps.mFloat16Format ? GL_RGB16F_ARB  : GL_RGB);
-	case ITexture::Format::RGBA32F:			return g_caps.mFloat32Format ? GL_RGBA32F_ARB : (g_caps.mFloat16Format ? GL_RGBA16F_ARB : GL_RGBA);
+	case ITexture::Format::Float:			return GL_INTENSITY32F_ARB;
+	case ITexture::Format::RGB16F:			return GL_RGB16F_ARB;
+	case ITexture::Format::RGBA16F:			return GL_RGBA16F_ARB;
+	case ITexture::Format::RGB32F:			return GL_RGB32F_ARB;
+	case ITexture::Format::RGBA32F:			return GL_RGBA32F_ARB;
 	case ITexture::Format::Depth:			return GL_DEPTH_COMPONENT24;
 	case ITexture::Format::DepthStencil:	return GL_DEPTH24_STENCIL8;
 	}
@@ -146,8 +151,8 @@ void GLTexture::_CheckForSource()
 		// Default jpegs to DXT3 compression. All other formats use their native formats.
 		if ( source.Find(".jpg", false) != source.GetLength() )
 		{
-			mFormat = Format::DXT3;
 			mRequestedFormat = Format::DXT3;
+			mFormat = _GetSupportedFormat(mRequestedFormat);
 		}
 	}
 }
@@ -388,7 +393,7 @@ uint GLTexture::_GetOrCreate()
 				g_caps.DecreaseTextureMemory(mSizeInMemory);
 
 				ulong size	 = 0;
-				ulong bpp	 = _GetBitsPerPixel( mFormat );
+				ulong bpp	 = ITexture::GetBitsPerPixel(mFormat);
 				ulong width  = mSize.x;
 				ulong height = mSize.y;
 				ulong depth  = mDepth;
@@ -506,7 +511,7 @@ void GLTexture::_Create()
 	}
 
 	// Figure out the appropriate bitrate and OpenGL format
-	uint bpp = _GetBitsPerPixel(mFormat);
+	uint bpp = ITexture::GetBitsPerPixel(mFormat);
 	int outFormat = _GetGLFormat(mFormat);
 
 	if ( mGlType == GL_TEXTURE_2D )
@@ -735,7 +740,7 @@ bool GLTexture::Load ( const String& file, uint format )
 		mDepth	= mTex[0].GetDepth();
 		mType	= (mDepth > 1) ? Type::ThreeDimensional : Type::TwoDimensional;
 		mGlType	= (mDepth > 1) ? GL_TEXTURE_3D : GL_TEXTURE_2D;
-		mFormat	= (format == Format::Optimal) ? mTex[0].GetFormat() : format;
+		mFormat	= _GetSupportedFormat((format == Format::Optimal) ? mTex[0].GetFormat() : format);
 	}
 
 	mCheckForSource = false;
@@ -802,7 +807,7 @@ bool GLTexture::Load (	const String&	up,
 		// Success -- set the texture format before exiting
 		mType	= Type::EnvironmentCubeMap;
 		mGlType = GL_TEXTURE_CUBE_MAP;
-		mFormat = (format == Format::Optimal) ? mTex[0].GetFormat() : format;
+		mFormat = _GetSupportedFormat((format == Format::Optimal) ? mTex[0].GetFormat() : format);
 	}
 	else
 	{
@@ -895,7 +900,7 @@ bool GLTexture::Set (const void*	buffer,
 			mRequestedFormat = format;
 
 			mType	= (mDepth > 1) ? Type::ThreeDimensional : Type::TwoDimensional;
-			mFormat = (format == Format::Optimal) ? dataFormat : format;
+			mFormat = _GetSupportedFormat((format == Format::Optimal) ? dataFormat : format);
 		}
 	}
 	mLock.Unlock();
@@ -1021,7 +1026,7 @@ bool GLTexture::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			mSize.x = mTex[0].GetWidth();
 			mSize.y = mTex[0].GetHeight();
 			mDepth  = mTex[0].GetDepth();
-			mFormat = (format == Format::Optimal) ? mTex[0].GetFormat() : format;
+			mFormat = _GetSupportedFormat((format == Format::Optimal) ? mTex[0].GetFormat() : format);
 
 			if ( validCount == 6 )
 			{

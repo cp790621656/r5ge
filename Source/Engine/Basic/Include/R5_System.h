@@ -7,6 +7,18 @@
 
 namespace System
 {
+	struct OS
+	{
+		enum
+		{
+			Unknown			= 0x0,
+			Windows			= 0x1,
+			MacOS			= 0x2,
+			Linux			= 0x4,
+		};
+	};
+
+	uint	GetOS();											// Returns the current operating system
 	bool	SetCurrentPath			(const char* path);			// _chdir()
 	void	Log						(const char* format, ...);	// Dumps a string into the log file
 	bool	FileExists				(const char* filename);		// Checks if the file exists
