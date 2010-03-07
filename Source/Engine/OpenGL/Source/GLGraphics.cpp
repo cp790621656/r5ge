@@ -1045,6 +1045,14 @@ bool GLGraphics::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		else if (tag == ITexture::ClassID())	EXECUTE(ITexture,	GetTexture)
 		else if (tag == IMaterial::ClassID())	EXECUTE(IMaterial,	GetMaterial)
 		else if (tag == IFont::ClassID())		EXECUTE(IFont,		GetFont)
+		else if (tag == "DXT")
+		{
+			// Turn off DXT compression if requested
+			if (value.IsBool() && !value.AsBool())
+			{
+				g_caps.mDXTCompression = false;
+			}
+		}
 	}
 
 	// If a skybox was found at some point, set it now

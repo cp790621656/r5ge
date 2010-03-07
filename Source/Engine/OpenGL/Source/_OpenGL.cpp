@@ -265,7 +265,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mBufferObjects	= CheckExtension("GL_ARB_vertex_buffer_object") && g_caps.mBufferObjects;
 					g_caps.mDrawBuffers		= CheckExtension("GL_ARB_draw_buffers");
 					g_caps.mDepthStencil	= CheckExtension("GL_EXT_packed_depth_stencil");
-					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc");
+					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
 
 					if (supported = g_caps.mBufferObjects)

@@ -67,7 +67,7 @@ inline int _GetGLFormat (uint format)
 	case ITexture::Format::RGB:				return GL_RGB;
 	case ITexture::Format::RGBA:			return GL_RGBA;
 	case ITexture::Format::RGB30A2:			return GL_RGB10_A2;
-	case ITexture::Format::DXT1:			return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+	case ITexture::Format::DXT1:			return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 	case ITexture::Format::DXT3:			return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 	case ITexture::Format::DXTN:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 	case ITexture::Format::DXT5:			return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
