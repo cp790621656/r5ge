@@ -41,9 +41,8 @@ void BoneAttachment::OnUpdate()
 // Serialization -- Save
 //============================================================================================================
 
-void BoneAttachment::SerializeTo (TreeNode& root) const
+void BoneAttachment::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& node = root.AddChild( Script::ClassID(), GetClassID() );
 	node.AddChild("Bone", mName);
 }
 
@@ -51,16 +50,11 @@ void BoneAttachment::SerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-void BoneAttachment::SerializeFrom (const TreeNode& root)
+void BoneAttachment::OnSerializeFrom (const TreeNode& node)
 {
-	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
+	if (node.mTag == "Bone")
 	{
-		const TreeNode& node = root.mChildren[i];
-
-		if (node.mTag == "Bone")
-		{
-			mName = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
-			mBoneIndex = -1;
-		}
+		mName = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
+		mBoneIndex = -1;
 	}
 }

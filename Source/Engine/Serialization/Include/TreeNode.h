@@ -82,6 +82,14 @@ struct TreeNode
 	// Loads the tree structure from memory -- only binary format is accepted
 	bool SerializeFrom (ConstBytePtr& buffer, uint& size);
 
+	// Convenience function
+	bool SerializeFrom (const Memory& mem)
+	{
+		const byte* buffer = mem.GetBuffer();
+		uint size = mem.GetSize();
+		return SerializeFrom(buffer, size);
+	}
+
 	// Loads the tree structure from a previously loaded string.
 	// Note that the specified string should not have any comments inside.
 	// Also note that the binary serialization is *significantly* faster.

@@ -113,7 +113,7 @@ private:
 	static Object* _Create (const String& type);
 
 	Object*	_AddObject	(const String& type, const String& name);
-    Object*	_FindObject	(const String& name, bool recursive = true);
+    Object*	_FindObject	(const String& name, bool recursive = true, bool threadSafe = true);
 	Script* _AddScript	(const String& type);
 	Script* _GetScript	(const String& type);
 
@@ -305,7 +305,7 @@ public:
 	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
 	{
 		if (threadSafe) Lock();
-		Object* obj = _FindObject(name, recursive);
+		Object* obj = _FindObject(name, recursive, threadSafe);
 		if (threadSafe) Unlock();
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 	}

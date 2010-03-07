@@ -61,3 +61,28 @@ void Script::DestroySelf()
 		mObject = 0;
 	}
 }
+
+//============================================================================================================
+// Serialization -- Save
+//============================================================================================================
+
+void Script::SerializeTo (TreeNode& root) const
+{
+	if (mSerializable)
+	{
+		TreeNode& node = root.AddChild(Script::ClassID(), GetClassID());
+		OnSerializeTo(node);
+	}
+}
+
+//============================================================================================================
+// Serialization -- Load
+//============================================================================================================
+
+void Script::SerializeFrom (const TreeNode& root)
+{
+	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
+	{
+		OnSerializeFrom(root.mChildren[i]);
+	}
+}

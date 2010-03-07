@@ -25,17 +25,18 @@ void UITextArea::AddParagraph (const String& text, const Color3f& color, bool sh
 
 	if (font != 0)
 	{
-		while (mParagraphs.GetSize() > mMaxParagraphs)
+		mLines.Lock();
 		{
-			Paragraph& para = mParagraphs[0];
-
-			const IFont* font = para.mFont;
-			const ITexture* tex = (font == 0) ? 0 : font->GetTexture();
-
-			if (tex != 0)
+			while (mParagraphs.GetSize() > mMaxParagraphs)
 			{
-				mLines.Lock();
+				Paragraph& para = mParagraphs[0];
+
+				const IFont* font = para.mFont;
+				const ITexture* tex = (font == 0) ? 0 : font->GetTexture();
+
+				if (tex != 0)
 				{
+					
 					for (uint i = mLines.GetSize(); i > 0; )
 					{
 						// If this texture is currently in use, invalidate its draw queue
@@ -47,32 +48,32 @@ void UITextArea::AddParagraph (const String& text, const Color3f& color, bool sh
 						}
 					}
 				}
-				mLines.Unlock();
+				
+				// NOTE: This is a dangerous operation. Array::RemoveAt actually moves memory over,
+				// without doing any copying. The advantage is that it's quick. The obvious glaring
+				// disadvantage is being able to screw up *very* easily. Be *very* careful whenever
+				// modifying this part of the code in the future. Strings must be released manually.
+
+				para.Release();
+				mParagraphs.RemoveAt(0);
 			}
-			
-			// NOTE: This is a dangerous operation. Array::RemoveAt actually moves memory over,
-			// without doing any copying. The advantage is that it's quick. The obvious glaring
-			// disadvantage is being able to screw up *very* easily. Be *very* careful whenever
-			// modifying this part of the code in the future. Strings must be released manually.
 
-			para.Release();
-			mParagraphs.RemoveAt(0);
+			Paragraph& par = mParagraphs.Expand();
+			par.mText   = text;
+			par.mFont   = font;
+			par.mColor  = color;
+			par.mShadow = shadow;
+			par.mTime	= Time::GetMilliseconds();
+
+			// Only rebuild the very last paragraph if a full rebuild is not already needed
+			if (!mNeedsRebuild)
+			{
+				_MarkVisibleTexturesAsDirty();
+				_Rebuild(mParagraphs.GetSize() - 1);
+				OnDirty(font->GetTexture());
+			}
 		}
-
-		Paragraph& par = mParagraphs.Expand();
-		par.mText   = text;
-		par.mFont   = font;
-		par.mColor  = color;
-		par.mShadow = shadow;
-		par.mTime	= Time::GetMilliseconds();
-
-		// Only rebuild the very last paragraph if a full rebuild is not already needed
-		if (!mNeedsRebuild)
-		{
-			_MarkVisibleTexturesAsDirty();
-			_Rebuild(mParagraphs.GetSize() - 1);
-			OnDirty(font->GetTexture());
-		}
+		mLines.Unlock();
 	}
 }
 

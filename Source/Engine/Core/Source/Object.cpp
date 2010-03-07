@@ -139,27 +139,31 @@ Object* Object::_AddObject (const String& type, const String& name)
 // INTERNAL: Finds an object in the scene
 //============================================================================================================
 
-Object* Object::_FindObject (const String& name, bool recursive)
+Object* Object::_FindObject (const String& name, bool recursive, bool threadSafe)
 {
 	Object* node (0);
 
 	if (mChildren.IsValid())
 	{
-		for (uint i = mChildren.GetSize(); i > 0; )
+		if (threadSafe) mChildren.Lock();
 		{
-			if ( name == mChildren[--i]->GetName() )
+			for (uint i = mChildren.GetSize(); i > 0; )
 			{
-				node = mChildren[i];
-				break;
+				if ( name == mChildren[--i]->GetName() )
+				{
+					node = mChildren[i];
+					break;
+				}
+			}
+
+			if ( node == 0 && recursive )
+			{
+				for (uint i = 0; i < mChildren.GetSize(); ++i)
+					if ( node = mChildren[i]->_FindObject(name, recursive) )
+						break;
 			}
 		}
-
-		if ( node == 0 && recursive )
-		{
-			for (uint i = 0; i < mChildren.GetSize(); ++i)
-				if ( node = mChildren[i]->_FindObject(name, recursive) )
-					break;
-		}
+		if (threadSafe) mChildren.Unlock();
 	}
 	return node;
 }
@@ -861,6 +865,13 @@ bool Object::SerializeTo (TreeNode& root) const
 			node.AddChild("Position", mRelativePos);
 			node.AddChild("Rotation", mRelativeRot);
 			node.AddChild("Scale", mRelativeScale);
+
+			if (mRelativeBounds.IsValid())
+			{
+				node.AddChild("Min", mRelativeBounds.GetMin());
+				node.AddChild("Max", mRelativeBounds.GetMax());
+			}
+
 			node.AddChild("Layer", mLayer);
 
 			if (mShowOutline) node.AddChild("Show Outline", mShowOutline);
@@ -904,6 +915,16 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
 			else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
 			else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
+			else if (tag == "Min" || tag == "Max")
+			{
+				Vector3f v;
+
+				if (value >> v)
+				{
+					mRelativeBounds.Include(v);
+					mIsDirty = true;
+				}
+			}
 			else if (tag == "Layer")
 			{
 				uint temp;
@@ -928,6 +949,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 					// The object should not remain locked during script serialization
 					Unlock();
 					ptr->SerializeFrom(node);
+					if (!serializable && mParent == 0) ptr->SetSerializable(false);
 					Lock();
 				}
 			}
@@ -940,7 +962,8 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 					// The object should not remain locked during child serialization
 					Unlock();
 					ptr->SerializeFrom(node, forceUpdate);
-					if (!serializable) ptr->SetSerializable(false);
+					if (!serializable && mParent == 0) ptr->SetSerializable(false);
+					ptr->SetDirty();
 					Lock();
 				}
 			}

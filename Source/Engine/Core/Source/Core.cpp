@@ -606,8 +606,7 @@ bool Core::SerializeTo (TreeNode& root) const
 				scripts[i]->SerializeTo(node);
 
 			for (uint i = 0; i < children.GetSize(); ++i)
-				if (children[i]->IsSerializable())
-					children[i]->SerializeTo(node);
+				children[i]->SerializeTo(node);
 
 			// If nothing was saved, don't keep the node around
 			if (node.mChildren.IsEmpty())

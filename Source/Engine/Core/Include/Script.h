@@ -34,6 +34,7 @@ protected:
 	Object*		mObject;
 	Flags		mIgnore;
 	bool		mEnabled;
+	bool		mSerializable;
 
 private:
 
@@ -46,7 +47,7 @@ private:
 protected:
 
 	// It's not possible to create just plain scripts -- they need to be derived from
-	Script() : mEnabled(true) {}
+	Script() : mEnabled(true), mSerializable(true) {}
 
 	// Destroys this script - this action is queued until next update
 	void DestroySelf();
@@ -61,6 +62,14 @@ public:
 
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();
+
+	// It's possible to choose not to serialize certain scripts
+	bool IsSerializable() const { return mSerializable; }
+	void SetSerializable (bool val) { mSerializable = val; }
+
+	// Serialization
+	void SerializeTo (TreeNode& root) const;
+	void SerializeFrom (const TreeNode& root);
 
 protected:
 
@@ -92,6 +101,6 @@ protected:
 	virtual void OnFill (FillParams& params) { mIgnore.Set(Ignore::Fill, true); }
 
 	// Serialization
-	virtual void SerializeTo	(TreeNode& node) const {}
-	virtual void SerializeFrom	(const TreeNode& root) {}
+	virtual void OnSerializeTo	(TreeNode& node) const {}
+	virtual void OnSerializeFrom(const TreeNode& node) {}
 };

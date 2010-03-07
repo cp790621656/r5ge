@@ -133,6 +133,7 @@ Octree::Octree() : mDepth(0), mPartitioned(true), mCustomFill(true)
 	mCalcAbsBounds		= false;
 	mIncChildBounds		= false;
 	mRootNode.mOctree	= this;
+	mRootNode.SetName("Octree Root");
 }
 
 //============================================================================================================
@@ -197,7 +198,7 @@ void Octree::OnPostUpdate()
 			sub->mChildren.Remove(child);
 
 			// If the child can't fit into its previous node, re-add it starting at the root.
-			if (!sub->Add(child)) OnAddChild(child);
+			if (!sub->Add(child)) mRootNode.Add(child);
 		}
 	}
 
@@ -210,7 +211,8 @@ void Octree::OnPostUpdate()
 	// as they belong to one of the internal nodes which is guaranteed to be inside the root's bounds.
 	for (uint i = mRootNode.mChildren.GetSize(); i > 0; )
 	{
-		const Bounds& bounds = mRootNode.mChildren[--i]->GetCompleteBounds();
+		Object* child = mRootNode.mChildren[--i];
+		const Bounds& bounds = child->GetCompleteBounds();
 		mCompleteBounds.Include(bounds);
 	}
 }

@@ -28,6 +28,6 @@ public:
 	virtual void OnUpdate();
 
 	// Serialization
-	virtual void SerializeTo	(TreeNode& root) const;
-	virtual void SerializeFrom	(const TreeNode& root);
+	virtual void OnSerializeTo	(TreeNode& node) const;
+	virtual void OnSerializeFrom(const TreeNode& node);
 };
