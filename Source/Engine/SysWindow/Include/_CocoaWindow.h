@@ -102,10 +102,10 @@ public:
 	virtual void		EndFrame()		{ mLock.Unlock(); }
 
 	// Retrieves a string from the clipboard
-	virtual String GetClipboardText() const { return String(); }
+	virtual String GetClipboardText() const;
 
 	// Sets the system clipboard text
-	virtual void SetClipboardText (const String& text) {}
+	virtual void SetClipboardText (const String& text);
 
 	// Serialization
 	virtual bool SerializeFrom (const TreeNode& root);
