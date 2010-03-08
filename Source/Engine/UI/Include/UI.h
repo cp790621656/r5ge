@@ -23,12 +23,21 @@ private:
 	};
 
 	IGraphics*  mGraphics;
+	IWindow*	mWindow;
 
 public:
 
-	UI (IGraphics* graphics);
+	// Graphics is necessary as it's used to draw the UI.
+	// The window is optional -- it's used to copy/paste to and from the clipboard.
+	UI (IGraphics* graphics, IWindow* window = 0);
 
 public:
+
+	// Retrieves a string from the clipboard
+	virtual String GetClipboardText() const { return (mWindow != 0) ? mWindow->GetClipboardText() : String(); }
+
+	// Sets the system clipboard text
+	virtual void SetClipboardText (const String& text) { if (mWindow != 0) mWindow->SetClipboardText(text); }
 
 	virtual float		GetCurrentTime() const				{ return Time::GetTime();	}
 	virtual ITexture*	GetTexture  (const String& name)	{ return mGraphics->GetTexture(name);	}

@@ -28,6 +28,9 @@ private:
 	// Moves the cursor up to the specified index
 	void _MoveCursorTo (uint index);
 
+	// Retrieves the text to the left and to the right of the selection
+	void _GetLeftRight (String& txtLeft, String& txtRight);
+
 public:
 
 	// These two functions need to reset the selection

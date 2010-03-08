@@ -58,6 +58,12 @@ struct IWindow
 	virtual void		BeginFrame()=0;
 	virtual void		EndFrame()=0;
 
+	// Retrieves a string from the clipboard
+	virtual String GetClipboardText() const=0;
+
+	// Sets the system clipboard text
+	virtual void SetClipboardText (const String& text)=0;
+
 	// Serialization
 	virtual bool SerializeFrom (const TreeNode& root)=0;
 	virtual bool SerializeTo (TreeNode& root) const=0;

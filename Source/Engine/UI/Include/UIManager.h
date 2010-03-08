@@ -187,6 +187,12 @@ protected:
 
 public:
 
+	// Retrieves a string from the clipboard
+	virtual String GetClipboardText() const=0;
+
+	// Sets the system clipboard text
+	virtual void SetClipboardText (const String& text)=0;
+
 	// Functions that must be overwritten
 	virtual float		GetCurrentTime() const=0;			// Retrieves the current time in seconds
 	virtual ITexture*	GetTexture	(const String& name)=0;	// Retrieves a texture of the specified name

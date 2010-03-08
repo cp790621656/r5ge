@@ -81,6 +81,29 @@ void  UIEditableLabel::_MoveCursorTo(uint index)
 }
 
 //============================================================================================================
+// Retrieves the text to the left and to the right of the selection
+//============================================================================================================
+
+void UIEditableLabel::_GetLeftRight (String& txtLeft, String& txtRight)
+{
+	uint left, right;
+
+	if ( mSelectionEnd < mSelectionStart )
+	{
+		left  = mSelectionEnd;
+		right = mSelectionStart;
+	}
+	else
+	{
+		left  = mSelectionStart;
+		right = mSelectionEnd;
+	}
+
+	mText.GetString(txtLeft, 0, left);
+	mText.GetString(txtRight, right);
+}
+
+//============================================================================================================
 // Selects the entire text
 //============================================================================================================
 
@@ -295,16 +318,52 @@ void UIEditableLabel::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if (isDown)
 	{
-		bool commandKey ( mUI->IsKeyDown(Key::LeftWindows) ||
-						  mUI->IsKeyDown(Key::RightWindows) );
+#ifdef _WINDOWS
+		bool ctrl ( mUI->IsKeyDown(Key::LeftControl) ||
+					mUI->IsKeyDown(Key::RightControl) );
+#else
+		bool ctrl ( mUI->IsKeyDown(Key::LeftWindows) ||
+					mUI->IsKeyDown(Key::RightWindows) );
+#endif
 
 		if		( key == Key::MouseLeft )	_MoveCursorTo( _GetIndexAt(pos) );
 		else if ( key == Key::Home )		_MoveCursorTo(0);
 		else if ( key == Key::End )			_MoveCursorTo(0xFFFFFFFF);
-		else if ( key == Key::ArrowLeft )	_MoveCursorTo( (mSelectionEnd > 0 && !commandKey) ? mSelectionEnd - 1 : 0 );
-		else if ( key == Key::ArrowRight )	_MoveCursorTo( commandKey ? 0xFFFFFFFF : mSelectionEnd + 1 );
+		else if ( key == Key::ArrowLeft )	_MoveCursorTo( (mSelectionEnd > 0 && !ctrl) ? mSelectionEnd - 1 : 0 );
+		else if ( key == Key::ArrowRight )	_MoveCursorTo( ctrl ? 0xFFFFFFFF : mSelectionEnd + 1 );
 		else if ( key == Key::Backspace )	OnChar(key);
 		else if ( key == Key::Delete )		OnChar(key);
+		else if ( key == Key::C && ctrl )
+		{
+			mUI->SetClipboardText(GetSelectedText());
+		}
+		else if ( key == Key::X && ctrl )
+		{
+			mUI->SetClipboardText(GetSelectedText());
+
+			String left, right;
+			_GetLeftRight(left, right);
+
+			mText.Clear();
+			mText << left;
+			mSelectionStart = mText.GetLength();
+			mSelectionEnd = mSelectionStart;
+			mText << right;
+			SetDirty();
+		}
+		else if ( key == Key::V && ctrl )
+		{
+			String left, right;
+			_GetLeftRight(left, right);
+
+			mText.Clear();
+			mText << left;
+			mText << mUI->GetClipboardText();
+			mSelectionStart = mText.GetLength();
+			mSelectionEnd = mSelectionStart;
+			mText << right;
+			SetDirty();
+		}
 	}
 	else if ( key == Key::Return )
 	{

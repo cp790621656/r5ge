@@ -57,7 +57,6 @@ long R5::GlobalEventHandler(HWND hWnd, UINT eventId, UINT first, UINT second)
 		case SysWindow::Event::MouseMove:
 			{
 				mousePos = second;
-				//mousePos.y = win->GetSize().y - mousePos.y;
 				static Vector2i last (mousePos);
 				if (handler != 0) handler->OnMouseMove(mousePos, mousePos - last);
 				last = mousePos;
@@ -639,6 +638,40 @@ bool SysWindow::Update()
 		if (mIsMinimized) ::Sleep(5);
 	}
 	return mStyle != Style::Undefined;
+}
+
+//==========================================================================================================
+// Retrieves a string from the clipboard
+//==========================================================================================================
+
+String SysWindow::GetClipboardText() const
+{
+	String text;
+	::OpenClipboard(NULL);
+	HANDLE clipboard = ::GetClipboardData(CF_TEXT);
+	::CloseClipboard();
+	((char*)::GlobalLock(clipboard)) >> text;
+	::GlobalUnlock(clipboard);
+	return text;
+}
+
+//==========================================================================================================
+// Sets the system clipboard text
+//==========================================================================================================
+
+void SysWindow::SetClipboardText (const String& text)
+{
+	uint length = text.GetLength();
+	HGLOBAL hText = ::GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, length + 1);
+	char* pText = (char*)::GlobalLock(hText);
+	memcpy(pText, text.GetBuffer(), length);
+	pText[length] = 0;
+
+	::GlobalUnlock(hText);
+	::OpenClipboard(NULL);
+	::EmptyClipboard();
+	::SetClipboardData(CF_TEXT, hText);
+	::CloseClipboard();
 }
 
 //==========================================================================================================

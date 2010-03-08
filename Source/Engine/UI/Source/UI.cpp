@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-UI::UI (IGraphics* graphics) : mGraphics(graphics)
+UI::UI (IGraphics* graphics, IWindow* window) : mGraphics(graphics), mWindow(window)
 {
 	ASSERT(mGraphics != 0, "IGraphics* can't be NULL!");
 }
