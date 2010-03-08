@@ -6,6 +6,7 @@ using namespace R5;
 UIInput::UIInput() : mMaxHistorySize(0), mShowHistory(true)
 {
 	mLabel.SetLayer(1, false);
+	mEventHandling = EventHandling::Full;
 
 	USEventListener* listener = mLabel.AddScript<USEventListener>();
 	ASSERT(listener != 0, "Missing listener?");

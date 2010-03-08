@@ -101,6 +101,122 @@ void GLTexture::SetDefaultAF (uint level)
 }
 
 //============================================================================================================
+// Generates a mipmap level using the specified buffer
+//============================================================================================================
+
+template <typename DataType, typename SumType>
+uint Generate2DMipmap (uint glType, const DataType* buffer, uint width, uint height,
+					   int inFormat, int outFormat, uint dataType, uint channels, uint level)
+{
+	uint w = width  >> 1;
+	uint h = height >> 1;
+
+	if (w == 0) w = 1;
+	if (h == 0) h = 1;
+
+	Array<DataType> temp;
+	temp.ExpandTo(w * h * channels);
+	uint bl, br, tl, tr, idx;
+	SumType sum;
+
+	// Standard 2x2 box filter is used for downsampling
+	for (uint y = 0; y < height; y += 2)
+	{
+		for (uint x = 0; x < width; x += 2)
+		{
+			bl = y * width + x;
+			br = bl + 1;
+			tl = bl + width;
+			tr = br + width;
+
+			if (x + 1 >= width)  { br = bl; tr = tl; }
+			if (y + 1 >= height) { tl = bl; tr = br; }
+
+			bl *= channels;
+			br *= channels;
+			tl *= channels;
+			tr *= channels;
+
+			idx = (x >> 1) + (y >> 1) * w;
+			DataType* out = &temp[idx * channels];
+
+			for (uint i = 0; i < channels; ++i)
+			{
+				sum = (SumType)buffer[bl+i] + buffer[br+i] + buffer[tl+i] + buffer[tr+i];
+				out[i] = (DataType)(sum / 4);
+			}
+		}
+	}
+
+	buffer	= temp.GetBuffer();
+	width	= w;
+	height	= h;
+
+	// Calculate the number of pixels
+	uint pixels = width * height;
+
+	// Upload the texture data to the videocard
+	glTexImage2D(glType, level, outFormat, width, height, 0, inFormat, dataType, buffer);
+
+	// Continue generating mipmaps until we reach 1x1
+	if (w > 1 || h > 1)
+	{
+		pixels += Generate2DMipmap<DataType, SumType>(glType, buffer, width, height,
+			inFormat, outFormat, dataType, channels, ++level);
+	}
+	return pixels;
+}
+
+//============================================================================================================
+// Macro that shortens the code, used in Create2DImage() function below
+//============================================================================================================
+
+#define GEN_2D_MIPMAP(type, sum, channels) Generate2DMipmap<type, sum>(glType, (const type*)buffer, \
+	width, height, inFormat, outFormat, dataType, channels, 1)
+
+//============================================================================================================
+// Creates an OpenGL texture with all the specified parameters
+//============================================================================================================
+
+uint Create2DImage (uint glType, const void* buffer, uint width, uint height, int inFormat,
+					int outFormat, uint dataType, bool mipmap)
+{
+	// Upload the starting image
+	glTexImage2D(glType, 0, outFormat, width, height, 0, inFormat, dataType, buffer);
+
+	uint pixels = width * height;
+
+	if (mipmap)
+	{
+		if (dataType == GL_FLOAT)
+		{
+			if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(float, float, 4);
+			else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(float, float, 3);
+			else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(float, float, 2);
+			else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(float, float, 1);
+			else
+			{
+				// Unsupported format -- let the videocard handle it
+				glGenerateMipmap(glType);
+			}
+		}
+		else
+		{
+			if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(byte, uint, 4);
+			else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(byte, uint, 3);
+			else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(byte, uint, 2);
+			else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(byte, uint, 1);
+			else
+			{
+				// Unsupported format -- let the videocard handle it
+				glGenerateMipmap(glType);
+			}
+		}
+	}
+	return pixels;
+}
+
+//============================================================================================================
 // All textures need to be created with a name
 //============================================================================================================
 
@@ -221,6 +337,218 @@ void GLTexture::Release()
 }
 
 //============================================================================================================
+// Internal function: Creates the OpenGL texture
+//============================================================================================================
+// This function is called on GetOrCreate(), and that one is called before glBindTexture()
+// is called. Since OpenGL calls should only be used in one thread, there is no need to
+// create resource locking / unlocking for OpenGL texture binding calls.
+//============================================================================================================
+
+void GLTexture::_Create()
+{
+	ASSERT(mType != ITexture::Type::Invalid, "Invalid texture type");
+
+	mLock.Lock();
+
+	// Get one texture handle from OpenGL
+	glGenTextures(1, &mGlID);
+	ASSERT( mGlID != 0, "glGenTextures() failed!");
+
+	// Figure out the texture's OpenGL type
+#ifdef _DEBUG
+	mGlType = (mType < 5) ? convertTextureTypeToGL[mType] : 0;
+#else
+	mGlType = convertTextureTypeToGL[mType];
+#endif
+
+	// Bind the texture
+	_BindTexture(mGlType, mGlID);
+
+	// Figure out the appropriate texture format
+	uint dataFormat = mTex[0].GetFormat();
+
+	// Start with an unsigned byte data type
+	mDataType = GL_UNSIGNED_BYTE;
+
+	if ( mTex[0].GetBuffer() == 0 )
+	{
+		if (mFormat == Format::Depth)
+		{
+			mInFormat = GL_DEPTH_COMPONENT;
+		}
+		else if (mFormat == Format::DepthStencil)
+		{
+			mInFormat = GL_DEPTH_STENCIL;
+			mDataType = GL_UNSIGNED_INT_24_8;
+		}
+		else mInFormat = GL_RGB;
+	}
+	else
+	{
+		switch ( dataFormat )
+		{
+			case Format::Alpha:			mInFormat = GL_LUMINANCE;		mDataType = GL_UNSIGNED_BYTE;	break;
+			case Format::Luminance:		mInFormat = GL_LUMINANCE_ALPHA;	mDataType = GL_UNSIGNED_BYTE;	break;
+			case Format::RGB:			mInFormat = GL_RGB;				mDataType = GL_UNSIGNED_BYTE;	break;
+			case Format::RGBA:			mInFormat = GL_RGBA;			mDataType = GL_UNSIGNED_BYTE;	break;
+			case Format::Float:			mInFormat = GL_LUMINANCE;		mDataType = GL_FLOAT;			break;
+			case Format::RGB32F:		mInFormat = GL_RGB;				mDataType = GL_FLOAT;			break;
+			case Format::RGBA32F:		mInFormat = GL_RGBA;			mDataType = GL_FLOAT;			break;
+			default:
+				ASSERT(false, "Invalid texture format");
+				break;
+		};
+	}
+
+	// If the filtering has not been specified, choose whatever seems appropriate
+	if (mFilter == Filter::Default)
+	{
+		bool isPowerOfTwo = IsPowerOfTwo(mSize.x) && IsPowerOfTwo(mSize.y);
+
+		if (!isPowerOfTwo)
+		{
+			// Non-power-of-two textures are not filtered at all by default
+			mFilter = Filter::Nearest;
+		}
+		else if (mFormat & Format::HDR)
+		{
+			// HDR textures are only linear-filtered
+			mFilter = Filter::Linear;
+		}
+		else
+		{
+			// All other cases use anisotropic filtering
+			mFilter = Filter::Anisotropic;
+		}
+	}
+
+	// Figure out the appropriate bitrate and OpenGL format
+	uint bpp = ITexture::GetBitsPerPixel(mFormat) / 8;
+	int outFormat = _GetGLFormat(mFormat);
+	mSizeInMemory = 0;
+
+	if ( mGlType == GL_TEXTURE_2D )
+	{
+		if (mFormat == Format::DXTN)
+		{
+			// DXT5 format meant for normal maps -- blue color must be stored in the alpha channel
+			uint size = mTex[0].GetSize();
+			byte* buffer = (byte*)(mTex[0].GetBuffer());
+
+			if (dataFormat == Format::RGB)
+			{
+				mInFormat = GL_RGBA;
+
+				// Since we need the alpha channel, we have to create a new buffer altogether
+				uint newSize = size / 3 * 4;
+				byte* data = new byte[newSize];
+				{
+					// Go through
+					for (uint o = 0, n = 0; o < size; o += 3, n += 4)
+					{
+						data[n]   = buffer[o];
+						data[n+1] = buffer[o+1];
+						data[n+2] = 0;
+						data[n+3] = buffer[o+2];
+					}
+
+					// Send this new buffer to the videocard
+					mSizeInMemory = bpp * Create2DImage(mGlType, data, mSize.x, mSize.y, mInFormat,
+						outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+				}
+				delete [] data;
+			}
+			else if (dataFormat == Format::RGBA)
+			{
+				// Swap B and A components
+				for (uint i = 0; i < size; i+=4) Swap(buffer[i+2], buffer[i+3]);
+
+				mSizeInMemory = bpp * Create2DImage(mGlType, buffer, mSize.x, mSize.y, mInFormat,
+					outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+			}
+			else
+			{
+				ASSERT(false, "Unsupported data format for DXTN compression. You must use RGB or RGBA for input data.");
+				mSizeInMemory = bpp * Create2DImage(mGlType, buffer, mSize.x, mSize.y, mInFormat,
+					outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+			}
+		}
+		else
+		{
+			// Basic 2D texture has a single image source
+			mSizeInMemory = bpp * Create2DImage(mGlType, mTex[0].GetBuffer(), mSize.x, mSize.y, mInFormat,
+				outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+		}
+	}
+	else if ( mGlType == GL_TEXTURE_CUBE_MAP )
+	{
+		// Cubemap texture has 6 source images
+		for (uint i = 0; i < 6; ++i)
+		{
+			mSizeInMemory += bpp * Create2DImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mTex[i].GetBuffer(),
+				mSize.x, mSize.y, mInFormat, outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+		}
+	}
+	else if ( mGlType == GL_TEXTURE_3D )
+	{
+		// 3D texture
+		glTexImage3D(mGlType, 0, outFormat, mSize.x, mSize.y, mDepth, 0, mInFormat, mDataType, mTex[0].GetBuffer());
+		mSizeInMemory = bpp * mSize.x * mSize.y * mDepth;
+	}
+	else
+	{
+		ASSERT(false, "1D textures are not implemented -- use 2D textures instead");
+		_InternalRelease(false);
+		mLock.Unlock();
+		return;
+	}
+
+	const char* err = glGetErrorString();
+
+	if (err)
+	{
+		// Some error occured -- invalidate the texture
+		String errText;
+		errText.Set("glTexImage returned: '%s'", err);
+		WARNING( errText.GetBuffer() );
+		_InternalRelease(false);
+		mLock.Unlock();
+		return;
+	}
+	else if (mFormat & ITexture::Format::Depth || mGlType == GL_TEXTURE_3D )
+	{
+		// Depth and 3D textures might not have filtering support, so start with no filtering
+		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	else
+	{
+		// All other textures start with linear filtering
+		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
+	// Keep track of video memory used by textures
+	g_caps.IncreaseTextureMemory(mSizeInMemory);
+
+#ifdef _DEBUG
+												System::Log("[TEXTURE] Created '%s'", mName.GetBuffer() );
+	if		(mGlType == GL_TEXTURE_2D)			System::Log( "          - Dims:     %u x %u",		mSize.x, mSize.y );
+	else if (mGlType == GL_TEXTURE_CUBE_MAP)	System::Log( "          - Dims:     %u x %u x 6",	mSize.x, mSize.y );
+	else if (mGlType == GL_TEXTURE_3D)			System::Log( "          - Dims:     %u x %u x %u",	mSize.x, mSize.y, mDepth );
+
+	System::Log("          - Format:   %s", ITexture::FormatToString(mFormat));
+	System::Log("          - Size:     %s bytes", String::GetFormattedSize(mSizeInMemory).GetBuffer());
+#endif
+
+	// Release the memory
+	for (uint i = 0; i < 6; ++i) mTex[i].Release();
+
+	mLock.Unlock();
+	CHECK_GL_ERROR;
+}
+
+//============================================================================================================
 // Retrieves the associated OpenGL texture ID
 //============================================================================================================
 
@@ -237,28 +565,6 @@ uint GLTexture::_GetOrCreate()
 
 	if ( mGlID != 0 )
 	{
-		// If the filtering has not been specified, choose whatever seems appropriate
-		if (mFilter == Filter::Default)
-		{
-			bool isPowerOfTwo = IsPowerOfTwo(mSize.x) && IsPowerOfTwo(mSize.y);
-
-			if (!isPowerOfTwo)
-			{
-				// Non-power-of-two textures are not filtered at all by default
-				mFilter = Filter::Nearest;
-			}
-			else if (mFormat & Format::HDR)
-			{
-				// HDR textures are only linear-filtered
-				mFilter = Filter::Linear;
-			}
-			else
-			{
-				// All other cases use anisotropic filtering
-				mFilter = Filter::Anisotropic;
-			}
-		}
-
 		// Adjust the filtering and generate mipmaps if necessary
 		if (mActiveFilter != mFilter)
 		{
@@ -374,270 +680,9 @@ uint GLTexture::_GetOrCreate()
 			}
 			CHECK_GL_ERROR;
 		}
-
-		// Check to see if we need to generate mipmaps
-		if ( mFilter & Filter::Mipmap )
-		{
-			if (!mMipmapsGenerated)
-			{
-				if (!active)
-				{
-					active = true;
-					_BindTexture( mGlType, mGlID );
-				}
-
-				// Generate the mipmap
-				glGenerateMipmap(mGlType);
-
-				// Keep track of used memory
-				g_caps.DecreaseTextureMemory(mSizeInMemory);
-
-				ulong size	 = 0;
-				ulong bpp	 = ITexture::GetBitsPerPixel(mFormat);
-				ulong width  = mSize.x;
-				ulong height = mSize.y;
-				ulong depth  = mDepth;
-
-				// Calculate how much memory the texture is taking with its mip-maps
-				while ( width > 1 || height > 1 || depth > 1 )
-				{
-					ulong current = width * height * depth * bpp;
-					current /= 8;
-					if (current == 0) current = 1;
-
-					size += current;
-
-					width  = width  >> 1;
-					height = height >> 1;
-					depth  = depth  >> 1;
-
-					if (width  == 0) width  = 1;
-					if (height == 0) height = 1;
-					if (depth  == 0) depth  = 1;
-				}
-
-				if (mType == ITexture::Type::EnvironmentCubeMap)
-					size *= 6;
-
-				// Keep track of video memory used by textures
-				g_caps.IncreaseTextureMemory(size);
-#ifdef _DEBUG
-				System::Log("[TEXTURE] Generated mipmaps for '%s'", mName.GetBuffer());
-				System::Log("          - Released  %s bytes", String::GetFormattedSize(mSizeInMemory).GetBuffer());
-				System::Log("          - Reserved  %s bytes", String::GetFormattedSize(size).GetBuffer());
-#endif
-				mSizeInMemory = size;
-			}
-			else if (mRegenMipmap)
-			{
-				if (!active)
-				{
-					active = true;
-					_BindTexture( mGlType, mGlID );
-				}
-				glGenerateMipmap(mGlType);
-			}
-
-			mMipmapsGenerated = true;
-			mRegenMipmap = false;
-			CHECK_GL_ERROR;
-		}
 	}
-
 	mTimestamp = Time::GetMilliseconds();
 	return mGlID;
-}
-
-//============================================================================================================
-// Internal function: Creates the OpenGL texture
-//============================================================================================================
-// This function is called on GetOrCreate(), and that one is called before glBindTexture()
-// is called. Since OpenGL calls should only be used in one thread, there is no need to
-// create resource locking / unlocking for OpenGL texture binding calls.
-//============================================================================================================
-
-void GLTexture::_Create()
-{
-	ASSERT(mType != ITexture::Type::Invalid, "Invalid texture type");
-
-	mLock.Lock();
-
-	// Get one texture handle from OpenGL
-	glGenTextures(1, &mGlID);
-	ASSERT( mGlID != 0, "glGenTextures() failed!");
-
-	// Figure out the texture's OpenGL type
-#ifdef _DEBUG
-	mGlType = (mType < 5) ? convertTextureTypeToGL[mType] : 0;
-#else
-	mGlType = convertTextureTypeToGL[mType];
-#endif
-
-	// Bind the texture
-	_BindTexture(mGlType, mGlID);
-
-	// Figure out the appropriate texture format
-	int inFormat;
-	uint dataFormat = mTex[0].GetFormat(), dataType(GL_UNSIGNED_BYTE);
-
-	if ( mTex[0].GetBuffer() == 0 )
-	{
-		if (mFormat == Format::Depth)
-		{
-			inFormat = GL_DEPTH_COMPONENT;
-		}
-		else if (mFormat == Format::DepthStencil)
-		{
-			inFormat = GL_DEPTH_STENCIL;
-			dataType = GL_UNSIGNED_INT_24_8;
-		}
-		else inFormat = GL_RGB;
-	}
-	else
-	{
-		switch ( dataFormat )
-		{
-			case Format::Alpha:			inFormat = GL_LUMINANCE;		dataType = GL_UNSIGNED_BYTE;	break;
-			case Format::Luminance:		inFormat = GL_LUMINANCE_ALPHA;	dataType = GL_UNSIGNED_BYTE;	break;
-			case Format::RGB:			inFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;	break;
-			case Format::RGBA:			inFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;	break;
-			case Format::Float:			inFormat = GL_LUMINANCE;		dataType = GL_FLOAT;			break;
-			case Format::RGB32F:		inFormat = GL_RGB;				dataType = GL_FLOAT;			break;
-			case Format::RGBA32F:		inFormat = GL_RGBA;				dataType = GL_FLOAT;			break;
-			default:
-				ASSERT(false, "Invalid texture format");
-				break;
-		};
-	}
-
-	// Figure out the appropriate bitrate and OpenGL format
-	uint bpp = ITexture::GetBitsPerPixel(mFormat);
-	int outFormat = _GetGLFormat(mFormat);
-
-	if ( mGlType == GL_TEXTURE_2D )
-	{
-		if (mFormat == Format::DXTN)
-		{
-			// DXT5 format meant for normal maps -- blue color must be stored in the alpha channel
-			uint size = mTex[0].GetSize();
-			byte* buffer = (byte*)(mTex[0].GetBuffer());
-
-			if (dataFormat == Format::RGB)
-			{
-				inFormat = GL_RGBA;
-
-				// Since we need the alpha channel, we have to create a new buffer altogether
-				uint newSize = size / 3 * 4;
-				byte* data = new byte[newSize];
-				{
-					// Go through
-					for (uint o = 0, n = 0; o < size; o += 3, n += 4)
-					{
-						data[n]   = buffer[o];
-						data[n+1] = buffer[o+1];
-						data[n+2] = 0;
-						data[n+3] = buffer[o+2];
-					}
-
-					// Send this new buffer to the videocard
-					glTexImage2D(mGlType, 0, outFormat, mSize.x, mSize.y, 0, inFormat, dataType, data);
-				}
-				delete [] data;
-			}
-			else if (dataFormat == Format::RGBA)
-			{
-				// Swap B and A components
-				for (uint i = 0; i < size; i+=4)
-					Swap(buffer[i+2], buffer[i+3]);
-
-				glTexImage2D(mGlType, 0, outFormat, mSize.x, mSize.y, 0, inFormat, dataType, buffer);
-			}
-			else
-			{
-				ASSERT(false, "Unsupported data format for DXTN compression. You must use RGB or RGBA for input data.");
-				glTexImage2D(mGlType, 0, outFormat, mSize.x, mSize.y, 0, inFormat, dataType, buffer);
-			}
-		}
-		else
-		{
-			// Basic 2D texture has a single image source
-			glTexImage2D(mGlType, 0, outFormat, mSize.x, mSize.y, 0, inFormat, dataType, mTex[0].GetBuffer());
-		}
-	}
-	else if ( mGlType == GL_TEXTURE_CUBE_MAP )
-	{
-		// Cubemap texture has 6 source images
-		for ( uint i = 0; i < 6; ++i )
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, outFormat,
-				mSize.x, mSize.y, 0, inFormat, dataType, mTex[i].GetBuffer());
-		}
-	}
-	else if ( mGlType == GL_TEXTURE_3D )
-	{
-		// 3D texture
-		glTexImage3D(mGlType, 0, outFormat, mSize.x, mSize.y, mDepth, 0, inFormat, dataType, mTex[0].GetBuffer());
-	}
-	else
-	{
-		ASSERT(false, "1D textures are not implemented -- use 2D textures instead");
-		_InternalRelease(false);
-		mLock.Unlock();
-		return;
-	}
-
-	const char* err = glGetErrorString();
-
-	if (err)
-	{
-		// Some error occured -- invalidate the texture
-		String errText;
-		errText.Set("glTexImage returned: '%s'", err);
-		WARNING( errText.GetBuffer() );
-		_InternalRelease(false);
-		mLock.Unlock();
-		return;
-	}
-	else if (mFormat & ITexture::Format::Depth || mGlType == GL_TEXTURE_3D )
-	{
-		// Depth and 3D textures might not have filtering support, so start with no filtering
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}
-	else
-	{
-		// All other textures start with linear filtering
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-
-	mSizeInMemory = 0;
-
-	if		(mGlType == GL_TEXTURE_2D)			mSizeInMemory = (ulong)mSize.x * mSize.y * bpp;
-	else if (mGlType == GL_TEXTURE_CUBE_MAP)	mSizeInMemory = (ulong)mSize.x * mSize.y * bpp * 6;
-	else if (mGlType == GL_TEXTURE_3D)			mSizeInMemory = (ulong)mSize.x * mSize.y * bpp * mSize.x * 6;
-
-	mSizeInMemory /= 8;
-
-	// Keep track of video memory used by textures
-	g_caps.IncreaseTextureMemory(mSizeInMemory);
-
-#ifdef _DEBUG
-												System::Log("[TEXTURE] Created '%s'", mName.GetBuffer() );
-	if		(mGlType == GL_TEXTURE_2D)			System::Log( "          - Dims:     %u x %u",		mSize.x, mSize.y );
-	else if (mGlType == GL_TEXTURE_CUBE_MAP)	System::Log( "          - Dims:     %u x %u x 6",	mSize.x, mSize.y );
-	else if (mGlType == GL_TEXTURE_3D)			System::Log( "          - Dims:     %u x %u x %u", mSize.x, mSize.y, mDepth );
-
-	System::Log("          - Format:   %s", ITexture::FormatToString(mFormat));
-	System::Log("          - Size:     %s bytes", String::GetFormattedSize(mSizeInMemory).GetBuffer());
-#endif
-
-	// Release the memory
-	for (uint i = 0; i < 6; ++i)
-		mTex[i].Release();
-
-	mLock.Unlock();
-	CHECK_GL_ERROR;
 }
 
 //============================================================================================================

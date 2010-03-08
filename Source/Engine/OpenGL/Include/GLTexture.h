@@ -29,6 +29,8 @@ protected:
 	uint		mFilter;			// Texture filtering setting
 	uint		mActiveWrapMode;	// Active wrapping setting
 	uint		mActiveFilter;		// Active filtering
+	int			mInFormat;			// Cached internal GL format
+	uint		mDataType;			// Cached internal data type
 	bool		mMipmapsGenerated;	// Whether mip-maps were generated
 	bool		mRegenMipmap;		// Whether to re-generate the mip-map
 	uint		mActiveAF;			// Active anisotropic filter setting
@@ -55,11 +57,11 @@ private:
 	// Internal function: Releases the associated OpenGL texture
 	void _InternalRelease(bool delayExecution);
 
-	// Uploads the texture to the videocard, or simply returns a texture ID
-	uint _GetOrCreate();
-
 	// Internal function: Creates the texture
 	void _Create();
+
+	// Uploads the texture to the videocard, or simply returns a texture ID
+	uint _GetOrCreate();
 
 	// Binds the specified texture
 	bool _BindTexture (uint glType, uint glID);

@@ -481,6 +481,13 @@ bool UIManager::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 				retVal = (mFocus->GetEventHandling() == UIWidget::EventHandling::Full);
 			}
 		}
+
+		// If the event was not handled and it didn't go to the root, and root can handle it, forward it
+		if (!retVal && mFocus != &mRoot && mRoot.GetEventHandling() == UIWidget::EventHandling::Full)
+		{
+			mRoot.OnKeyPress(pos, key, isDown);
+			retVal = true;
+		}
 	}
 	Unlock();
 	return retVal;
