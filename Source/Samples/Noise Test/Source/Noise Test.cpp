@@ -9,7 +9,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mCore(0), mCam(0), mUI(0), mRegenera
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mUI			= new UI(mGraphics);
+	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	mCore->SetSleepDelay(5);

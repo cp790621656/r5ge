@@ -62,7 +62,7 @@ TestApp::TestApp() : mBranch(0), mSeed(0), mOriginalD(0), mOriginalN(0), mFinalD
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mUI			= new UI(mGraphics);
+	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);
 
 	Object* root = mCore->GetRoot();

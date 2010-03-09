@@ -7,12 +7,12 @@ ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbL
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mUI			= new UI(mGraphics);
+	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	// Event listeners
 	mCore->SetListener( bind(&ModelViewer::OnDraw,			this) );
-	mCore->SetListener( bind(&ModelViewer::OnKeyPress,			this) );
+	mCore->SetListener( bind(&ModelViewer::OnKeyPress,		this) );
 	mCore->SetListener( bind(&ModelViewer::OnMouseMove,		this) );
 	mCore->SetListener( bind(&ModelViewer::OnScroll,		this) );
 	mCore->SetListener( bind(&ModelViewer::SerializeFrom,	this) );

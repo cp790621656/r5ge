@@ -237,7 +237,7 @@ TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mUI			= new UI(mGraphics);
+	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);
 	mRoot		= mUI->AddWidget<UIFrame>("Root");
 	mStart		= 0;

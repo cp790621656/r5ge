@@ -75,7 +75,7 @@ TestApp::TestApp() : mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mUI			= new UI(mGraphics);
+	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	Script::Register<SlightRotation>();
