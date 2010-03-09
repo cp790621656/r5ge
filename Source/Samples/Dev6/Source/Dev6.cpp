@@ -72,9 +72,6 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
-	static UILabel* tri = mUI->FindWidget<UILabel>("Triangles");
-
 	mScene.Cull(mCam);
 
 	Array<const ITechnique*>& techs = mScene.GetForwardTechniques();

@@ -309,7 +309,6 @@ bool ModelViewer::CreateUI()
 
 			_optFrame->SetAlpha(0.0f);
 
-			UISubPicture*	bnd = _optFrame->FindWidget<UISubPicture>	("Options Background", false);
 			UIList*			ren = _optFrame->FindWidget<UIList>			("Rendering Method");
 			UIList*			bgd = _optFrame->FindWidget<UIList>			("Background");
 			UICheckbox*		chk = _optFrame->FindWidget<UICheckbox>		("Bloom Checkbox");

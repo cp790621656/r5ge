@@ -93,7 +93,6 @@ bool ModelInstance::OnFill (FillParams& params)
 
 uint ModelInstance::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
-	uint result(0);
 	IGraphics* graphics = mCore->GetGraphics();
 
 	// Automatically normalize normals if the scale is not 1.0

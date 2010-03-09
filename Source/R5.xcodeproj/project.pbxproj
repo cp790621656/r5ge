@@ -125,6 +125,7 @@
 		14ACB411110679D300258C54 /* Dev10.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14ACB40E110679D300258C54 /* Dev10.cpp */; };
 		14ACB412110679D300258C54 /* FireEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14ACB40F110679D300258C54 /* FireEmitter.cpp */; };
 		14ACB413110679D300258C54 /* SmokeEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14ACB410110679D300258C54 /* SmokeEmitter.cpp */; };
+		14AFF18F1145C29100318F9F /* Intersect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14AFF18E1145C29100318F9F /* Intersect.cpp */; };
 		14B42523112CF9F50063BD8F /* _R5T.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B42521112CF9F50063BD8F /* _R5T.cpp */; };
 		14B42524112CF9F50063BD8F /* _TGA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B42522112CF9F50063BD8F /* _TGA.cpp */; };
 		14B467140F1B9A670085BEFD /* _CocoaClasses.mm in Sources */ = {isa = PBXBuildFile; fileRef = 14B467120F1B9A670085BEFD /* _CocoaClasses.mm */; };
@@ -1240,6 +1241,13 @@
 			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
 			remoteInfo = Render;
 		};
+		14AFF1941145C32400318F9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1434863C10B4E9A600FD9B41 /* Render */;
+			remoteInfo = Render;
+		};
 		14B42536112CFA910063BD8F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1951,6 +1959,8 @@
 		14ACB40E110679D300258C54 /* Dev10.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dev10.cpp; sourceTree = "<group>"; };
 		14ACB40F110679D300258C54 /* FireEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FireEmitter.cpp; sourceTree = "<group>"; };
 		14ACB410110679D300258C54 /* SmokeEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SmokeEmitter.cpp; sourceTree = "<group>"; };
+		14AFF18D1145C27D00318F9F /* Intersect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Intersect.h; path = Engine/Math/Include/Intersect.h; sourceTree = "<group>"; };
+		14AFF18E1145C29100318F9F /* Intersect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Intersect.cpp; path = Engine/Math/Source/Intersect.cpp; sourceTree = "<group>"; };
 		14B42521112CF9F50063BD8F /* _R5T.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = _R5T.cpp; path = Engine/Image/Source/_R5T.cpp; sourceTree = "<group>"; };
 		14B42522112CF9F50063BD8F /* _TGA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = _TGA.cpp; path = Engine/Image/Source/_TGA.cpp; sourceTree = "<group>"; };
 		14B4670C0F1B9A4C0085BEFD /* _All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _All.h; path = Engine/SysWindow/Include/_All.h; sourceTree = "<group>"; };
@@ -2694,6 +2704,7 @@
 		1468B86C0D903D7B00E0AE61 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				14AFF18E1145C29100318F9F /* Intersect.cpp */,
 				1456F9450F72D277002776C2 /* Matrix43.cpp */,
 				1456F9460F72D277002776C2 /* Matrix44.cpp */,
 				1456F9470F72D277002776C2 /* SplineF.cpp */,
@@ -2716,6 +2727,7 @@
 		1468B86D0D903D8200E0AE61 /* Include */ = {
 			isa = PBXGroup;
 			children = (
+				14AFF18D1145C27D00318F9F /* Intersect.h */,
 				14F0F8320ED60FA50034CF84 /* _All.h */,
 				14F0F8330ED60FA50034CF84 /* _Define.h */,
 				1456F93F0F72D241002776C2 /* Color4f.h */,
@@ -4389,6 +4401,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				14AFF1951145C32400318F9F /* PBXTargetDependency */,
 				14753D0C0D9C2B8F000D05A5 /* PBXTargetDependency */,
 				14753D0A0D9C2B8C000D05A5 /* PBXTargetDependency */,
 			);
@@ -4879,6 +4892,7 @@
 				1456F94C0F72D277002776C2 /* SplineF.cpp in Sources */,
 				1456F94D0F72D277002776C2 /* SplineQ.cpp in Sources */,
 				1456F94E0F72D277002776C2 /* SplineV.cpp in Sources */,
+				14AFF18F1145C29100318F9F /* Intersect.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5919,6 +5933,11 @@
 			target = 1434863C10B4E9A600FD9B41 /* Render */;
 			targetProxy = 14ACB415110679ED00258C54 /* PBXContainerItemProxy */;
 		};
+		14AFF1951145C32400318F9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1434863C10B4E9A600FD9B41 /* Render */;
+			targetProxy = 14AFF1941145C32400318F9F /* PBXContainerItemProxy */;
+		};
 		14B42537112CFA910063BD8F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
@@ -6295,6 +6314,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -6328,6 +6348,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6586,6 +6607,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -6618,6 +6640,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6652,6 +6675,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -6684,6 +6708,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6733,6 +6758,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -6766,6 +6792,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6801,6 +6828,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -6834,6 +6862,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7442,6 +7471,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -7475,6 +7505,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7558,6 +7589,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -7591,6 +7623,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7626,6 +7659,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -7659,6 +7693,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7694,6 +7729,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -7727,6 +7763,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7872,6 +7909,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -7905,6 +7943,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -7941,6 +7980,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 			};
 			name = Debug;
@@ -7974,6 +8014,7 @@
 					"-lR5_Image",
 					"-lR5_SysWindow",
 					"-lR5_OpenGL",
+					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
