@@ -652,7 +652,7 @@ Network::Network() :	mThreadCount	(0),
 						mTerminate		(false),
 						mActiveSleep	(-1),
 						mIdleSleep		(1),
-						mBufferSize	(2048)
+						mBufferSize		(2048)
 {
 	NORMAL_LOG( String("Starting up the network") );
 

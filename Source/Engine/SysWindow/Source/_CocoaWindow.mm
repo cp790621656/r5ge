@@ -273,20 +273,28 @@ bool HandleEvent (NSEvent* event)
 		unsigned char key ( GetKeyCode([event keyCode]) );
 		keys[key] = true;
 
+		// Whether the command key is current held down
+		bool command = keys[Key::LeftWindows] || keys[Key::RightWindows];
+		
 		// Command+Q is a standard 'quit the app' signal for macs.
 		// Is there another event it sends? I don't know... but checking keys here works fine.
-		if (key == Key::Q && (keys[Key::LeftWindows] || keys[Key::RightWindows])) return false;
+		if (command && key == Key::Q) return false;
 
 		if (handler)
 		{
 			handler->OnKeyPress(mouse, key, true);
-			
-			NSString* chars	( [event characters] );
-			unsigned int length = [chars length];
-			for (unsigned int i = 0; i < length; ++i)
+
+			// Only process character events if the command key isn't held
+			if (!command)
 			{
-				unsigned short ch = [chars characterAtIndex:i];
-				if (ch >= 32 && ch < 127) handler->OnChar((unsigned char)ch);
+				NSString* chars	( [event characters] );
+				unsigned int length = [chars length];
+
+				for (unsigned int i = 0; i < length; ++i)
+				{
+					unsigned short ch = [chars characterAtIndex:i];
+					if (ch >= 32 && ch < 127) handler->OnChar((unsigned char)ch);
+				}
 			}
 
 			// Don't forward this event to the app or it makes a beeping noise
