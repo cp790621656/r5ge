@@ -4,7 +4,8 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// FreeType-generated texture mapped font class
+// FreeType-generated texture mapped font class. This is a stand-alone class that does not depend on the
+// Graphics class. It can be used to load font textures for the purpose of saving them out as files.
 //============================================================================================================
 
 class Font
