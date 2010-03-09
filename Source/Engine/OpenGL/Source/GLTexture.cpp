@@ -175,45 +175,50 @@ uint Generate2DMipmap (uint glType, const DataType* buffer, uint width, uint hei
 	width, height, inFormat, outFormat, dataType, channels, 1)
 
 //============================================================================================================
+// Generates 2D mipmaps for the current texture
+//============================================================================================================
+
+uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, int inFormat, int outFormat, uint dataType)
+{
+	uint pixels = width * height;
+
+	if (dataType == GL_FLOAT)
+	{
+		if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(float, float, 4);
+		else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(float, float, 3);
+		else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(float, float, 2);
+		else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(float, float, 1);
+		else
+		{
+			// Unsupported format -- let the videocard handle it
+			glGenerateMipmap(glType);
+		}
+	}
+	else
+	{
+		if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(byte, uint, 4);
+		else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(byte, uint, 3);
+		else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(byte, uint, 2);
+		else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(byte, uint, 1);
+		else
+		{
+			// Unsupported format -- let the videocard handle it
+			glGenerateMipmap(glType);
+		}
+	}
+	return pixels;
+}
+
+//============================================================================================================
 // Creates an OpenGL texture with all the specified parameters
 //============================================================================================================
 
-uint Create2DImage (uint glType, const void* buffer, uint width, uint height, int inFormat,
+inline uint Create2DImage (uint glType, const void* buffer, uint width, uint height, int inFormat,
 					int outFormat, uint dataType, bool mipmap)
 {
 	// Upload the starting image
 	glTexImage2D(glType, 0, outFormat, width, height, 0, inFormat, dataType, buffer);
-
-	uint pixels = width * height;
-
-	if (mipmap)
-	{
-		if (dataType == GL_FLOAT)
-		{
-			if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(float, float, 4);
-			else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(float, float, 3);
-			else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(float, float, 2);
-			else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(float, float, 1);
-			else
-			{
-				// Unsupported format -- let the videocard handle it
-				glGenerateMipmap(glType);
-			}
-		}
-		else
-		{
-			if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(byte, uint, 4);
-			else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(byte, uint, 3);
-			else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(byte, uint, 2);
-			else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(byte, uint, 1);
-			else
-			{
-				// Unsupported format -- let the videocard handle it
-				glGenerateMipmap(glType);
-			}
-		}
-	}
-	return pixels;
+	return mipmap ? Create2DMipmaps(glType, buffer, width, height, inFormat, outFormat, dataType) : width * height;
 }
 
 //============================================================================================================
@@ -367,10 +372,13 @@ void GLTexture::_Create()
 	// Figure out the appropriate texture format
 	uint dataFormat = mTex[0].GetFormat();
 
+	// We will not need to genenerate the mipmap after this as it's part of the creation process
+	mRegenMipmap = false;
+
 	// Start with an unsigned byte data type
 	mDataType = GL_UNSIGNED_BYTE;
 
-	if ( mTex[0].GetBuffer() == 0 )
+	if (mTex[0].GetBuffer() == 0)
 	{
 		if (mFormat == Format::Depth)
 		{
@@ -385,7 +393,7 @@ void GLTexture::_Create()
 	}
 	else
 	{
-		switch ( dataFormat )
+		switch (dataFormat)
 		{
 			case Format::Alpha:			mInFormat = GL_LUMINANCE;		mDataType = GL_UNSIGNED_BYTE;	break;
 			case Format::Luminance:		mInFormat = GL_LUMINANCE_ALPHA;	mDataType = GL_UNSIGNED_BYTE;	break;
@@ -427,7 +435,7 @@ void GLTexture::_Create()
 	int outFormat = _GetGLFormat(mFormat);
 	mSizeInMemory = 0;
 
-	if ( mGlType == GL_TEXTURE_2D )
+	if (mGlType == GL_TEXTURE_2D)
 	{
 		if (mFormat == Format::DXTN)
 		{
@@ -680,6 +688,39 @@ uint GLTexture::_GetOrCreate()
 			}
 			CHECK_GL_ERROR;
 		}
+
+		// Since we generate mipmaps manually, we need to first get the texture data from the GPU
+		if (mRegenMipmap && mGlType == GL_TEXTURE_2D)
+		{
+			mRegenMipmap = false;
+
+			if (!active)
+			{
+				active = true;
+				_BindTexture( mGlType, mGlID );
+			}
+
+			g_caps.DecreaseTextureMemory(mSizeInMemory);
+			{
+				uint type = GL_UNSIGNED_BYTE, memSize = 4 * mSize.x * mSize.y;
+
+				if (mFormat >= ITexture::Format::Float)
+				{
+					type = GL_FLOAT;
+					memSize *= 4;
+				}
+
+				// Read back the texture information
+				Memory mem;
+				glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, type, mem.Resize(memSize));
+
+				// Create the mipmaps using the texture information
+				uint bpp = ITexture::GetBitsPerPixel(mFormat) / 8;
+				mSizeInMemory = bpp * Create2DMipmaps(mGlType, mem.GetBuffer(), mSize.x, mSize.y, GL_RGBA,
+					_GetGLFormat(mFormat), mDataType);
+			}
+			g_caps.IncreaseTextureMemory(mSizeInMemory);
+		}
 	}
 	mTimestamp = Time::GetMilliseconds();
 	return mGlID;
@@ -757,7 +798,6 @@ void GLTexture::SetFiltering (uint filtering)
 	if (mFilter != filtering)
 	{
 		mFilter = filtering;
-		if ( (mFilter & Filter::Mipmap) == 0 ) InvalidateMipmap();
 		if (mTex[0].GetSource().IsValid()) mSerializable = true;
 	}
 }

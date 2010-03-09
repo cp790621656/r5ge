@@ -208,7 +208,7 @@ void TestApp::DrawLeaves(void* param)
 
 		// Change the texture filtering to use 'nearest' filtering
 		mFinalD->SetFiltering(ITexture::Filter::Nearest);
-		mFinalN->SetFiltering (ITexture::Filter::Nearest);
+		mFinalN->SetFiltering(ITexture::Filter::Nearest);
 
 		// Draw the scene into the diffuse map target
 		mGraphics->SetActiveRenderTarget(diffuseTarget);
@@ -231,6 +231,10 @@ void TestApp::DrawLeaves(void* param)
 		mGraphics->SetActiveTexture(0, mFinalD);
 		mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
+
+		// Invalidate the mipmaps so they get recreated next time the textures get used
+		mFinalD->InvalidateMipmap();
+		mFinalN->InvalidateMipmap();
 
 		// Change filtering to anisotropic since the textures will be used on a 3D model
 		mFinalD->SetFiltering(ITexture::Filter::Anisotropic);
