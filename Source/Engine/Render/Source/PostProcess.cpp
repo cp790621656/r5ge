@@ -203,6 +203,10 @@ void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float thres
 
 		BlurDownsample (graphics, color, 0, replacement, final, target);
 	}
+	else if (target == 0)
+	{
+		PostProcess::None(graphics, color);
+	}
 }
 
 //============================================================================================================

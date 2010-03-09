@@ -90,8 +90,8 @@ Root
 			Technique = "Opaque"
 			{
 				Shader = "Forward/TreeTrunk"
-				Texture 0 = "Textures\Plants\bark.jpg"
-				Texture 1 = "Textures\Plants\bark_n.png"
+				Texture 0 = "Textures/Plants/bark.jpg"
+				Texture 1 = "Textures/Plants/bark_n.png"
 			}
 		}
 
