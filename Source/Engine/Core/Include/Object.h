@@ -239,7 +239,7 @@ public:
 	uint Draw (uint group, const ITechnique* tech, bool insideOut);
 
 	// Cast a ray into space and fill the list with objects that it intersected with
-	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
+	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe = true);
 
 	// Serialization
 	bool SerializeTo (TreeNode& root) const;

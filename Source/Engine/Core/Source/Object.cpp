@@ -814,7 +814,7 @@ uint Object::Draw (uint group, const ITechnique* tech, bool insideOut)
 // Cast a ray into space and fill the list with objects that it intersected with
 //============================================================================================================
 
-void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
+void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe)
 {
 	if (mFlags.Get(Flag::BoxCollider) && Intersect::RayBounds(pos, dir, mCompleteBounds))
 	{
@@ -841,12 +841,12 @@ void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit
 		// Continue on to children
 		if (considerChildren)
 		{
-			Lock();
+			if (threadSafe) Lock();
 			{
 				for (uint i = mChildren.GetSize(); i > 0; )
-					mChildren[--i]->Raycast(pos, dir, hits);
+					mChildren[--i]->Raycast(pos, dir, hits, threadSafe);
 			}
-			Unlock();
+			if (threadSafe) Unlock();
 		}
 	}
 }

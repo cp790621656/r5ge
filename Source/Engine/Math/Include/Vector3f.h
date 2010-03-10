@@ -18,7 +18,8 @@ struct Vector3f
 	Vector3f()									: x(0.0f), y(0.0f), z(0.0f) {}
 	Vector3f(float f)							: x(f),	y(f), z(f) {}
 	Vector3f(float X, float Y, float Z)			: x(X),	y(Y), z(Z) {}
-	Vector3f(const Vector3f& v)					{ x = v.x;	y = v.y; z = v.z; }
+	Vector3f(const Vector2f& v)					{ x = v.x; y = v.y; z = 0.0f; }
+	Vector3f(const Vector3f& v)					{ x = v.x; y = v.y; z = v.z;  }
 	Vector3f(const Color4ub& c)					{ *this = c; }
 	Vector3f(const Quaternion& q);				// Inlined in Quaternion.h
 
