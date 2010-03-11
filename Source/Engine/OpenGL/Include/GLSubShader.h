@@ -64,4 +64,4 @@ public:
 };
 
 // This function is used in both GLSubShader as well as GLShader
-void PrintDebugLog (const String& log);
+void PrintDebugLog (const String& log, const String& code);

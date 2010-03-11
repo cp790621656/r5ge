@@ -16,6 +16,7 @@
 		{																		\
 			System::Log("[ASSERT]  %s", description);							\
 			System::Log("          - %s (Line: %u)", __FILE__, __LINE__);		\
+			System::FlushLog();													\
 			if ( R5::Thread::AssertWindow( description,	__LINE__, __FILE__, keepChecking) ) { __asm { int 3 } }	\
 		}																		\
 	}

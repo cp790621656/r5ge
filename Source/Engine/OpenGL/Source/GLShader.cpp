@@ -499,7 +499,7 @@ bool GLShader::_Link()
 		}
 		else
 		{
-			R5::PrintDebugLog(log);
+			R5::PrintDebugLog(log, "");
 #ifdef _DEBUG
 			String errMsg ("Failed to link '");
 			errMsg << mName;

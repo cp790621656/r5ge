@@ -12,19 +12,24 @@
 using namespace R5;
 
 //============================================================================================================
+// Global access
+//============================================================================================================
+
+FILE* g_file = 0;
+
+//============================================================================================================
 // File container that has a destructor that will properly close the file
 //============================================================================================================
 
 struct File
 {
-	FILE* fp;
 	Thread::Lockable lock;
 
-	File (const char* filename) { fp = fopen(filename, "w"); }
-	~File() { if (fp) { fflush(fp); fclose(fp); fp = 0; } }
+	File (const char* filename) { g_file = fopen(filename, "w"); }
+	~File() { if (g_file) { fflush(g_file); fclose(g_file); g_file = 0; } }
 
-	operator FILE* () { return fp; }
-	operator bool () const { return fp != 0; }
+	operator FILE* () { return g_file; }
+	operator bool () const { return g_file != 0; }
 
 	void Lock()   const { lock.Lock(); }
 	void Unlock() const { lock.Unlock(); }
@@ -54,6 +59,15 @@ bool System::SetCurrentPath(const char* path)
 }
 
 //============================================================================================================
+// Flush the log file, saving out the contents
+//============================================================================================================
+
+void System::FlushLog()
+{
+	if (g_file != 0) fflush(g_file);
+}
+
+//============================================================================================================
 // Dumps a string into the log file
 //============================================================================================================
 
@@ -62,13 +76,11 @@ void System::Log(const char *format, ...)
 	static File log ("log.txt");
 	static ulong last = 0;
 
-	FILE* file = log;
-
 	// In rare cases the log may need to be used after the static variable has been released.
 	// If this happens, open the log manually and simply append to it.
-	if (file == 0) file = fopen("log.txt", "a");
+	if (g_file == 0) g_file = fopen("log.txt", "a");
 
-	if (file != 0)
+	if (g_file != 0)
 	{
 		if (log) log.Lock();
 		{
@@ -93,9 +105,9 @@ void System::Log(const char *format, ...)
 			ulong remMIN	= totalMIN % 60;
 			ulong totalHRS	= totalMIN / 60;
 			
-			fprintf(file, "[%3d.%02d.%02d.%03d]: ", totalHRS, remMIN, remSEC, remMS);
-			fputs(text, file);
-			fputc('\n', file);
+			fprintf(g_file, "[%3d.%02d.%02d.%03d]: ", totalHRS, remMIN, remSEC, remMS);
+			fputs(text, g_file);
+			fputc('\n', g_file);
 
 #ifdef _WINDOWS
 			delete [] text;
@@ -104,11 +116,15 @@ void System::Log(const char *format, ...)
 			if (log && totalMS - last > 100)
 			{
 				last = totalMS;
-				fflush(file);
+				fflush(g_file);
 			}
 		}
 		if (log) log.Unlock();
-		else fclose(file);
+		else
+		{
+			fclose(g_file);
+			g_file = 0;
+		}
 	}
 }
 

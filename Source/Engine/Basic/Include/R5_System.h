@@ -21,6 +21,7 @@ namespace System
 	uint	GetOS();											// Returns the current operating system
 	bool	SetCurrentPath			(const char* path);			// _chdir()
 	void	Log						(const char* format, ...);	// Dumps a string into the log file
+	void	FlushLog();											// Flush the log file, saving out the contents
 	bool	FileExists				(const char* filename);		// Checks if the file exists
 	uint	GetFileHeader			(const char* filename);		// Gets the file's header (first 4 bytes)
 	String	GetFilenameFromPath		(const String& path);		// "c:\temp\test.abc" becomes "test.abc"

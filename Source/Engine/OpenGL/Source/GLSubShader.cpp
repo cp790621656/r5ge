@@ -15,7 +15,7 @@ using namespace R5;
 // Prints the specified shader log
 //============================================================================================================
 
-void R5::PrintDebugLog (const String& log)
+void R5::PrintDebugLog (const String& log, const String& code)
 {
 	Array<String> lines;
 	String debug(log), left, right;
@@ -29,7 +29,57 @@ void R5::PrintDebugLog (const String& log)
 	}
 
 	if (debug.IsValid()) lines.Expand() = debug;
-	for (uint i = 0; i < lines.GetSize(); ++i) System::Log("          - %s", lines[i].GetBuffer());
+
+	// We want to run through all debug lines and write them down
+	for (uint i = 0; i < lines.GetSize(); ++i)
+	{
+		const String& line (lines[i]);
+
+		// Standard log entry with the error message
+		System::Log("          - %s", line.GetBuffer());
+
+		// If we have source code to work with, let's find the lines the errors are referencing
+		if (code.IsValid())
+		{
+			uint col (0xFFFFFFFF), row (0xFFFFFFFF);
+
+			if (line.BeginsWith("ERROR: ") && line.GetLength() > 7)
+			{
+				// ATI error syntax
+				sscanf(line.GetBuffer() + 7, "%u:%u", &col, &row);
+			}
+			else
+			{
+				// NVidia error syntax
+				sscanf(line.GetBuffer(), "%u (%u)", &col, &row);
+			}
+
+			if (row != 0xFFFFFFFF)
+			{
+				String newLine;
+				newLine = "\n";
+
+				// Run through the lines and find the one we've encountered an issue with
+				for (uint b = 0, offset = 0; offset < code.GetLength(); ++b)
+				{
+					if (b + 1 == row)
+					{
+						// Get this line
+						String errorLine;
+						code.GetLine(errorLine, offset);
+						if (errorLine.IsValid()) System::Log("          - %s", errorLine.GetBuffer());
+						break;
+					}
+					else
+					{
+						// Move on to the next line
+						offset = code.Find(newLine, true, offset) + 1;
+					}
+				}
+			}
+		}
+	}
+	System::FlushLog();
 }
 
 //============================================================================================================
@@ -459,7 +509,7 @@ bool GLSubShader::_Compile()
 			System::Log( "[SHADER]  '%s' has FAILED to compile!", mName.GetBuffer() );
 
 			// Print the debug log if there is something to print
-			R5::PrintDebugLog(log);
+			R5::PrintDebugLog(log, mCode);
 
 #ifdef _DEBUG
 			// Trigger an assert
