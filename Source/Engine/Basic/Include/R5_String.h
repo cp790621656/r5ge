@@ -84,7 +84,7 @@ public:
 	String&		operator  = (ushort value)				{ return Set("%u", value); }
 	String&		operator  = (uint value)				{ return Set("%u", value); }
 	String&		operator  = (float value)				{ return Set("%f", value); }
-	String&		operator  = (double value)				{ return Set("%f", value); }
+	String&		operator  = (double value)				{ return Set("%lf", value); }
 
 	bool		operator == (const char* txt)	const;
 	bool		operator != (const char* txt)	const	{ return !(*this == txt); }
