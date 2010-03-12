@@ -168,6 +168,20 @@ uint Generate2DMipmap (uint glType, const DataType* buffer, uint width, uint hei
 }
 
 //============================================================================================================
+// Counts the number of pixels used by the mip-mapped texture
+//============================================================================================================
+
+uint CountMipmapSize (uint width, uint height)
+{
+	if (width  == 0) width  = 1;
+	if (height == 0) height = 1;
+
+	uint pixels = width * height;
+
+	return (pixels == 1) ? pixels : pixels + CountMipmapSize(width >> 1, height >> 1);
+}
+
+//============================================================================================================
 // Macro that shortens the code, used in Create2DImage() function below
 //============================================================================================================
 
@@ -192,6 +206,7 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 		{
 			// Unsupported format -- let the videocard handle it
 			glGenerateMipmap(glType);
+			return CountMipmapSize(width, height);
 		}
 	}
 	else
@@ -204,6 +219,7 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 		{
 			// Unsupported format -- let the videocard handle it
 			glGenerateMipmap(glType);
+			return CountMipmapSize(width, height);
 		}
 	}
 	return pixels;
@@ -218,6 +234,18 @@ inline uint Create2DImage (uint glType, const void* buffer, uint width, uint hei
 {
 	// Upload the starting image
 	glTexImage2D(glType, 0, outFormat, width, height, 0, inFormat, dataType, buffer);
+
+	// Non-compressed texture: use the videocard's accelerated functionality
+	if (outFormat != GL_COMPRESSED_RGB_S3TC_DXT1_EXT  &&
+		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT1_EXT &&
+		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT3_EXT &&
+		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+	{
+		glGenerateMipmap(glType);
+		return CountMipmapSize(width, height);
+	}
+
+	// Compressed texture mipmap generation is not always supported on all videocards
 	return mipmap ? Create2DMipmaps(glType, buffer, width, height, inFormat, outFormat, dataType) : width * height;
 }
 
@@ -702,22 +730,34 @@ uint GLTexture::_GetOrCreate()
 
 			g_caps.DecreaseTextureMemory(mSizeInMemory);
 			{
-				uint type = GL_UNSIGNED_BYTE, memSize = 4 * mSize.x * mSize.y;
-
-				if (mFormat >= ITexture::Format::Float)
+				if ((mFormat & ITexture::Format::Compressed) == 0)
 				{
-					type = GL_FLOAT;
-					memSize *= 4;
+					// Non-compressed texture: use the videocard's accelerated functionality
+					glGenerateMipmap(mGlType);
+					mSizeInMemory = CountMipmapSize(mSize.x, mSize.y);
+				}
+				else
+				{
+					// Compressed texture mipmap generation is not always supported on all videocards
+					uint type = GL_UNSIGNED_BYTE, memSize = 4 * mSize.x * mSize.y;
+
+					if (mFormat >= ITexture::Format::Float)
+					{
+						type = GL_FLOAT;
+						memSize *= 4;
+					}
+
+					// Read back the texture information
+					Memory mem;
+					glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, type, mem.Resize(memSize));
+
+					// Create the mipmaps using the texture information
+					mSizeInMemory = Create2DMipmaps(mGlType, mem.GetBuffer(), mSize.x, mSize.y, GL_RGBA,
+						_GetGLFormat(mFormat), mDataType);
 				}
 
-				// Read back the texture information
-				Memory mem;
-				glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, type, mem.Resize(memSize));
-
-				// Create the mipmaps using the texture information
-				uint bpp = ITexture::GetBitsPerPixel(mFormat) / 8;
-				mSizeInMemory = bpp * Create2DMipmaps(mGlType, mem.GetBuffer(), mSize.x, mSize.y, GL_RGBA,
-					_GetGLFormat(mFormat), mDataType);
+				// Take the number of bytes per pixel into account
+				mSizeInMemory *= ITexture::GetBitsPerPixel(mFormat) / 8;
 			}
 			g_caps.IncreaseTextureMemory(mSizeInMemory);
 		}
