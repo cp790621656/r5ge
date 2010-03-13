@@ -234,9 +234,9 @@ bool InitOpenGL (float requiredVersion)
 		const char* shaderStr	= (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
 		String brandStr (brand);
-		if		(brandStr.Contains("NVidia"))	g_caps.mVendor = Vendor::NVidia;
-		else if (brandStr.Contains("Intel"))	g_caps.mVendor = Vendor::Intel;
-		else if (brandStr.Contains("ATI"))		g_caps.mVendor = Vendor::ATI;
+		if		(brandStr.Contains("NVidia"))	g_caps.mVendor = DeviceInfo::Vendor::NVidia;
+		else if (brandStr.Contains("Intel"))	g_caps.mVendor = DeviceInfo::Vendor::Intel;
+		else if (brandStr.Contains("ATI"))		g_caps.mVendor = DeviceInfo::Vendor::ATI;
 
 		g_caps.mMaxTextureUnits_FFP		= glGetInteger(GL_MAX_TEXTURE_UNITS);
 		g_caps.mMaxTextureUnits_Shader	= glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS);
@@ -274,7 +274,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
 
-					if (g_caps.mVendor == Vendor::ATI)
+					if (g_caps.mVendor == DeviceInfo::Vendor::ATI)
 					{
 						// ATI Driver bug: Catalyst does not support Depth24+Stencil8 texture format.
 						// Frame buffer objects using such textures exhibit hideous artifacts.
