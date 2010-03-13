@@ -367,9 +367,9 @@ void GLFBO::Activate() const
 						clearMask |= GL_COLOR_BUFFER_BIT;
 
 						// Set the size of the texture to match the render target's size
-						tex->Set(0, mSize.x, mSize.y, 1, format, format);
-						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
 						tex->SetFiltering(ITexture::Filter::Nearest);
+						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
+						tex->Set(0, mSize.x, mSize.y, 1, format, format);
 					}
 
 					// Bind the texture as a render target's color attachment
@@ -415,9 +415,9 @@ void GLFBO::Activate() const
 				if (mDepthTex->GetSize() != mSize || mDepthTex->GetFormat() != depthFormat)
 				{
 					clearMask |= GL_DEPTH_BUFFER_BIT;
-					mDepthTex->Set(0, mSize.x, mSize.y, 1, depthFormat, depthFormat);
 					mDepthTex->SetFiltering(ITexture::Filter::Nearest);
 					mDepthTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
+					mDepthTex->Set(0, mSize.x, mSize.y, 1, depthFormat, depthFormat);
 				}
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
@@ -440,9 +440,9 @@ void GLFBO::Activate() const
 				if (mStencilTex->GetSize() != mSize || mStencilTex->GetFormat() != stencilFormat)
 				{
 					clearMask |= GL_STENCIL_BUFFER_BIT;
-					mStencilTex->Set(0, mSize.x, mSize.y, 1, stencilFormat, stencilFormat);
-					mStencilTex->SetFiltering(ITexture::Filter::Nearest);
 					mStencilTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
+					mStencilTex->SetFiltering(ITexture::Filter::Nearest);
+					mStencilTex->Set(0, mSize.x, mSize.y, 1, stencilFormat, stencilFormat);
 				}
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D,

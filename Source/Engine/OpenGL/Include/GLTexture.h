@@ -16,8 +16,8 @@ protected:
 	IGraphics*	mGraphics;			// GLGraphics manager that has created this texture
 	Image		mTex[6];			// Up to 6 raw textures
 	bool		mCheckForSource;	// Whether the texture should be checked to see if it has a valid source
-	uint		mGlID;				// Associated OpenGL texture ID
 	uint		mType;				// Texture type (ITexture::TwoDimensional, etc)
+	uint		mGlID;				// Associated OpenGL texture ID
 	uint		mGlType;			// Saved OpenGL Texture type (GL_TEXTURE_2D, etc)
 	uint		mFormat;			// Texture format, such as ITexture::Format::RGB
 	uint		mRequestedFormat;	// Original requested format (mFormat can change, if not supported)
@@ -67,6 +67,11 @@ private:
 	bool _BindTexture (uint glType, uint glID);
 
 public:
+
+	// OpenGL texture type
+	uint GetGLType()		const { return mGlType; }
+	uint GetGLMinFilter()	const;
+	uint GetGLMagFilter()	const;
 
 	// Some functions should be overwritten
 	virtual const String&	GetName()	const	{ return mName;			}

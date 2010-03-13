@@ -257,8 +257,8 @@ GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mName				(name),
 	mGraphics			(graphics),
 	mCheckForSource		(true),
-	mGlID				(0),
 	mType				(Type::Invalid),
+	mGlID				(0),
 	mGlType				(0),
 	mFormat				(Format::Invalid),
 	mRequestedFormat	(Format::Invalid),
@@ -293,7 +293,7 @@ void GLTexture::_CheckForSource()
 		mSize.y = mTex[0].GetHeight();
 		mDepth  = mTex[0].GetDepth();
 		mFormat = mTex[0].GetFormat();
-		mType	 = (mDepth > 1) ? Type::ThreeDimensional : Type::TwoDimensional;
+		mType	= (mDepth > 1) ? Type::ThreeDimensional : Type::TwoDimensional;
 
 		const String& source = mTex[0].GetSource();
 
@@ -413,22 +413,9 @@ void GLTexture::_Create()
 	// ATI drivers seem to like it when the texture filtering is set prior to texture data
 	mActiveFilter = mFilter;
 
-	// Set the texture filtering
-	if (mFilter & Filter::Mipmap)
-	{
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	else if (mFilter == Filter::Linear)
-	{
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	else
-	{
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}
+	glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
+	glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());
+	CHECK_GL_ERROR;
 
 	// Figure out the appropriate texture format
 	uint dataFormat = mTex[0].GetFormat();
@@ -633,21 +620,8 @@ uint GLTexture::_GetOrCreate()
 				_BindTexture( mGlType, mGlID );
 			}
 
-			if (mFilter & Filter::Mipmap)
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-				glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			}
-			else if (mFilter == Filter::Linear)
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			}
-			else
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			}
+			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
+			glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());
 			CHECK_GL_ERROR;
 		}
 
@@ -756,6 +730,9 @@ uint GLTexture::_GetOrCreate()
 				_BindTexture( mGlType, mGlID );
 			}
 
+			// Just in case, for ATI
+			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
 			g_caps.DecreaseTextureMemory(mSizeInMemory);
 			{
 				if ((mFormat & ITexture::Format::Compressed) == 0)
@@ -801,6 +778,25 @@ uint GLTexture::_GetOrCreate()
 inline bool GLTexture::_BindTexture (uint glType, uint glID)
 {
 	return ((GLGraphics*)mGraphics)->_BindTexture(glType, glID);
+}
+
+//============================================================================================================
+// OpenGL minification filter
+//============================================================================================================
+
+inline uint GLTexture::GetGLMinFilter() const
+{
+	return ((mFilter & Filter::Mipmap) != 0) ? GL_LINEAR_MIPMAP_NEAREST :
+		(mFilter == Filter::Linear ? GL_LINEAR : GL_NEAREST);
+}
+
+//============================================================================================================
+// OpenGL magnification filter
+//============================================================================================================
+
+inline uint GLTexture::GetGLMagFilter() const
+{
+	return (mFilter == Filter::Nearest) ? GL_NEAREST : GL_LINEAR;
 }
 
 //============================================================================================================
@@ -874,7 +870,7 @@ void GLTexture::SetFiltering (uint filtering)
 // Load a single texture from the specified file
 //============================================================================================================
 
-bool GLTexture::Load ( const String& file, uint format )
+bool GLTexture::Load (const String& file, uint format)
 {
 	mLock.Lock();
 
@@ -988,7 +984,13 @@ bool GLTexture::Set (const void*	buffer,
 
 	mLock.Lock();
 	{
+		uint wrapMode	= mWrapMode;
+		uint filter		= mFilter;
+
 		_InternalRelease(true);
+
+		mWrapMode	= wrapMode;
+		mFilter		= filter;
 
 		if (buffer != 0)
 		{
