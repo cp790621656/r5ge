@@ -47,8 +47,20 @@ uint glGetInteger(uint id);
 
 struct DeviceInfo
 {
+	struct Vendor
+	{
+		enum
+		{
+			Unknown	= 0,
+			NVidia,
+			ATI,
+			Intel,
+		};
+	};
+
 	bool	mInitialized;				// Whether the device has been initialized
 	float	mVersion;					// Detected OpenGL version
+	byte	mVendor;					// Videocard vendor
 	bool	mFloat16Format;				// Support for 16-bit floating point textures (half precision)
 	bool	mFloat32Format;				// Support for 32-bit floating point textures (full precision)
 	bool	mBufferObjects;				// Support for buffer objects (VBOs, FBOs)

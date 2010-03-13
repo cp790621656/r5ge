@@ -15,6 +15,7 @@ DeviceInfo	g_caps;
 DeviceInfo::DeviceInfo() :
 	mInitialized			(false),
 	mVersion				(1.0f),
+	mVendor					(Vendor::Unknown),
 	mFloat16Format			(false),
 	mFloat32Format			(false),
 	mBufferObjects			(false),
@@ -232,6 +233,11 @@ bool InitOpenGL (float requiredVersion)
 		const char* versionStr  = (const char*)glGetString(GL_VERSION);
 		const char* shaderStr	= (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
+		String brandStr (brand);
+		if		(brandStr.Contains("NVidia"))	g_caps.mVendor = Vendor::NVidia;
+		else if (brandStr.Contains("Intel"))	g_caps.mVendor = Vendor::Intel;
+		else if (brandStr.Contains("ATI"))		g_caps.mVendor = Vendor::ATI;
+
 		g_caps.mMaxTextureUnits_FFP		= glGetInteger(GL_MAX_TEXTURE_UNITS);
 		g_caps.mMaxTextureUnits_Shader	= glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS);
 		g_caps.mMaxTextureCoords		= glGetInteger(GL_MAX_TEXTURE_COORDS);
@@ -267,6 +273,15 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mDepthStencil	= CheckExtension("GL_EXT_packed_depth_stencil");
 					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
+
+					if (g_caps.mVendor == Vendor::ATI)
+					{
+						// ATI Driver bug: Catalyst does not support Depth24+Stencil8 texture format.
+						// Frame buffer objects using such textures exhibit hideous artifacts.
+						// Tried this on Catalyst version 9.1, 9.2 and 10.3. Also note:
+						// http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=254426
+						g_caps.mDepthStencil = false;
+					}
 
 					if (supported = g_caps.mBufferObjects)
 					{
