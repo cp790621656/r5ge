@@ -42,6 +42,9 @@ public:
 	GLGraphics();
 	virtual ~GLGraphics();
 
+	// ID of the thread the graphics class was initialized in
+	Thread::IDType GetThreadID() const { return mThread; }
+
 	// Gets the specified sub-shader entry
 	GLSubShader* GetGLSubShader (const String& filename, bool createIfMissing, byte type);
 

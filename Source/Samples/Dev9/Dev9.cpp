@@ -188,59 +188,72 @@ void TestApp::DrawLeaves(void* param)
 	{
 		static IRenderTarget* diffuseTarget = 0;
 		static IRenderTarget* normalTarget  = 0;
+		static ITexture* temp0 = mGraphics->GetTexture("Temp Texture 0");
+		static ITexture* temp1 = mGraphics->GetTexture("Temp Texture 1");
+
 		ITexture* tex = mGraphics->GetTexture("Leaf Diffuse map");
 
 		if (diffuseTarget == 0)
 		{
 			diffuseTarget = mGraphics->CreateRenderTarget();
-			diffuseTarget->AttachColorTexture(0, mFinalD, ITexture::Format::RGBA);
+			diffuseTarget->AttachColorTexture(0, temp0, ITexture::Format::RGBA);
 			diffuseTarget->SetBackgroundColor( Color4ub(65, 90, 20, 0) );
 			diffuseTarget->SetSize( tex->GetSize() * 2 );
+			temp0->SetFiltering(ITexture::Filter::Nearest);
 		}
 
 		if (normalTarget == 0)
 		{
 			normalTarget = mGraphics->CreateRenderTarget();
-			normalTarget->AttachColorTexture(0, mFinalN, ITexture::Format::RGBA);
+			normalTarget->AttachColorTexture(0, temp1, ITexture::Format::RGBA);
 			normalTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
 			normalTarget->SetSize( tex->GetSize() * 2 );
+			temp1->SetFiltering(ITexture::Filter::Nearest);
 		}
 
-		// Change the texture filtering to use 'nearest' filtering
-		mFinalD->SetFiltering(ITexture::Filter::Nearest);
-		mFinalN->SetFiltering(ITexture::Filter::Nearest);
-
 		// Draw the scene into the diffuse map target
-		mGraphics->SetActiveRenderTarget(diffuseTarget);
-		mGraphics->Clear();
-		mOffscreen.Cull(offCam);
-		mOffscreen.Draw("Diffuse Map");
+		{
+			mGraphics->SetActiveRenderTarget(diffuseTarget);
+			mGraphics->Clear();
+			mOffscreen.Cull(offCam);
+			mOffscreen.Draw("Diffuse Map");
+			mGraphics->Flush();
+
+			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
+			// side-effect by-product of rendering alpha-blended textures into an FBO.
+			mGraphics->SetFog(false);
+			mGraphics->SetAlphaTest(false);
+			mGraphics->SetBlending(IGraphics::Blending::None);
+			mGraphics->SetActiveRenderTarget(diffuseTarget);
+			mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+			mGraphics->SetActiveTexture(0, temp0);
+			mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
+			mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
+			mGraphics->Flush();
+		}
 
 		// Draw the scene into the normal map target
-		mGraphics->SetActiveRenderTarget(normalTarget);
-		mGraphics->Clear();
-		mOffscreen.Draw("Normal Map");
+		{
+			mGraphics->SetActiveRenderTarget(normalTarget);
+			mGraphics->Clear();
+			mOffscreen.Draw("Normal Map");
+			mGraphics->Flush();
+		}
 
-		// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
-		// side-effect by-product of rendering alpha-blended textures into an FBO.
-		mGraphics->SetFog(false);
-		mGraphics->SetAlphaTest(false);
-		mGraphics->SetBlending(IGraphics::Blending::None);
-		mGraphics->SetActiveRenderTarget(diffuseTarget);
-		mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
-		mGraphics->SetActiveTexture(0, mFinalD);
-		mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
-		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
+		// Get the texture data and fill out the diffuse and normal textures
+		{
+			Memory mem;
 
-		// Invalidate the mipmaps so they get recreated next time the textures get used
-		mFinalD->InvalidateMipmap();
-		mFinalN->InvalidateMipmap();
+			temp0->GetBuffer(mem);
+			mFinalD->Set(mem.GetBuffer(), temp0->GetSize().x, temp0->GetSize().y, 1, temp0->GetFormat());
+			mFinalD->SetFiltering(ITexture::Filter::Anisotropic);
+			mFinalD->SetWrapMode(ITexture::WrapMode::Repeat);
 
-		// Change filtering to anisotropic since the textures will be used on a 3D model
-		mFinalD->SetFiltering(ITexture::Filter::Anisotropic);
-		mFinalN->SetFiltering(ITexture::Filter::Anisotropic);
-		mFinalD->SetWrapMode(ITexture::WrapMode::Repeat);
-		mFinalN->SetWrapMode(ITexture::WrapMode::Repeat);
+			temp1->GetBuffer(mem);
+			mFinalN->Set(mem.GetBuffer(), temp1->GetSize().x, temp1->GetSize().y, 1, temp1->GetFormat());
+			mFinalN->SetFiltering(ITexture::Filter::Anisotropic);
+			mFinalN->SetWrapMode(ITexture::WrapMode::Repeat);
+		}
 	}
 }
 
