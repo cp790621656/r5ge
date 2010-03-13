@@ -404,10 +404,36 @@ void GLTexture::_Create()
 	// Bind the texture
 	_BindTexture(mGlType, mGlID);
 
+	// Depth and 3D textures should not be filtered
+	if ((mFormat & ITexture::Format::Depth) != 0 || mGlType == GL_TEXTURE_3D)
+	{
+		mFilter = Filter::Nearest;
+	}
+
+	// ATI drivers seem to like it when the texture filtering is set prior to texture data
+	mActiveFilter = mFilter;
+
+	// Set the texture filtering
+	if (mFilter & Filter::Mipmap)
+	{
+		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else if (mFilter == Filter::Linear)
+	{
+		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 	// Figure out the appropriate texture format
 	uint dataFormat = mTex[0].GetFormat();
 
-	// We will not need to genenerate the mipmap after this as it's part of the creation process
+	// We will not need to generate the mipmap after this as it's part of the creation process
 	mRegenMipmap = false;
 
 	// Start with an unsigned byte data type
@@ -558,18 +584,6 @@ void GLTexture::_Create()
 		mLock.Unlock();
 		return;
 	}
-	else if (mFormat & ITexture::Format::Depth || mGlType == GL_TEXTURE_3D )
-	{
-		// Depth and 3D textures might not have filtering support, so start with no filtering
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}
-	else
-	{
-		// All other textures start with linear filtering
-		glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
 
 	// Keep track of video memory used by textures
 	g_caps.IncreaseTextureMemory(mSizeInMemory);
@@ -608,7 +622,7 @@ uint GLTexture::_GetOrCreate()
 
 	if ( mGlID != 0 )
 	{
-		// Adjust the filtering and generate mipmaps if necessary
+		// Adjust the filtering if necessary
 		if (mActiveFilter != mFilter)
 		{
 			mActiveFilter = mFilter;
@@ -638,21 +652,29 @@ uint GLTexture::_GetOrCreate()
 		}
 
 		// Anisotropy is only enabled for mip-mapped textures
-		uint af = (mFilter & ITexture::Filter::Mipmap) ? mDefaultAF : 1;
-
-		// Adjust the active texture anisotropy level
-		if (mActiveAF != af && af > 0)
 		{
-			mActiveAF = af;
+			uint af = (mFilter & ITexture::Filter::Mipmap) ? mDefaultAF : 0;
 
-			if (!active)
+			// Adjust the active texture anisotropy level
+			if (mActiveAF != af)
 			{
-				active = true;
-				_BindTexture( mGlType, mGlID );
-			}
+				if (af > 1)
+				{
+					if (!active)
+					{
+						active = true;
+						_BindTexture( mGlType, mGlID );
+					}
 
-			glTexParameteri( mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF );
-			CHECK_GL_ERROR;
+					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = af);
+					CHECK_GL_ERROR;
+				}
+				else
+				{
+					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = 0);
+					CHECK_GL_ERROR;
+				}
+			}
 		}
 
 		// If texture wrapping has not been specified, choose whatever seems appropriate
@@ -724,7 +746,6 @@ uint GLTexture::_GetOrCreate()
 			CHECK_GL_ERROR;
 		}
 
-		// Since we generate mipmaps manually, we need to first get the texture data from the GPU
 		if (mRegenMipmap && mGlType == GL_TEXTURE_2D)
 		{
 			mRegenMipmap = false;
