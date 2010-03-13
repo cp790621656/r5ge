@@ -77,7 +77,7 @@ void Decal::SetShader (IShader* shader)
 		mShader->RegisterUniform("g_pos",	  OnSetPos);
 		mShader->RegisterUniform("g_forward", OnSetForward);
 		mShader->RegisterUniform("g_right",	  OnSetRight);
-		mShader->RegisterUniform("g_up",	  OnSetUp); 
+		mShader->RegisterUniform("g_up",	  OnSetUp);
 	}
 }
 
@@ -168,6 +168,9 @@ uint Decal::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 
 	// Activate the shader, force-updating the uniforms
 	graphics->SetActiveShader(mShader, true);
+
+	// ATI cards seem to clamp gl_FrontMaterial.diffuse in 0-1 range
+	if (mShader != 0) mShader->SetUniform("g_color", mColor);
 
 	// Bind all textures
 	for (uint i = 0; i < mTextures.GetSize(); ++i)
