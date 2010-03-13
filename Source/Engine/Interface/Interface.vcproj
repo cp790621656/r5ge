@@ -152,6 +152,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\IAudio.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\IEventReceiver.h"
 				>
 			</File>

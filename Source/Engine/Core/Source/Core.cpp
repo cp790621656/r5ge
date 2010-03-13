@@ -77,16 +77,16 @@ void Core::Init()
 // Core constructor and destructor
 //============================================================================================================
 
-Core::Core (IWindow* window, IGraphics* graphics, IUI* gui) :
-	mWin(window), mGraphics(graphics), mUI(gui)
+Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio) :
+	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
 {
 	Init();
 }
 
 //============================================================================================================
 
-Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene) :
-	mWin(window), mGraphics(graphics), mUI(gui)
+Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene, IAudio* audio) :
+	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
 {
 	Init();
 	scene.SetRoot(&mRoot);
@@ -134,6 +134,8 @@ void Core::Release()
 bool Core::Update()
 {
 	Time::Update();
+
+	if (mAudio != 0) mAudio->Update();
 
 	if (mWin != 0)
 	{
@@ -215,7 +217,7 @@ bool Core::Update()
 		Thread::Sleep(mSleepDelay);
 		return true;
 	}
-	return false;
+	return true;
 }
 
 //============================================================================================================

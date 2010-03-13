@@ -32,6 +32,8 @@ namespace R5
 	#include "IGraphicsController.h"	// Low level graphics card controller interface
 	#include "IGraphicsManager.h"		// Higher level graphics resource manager interface
 	#include "IGraphics.h"				// Combines IGraphicsController and IGraphicsManager into a single interface
+
+	#include "IAudio.h"					// Base class for the Audio
 };
 
 #endif

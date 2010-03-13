@@ -23,6 +23,7 @@ protected:
 	IWindow*		mWin;				// Pointer to the window created by the application
 	IGraphics*		mGraphics;			// Graphics manager and controller
 	IUI*			mUI;				// User interface, if available
+	IAudio*			mAudio;				// Audio, if available
 	Object			mRoot;				// Root of the entire scene
 	bool			mIsDirty;			// Whether to update the scene next update, regardless of time delta
 	bool			mIsKeyDown[256];	// Provides a quick way of checking whether some key is held down
@@ -45,10 +46,10 @@ private:
 public:
 
 	// Default constructor
-	Core (IWindow* window, IGraphics* graphics, IUI* gui);
+	Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio = 0);
 
 	// Convenience constructor -- sets the scene's root to the root of the game object tree
-	Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene);
+	Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene, IAudio* audio = 0);
 
 	// Destructor will wait for all threads to finish before exiting
 	~Core();
