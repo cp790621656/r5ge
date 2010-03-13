@@ -144,6 +144,7 @@ protected:
 public:
 
 	// Statistics about the current frame
+	virtual const DeviceInfo&	GetDeviceInfo()			const;
 	virtual const FrameStats&	GetFrameStats()			const	{ return mStats;		}
 	virtual bool				GetFog()				const	{ return mFog;			}
 	virtual bool				GetDepthWrite()			const	{ return mDepthWrite;	}

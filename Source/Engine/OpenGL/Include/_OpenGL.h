@@ -30,6 +30,21 @@
 #endif
 
 //==========================================================================================================
+// Library-wide global variable
+//==========================================================================================================
+
+struct GLDeviceInfo : public R5::IGraphics::DeviceInfo
+{
+	// Whether the device has been initialized
+	bool mInitialized;
+
+	GLDeviceInfo() : mInitialized(false) {}
+	virtual ~GLDeviceInfo();
+};
+
+extern GLDeviceInfo g_caps;
+
+//==========================================================================================================
 // Retrieves some descriptive information about an OpenGL error, if it occured
 //==========================================================================================================
 
@@ -40,61 +55,6 @@ const char* glGetErrorString();
 //==========================================================================================================
 
 uint glGetInteger(uint id);
-
-//==========================================================================================================
-// Device caps, set on InitOpenGL() and accessible throughout the project
-//==========================================================================================================
-
-struct DeviceInfo
-{
-	struct Vendor
-	{
-		enum
-		{
-			Unknown	= 0,
-			NVidia,
-			ATI,
-			Intel,
-		};
-	};
-
-	bool	mInitialized;				// Whether the device has been initialized
-	float	mVersion;					// Detected OpenGL version
-	byte	mVendor;					// Videocard vendor
-	bool	mFloat16Format;				// Support for 16-bit floating point textures (half precision)
-	bool	mFloat32Format;				// Support for 32-bit floating point textures (full precision)
-	bool	mBufferObjects;				// Support for buffer objects (VBOs, FBOs)
-	bool	mDrawBuffers;				// Support for multiple color-out attachments for Frame Buffer Objects
-	bool	mDepthStencil;				// Support for Depth24-Stencil8 textures and buffers
-	bool	mDXTCompression;			// Support for DXT compression
-	bool	mMixedAttachments;			// Support for mixed format FBO color attachments
-	bool	mAlphaAttachments;			// Support for alpha textures assigned to FBO as color attachments
-	bool	mOcclusion;					// Support for occlusion queries
-	bool	mShaders;					// Support for GLSL shaders
-	bool	mGeometryShaders;			// Support for geometry shaders (GeForce 8+)
-	uint	mMaxTextureUnits_FFP;		// Maximum number of texture units that can be used with the fixed-function pipeline
-	uint	mMaxTextureUnits_Shader;	// Maximum number of texture units that can be used in shaders
-	uint	mMaxTextureCoords;			// Maximum number of texture coordinate arrays
-	uint	mMaxTextureSize;			// Maximum texture width and height
-	uint	mMaxLights;					// Maximum number of hardware lights
-	uint	mMaxFBOAttachments;			// Maximum color attachments for FBOs
-	uint	mMaxAnisotropicLevel;		// Maximum supported anisotropic filtering level
-	uint	mTextureMemory;				// Amount of videocard memory currently used by textures
-	uint	mBufferMemory;				// Amount of videocard memory currently used by VBOs
-	uint	mMaxTextureMemory;			// Maximum amount of videocard memory used by textures
-	uint	mMaxBufferMemory;			// Maximum amount of videocard memory used by VBOs
-	uint	mMaxMemory;					// Maximum amount of combined memory used
-
-	DeviceInfo();
-	~DeviceInfo();
-
-	void IncreaseTextureMemory (uint val);
-	void IncreaseBufferMemory  (uint val);
-	void DecreaseTextureMemory (uint val) { mTextureMemory -= val; }
-	void DecreaseBufferMemory  (uint val) { mBufferMemory  -= val; }
-};
-
-extern DeviceInfo g_caps;
 
 //==========================================================================================================
 // One function to bind all function pointers

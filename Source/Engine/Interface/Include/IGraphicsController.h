@@ -87,6 +87,9 @@ struct IGraphicsController
 		};
 	};
 
+	// Graphics card device information
+	#include "DeviceInfo.h"
+
 public:
 
 	// Should finish all drawing operations
@@ -113,6 +116,7 @@ public:
 	virtual void SetDefaultAF		(uint level)=0;
 
 	// Statistics about the current frame
+	virtual const DeviceInfo&	GetDeviceInfo()			const=0;
 	virtual const FrameStats&	GetFrameStats()			const=0;
 	virtual bool				GetFog()				const=0;
 	virtual bool				GetDepthWrite()			const=0;

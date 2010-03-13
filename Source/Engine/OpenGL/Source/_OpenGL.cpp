@@ -6,42 +6,11 @@ using namespace R5;
 // Project-wide device capability information, set on InitOpenGL()
 //===============================================================================================================
 
-DeviceInfo	g_caps;
-
-//===============================================================================================================
-// Device info structure keeps track of all kinds of useful information
-//===============================================================================================================
-
-DeviceInfo::DeviceInfo() :
-	mInitialized			(false),
-	mVersion				(1.0f),
-	mVendor					(Vendor::Unknown),
-	mFloat16Format			(false),
-	mFloat32Format			(false),
-	mBufferObjects			(false),
-	mDrawBuffers			(false),
-	mDepthStencil			(false),
-	mDXTCompression			(false),
-	mAlphaAttachments		(false),
-	mMixedAttachments		(false),
-	mOcclusion				(false),
-	mShaders				(false),
-	mGeometryShaders		(false),
-	mMaxTextureUnits_FFP	(0),
-	mMaxTextureUnits_Shader	(0),
-	mMaxTextureCoords		(0),
-	mMaxTextureSize			(0),
-	mMaxLights				(0),
-	mMaxFBOAttachments		(0),
-	mTextureMemory			(0),
-	mBufferMemory			(0),
-	mMaxTextureMemory		(0),
-	mMaxBufferMemory		(0),
-	mMaxMemory				(0) {}
+GLDeviceInfo g_caps;
 
 //===============================================================================================================
 
-DeviceInfo::~DeviceInfo()
+GLDeviceInfo::~GLDeviceInfo()
 {
 #ifdef _DEBUG
 	if (mInitialized)
@@ -65,32 +34,6 @@ DeviceInfo::~DeviceInfo()
 		System::Log("          - Total:    %s bytes", String::GetFormattedSize(mMaxMemory).GetBuffer());
 	}
 #endif
-}
-
-//===============================================================================================================
-// Increases texture memory, keeping track of maximum used memory across textures as well as overall
-//===============================================================================================================
-
-void DeviceInfo::IncreaseTextureMemory (uint val)
-{
-	mTextureMemory += val;
-	if (mMaxTextureMemory < mTextureMemory)
-		mMaxTextureMemory = mTextureMemory;
-	if (mMaxMemory < mTextureMemory + mBufferMemory)
-		mMaxMemory = mTextureMemory + mBufferMemory;
-}
-
-//===============================================================================================================
-// Increases buffer memory, keeping track of maximum used memory across buffers as well as overall
-//===============================================================================================================
-
-void DeviceInfo::IncreaseBufferMemory (uint val)
-{
-	mBufferMemory += val;
-	if (mMaxBufferMemory < mBufferMemory)
-		mMaxBufferMemory = mBufferMemory;
-	if (mMaxMemory < mTextureMemory + mBufferMemory)
-		mMaxMemory = mTextureMemory + mBufferMemory;
 }
 
 //===============================================================================================================
@@ -225,7 +168,7 @@ bool InitOpenGL (float requiredVersion)
 {
 	if (!g_caps.mInitialized)
 	{
-		g_caps.mInitialized	= true;
+		g_caps.mInitialized		= true;
 		bool supported			= true;
 		bool full				= true;
 		const char* renderer	= (const char*)glGetString(GL_RENDERER);
@@ -234,9 +177,9 @@ bool InitOpenGL (float requiredVersion)
 		const char* shaderStr	= (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
 		String brandStr (brand);
-		if		(brandStr.Contains("NVidia"))	g_caps.mVendor = DeviceInfo::Vendor::NVidia;
-		else if (brandStr.Contains("Intel"))	g_caps.mVendor = DeviceInfo::Vendor::Intel;
-		else if (brandStr.Contains("ATI"))		g_caps.mVendor = DeviceInfo::Vendor::ATI;
+		if		(brandStr.Contains("NVidia"))	g_caps.mVendor = IGraphics::DeviceInfo::Vendor::NVidia;
+		else if (brandStr.Contains("Intel"))	g_caps.mVendor = IGraphics::DeviceInfo::Vendor::Intel;
+		else if (brandStr.Contains("ATI"))		g_caps.mVendor = IGraphics::DeviceInfo::Vendor::ATI;
 
 		g_caps.mMaxTextureUnits_FFP		= glGetInteger(GL_MAX_TEXTURE_UNITS);
 		g_caps.mMaxTextureUnits_Shader	= glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS);
@@ -274,7 +217,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
 
-					if (g_caps.mVendor == DeviceInfo::Vendor::ATI)
+					if (g_caps.mVendor == IGraphics::DeviceInfo::Vendor::ATI)
 					{
 						// ATI Driver bug: Catalyst does not support Depth24+Stencil8 texture format.
 						// Frame buffer objects using such textures exhibit hideous artifacts.
