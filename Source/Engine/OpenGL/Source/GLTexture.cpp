@@ -157,6 +157,7 @@ uint Generate2DMipmap (uint glType, const DataType* buffer, uint width, uint hei
 
 	// Upload the texture data to the videocard
 	glTexImage2D(glType, level, outFormat, width, height, 0, inFormat, dataType, buffer);
+	CHECK_GL_ERROR;
 
 	// Continue generating mipmaps until we reach 1x1
 	if (w > 1 || h > 1)
@@ -205,7 +206,7 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 		else
 		{
 			// Unsupported format -- let the videocard handle it
-			glGenerateMipmap(glType);
+			glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
 			return CountMipmapSize(width, height);
 		}
 	}
@@ -218,7 +219,7 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 		else
 		{
 			// Unsupported format -- let the videocard handle it
-			glGenerateMipmap(glType);
+			glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
 			return CountMipmapSize(width, height);
 		}
 	}
@@ -241,7 +242,7 @@ inline uint Create2DImage (uint glType, const void* buffer, uint width, uint hei
 		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT3_EXT &&
 		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
 	{
-		glGenerateMipmap(glType);
+		glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
 		return CountMipmapSize(width, height);
 	}
 
@@ -543,6 +544,7 @@ void GLTexture::_Create()
 		{
 			mSizeInMemory += bpp * Create2DImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mTex[i].GetBuffer(),
 				mSize.x, mSize.y, mInFormat, outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+			CHECK_GL_ERROR;
 		}
 	}
 	else if ( mGlType == GL_TEXTURE_3D )
