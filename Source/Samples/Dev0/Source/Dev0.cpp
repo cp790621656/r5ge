@@ -73,6 +73,11 @@ int main (int argc, char* argv[])
 
 	if (FMODCheck(result))
 	{
+		// Just for the fun of it, set a preset
+		FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_SEWERPIPE;
+		system->setReverbProperties(&prop);
+
+		// Play the sound
 		FMOD::Channel* channel (0);
 		result = system->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
 
