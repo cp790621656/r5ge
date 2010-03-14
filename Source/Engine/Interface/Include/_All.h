@@ -17,6 +17,7 @@ namespace R5
 	#include "IWindow.h"				// Base class for the application window
 	#include "FrameStats.h"				// Frame statistics struct -- used by both UI as well as Graphics
 	#include "IUI.h"					// User Interface
+	#include "IAudio.h"					// Base class for the audio controller class
 
 	#include "ITechnique.h"				// Rendering technique is used to batch objects of similar properties together
 	#include "ITexture.h"				// Base class for textures (Images stored on the videocard)
@@ -32,8 +33,6 @@ namespace R5
 	#include "IGraphicsController.h"	// Low level graphics card controller interface
 	#include "IGraphicsManager.h"		// Higher level graphics resource manager interface
 	#include "IGraphics.h"				// Combines IGraphicsController and IGraphicsManager into a single interface
-
-	#include "IAudio.h"					// Base class for the Audio
 };
 
 #endif

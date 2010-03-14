@@ -4,74 +4,65 @@
 //           R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko / Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Basic interface for the Audio class
+// Basic interface for the Audio controller class
 //============================================================================================================
 
 struct IAudio
 {
 	R5_DECLARE_INTERFACE_CLASS("Audio");
 
-	struct Event
-	{
-		enum
-		{
-			NONE	= 0,
-			PAUSE	= 1,
-			STOP	= 2
-		};
-	};
-
-	struct Sound
-	{
-		String		mFileName;		// File that is being referenced
-		Vector3f	mPosition;		// Fade in, play, and fade out duration
-		uint		mLayer;			// Layer this animation is activated on
-		bool		mLoop;			// Whether to loop this animation
-		Vector3f	mVolume;		// Volume the sound is at. X = start, Y = current Z = end
-		void*		mAudioSource;	// Pointer to the IAudioSource provided by CAudio
-		float		mDuration;		// Fade duration
-		ulong		mStart;			// The start time of the fade
-		uint		mEvent;			// What action is currently being executed on the Audio
-
-		Sound() : 
-			mVolume (0.0f, 0.0f, 1.0f), 
-			mPosition (0.0f, 0.0f, 0.0f), 
-			mLoop (false), 
-			mAudioSource (0), 
-			mEvent (0){}
-	};
-
-public:
-
 	virtual ~IAudio() {}
 
-	virtual void Update() = 0;
+	// Release all audio resources
+	virtual void Release()=0;
+
+	// Update notification
+	virtual void Update()=0;
+
+	// Adds a new sound to the library
+	virtual void Add (const String& name, const byte* buffer, uint size)=0;
+
+	// Play the specified sound in 2D
+	virtual void Play (const String& name,
+		uint	layer		= 0, 
+		bool	loop		= false, 
+		float	volume		= 1.0f,
+		float	fadeInTime	= 0.0f)=0;
+
+	// Play the specified sound at the specified position
+	virtual void Play (const String& name, const Vector3f& position,
+		uint	layer		= 0, 
+		bool	loop		= false, 
+		float	volume		= 1.0f,
+		float	fadeInTime	= 0.0f)=0;
+
+	// Pause the playback of the specified sound temporarily, fading it out over the specified duration
+	virtual void Pause (const String& name, float duration = 0.25f)=0;
+
+	// Stop playing the specified sound, fading it out over the specified duration
+	virtual void Stop (const String& name, float duration = 0.25f)=0;
 	
-	virtual void Play (
-		String& fileName, 
-		uint layer = 0, 
-		bool loop = false, 
-		float volume = 1.0f,
-		float duration = 0.0f) = 0;
+	// Release all resources associated with the specified sound
+	virtual void Release (const String& name)=0;
 
-	virtual void Play (
-		String& fileName,
-		Vector3f position,
-		uint layer = 0, 
-		bool loop = false, 
-		float volume = 1.0f,
-		float duration = 0.0f) =0;
+	// Sets the sound listener position (usually should be the camera's position)
+	virtual void SetListenerPosition(const Vector3f& position)=0;
 
-	virtual void	Stop		(String& fileName, float duration = 0.25f) = 0;
-	virtual void	Pause		(String& fileName, float duration = 0.25f) = 0;
-	virtual void	Release		(String& fileName) = 0;
-	
-	virtual void	SetSoundVolume		(String& fileName, float volume, float duration = 0.25f)= 0;
-	virtual void	SetLayerVolume		(uint layer, float volume, float duration = 0.25f) = 0;
-	virtual void	SetListenerPosition (const Vector3f position) = 0;
-	virtual void	SetSoundLooping		(String& fileName, bool loop) = 0;
-	virtual void	SetSoundPosition	(String& fileName, Vector3f position) = 0;
+	// Changes the volume of an entire sound layer (music layer, for example)
+	virtual void SetLayerVolume (uint layer, float volume, float duration = 0.25f)=0;
 
-	virtual const float	GetLayerVolume	(uint layer) const = 0;
-	virtual const float	GetSoundVolume	(String& fileName) const = 0;
+	// Changes the volume of the specified sound
+	virtual void SetSoundVolume	(const String& name, float volume, float duration = 0.25f)=0;
+
+	// Sets whether the sound will repeat after it ends
+	virtual void SetSoundRepeat	(const String& name, bool repeat)=0;
+
+	// Sets the 3D position of the specified sound
+	virtual void SetSoundPosition (const String& name, const Vector3f& position)=0;
+
+	// Gets the volume of the specified layer
+	virtual const float	GetLayerVolume	(uint layer) const=0;
+
+	// Gets the volume of the specified sound
+	virtual const float	GetSoundVolume	(const String& name) const=0;
 };

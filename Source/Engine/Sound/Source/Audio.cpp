@@ -1,63 +1,55 @@
 #include "../Include/_All.h"
 
 //============================================================================================================
-//  Audio Library
+// Audio Library
 //============================================================================================================
 
 #include <CAudio/Include/cAudio.h>
 
 #ifdef _WINDOWS
-	#pragma comment(lib, "cAudio.lib")
+  #pragma comment(lib, "cAudio.lib")
 #endif
 
 using namespace R5;
-using namespace cAudio;
-
-IAudioManager* mAudioManager;
 
 //============================================================================================================
+// In order to abstract cAudio and make it invisible to the outside projects we keep it as a void*
+//============================================================================================================
 
-Audio::Audio()
+#define CAUDIO ((cAudio::IAudioManager*)mAudioLib)
+#define SOURCE(source) ((cAudio::IAudioSource*)source)
+
+//============================================================================================================
+// Initialize the cAudio library
+//============================================================================================================
+
+Audio::Audio() : mAudioLib(0)
 {
-	mAudioManager = createAudioManager();
+	mAudioLib = cAudio::createAudioManager();
 }
+
+//============================================================================================================
 
 Audio::~Audio()
 {
-	mAudioFiles.Release();
-
-	//Shutdown cAudio
-	mAudioManager->releaseAllSources();
-	mAudioManager->shutDown();
-	destroyAudioManager(mAudioManager);
+	Release();
+	CAUDIO->shutDown();
+	cAudio::destroyAudioManager(CAUDIO);
 }
 
 //============================================================================================================
-// Load the requested file and create a AudioSource for it
+// Release all audio resources
 //============================================================================================================
 
-IAudioSource* Load (String& fileName)
+void Audio::Release()
 {
-	// Temporary memory buffer used to load the file
-	Memory in;
-	
-	if (mAudioManager != 0 && in.Load(fileName))
+	Lock();
 	{
-		return mAudioManager->createFromMemory(fileName, (char*)in.GetBuffer(), in.GetSize(), System::GetExtensionFromFilename(fileName));
+		mLayers.Release();
+		mLibrary.Release();
+		CAUDIO->releaseAllSources();
 	}
-	return 0;
-}
-
-//============================================================================================================
-// Create a AudioSource
-//============================================================================================================
-
-IAudio::Sound* Audio::CreateAudioSource (String& fileName)
-{
-	Sound* sound			= new Sound();
-	sound->mFileName		= fileName;
-	mAudioFiles[fileName]	= sound;
-	return sound;
+	Unlock();
 }
 
 //============================================================================================================
@@ -66,232 +58,387 @@ IAudio::Sound* Audio::CreateAudioSource (String& fileName)
 
 void Audio::Update()
 {
-	ulong currentTime = Time::GetMilliseconds();
-
-	PointerArray<Sound>& values = mAudioFiles.GetAllValues();
-	
-	for (uint b = values.GetSize(); b > 0;)
+	Lock();
 	{
-		Sound* sound = values[--b];
-		IAudioSource* source = ((IAudioSource*)sound->mAudioSource);
-		
-		if (source != 0 && source->isPlaying())
-		{
-			// Volume has changed fade to new volume
-			if (sound->mVolume.y != sound->mVolume.z)
-			{
-				float factor = (sound->mDuration > 0) ? (float)(0.001 * (currentTime - sound->mStart)) / (float)sound->mDuration  : 1.0f;
-				sound->mVolume.y = Interpolation::Linear(sound->mVolume.x, sound->mVolume.z, factor);
-				source->setVolume(sound->mVolume.y);
+		ulong currentTime = Time::GetMilliseconds();
+		PointerArray<Sound>& values = mLibrary.GetAllValues();
 
-				// When the sound has fully fade perform event
-				if(sound->mVolume.y <= 0.0f) 
+		for (uint b = values.GetSize(); b > 0;)
+		{
+			Sound* sound = values[--b];
+			cAudio::IAudioSource* source = SOURCE(sound->mAudioSource);
+
+			// Only continue if the sound is actually playing
+			if (source != 0 && source->isPlaying())
+			{
+				// If the sound volume is changing, we need to adjust it inside cAudio
+				if (sound->mVolume.y != sound->mVolume.z)
 				{
-					if(sound->mEvent == Event::STOP)
+					// Calculate the current fade-out factor
+					float factor = (sound->mDuration > 0) ? (float)(0.001 * (currentTime - sound->mStart)) /
+						sound->mDuration : 1.0f;
+
+					if (factor < 1.0f)
 					{
-						source->stop();
+						// Update the volume
+						sound->mVolume.y = Interpolation::Linear(sound->mVolume.x, sound->mVolume.z, factor);
+						source->setVolume(sound->mVolume.y);
 					}
-					else if (sound->mEvent == Event::PAUSE)
+					else
 					{
-						source->pause();
+						// We've reached the end of the fading process
+						sound->mVolume.y = sound->mVolume.z;
+						source->setVolume(sound->mVolume.y);
+
+						// If the sound was fading out, perform the target action
+						if (sound->mVolume.y < 0.0001f)
+						{
+							if (sound->mAction == TargetAction::Stop)
+							{
+								source->stop();
+							}
+							else if (sound->mAction == TargetAction::Pause)
+							{
+								source->pause();
+							}
+						}
 					}
 				}
 			}
 		}
 	}
+	Unlock();
+}
+
+//============================================================================================================
+// Adds a new sound to the library
+//============================================================================================================
+
+void Audio::Add (const String& name, const byte* buffer, uint size)
+{
+	// Make sure to release any existing data
+	Release(name);
+
+	Lock();
+	{
+		// Release any previous data
+		Sound* sound = mLibrary.GetIfExists(name);
+		if (sound != 0) _Release(sound);
+
+		// Add a new sound
+		sound = _AddSound(name);
+
+		// Load the data
+		sound->mAudioSource = CAUDIO->createFromMemory(name, (char*)buffer, size,
+			System::GetExtensionFromFilename(name).GetBuffer());
+	}
+	Unlock();
 }
 
 //============================================================================================================
 // Plays a 2D sound
 //============================================================================================================
 
-void Audio::Play (String& fileName, uint layer, bool loop, float volume, float duration)
+void Audio::Play (const String& name, uint layer, bool repeat, float volume, float duration)
 {
-	PlaySound(fileName, layer, loop, volume, duration);
-
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-	
-	if (sound != 0 && sound->mAudioSource != 0)
+	Lock();
 	{
-		IAudioSource* source = ((IAudioSource*)sound->mAudioSource);
+		Sound* sound = _PlaySound(name, layer, repeat, volume, duration);
 
-		if (source != 0)
+		if (sound != 0 && sound->mAudioSource != 0)
 		{
-			source->play2d(loop);
+			SOURCE(sound->mAudioSource)->play2d(repeat);
 		}
 	}
+	Unlock();
 }
 
 //============================================================================================================
 // Plays a 3D sound
 //============================================================================================================
 
-void Audio::Play(String& fileName, Vector3f position, uint layer, bool loop, float volume, float duration)
+void Audio::Play (const String& name, const Vector3f& position, uint layer, bool repeat, float volume, float duration)
 {
-	PlaySound(fileName, layer, loop, volume, duration);
-
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-	
-	if (sound != 0 && sound->mAudioSource != 0)
+	Lock();
 	{
-		SetPosition	(sound, position);
-
-		IAudioSource* source = ((IAudioSource*)sound->mAudioSource);
-
-		if (source != 0)
+		Sound* sound = _PlaySound(name, layer, repeat, volume, duration);
+		
+		if (sound != 0 && sound->mAudioSource != 0)
 		{
-			cVector3 pos (position.x, position.y, position.z);
-			source->play3d(pos, 1.0f, loop);
+			_SetPosition (sound, position);
+
+			cAudio::cVector3 pos (position.x, position.y, position.z);
+			SOURCE(sound->mAudioSource)->play3d(pos, 1.0f, repeat);
 		}
 	}
+	Unlock();
 }
 
 //============================================================================================================
-// Helper function to separates common functionality between 2D and 3D sound
+// Pause the sound by fading it out over the specified time duration
 //============================================================================================================
 
-void Audio::PlaySound (String& fileName, uint layer, bool loop, float volume, float duration)
+void Audio::Pause (const String& name, float duration)
 {
-	AudioLayer* audioLayer = mAudioLayers.GetIfExists(layer);
-	
-	// If the audio layer isn't found create one.
-	if (audioLayer == 0)
+	Lock();
 	{
-		AudioLayer* al = new AudioLayer(layer,volume);
-		mAudioLayers[layer] = al;
-		audioLayer = mAudioLayers.GetIfExists(layer);
+		Sound* sound = mLibrary.GetIfExists(name);
+		if (sound != 0) _Pause(sound, duration);	
 	}
-
-	PlayingSounds& sounds = audioLayer->mPlayingSound;
-	
-	// For all the playing sounds on this layer fade them out.
-	if (sounds.IsValid())
-	{
-		for (uint b = sounds.GetSize(); b > 0; )
-		{
-			Sound* sound = mAudioFiles[sounds[--b]->mFileName];
-
-			if(sounds[b]->mFileName != fileName)
-			{
-				Stop(sound);
-			}
-		}
-	}
-	
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-
-	// If the sound hasn't been created create it and set default parameters.
-	if (sound == 0)
-	{
-		sound = CreateAudioSource(fileName);
-		sounds.Expand()	= sound;
-	}
-
-	if (sound->mAudioSource == 0)
-	{
-		sound->mAudioSource = Load(fileName);
-	}
-
-	// If the AudioSource is valid play the sound.
-	if (sound->mAudioSource != 0)
-	{
-		sound->mLayer = layer;
-		SetVolume	(sound, volume);
-		SetLooping	(sound, loop);		
-	}
+	Unlock();
 }
 
 //============================================================================================================
-// Stop the audio by fading it out over duration
+// Stop the sound by fading it out over the specified time duration
 //============================================================================================================
 
-void Audio::Stop (String& fileName, float duration)
+void Audio::Stop (const String& name, float duration)
 {
-	Stop(mAudioFiles.GetIfExists(fileName), duration);	
-}
-
-void Audio::Stop (Sound* sound, float duration)
-{
-	if (sound != 0 && sound->mVolume.z > 0.0f)
+	Lock();
 	{
-		sound->mEvent = Event::STOP;
-		SetVolume(sound, 0.0f, duration);
+		Sound* sound = mLibrary.GetIfExists(name);
+		if (sound != 0) _Stop(sound, duration);	
 	}
+	Unlock();
 }
 
 //============================================================================================================
-// Pause the audio by fading it out over duration
+// Release all resources associated with the specified sound
 //============================================================================================================
 
-void Audio::Pause (String& fileName, float duration)
+void Audio::Release (const String& name)
 {
-	Pause(mAudioFiles.GetIfExists(fileName), duration);	
-}
-
-void Audio::Pause (Sound* sound, float duration)
-{
-	if (sound != 0 && sound->mVolume.z > 0.0f)
+	Lock();
 	{
-		sound->mEvent = Event::PAUSE;
-		SetVolume(sound, 0.0f, duration);
+		Sound* sound = mLibrary.GetIfExists(name);
+		if (sound != 0) _Release(sound);
 	}
+	Unlock();
+}
+
+//============================================================================================================
+// Sets the sound listener position (usually should be the camera's position)
+//============================================================================================================
+
+void Audio::SetListenerPosition (const Vector3f& position)
+{
+	cAudio::cVector3 pos (position.x, position.y, position.z);
+	CAUDIO->getListener()->setPosition(pos);
 }
 
 //============================================================================================================
 // Set the layers volume
 //============================================================================================================
 
-void Audio::SetLayerVolume(uint layer, float volume, float duration)
+void Audio::SetLayerVolume (uint layer, float volume, float duration)
 {
-	AudioLayer* audioLayer = mAudioLayers.GetIfExists(layer);
-	
-	// If the audio layer isn't found create one.
-	if (audioLayer == 0)
+	Lock();
 	{
-		AudioLayer* al = new AudioLayer(layer,volume);
-		mAudioLayers[layer] = al;
-		audioLayer = mAudioLayers.GetIfExists(layer);
-	}
-
-	audioLayer->mVolume = volume;
-
-	PlayingSounds& sounds = audioLayer->mPlayingSound;
-	
-	// For all the playing sounds update there volume level
-	if (sounds.IsValid())
-	{
-		for (uint b = sounds.GetSize(); b > 0; )
+		AudioLayer* audioLayer = mLayers.GetIfExists(layer);
+		
+		// If the audio layer isn't found create one.
+		if (audioLayer == 0)
 		{
-			Sound* sound = mAudioFiles[sounds[--b]->mFileName];
-			SetVolume(sound, sound->mVolume.y, duration);
+			AudioLayer* al = new AudioLayer(layer,volume);
+			mLayers[layer] = al;
+			audioLayer = mLayers.GetIfExists(layer);
+		}
+
+		audioLayer->mVolume = volume;
+
+		PlayingSounds& sounds = audioLayer->mSounds;
+		
+		// For all the playing sounds update there volume level
+		if (sounds.IsValid())
+		{
+			for (uint b = sounds.GetSize(); b > 0; )
+			{
+				Sound* sound = mLibrary[sounds[--b]->mName];
+				_SetVolume(sound, sound->mVolume.y, duration);
+			}
 		}
 	}
+	Unlock();
 }
 
 //============================================================================================================
-// Set the volume of a sound
+// Get the volume of a layer if the layer exists
 //============================================================================================================
 
-void Audio::SetSoundVolume(String& fileName, float volume, float duration)
+const float Audio::GetLayerVolume (uint layer) const
 {
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-	
-	if (sound == 0)
+	float volume (0.0f);
+	Lock();
 	{
-		sound = CreateAudioSource(fileName);
+		AudioLayer* audioLayer = mLayers.GetIfExists(layer);
+		if (audioLayer != 0) volume = audioLayer->mVolume;
 	}
-	SetVolume(sound, volume, duration);	
+	Unlock();
+	return volume;
 }
 
 //============================================================================================================
-// Helper function to set the volume for the sound base on the layers volume as well
+// Get the volume of a sound if it exists
 //============================================================================================================
 
-void Audio::SetVolume(Sound* sound, float volume, float duration)
+const float Audio::GetSoundVolume (const String& name) const
+{
+	float volume (0.0f);
+	Lock();
+	{
+		Sound* sound = mLibrary.GetIfExists(name);
+		if (sound != 0) volume = sound->mVolume.y;
+	}
+	Unlock();
+	return volume;
+}
+
+//============================================================================================================
+// INTERNAL: Retrieves the specified audio layer
+//============================================================================================================
+
+Audio::AudioLayer* Audio::_GetAudioLayer (uint layer, float volume)
+{
+	AudioLayerPtr& ptr = mLayers[layer];
+	if (ptr == 0) ptr = new AudioLayer(layer, volume);
+	return ptr;
+}
+
+//============================================================================================================
+// INTERNAL: Create a AudioSource
+//============================================================================================================
+
+Audio::Sound* Audio::_AddSound (const String& name)
+{
+	SoundPtr& sound = mLibrary[name];
+	if (sound == 0) sound = new Sound(name);
+	return sound;
+}
+
+//============================================================================================================
+// INTERNAL: Play the specified sound
+//============================================================================================================
+
+Audio::Sound* Audio::_PlaySound (const String& name, uint layer, bool loop, float volume, float duration)
+{
+	AudioLayer* audioLayer = _GetAudioLayer(layer, volume);
+
+	PlayingSounds& playing = audioLayer->mSounds;
+
+	Sound* sound = 0;
+	bool isPlaying = false;
+
+	// Fade out all the sounds playing on the same layer
+	if (playing.IsValid())
+	{
+		for (uint b = playing.GetSize(); b > 0; )
+		{
+			Sound* current = mLibrary[playing[--b]->mName];
+
+			if (current->mName == name)
+			{
+				sound = current;
+				isPlaying = true;
+			}
+			else
+			{
+				_Stop(current, duration);
+			}
+		}
+	}
+
+	// Create the sound if it hasn't been found
+	if (sound == 0) sound = _AddSound(name);
+
+	// If the sound hasn't been loaded, try to load it
+	if (sound->mAudioSource == 0)
+	{
+		Memory mem;
+
+		if (mem.Load(name.GetBuffer()))
+		{
+			sound->mAudioSource = CAUDIO->createFromMemory(name, (char*)mem.GetBuffer(), mem.GetSize(),
+				System::GetExtensionFromFilename(name).GetBuffer());
+		}
+	}
+
+	// If the AudioSource is valid, play the sound
+	if (sound->mAudioSource != 0)
+	{
+		sound->mLayer = layer;
+
+		_SetVolume(sound, volume);
+		_SetRepeat(sound, loop);
+
+		if (!isPlaying) playing.Expand() = sound;
+		return sound;
+	}
+
+	// No audio source -- the sound is not valid
+	WARNING("Trying to play a sound that has not been loaded");
+	return 0;
+}
+
+//============================================================================================================
+// INTERNAL: Release the specified sound
+//============================================================================================================
+
+void Audio::_Release (Sound* sound)
 {
 	if (sound != 0)
 	{
-		AudioLayer* audioLayer = mAudioLayers.GetIfExists(sound->mLayer);
+		PointerArray<AudioLayer>& layers = mLayers.GetAllValues();
+
+		for (uint i = 0; i < layers.GetSize(); ++i)
+		{
+			AudioLayer* layer = layers[i];
+			layer->mSounds.Remove(sound);
+		}
+
+		if (sound->mAudioSource != 0)
+		{
+			CAUDIO->release( SOURCE(sound->mAudioSource) );
+			sound->mAudioSource = 0;
+		}
+		mLibrary.Delete(sound->mName);
+	}
+}
+
+//============================================================================================================
+// INTERNAL: Pause the playback of the specified sound temporarily, fading it out over the specified duration
+//============================================================================================================
+
+void Audio::_Pause (Sound* sound, float duration)
+{
+	if (sound != 0 && sound->mVolume.z > 0.0f)
+	{
+		sound->mAction = TargetAction::Pause;
+		_SetVolume(sound, 0.0f, duration);
+	}
+}
+
+//============================================================================================================
+// INTERNAL: Stop playing the specified sound, fading it out over the specified duration
+//============================================================================================================
+
+void Audio::_Stop (Sound* sound, float duration)
+{
+	if (sound != 0 && sound->mVolume.z > 0.0f)
+	{
+		sound->mAction = TargetAction::Stop;
+		_SetVolume(sound, 0.0f, duration);
+	}
+}
+
+//============================================================================================================
+// INTERNAL: Changes the volume of the specified sound
+//============================================================================================================
+
+void Audio::_SetVolume (Sound* sound, float volume, float duration)
+{
+	if (sound != 0)
+	{
+		AudioLayer* audioLayer = mLayers.GetIfExists(sound->mLayer);
 
 		if (audioLayer != 0)
 		{
@@ -304,55 +451,25 @@ void Audio::SetVolume(Sound* sound, float volume, float duration)
 }
 
 //============================================================================================================
-// Get the volume of a layer if the layer exists
+// INTERNAL: Sets whether the sound will repeat after it ends
 //============================================================================================================
 
-const float Audio::GetLayerVolume (uint layer) const
+void Audio::_SetRepeat (Sound* sound, bool repeat)
 {
-	AudioLayer* audioLayer = mAudioLayers.GetIfExists(layer);
-	
-	if (audioLayer != 0)
-	{
-		return audioLayer->mVolume;
-	}
-	return 0.0f;
-}
-
-//============================================================================================================
-// Get the volume of a sound if it exists
-//============================================================================================================
-
-const float Audio::GetSoundVolume (String& fileName) const
-{
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-
 	if (sound != 0)
 	{
-		return sound->mVolume.y;
+		if (sound->mAudioSource != 0)
+		{
+			SOURCE(sound->mAudioSource)->loop(repeat);
+		}
 	}
-	return 0.0f;
 }
 
 //============================================================================================================
-// Sets the position a sound source
+// INTERNAL: Sets the 3D position of the specified sound
 //============================================================================================================
 
-void Audio::SetSoundPosition (String& fileName, Vector3f position)
-{
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-
-	if (sound == 0)
-	{
-		sound = CreateAudioSource(fileName);
-	}
-	SetPosition(sound, position);
-}
-
-//============================================================================================================
-// Helper function to set position
-//============================================================================================================
-
-void Audio::SetPosition (Sound* sound, Vector3f position)
+void Audio::_SetPosition (Sound* sound, Vector3f position)
 {
 	if (sound != 0)
 	{
@@ -360,55 +477,8 @@ void Audio::SetPosition (Sound* sound, Vector3f position)
 
 		if (sound->mAudioSource != 0)
 		{
-			IAudioSource* source = ((IAudioSource*)sound->mAudioSource);
-			cVector3 pos (position.x, position.y, position.z);
-			source->setPosition(pos);
-		}
-	}
-}
-
-//============================================================================================================
-// Sets the position of the listener
-//============================================================================================================
-
-void Audio::SetListenerPosition (const Vector3f position)
-{
-	if (mAudioManager != 0)
-	{
-		IListener* listener = mAudioManager->getListener();
-		cVector3 pos (position.x, position.y, position.z);
-		listener->setPosition(pos);
-	}
-}
-
-//============================================================================================================
-// Sets the sound source is looping
-//============================================================================================================
-
-void Audio::SetSoundLooping (String& fileName, bool loop)
-{
-	Sound* sound = mAudioFiles.GetIfExists(fileName);
-
-	if (sound == 0)
-	{
-		sound = CreateAudioSource(fileName);
-	}
-	SetLooping(sound, loop);
-}
-
-//============================================================================================================
-// Helper function to set looping
-//============================================================================================================
-
-void Audio::SetLooping (Sound* sound, bool loop)
-{
-	if (sound != 0)
-	{
-		sound->mLoop = loop;
-
-		if (sound->mAudioSource != 0)
-		{
-			((IAudioSource*)sound->mAudioSource)->loop(loop);
+			cAudio::cVector3 pos (position.x, position.y, position.z);
+			SOURCE(sound->mAudioSource)->setPosition(pos);
 		}
 	}
 }
