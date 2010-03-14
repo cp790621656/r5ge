@@ -7,7 +7,7 @@
 #include <CAudio/Include/cAudio.h>
 
 #ifdef _WINDOWS
-  #pragma comment(lib, "cAudio.lib")
+  //#pragma comment(lib, "cAudio.lib")OpenAl32.lib ogg_static.lib vorbis_static.lib vorbisenc_static.lib vorbisfile_static.lib
 #endif
 
 using namespace R5;
