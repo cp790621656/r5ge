@@ -63,7 +63,6 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/IGNORE:4221"
-				AdditionalDependencies="cAudio.lib"
 				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\lib\R5_$(ProjectName).lib"
 				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 			/>
@@ -127,7 +126,6 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/IGNORE:4006"
-				AdditionalDependencies="cAudio.lib"
 				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\lib\R5_$(ProjectName).lib"
 				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 			/>
