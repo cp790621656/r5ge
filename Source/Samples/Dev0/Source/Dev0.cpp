@@ -5,8 +5,32 @@
 // Dev0 is a temporary testing application. Its source code and purpose change frequently.
 //============================================================================================================
 
-#include "../../../Engine/Image/Include/_All.h"
+// Include R5
+#include "../../../Engine/Interface/Include/_All.h"
+
+// For some strange reason FMOD doesn't link unless <windows.h> is included prior to its header files.
+#include <windows.h>
+
+// Include FMod
+#include "../Include/fmod.hpp"
+#include "../Include/fmod_errors.h"
+#pragma comment(lib, "fmodex.lib")
+
 using namespace R5;
+
+//============================================================================================================
+// FMod error check
+//============================================================================================================
+
+bool FMODCheck (FMOD_RESULT result)
+{
+	if (result != FMOD_OK)
+	{
+		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+		return false;
+	}
+	return true;
+}
 
 //============================================================================================================
 // Application entry point
@@ -19,51 +43,51 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath(path.GetBuffer());
 	System::SetCurrentPath("../../../");
 #endif
+	System::SetCurrentPath("../../../Resources/");
 
-	bool error = false;
+	printf("FMOD Sound System, copyright © Firelight Technologies Pty, Ltd., 1994-2010.\n");
 
-	if (argc > 1)
+	FMOD::System* system (0);
+    FMOD_RESULT result = FMOD::System_Create(&system);
+    if (!FMODCheck(result)) return 0;
+
+	uint version (0);
+    result = system->getVersion(&version);
+    if (!FMODCheck(result)) return 0;
+
+    if (version < FMOD_VERSION)
+    {
+        printf("Error! You are using an old version of FMOD %08x. This program requires %08x\n",
+			version, FMOD_VERSION);
+        getchar();
+        return 0;
+    }
+
+    result = system->init(32, FMOD_INIT_NORMAL, NULL);
+    if (!FMODCheck(result)) return 0;
+
+	printf("Creating the sound... ");
+	FMOD::Sound* sound = 0;
+	result = system->createSound("Sound/cAudioTheme1.ogg", FMOD_LOOP_NORMAL, 0, &sound);
+	printf(" done.\n");
+
+	if (FMODCheck(result))
 	{
-		Image img;
+		FMOD::Channel* channel (0);
+		result = system->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
 
-		for (int i = 1; i < argc; ++i)
+		if (FMODCheck(result))
 		{
-			if (img.Load(argv[i]))
-			{
-				String name (argv[i]);
-				String extension (System::GetExtensionFromFilename(name));
-
-				if (extension == "r5t")
-				{
-					name.Replace(extension, "tga");
-				}
-				else
-				{
-					name.Replace(extension, "r5t");
-				}
-
-				if (img.Save(name))
-				{
-					printf("Saved '%s'\n", name.GetBuffer());
-				}
-			}
-			else
-			{
-				error = true;
-				printf("Unable to load '%s'\n", argv[i]);
-			}
+			system->update();
+			printf("Press Enter key to stop playback\n");
+			getchar();
 		}
 	}
-	else
-	{
-		error = true;
-		printf("Usage: Drag an image file you want to convert onto this executable\n");
-	}
 
-	if (error)
-	{
-		printf("Press any key to exit...\n");
-		getchar();
-	}
+	result = system->release();
+	if (!FMODCheck(result)) return 0;
+
+	printf("Done! Press Enter to exit.\n");
+	getchar();
 	return 0;
 }
