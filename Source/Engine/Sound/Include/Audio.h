@@ -65,6 +65,8 @@ private:
 
 public:
 
+	R5_DECLARE_INHERITED_CLASS("Audio", Audio, IAudio, IAudio);
+
 	Audio();
 	virtual ~Audio();
 
