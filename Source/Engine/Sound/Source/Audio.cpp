@@ -25,6 +25,11 @@ using namespace R5;
 
 Audio::Audio() : mAudioLib(0)
 {
+	// cAudio has a strange habit of leaving an HTML log file by default. This disables it.
+	cAudio::ILogger* logger = cAudio::getLogger();
+	logger->unRegisterLogReceiver("File");
+
+	// Initialize the cAudio library
 	mAudioLib = cAudio::createAudioManager();
 }
 

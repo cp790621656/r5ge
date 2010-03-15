@@ -68,7 +68,7 @@ int main (int argc, char* argv[])
 
 	printf("Creating the sound... ");
 	FMOD::Sound* sound = 0;
-	result = system->createSound("Sound/cAudioTheme1.ogg", FMOD_LOOP_NORMAL, 0, &sound);
+	result = system->createStream("Sound/cAudioTheme1.ogg", FMOD_LOOP_NORMAL, 0, &sound);
 	printf(" done.\n");
 
 	if (FMODCheck(result))
