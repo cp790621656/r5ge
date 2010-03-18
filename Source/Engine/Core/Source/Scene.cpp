@@ -71,6 +71,15 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
 
+		bool camChanged = (mLastCamPos != pos || mLastCamRot != rot || mLastCamRange != range);
+
+		if (camChanged)
+		{
+			mLastCamPos		= pos;
+			mLastCamRot		= rot;
+			mLastCamRange	= range;
+		}
+
 		// Update the frustum
 		mFrustum.Update( graphics->GetModelViewProjMatrix() );
 
@@ -78,7 +87,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		mHits.Clear();
 
 		// Cull the scene
-		_Cull(graphics, mFrustum, pos, dir);
+		_Cull(graphics, mFrustum, pos, dir, camChanged);
 	}
 }
 
@@ -237,11 +246,12 @@ uint Scene::Draw (const Techniques& techniques, bool insideOut)
 // Culls the scene using the specified frustum
 //============================================================================================================
 
-void Scene::_Cull (IGraphics* graphics, const Frustum& frustum, const Vector3f& pos, const Vector3f& dir)
+void Scene::_Cull (IGraphics* graphics, const Frustum& frustum, const Vector3f& pos, const Vector3f& dir, bool camMoved)
 {
 	FillParams params (mQueue, frustum);
-	params.mCamPos = pos;
-	params.mCamDir = dir;
+	params.mCamPos		= pos;
+	params.mCamDir		= dir;
+	params.mCamChanged	= camMoved;
 
 	mQueue.Clear();
 	mRoot->Fill(params);

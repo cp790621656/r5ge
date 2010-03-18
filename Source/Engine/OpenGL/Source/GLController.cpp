@@ -1406,7 +1406,7 @@ void GLController::_ActivateMatrices()
 			if (mResetModel || mResetView)
 			{
 				// If the active shader supports pseudo-instancing, take advantage of that
-				if ( mResetModel && (mShader != 0 && mShader->GetFlag(IShader::Flag::Instanced)))
+				if ( mShader != 0 && mShader->GetFlag(IShader::Flag::Instanced) )
 				{
 					const Matrix43& mat = GetModelMatrix();
 

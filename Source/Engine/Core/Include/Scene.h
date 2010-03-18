@@ -21,6 +21,10 @@ private:
 	Techniques	mTechs;		// Cached list of techniques, for convenience reasons
 	Vector2i	mLastRay;	// Last mouse position used to cast a ray into the screen
 
+	Vector3f	mLastCamPos;
+	Quaternion	mLastCamRot;
+	Vector3f	mLastCamRange;
+
 	// List of raycast hits after running a raycast in the direction of the ray cast from the mouse
 	Array<RaycastHit> mHits;
 
@@ -90,5 +94,5 @@ public:
 private:
 
 	// Culls the scene
-	void _Cull (IGraphics* graphics, const Frustum& frustum, const Vector3f& pos, const Vector3f& dir);
+	void _Cull (IGraphics* graphics, const Frustum& frustum, const Vector3f& pos, const Vector3f& dir, bool camMoved);
 };
