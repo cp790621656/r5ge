@@ -57,6 +57,9 @@ public:
 	// Remove the specified number of bytes from the front of the buffer
 	void Remove (uint size);
 
+	// Convenience function
+	void Set (const void* buffer, uint size) { memcpy(Resize(size), buffer, size); }
+
 	// Append types that can't be templated
 	int32*	Append (int val)			{ int32*  ptr = (int32*) Expand(4); *ptr = (int32) val; return ptr; }
 	uint32*	Append (uint val)			{ uint32* ptr = (uint32*)Expand(4); *ptr = (uint32)val; return ptr; }
