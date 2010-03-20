@@ -41,15 +41,15 @@ public:
 	Scene (Object* root = 0) : mRoot(root) {}
 
 	// Finds a child object of the specified name and type
-	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
 	{
-		return mRoot->FindObject<Type>(name, recursive);
+		return mRoot->FindObject<Type>(name, recursive, threadSafe);
 	}
 
 	// Creates a new child of specified type and name
-	template <typename Type> Type* AddObject (const String& name)
+	template <typename Type> Type* AddObject (const String& name, bool threadSafe = true)
 	{
-		return mRoot->AddObject<Type>(name);
+		return mRoot->AddObject<Type>(name, threadSafe);
 	}
 
 	// It should be possible to change the root of the scene if desired
