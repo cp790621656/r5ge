@@ -13,7 +13,6 @@
 
 namespace R5
 {
-
 class TestApp
 {
 public:
@@ -28,12 +27,12 @@ public:
 		bool		mActive;	// Whether this node is currently active and has a valid cost
 		bool		mOpen;		// Whether this node is currently open
 
-		bool		mPassable;
+		bool			mPassable;
 		UIHighlight*	mHlt;
 		UILabel*		mLblCost;
 		UILabel*		mLblEstimate;
 		UILabel*		mLblTotal;
-		Vector2i	mPos;
+		Vector2i		mPos;
 
 		Node() :	mParent		(0),
 					mNext		(0),
@@ -53,7 +52,7 @@ protected:
 	
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
-	UIManager*			mUI;
+	UIManager*		mUI;
 	Core*			mCore;
 	UIFrame*		mRoot;
 	UILabel*		mStatus;
@@ -80,5 +79,4 @@ public:
 	void OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta);
 	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
 };
-
 }; // namespace R5
