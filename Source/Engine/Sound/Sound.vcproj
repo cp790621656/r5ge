@@ -155,7 +155,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Source\AEffects.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Audio.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Sound.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\SoundInstance.cpp"
 				>
 			</File>
 		</Filter>
@@ -169,7 +181,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\AEffects.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\Audio.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\Sound.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\SoundInstance.h"
 				>
 			</File>
 		</Filter>

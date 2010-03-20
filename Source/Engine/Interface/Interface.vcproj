@@ -192,6 +192,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\ISound.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\ISoundInstance.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\ISubShader.h"
 				>
 			</File>

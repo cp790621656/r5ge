@@ -1,0 +1,369 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "Sound"
+		Position = 679 161
+		Size = 531 264
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 0
+		Background Color = 0.000000 0.000000 0.000000 0.000000
+		Fog Range = 50.000000 100.000000
+	}
+
+	UI
+	{
+		Default Skin = "Neon"
+		Default Font = "Arial 15"
+		Tooltip Delay = 1.000000
+
+		Layout
+		{
+			Window = "Layer Frame"
+			{
+				Left = 0.000000 280.000000
+				Right = 0.000000 520.000000
+				Top = 0.000000 11.000000
+				Bottom = 0.000000 87.000000
+				Alpha = 1.000000
+				Titlebar Height = 25
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Layer"
+				Shadow = true
+				Alignment = "Center"
+				Event Handling = "Normal"
+				Layer = 0
+
+				Label = "Layer text"
+				{
+					Left = 0.000000 5.000000
+					Right = 0.500000 -5.000000
+					Top = 0.000000 5.000000
+					Bottom = 0.000000 25.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Layer"
+					Shadow = false
+					Alignment = "Left"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Input = "Layer Value"
+				{
+					Left = 0.500000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 5.000000
+					Bottom = 0.000000 25.000000
+					Alpha = 1.000000
+					Face
+					Color = 1.000000 1.000000 1.000000
+					Text = "0"
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				Label = "Layer Volume text"
+				{
+					Left = 0.000000 5.000000
+					Right = 0.500000 -5.000000
+					Top = 0.000000 27.000000
+					Bottom = 0.000000 53.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Volume"
+					Shadow = false
+					Alignment = "Left"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Slider = "Layer Volume"
+				{
+					Left = 0.500000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 30.000000
+					Bottom = 0.000000 45.000000
+					Alpha = 1.000000
+					Value = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+
+					Label = "Layer Volume value"
+					{
+						Left = 0.000000 1.000000
+						Right = 1.000000 -1.000000
+						Top = 0.000000 1.000000
+						Bottom = 1.000000 -1.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "1.00"
+						Shadow = true
+						Alignment = "Center"
+						Event Handling = "None"
+						Layer = 1
+					}
+				}
+			}
+
+			Window = "Sound Frame"
+			{
+				Left = 0.000000 10.000000
+				Right = 0.000000 263.000000
+				Top = 0.000000 10.000000
+				Bottom = 0.000000 253.000000
+				Alpha = 1.000000
+				Titlebar Height = 25
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Sound"
+				Shadow = true
+				Alignment = "Center"
+				Event Handling = "Normal"
+				Layer = 0
+
+				Input = "Sound Name"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 5.000000
+					Bottom = 0.000000 25.000000
+					Alpha = 1.000000
+					Face = "Dark Area"
+					Color = 1.000000 1.000000 1.000000
+					Text = "Sound/cAudioTheme1.ogg"
+					Shadow = true
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 10
+
+					History = String[]
+					{
+						"Sound/cAudioTheme1.ogg"
+						"Sound/bling.ogg"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Try typing here"
+					Layer = 0
+				}
+
+				Label = "Volume text"
+				{
+					Left = 0.000000 5.000000
+					Right = 0.500000 -5.000000
+					Top = 0.000000 27.000000
+					Bottom = 0.000000 53.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Volume"
+					Shadow = false
+					Alignment = "Left"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Label = "Repeat text"
+				{
+					Left = 0.000000 5.000000
+					Right = 0.500000 -5.000000
+					Top = 0.000000 55.000000
+					Bottom = 0.000000 80.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Repeat"
+					Shadow = false
+					Alignment = "Left"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Checkbox = "Repeat Checkbox"
+				{
+					Left = 0.500000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 60.000000
+					Bottom = 0.000000 75.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Left"
+					State = "Checked"
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+				}
+
+				Label = "Layer text"
+				{
+					Left = 0.000000 5.000000
+					Right = 0.500000 -5.000000
+					Top = 0.000000 82.000000
+					Bottom = 0.000000 107.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Layer"
+					Shadow = false
+					Alignment = "Left"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Button = "Pause"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 136.000000
+					Bottom = 0.000000 161.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Pause"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				Button = "Resume"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 163.000000
+					Bottom = 0.000000 188.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Resume"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				Input = "Layer"
+				{
+					Left = 0.500000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 82.000000
+					Bottom = 0.000000 107.000000
+					Alpha = 1.000000
+					Face
+					Color = 1.000000 1.000000 1.000000
+					Text = "0"
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Normal"
+					Layer = 0
+				}
+
+				Button = "Stop"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 190.000000
+					Bottom = 0.000000 215.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Stop"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				Button = "Play"
+				{
+					Left = 0.000000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 109.000000
+					Bottom = 0.000000 134.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "Play"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				Slider = "Volume"
+				{
+					Left = 0.500000 5.000000
+					Right = 1.000000 -5.000000
+					Top = 0.000000 30.000000
+					Bottom = 0.000000 45.000000
+					Alpha = 1.000000
+					Value = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Animation Time = 0.000000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+
+					Label = "Volume value"
+					{
+						Left = 0.000000 1.000000
+						Right = 1.000000 -1.000000
+						Top = 0.000000 1.000000
+						Bottom = 1.000000 -1.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "1.00"
+						Shadow = true
+						Alignment = "Center"
+						Event Handling = "None"
+						Layer = 1
+					}
+				}
+			}
+		}
+	}
+
+	Core
+	{
+		Execute = "Config/Neon UI Skin.txt"
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = 0.000000 0.000000 2.000000
+			Rotation = -0.079043 -0.368595 -0.905634 -0.194211
+			Scale = 1.000000
+			Layer = 10
+			Range = 0.300000 100.000000 90.000000
+			Dolly = 0.000000 5.999748 30.000000
+		}
+	}
+}
