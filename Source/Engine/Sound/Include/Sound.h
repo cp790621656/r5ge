@@ -12,7 +12,7 @@ class Sound : public ISound
 private:
 
 	String				mName;		// File that is being referenced
-	Memory				mData;		// The memory from which a instance is created
+	Memory				mData;		// The memory from which the instance is created
 	IAudio*				mAudio;		// Audio instance which created this Sound
 	Thread::Lockable	mLock;		// Makes the sound thread safe
 

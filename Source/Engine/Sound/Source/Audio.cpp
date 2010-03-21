@@ -211,7 +211,6 @@ R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 	return sound;
 }
 
-
 //============================================================================================================
 // Releases the cAudio Sound source.
 //============================================================================================================
@@ -228,7 +227,6 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 	}
 	Unlock();
 }
-
 
 //============================================================================================================
 // Returns a newly created cAudio sound source. Needs to return void* as cAudio is not defined outside this

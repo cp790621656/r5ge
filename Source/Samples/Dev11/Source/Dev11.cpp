@@ -1,5 +1,5 @@
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//           R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko / Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Dev11: Sound
@@ -14,13 +14,17 @@
 #include "../../../Engine/Core/Include/_All.h"
 #include "../../../Engine/UI/Include/_All.h"
 
-using namespace R5;
+namespace R5
+{
+	#include "../Include/OSAudioListener.h"
+	#include "../Include/OSSound.h"
+}
 
-R5::Random randomGen;
+using namespace R5;
 
 //============================================================================================================
 
-class TestApp
+class TestApp : Thread::Lockable
 {
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
@@ -37,7 +41,6 @@ class TestApp
 	};
 
 	PointerArray<NamedSound> mSounds;
-	Thread::Lockable mLock;
 
 public:
 
@@ -74,6 +77,11 @@ TestApp::TestApp() : mCam (0)
 
 	mUI->SetOnValueChange ("Layer Volume",	bind(&TestApp::OnLayerVolumeChange,	this));
 	mUI->SetOnFocus		  ("Layer Value",	bind(&TestApp::OnLayerChanged,		this));
+
+	// Register the scripts
+	Script::Register<OSAudioListener>();
+	Script::Register<OSSound>();
+
 }
 
 //============================================================================================================
@@ -103,7 +111,7 @@ void TestApp::Run()
 
 			while (mCore->Update())
 			{
-				mLock.Lock();
+				Lock();
 				for (uint i = mSounds.GetSize(); i > 0;)
 				{
 					NamedSound* namedSound = (NamedSound*)mSounds[--i];
@@ -117,7 +125,7 @@ void TestApp::Run()
 						}
 					}
 				}
-				mLock.Unlock();
+				Unlock();
 			}
 		}
 	}
@@ -132,10 +140,8 @@ void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
 	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
-	mScene.DrawAllForward(false);
 	PostProcess::Bloom(mGraphics, result.mColor, 1.0f);
 }
-
 
 //============================================================================================================
 // Sound functions
@@ -152,7 +158,7 @@ void TestApp::OnVolumeChange (UIWidget* widget)
 
 		if (sound)
 		{
-			mLock.Lock();
+			Lock();
 			for (uint i = mSounds.GetSize(); i > 0;)
 			{
 				NamedSound* namedSound = (NamedSound*)mSounds[--i];
@@ -167,13 +173,15 @@ void TestApp::OnVolumeChange (UIWidget* widget)
 					break;
 				}
 			}	
-			mLock.Unlock();
+			Unlock();
 		}		
 
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.2f", val) );
 	}
 }
+
+//============================================================================================================
 
 void TestApp::OnPlayClick (UIWidget* widget, uint state, bool isSet)
 {
@@ -188,22 +196,25 @@ void TestApp::OnPlayClick (UIWidget* widget, uint state, bool isSet)
 			UISlider*	slider		= mUI->FindWidget<UISlider>("Volume");
 			UIInput*	layer		= mUI->FindWidget<UIInput>("Layer");
 
-			mLock.Lock();
+			Lock();
 			if (sound)
 			{
 				NamedSound* namedSound = new NamedSound();
 				uint layerVal;
 				if (!(layer->GetText() >> layerVal)) layerVal = 0;
 
-				namedSound->mSound = (SoundInstance*)mAudio->GetSound(sound->GetText())->Play(layerVal, 0.0f, (checkBox->GetState() & UIButton::State::Pressed) != 0);
-				namedSound->mSound->SetVolume(slider->GetValue());
+				namedSound->mSound = (SoundInstance*)mAudio->GetSound(sound->GetText())->Play(layerVal, 0.0f, 
+					(checkBox->GetState() & UIButton::State::Pressed) != 0);
+				namedSound->mSound->SetVolume(slider->GetValue(), 0.0f);
 				namedSound->mName = sound->GetText();
 				mSounds.Expand() = namedSound;				
 			}
-			mLock.Unlock();
+			Unlock();
 		}
 	}
 }
+
+//============================================================================================================
 
 void TestApp::OnStopClick (UIWidget* widget, uint state, bool isSet)
 {
@@ -218,7 +229,7 @@ void TestApp::OnStopClick (UIWidget* widget, uint state, bool isSet)
 			
 			if (sound)
 			{
-				mLock.Lock();
+				Lock();
 				for (uint i = mSounds.GetSize(); i > 0;)
 				{
 					NamedSound* namedSound = (NamedSound*)mSounds[--i];
@@ -235,11 +246,13 @@ void TestApp::OnStopClick (UIWidget* widget, uint state, bool isSet)
 						break;
 					}
 				}
-				mLock.Unlock();
+				Unlock();
 			}
 		}
 	}
 }
+
+//============================================================================================================
 
 void TestApp::OnPauseClick (UIWidget* widget, uint state, bool isSet)
 {
@@ -254,7 +267,7 @@ void TestApp::OnPauseClick (UIWidget* widget, uint state, bool isSet)
 
 			if (sound)
 			{
-				mLock.Lock();
+				Lock();
 				for (uint i = mSounds.GetSize(); i > 0;)
 				{
 					NamedSound* namedSound = (NamedSound*)mSounds[--i];
@@ -271,11 +284,13 @@ void TestApp::OnPauseClick (UIWidget* widget, uint state, bool isSet)
 						break;
 					}
 				}
-				mLock.Unlock();
+				Unlock();
 			}
 		}
 	}
 }
+
+//============================================================================================================
 
 void TestApp::OnResumeClick (UIWidget* widget, uint state, bool isSet)
 {
@@ -290,7 +305,7 @@ void TestApp::OnResumeClick (UIWidget* widget, uint state, bool isSet)
 
 			if(sound)
 			{
-				mLock.Lock();
+				Lock();
 				for (uint i = mSounds.GetSize(); i > 0;)
 				{
 					NamedSound* namedSound = (NamedSound*)mSounds[--i];
@@ -307,7 +322,7 @@ void TestApp::OnResumeClick (UIWidget* widget, uint state, bool isSet)
 						break;
 					}
 				}
-				mLock.Unlock();
+				Unlock();
 			}
 		}
 	}
@@ -335,6 +350,9 @@ void TestApp::OnLayerVolumeChange (UIWidget* widget)
 		if (txt) txt->SetText( String("%.2f", val) );
 	}
 }
+
+//============================================================================================================
+
 void TestApp::OnLayerChanged (UIWidget* widget, bool focus)
 {	
 	if (!focus)

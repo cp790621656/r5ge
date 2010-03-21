@@ -62,6 +62,7 @@ public:
 	IWindow*	GetWindow()		{ return mWin;		}
 	IGraphics*	GetGraphics()	{ return mGraphics; }
 	IUI*		GetUI()			{ return mUI;		}
+	IAudio*		GetAudio()		{ return mAudio;	}
 
 	// Convenience, quick serialization to and from the specified file
 	bool operator << (const char* file);

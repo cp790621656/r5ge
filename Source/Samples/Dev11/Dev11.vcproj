@@ -170,6 +170,14 @@
 		<Filter
 			Name="Header Files"
 			>
+			<File
+				RelativePath=".\Include\OSAudioListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\OSSound.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"

@@ -6,14 +6,14 @@ Root
 	{
 		Title = "Sound"
 		Position = 679 161
-		Size = 531 264
+		Size = 886 610
 		Full Screen = false
 	}
 
 	Graphics
 	{
-		Default AF = 0
-		Background Color = 0.000000 0.000000 0.000000 0.000000
+		Default AF = 8
+		Background Color = 0.000000 0.000000 0.000000 1.000000
 		Fog Range = 50.000000 100.000000
 	}
 
@@ -352,18 +352,88 @@ Root
 	Core
 	{
 		Execute = "Config/Neon UI Skin.txt"
+
+		Model = "Teapot"
+		{
+			Source = "Models/teapot.r5b"
+		}
+
+		Model = "Plane"
+		{
+			Source = "Models/rect.r5a"
+		}
 	}
 
 	Scene
 	{
+		Point Light = "First Light"
+		{
+			Position = 0.000000 0.000000 10.000000
+			Rotation = -0.279848 0.115917 -0.364705 0.880476
+			Scale = 1.000000
+			Min = -17.244621 -17.244621 -17.244621
+			Max = 17.244621 17.244621 17.244621
+			Layer = 10
+			Ambient = 0.100000 0.100000 0.100000
+			Diffuse = 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000
+			Brightness = 1.820788
+			Range = 29.868561
+			Power = 2.165083
+
+			Billboard
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
+				Color = 0xffffffff
+				Texture = "Billboards/light.jpg"
+				Technique = "Glow"
+			}
+
+			Glare
+			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 6.000000
+				Layer = 10
+				Color = 0xffffffff
+				Texture = "Billboards/glare_rgb.jpg"
+				Technique = "Glare"
+			}
+		}
+		
+		Model Instance = Teapot 28
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 1.000000
+			Model = Teapot
+			Script = "OSSound"
+			{
+				Sound = "Sound/cAudioTheme1.ogg"
+				Layer = 0
+			}
+		}
+
+		Model Instance = Plane
+		{
+			Position = 0.000000 0.000000 0.000000
+			Rotation = 0.000000 0.000000 0.000000 1.000000
+			Scale = 30.000000
+			Model = Plane
+		}
+
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 2.000000
-			Rotation = -0.079043 -0.368595 -0.905634 -0.194211
+			Position = 1.881875 -0.523906 3.444616
+			Rotation = -0.083335 0.236534 -0.913032 0.321683
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 5.999748 30.000000
+			Dolly = 0.000000 27.999767 30.000000
+			Script = "OSAudioListener"
 		}
 	}
 }

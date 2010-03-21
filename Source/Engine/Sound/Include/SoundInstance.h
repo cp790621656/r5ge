@@ -40,7 +40,7 @@ protected:
 public:
 
 	SoundInstance()	:
-			mVolume		(0.0f, 1.0f, 1.0f), 
+			mVolume		(0.0f, 0.0f, 1.0f, 1.0f), 
 			mLayer		(0),
 			mAudioSource(0), 
 			mDuration	(0.0f),

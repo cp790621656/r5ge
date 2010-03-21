@@ -11,6 +11,10 @@ Sound::~Sound()
 	mData.Release();
 }
 
+//============================================================================================================
+// Play the specified in 2D
+//============================================================================================================
+
 ISoundInstance* Sound::Play (uint layer, float fadeInTime, bool repeat)
 {
 	SoundInstance* sound = 0;
@@ -26,7 +30,10 @@ ISoundInstance* Sound::Play (uint layer, float fadeInTime, bool repeat)
 	return sound;
 }
 
+//============================================================================================================
 // Play the specified sound at the specified position
+//============================================================================================================
+
 ISoundInstance* Sound::Play (const Vector3f& position, uint layer , float fadeInTime, bool repeat)
 {
 	SoundInstance* sound = 0;
@@ -43,7 +50,10 @@ ISoundInstance* Sound::Play (const Vector3f& position, uint layer , float fadeIn
 	return sound;
 }
 
+//============================================================================================================
 // Set the buffer used to create instances.
+//============================================================================================================
+
 void Sound::Set(const byte* buffer, uint size)
 {
 	Lock();
