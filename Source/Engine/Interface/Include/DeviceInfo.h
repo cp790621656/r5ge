@@ -46,7 +46,7 @@ struct DeviceInfo
 	uint	mMaxBufferMemory;			// Maximum amount of videocard memory used by VBOs
 	uint	mMaxMemory;					// Maximum amount of combined memory used
 
-	DeviceInfo::DeviceInfo() :
+	DeviceInfo() :
 		mVersion				(1.0f),
 		mVendor					(Vendor::Unknown),
 		mFloat16Format			(false),

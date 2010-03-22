@@ -22,6 +22,9 @@ bool GLWindow::_CreateContext()
 		attribs[i++] = NSOpenGLPFAAccelerated;
 		attribs[i++] = NSOpenGLPFADoubleBuffer;
 		
+		attribs[i++] = NSOpenGLPFAColorSize;
+		attribs[i++] = (NSOpenGLPixelFormatAttribute) 24;
+
 		attribs[i++] = NSOpenGLPFAAlphaSize;
 		attribs[i++] = (NSOpenGLPixelFormatAttribute) 8;
 		
@@ -29,7 +32,7 @@ bool GLWindow::_CreateContext()
 		attribs[i++] = (NSOpenGLPixelFormatAttribute) 24;
 
 		attribs[i++] = NSOpenGLPFAStencilSize;
-		attribs[i++] = (NSOpenGLPixelFormatAttribute) 0;
+		attribs[i++] = (NSOpenGLPixelFormatAttribute) 8;
 
 		attribs[i++] = NSOpenGLPFAAccumSize;
 		attribs[i++] = (NSOpenGLPixelFormatAttribute) 0;
