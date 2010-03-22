@@ -4,12 +4,12 @@
 //           R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko / Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Update 
+// Positional sound test script
 //============================================================================================================
 
 class OSSound : public Script
 {
-	ISoundInstance* mSound;
+	ISoundInstance* mInst;
 	String			mName;
 	uint			mLayer;
 
@@ -17,36 +17,33 @@ public:
 
 	R5_DECLARE_INHERITED_CLASS("OSSound", OSSound, Script, Script);
 
-	OSSound() :
-		mSound (0) {}
+	OSSound() : mInst (0), mLayer(0) {}
 
+	// Update the sound's position
 	virtual void OnUpdate()
 	{
-		if (mSound == 0)
+		if (mInst == 0)
 		{
-			mSound = mObject->GetCore()->GetAudio()->GetSound(mName)->Play(mObject->GetAbsolutePosition(), mLayer);
+			if (mName.IsEmpty()) return;
+			const Vector3f& pos = mObject->GetAbsolutePosition();
+			ISound* sound = mObject->GetCore()->GetAudio()->GetSound(mName);
+			mInst = sound->Play(pos, mLayer, 0.0f, true);
 		}
 
-		if (mSound != 0)
+		if (mInst != 0)
 		{
-			mSound->SetPosition(mObject->GetAbsolutePosition());
+			mInst->SetPosition(mObject->GetAbsolutePosition());
 		}
 	}
 
-	//============================================================================================================
 	// Serilization -- Save
-	//============================================================================================================
-
 	virtual void OnSerializeTo(TreeNode& node) const
 	{
 		node.AddChild("Sound", mName);
 		node.AddChild("Layer", mLayer);
 	}
 
-	//============================================================================================================
 	// Serilization -- Load
-	//============================================================================================================
-
 	virtual void OnSerializeFrom(const TreeNode& node)
 	{
 		if (node.mTag == "Sound")

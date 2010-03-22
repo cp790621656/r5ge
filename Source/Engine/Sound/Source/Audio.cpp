@@ -135,13 +135,19 @@ void Audio::Release (ISound* sound)
 }
 
 //============================================================================================================
-// Sets the sound listener position (usually should be the camera's position)
+// Sets the sound listener pos/dir/up (usually should be the camera)
 //============================================================================================================
 
-void Audio::SetListenerPosition (const Vector3f& position)
+void Audio::SetListener (const Vector3f& position, const Vector3f& dir, const Vector3f& up)
 {
-	cAudio::cVector3 pos (position.x, position.y, position.z);
-	CAUDIO->getListener()->setPosition(pos);
+	cAudio::IListener* list = CAUDIO->getListener();
+	cAudio::cVector3 p (position.x, position.y, position.z);
+	cAudio::cVector3 d (dir.x, dir.y, dir.z);
+	cAudio::cVector3 u (up.x, up.y, up.z);
+
+	list->setPosition (p);
+	list->setDirection(d);
+	list->setUpVector (u);
 }
 
 //============================================================================================================

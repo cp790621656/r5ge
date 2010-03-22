@@ -167,26 +167,22 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Header Files"
+		<File
+			RelativePath=".\Source\Dev11.cpp"
 			>
-			<File
-				RelativePath=".\Include\OSAudioListener.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\OSSound.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Source Files"
+		</File>
+		<File
+			RelativePath="..\..\..\Resources\Config\Dev11.txt"
 			>
-			<File
-				RelativePath=".\Source\Dev11.cpp"
-				>
-			</File>
-		</Filter>
+		</File>
+		<File
+			RelativePath=".\Include\OSAudioListener.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Include\OSSound.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------------------------------------
 // Sound testing
 //------------------------------------------------------------------------------------------------------------
-// Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, UI
+// Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, UI, Render, Sound
 //============================================================================================================
 
 #include "../../../Engine/OpenGL/Include/_All.h"
@@ -18,7 +18,7 @@ namespace R5
 {
 	#include "../Include/OSAudioListener.h"
 	#include "../Include/OSSound.h"
-}
+};
 
 using namespace R5;
 

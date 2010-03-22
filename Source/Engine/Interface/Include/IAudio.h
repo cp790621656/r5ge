@@ -22,8 +22,8 @@ struct IAudio
 	// Release all resources associated with the specified sound
 	virtual void Release (ISound* sound)=0;
 
-	// Sets the sound listener position (usually should be the camera's position)
-	virtual void SetListenerPosition (const Vector3f& position)=0;
+	// Sets the sound listener pos/dir/up (usually should be the camera)
+	virtual void SetListener (const Vector3f& position, const Vector3f& dir, const Vector3f& up)=0;
 
 	// Changes the volume of an entire sound layer (music layer, for example)
 	virtual void SetLayerVolume (uint layer, float volume, float duration = 0.25f)=0;
