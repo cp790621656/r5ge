@@ -140,6 +140,8 @@ void Audio::Release (ISound* sound)
 
 void Audio::SetListener (const Vector3f& position, const Vector3f& dir, const Vector3f& up)
 {
+	mPos = position;
+
 	cAudio::IListener* list = CAUDIO->getListener();
 	cAudio::cVector3 p (position.x, position.y, position.z);
 	cAudio::cVector3 d (dir.x, dir.y, dir.z);

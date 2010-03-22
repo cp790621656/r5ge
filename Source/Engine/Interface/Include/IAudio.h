@@ -22,6 +22,9 @@ struct IAudio
 	// Release all resources associated with the specified sound
 	virtual void Release (ISound* sound)=0;
 
+	// Retrieves the audio listener position
+	virtual const Vector3f& GetListener() const=0;
+
 	// Sets the sound listener pos/dir/up (usually should be the camera)
 	virtual void SetListener (const Vector3f& position, const Vector3f& dir, const Vector3f& up)=0;
 

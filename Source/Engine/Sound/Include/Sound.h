@@ -16,6 +16,10 @@ private:
 	IAudio*				mAudio;		// Audio instance which created this Sound
 	Thread::Lockable	mLock;		// Makes the sound thread safe
 
+	// Only the Audio class should be able to access SetAudio
+	friend class Audio;
+	void SetAudio (IAudio* audio) { mAudio = audio; }
+
 public:
 
 	R5_DECLARE_ABSTRACT_CLASS("Sound", ISound);
@@ -26,6 +30,13 @@ public:
 
 	virtual ~Sound();
 
+	// Get the name of the sound
+	virtual const String& GetName()	 const { return mName;  }
+
+	// Get the associated Audio class
+	virtual const IAudio* GetAudio() const { return mAudio; }
+
+	// Play the sound in 2D
 	virtual ISoundInstance* Play (uint layer = 0, float fadeInTime = 0.0f, bool repeat = false);
 
 	// Play the specified sound at the specified position
@@ -33,12 +44,6 @@ public:
 
 	// Set the buffer used to create instances.
 	virtual void Set (const byte* buffer, uint size);
-
-	virtual const IAudio* GetAudio() { return mAudio; }
-	virtual const String& GetName()	 { return mName;  }
-	
-	virtual void SetAudio	(IAudio* audio)			{ mAudio = audio; }
-	virtual void SetName	(const String& name)	{ mName = name;   }	
 
 protected:
 

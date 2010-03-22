@@ -78,8 +78,8 @@ void SoundInstance::Play()
 		{
 			cAudio::cVector3 pos (mPosition.x, mPosition.y, mPosition.z);
 			SOURCE(mAudioSource)->play3d(pos, 2.0f, mRepeat);
-			SOURCE(mAudioSource)->setMinDistance(1.0f);
-			SOURCE(mAudioSource)->setMaxDistance(100.0f);
+			SOURCE(mAudioSource)->setMinDistance(1000.0f);
+			SOURCE(mAudioSource)->setMaxDistance(1000.0f);
 		}
 	}
 }
