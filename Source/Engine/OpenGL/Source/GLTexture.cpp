@@ -203,12 +203,7 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 		else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(float, float, 3);
 		else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(float, float, 2);
 		else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(float, float, 1);
-		else
-		{
-			// Unsupported format -- let the videocard handle it
-			glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
-			return CountMipmapSize(width, height);
-		}
+		else return 0;
 	}
 	else
 	{
@@ -216,12 +211,7 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 		else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(byte, uint, 3);
 		else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(byte, uint, 2);
 		else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(byte, uint, 1);
-		else
-		{
-			// Unsupported format -- let the videocard handle it
-			glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
-			return CountMipmapSize(width, height);
-		}
+		else return 0;
 	}
 	return pixels;
 }
@@ -236,18 +226,30 @@ inline uint Create2DImage (uint glType, const void* buffer, uint width, uint hei
 	// Upload the starting image
 	glTexImage2D(glType, 0, outFormat, width, height, 0, inFormat, dataType, buffer);
 
-	// Non-compressed texture: use the videocard's accelerated functionality
-	if (outFormat != GL_COMPRESSED_RGB_S3TC_DXT1_EXT  &&
-		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT1_EXT &&
-		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT3_EXT &&
-		outFormat != GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+	// If no mipmap was requested, just return the base number of pixels
+	if (!mipmap) return width * height;
+
+	uint pixels = 0;
+	
+	// Compressed textures and Intel cards should always go through manual mipmap generation
+	if (outFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT  ||
+		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
+		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
+		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ||
+		glGenerateMipmap == 0 ||
+		g_caps.mVendor == IGraphics::DeviceInfo::Vendor::Intel)
 	{
+		// Manual mipmap generation
+		pixels = Create2DMipmaps(glType, buffer, width, height, inFormat, outFormat, dataType);
+	}
+	
+	if (pixels == 0)
+	{
+		// Hardware-accelerated mipmap generation
 		glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
 		return CountMipmapSize(width, height);
 	}
-
-	// Compressed texture mipmap generation is not always supported on all videocards
-	return mipmap ? Create2DMipmaps(glType, buffer, width, height, inFormat, outFormat, dataType) : width * height;
+	return pixels;
 }
 
 //============================================================================================================
