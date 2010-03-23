@@ -71,6 +71,10 @@ namespace R5
 	typedef const unsigned char* ConstBytePtr;
 };
 
+#ifndef FOREACH
+#define FOREACH(var, array) for (uint var = 0, var##max = array.GetSize(); var < var##max; ++var)
+#endif
+
 #ifndef _R5_MATH_DEFINES
 #define _R5_MATH_DEFINES
 

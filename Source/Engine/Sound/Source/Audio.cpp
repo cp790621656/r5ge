@@ -68,13 +68,13 @@ void Audio::Update()
 		ulong currentTime = Time::GetMilliseconds();
 		PointerArray<AudioLayer>& values = mLayers.GetAllValues();
 
-		for (uint b = values.GetSize(); b > 0;)
+		FOREACH(b, values)
 		{
-			AudioLayer* audioLayer = values[--b];
-			
-			for (uint j = audioLayer->mSounds.GetSize(); j > 0;)
+			AudioLayer* audioLayer = values[b];
+
+			FOREACH(j, audioLayer->mSounds)
 			{
-				SoundInstance* sound = (SoundInstance*)audioLayer->mSounds[--j];
+				SoundInstance* sound = (SoundInstance*)audioLayer->mSounds[j];
 
 				cAudio::IAudioSource* source = SOURCE(sound->mAudioSource);
 

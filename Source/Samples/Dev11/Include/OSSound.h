@@ -37,6 +37,7 @@ public:
 
 			float range = 30.0f;
 			float volume = 1.0f - Float::Min((pos - listener).Magnitude() / range, 1.0f);
+			volume *= volume;
 
 			mInst->SetPosition(pos);
 			mInst->SetVolume(volume, 0.0f);
