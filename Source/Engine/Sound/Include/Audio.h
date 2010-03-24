@@ -73,6 +73,12 @@ public:
 	// Create a cAudio audio source by name
 	virtual ISoundInstance* Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, Memory& data);
 
+	// Creates a new cAudio source
+	virtual void* CreateAudioSource(const Memory& data, const String& name);
+
+	// Release a cAudio source
+	virtual void ReleaseAudioSource(void* audioSource);
+
 private:
 
 	void		_Release		(ISound* sound);

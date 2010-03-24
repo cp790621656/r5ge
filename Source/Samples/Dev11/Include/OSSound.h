@@ -40,7 +40,7 @@ public:
 			volume *= volume;
 
 			mInst->SetPosition(pos);
-			mInst->SetVolume(volume, 0.0f);
+			//mInst->SetVolume(volume, 0.0f);
 		}
 	}
 

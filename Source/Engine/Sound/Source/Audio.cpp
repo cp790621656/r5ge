@@ -23,7 +23,7 @@ using namespace R5;
 // Initialize the cAudio library
 //============================================================================================================
 
-Audio::Audio() : mAudioLib(0)
+Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
 {
 	// cAudio has a strange habit of leaving an HTML log file by default. This disables it.
 	cAudio::ILogger* logger = cAudio::getLogger();
@@ -75,46 +75,7 @@ void Audio::Update()
 			FOREACH(j, audioLayer->mSounds)
 			{
 				SoundInstance* sound = (SoundInstance*)audioLayer->mSounds[j];
-
-				cAudio::IAudioSource* source = SOURCE(sound->mAudioSource);
-
-				// Only continue if the sound is actually playing
-				if (source != 0 && source->isPlaying())
-				{
-					// If the sound volume is changing, we need to adjust it inside cAudio
-					if (sound->mVolume.y != sound->mVolume.z)
-					{
-						// Calculate the current fade-out factor
-						float factor = (sound->mDuration > 0) ? (float)(0.001 * (currentTime - sound->mStart)) /
-							sound->mDuration : 1.0f;
-
-						if (factor < 1.0f)
-						{
-							// Update the volume
-							sound->mVolume.y = Interpolation::Linear(sound->mVolume.x, sound->mVolume.z, factor);
-							source->setVolume(sound->mVolume.y);
-						}
-						else
-						{
-							// We've reached the end of the fading process
-							sound->mVolume.y = sound->mVolume.z;
-							source->setVolume(sound->mVolume.y);
-
-							// If the sound was fading out, perform the target action
-							if (sound->mVolume.y < 0.0001f)
-							{
-								if (sound->mAction == SoundInstance::TargetAction::Stop)
-								{
-									source->stop();
-								}
-								else if (sound->mAction == SoundInstance::TargetAction::Pause)
-								{
-									source->pause();
-								}
-							}
-						}
-					}
-				}
+				sound->Update(currentTime);
 			}
 		}
 	}
@@ -244,12 +205,10 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, Memory& data)
 {
 	// Load the data
-	
 	String name = sound->GetName();
 	SoundInstance* soundInst = new SoundInstance();
 	soundInst->mSound = sound;
-	soundInst->mAudioSource = CAUDIO->createFromMemory(name, (char*)data.GetBuffer(), data.GetSize(), 
-							System::GetExtensionFromFilename(name).GetBuffer());
+	soundInst->mAudioSource = CreateAudioSource(data, name);
 	soundInst->mLayer = layer;
 
 	Lock();
@@ -262,6 +221,25 @@ ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime,
 	}
 	Unlock();
 	return soundInst;
+}
+
+//============================================================================================================
+// Create a new cAudioSource. Returns a void* to hide cAudio
+//============================================================================================================
+
+void* Audio::CreateAudioSource (const Memory& data, const String& name)
+{
+	return CAUDIO->createFromMemory(name, (const char*)data.GetBuffer(), data.GetSize(), 
+							System::GetExtensionFromFilename(name).GetBuffer());
+}
+
+//============================================================================================================
+// Release a cAudioSource. Accepts a void* to hid cAudio
+//============================================================================================================
+
+void Audio::ReleaseAudioSource (void* audioSource)
+{
+	CAUDIO->release(SOURCE(audioSource));
 }
 
 //============================================================================================================

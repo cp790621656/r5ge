@@ -42,4 +42,10 @@ struct IAudio
 
 	// Create a sound instance
 	virtual ISoundInstance* Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, Memory& data)=0;
+
+	// Creates a new cAudio source
+	virtual void* CreateAudioSource(const Memory& data, const String& name)=0;
+
+	// Release a cAudio source
+	virtual void ReleaseAudioSource(void* audioSource)=0;
 };

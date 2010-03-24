@@ -26,28 +26,39 @@ private:
 
 protected:
 
-	Vector3f	mPosition;		// Fade in, play, and fade out duration
+	Vector3f	mPosition;		// The location the sound is being played from
+	Vector3f	mLastPosition;	// The last position the sound was at (used for velocity)
 	Vector4f	mVolume;		// Volume the sound is at. X = start, Y = current, Z = end, W = volume unmodified
 	bool		mRepeat;		// If this sound will repeat
 	uint		mLayer;			// Layer this sound belongs to
 	void*		mAudioSource;	// Pointer to the IAudioSource provided by cAudio
-	float		mDuration;		// Fade duration
-	ulong		mStart;			// The start time of the fade
+	float		mFadeDuration;	// Fade duration
+	ulong		mFadeStart;		// The start time of the fade
 	byte		mAction;		// What action will be executed when the fade completes
 	bool		mIs3D;			// If this sound is being player in 3D
 	ISound*		mSound;			// The sound this instance was created from
+	Vector2f	mRange;			// The range of which the sound is played
+	ulong		mDuration;		// How long the sound has been playing
+	bool		mIsPlaying;		// If the sound is playing
+	bool		mIsPaused;		// If the sound is paused
 
 public:
 
 	SoundInstance()	:
-			mVolume		(0.0f, 0.0f, 1.0f, 1.0f), 
-			mLayer		(0),
-			mAudioSource(0), 
-			mDuration	(0.0f),
-			mStart		(0),
-			mAction		(TargetAction::None),
-			mIs3D		(false),
-			mSound		(0) {}
+			mPosition		(0.0f, 0.0f, 0.0f),
+			mLastPosition	(0.0f, 0.0f, 0.0f),
+			mVolume			(0.0f, 0.0f, 1.0f, 1.0f), 
+			mLayer			(0),
+			mAudioSource	(0), 
+			mFadeDuration	(0.0f),
+			mFadeStart		(0),
+			mAction			(TargetAction::None),
+			mIs3D			(false),
+			mSound			(0),
+			mRange			(1, 15),
+			mDuration		(0),
+			mIsPlaying		(false),
+			mIsPaused		(false) {}
 
 	~SoundInstance(){}
 
@@ -55,10 +66,14 @@ public:
 
 public:
 
-	virtual const ISound*	GetSound()	const	{ return mSound; }
-	virtual const bool		Is3D()		const	{ return mIs3D;	 }
-	virtual const bool		IsPlaying()	const;
-	virtual const bool		IsPaused()	const;
+	virtual ISound*	GetSound()	{ return mSound; }
+
+	virtual const bool		Is3D()		const	{ return mIs3D;		 }
+	virtual const bool		IsPlaying()	const	{ return mIsPlaying; }
+	virtual const bool		IsPaused()	const	{ return mIsPaused;	 }
+
+	// Update the sound
+	virtual void Update(ulong time);
 
 	// Destory the sound
 	virtual void DestroySelf();
@@ -81,6 +96,9 @@ public:
 	// Sets whether the sound will repeat after it ends
 	virtual void SetRepeat (bool repeat);
 
+	// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
+	virtual void SetRange (Vector2f& range);
+
 	// Gets the volume of the specified sound
 	virtual const float	GetVolume () const { return mVolume.w; }
 
@@ -92,6 +110,9 @@ public:
 
 	// Gets the layer of the specified sound
 	virtual const uint	GetLayer() const { return mLayer; }
+
+	// Gets the sound range
+	virtual const Vector2f	GetRange() const { return mRange; }
 
 private:
 

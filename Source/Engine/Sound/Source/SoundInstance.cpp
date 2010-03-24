@@ -19,33 +19,92 @@ using namespace R5;
 #define SOURCE(source) ((cAudio::IAudioSource*)source)
 
 //============================================================================================================
-// Check to see if the sound is playing
+// Update the sound
 //============================================================================================================
 
-const bool SoundInstance::IsPlaying()	const
+void SoundInstance::Update(ulong time)
 {
-	bool isPlaying = false;
-
-	if (mAudioSource != 0)
+	if (!mIsPaused)
 	{
-		isPlaying = SOURCE(mAudioSource)->isPlaying();
+		mDuration += Time::GetDeltaMS();
 	}
-	return isPlaying;
-}
 
-//============================================================================================================
-// Check to see if the sound is paused
-//============================================================================================================
-
-const bool SoundInstance::IsPaused()	const
-{
-	bool isPaused = false;
-
-	if (mAudioSource != 0)
+	float atten = 1.0f;
+		
+	if (mIs3D)
 	{
-		isPaused = SOURCE(mAudioSource)->isPaused();
+		atten = 1.0f - Float::Min((mPosition - mSound->GetAudio()->GetListener()).Magnitude() / 
+			(mRange.y - mRange.x), 1.0f);
+		atten *= atten;
+
+		if (atten < 0.0001f)
+		{
+			if (mAudioSource != 0)
+			{
+				mSound->GetAudio()->ReleaseAudioSource(mAudioSource);
+				mAudioSource = 0;
+			}
+		}
+		else if (mAudioSource == 0)
+		{
+			mAudioSource = mSound->GetAudio()->CreateAudioSource(mSound->GetMemory(), mSound->GetName());
+			ASSERT(mAudioSource != 0, "Audio source seems to be still null");
+			Play();
+		}
 	}
-	return isPaused;
+
+	cAudio::IAudioSource* source = SOURCE(mAudioSource);
+
+	// Only continue if the sound is actually playing
+	if (source != 0 && source->isPlaying())
+	{
+		// If the sound volume is changing, we need to adjust it inside cAudio
+		if (mVolume.y != mVolume.z)
+		{
+			// Calculate the current fade-out factor
+			float factor = (mFadeDuration > 0) ? (float)(0.001 * (time - mFadeStart)) /	mFadeDuration : 1.0f;
+
+			if (factor < 1.0f)
+			{
+				// Update the volume
+				mVolume.y = Interpolation::Linear(mVolume.x, mVolume.z, factor);
+			}
+			else
+			{
+				// We've reached the end of the fading process
+				mVolume.y = mVolume.z;
+
+				// If the sound was fading out, perform the target action
+				if (mVolume.y < 0.0001f)
+				{
+					if (mAction == TargetAction::Stop)
+					{
+						source->stop();
+						mIsPlaying = false;
+						mIsPaused = false;
+						mDuration = 0;
+					}
+					else if (mAction == TargetAction::Pause)
+					{
+						source->pause();
+						mIsPlaying = false;
+						mIsPaused = true;
+					}
+				}
+			}
+		}
+
+		if (mIs3D)
+		{
+			Vector3f velocity = (mPosition - mLastPosition) * Time::GetDelta();
+			cAudio::cVector3 pos (mPosition.x, mPosition.y, mPosition.z);
+			cAudio::cVector3 vel (velocity.x, velocity.y, velocity.z);
+			source->setPosition (pos);
+			source->setVelocity(vel);
+		}
+
+		source->setVolume(mVolume.y * atten);
+	}
 }
 
 //============================================================================================================
@@ -65,23 +124,29 @@ void SoundInstance::Play()
 {
 	if (mAudioSource !=0)
 	{
-		if (IsPaused())
+		cAudio::IAudioSource* source = SOURCE(mAudioSource);
+		source->seek(mDuration / 1000.0f);
+
+		if (mIsPaused)
 		{
-			SOURCE(mAudioSource)->play();
+			source->play();
 			SetVolume(mVolume.w, 0.0f);
 		}
 		else if (!mIs3D)
 		{
-			SOURCE(mAudioSource)->play2d(mRepeat);
+			source->play2d(mRepeat);
 		}
 		else
 		{
 			cAudio::cVector3 pos (mPosition.x, mPosition.y, mPosition.z);
-			SOURCE(mAudioSource)->play3d(pos, 2.0f, mRepeat);
-			SOURCE(mAudioSource)->setMinDistance(1000.0f);
-			SOURCE(mAudioSource)->setMaxDistance(1000.0f);
+			source->play3d(pos, 2.0f, mRepeat);
+			source->setMinDistance(1000.0f);
+			source->setMaxDistance(1000.0f);
 		}
 	}
+	
+	mIsPlaying = true;
+	mIsPaused = false;
 }
 
 //============================================================================================================
@@ -117,18 +182,13 @@ void SoundInstance::Stop (float duration)
 }
 
 //============================================================================================================
-// Sets the 3D position of the specified sound
+// Sets the 3D position of the specified sound (Should only be set once per frame)
 //============================================================================================================
 
 void SoundInstance::SetPosition (const Vector3f& position)
 {
+	mLastPosition = mPosition;
 	mPosition = position;
-
-	if (mAudioSource != 0)
-	{
-		cAudio::cVector3 pos (position.x, position.y, position.z);
-		SOURCE(mAudioSource)->setPosition (pos);
-	}
 }
 
 //============================================================================================================
@@ -157,6 +217,15 @@ void SoundInstance::SetRepeat (bool repeat)
 }
 
 //============================================================================================================
+// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
+//============================================================================================================
+
+void SoundInstance::SetRange (Vector2f& range)
+{
+	mRange = range;
+}
+
+//============================================================================================================
 // INTERNAL: Set the volume of the sound
 //============================================================================================================
 
@@ -165,6 +234,6 @@ void SoundInstance::_SetVolume (float volume, float calculatedVolume, float dura
 	mVolume.x = mVolume.y;
 	mVolume.z = calculatedVolume;
 	mVolume.w = volume;
-	mStart = Time::GetMilliseconds();
-	mDuration = duration;
+	mFadeStart = Time::GetMilliseconds();
+	mFadeDuration = duration;
 }

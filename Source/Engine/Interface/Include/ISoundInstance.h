@@ -13,10 +13,14 @@ struct ISoundInstance
 {
 	R5_DECLARE_INTERFACE_CLASS("ISoundInstance");
 	
-	virtual const ISound*	GetSound()		const=0;
+	virtual ISound*	GetSound()=0;
+
 	virtual const bool		Is3D()			const=0;
 	virtual const bool		IsPlaying()		const=0;
 	virtual const bool		IsPaused()		const=0;
+
+	// Update the sound
+	virtual void Update(ulong time)=0;
 
 	// Destory the sound
 	virtual void DestroySelf()=0;
@@ -39,6 +43,9 @@ struct ISoundInstance
 	// Sets whether the sound will repeat after it ends
 	virtual void SetRepeat (bool repeat)=0;
 
+	// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
+	virtual void SetRange (Vector2f& range)=0;
+
 	// Gets the volume of the specified sound
 	virtual const float	GetVolume () const=0;
 
@@ -50,4 +57,7 @@ struct ISoundInstance
 
 	// Gets the layer of the specified sound
 	virtual const uint	GetLayer () const=0;
+
+	// Gets the sound range
+	virtual const Vector2f	GetRange() const=0;
 };

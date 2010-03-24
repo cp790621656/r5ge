@@ -19,7 +19,10 @@ struct ISound
 	virtual const String& GetName() const=0;
 
 	// Get the associated Audio class
-	virtual const IAudio* GetAudio() const=0;
+	virtual IAudio* GetAudio()=0;
+	
+	// Get the memory buffer for the sound
+	virtual Memory& GetMemory()=0;
 
 	// Play the sound in 2D
 	virtual ISoundInstance* Play (uint layer = 0, float fadeInTime = 0.0f, bool repeat = false)=0;

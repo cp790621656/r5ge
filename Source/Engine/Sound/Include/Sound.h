@@ -34,7 +34,10 @@ public:
 	virtual const String& GetName()	 const { return mName;  }
 
 	// Get the associated Audio class
-	virtual const IAudio* GetAudio() const { return mAudio; }
+	virtual IAudio* GetAudio() { return mAudio; }
+
+	// Get the memory buffer for the sound
+	virtual Memory& GetMemory() { return mData; }
 
 	// Play the sound in 2D
 	virtual ISoundInstance* Play (uint layer = 0, float fadeInTime = 0.0f, bool repeat = false);
