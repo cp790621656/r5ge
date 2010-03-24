@@ -43,6 +43,7 @@ ISoundInstance* Sound::Play (const Vector3f& position, uint layer , float fadeIn
 		{
 			sound = (SoundInstance*)mAudio->Instantiate (this, layer, fadeInTime, repeat, mData);
 			sound->mIs3D = true;
+			sound->SetPosition(position);
 			sound->Play();
 		}
 	}

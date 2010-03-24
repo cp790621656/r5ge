@@ -33,14 +33,7 @@ public:
 		if (mInst != 0)
 		{
 			const Vector3f& pos = mObject->GetAbsolutePosition();
-			const Vector3f& listener = mInst->GetSound()->GetAudio()->GetListener();
-
-			float range = 30.0f;
-			float volume = 1.0f - Float::Min((pos - listener).Magnitude() / range, 1.0f);
-			volume *= volume;
-
 			mInst->SetPosition(pos);
-			//mInst->SetVolume(volume, 0.0f);
 		}
 	}
 
