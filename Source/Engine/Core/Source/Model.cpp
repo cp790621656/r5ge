@@ -705,6 +705,16 @@ uint Model::PlayAnimation (const Animation* anim, float strength, const Animatio
 }
 
 //============================================================================================================
+// Convenience function -- finds and stops the requested animation
+//============================================================================================================
+
+bool Model::StopAnimation (const String& name, float duration, const AnimationEnd& onAnimEnd)
+{
+	Animation* anim = (mSkeleton != 0 ? mSkeleton->GetAnimation(name, false) : 0);
+	return (anim != 0) ? StopAnimation(anim, duration, onAnimEnd) : false;
+}
+
+//============================================================================================================
 // Stops the specified animation, fading it out over the specified amount of time
 //============================================================================================================
 

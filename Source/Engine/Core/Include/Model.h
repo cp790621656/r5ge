@@ -148,8 +148,11 @@ public:
 	// Finds and plays the requested animation
 	uint PlayAnimation (const String& name, float strength = 1.0f, const AnimationEnd& onAnimEnd = 0);
 
-	// Plays the requested animation
+	// Convenience function -- plays the requested animation
 	uint PlayAnimation (const Animation* anim, float strength = 1.0f, const AnimationEnd& onAnimEnd = 0);
+
+	// Convenience function -- finds and stops the requested animation
+	bool StopAnimation (const String& name, float duration = 0.25f, const AnimationEnd& onAnimEnd = 0);
 
 	// Stops the specified animation, fading it out over the specified amount of time
 	bool StopAnimation (const Animation* anim, float duration = 0.25f, const AnimationEnd& onAnimEnd = 0);
