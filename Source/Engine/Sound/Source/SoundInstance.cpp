@@ -127,22 +127,20 @@ void SoundInstance::Play()
 	{
 		cAudio::IAudioSource* source = SOURCE(mAudioSource);
 		source->seek(mDuration / 1000.0f);
+		source->setVolume(0.0f);
 
 		if (mIsPaused)
 		{
-			source->setVolume(0.0f);
 			source->play();
 			SetVolume(mVolume.w, 0.0f);
 		}
 		else if (!mIs3D)
 		{
-			source->setVolume(0.0f);
 			source->play2d(mRepeat);
 		}
 		else
 		{
 			cAudio::cVector3 pos (mPosition.x, mPosition.y, mPosition.z);
-			source->setVolume(0.0f);
 			source->play3d(pos, 2.0f, mRepeat);
 			source->setMinDistance(1000.0f);
 			source->setMaxDistance(1000.0f);
