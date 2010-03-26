@@ -40,12 +40,9 @@ struct IAudio
 	// Release the soundinstance instance
 	virtual void ReleaseInstance (ISoundInstance* sound)=0;
 
-	// Create a sound instance
-	virtual ISoundInstance* Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, Memory& data)=0;
+	// Create a 2D sound instance
+	virtual ISoundInstance* Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, void* data)=0;
 
-	// Creates a new cAudio source
-	virtual void* CreateAudioSource(const Memory& data, const String& name)=0;
-
-	// Release a cAudio source
-	virtual void ReleaseAudioSource(void* audioSource)=0;
+	// Create a 3D sound instance
+	virtual ISoundInstance* Instantiate (ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat, void* data)=0;
 };

@@ -1,13 +1,12 @@
+#include <IrrKlang/Include/irrKlang.h>
 #include "../Include/_All.h"
 
 //============================================================================================================
 // Audio Library
 //============================================================================================================
 
-#include <CAudio/Include/cAudio.h>
-
 #ifdef _WINDOWS
-  #pragma comment(lib, "cAudio.lib")
+  #pragma comment(lib, "irrKlang.lib")
 #endif
 
 using namespace R5;
@@ -16,8 +15,9 @@ using namespace R5;
 // In order to abstract cAudio and make it invisible to the outside projects we keep it as a void*
 //============================================================================================================
 
-#define CAUDIO ((cAudio::IAudioManager*)mAudioLib)
-#define SOURCE(source) ((cAudio::IAudioSource*)source)
+#define IRRKLANG ((irrklang::ISoundEngine*)mAudioLib)
+#define SOURCE(source) ((irrklang::ISoundSource*)source)
+#define SOUND(sound) ((irrklang::ISound*)sound)
 
 //============================================================================================================
 // Initialize the cAudio library
@@ -25,12 +25,11 @@ using namespace R5;
 
 Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
 {
-	// cAudio has a strange habit of leaving an HTML log file by default. This disables it.
-	cAudio::ILogger* logger = cAudio::getLogger();
-	logger->unRegisterLogReceiver("File");
-
-	// Initialize the cAudio library
-	mAudioLib = cAudio::createAudioManager();
+	mAudioLib = irrklang::createIrrKlangDevice();
+	if (!mAudioLib)
+	{
+		WARNING("Could not startup engine\n");
+	}
 }
 
 //============================================================================================================
@@ -38,8 +37,7 @@ Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
 Audio::~Audio()
 {
 	Release();
-	CAUDIO->shutDown();
-	cAudio::destroyAudioManager(CAUDIO);
+	IRRKLANG->drop();
 }
 
 //============================================================================================================
@@ -50,9 +48,9 @@ void Audio::Release()
 {
 	Lock();
 	{
+		IRRKLANG->stopAllSounds();
 		mLayers.Release();
 		mLibrary.Release();
-		CAUDIO->releaseAllSources();
 	}
 	Unlock();
 }
@@ -103,14 +101,12 @@ void Audio::SetListener (const Vector3f& position, const Vector3f& dir, const Ve
 {
 	mPos = position;
 
-	cAudio::IListener* list = CAUDIO->getListener();
-	cAudio::cVector3 p (position.x, position.y, position.z);
-	cAudio::cVector3 d (dir.x, dir.y, dir.z);
-	cAudio::cVector3 u (up.x, up.y, up.z);
+	irrklang::vec3df p (position.x, position.y, position.z);
+	irrklang::vec3df d (dir.x, dir.y, dir.z);
+	irrklang::vec3df v (0.0f, 0.0f, 0.0f);
+	irrklang::vec3df u (up.x, up.y, up.z);
 
-	list->setPosition (p);
-	list->setDirection(d);
-	list->setUpVector (u);
+	IRRKLANG->setListenerPosition(p, d, v, u);
 }
 
 //============================================================================================================
@@ -173,6 +169,7 @@ R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 		{
 			sound = mLibrary.AddUnique(name);
 			sound->SetAudio(this);
+			sound->SetSource(IRRKLANG->addSoundSourceFromFile(name));
 		}
 		Unlock();
 		
@@ -189,7 +186,7 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 	Lock();
 	{
 		SoundInstance* inst = (SoundInstance*)sound;
-		CAUDIO->release(SOURCE(inst->mAudioSource));
+		SOUND(inst->mAudioSource)->drop();
 		AudioLayer* audioLayer = _GetAudioLayer(inst->mLayer, 1.0f);
 		audioLayer->mSounds.Remove(sound);
 		delete sound;
@@ -198,48 +195,36 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 }
 
 //============================================================================================================
-// Returns a newly created cAudio sound source. Needs to return void* as cAudio is not defined outside this
+// Returns a newly created 2D sound source. Needs to return void* as irrklang is not defined outside this
 // class and the SoundInstance class
 //============================================================================================================
 
-ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, Memory& data)
+ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, void* data)
 {
-	// Load the data
-	String name = sound->GetName();
-	SoundInstance* soundInst = new SoundInstance();
-	soundInst->mSound = sound;
-	soundInst->mAudioSource = CreateAudioSource(data, name);
-	soundInst->mLayer = layer;
-
-	Lock();
-	{
-		AudioLayer* audioLayer = _GetAudioLayer(layer, 1.0f);
-		PlayingSounds& playing = audioLayer->mSounds;
-		soundInst->SetVolume(1.0f, fadeInTime);
-		soundInst->SetRepeat(repeat);
-		playing.Expand() = soundInst;
-	}
-	Unlock();
+	SoundInstance* soundInst = _Instantiate(sound, layer, fadeInTime, repeat, data);
+	irrklang::ISound* soundval = IRRKLANG->play2D(SOURCE(sound->GetSource()), repeat, false, true);
+	soundInst->mAudioSource = soundval;
+	SOUND(soundval)->setVolume(0.0f);
 	return soundInst;
 }
 
 //============================================================================================================
-// Create a new cAudioSource. Returns a void* to hide cAudio
+// Returns a newly created 3D sound source. Needs to return void* as irrklang is not defined outside this
+// class and the SoundInstance class
 //============================================================================================================
 
-void* Audio::CreateAudioSource (const Memory& data, const String& name)
+ISoundInstance* Audio::Instantiate (ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat, void* data)
 {
-	return CAUDIO->createFromMemory(name, (const char*)data.GetBuffer(), data.GetSize(), 
-							System::GetExtensionFromFilename(name).GetBuffer());
-}
-
-//============================================================================================================
-// Release a cAudioSource. Accepts a void* to hid cAudio
-//============================================================================================================
-
-void Audio::ReleaseAudioSource (void* audioSource)
-{
-	CAUDIO->release(SOURCE(audioSource));
+	SoundInstance* soundInst = _Instantiate(sound, layer, fadeInTime, repeat, data);
+	irrklang::vec3df pos (position.x, position.y, position.z);
+	irrklang::ISoundSource* soundSource = SOURCE(sound->GetSource());
+	irrklang::ISound* soundval = IRRKLANG->play3D(soundSource, pos, repeat, false, true);
+	soundInst->mAudioSource = soundval;
+	SOUND(soundval)->setMinDistance(1000.0f);
+	SOUND(soundval)->setMaxDistance(1000.0f);
+	SOUND(soundval)->setVolume(0.0f);
+	soundInst->mIs3D = true;
+	return soundInst;
 }
 
 //============================================================================================================
@@ -263,4 +248,31 @@ Audio::AudioLayer* Audio::_GetAudioLayer (uint layer, float volume)
 	AudioLayerPtr& ptr = mLayers[layer];
 	if (ptr == 0) ptr = new AudioLayer(layer, volume);
 	return ptr;
+}
+
+//============================================================================================================
+// INTERNAL: Set common properties for a sound
+//============================================================================================================
+
+SoundInstance* Audio::_Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, void* data)
+{
+	// Load the data
+	String name = sound->GetName();
+	SoundInstance* soundInst = new SoundInstance();
+	
+	soundInst->mSound = sound;
+	soundInst->mLayer = layer;
+	soundInst->mIsPlaying = true;
+	soundInst->mIsPaused = false;
+
+	Lock();
+	{
+		AudioLayer* audioLayer = _GetAudioLayer(layer, 1.0f);
+		PlayingSounds& playing = audioLayer->mSounds;
+		soundInst->SetVolume(1.0f, fadeInTime);
+		soundInst->SetRepeat(repeat);
+		playing.Expand() = soundInst;
+	}
+	Unlock();
+	return soundInst;
 }

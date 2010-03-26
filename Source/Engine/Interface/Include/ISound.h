@@ -20,16 +20,13 @@ struct ISound
 
 	// Get the associated Audio class
 	virtual IAudio* GetAudio()=0;
-	
-	// Get the memory buffer for the sound
-	virtual Memory& GetMemory()=0;
+
+	// Get the source for the sound
+	virtual void* GetSource()=0;
 
 	// Play the sound in 2D
 	virtual ISoundInstance* Play (uint layer = 0, float fadeInTime = 0.0f, bool repeat = false)=0;
 
 	// Play the specified sound in 3D
 	virtual ISoundInstance* Play (const Vector3f& position, uint layer = 0, float fadeInTime = 0.0f, bool repeat = false)=0;
-
-	// Set the buffer used to create instances.
-	virtual void Set(const byte* buffer, uint size)=0;
 };

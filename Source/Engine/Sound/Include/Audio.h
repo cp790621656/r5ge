@@ -70,19 +70,17 @@ public:
 	// Release the created sound instance
 	virtual void ReleaseInstance (ISoundInstance* sound);
 
-	// Create a cAudio audio source by name
-	virtual ISoundInstance* Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, Memory& data);
+	// Create a 2D sound instance.
+	virtual ISoundInstance* Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, void* data);
 
-	// Creates a new cAudio source
-	virtual void* CreateAudioSource(const Memory& data, const String& name);
-
-	// Release a cAudio source
-	virtual void ReleaseAudioSource(void* audioSource);
+	// Create a 3D sound instance.
+	virtual ISoundInstance* Instantiate (ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat, void* data);
 
 private:
 
 	void		_Release		(ISound* sound);
 	AudioLayer* _GetAudioLayer  (uint layer, float volume);
+	SoundInstance* _Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, void* data);
 	
 	// Thread-safe functionality
 	void Lock()		const { mLock.Lock(); }

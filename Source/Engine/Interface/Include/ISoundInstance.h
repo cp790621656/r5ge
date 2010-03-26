@@ -44,7 +44,7 @@ struct ISoundInstance
 	virtual void SetRepeat (bool repeat)=0;
 
 	// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
-	virtual void SetRange (Vector2f& range)=0;
+	virtual void SetRange (const Vector2f& range)=0;
 
 	// Gets the volume of the specified sound
 	virtual const float	GetVolume () const=0;

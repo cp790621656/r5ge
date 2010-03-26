@@ -1,3 +1,4 @@
+#include <IrrKlang/Include/irrKlang.h>
 #include "../Include/_All.h"
 
 //============================================================================================================
@@ -6,9 +7,12 @@
 
 using namespace R5;
 
+#define SOURCE(source) ((irrklang::ISoundSource*)source)
+
 Sound::~Sound()
 {
-	mData.Release();
+	SOURCE(mSource)->drop();
+	mSource = 0;
 }
 
 //============================================================================================================
@@ -17,17 +21,7 @@ Sound::~Sound()
 
 ISoundInstance* Sound::Play (uint layer, float fadeInTime, bool repeat)
 {
-	SoundInstance* sound = 0;
-	Lock();
-	{
-		if (mData.IsValid() || mData.Load(mName))
-		{
-			sound = (SoundInstance*)mAudio->Instantiate (this, layer, fadeInTime, repeat, mData);
-			sound->Play();			
-		}
-	}
-	Unlock();
-	return sound;
+	return mAudio->Instantiate (this, layer, fadeInTime, repeat, mSource);
 }
 
 //============================================================================================================
@@ -36,30 +30,5 @@ ISoundInstance* Sound::Play (uint layer, float fadeInTime, bool repeat)
 
 ISoundInstance* Sound::Play (const Vector3f& position, uint layer , float fadeInTime, bool repeat)
 {
-	SoundInstance* sound = 0;
-	Lock();
-	{
-		if (mData.IsValid() || mData.Load(mName))
-		{
-			sound = (SoundInstance*)mAudio->Instantiate (this, layer, fadeInTime, repeat, mData);
-			sound->mIs3D = true;
-			sound->SetPosition(position);
-			sound->Play();
-		}
-	}
-	Unlock();
-	return sound;
-}
-
-//============================================================================================================
-// Set the buffer used to create instances.
-//============================================================================================================
-
-void Sound::Set(const byte* buffer, uint size)
-{
-	Lock();
-	{
-		mData.Set(buffer, size);	
-	}
-	Unlock();
+	return mAudio->Instantiate (this, position, layer, fadeInTime, repeat, mSource);
 }

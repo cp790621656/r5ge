@@ -1,14 +1,9 @@
+#include <IrrKlang/Include/irrKlang.h>
 #include "../Include/_All.h"
 
 //============================================================================================================
-// Audio Library
+// Sound Instance library
 //============================================================================================================
-
-#include <CAudio/Include/cAudio.h>
-
-#ifdef _WINDOWS
-  #pragma comment(lib, "cAudio.lib")
-#endif
 
 using namespace R5;
 
@@ -16,7 +11,7 @@ using namespace R5;
 // In order to abstract cAudio and make it invisible to the outside projects we keep it as a void*
 //============================================================================================================
 
-#define SOURCE(source) ((cAudio::IAudioSource*)source)
+#define SOUND(source) ((irrklang::ISound*)source)
 
 //============================================================================================================
 // Update the sound
@@ -24,7 +19,7 @@ using namespace R5;
 
 void SoundInstance::Update(ulong time)
 {
-	if (!mIsPaused)
+	if (mIsPlaying)
 	{
 		mDuration += Time::GetDeltaMS();
 	}
@@ -36,28 +31,12 @@ void SoundInstance::Update(ulong time)
 		atten = 1.0f - Float::Min((mPosition - mSound->GetAudio()->GetListener()).Magnitude() / 
 			(mRange.y - mRange.x), 1.0f);
 		atten *= atten;
-
-		if (atten < 0.0001f)
-		{
-			if (mAudioSource != 0)
-			{
-				SOURCE(mAudioSource)->stop();
-				mSound->GetAudio()->ReleaseAudioSource(mAudioSource);
-				mAudioSource = 0;
-			}
-		}
-		else if (mAudioSource == 0)
-		{
-			mAudioSource = mSound->GetAudio()->CreateAudioSource(mSound->GetMemory(), mSound->GetName());
-			ASSERT(mAudioSource != 0, "Audio source seems to be still null");
-			Play();
-		}
 	}
 
-	cAudio::IAudioSource* source = SOURCE(mAudioSource);
+	irrklang::ISound* source = SOUND(mAudioSource);
 
 	// Only continue if the sound is actually playing
-	if (source != 0 && source->isPlaying())
+	if (source != 0 && mIsPlaying)
 	{
 		// If the sound volume is changing, we need to adjust it inside cAudio
 		if (mVolume.y != mVolume.z)
@@ -80,14 +59,14 @@ void SoundInstance::Update(ulong time)
 				{
 					if (mAction == TargetAction::Stop)
 					{
-						source->stop();
+						source->setIsPaused(true);
 						mIsPlaying = false;
 						mIsPaused = false;
 						mDuration = 0;
 					}
 					else if (mAction == TargetAction::Pause)
 					{
-						source->pause();
+						source->setIsPaused(true);
 						mIsPlaying = false;
 						mIsPaused = true;
 					}
@@ -98,9 +77,9 @@ void SoundInstance::Update(ulong time)
 		if (mIs3D)
 		{
 			Vector3f velocity = (mPosition - mLastPosition) * Time::GetDelta();
-			cAudio::cVector3 pos (mPosition.x, mPosition.y, mPosition.z);
-			cAudio::cVector3 vel (velocity.x, velocity.y, velocity.z);
-			source->setPosition (pos);
+			irrklang::vec3df pos (mPosition.x, mPosition.y, mPosition.z);
+			irrklang::vec3df vel (velocity.x, velocity.y, velocity.z);
+			source->setPosition(pos);
 			source->setVelocity(vel);
 		}
 
@@ -125,25 +104,14 @@ void SoundInstance::Play()
 {
 	if (mAudioSource !=0)
 	{
-		cAudio::IAudioSource* source = SOURCE(mAudioSource);
-		source->seek(mDuration / 1000.0f);
+		irrklang::ISound* source = SOUND(mAudioSource);
+		source->setPlayPosition(mDuration);
 		source->setVolume(0.0f);
 
-		if (mIsPaused)
+		if (!mIsPlaying)
 		{
-			source->play();
+			source->setIsPaused(false);
 			SetVolume(mVolume.w, 0.0f);
-		}
-		else if (!mIs3D)
-		{
-			source->play2d(mRepeat);
-		}
-		else
-		{
-			cAudio::cVector3 pos (mPosition.x, mPosition.y, mPosition.z);
-			source->play3d(pos, 2.0f, mRepeat);
-			source->setMinDistance(1000.0f);
-			source->setMaxDistance(1000.0f);
 		}
 	}
 	
@@ -214,7 +182,7 @@ void SoundInstance::SetRepeat (bool repeat)
 
 	if (mAudioSource != 0)
 	{
-		SOURCE(mAudioSource)->loop(repeat);
+		SOUND(mAudioSource)->setIsLooped(repeat);
 	}
 }
 
@@ -222,7 +190,7 @@ void SoundInstance::SetRepeat (bool repeat)
 // Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
 //============================================================================================================
 
-void SoundInstance::SetRange (Vector2f& range)
+void SoundInstance::SetRange (const Vector2f& range)
 {
 	mRange = range;
 }
