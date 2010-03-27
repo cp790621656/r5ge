@@ -101,10 +101,10 @@ void Audio::SetListener (const Vector3f& position, const Vector3f& dir, const Ve
 {
 	mPos = position;
 
-	irrklang::vec3df p (position.x, position.y, position.z);
-	irrklang::vec3df d (dir.x, dir.y, dir.z);
+	irrklang::vec3df p (position.x, position.z, position.y);
+	irrklang::vec3df d (dir.x, dir.z, dir.y);
 	irrklang::vec3df v (0.0f, 0.0f, 0.0f);
-	irrklang::vec3df u (up.x, up.y, up.z);
+	irrklang::vec3df u (up.x, up.z, up.y);
 
 	IRRKLANG->setListenerPosition(p, d, v, u);
 }

@@ -83,8 +83,8 @@ void SoundInstance::Update(ulong time)
 		if (mIs3D)
 		{
 			Vector3f velocity = (mPosition - mLastPosition) * Time::GetDelta();
-			irrklang::vec3df pos (mPosition.x, mPosition.y, mPosition.z);
-			irrklang::vec3df vel (velocity.x, velocity.y, velocity.z);
+			irrklang::vec3df pos (mPosition.x, mPosition.z, mPosition.y);
+			irrklang::vec3df vel (velocity.x, velocity.z, velocity.y);
 			source->setPosition(pos);
 			source->setVelocity(vel);
 		}
