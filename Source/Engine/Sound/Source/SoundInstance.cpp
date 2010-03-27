@@ -13,6 +13,12 @@ using namespace R5;
 
 #define SOUND(source) ((irrklang::ISound*)source)
 
+SoundInstance::~SoundInstance()
+{
+	SOUND(mAudioSource)->drop();
+	mAudioSource = 0;
+}
+
 //============================================================================================================
 // Update the sound
 //============================================================================================================

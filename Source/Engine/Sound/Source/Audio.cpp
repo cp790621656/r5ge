@@ -186,7 +186,6 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 	Lock();
 	{
 		SoundInstance* inst = (SoundInstance*)sound;
-		SOUND(inst->mAudioSource)->drop();
 		AudioLayer* audioLayer = _GetAudioLayer(inst->mLayer, 1.0f);
 		audioLayer->mSounds.Remove(sound);
 		delete sound;

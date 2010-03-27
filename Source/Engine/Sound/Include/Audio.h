@@ -24,6 +24,14 @@ private:
 		PlayingSounds	mSounds;
 
 		AudioLayer(uint layer, float volume) : mLayer(layer), mVolume(volume) {} 
+		~AudioLayer() 
+		{
+			FOREACH(b, mSounds)
+			{
+				delete mSounds[b];
+			}
+			mSounds.Release(); 
+		}
 	};
 
 	typedef AudioLayer* AudioLayerPtr;

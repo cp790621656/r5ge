@@ -12,6 +12,8 @@ struct ISound;
 struct ISoundInstance
 {
 	R5_DECLARE_INTERFACE_CLASS("ISoundInstance");
+
+	virtual ~ISoundInstance() {}
 	
 	virtual ISound*	GetSound()=0;
 

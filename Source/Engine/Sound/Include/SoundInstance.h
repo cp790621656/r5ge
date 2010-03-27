@@ -60,7 +60,7 @@ public:
 			mIsPlaying		(false),
 			mIsPaused		(false) {}
 
-	~SoundInstance(){}
+	virtual ~SoundInstance();
 
 	R5_DECLARE_ABSTRACT_CLASS("Sound Instance", ISoundInstance);
 
