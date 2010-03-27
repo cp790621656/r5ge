@@ -25,6 +25,7 @@ struct TreeNode
 
 	TreeNode() {}
 	TreeNode(const char* tag) { mTag = tag; }
+	TreeNode(const String& s) { mTag = s; }
 
 	void Lock()		{ mChildren.Lock(); }
 	void Unlock()	{ mChildren.Unlock(); }

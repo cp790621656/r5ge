@@ -274,18 +274,22 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if ( tag == Limb::ClassID() )
+		if (tag == Limb::ClassID())
 		{
 			_LoadLimb( node, true );
 		}
-		else if ( tag == Skeleton::ClassID() )
+		else if (tag == Skeleton::ClassID())
 		{
 			SetSkeleton( mCore->GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true) );
 		}
-		else if ( tag == "Source" )
+		else if (tag == "Source")
 		{
 			ModelTemplate* temp = mCore->GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
 			SetSource( temp, forceUpdate );
+		}
+		else if (tag == "OnSerialize")
+		{
+			mOnSerialize = node;
 		}
 	}
 	return true;
@@ -315,6 +319,13 @@ void ModelTemplate::SerializeTo	 (TreeNode& root) const
 
 		// Save the limbs
 		_SaveLimbs(node, false);
+
+		// Save all scripts
+		if (mOnSerialize.HasChildren())
+		{
+			node.mChildren.Expand() = mOnSerialize;
+			node.mChildren.Back().mTag = "OnSerialize";
+		}
 	}
 }
 

@@ -44,6 +44,7 @@ protected:
 	bool				mIsDirty;		// Whether the bounds of the model need to be recalculated
 	Bounds				mBounds;		// Calculated local bounding volume
 	uint				mMask;			// Calculated combined technique mask
+	TreeNode			mOnSerialize;	// TreeNode passed to ModelInstance on serialization
 
 public:
 
@@ -76,6 +77,7 @@ public:
 	ModelTemplate*			GetSource()					{ return mTemplate;			}
 	Skeleton*				GetSkeleton()				{ return mSkeleton;			}
 	Core*					GetCore()					{ return mCore;				}
+	TreeNode&				GetOnSerialize()			{ return mOnSerialize;		}
 
 	void SetName		 (const String& name)			{ mName = name;				}
 	void SetSource		 (ModelTemplate* temp, bool forceUpdate = true);

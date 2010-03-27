@@ -243,7 +243,7 @@ public:
 
 	// Serialization
 	bool SerializeTo (TreeNode& root) const;
-	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
+	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false, bool threadSafe = true);
 
 protected:
 

@@ -16,7 +16,7 @@ Root
 		Background Color = 0.000000 0.000000 0.000000 1.000000
 		Fog Range = 100.000000 200.000000
 
-		Material = "Teapot"
+		Material = "DNS"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 1.000000 1.000000 1.000000 0.990000
@@ -26,23 +26,12 @@ Root
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Sand/wavy.jpg"
-				Texture 1 = "Textures/Sand/wavy_ns.png"
-			}
-		}
 
-		Material = "Test Material"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 0.990000
-			Glow = 0.000000
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D_N"
-				Texture 0 = "Textures/Sand/wavy.jpg"
-				Texture 1 = "Textures/Sand/wavy_ns.png"
+				Textures = String[]
+				{
+					"Textures/Sand/wavy.jpg"
+					"Textures/Sand/wavy_ns.png"
+				}
 			}
 		}
 	}
@@ -62,7 +51,7 @@ Root
 				Top = 0.000000 5.000000
 				Bottom = 1.000000 0.000000
 				Alpha = 1.000000
-				Receives Events = false
+				Event Handling = "None"
 				Layer = 0
 
 				Label = "FPS"
@@ -72,12 +61,12 @@ Root
 					Top = 0.000000 0.000000
 					Bottom = 0.000000 15.000000
 					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = ""
+					Color = 1.000000 1.000000 1.000000
+					Text = "FPS: 272"
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 				}
 
@@ -88,12 +77,12 @@ Root
 					Top = 0.000000 20.000000
 					Bottom = 0.000000 35.000000
 					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = "FPS: 788"
+					Color = 1.000000 1.000000 1.000000
+					Text = "TRI: 10708"
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 				}
 
@@ -104,15 +93,15 @@ Root
 					Top = 0.000000 40.000000
 					Bottom = 0.000000 55.000000
 					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = ""
+					Color = 1.000000 1.000000 1.000000
+					Text = "57 objects"
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 				}
-				
+
 				Label = "Debug 0"
 				{
 					Left = 0.000000 0.000000
@@ -120,15 +109,15 @@ Root
 					Top = 0.000000 60.000000
 					Bottom = 0.000000 75.000000
 					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = ""
+					Color = 1.000000 1.000000 1.000000
+					Text = "DC[[FF5555]91[FFFFFF]] BB[[FF5555]11[FFFFFF]] TX[[FF5555]10[FFFFFF]]"
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 				}
-				
+
 				Label = "Debug 1"
 				{
 					Left = 0.000000 0.000000
@@ -136,12 +125,12 @@ Root
 					Top = 0.000000 80.000000
 					Bottom = 0.000000 95.000000
 					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
 					Font = "Arial"
-					Text = ""
+					Color = 1.000000 1.000000 1.000000
+					Text = "SH[[FF5555]4[FFFFFF]] TC[[FF5555]3[FFFFFF]] LS[[FF5555]53[FFFFFF]]"
 					Shadow = true
 					Alignment = "Left"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 				}
 			}
@@ -153,15 +142,14 @@ Root
 				Top = 0.000000 385.000000
 				Bottom = 0.000000 585.000000
 				Alpha = 1.000000
-				Skin = "Default"
 				Titlebar Height = 22
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
 				Font = "Arial"
+				Color = 1.000000 1.000000 1.000000
 				Text = "Light Specular X-Ray"
 				Shadow = true
 				Alignment = "Center"
-				Receives Events = true
+				Event Handling = "Normal"
 				Layer = 0
 
 				Shaded Area = "Specular Xray"
@@ -172,8 +160,13 @@ Root
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
 					Shader = "Other/Xray"
-					Texture 0 = "[Generated] Specular Light"
-					Receives Events = false
+
+					Textures = String[]
+					{
+						"[Generated] Specular Light"
+					}
+
+					Event Handling = "None"
 					Layer = 1
 				}
 			}
@@ -185,15 +178,14 @@ Root
 				Top = 0.000000 390.000000
 				Bottom = 0.000000 590.000000
 				Alpha = 1.000000
-				Skin = "Default"
 				Titlebar Height = 22
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
 				Font = "Arial"
+				Color = 1.000000 1.000000 1.000000
 				Text = "Light Diffuse X-Ray"
 				Shadow = true
 				Alignment = "Center"
-				Receives Events = true
+				Event Handling = "Normal"
 				Layer = 0
 
 				Shaded Area = "Diffuse Xray"
@@ -204,8 +196,13 @@ Root
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
 					Shader = "Other/Xray"
-					Texture 0 = "[Generated] Diffuse Light"
-					Receives Events = false
+
+					Textures = String[]
+					{
+						"[Generated] Diffuse Light"
+					}
+
+					Event Handling = "None"
 					Layer = 1
 				}
 			}
@@ -219,18 +216,28 @@ Root
 		Model = "Teapot"
 		{
 			Source = "Models/teapot.r5b"
-			Layer = 0
 
 			Limb = "Teapot"
 			{
 				Mesh = "Teapot"
-				Material = "Teapot"
+				Material = "DNS"
+			}
+			
+			OnSerialize
+			{
+				Script = "TeapotScript"
 			}
 		}
 
 		Model = "Plane"
 		{
 			Source = "Models/rect.r5a"
+
+			Limb = "Simple Rectangle"
+			{
+				Mesh = "Simple Rectangle"
+				Material = "DNS"
+			}
 		}
 	}
 
@@ -238,11 +245,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0 0 0
+			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.303034 -0.196358 0.507058 0.782627
-			Scale = 1.0
-			Range = 1 200 90
-			Dolly = 0 28 50
+			Scale = 1.000000
+			Layer = 10
+			Range = 1.000000 200.000000 90.000000
+			Dolly = 0.000000 28.000000 50.000000
 		}
 
 		Model Instance = "Teapot 7"
@@ -250,6 +258,9 @@ Root
 			Position = 0.000000 10.000000 -2.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Min = -4.231425 -6.347139 -0.175709
+			Max = 4.231425 7.265358 6.488787
+			Layer = 10
 			Model = "Teapot"
 		}
 
@@ -258,6 +269,9 @@ Root
 			Position = 0.000000 20.000000 -2.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Min = -4.231425 -6.347139 -0.175709
+			Max = 4.231425 7.265358 6.488787
+			Layer = 10
 			Model = "Teapot"
 		}
 
@@ -266,6 +280,9 @@ Root
 			Position = 0.000000 -10.000000 -2.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Min = -4.231425 -6.347139 -0.175709
+			Max = 4.231425 7.265358 6.488787
+			Layer = 10
 			Model = "Teapot"
 		}
 
@@ -274,6 +291,9 @@ Root
 			Position = 0.000000 -20.000000 -2.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
+			Min = -4.231425 -6.347139 -0.175709
+			Max = 4.231425 7.265358 6.488787
+			Layer = 10
 			Model = "Teapot"
 		}
 
@@ -282,6 +302,9 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 30.000000
+			Min = -2.000000 -2.000000 0.000000
+			Max = 2.000000 2.000000 0.000000
+			Layer = 10
 			Model = "Plane"
 		}
 	}

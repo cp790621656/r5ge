@@ -895,9 +895,9 @@ bool Object::SerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
+bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadSafe)
 {
-	Lock();
+	if (threadSafe) Lock();
 	{
 		bool serializable = true;
 
@@ -969,7 +969,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			}
 		}
 	}
-	Unlock();
+	if (threadSafe) Unlock();
 	return true;
 }
 

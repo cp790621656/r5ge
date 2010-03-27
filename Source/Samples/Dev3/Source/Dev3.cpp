@@ -14,6 +14,8 @@ public:
 
 	R5_DECLARE_INHERITED_CLASS("SpinScript", SpinScript, Script, Script);
 
+	SpinScript() : mAxis(0.0f, 0.0f, 1.0f), mFactor(1.0f) {}
+
 	void Set (float x, float y, float z, float factor)
 	{
 		mAxis = Normalize( Vector3f(x, y, z) );
@@ -25,6 +27,22 @@ public:
 		float factor = Time::GetTime() * mFactor;
 		mObject->SetRelativeRotation( Quaternion(mAxis, factor) );
 		mObject->SetRelativeScale( 0.75f * (1.0f + 0.5f * Float::Cos(factor)) );
+	}
+};
+
+//============================================================================================================
+// Script attached to teapots via the template's OnSerialize functionality
+//============================================================================================================
+
+class TeapotScript : public Script
+{
+public:
+
+	R5_DECLARE_INHERITED_CLASS("TeapotScript", TeapotScript, Script, Script);
+
+	virtual void OnPreUpdate()
+	{
+		mObject->SetRelativeRotation( Quaternion(Vector3f(0.0f, 0.0f, 1.0f), -Time::GetTime()) );
 	}
 };
 
@@ -41,6 +59,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mObjects(
 
 	// Register a new script type that can be created via AddScript<> template
 	Script::Register<SpinScript>();
+	Script::Register<TeapotScript>();
 	mCore->SetSleepDelay(0);
 }
 

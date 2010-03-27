@@ -27,6 +27,15 @@ void ModelInstance::SetModel (Model* model)
 		if (mModel != 0) mModel->_Decrement();
 		mModel = model;
 		if (mModel != 0) mModel->_Increment();
+
+		ModelTemplate* temp = mModel;
+
+		while (temp != 0)
+		{
+			TreeNode& onSerialize = temp->GetOnSerialize();	
+			if (onSerialize.HasChildren()) SerializeFrom(onSerialize, false, false);
+			temp = temp->GetSource();
+		}
 	}
 }
 
