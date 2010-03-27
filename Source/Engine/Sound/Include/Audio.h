@@ -15,7 +15,7 @@ class Audio : public IAudio
 private:
 
 	typedef Sound* SoundPtr;
-	typedef Array<ISoundInstance*> PlayingSounds;
+	typedef PointerArray<ISoundInstance> PlayingSounds;
 
 	struct AudioLayer
 	{
@@ -26,10 +26,6 @@ private:
 		AudioLayer(uint layer, float volume) : mLayer(layer), mVolume(volume) {} 
 		~AudioLayer() 
 		{
-			FOREACH(b, mSounds)
-			{
-				delete mSounds[b];
-			}
 			mSounds.Release(); 
 		}
 	};
