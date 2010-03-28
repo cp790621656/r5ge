@@ -366,6 +366,16 @@ void Object::DestroySelf (bool threadSafe)
 	{
 		if (threadSafe) Lock();
 		{
+			mScripts.Lock();
+			{
+				FOREACH(i, mScripts)
+				{
+					Script* script = mScripts[i];
+					script->OnDestroy();
+				}
+			}
+			mScripts.Unlock();
+
 			mParent->_Remove(this);
 			mParent->mDeletedObjects.Expand() = this;
 			mParent = 0;

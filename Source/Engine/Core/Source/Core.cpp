@@ -319,6 +319,25 @@ ModelTemplate* Core::GetModelTemplate (const String& name, bool createIfMissing)
 }
 
 //============================================================================================================
+// Deletes the specified model
+//============================================================================================================
+
+void Core::DeleteModel (Model* model)
+{
+	ASSERT(model->GetNumberOfReferences() == 0, "The model is still in use");
+
+	if (model->GetNumberOfReferences() == 0)
+	{
+		mModels.Lock();
+		{
+			mModels.Remove(model);
+			delete model;
+		}
+		mModels.Unlock();
+	}
+}
+
+//============================================================================================================
 // Load the specified file
 //============================================================================================================
 

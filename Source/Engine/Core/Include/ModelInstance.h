@@ -31,7 +31,7 @@ public:
 	const Bounds&	GetCullBounds()		const	{ return mCullBounds;	}
 	const Matrix43&	GetMatrix()			const;
 
-	void SetModel		(Model* model);
+	void SetModel		(Model* model, bool threadSafe = true);
 	void SetCullBounds	(const Bounds& bounds)	{ mCullBounds = bounds;	mIsDirty = true; }
 
 protected:
