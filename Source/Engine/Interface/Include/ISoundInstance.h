@@ -8,6 +8,7 @@
 //============================================================================================================
 
 struct ISound;
+struct ReverbProp;
 
 struct ISoundInstance
 {
@@ -48,6 +49,9 @@ struct ISoundInstance
 	// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
 	virtual void SetRange (const Vector2f& range)=0;
 
+	// The effect that is going to be played on this sound
+	virtual void SetEffect (ReverbProp* prop)=0;
+
 	// Gets the volume of the specified sound
 	virtual const float	GetVolume () const=0;
 
@@ -62,4 +66,7 @@ struct ISoundInstance
 
 	// Gets the sound range
 	virtual const Vector2f	GetRange() const=0;
+
+	// The effect that is playing on the sound
+	virtual const ReverbProp* GetEffect() const=0;
 };

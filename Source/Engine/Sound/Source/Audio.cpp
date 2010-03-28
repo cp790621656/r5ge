@@ -201,7 +201,7 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat, void* data)
 {
 	SoundInstance* soundInst = _Instantiate(sound, layer, fadeInTime, repeat, data);
-	irrklang::ISound* soundval = IRRKLANG->play2D(SOURCE(sound->GetSource()), repeat, false, true);
+	irrklang::ISound* soundval = IRRKLANG->play2D(SOURCE(sound->GetSource()), repeat, false, true, true);
 	soundInst->mAudioSource = soundval;
 	SOUND(soundval)->setVolume(0.0f);
 	return soundInst;
@@ -217,7 +217,7 @@ ISoundInstance* Audio::Instantiate (ISound* sound, const Vector3f& position, uin
 	SoundInstance* soundInst = _Instantiate(sound, layer, fadeInTime, repeat, data);
 	irrklang::vec3df pos (position.x, position.y, position.z);
 	irrklang::ISoundSource* soundSource = SOURCE(sound->GetSource());
-	irrklang::ISound* soundval = IRRKLANG->play3D(soundSource, pos, repeat, false, true);
+	irrklang::ISound* soundval = IRRKLANG->play3D(soundSource, pos, repeat, false, true, true);
 	soundInst->mAudioSource = soundval;
 	SOUND(soundval)->setMinDistance(1000.0f);
 	SOUND(soundval)->setMaxDistance(1000.0f);

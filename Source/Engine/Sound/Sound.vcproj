@@ -178,6 +178,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\AEffects.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\Audio.h"
 				>
 			</File>

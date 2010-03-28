@@ -41,6 +41,7 @@ protected:
 	ulong		mDuration;		// How long the sound has been playing
 	bool		mIsPlaying;		// If the sound is playing
 	bool		mIsPaused;		// If the sound is paused
+	ReverbProp* mEffect;		// The effect that is being played on the sound
 
 public:
 
@@ -58,7 +59,8 @@ public:
 			mRange			(1, 15),
 			mDuration		(0),
 			mIsPlaying		(false),
-			mIsPaused		(false) {}
+			mIsPaused		(false),
+			mEffect			(0) {}
 
 	virtual ~SoundInstance();
 
@@ -99,6 +101,9 @@ public:
 	// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
 	virtual void SetRange (const Vector2f& range);
 
+	// The effect that is going to be played on this sound. Null will disable the effect
+	virtual void SetEffect (ReverbProp* prop);
+
 	// Gets the volume of the specified sound
 	virtual const float	GetVolume () const { return mVolume.w; }
 
@@ -113,6 +118,9 @@ public:
 
 	// Gets the sound range
 	virtual const Vector2f	GetRange() const { return mRange; }
+
+	// The effect that is playing on the sound
+	virtual const ReverbProp* GetEffect() const { return mEffect; }
 
 private:
 
