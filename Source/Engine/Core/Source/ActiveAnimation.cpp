@@ -121,11 +121,12 @@ bool ActiveAnimation::AdvanceSample (float delta, const Skeleton::Bones& bones, 
 			{
 				// Choose the least of the two
 				mOverrideFactor += delta / mOverrideDuration;
-				mCurrentAlpha = Float::Min(mCurrentAlpha, 1.0f - mOverrideFactor);
+				mCurrentAlpha = 1.0f - mOverrideFactor;
 
 				// Deactivate this animation if necessary
 				if (mCurrentAlpha < 0.0f)
 				{
+					mOverrideDuration = 0.0f;
 					mCurrentAlpha = 0.0f;
 					mIsActive = false;
 				}
