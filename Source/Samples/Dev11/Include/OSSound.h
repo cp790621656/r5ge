@@ -28,8 +28,7 @@ public:
 			const Vector3f& pos = mObject->GetAbsolutePosition();
 			ISound* sound = mObject->GetCore()->GetAudio()->GetSound(mName);
 			mInst = sound->Play(pos, mLayer, 0.0f, true);
-			ReverbProp prop = FX_AUDITORIUM;
-			mInst->SetEffect(&prop);
+			mInst->SetEffect(ISoundInstance::Effect::Auditorium);
 		}
 
 		if (mInst != 0)

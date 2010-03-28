@@ -12,5 +12,4 @@ namespace R5
 	#include "Audio.h"
 	#include "Sound.h"
 	#include "SoundInstance.h"
-	#include "AEffects.h"
 };

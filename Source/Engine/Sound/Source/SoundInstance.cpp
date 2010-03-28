@@ -205,19 +205,24 @@ void SoundInstance::SetRange (const Vector2f& range)
 // The effect that is going to be played on this sound. Null will disable the effect
 //============================================================================================================
 
-void SoundInstance::SetEffect (ReverbProp* prop)
+void SoundInstance::SetEffect (byte effect)
 {
-	mEffect = prop;
+	if (mEffect != effect)
+	{
+		mEffect = effect;
 
-	if (prop != 0)
-	{
-		irrklang::ISoundEffectControl* fx = SOUND(mAudioSource)->getSoundEffectControl();
-		fx->enableI3DL2ReverbSoundEffect(prop->Room, prop->RoomHF, prop->RoomRolloffFactor, prop->DecayTime, 
-			prop->DecayHFRatio, prop->Reflections, prop->ReflectionsDelay, prop->Reverb, prop->ReverbDelay, 
-			prop->Diffusion, prop->Density, prop->HFReference);
-	}
-	else 
-	{
+		if (effect != 0)
+		{
+			irrklang::ISoundEffectControl* fx = SOUND(mAudioSource)->getSoundEffectControl();
+
+			if (effect == Effect::Auditorium)
+			{
+				fx->enableI3DL2ReverbSoundEffect(-1000, -476, 0, 4.32f, 0.59f, -789,
+					0.020f, -789, 0.020f, 100.0f, 100.0f, 5000.0f);
+				return;
+			}
+		}
+
 		irrklang::ISoundEffectControl* fx = SOUND(mAudioSource)->getSoundEffectControl();
 		fx->disableI3DL2ReverbSoundEffect();
 	}
