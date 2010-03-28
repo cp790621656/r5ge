@@ -840,6 +840,27 @@ float Model::GetTimeToAnimationEnd (const Animation* anim)
 }
 
 //============================================================================================================
+// Deletes the model if it's no longer referenced
+//============================================================================================================
+
+void Model::DestroySelf()
+{
+	ASSERT(GetNumberOfReferences() == 0, "The model is still in use");
+
+	if (GetNumberOfReferences() == 0)
+	{
+		Core::Models& models = mCore->GetAllModels();
+
+		models.Lock();
+		{
+			models.Remove(this);
+			delete this;
+		}
+		models.Unlock();
+	}
+}
+
+//============================================================================================================
 // Special: will either enable or disable skinning on the GPU using shaders
 //============================================================================================================
 

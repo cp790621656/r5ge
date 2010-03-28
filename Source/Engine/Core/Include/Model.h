@@ -166,6 +166,9 @@ public:
 	// Returns the amount of time that's left on the specified animation's playback
 	float GetTimeToAnimationEnd (const Animation* anim);
 
+	// Deletes the model if it's no longer referenced
+	void DestroySelf();
+
 public:
 
 	// Special: will either enable or disable skinning on the GPU using shaders
