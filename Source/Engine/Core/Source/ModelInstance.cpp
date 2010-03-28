@@ -155,7 +155,7 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& root)
 			model->SetSerializable(false);
 		}
 
-		SetModel( model );
+		SetModel(model, false);
 		return true;
 	}
 	else if ( tag == "Culling Bounds" )
