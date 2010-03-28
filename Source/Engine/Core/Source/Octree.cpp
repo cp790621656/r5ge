@@ -48,6 +48,7 @@ bool Octree::Node::Add (Object* obj)
 {
 	const Bounds& bounds = obj->GetCompleteBounds();
 
+	// If the bounds are invalid or we were unable to add this node to a child, add this object anyway
 	if (!bounds.IsValid() || !Add(obj, bounds))
 	{
 		obj->SetSubParent(this);
@@ -198,7 +199,10 @@ void Octree::OnPostUpdate()
 			sub->mChildren.Remove(child);
 
 			// If the child can't fit into its previous node, re-add it starting at the root.
-			if (!sub->Add(child)) mRootNode.Add(child);
+			if (!sub->Add(child, child->GetCompleteBounds()))
+			{
+				mRootNode.Add(child);
+			}
 		}
 	}
 
