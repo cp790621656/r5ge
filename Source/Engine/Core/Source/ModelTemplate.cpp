@@ -147,7 +147,7 @@ ModelTemplate::ModelTemplate (const String& name) :
 // Copies all limb information from the specified template
 //============================================================================================================
 
-void ModelTemplate::SetSource (ModelTemplate* temp, bool forceUpdate)
+void ModelTemplate::SetSource (ModelTemplate* temp)
 {
 	if (mTemplate != temp)
 	{
@@ -285,7 +285,7 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 		else if (tag == "Source")
 		{
 			ModelTemplate* temp = mCore->GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
-			SetSource( temp, forceUpdate );
+			SetSource(temp);
 		}
 		else if (tag == "OnSerialize")
 		{

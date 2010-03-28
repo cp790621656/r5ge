@@ -947,10 +947,10 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadS
 				if (ptr != 0 && mScripts.Contains(ptr))
 				{
 					// The object should not remain locked during script serialization
-					Unlock();
+					if (threadSafe) Unlock();
 					ptr->SerializeFrom(node);
 					if (!serializable && mParent == 0) ptr->SetSerializable(false);
-					Lock();
+					if (threadSafe) Lock();
 				}
 			}
 			else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
@@ -960,11 +960,11 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadS
 				if (ptr != 0)
 				{
 					// The object should not remain locked during child serialization
-					Unlock();
+					if (threadSafe) Unlock();
 					ptr->SerializeFrom(node, forceUpdate);
 					if (!serializable && mParent == 0) ptr->SetSerializable(false);
 					ptr->SetDirty();
-					Lock();
+					if (threadSafe) Lock();
 				}
 			}
 		}

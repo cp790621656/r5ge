@@ -80,7 +80,7 @@ public:
 	TreeNode&				GetOnSerialize()			{ return mOnSerialize;		}
 
 	void SetName		 (const String& name)			{ mName = name;				}
-	void SetSource		 (ModelTemplate* temp, bool forceUpdate = true);
+	void SetSource		 (ModelTemplate* temp);
 	void SetSkeleton	 (Skeleton* skel);
 	void SetSkeleton	 (const String& name);
 	void SetSerializable (bool val)						{ mSerializable = val;		}

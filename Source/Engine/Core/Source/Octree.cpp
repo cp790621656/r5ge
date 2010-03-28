@@ -209,9 +209,9 @@ void Octree::OnPostUpdate()
 
 	// Include all children that currently reside on the root node. Other children don't need to be included
 	// as they belong to one of the internal nodes which is guaranteed to be inside the root's bounds.
-	for (uint i = mRootNode.mChildren.GetSize(); i > 0; )
+	FOREACH(i, mRootNode.mChildren)
 	{
-		Object* child = mRootNode.mChildren[--i];
+		Object* child = mRootNode.mChildren[i];
 		const Bounds& bounds = child->GetCompleteBounds();
 		mCompleteBounds.Include(bounds);
 	}

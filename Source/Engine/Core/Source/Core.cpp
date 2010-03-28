@@ -535,16 +535,16 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 // Serialization -- Save
 //============================================================================================================
 
-bool Core::SerializeTo (TreeNode& root) const
+bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) const
 {
 	// Window information should always be saved first as it *has* to come first
-	if (mWin) mWin->SerializeTo(root);
+	if (mWin != 0 && window) mWin->SerializeTo(root);
 
 	// Makes sense to have graphics second
-	if (mGraphics) mGraphics->SerializeTo(root);
+	if (mGraphics != 0 && graphics) mGraphics->SerializeTo(root);
 
 	// User interface comes next
-	if (mUI) mUI->SerializeTo(root);
+	if (mUI != 0 && ui) mUI->SerializeTo(root);
 
 	// Save all resources and models
 	if (mResources.IsValid() || mExecuted.IsValid() || mModels.IsValid())

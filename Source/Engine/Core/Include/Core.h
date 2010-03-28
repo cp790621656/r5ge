@@ -115,7 +115,7 @@ public:
 
 	// Serialization functions -- 'false' is returned only if the application should exit immediately
 	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
-	bool SerializeTo (TreeNode& root) const;
+	bool SerializeTo (TreeNode& root, bool window = true, bool graphics = true, bool ui = true) const;
 
 	// Executes an existing (loaded) resource in a different thread
 	void SerializeFrom (Resource* ptr);
