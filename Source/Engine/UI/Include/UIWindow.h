@@ -74,9 +74,6 @@ public:
 	// Window uses a content region which is smaller than the actual region. All children use this content region.
 	virtual const UIRegion& GetSubRegion() const { return mContent; }
 
-	// Marks this specific widget as needing to be rebuilt
-	virtual void SetDirty();
-
 	// Called when something changes in the texture
 	virtual void OnTextureChanged (const ITexture* ptr);
 

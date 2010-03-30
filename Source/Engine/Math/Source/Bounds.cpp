@@ -5,7 +5,7 @@ using namespace R5;
 // Whether the specified bounds fit into current ones
 //============================================================================================================
 
-bool Bounds::Contains (const Bounds& b)
+bool Bounds::Contains (const Bounds& b) const
 {
 	Vector3f min (b.GetMin() - GetMin());
 	Vector3f max (GetMax() - b.GetMax());

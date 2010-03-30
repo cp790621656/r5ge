@@ -36,6 +36,10 @@ void UISubPicture::Set (const UISkin* skin, const String& face, bool setDirty)
 			mFace = mSkin->GetFace(face);
 			if (setDirty) SetDirty();
 		}
+		else
+		{
+			mFace = 0;
+		}
 	}
 }
 
@@ -55,6 +59,10 @@ void UISubPicture::SetSkin (const UISkin* skin, bool setDirty)
 			mFace = mSkin->GetFace(mFace->GetName());
 			if (setDirty) SetDirty();
 		}
+		else
+		{
+			mFace = 0;
+		}
 	}
 }
 
@@ -70,16 +78,13 @@ void UISubPicture::SetFace (const String& face, bool setDirty)
 	{
 		if (face.IsEmpty())
 		{
-			if (mFace != 0 && setDirty) SetDirty();
+			if (setDirty) SetDirty();
 			mFace = 0;
 		}
-		else
+		else if (mFace == 0 || mFace->GetName() != face)
 		{
-			if (mFace == 0 || mFace->GetName() != face)
-			{
-				mFace = mSkin->GetFace(face);
-				if (setDirty) SetDirty();
-			}
+			mFace = mSkin->GetFace(face);
+			if (setDirty) SetDirty();
 		}
 	}
 }

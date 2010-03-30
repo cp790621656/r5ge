@@ -47,3 +47,22 @@ bool Intersect::RayBounds (const Vector3f& origin, const Vector3f& dir, const Bo
 
 	return !(Float::Abs(a) > b);
 }
+
+//============================================================================================================
+// Bounds-sphere intersect test
+//============================================================================================================
+
+bool Intersect::BoundsSphere (const Bounds& bounds, const Vector3f& pos, float radius)
+{
+	const Vector3f& center = bounds.GetCenter();
+	Vector3f dir (center - pos);
+	float mag = dir.Magnitude();
+
+	if (mag > radius)
+	{
+		dir /= mag;
+		dir *= radius;
+		return bounds.Contains(pos + dir);
+	}
+	return true;
+}

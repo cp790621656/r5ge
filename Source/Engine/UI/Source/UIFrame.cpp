@@ -36,9 +36,10 @@ void UIFrame::OnDirty (const ITexture* tex, int layer, const UIWidget* widget)
 	if (ptr == 0)
 	{
 		ptr = mUI->CreateQueue();
-		ptr->mTex	= tex;
-		ptr->mLayer = layer;
+		ptr->mTex		= tex;
+		ptr->mLayer		= layer;
 		ptr->mWidget	= widget;
+
 		ASSERT(ptr != 0, "Failed to create the queue?");
 		mQs.Expand() = ptr;
 	}

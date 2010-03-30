@@ -53,10 +53,10 @@ public:
 	const Vector3f&	GetCenter() const	{ if (mIsDirty) _Update(); return mCenter; }
 	float			GetRadius() const	{ if (mIsDirty) _Update(); return mRadius; }
 
-	bool Contains (const Vector3f& pos)	{ return (mIsValid && (pos > mMin) && (pos < mMax)); }
-	bool Contains (const Bounds& b);
+	bool Contains (const Vector3f& pos) const	{ return (mIsValid && (pos > mMin) && (pos < mMax)); }
+	bool Contains (const Bounds& b) const;
 
-	bool Matches (const Bounds& b)
+	bool Matches (const Bounds& b) const
 	{
 		if (!IsValid()) return !b.IsValid();
 		float dot0 = (mMin - b.GetMin()).Dot();
