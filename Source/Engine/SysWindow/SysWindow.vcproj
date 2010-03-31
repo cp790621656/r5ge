@@ -146,6 +146,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Source\_CocoaClasses.mm"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\_CocoaWindow.mm"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\_MSWindow.cpp"
 				>
 			</File>
@@ -157,6 +165,14 @@
 			>
 			<File
 				RelativePath=".\Include\_All.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\_CocoaClasses.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\_CocoaWindow.h"
 				>
 			</File>
 			<File

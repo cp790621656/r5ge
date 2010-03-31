@@ -241,10 +241,12 @@ void Object::_Add (Object* obj)
 		obj->mAbsolutePos	= obj->mRelativePos;
 		obj->mAbsoluteRot	= obj->mRelativeRot;
 		obj->mAbsoluteScale	= obj->mRelativeScale;
+		obj->mAbsoluteVel	= mAbsoluteVel + mRelativeVel;
 
 		obj->mRelativePos	= Interpolation::GetDifference(mAbsolutePos, obj->mAbsolutePos) / mAbsoluteScale;
 		obj->mRelativeRot	= Interpolation::GetDifference(mAbsoluteRot, obj->mAbsoluteRot);
 		obj->mRelativeScale	= obj->mAbsoluteScale / mAbsoluteScale;
+		obj->mLastPos		= obj->mRelativePos;
 
 		mChildren.Expand() = obj;
 		mIsDirty = true;
@@ -268,6 +270,8 @@ void Object::_Remove (Object* obj)
 		obj->mRelativePos	= obj->mAbsolutePos;
 		obj->mRelativeRot	= obj->mAbsoluteRot;
 		obj->mRelativeScale	= obj->mAbsoluteScale;
+		obj->mRelativeVel	= obj->mAbsoluteVel;
+		obj->mLastPos		= obj->mRelativePos;
 
 		mIsDirty = true;
 	}
@@ -623,6 +627,12 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 	{
 		if (threadSafe) Lock();
 		{
+			// Calculate the velocity since last update
+			mRelativeVel = (mRelativePos - mLastPos) / Time::GetDelta();
+			mAbsoluteVel = mRelativeVel;
+			if (mParent != 0) mAbsoluteVel += mParent->GetAbsoluteVelocity();
+			mLastPos = mRelativePos;
+
 			// If the parent has moved then we need to recalculate the absolute values
 			if (parentMoved) mIsDirty = true;
 
@@ -737,6 +747,12 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			mIsDirty = false;
 		}
 		if (threadSafe) Unlock();
+	}
+	else
+	{
+		// The object is disabled -- no local velocity, and use parent's velocity for absolute
+		mRelativeVel.Set(0.0f, 0.0f, 0.0f);
+		mAbsoluteVel = (mParent != 0) ? mParent->GetAbsoluteVelocity() : mRelativeVel;
 	}
 	return retVal;
 }
