@@ -153,7 +153,7 @@ void Deferred::DrawPointLights (IGraphics* graphics, const Light::List& lights, 
 	// Restore important states
 	graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 	graphics->SetCulling(IGraphics::Culling::Back);
-	graphics->ResetModelMatrix();
+	graphics->ResetModelViewMatrix();
 }
 
 //============================================================================================================
