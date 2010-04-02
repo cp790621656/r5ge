@@ -63,6 +63,9 @@ public:
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();
 
+	// Convenience function: mObject->GetCore()->IsKeyDown(key);
+	bool IsKeyDown (uint key);
+
 	// It's possible to choose not to serialize certain scripts
 	bool IsSerializable() const { return mSerializable; }
 	void SetSerializable (bool val) { mSerializable = val; }
