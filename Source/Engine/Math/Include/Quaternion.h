@@ -157,6 +157,16 @@ public:
 		v.Normalize();
 		return v;
 	}
+
+	// Two-dimensional right vector
+	Vector2f GetFlatRight() const
+	{
+		Vector2f v ( 1.0f - 2.0f * (y * y + z * z),
+							2.0f * (x * y + z * w) );
+		if (v.Sum() > 0.0f) v.Normalize();
+		else v.Set(1.0f, 0.0f);
+		return v;
+	}
 };
 
 //============================================================================================================

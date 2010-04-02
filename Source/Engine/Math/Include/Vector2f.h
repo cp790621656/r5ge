@@ -64,8 +64,9 @@ struct Vector2f
 	void operator *=(const Matrix43& mat);			// Inlined in Matrix43.h
 	void operator %=(const Matrix43& mat);			// Inlined in Matrix43.h
 
-	float Dot()										{ return x * x + y * y; }
-	float Magnitude()								{ return Float::Sqrt(x * x + y * y); }
+	float Sum() const								{ return Float::Abs(x) + Float::Abs(y); }
+	float Dot() const								{ return x * x + y * y; }
+	float Magnitude() const							{ return Float::Sqrt(x * x + y * y); }
 	
 #ifdef R5_USE_INVSQRT
 	void Normalize()								{ (*this) *= Float::InvSqrt(x * x + y * y); }
