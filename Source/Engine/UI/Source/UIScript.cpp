@@ -77,3 +77,12 @@ UIWidget* UIScript::GetRoot()
 {
 	return mWidget->GetRoot();
 }
+
+//============================================================================================================
+// Convenience function
+//============================================================================================================
+
+bool UIScript::IsKeyDown (uint key)
+{
+	return mWidget->GetUI()->IsKeyDown(key);
+}

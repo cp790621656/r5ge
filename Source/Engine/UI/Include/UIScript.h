@@ -51,9 +51,16 @@ public:
 	void DestroySelf();
 
 	// Returns the widget this script belongs to
-	UIWidget*	GetWidget()	{ return mWidget; }
-	UIManager*	GetUI();
-	UIWidget*	GetRoot();
+	UIWidget* GetWidget() { return mWidget; }
+
+	// Convenience function: mWidget->GetUI();
+	UIManager* GetUI();
+
+	// Convenience function: mWidget->GetRoot();
+	UIWidget* GetRoot();
+
+	// Convenience function: mWidget->GetUI()->IsKeyDown(key);
+	bool IsKeyDown (uint key);
 
 	// Initialization function is called once the script has been created
 	virtual void OnInit() {}
