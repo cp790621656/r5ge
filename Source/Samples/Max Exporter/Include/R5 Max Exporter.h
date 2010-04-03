@@ -57,6 +57,7 @@ public:
 		PosKeys			mPosKeys;
 		RotKeys			mRotKeys;
 		bool			mSpline;
+		bool			mIsUsed;
 	};
 
 	struct Mesh
@@ -137,20 +138,20 @@ protected:
 
 	void ExportBone		( ::INode* node, ::Interval interval, bool isBipedRoot, bool isBiped );
 	void ExportGeometry	( ::INode* node, ::Object* object, ::TimeValue time, ::ISkin* skin = 0 );
-	bool SaveAscii		( const String& filename );
+	bool SaveR5			( const String& filename );
 
 public:
 
 	// Functions from ::SceneExport
-	virtual int				ExtCount()				{ return 2; }
-	virtual const char*		Ext(int n)				{ return (n == 0) ? "r5a" : "r5b"; }
+	virtual int				ExtCount()				{ return 3; }
+	virtual const char*		Ext(int n)				{ return (n == 0) ? "r5a" : (n == 1 ? "r5b" : "r5c"); }
 	virtual const char*		LongDesc()				{ return "R5 Engine Model"; }
 	virtual const char*		ShortDesc()				{ return "R5 Model"; }
 	virtual const char*		AuthorName()			{ return "Michael Lyashenko"; }
 	virtual const char*		CopyrightMessage()		{ return "Copyright (c) 2007-2010 Michael Lyashenko"; }
 	virtual const char*		OtherMessage1()			{ return "";  }
 	virtual const char*		OtherMessage2()			{ return "";  }
-	virtual unsigned int	Version()				{ return 200; }
+	virtual unsigned int	Version()				{ return 250; }
 	virtual void			ShowAbout(HWND hWnd)	{ Thread::MessageWindow("R5 Engine 3ds Max Exporter: Please visit [www.nextrevision.com] for more information."); }
 
 	virtual int SupportsOptions (int ext, unsigned long options) { return 0; }

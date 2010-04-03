@@ -32,7 +32,7 @@ public:
 
 private:
 
-	uint		mParent;	// Index of the parent bone, 0xFF if none
+	uint		mParent;	// Index of the parent bone, -1 if none
 	String		mName;		// This bone's human-readable name
 	Vector3f	mPos;		// Original position
 	Quaternion	mRot;		// Original rotation

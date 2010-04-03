@@ -29,11 +29,13 @@ protected:
 
 	uint			mId;		// This animation's ID (internal use)
 	String			mName;		// Name of this animation
+	String			mRootBone;	// Name of the root bone for this animation
 	Vector2i		mFrames;	// Range of frames this animation is using
 	Vector3f		mDuration;	// Fade in, play, and fade out duration
 	uint			mLayer;		// Layer this animation is activated on
 	bool			mLoop;		// Whether to loop this animation
 	AnimatedBones	mBones;		// List of calculated bone splines for every bone
+	uint			mRootIndex;	// Root bone index, set automatically
 	bool			mIsDirty;	// Whether the animation needs to be rebuilt
 
 public:

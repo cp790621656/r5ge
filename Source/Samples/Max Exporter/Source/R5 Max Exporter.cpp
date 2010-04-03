@@ -1,6 +1,5 @@
 #include "../Include/_All.h"
 
-#define POSITION_SCALE 0.2f
 #undef CopyMemory
 
 //============================================================================================================
@@ -10,6 +9,12 @@
 #pragma comment(lib, "R5_Basic.lib")
 #pragma comment(lib, "R5_Math.lib")
 #pragma comment(lib, "R5_Serialization.lib")
+
+//============================================================================================================
+// Overriding scale applied on export
+//============================================================================================================
+
+float g_globalScale = 0.2f;
 
 //============================================================================================================
 // Converts Max' matrix into R5's matrix. It's a straight copy since they match. There is something
@@ -437,6 +442,8 @@ R5MaxExporter::Bone* R5MaxExporter::GetBone (const String& name)
 	Bone& bone		= mBones.Expand();
 	bone.mName		= name;
 	bone.mParent	= -1;
+	bone.mSpline	= !name.Contains("Linear");
+	bone.mIsUsed	= false;
 	return &bone;
 }
 
@@ -458,8 +465,13 @@ uint R5MaxExporter::GetBoneIndex (const String& name)
 	ASSERT(name.IsValid(), "Missing bone name?");
 
 	for (uint i = 0; i < mBones.GetSize(); ++i)
+	{
 		if (mBones[i].mName == name)
+		{
+			mBones[i].mIsUsed = true;
 			return i;
+		}
+	}
 
 	// We should already have the bone struct *before* exporting the skin
 	ASSERT(mBones.IsValid(), "Missing bones?");
@@ -544,7 +556,7 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 			}
 
 			// Adjust by position scale
-			v *= POSITION_SCALE;
+			v *= g_globalScale;
 
 			// We need to check to see if the vertex/normal/texcoord combo already exists in the list
 			uint myIndex = -1;
@@ -762,8 +774,6 @@ void AppendKeys (Array<int>& keyTimes, ::Animatable* ctrl)
 
 void R5MaxExporter::_ExportKeys( Bone* bone, ::INode* node, ::INode* parent, ::Interval interval )
 {
-	bone->mSpline = true;
-
 	Array<int> posTimes;
 	Array<int> rotTimes;
 
@@ -793,8 +803,8 @@ void R5MaxExporter::_ExportKeys( Bone* bone, ::INode* node, ::INode* parent, ::I
 
 		PosKey& kf	 = bone->mPosKeys.Expand();
 		kf.mTime	 = (uint)(time / GetTicksPerFrame());
-		kf.mPos	 = myMat;
-		kf.mPos	*= POSITION_SCALE;
+		kf.mPos		 = myMat;
+		kf.mPos		*= g_globalScale;
 	}
 
 	// Same thing with the rotation keyframes
@@ -813,7 +823,7 @@ void R5MaxExporter::_ExportKeys( Bone* bone, ::INode* node, ::INode* parent, ::I
 
 		RotKey& kf	= bone->mRotKeys.Expand();
 		kf.mTime	= (uint)(time / GetTicksPerFrame());
-		kf.mRot	= myMat;
+		kf.mRot		= myMat;
 	}
 }
 
@@ -823,9 +833,6 @@ void R5MaxExporter::_ExportKeys( Bone* bone, ::INode* node, ::INode* parent, ::I
 
 void R5MaxExporter::_ExportFull( Bone* bone, ::INode* node, ::INode* parent, ::Interval interval )
 {
-	// Note that this should be 'false' if bipeds with interpolated keyframes are used
-	bone->mSpline = true;
-
 	int frameSize  = GetTicksPerFrame();
 	int firstFrame = interval.Start() / frameSize;
 	int lastFrame  = interval.End()	/ frameSize;
@@ -849,7 +856,7 @@ void R5MaxExporter::_ExportFull( Bone* bone, ::INode* node, ::INode* parent, ::I
 		PosKey& pk	= bone->mPosKeys.Expand();
 		pk.mTime	= (uint)i;
 		pk.mPos		= myMat;
-		pk.mPos		*= POSITION_SCALE;
+		pk.mPos		*= g_globalScale;
 
 		RotKey& rk	= bone->mRotKeys.Expand();
 		rk.mTime	= (uint)i;
@@ -891,7 +898,7 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 		// Set the bone's bind pose orientation
 		bone->mPos = myMat;
 		bone->mRot = myMat;
-		bone->mPos *= POSITION_SCALE;
+		bone->mPos *= g_globalScale;
 	}
 
 	// Unfortunately bipeds require insane precision in order to export them out properly
@@ -969,41 +976,110 @@ void R5MaxExporter::ExportGeometry (::INode* node, ::Object* object, ::TimeValue
 }
 
 //============================================================================================================
-// Save the geometry in Ascii format
+// Ensures that the specified bone index is valid
 //============================================================================================================
 
-bool R5MaxExporter::SaveAscii ( const String& filename )
+void BoneIndexCheck (byte& current, float& weight, const byte& original)
+{
+	if (current == 0xFF)
+	{
+		if (Float::IsNotZero(weight))
+		{
+			// This should never happen, but just in case
+			Thread::MessageWindow("WARNING! Bone %u got cut, but it's actually used", original);
+		}
+		current = 0;
+		weight  = 0.0f;
+	}
+}
+
+//============================================================================================================
+// Save the geometry in R5 format
+//============================================================================================================
+
+bool R5MaxExporter::SaveR5 (const String& filename)
 {
 	if (mLimbs.IsValid())
 	{
 		TreeNode root ("Root");
-		TreeNode& graphics	= root.AddChild("Graphics");
+		TreeNode& graphics	= root.mChildren.Expand();
 		TreeNode& core		= root.AddChild("Core");
 		TreeNode& model		= root.AddChild("Template");
 
-		graphics.AddChild ("Serializable", false);
-		core.AddChild     ("Serializable", false);
-		model.AddChild	  ("Serializable", false);
+		// Try to load an external material file
+		{
+			String matFileName;
+			matFileName << "_graphics.r5a";
+
+			if (graphics.Load(matFileName.GetBuffer()))
+			{
+				// Loading from a file wipes out the tag's value
+				graphics.mTag = "Graphics";
+			}
+			else
+			{
+				// No material file loaded -- all materials should not be serialized on app save
+				graphics.AddChild("Serializable", false);
+			}
+		}
+
+		// None of this information should be serialized out on app save
+		core.AddChild ("Serializable", false);
+		model.AddChild("Serializable", false);
+
+		// Not all bones may end up getting saved out, and we need to keep track of that
+		Array<byte> boneIndices;
+		uint lastBone = 0;
+
+		// Run through all bones and create a re-indexing array
+		if (mBones.IsValid())
+		{
+			FOREACH(i, mBones)
+			{
+				Bone& bone = mBones[i];
+
+				// If this bone is not used, there is no point in exporting it
+				if (!bone.mIsUsed && bone.mPosKeys.IsEmpty() && bone.mRotKeys.IsEmpty())
+				{
+					boneIndices.Expand() = 0xFF;
+					continue;
+				}
+
+				// This is a valid bone
+				boneIndices.Expand() = lastBone++;
+			}
+		}
 
 		// Save the skeleton
 		if (mBones.IsValid())
 		{
-			TreeNode& skel = core.AddChild("Skeleton");
+			TreeNode& skel = core.mChildren.Expand();
+
+			// Load the optional skeleton file that may contain saved animations
+			String skelFileName;
+			skelFileName << "_skeleton.r5a";
+			skel.Load(skelFileName.GetBuffer());
+			skel.mTag = "Skeleton";
 
 			// Go through all available bones
 			for (uint i = 0; i < mBones.GetSize(); ++i)
 			{
-				Bone& bone		= mBones[i];
+				Bone& bone = mBones[i];
+
+				// If this bone should not be saved out, skip it
+				if (boneIndices[i] == 0xFF) continue;
+
+				// Add a new bone entry
 				TreeNode& node	= skel.AddChild("Bone");
 
 				// Bone's index goes into the value slot
-				(i >> node.mValue);
+				(boneIndices[i] >> node.mValue);
 
 				// If the node has a parent, save its index
 				if (bone.mParent != -1)
 				{
 					// Child bone -- save the name of the parent
-					node.AddChild("Parent", bone.mParent);
+					node.AddChild("Parent", boneIndices[bone.mParent]);
 				}
 				else
 				{
@@ -1056,7 +1132,28 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 		// Save all materials
 		for (uint i = 0; i < mMaterials.GetSize(); ++i)
 		{
-			Material* mat	= mMaterials[i];
+			Material* mat = mMaterials[i];
+
+			// Check to ensure that this material tag doesn't already exist (loaded from an external file)
+			{
+				bool exists = false;
+				
+				FOREACH(b, graphics.mChildren)
+				{
+					TreeNode& child = graphics.mChildren[b];
+
+					if (child.mTag == "Material" &&
+						child.mValue.IsString() &&
+						child.mValue.AsString() == mat->mName)
+					{
+						exists = true;
+						break;
+					}
+				}
+				if (exists) continue;
+			}
+
+			// Add a new material entry
 			TreeNode& node	= graphics.AddChild("Material", mat->mName);
 
 			node.AddChild("Diffuse", mat->mDiffuse);
@@ -1164,6 +1261,22 @@ bool R5MaxExporter::SaveAscii ( const String& filename )
 					const Vertex& v	 = mesh->mVertices[b];
 					indices.Expand() = v.mBoneIndices;
 					weights.Expand() = v.mBoneWeights;
+
+					// Re-index the bone indices, since not all bones may have been saved out
+					{
+						Color4ub& idx = indices.Back();
+						Color4f&  wt  = weights.Back();
+
+						idx.r = boneIndices[idx.r];
+						idx.g = boneIndices[idx.g];
+						idx.b = boneIndices[idx.b];
+						idx.a = boneIndices[idx.a];
+
+						BoneIndexCheck(idx.r, wt.r, v.mBoneIndices.r);
+						BoneIndexCheck(idx.g, wt.g, v.mBoneIndices.g);
+						BoneIndexCheck(idx.b, wt.b, v.mBoneIndices.b);
+						BoneIndexCheck(idx.a, wt.a, v.mBoneIndices.a);
+					}
 				}
 			}
 
@@ -1209,6 +1322,10 @@ int R5MaxExporter::DoExport (	const char*		filename,
 		mMeshes.Release();
 		mMaterials.Release();
 
+		// If we can load an overriding scale property, use it
+		String scale;
+		if (scale.Load("_scale.txt")) scale >> g_globalScale;
+
 		// Enum all bones first
 		mStage = 0;
 		ei->theScene->EnumTree(this);
@@ -1219,7 +1336,7 @@ int R5MaxExporter::DoExport (	const char*		filename,
 
 		if (mLimbs.IsValid() || mBones.IsValid())
 		{
-			if (!SaveAscii(filename))
+			if (!SaveR5(filename))
 			{
 				Thread::MessageWindow("Save to '%s' failed.\nIs the file write-protected?", filename);
 				retVal = 0;
@@ -1232,7 +1349,6 @@ int R5MaxExporter::DoExport (	const char*		filename,
 		}
 	}
 	mLock.Unlock();
-
 	return 1;
 }
 

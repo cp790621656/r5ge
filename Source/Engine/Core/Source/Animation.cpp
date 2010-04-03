@@ -12,6 +12,8 @@ void Animation::_Reset()
 	mDuration	= 0.0f;
 	mLayer		= 0;
 	mLoop		= false;
+	mRootIndex	= -1;
+	mRootBone.Clear();
 }
 
 //============================================================================================================
@@ -30,6 +32,18 @@ void Animation::SetFrames (const Vector2i& val)
 		mBones.Clear();
 		mBones.Unlock();
 	}
+}
+
+//============================================================================================================
+// Helper function that determines whether the specified bone is parented to the specified parent
+//============================================================================================================
+
+bool IsLinkedTo (uint index, uint parent, const Animation::Bones& bones)
+{
+	if (index == parent) return true;
+	if (index == -1 || bones.GetSize() < index || bones[index] == 0) return false;
+	index = bones[index]->GetParent();
+	return IsLinkedTo(index, parent, bones);
 }
 
 //============================================================================================================
@@ -55,18 +69,44 @@ void Animation::Fill (const Bones& bones)
 		{
 			bones.Lock();
 			{
-				for (uint i = 0; i < bones.GetSize(); ++i)
+				mBones.ExpandTo(bones.GetSize());
+
+				// Run through all bones and find the root bone
+				if (mRootBone.IsValid())
+				{
+					FOREACH(i, bones)
+					{
+						const Bone* bone = bones[i];
+
+						// Safety check -- if this is ever triggered then the model's bone list got corrupted
+						ASSERT(bone != 0, "Missing bone?");
+						if (bone == 0) continue;
+
+						// If this is our root bone, remember its index
+						if (bone->GetName() == mRootBone)
+						{
+							mRootIndex = i;
+							break;
+						}
+					}
+				}
+
+				// Run through all bones and create animated bone entries
+				FOREACH(i, bones)
 				{
 					const Bone* bone = bones[i];
-					ASSERT(bone != 0, "Missing bone?");
+					if (bone == 0) continue;
 
 					const Bone::PosKeys& posKeys = bone->GetAllPosKeys();
 					const Bone::RotKeys& rotKeys = bone->GetAllRotKeys();
 
-					// Add a new animated bone entry
-					AnimatedBone& animBone = mBones.Expand();
+					// Whether we're going to be using spline-based interpolation
+					AnimatedBone& animBone = mBones[i];
 					animBone.mSmoothV = bone->IsUsingSplinesForPositions();
 					animBone.mSmoothQ = bone->IsUsingSplinesForRotations();
+
+					// If we have a root bone for this animation and this bone is not attached to it, skip it
+					if (mRootIndex != -1 && !IsLinkedTo(i, mRootIndex, bones)) continue;
 
 					// Add all bone position keys to the animatable node's spline
 					for (uint b = 0; b < posKeys.GetSize(); ++b)
@@ -161,6 +201,7 @@ bool Animation::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		else if (node.mTag == "Duration")		{ node.mValue >> mDuration;	}
 		else if (node.mTag == "Looping")		{ node.mValue >> mLoop;		}
 		else if (node.mTag == "Layer")			{ node.mValue >> mLayer;	}
+		else if (node.mTag == "Root Bone")		{ node.mValue >> mRootBone; }
 	}
 	return true;
 }
@@ -176,5 +217,6 @@ bool Animation::SerializeTo (TreeNode& root) const
 	node.AddChild("Duration", mDuration);
 	node.AddChild("Looping", mLoop);
 	node.AddChild("Layer", mLayer);
+	if (mRootBone.IsValid()) node.AddChild("Root Bone", mRootBone);
 	return true;
 }
