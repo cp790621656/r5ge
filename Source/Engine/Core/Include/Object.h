@@ -347,7 +347,7 @@ public:
 	{
 		if (threadSafe) Lock();
 		Script* script = _GetScript(Type::ClassID());
-		if (script != 0) delete script;
+		if (script != 0) script->DestroySelf(false);
 		if (threadSafe) Unlock();
 	}
 };

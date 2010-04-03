@@ -60,13 +60,18 @@ bool Script::IsKeyDown (uint key)
 // Destroys this script - this action is queued until next update
 //============================================================================================================
 
-void Script::DestroySelf()
+void Script::DestroySelf (bool threadSafe)
 {
 	if (mObject != 0)
 	{
 		OnDestroy();
-		mObject->mScripts.Remove(this);
-		mObject->mDeletedScripts.Expand() = this;
+
+		if (threadSafe) mObject->Lock();
+		{
+			mObject->mScripts.Remove(this);
+			mObject->mDeletedScripts.Expand() = this;
+		}
+		if (threadSafe) mObject->Unlock();
 		mObject = 0;
 	}
 }

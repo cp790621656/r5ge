@@ -49,8 +49,8 @@ protected:
 	// It's not possible to create just plain scripts -- they need to be derived from
 	Script() : mEnabled(true), mSerializable(true) {}
 
-	// Destroys this script - this action is queued until next update
-	void DestroySelf();
+	// Convenience function meant to be used from inside the protected functions
+	void DestroySelf() { DestroySelf(false); }
 
 public:
 
@@ -65,6 +65,9 @@ public:
 
 	// Convenience function: mObject->GetCore()->IsKeyDown(key);
 	bool IsKeyDown (uint key);
+
+	// Destroys this script - this action is queued until next update
+	void DestroySelf (bool threadSafe);
 
 	// It's possible to choose not to serialize certain scripts
 	bool IsSerializable() const { return mSerializable; }
