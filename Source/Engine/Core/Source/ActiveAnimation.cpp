@@ -100,7 +100,7 @@ bool ActiveAnimation::AdvanceSample (float delta, const Skeleton::Bones& bones, 
 
 				// We're fading in the animation
 				mCurrentAlpha = 1.0f - (mFadeInEnd - mPlaybackFactor) / mFadeInEnd;
-				mCurrentAlpha = Interpolation::Cosine(0.0f, 1.0f, mCurrentAlpha);
+				mCurrentAlpha = Interpolation::Hermite(0.0f, 1.0f, mCurrentAlpha);
 			}
 			else if (mPlaybackFactor > mFadeOutStart)
 			{
@@ -108,7 +108,7 @@ bool ActiveAnimation::AdvanceSample (float delta, const Skeleton::Bones& bones, 
 
 				// We're fading out the animation
 				mCurrentAlpha = 1.0f - (mPlaybackFactor - mFadeOutStart) / (1.0f - mFadeOutStart);
-				mCurrentAlpha = Interpolation::Cosine(0.0f, 1.0f, mCurrentAlpha);
+				mCurrentAlpha = Interpolation::Hermite(0.0f, 1.0f, mCurrentAlpha);
 			}
 			else
 			{

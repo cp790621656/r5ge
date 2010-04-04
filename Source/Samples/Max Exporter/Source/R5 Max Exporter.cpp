@@ -916,8 +916,11 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	{
 		_ExportKeys(bone, node, parent, interval);
 
-		CleanKeys (bone->mPosKeys, bone->mPos, precise);
-		CleanKeys (bone->mRotKeys, bone->mRot, precise);
+		if (!isBipedRoot)
+		{
+			CleanKeys (bone->mPosKeys, bone->mPos, precise);
+			CleanKeys (bone->mRotKeys, bone->mRot, precise);
+		}
 
 		// If we happen to get no keys out of the process, let's try the high precision next
 		precise = (bone->mPosKeys.IsEmpty() && bone->mRotKeys.IsEmpty());
@@ -928,8 +931,11 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	{
 		_ExportFull(bone, node, parent, interval);
 
-		CleanKeys (bone->mPosKeys, bone->mPos, precise);
-		CleanKeys (bone->mRotKeys, bone->mRot, precise);
+		if (!isBipedRoot)
+		{
+			CleanKeys (bone->mPosKeys, bone->mPos, precise);
+			CleanKeys (bone->mRotKeys, bone->mRot, precise);
+		}
 	}
 }
 

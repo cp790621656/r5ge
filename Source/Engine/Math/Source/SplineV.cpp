@@ -29,6 +29,8 @@ void SplineV::AddKey (float time, const Vector3f& pos)
 
 void SplineV::Smoothen()
 {
+	mIsSmooth = true;
+
 	if (mCp.GetSize() > 2)
 	{
 		CtrlPoint *past, *current, *future, *end;
@@ -68,9 +70,6 @@ void SplineV::Smoothen()
 			p3.mTan = p0.mTan;
 		}
 	}
-
-	// The spline is now smooth
-	mIsSmooth = true;
 }
 
 //============================================================================================================
