@@ -271,7 +271,7 @@ void UIWidget::DestroySelf()
 
 void UIWidget::BringToFront (UIWidget* child)
 {
-	if (child != 0)
+	if (child != 0 && mChildren.IsValid() && mChildren.Back() != child)
 	{
 		if (mChildren.Remove(child)) mChildren.Expand() = child;
 		child->SetDirty();
