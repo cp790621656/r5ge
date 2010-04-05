@@ -916,7 +916,11 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	{
 		_ExportKeys(bone, node, parent, interval);
 
-		if (!isBipedRoot)
+		// NOTE: The root bone's rotation going into the animation should match its rotation when
+		// the animation ends. Uncommenting this line will force-write root bone's keys at each
+		// keyframe -- something that's not needed if the rule above is followed.
+
+		//if (!isBipedRoot)
 		{
 			CleanKeys (bone->mPosKeys, bone->mPos, precise);
 			CleanKeys (bone->mRotKeys, bone->mRot, precise);
@@ -931,7 +935,7 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	{
 		_ExportFull(bone, node, parent, interval);
 
-		if (!isBipedRoot)
+		//if (!isBipedRoot)
 		{
 			CleanKeys (bone->mPosKeys, bone->mPos, precise);
 			CleanKeys (bone->mRotKeys, bone->mRot, precise);
@@ -1008,7 +1012,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 	if (mLimbs.IsValid())
 	{
 		TreeNode root ("Root");
-		TreeNode& graphics	= root.mChildren.Expand();
+		TreeNode& graphics	= root.AddChild("Graphics");
 		TreeNode& core		= root.AddChild("Core");
 		TreeNode& model		= root.AddChild("Template");
 
