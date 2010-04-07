@@ -64,7 +64,7 @@ bool _Locate (String& file)
 // Loads the specified font file, creating a font of specified size
 //============================================================================================================
 
-bool Font::Load (const String& filename, byte fontSize)
+bool Font::Load (const String& filename, byte fontSize, byte padding)
 {
 	// Temporary memory buffer used to load the file
 	Memory in;
@@ -74,7 +74,7 @@ bool Font::Load (const String& filename, byte fontSize)
 	// Try to load the file, and ensure that it has enough data for a header, at least
 	if (_Locate(mLoadingFN) && in.Load(mLoadingFN) && in.GetSize() > 4)
 	{
-		if ( Font::Load(in.GetBuffer(), in.GetSize(), fontSize) )
+		if ( Font::Load(in.GetBuffer(), in.GetSize(), fontSize, padding) )
 		{
 			mSource = mLoadingFN;
 			mLoadingFN.Release();
@@ -89,16 +89,18 @@ bool Font::Load (const String& filename, byte fontSize)
 // Create the font using the specified input memory buffer and font size
 //============================================================================================================
 
-bool Font::Load (const void* buffer, uint bufferSize, byte fontSize)
+bool Font::Load (const void* buffer, uint bufferSize, byte fontSize, byte padding)
 {
 	if (buffer == 0 || bufferSize < 4 || fontSize == 0) return false;
 
-	ASSERT(((uint)mSize + mPadding * 2 < 100), "Requested font is excessively large");
+	ASSERT(((uint)fontSize + (padding << 1) < 100), "Requested font is excessively large");
 	
 	g_lib.Lock();
 	{
-		mBuffer.Release();
 		mSize = fontSize;
+		mPadding = padding;
+
+		mBuffer.Release();
 		FT_Face face;
 
 		// Try to create the font
@@ -118,7 +120,7 @@ bool Font::Load (const void* buffer, uint bufferSize, byte fontSize)
 
 		Vector2i topLeft, bottomRight;
 
-		// Run through all glyphs and figure out some useful measurments
+		// Run through all glyphs and figure out some useful measurements
 		for (int i = 0; i < 95; ++i)
 		{
 			if ( FT_Load_Char(face, i + 32, FT_FLAGS) == 0 )
@@ -142,7 +144,7 @@ bool Font::Load (const void* buffer, uint bufferSize, byte fontSize)
 		int height = topLeft.y - bottomRight.y;
 
 		// Figure out the size of each glyph
-		mGlyphSize	= ((width > height) ? width : height) + mPadding;
+		mGlyphSize = ((width > height) ? width : height) + (mPadding << 1);
 
 		if (mGlyphSize == 0)
 		{
@@ -215,7 +217,8 @@ bool Font::Load (const void* buffer, uint bufferSize, byte fontSize)
 					for (uint bitmapX = 0; bitmapX < bitmapWidth; ++bitmapX)
 					{
 						uint bitmapIndex	= bitmapY * bitmapWidth + bitmapX;
-						uint textureIndex	= (textureY + bitmapY) * mWidth + textureX + bitmapX;
+						uint paddingOffset	= mWidth * mPadding + mPadding;
+						uint textureIndex	= (textureY + bitmapY) * mWidth + textureX + bitmapX + paddingOffset;
 						byte pixel			= bitmap->buffer[bitmapIndex];
 						
 						// If the pixel is not black...

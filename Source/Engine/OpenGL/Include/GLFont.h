@@ -40,10 +40,10 @@ public:
 	virtual const ITexture* GetTexture()		const { return mTex; }
 
 	// Loads the specified font file, creating a font of specified size
-	virtual bool Load (const String& filename, byte fontSize);
+	virtual bool Load (const String& filename, byte fontSize, byte padding = 0);
 
 	// Create the font using the specified input memory buffer and font size
-	virtual bool Load (const void* buffer, uint bufferSize, byte fontSize);
+	virtual bool Load (const void* buffer, uint bufferSize, byte fontSize, byte padding = 0);
 
 	// Figures out the length of the text if it was printed
 	virtual uint GetLength

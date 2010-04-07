@@ -73,10 +73,10 @@ void GLFont::Release()
 // Loads the specified font file, creating a font of specified size
 //============================================================================================================
 
-bool GLFont::Load (const String& filename, byte fontSize)
+bool GLFont::Load (const String& filename, byte fontSize, byte padding)
 {
 	mLock.Lock();
-	bool retVal = mFont.Load(filename, fontSize) && _Reload();
+	bool retVal = mFont.Load(filename, fontSize, padding) && _Reload();
 	mLock.Unlock();
 	return retVal;
 }
@@ -85,10 +85,10 @@ bool GLFont::Load (const String& filename, byte fontSize)
 // Create the font using the specified input memory buffer and font size
 //============================================================================================================
 
-bool GLFont::Load (const void* buffer, uint bufferSize, byte fontSize)
+bool GLFont::Load (const void* buffer, uint bufferSize, byte fontSize, byte padding)
 {
 	mLock.Lock();
-	bool retVal = mFont.Load(buffer, bufferSize, fontSize) && _Reload();
+	bool retVal = mFont.Load(buffer, bufferSize, fontSize, padding) && _Reload();
 	mLock.Unlock();
 	return retVal;
 }

@@ -60,10 +60,10 @@ public:
 	uint			GetWidth()	const	{ return mWidth; }
 
 	// Loads the specified font file, creating a font of specified size
-	bool Load (const String& filename, byte fontSize);
+	bool Load (const String& filename, byte fontSize, byte padding = 0);
 
 	// Create the font using the specified input memory buffer and font size
-	bool Load (const void* buffer, uint bufferSize, byte fontSize);
+	bool Load (const void* buffer, uint bufferSize, byte fontSize, byte padding = 0);
 
 	// Figures out the length of the text if it was printed
 	uint GetLength
