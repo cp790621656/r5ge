@@ -261,7 +261,6 @@ bool Memory::Load (const char* filename)
 		fseek(fp, 0, SEEK_SET);
 		fread(buffer, 1, size, fp);
 	}
-
 	fclose(fp);
 	return true;
 }
@@ -272,6 +271,8 @@ bool Memory::Load (const char* filename)
 
 bool Memory::Save (const char* filename)
 {
+	if (mBuffer == 0) return false;
+
 	FILE* fp = fopen(filename, "wb");
 	if (fp == 0) return false;
 	

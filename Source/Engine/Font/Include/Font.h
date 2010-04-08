@@ -21,7 +21,7 @@ private:
 	//  Individual glyph information struct
 	struct Glyph
 	{
-		uint	mWidth;		// Actual character width for this glyph
+		byte	mWidth;		// Actual character width for this glyph
 		float	mLeft;		// left, right, top, and bottom are all texture coordinates
 		float	mRight;
 		float	mTop;
@@ -60,10 +60,16 @@ public:
 	uint			GetWidth()	const	{ return mWidth; }
 
 	// Loads the specified font file, creating a font of specified size
-	bool Load (const String& filename, byte fontSize, byte padding = 0);
+	bool Load (const String& filename, byte fontSize = 0, byte padding = 0);
 
 	// Create the font using the specified input memory buffer and font size
-	bool Load (const void* buffer, uint bufferSize, byte fontSize, byte padding = 0);
+	bool Load (const byte* buffer, uint bufferSize, byte fontSize = 0, byte padding = 0);
+
+	// Saves the font in R5F format into the specified memory buffer
+	bool Save (Memory& mem) const;
+
+	// Saves the font into the specified file (R5F font format, or TGA texture + R5A glyph definition file)
+	bool Save (const String& filename) const;
 
 	// Figures out the length of the text if it was printed
 	uint GetLength

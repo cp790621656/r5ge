@@ -1,9 +1,13 @@
 #include "../Include/_All.h"
 
+// Whether the FreeType library will be compiled and used
+//#define R5_USE_FREETYPE
+
 //============================================================================================================
 //  FreeType Library
 //============================================================================================================
 
+#ifdef R5_USE_FREETYPE
 #include <freetype/config/ftheader.h>
 #include FT_FREETYPE_H
 
@@ -38,6 +42,10 @@ struct FreeType
 
 FreeType  g_lib;
 
+#else
+using namespace R5;
+#endif
+
 //============================================================================================================
 // Locates a font file, if it's nearby
 //============================================================================================================
@@ -52,11 +60,13 @@ bool _Locate (String& file)
 	file = "Fonts/" + name;
 	if (System::FileExists(file)) return true;
 
-	file << ".ttf";
+	file << ".r5f";
 	if (System::FileExists(file)) return true;
 
-	file = "Resources/" + file;
+#ifdef R5_USE_FREETYPE
+	file.Replace(".r5f", ".ttf", true);
 	if (System::FileExists(file)) return true;
+#endif
 	return false;
 }
 
@@ -72,7 +82,14 @@ bool Font::Load (const String& filename, byte fontSize, byte padding)
 	mLoadingFN = filename;
 
 	// Try to load the file, and ensure that it has enough data for a header, at least
-	if (_Locate(mLoadingFN) && in.Load(mLoadingFN) && in.GetSize() > 4)
+	if (!_Locate(mLoadingFN) || !in.Load(mLoadingFN) || !(in.GetSize() > 5))
+	{
+		mLoadingFN = filename;
+		mLoadingFN << " ";
+		mLoadingFN << (uint)fontSize;
+	}
+
+	if (in.IsValid() || (_Locate(mLoadingFN) && in.Load(mLoadingFN) && in.GetSize() > 5))
 	{
 		if ( Font::Load(in.GetBuffer(), in.GetSize(), fontSize, padding) )
 		{
@@ -89,10 +106,35 @@ bool Font::Load (const String& filename, byte fontSize, byte padding)
 // Create the font using the specified input memory buffer and font size
 //============================================================================================================
 
-bool Font::Load (const void* buffer, uint bufferSize, byte fontSize, byte padding)
+bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte padding)
 {
-	if (buffer == 0 || bufferSize < 4 || fontSize == 0) return false;
+	if (buffer == 0 || bufferSize < 5) return false;
 
+	// See if the file is in the R5F format
+	if (buffer[0] == '/' &&
+		buffer[1] == '/' &&
+		buffer[2] == 'R' &&
+		buffer[3] == '5' &&
+		buffer[4] == 'F')
+	{
+		buffer += 5;
+		bufferSize -= 5;
+
+		return (Memory::Extract(buffer, bufferSize, mSize) &&
+				Memory::Extract(buffer, bufferSize, mPadding) &&
+				Memory::Extract(buffer, bufferSize, mGlyphSize) &&
+				Memory::Extract(buffer, bufferSize, mGlyph, sizeof(Glyph) * 95) &&
+				Memory::Extract(buffer, bufferSize, mWidth) &&
+				Decompress(buffer, bufferSize, mBuffer));
+	}
+
+#ifndef R5_USE_FREETYPE
+	return false;
+#else
+	// If this point was reached then the font is in FreeType format
+	if (fontSize == 0) return false;
+
+	// Safety check
 	ASSERT(((uint)fontSize + (padding << 1) < 100), "Requested font is excessively large");
 	
 	g_lib.Lock();
@@ -193,7 +235,7 @@ bool Font::Load (const void* buffer, uint bufferSize, byte fontSize, byte paddin
 				FT_Bitmap* bitmap = &face->glyph->bitmap;
 				FT_Glyph_Metrics* metrics = &face->glyph->metrics;
 
-				mGlyph[glyphIndex].mWidth	= (uint)(metrics->horiAdvance >> 6);
+				mGlyph[glyphIndex].mWidth	= (byte)(metrics->horiAdvance >> 6);
 				mGlyph[glyphIndex].mLeft	= textureGlyphWidth * x;
 				mGlyph[glyphIndex].mRight	= textureGlyphWidth * (x + 1);
 				mGlyph[glyphIndex].mTop		= textureGlyphWidth * y;
@@ -237,6 +279,32 @@ bool Font::Load (const void* buffer, uint bufferSize, byte fontSize, byte paddin
 	}
 	g_lib.Unlock();
 	return true;
+#endif
+}
+
+//============================================================================================================
+// Saves the font in R5F format into the specified memory buffer
+//============================================================================================================
+
+bool Font::Save (Memory& mem) const
+{
+	mem.Append("//R5F", 5);
+	mem.Append(mSize);
+	mem.Append(mPadding);
+	mem.Append(mGlyphSize);
+	mem.Append(mGlyph, sizeof(Glyph) * 95);
+	mem.Append(mWidth);
+	return Compress(mBuffer, mem);
+}
+
+//============================================================================================================
+// Saves the font into the specified file (R5F font format, or TGA texture + R5A glyph definition file)
+//============================================================================================================
+
+bool Font::Save (const String& filename) const
+{
+	Memory comp;
+	return Save(comp) && comp.Save(filename);
 }
 
 //============================================================================================================

@@ -85,7 +85,7 @@ bool GLFont::Load (const String& filename, byte fontSize, byte padding)
 // Create the font using the specified input memory buffer and font size
 //============================================================================================================
 
-bool GLFont::Load (const void* buffer, uint bufferSize, byte fontSize, byte padding)
+bool GLFont::Load (const byte* buffer, uint bufferSize, byte fontSize, byte padding)
 {
 	mLock.Lock();
 	bool retVal = mFont.Load(buffer, bufferSize, fontSize, padding) && _Reload();

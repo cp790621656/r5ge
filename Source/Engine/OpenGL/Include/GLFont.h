@@ -43,7 +43,7 @@ public:
 	virtual bool Load (const String& filename, byte fontSize, byte padding = 0);
 
 	// Create the font using the specified input memory buffer and font size
-	virtual bool Load (const void* buffer, uint bufferSize, byte fontSize, byte padding = 0);
+	virtual bool Load (const byte* buffer, uint bufferSize, byte fontSize, byte padding = 0);
 
 	// Figures out the length of the text if it was printed
 	virtual uint GetLength
