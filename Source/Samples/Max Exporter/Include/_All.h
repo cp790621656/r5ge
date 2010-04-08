@@ -29,6 +29,7 @@
 #define BIPED_NODE_CLASSID	::Class_ID(0x9154, 0)
 //#define BIPED_CLASSID		::Class_ID(0x9155, 0)
 #define BIPED_ROOT_CLASSID	::Class_ID(0x9156, 0)
+#define BONE_CLASSID		::Class_ID(BONE_CLASS_ID, 0)
 
 // Pesky global defines that should never be part of the global namespace
 #undef min

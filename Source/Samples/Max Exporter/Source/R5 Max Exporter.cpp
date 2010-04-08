@@ -154,7 +154,9 @@ bool IsBone (::INode* node)
 	if (ctrlType == BIPED_ROOT_CLASSID || ctrlType == BIPED_NODE_CLASSID) return true;
 
 	::Object* object = node->EvalWorldState(0).obj;
-	return (object != 0 && object->ClassID() == BONE_OBJ_CLASSID);
+	return (object != 0 && (object->ClassID() == BONE_OBJ_CLASSID ||
+							object->ClassID() == BONE_CLASSID ||
+							object->ClassID() == DUMMY_CLASSID));
 }
 
 //============================================================================================================
@@ -475,7 +477,7 @@ uint R5MaxExporter::GetBoneIndex (const String& name)
 
 	// We should already have the bone struct *before* exporting the skin
 	ASSERT(mBones.IsValid(), "Missing bones?");
-	return 0;
+	return -1;
 }
 
 //============================================================================================================
@@ -513,7 +515,8 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 		//TCHAR* name = skin->GetBoneName(i);
 		INode* boneNode = skin->GetBone(i);
 		TCHAR* nodeName = boneNode->GetName();
-		boneIndices.Expand() = GetBoneIndex( nodeName );
+		uint index = GetBoneIndex(nodeName);
+		if (index != -1) boneIndices.Expand() = index;
 	}
 
 	// Apparently parity determines whether the indices are clockwise or counter-clockwise
@@ -1049,7 +1052,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				Bone& bone = mBones[i];
 
 				// If this bone is not used, there is no point in exporting it
-				if (!bone.mIsUsed && bone.mPosKeys.IsEmpty() && bone.mRotKeys.IsEmpty())
+				if (!bone.mIsUsed)
 				{
 					boneIndices.Expand() = 0xFF;
 					continue;
@@ -1080,7 +1083,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				if (boneIndices[i] == 0xFF) continue;
 
 				// Add a new bone entry
-				TreeNode& node	= skel.AddChild("Bone");
+				TreeNode& node = skel.AddChild("Bone");
 
 				// Bone's index goes into the value slot
 				(boneIndices[i] >> node.mValue);
@@ -1261,7 +1264,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 			}
 
 			// If the mesh contains skinning information, save it
-			if (mesh->mHasWeights)
+			if (mesh->mHasWeights && mBones.IsValid())
 			{
 				Array<Color4f>&		weights = node.AddChild("Bone Weights").mValue.ToColor4fArray();
 				Array<Color4ub>&	indices = node.AddChild("Bone Indices").mValue.ToColor4ubArray();
@@ -1383,38 +1386,43 @@ int R5MaxExporter::callback (::INode* node)
 		::Modifier* mod = GetModifier(node, SKIN_CLASSID);
 		::ISkin* skin = (mod == 0 ? 0 : (ISkin*)mod->GetInterface(I_SKIN));
 
-		// Evalulate the object at its present state
+		// Evaluate the object at its present state
 		::Object* object = node->EvalWorldState( skin == 0 ? time : 0 ).obj;
 		::INode*  parent = node->GetParentNode();
 
-		// Safety reasons, although I believe neither of these can ever be null
-		if (nodeController != 0 && object != 0)
+		if (object != 0)
 		{
-			// We need to know the object's class ID so we can decide what to do with it
-			::Class_ID controllerType	= nodeController->ClassID();
-			::Class_ID objectType		= object->ClassID();
+			::Class_ID objectType = object->ClassID();
 
-			if ( objectType != DUMMY_CLASSID )
+			String name (node->GetName());
+
+			if (!name.Contains("Ignore Me"))
 			{
-				if ( controllerType == BIPED_ROOT_CLASSID )
-				{
-					// Biped root
-					if (mStage == 0) ExportBone(node, interval, true, true);
-				}
-				else if ( controllerType == BIPED_NODE_CLASSID )
-				{
-					// Biped bone
-					if (mStage == 0) ExportBone(node, interval, false, true);
-				}
-				else if ( objectType == BONE_OBJ_CLASSID )
+				if ( objectType == BONE_OBJ_CLASSID || objectType == BONE_CLASSID || objectType == DUMMY_CLASSID )
 				{
 					// Regular bone
 					if (mStage == 0) ExportBone(node, interval, false, false);
 				}
-				else if ( IsGeometric(object) )
+				else if (nodeController != 0)
 				{
-					// If the object can be considered geometric, export it as geometry
-					if (mStage == 1) ExportGeometry(node, object, time, skin);
+					// We need to know the object's class ID so we can decide what to do with it
+					::Class_ID controllerType = nodeController->ClassID();
+
+					if ( controllerType == BIPED_ROOT_CLASSID )
+					{
+						// Biped root
+						if (mStage == 0) ExportBone(node, interval, true, true);
+					}
+					else if ( controllerType == BIPED_NODE_CLASSID )
+					{
+						// Biped bone
+						if (mStage == 0) ExportBone(node, interval, false, true);
+					}
+					else if ( objectType != DUMMY_CLASSID && IsGeometric(object) )
+					{
+						// If the object can be considered geometric, export it as geometry
+						if (mStage == 1) ExportGeometry(node, object, time, skin);
+					}
 				}
 			}
 		}

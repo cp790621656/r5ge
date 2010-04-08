@@ -491,26 +491,29 @@ void Model::_OnSkeletonChanged()
 			const Bone* bone = bones[i];
 			ASSERT(bone != 0, "Missing bone?");
 
-			// Add a new bone transform and copy over the parent's ID as well as the bone's orientation
-			// so we have all this information locally and don't have to go through bones again.
-			BoneTransform& trans = mTransforms.Expand();
-			trans.mParent		 = bone->GetParent();
-			trans.mRelativePos	 = bone->GetPosition();
-			trans.mRelativeRot	 = bone->GetRotation();
-
-			if (trans.mParent < mTransforms.GetSize())
+			if (bone != 0)
 			{
-				// Calculate the bind pose transformation matrix
-				trans.CalculateTransformMatrix( mTransforms[trans.mParent] );
-			}
-			else
-			{
-				trans.CalculateTransformMatrix();
-			}
+				// Add a new bone transform and copy over the parent's ID as well as the bone's orientation
+				// so we have all this information locally and don't have to go through bones again.
+				BoneTransform& trans = mTransforms.Expand();
+				trans.mParent		 = bone->GetParent();
+				trans.mRelativePos	 = bone->GetPosition();
+				trans.mRelativeRot	 = bone->GetRotation();
 
-			// Calculate the inverse transforms
-			trans.mInvBindPos = -trans.mAbsolutePos;
-			trans.mInvBindRot = -trans.mAbsoluteRot;
+				if (trans.mParent < mTransforms.GetSize())
+				{
+					// Calculate the bind pose transformation matrix
+					trans.CalculateTransformMatrix( mTransforms[trans.mParent] );
+				}
+				else
+				{
+					trans.CalculateTransformMatrix();
+				}
+
+				// Calculate the inverse transforms
+				trans.mInvBindPos = -trans.mAbsolutePos;
+				trans.mInvBindRot = -trans.mAbsoluteRot;
+			}
 
 			// We want to have the proper number of matrices as well
 			mMatrices.Expand();

@@ -101,6 +101,21 @@ Root
 				}
 			}
 		}
+
+		Material = "01 - Default"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Material"
+			}
+
+			Technique = "Opaque"
+		}
 	}
 
 	UI
@@ -290,7 +305,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "876"
+					Text = "484"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -342,12 +357,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.003221 0.018280 0.625044
-			Rotation = -0.002037 -0.101500 0.994633 0.019964
+			Position = 0.001267 0.018200 0.617190
+			Rotation = -0.031823 0.187256 -0.967918 0.164493
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 2.072373 50.000000
+			Dolly = 0.000000 1.628507 50.000000
 
 			Directional Light = "Default Light"
 			{
@@ -396,8 +411,8 @@ Root
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
-				Min = -0.591786 -0.119999 0.014681
-				Max = 0.598229 0.156559 1.235407
+				Min = -0.239554 -0.124533 -0.000917
+				Max = 0.242087 0.160932 1.235296
 				Layer = 10
 				Model = "Default Model"
 			}
@@ -415,5 +430,6 @@ Root
 		"Models/fern.r5a"
 		"Models/peasant.r5c"
 		"../../DotC/Resources/Models/NPCs/peasant.r5a"
+		"C:\Users\michaell\Documents\3dsmax\export\test.r5a"
 	}
 }
