@@ -19,7 +19,7 @@ Root
 
 	UI
 	{
-		Default Skin = "Default"
+		Default Skin = "Neon"
 		Default Font = "Arial 15"
 		Tooltip Delay = 1.000000
 
@@ -31,7 +31,7 @@ Root
 				Right = 0.000000 293.000000
 				Top = 0.000000 16.000000
 				Bottom = 0.000000 207.000000
-				Alpha = 1.000000
+				Alpha = 0.850000
 				Titlebar Height = 22
 				Resizable = true
 				Color = 1.000000 1.000000 1.000000
@@ -41,6 +41,27 @@ Root
 				Receives Events = true
 				Tooltip = "This is a basic window created in the UI Layout section of [FF8800]Basic Application.txt"
 				Layer = 0
+				
+				Button = "Close"
+				{
+					Left = 1 -22
+					Right = 1 0
+					Top = 0 -22
+					Bottom = 0 0
+					Skin = "Default"
+					Text = "X"
+					UIScript = "USDestroyWindow"
+				}
+				
+				Button = "Button Test"
+				{
+					Left = 0.5 -50
+					Right = 0.5 50
+					Top = 0 40
+					Bottom = 0 60
+					Skin = "Default"
+					Text = "Click Me"
+				}
 			}
 		}
 	}
@@ -48,6 +69,7 @@ Root
 	Core
 	{
 		Execute = "Config/Leo UI Skin.txt"
+		Execute = "Config/Neon UI Skin.txt"
 	}
 
 	Scene

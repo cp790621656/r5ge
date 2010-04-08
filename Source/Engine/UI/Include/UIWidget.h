@@ -119,8 +119,7 @@ public:
 	void SetTooltip	(const String& text)	{ mTooltip = text;		}
 	void SetLayer	(int layer, bool setDirty = true);
 
-	// Destroys this widget. The widget is only deleted immediately if it has no parent.
-	// If it does have a parent, as in the case of most widgets, it gets scheduled for deletion instead.
+	// Marks the widget as needing to be destroyed next update
 	void DestroySelf();
 
 	// Brings the widget to the foreground
@@ -207,6 +206,9 @@ public:
 	// Function called after the parent and root have been set
 	virtual void OnInit() {}
 
+	// Function called when the widget is being destroyed
+	virtual void OnDestroy() {}
+
 	// Called when something changes in the texture
 	virtual void OnTextureChanged (const ITexture* ptr) {}
 
@@ -264,7 +266,7 @@ public:
 	{
 		UIScript* script = _GetScript(Type::ClassID());
 		if (script == 0) return false;
-		_DelayedDelete(script);
+		script->DestroySelf();
 		return true;
 	}
 

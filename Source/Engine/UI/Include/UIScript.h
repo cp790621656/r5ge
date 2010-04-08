@@ -65,6 +65,9 @@ public:
 	// Initialization function is called once the script has been created
 	virtual void OnInit() {}
 
+	// Function called when the UI script is being destroyed
+	virtual void OnDestroy() {}
+
 	// Virtual functions that should be overwritten to add functionality
 	virtual void OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{}
 	virtual void OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{}

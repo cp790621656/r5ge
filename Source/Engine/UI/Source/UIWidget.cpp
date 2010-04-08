@@ -248,14 +248,27 @@ void UIWidget::SetLayer (int layer, bool setDirty)
 }
 
 //============================================================================================================
-// Destroys this widget. The widget is only deleted immediately if it has no parent.
-// If it does have a parent, as in the case of most widgets, it gets scheduled for deletion instead.
+// Marks the widget as needing to be destroyed next update
 //============================================================================================================
 
 void UIWidget::DestroySelf()
 {
 	if (mParent != 0)
 	{
+		// Remove all references to this widget
+		mUI->RemoveAllReferencesTo(this);
+
+		// Destroy all scripts
+		for (uint i = mScripts.GetSize(); i > 0; )
+			mScripts[--i]->DestroySelf();
+
+		// Destroy all children
+		for (uint i = mChildren.GetSize(); i > 0; )
+			mChildren[--i]->DestroySelf();
+
+		// Notify the listener
+		OnDestroy();
+
 		// Ensure that the parent knows that the draw queues should be updated
 		SetDirty();
 

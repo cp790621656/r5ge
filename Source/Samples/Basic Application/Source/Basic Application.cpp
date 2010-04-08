@@ -3,12 +3,29 @@ using namespace R5;
 
 //============================================================================================================
 
+struct USDestroyWindow : public UIScript
+{
+	R5_DECLARE_INHERITED_CLASS("USDestroyWindow", USDestroyWindow, UIScript, UIScript);
+
+	virtual void OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+	{
+		if (key == Key::MouseLeft && !isDown && mWidget->GetRegion().Contains(pos))
+		{
+			mWidget->GetParent()->DestroySelf();
+		}
+	}
+};
+
+//============================================================================================================
+
 TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+
+	UIScript::Register<USDestroyWindow>();
 }
 
 //============================================================================================================

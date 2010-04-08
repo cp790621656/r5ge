@@ -55,6 +55,7 @@ void UIScript::DestroySelf()
 {
 	if (mWidget != 0)
 	{
+		OnDestroy();
 		mWidget->_DelayedDelete(this);
 		mWidget = 0;
 	}
