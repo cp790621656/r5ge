@@ -13,8 +13,9 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
+		Background Color = 0.000000 0.000000 0.000000 1.000000
 		Fog Range = 50.000000 150.000000
+		Skybox = "LDR Skybox 1"
 
 		Texture = "LDR Skybox 0"
 		{
@@ -55,25 +56,6 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
-		Material = "Magma"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 0.648961 0.325635 1.000000
-			Glow = 0.635104
-			ADT = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/Skinned_D_NS"
-
-				Textures = String[]
-				{
-					"Textures/Stone/magma.hdr"
-					"Textures/Stone/lime_ns.png"
-				}
-			}
-		}
-
 		Material = "Peasant"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -102,19 +84,22 @@ Root
 			}
 		}
 
-		Material = "01 - Default"
+		Material = "Chromatic"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
-			ADT = 0.003922
+			Specular = 0.648961 0.635104 0.621247 1.000000
+			Glow = 0.796767
+			ADT = 0.000000
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Material"
-			}
+				Shader = "Deferred/chromatic"
 
-			Technique = "Opaque"
+				Textures = String[]
+				{
+					"LDR Skybox 1"
+				}
+			}
 		}
 	}
 
@@ -262,7 +247,7 @@ Root
 						Bottom = 0.000000 46.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "Grey Color"
+						Text = "LDR Skybox 1"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
@@ -305,7 +290,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "484"
+					Text = "452"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -318,7 +303,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
+					Alpha = 0.850000
 					Top Color = 0.000000 0.000000 0.000000 0.000000
 					Bottom Color = 0.000000 0.000000 0.000000 1.000000
 					Event Handling = "Normal"
@@ -332,7 +317,7 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "Loaded '../../DotC/Resources/Models/NPCs/peasant.r5a'"
+						Text = "R5 Model Viewer v.1.4.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
 						Shadow = true
 						Alignment = "Center"
 						Event Handling = "None"
@@ -349,7 +334,13 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "../../DotC/Resources/Models/NPCs/peasant.r5a"
+			Source = "Models/teapot.r5b"
+
+			Limb = "Teapot"
+			{
+				Mesh = "Teapot"
+				Material = "Chromatic"
+			}
 		}
 	}
 
@@ -357,17 +348,17 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.001267 0.018200 0.617190
-			Rotation = -0.031823 0.187256 -0.967918 0.164493
+			Position = 0.000000 0.459110 3.156539
+			Rotation = -0.160250 0.256554 -0.808406 0.504955
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 1.628507 50.000000
+			Dolly = 0.000000 11.830863 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.177846 -0.021280 0.116949 -0.977344
+				Rotation = 0.110849 0.045360 -0.376179 -0.919317
 				Scale = 1.000000
 				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
@@ -411,8 +402,8 @@ Root
 				Position = 0.000000 0.000000 0.000000
 				Rotation = 0.000000 0.000000 0.000000 1.000000
 				Scale = 1.000000
-				Min = -0.239554 -0.124533 -0.000917
-				Max = 0.242087 0.160932 1.235296
+				Min = -4.231425 -6.347139 -0.175709
+				Max = 4.231425 7.265358 6.488787
 				Layer = 10
 				Model = "Default Model"
 			}
@@ -421,7 +412,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/fern.r5b"
 		"Models/peasant.r5a"
 		"Models/tree.r5a"
 		"Config/Materials.txt"
@@ -431,5 +421,6 @@ Root
 		"Models/peasant.r5c"
 		"../../DotC/Resources/Models/NPCs/peasant.r5a"
 		"C:\Users\michaell\Documents\3dsmax\export\test.r5a"
+		"Models/teapot.r5b"
 	}
 }

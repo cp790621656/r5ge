@@ -225,6 +225,8 @@ bool Image::Save (Memory& out, const String& extension, const byte* buffer, uint
 	{
 		g_allCodecs.Lock();
 		{
+			_RegisterAll();
+
 			for (uint i = 0; i < g_allCodecs.GetSize(); ++i)
 			{
 				RegisteredCodec& rf = g_allCodecs[i];

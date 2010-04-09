@@ -1,7 +1,7 @@
 #include "../Include/_All.h"
 
 // Whether the FreeType library will be compiled and used
-//#define R5_USE_FREETYPE
+#define R5_USE_FREETYPE
 
 //============================================================================================================
 //  FreeType Library
@@ -238,8 +238,8 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 				mGlyph[glyphIndex].mWidth	= (byte)(metrics->horiAdvance >> 6);
 				mGlyph[glyphIndex].mLeft	= textureGlyphWidth * x;
 				mGlyph[glyphIndex].mRight	= textureGlyphWidth * (x + 1);
-				mGlyph[glyphIndex].mTop		= textureGlyphWidth * y;
-				mGlyph[glyphIndex].mBottom	= textureGlyphWidth * (y + 1);
+				mGlyph[glyphIndex].mTop		= textureGlyphWidth * (mWidth - y);
+				mGlyph[glyphIndex].mBottom	= textureGlyphWidth * (mWidth - y - 1);
 				
 				int left = metrics->horiBearingX >> 6;
 				int top  = face->glyph->bitmap_top;
@@ -250,8 +250,9 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 				uint textureX = x * mGlyphSize + pixelOffsetX;
 				uint textureY = y * mGlyphSize + pixelOffsetY;
 
-				uint bitmapWidth  = bitmap->width;
-				uint bitmapHeight = bitmap->rows;
+				uint bitmapWidth	= bitmap->width;
+				uint bitmapHeight	= bitmap->rows;
+				uint paddingOffset	= (mWidth - 1) * mPadding;
 
 				// Go through all pixels in the bitmap
 				for (uint bitmapY = 0; bitmapY < bitmapHeight; ++bitmapY)
@@ -259,13 +260,19 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 					for (uint bitmapX = 0; bitmapX < bitmapWidth; ++bitmapX)
 					{
 						uint bitmapIndex	= bitmapY * bitmapWidth + bitmapX;
-						uint paddingOffset	= mWidth * mPadding + mPadding;
-						uint textureIndex	= (textureY + bitmapY) * mWidth + textureX + bitmapX + paddingOffset;
 						byte pixel			= bitmap->buffer[bitmapIndex];
 						
 						// If the pixel is not black...
 						if (pixel > 0)
 						{
+							// Texture should have the first character at the top-left corner,
+							// but (0, 0) is actually the bottom-right. This is why we flip the
+							// Y coordinate here, matching the flipped texCoords set above. Doing so
+							// makes the texture look upright when viewed, rather than upside-down.
+
+							uint textureIndex = (mWidth - (textureY + bitmapY) - 1) * mWidth +
+								textureX + bitmapX - paddingOffset;
+
 							// Copy the pixel as alpha over onto the main texture using white (255) for color
 							buffer[textureIndex] = 255 | (pixel << 8);
 						}

@@ -16,7 +16,7 @@ public:
 	typedef IFont::Vertices		Vertices;
 	typedef IFont::Tags			Tags;
 
-private:
+public:
 
 	//  Individual glyph information struct
 	struct Glyph
@@ -53,11 +53,14 @@ private:
 
 public:
 
-	void			Release()			{ mBuffer.Release(); }
-	const String&	GetSource()	const	{ return mSource; }
-	byte			GetSize()	const	{ return mSize; }
-	const Memory&	GetBuffer()	const	{ return mBuffer; }
-	uint			GetWidth()	const	{ return mWidth; }
+	void			Release()				{ mBuffer.Release(); }
+	const String&	GetSource()		const	{ return mSource; }
+	byte			GetSize()		const	{ return mSize; }
+	byte			GetPadding()	const	{ return mPadding; }
+	const Memory&	GetBuffer()		const	{ return mBuffer; }
+	uint			GetWidth()		const	{ return mWidth; }
+	const Glyph*	GetGlyphs()		const	{ return mGlyph; }
+	uint			GetGlyphCount() const	{ return 95; }
 
 	// Loads the specified font file, creating a font of specified size
 	bool Load (const String& filename, byte fontSize = 0, byte padding = 0);
