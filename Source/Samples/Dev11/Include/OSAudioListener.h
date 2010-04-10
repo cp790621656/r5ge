@@ -17,7 +17,7 @@ public:
 	virtual void OnInit()
 	{
 		mAudio = mObject->GetCore()->GetAudio();
-		if (mAudio == 0)DestroySelf();
+		if (mAudio == 0) DestroySelf();
 	}
 
 	virtual void OnUpdate()

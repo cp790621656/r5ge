@@ -207,6 +207,7 @@ void SoundInstance::SetRange (const Vector2f& range)
 
 void SoundInstance::SetEffect (byte effect)
 {
+#ifndef _MACOS
 	if (mEffect != effect)
 	{
 		mEffect = effect;
@@ -226,6 +227,7 @@ void SoundInstance::SetEffect (byte effect)
 		irrklang::ISoundEffectControl* fx = SOUND(mAudioSource)->getSoundEffectControl();
 		fx->disableI3DL2ReverbSoundEffect();
 	}
+#endif
 }
 
 //============================================================================================================

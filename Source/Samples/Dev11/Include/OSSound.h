@@ -27,7 +27,7 @@ public:
 			if (mName.IsEmpty()) return;
 			const Vector3f& pos = mObject->GetAbsolutePosition();
 			ISound* sound = mObject->GetCore()->GetAudio()->GetSound(mName);
-			mInst = sound->Play(pos, mLayer, 0.0f, true);
+			mInst = sound->Play(pos, mLayer, 0.1f, true);
 			mInst->SetEffect(ISoundInstance::Effect::Auditorium);
 		}
 
