@@ -99,7 +99,7 @@ void Font::SetBuffer (const void* buffer, uint width, uint format)
 // Loads the specified font file, creating a font of specified size
 //============================================================================================================
 
-bool Font::Load (const String& filename, byte fontSize, byte padding)
+bool Font::Load (const String& filename, byte fontSize, byte padding, byte spacing)
 {
 	// Temporary memory buffer used to load the file
 	Memory in;
@@ -116,7 +116,7 @@ bool Font::Load (const String& filename, byte fontSize, byte padding)
 
 	if (in.IsValid() || (_Locate(mLoadingFN) && in.Load(mLoadingFN) && in.GetSize() > 5))
 	{
-		if ( Font::Load(in.GetBuffer(), in.GetSize(), fontSize, padding) )
+		if ( Font::Load(in.GetBuffer(), in.GetSize(), fontSize, padding, spacing) )
 		{
 			mSource = mLoadingFN;
 			mLoadingFN.Release();
@@ -131,7 +131,7 @@ bool Font::Load (const String& filename, byte fontSize, byte padding)
 // Create the font using the specified input memory buffer and font size
 //============================================================================================================
 
-bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte padding)
+bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte padding, byte spacing)
 {
 	if (buffer == 0 || bufferSize < 5) return false;
 
@@ -165,6 +165,7 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 #else
 	// If this point was reached then the font is in FreeType format
 	if (fontSize == 0) return false;
+	if (spacing > padding) padding = spacing;
 
 	// Safety check
 	ASSERT(((uint)fontSize + (padding << 1) < 100), "Requested font is excessively large");
@@ -276,7 +277,7 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 				FT_Bitmap* bitmap = &face->glyph->bitmap;
 				FT_Glyph_Metrics* metrics = &face->glyph->metrics;
 
-				mGlyphs[glyphIndex].mWidth	= (byte)(metrics->horiAdvance >> 6);
+				mGlyphs[glyphIndex].mWidth	= (byte)(metrics->horiAdvance >> 6) + (spacing << 1);
 				mGlyphs[glyphIndex].mLeft	= textureGlyphWidth * x;
 				mGlyphs[glyphIndex].mRight	= textureGlyphWidth * (x + 1);
 				mGlyphs[glyphIndex].mTop	= textureGlyphWidth * (mWidth - y);
@@ -311,7 +312,7 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 							// makes the texture look upright when viewed, rather than upside-down.
 
 							uint textureIndex = (mWidth - (textureY + bitmapY) - 1) * mWidth +
-								textureX + bitmapX - paddingOffset;
+								textureX + bitmapX - paddingOffset + spacing;
 
 							// Copy the pixel as alpha over onto the main texture using white (255) for color
 							buffer[textureIndex] = 255 | (pixel << 8);

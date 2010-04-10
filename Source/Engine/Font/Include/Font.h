@@ -77,10 +77,10 @@ public:
 	void SetBuffer (const void* buffer, uint width, uint format);
 
 	// Loads the specified font file, creating a font of specified size
-	bool Load (const String& filename, byte fontSize = 0, byte padding = 0);
+	bool Load (const String& filename, byte fontSize = 0, byte padding = 0, byte spacing = 0);
 
 	// Create the font using the specified input memory buffer and font size
-	bool Load (const byte* buffer, uint bufferSize, byte fontSize = 0, byte padding = 0);
+	bool Load (const byte* buffer, uint bufferSize, byte fontSize = 0, byte padding = 0, byte spacing = 0);
 
 	// Saves the font in R5F format into the specified memory buffer
 	bool Save (Memory& mem) const;
