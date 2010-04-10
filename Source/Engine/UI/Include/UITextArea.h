@@ -91,7 +91,7 @@ public:
 	void SetMaxParagraphs (uint val) { mMaxParagraphs = val; }
 
 	// Adds a new paragraph of specified font and color
-	void AddParagraph (const String& text, const Color3f& color = Color3f(1.0f), bool shadow = true, const IFont* font = 0);
+	void AddParagraph (const String& text, const Color3f& color = Color3f(1.0f), bool shadow = false, const IFont* font = 0);
 
 	// Paragraph drawing style (normal being top-down, chatbox being bottom up, etc)
 	void SetStyle (uint style) { mStyle = style; _MarkAllTexturesAsDirty(); }
