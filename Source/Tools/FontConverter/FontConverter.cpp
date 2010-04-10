@@ -2,7 +2,7 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// FontConverter can be used to convert R5F files into TGA + R5A pairs
+// FontConverter can be used to convert R5F files into TGA + FD pairs and back
 //============================================================================================================
 
 #include "../../Engine/Font/Include/_All.h"
@@ -75,16 +75,16 @@ int main (int argc, char* argv[])
 		String filename;
 		uint size = 15;
 		uint padding = 4;
+		uint spacing = 0;
 
 #ifndef _DEBUG
 		for (int i = 1; i < argc; ++i)
 		{
 			filename = argv[i];
 #else
-			filename = "../../../Resources/Fonts/Arial.ttf";
-			//filename = "../../../Resources/Fonts/Arial 15.r5f";
-			//filename = "../../../Resources/Fonts/Arial 15.fd";
-			//filename = "../../../Resources/Fonts/Arial 15 - out.r5f";
+			filename = "../../../Resources/Fonts/arial.ttf";
+			//filename = "../../../Resources/Fonts/arial 15.r5f";
+			//filename = "../../../Resources/Fonts/arial 15.fd";
 #endif
 			if (filename.EndsWith(".ttf"))
 			{
@@ -92,12 +92,17 @@ int main (int argc, char* argv[])
 				if (i+1 < argc && String(argv[i+1]) >> size)
 				{
 					++i;
-					if (i+1 < argc && String(argv[i+1]) >> padding) ++i;
+					
+					if (i+1 < argc && String(argv[i+1]) >> padding)
+					{
+						++i;
+						if (i+1 < argc && String(argv[i+1]) >> spacing) ++i;
+					}
 				}
 #endif
 				Font font;
 
-				if (font.Load(filename, (byte)size, (byte)padding))
+				if (font.Load(filename, (byte)size, (byte)padding, (byte)spacing))
 				{
 					printf("Loaded %s\n", filename.GetBuffer());
 
@@ -105,7 +110,7 @@ int main (int argc, char* argv[])
 					
 					if (font.Save(filename))
 					{
-						printf("Saved out '%s' (size %u, padding %u)\n", filename.GetBuffer(), size, padding);
+						printf("Saved out '%s'\n - Size %u, padding %u, spacing %u\n", filename.GetBuffer(), size, padding, spacing);
 					}
 					else WRITE_ERROR;
 				}
@@ -206,7 +211,16 @@ int main (int argc, char* argv[])
 #ifndef _DEBUG
 		}
 	}
+	else
+	{
+		puts("Usage: FontConverter font [size] [padding] [spacing]");
+		puts("Example 1: FontConverter arial.ttf 15 4 1");
+		puts("Example 2: FontConverter arial.r5f");
+		puts("Example 3: FontConverter arial.fd");
+		puts("You can also drag the file in question onto this executable in order to convert it.");
+	}
 #endif
+	puts("Press Enter to exit...");
 	getchar();
 	return 0;
 }
