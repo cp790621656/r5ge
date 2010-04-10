@@ -18,7 +18,7 @@ private:
 
 public:
 
-	GLWindow() : mGraphicsThread(0) {}
+	GLWindow() : mGraphicsThread(0), mContext(0) {}
 
 protected:
 

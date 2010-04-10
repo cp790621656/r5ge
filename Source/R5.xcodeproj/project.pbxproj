@@ -169,12 +169,17 @@
 		14DDF2E30E100C000015264B /* Filters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14DDF2E20E100C000015264B /* Filters.cpp */; };
 		14E1AF68110CE9EA0030F626 /* GLSubShader.h in Headers */ = {isa = PBXBuildFile; fileRef = 14E1AF67110CE9EA0030F626 /* GLSubShader.h */; };
 		14E1AF6A110CEA090030F626 /* GLSubShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14E1AF69110CEA090030F626 /* GLSubShader.cpp */; };
+		14E5FB1A115FCD0B002EED30 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14E5FB17115FCD0B002EED30 /* Audio.cpp */; };
+		14E5FB1B115FCD0B002EED30 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14E5FB18115FCD0B002EED30 /* Sound.cpp */; };
+		14E5FB1C115FCD0B002EED30 /* SoundInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14E5FB19115FCD0B002EED30 /* SoundInstance.cpp */; };
+		14E5FB57115FD1F7002EED30 /* Dev11.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14E5FB56115FD1B1002EED30 /* Dev11.cpp */; };
 		14F0F8460ED60FBF0034CF84 /* Shapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8450ED60FBF0034CF84 /* Shapes.cpp */; };
 		14F0F8620ED611F00034CF84 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */; };
 		14F0F8630ED611F00034CF84 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8610ED611F00034CF84 /* PointLight.cpp */; };
 		14F68046112B8021001C7CED /* Compression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F68045112B8021001C7CED /* Compression.cpp */; };
 		14F82D2B111A897E001DDF69 /* UIStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F82D2A111A897E001DDF69 /* UIStats.cpp */; };
 		14F8E6880F89D889005431C6 /* ModelTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F8E6870F89D889005431C6 /* ModelTemplate.cpp */; };
+		B399CFAE1161828E00E8710D /* libirrklang.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B399CFAD1161828E00E8710D /* libirrklang.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1809,6 +1814,104 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
+		14E0371D1162E83A0025248B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
+			remoteInfo = Math;
+		};
+		14E5FB0C115FCC94002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
+			remoteInfo = Basic;
+		};
+		14E5FB2F115FCFE7002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
+			remoteInfo = Math;
+		};
+		14E5FB36115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
+			remoteInfo = Serialization;
+		};
+		14E5FB38115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
+			remoteInfo = OpenGL;
+		};
+		14E5FB3A115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
+			remoteInfo = DevIL;
+		};
+		14E5FB3C115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
+			remoteInfo = Math;
+		};
+		14E5FB3E115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
+			remoteInfo = Core;
+		};
+		14E5FB40115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
+			remoteInfo = UI;
+		};
+		14E5FB42115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
+			remoteInfo = FreeType;
+		};
+		14E5FB44115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
+			remoteInfo = Basic;
+		};
+		14E5FB46115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
+			remoteInfo = OSXWindow;
+		};
+		14E5FB48115FD163002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
+			remoteInfo = Render;
+		};
+		14E5FB54115FD188002EED30 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14E5FB0A115FCC94002EED30;
+			remoteInfo = Sound;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -2167,6 +2270,18 @@
 		14E1AF67110CE9EA0030F626 /* GLSubShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLSubShader.h; path = Engine/OpenGL/Include/GLSubShader.h; sourceTree = "<group>"; };
 		14E1AF69110CEA090030F626 /* GLSubShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLSubShader.cpp; path = Engine/OpenGL/Source/GLSubShader.cpp; sourceTree = "<group>"; };
 		14E434C00DBA8643000F227B /* R5_Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = R5_Defines.h; path = Engine/Basic/Include/R5_Defines.h; sourceTree = "<group>"; };
+		14E5FB16115FCC94002EED30 /* libR5_Sound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libR5_Sound.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14E5FB17115FCD0B002EED30 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Audio.cpp; path = Engine/Sound/Source/Audio.cpp; sourceTree = "<group>"; };
+		14E5FB18115FCD0B002EED30 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sound.cpp; path = Engine/Sound/Source/Sound.cpp; sourceTree = "<group>"; };
+		14E5FB19115FCD0B002EED30 /* SoundInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundInstance.cpp; path = Engine/Sound/Source/SoundInstance.cpp; sourceTree = "<group>"; };
+		14E5FB20115FCDC5002EED30 /* _All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _All.h; path = Engine/Sound/Include/_All.h; sourceTree = "<group>"; };
+		14E5FB21115FCDC5002EED30 /* Audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Audio.h; path = Engine/Sound/Include/Audio.h; sourceTree = "<group>"; };
+		14E5FB22115FCDC5002EED30 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = Engine/Sound/Include/Sound.h; sourceTree = "<group>"; };
+		14E5FB23115FCDC5002EED30 /* SoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundInstance.h; path = Engine/Sound/Include/SoundInstance.h; sourceTree = "<group>"; };
+		14E5FB52115FD163002EED30 /* Dev11.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dev11.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		14E5FB56115FD1B1002EED30 /* Dev11.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dev11.cpp; path = Samples/Dev11/Source/Dev11.cpp; sourceTree = "<group>"; };
+		14E5FB5B115FD24E002EED30 /* OSAudioListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSAudioListener.h; path = Samples/Dev11/Include/OSAudioListener.h; sourceTree = "<group>"; };
+		14E5FB5C115FD24E002EED30 /* OSSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSSound.h; path = Samples/Dev11/Include/OSSound.h; sourceTree = "<group>"; };
 		14F0F8320ED60FA50034CF84 /* _All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _All.h; path = Engine/Math/Include/_All.h; sourceTree = "<group>"; };
 		14F0F8330ED60FA50034CF84 /* _Define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _Define.h; path = Engine/Math/Include/_Define.h; sourceTree = "<group>"; };
 		14F0F8340ED60FA50034CF84 /* Basic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Basic.h; path = Engine/Math/Include/Basic.h; sourceTree = "<group>"; };
@@ -2202,6 +2317,7 @@
 		14F82D2A111A897E001DDF69 /* UIStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIStats.cpp; path = Engine/UI/Source/UIStats.cpp; sourceTree = "<group>"; };
 		14F8E6860F89D875005431C6 /* ModelTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModelTemplate.h; path = Engine/Core/Include/ModelTemplate.h; sourceTree = "<group>"; };
 		14F8E6870F89D889005431C6 /* ModelTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelTemplate.cpp; path = Engine/Core/Source/ModelTemplate.cpp; sourceTree = "<group>"; };
+		B399CFAD1161828E00E8710D /* libirrklang.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libirrklang.dylib; path = ../Debug/Mac/bin/libirrklang.dylib; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2457,12 +2573,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		14E5FB12115FCC94002EED30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14E5FB4E115FD163002EED30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B399CFAE1161828E00E8710D /* libirrklang.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		08FB7794FE84155DC02AAC07 /* R5 */ = {
 			isa = PBXGroup;
 			children = (
+				B399CFAD1161828E00E8710D /* libirrklang.dylib */,
 				14CE0EFB0D9046B70027155A /* 1. Stand-Alone Components */,
 				14CE0F020D9047D30027155A /* 2. Interface */,
 				14CE0F1A0D90487B0027155A /* 3. Stand-alone Libraries */,
@@ -3173,6 +3305,7 @@
 				1475534F0E0A3A2800D5641D /* Network */,
 				14CE0F3D0D904A890027155A /* Noise */,
 				1434863910B4E96900FD9B41 /* Render */,
+				14E5FB1D115FCD20002EED30 /* Sound */,
 			);
 			name = "3. Stand-alone Libraries";
 			sourceTree = "<group>";
@@ -3202,6 +3335,7 @@
 				14B48F5410FAFEA300C22373 /* Dev8 */,
 				1436F67310FAFF7000580BF8 /* Dev9 */,
 				14ACB4071106799D00258C54 /* Dev10 */,
+				14E5FB58115FD203002EED30 /* Dev11 */,
 				1410ACBB0F453FA60099D80E /* Model Viewer */,
 				14C01ED90D92AD6800CB59E3 /* Window Creation */,
 			);
@@ -3672,6 +3806,62 @@
 			name = Include;
 			sourceTree = "<group>";
 		};
+		14E5FB1D115FCD20002EED30 /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				14E5FB1E115FCD2B002EED30 /* Include */,
+				14E5FB1F115FCD39002EED30 /* Source */,
+			);
+			name = Sound;
+			sourceTree = "<group>";
+		};
+		14E5FB1E115FCD2B002EED30 /* Include */ = {
+			isa = PBXGroup;
+			children = (
+				14E5FB20115FCDC5002EED30 /* _All.h */,
+				14E5FB21115FCDC5002EED30 /* Audio.h */,
+				14E5FB22115FCDC5002EED30 /* Sound.h */,
+				14E5FB23115FCDC5002EED30 /* SoundInstance.h */,
+			);
+			name = Include;
+			sourceTree = "<group>";
+		};
+		14E5FB1F115FCD39002EED30 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				14E5FB17115FCD0B002EED30 /* Audio.cpp */,
+				14E5FB18115FCD0B002EED30 /* Sound.cpp */,
+				14E5FB19115FCD0B002EED30 /* SoundInstance.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		14E5FB58115FD203002EED30 /* Dev11 */ = {
+			isa = PBXGroup;
+			children = (
+				14E5FB59115FD20B002EED30 /* Include */,
+				14E5FB5A115FD217002EED30 /* Source */,
+			);
+			name = Dev11;
+			sourceTree = "<group>";
+		};
+		14E5FB59115FD20B002EED30 /* Include */ = {
+			isa = PBXGroup;
+			children = (
+				14E5FB5B115FD24E002EED30 /* OSAudioListener.h */,
+				14E5FB5C115FD24E002EED30 /* OSSound.h */,
+			);
+			name = Include;
+			sourceTree = "<group>";
+		};
+		14E5FB5A115FD217002EED30 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				14E5FB56115FD1B1002EED30 /* Dev11.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
 		14F68041112B7FC8001C7CED /* zlib */ = {
 			isa = PBXGroup;
 			children = (
@@ -3733,6 +3923,8 @@
 				14ACB3DC1106790300258C54 /* Dev2.app */,
 				14ACB4051106798500258C54 /* Dev10.app */,
 				14AFF2701145E90000318F9F /* T10.app */,
+				14E5FB16115FCC94002EED30 /* libR5_Sound.a */,
+				14E5FB52115FD163002EED30 /* Dev11.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3830,6 +4022,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		14CE0F790D904DA10027155A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14E5FB0D115FCC94002EED30 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -4201,6 +4400,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				14E0371E1162E83A0025248B /* PBXTargetDependency */,
 				149FDE2C10B76CD600ABF671 /* PBXTargetDependency */,
 				1483A8910E0C57DA00C96079 /* PBXTargetDependency */,
 				1483A88F0E0C57D500C96079 /* PBXTargetDependency */,
@@ -4683,6 +4883,54 @@
 			productReference = 14DDF1B50E0CBA9A0015264B /* Noise Test.app */;
 			productType = "com.apple.product-type.application";
 		};
+		14E5FB0A115FCC94002EED30 /* Sound */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14E5FB13115FCC94002EED30 /* Build configuration list for PBXNativeTarget "Sound" */;
+			buildPhases = (
+				14E5FB0D115FCC94002EED30 /* Headers */,
+				14E5FB0E115FCC94002EED30 /* Sources */,
+				14E5FB12115FCC94002EED30 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				14E5FB30115FCFE7002EED30 /* PBXTargetDependency */,
+				14E5FB0B115FCC94002EED30 /* PBXTargetDependency */,
+			);
+			name = Sound;
+			productName = Math;
+			productReference = 14E5FB16115FCC94002EED30 /* libR5_Sound.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		14E5FB34115FD163002EED30 /* Dev11 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14E5FB4F115FD163002EED30 /* Build configuration list for PBXNativeTarget "Dev11" */;
+			buildPhases = (
+				14E5FB49115FD163002EED30 /* Resources */,
+				14E5FB4A115FD163002EED30 /* Sources */,
+				14E5FB4E115FD163002EED30 /* Frameworks */,
+				14E5FC42115FF873002EED30 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				14E5FB55115FD188002EED30 /* PBXTargetDependency */,
+				14E5FB35115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB37115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB39115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB3B115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB3D115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB3F115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB41115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB43115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB45115FD163002EED30 /* PBXTargetDependency */,
+				14E5FB47115FD163002EED30 /* PBXTargetDependency */,
+			);
+			name = Dev11;
+			productName = "Cocoa Window";
+			productReference = 14E5FB52115FD163002EED30 /* Dev11.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4710,6 +4958,7 @@
 				14CE0F780D904DA10027155A /* SysWindow */,
 				14CE0F700D904D940027155A /* OpenGL */,
 				1434863C10B4E9A600FD9B41 /* Render */,
+				14E5FB0A115FCC94002EED30 /* Sound */,
 				1483A8850E0C577100C96079 /* Network Test */,
 				14C01EE40D92B50600CB59E3 /* Window Creation */,
 				14C154570DA6727B00588C73 /* Dev1 */,
@@ -4722,6 +4971,7 @@
 				14B48F0F10FAFDE100C22373 /* Dev8 */,
 				14B48F3110FAFE4200C22373 /* Dev9 */,
 				14ACB3EB1106798500258C54 /* Dev10 */,
+				14E5FB34115FD163002EED30 /* Dev11 */,
 				14DDF18A0E0CBA9A0015264B /* Noise Test */,
 				1410AC9E0F453F630099D80E /* Model Viewer */,
 				1437764810B216FB0004D92E /* T01 */,
@@ -4900,7 +5150,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		14E5FB49115FD163002EED30 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		14E5FC42115FF873002EED30 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME)",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change /usr/local/lib/libirrklang.dylib @executable_path/../../../libirrklang.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		140E402B0F38648600F3CF52 /* Sources */ = {
@@ -5308,6 +5582,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				14DDF1BE0E0CBD0D0015264B /* Noise Test.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14E5FB0E115FCC94002EED30 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				14E5FB1A115FCD0B002EED30 /* Audio.cpp in Sources */,
+				14E5FB1B115FCD0B002EED30 /* Sound.cpp in Sources */,
+				14E5FB1C115FCD0B002EED30 /* SoundInstance.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14E5FB4A115FD163002EED30 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				14E5FB57115FD1F7002EED30 /* Dev11.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6479,12 +6771,83 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 14DDF19C0E0CBA9A0015264B /* PBXContainerItemProxy */;
 		};
+		14E0371E1162E83A0025248B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1468B89E0D903E6300E0AE61 /* Math */;
+			targetProxy = 14E0371D1162E83A0025248B /* PBXContainerItemProxy */;
+		};
+		14E5FB0B115FCC94002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14753BC70D9C12E3000D05A5 /* Basic */;
+			targetProxy = 14E5FB0C115FCC94002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB30115FCFE7002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1468B89E0D903E6300E0AE61 /* Math */;
+			targetProxy = 14E5FB2F115FCFE7002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB35115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			targetProxy = 14E5FB36115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB37115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F700D904D940027155A /* OpenGL */;
+			targetProxy = 14E5FB38115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB39115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F680D904D7E0027155A /* Image */;
+			targetProxy = 14E5FB3A115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB3B115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1468B89E0D903E6300E0AE61 /* Math */;
+			targetProxy = 14E5FB3C115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB3D115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F4D0D904C240027155A /* Core */;
+			targetProxy = 14E5FB3E115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB3F115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F580D904D1B0027155A /* UI */;
+			targetProxy = 14E5FB40115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB41115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F600D904D700027155A /* Font */;
+			targetProxy = 14E5FB42115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB43115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14753BC70D9C12E3000D05A5 /* Basic */;
+			targetProxy = 14E5FB44115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB45115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F780D904DA10027155A /* SysWindow */;
+			targetProxy = 14E5FB46115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB47115FD163002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1434863C10B4E9A600FD9B41 /* Render */;
+			targetProxy = 14E5FB48115FD163002EED30 /* PBXContainerItemProxy */;
+		};
+		14E5FB55115FD188002EED30 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14E5FB0A115FCC94002EED30 /* Sound */;
+			targetProxy = 14E5FB54115FD188002EED30 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		140E402F0F38648600F3CF52 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6519,6 +6882,7 @@
 		140E40300F38648600F3CF52 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6555,6 +6919,7 @@
 		1410ACB50F453F630099D80E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6588,6 +6953,7 @@
 		1410ACB60F453F630099D80E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6621,6 +6987,7 @@
 		1412DBFB10ACD24300BBA8F4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Debug;
@@ -6635,6 +7002,7 @@
 		1417139510FAFCE200BA7643 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6670,6 +7038,7 @@
 		1417139610FAFCE200BA7643 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6707,6 +7076,7 @@
 		141713C610FAFD5700BA7643 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6742,6 +7112,7 @@
 		141713C710FAFD5700BA7643 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6779,6 +7150,7 @@
 		1432D4E510B3633A00BE38E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6812,6 +7184,7 @@
 		1432D4E610B3633A00BE38E6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6847,6 +7220,7 @@
 		1432D4FE10B3634A00BE38E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6880,6 +7254,7 @@
 		1432D4FF10B3634A00BE38E6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6915,6 +7290,7 @@
 		1434865210B4E9A600FD9B41 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Debug;
@@ -6929,6 +7305,7 @@
 		1437765E10B216FB0004D92E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6963,6 +7340,7 @@
 		1437765F10B216FB0004D92E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -6999,6 +7377,7 @@
 		1437767710B2171C0004D92E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7033,6 +7412,7 @@
 		1437767810B2171C0004D92E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7069,6 +7449,7 @@
 		144C2D8110B63263009CA886 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7102,6 +7483,7 @@
 		144C2D8210B63263009CA886 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7137,6 +7519,7 @@
 		144F1AF70EF9CD8C00284312 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7171,6 +7554,7 @@
 		144F1AF80EF9CD8C00284312 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7207,6 +7591,7 @@
 		1468B8A00D903E6400E0AE61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Debug;
@@ -7221,6 +7606,7 @@
 		14753BD40D9C12E3000D05A5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
@@ -7238,6 +7624,7 @@
 		1475539D0E0C2A2B00D5641D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Debug;
@@ -7252,6 +7639,7 @@
 		1483A8880E0C577200C96079 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
@@ -7264,6 +7652,8 @@
 					"-lR5_Basic",
 					"-lR5_Network",
 					"-lR5_Serialization",
+					"-lR5_Math",
+					"-lz",
 				);
 				PRODUCT_NAME = "Network Test";
 			};
@@ -7290,6 +7680,7 @@
 		1484874A0E42836500B02838 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7324,6 +7715,7 @@
 		1484874B0E42836500B02838 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7360,6 +7752,7 @@
 		14ACB3DA1106790300258C54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7395,6 +7788,7 @@
 		14ACB3DB1106790300258C54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7432,6 +7826,7 @@
 		14ACB4031106798500258C54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7466,6 +7861,7 @@
 		14ACB4041106798500258C54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7502,6 +7898,7 @@
 		14AFF26E1145E90000318F9F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7537,6 +7934,7 @@
 		14AFF26F1145E90000318F9F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7574,6 +7972,7 @@
 		14B48F2B10FAFDE100C22373 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7608,6 +8007,7 @@
 		14B48F2C10FAFDE100C22373 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7644,6 +8044,7 @@
 		14B48F4A10FAFE4200C22373 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7678,6 +8079,7 @@
 		14B48F4B10FAFE4200C22373 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7714,6 +8116,7 @@
 		14BA96890F95CB2700E41525 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7748,6 +8151,7 @@
 		14BA968A0F95CB2700E41525 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7784,6 +8188,7 @@
 		14C01EE80D92B50600CB59E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7807,6 +8212,7 @@
 		14C01EE90D92B50600CB59E3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7832,6 +8238,7 @@
 		14C1547B0DA6727B00588C73 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7866,6 +8273,7 @@
 		14C1547C0DA6727B00588C73 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7902,9 +8310,11 @@
 		14C9277E10B2181200D71A09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -7936,6 +8346,7 @@
 		14C9277F10B2181200D71A09 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -7972,6 +8383,7 @@
 		14C9279B10B2184D00D71A09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -8006,6 +8418,7 @@
 		14C9279C10B2184D00D71A09 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -8042,6 +8455,7 @@
 		14CE0F3A0D904A060027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				PREBINDING = NO;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
@@ -8058,6 +8472,7 @@
 		14CE0F550D904C240027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				PREBINDING = NO;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
@@ -8074,6 +8489,7 @@
 		14CE0F5D0D904D1B0027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Debug;
@@ -8088,6 +8504,7 @@
 		14CE0F650D904D700027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				HEADER_SEARCH_PATHS = Engine/Font/Include;
 				OTHER_LDFLAGS = "-lfreetype";
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
@@ -8106,6 +8523,7 @@
 		14CE0F6D0D904D7E0027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Debug;
@@ -8120,6 +8538,7 @@
 		14CE0F750D904D940027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				PRODUCT_NAME = "R5_$(TARGET_NAME)";
 			};
@@ -8136,6 +8555,7 @@
 		14CE0F7D0D904DA10027155A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
@@ -8152,6 +8572,7 @@
 		14DB4E140F735AF6004F23C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -8186,6 +8607,7 @@
 		14DB4E150F735AF6004F23C0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -8222,6 +8644,7 @@
 		14DDF1B30E0CBA9A0015264B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -8256,6 +8679,7 @@
 		14DDF1B40E0CBA9A0015264B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
@@ -8285,6 +8709,120 @@
 					"-lR5_Render",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		14E5FB14115FCC94002EED30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				HEADER_SEARCH_PATHS = Engine/Sound/Include;
+				LD_MAP_FILE_PATH = "$(TARGET_TEMP_DIR)/$(PRODUCT_NAME)-LinkMap-$(CURRENT_VARIANT)-$(CURRENT_ARCH).txt";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Release/Mac/bin\"",
+				);
+				PRELINK_LIBS = "";
+				PRODUCT_NAME = "R5_$(TARGETNAME)";
+			};
+			name = Debug;
+		};
+		14E5FB15115FCC94002EED30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = Engine/Sound/Include;
+				LD_MAP_FILE_PATH = "$(TARGET_TEMP_DIR)/$(PRODUCT_NAME)-LinkMap-$(CURRENT_VARIANT)-$(CURRENT_ARCH).txt";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Release/Mac/bin\"",
+				);
+				PRELINK_LIBS = "";
+				PRODUCT_NAME = "R5_$(TARGETNAME)";
+			};
+			name = Release;
+		};
+		14E5FB50115FD163002EED30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Debug/Mac/bin\"",
+					"\"$(SRCROOT)/../Release/Mac/bin\"",
+				);
+				MACH_O_TYPE = mh_execute;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					OpenGL,
+					"-framework",
+					AppKit,
+					"-lz",
+					"-lpng",
+					"-ljpeg",
+					"-lR5_Basic",
+					"-lR5_Math",
+					"-lR5_Serialization",
+					"-lR5_Core",
+					"-lR5_UI",
+					"-lR5_Font",
+					"-lR5_Image",
+					"-lR5_SysWindow",
+					"-lR5_OpenGL",
+					"-lR5_Render",
+					"-lR5_Sound",
+				);
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		14E5FB51115FD163002EED30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Debug/Mac/bin\"",
+					"\"$(SRCROOT)/../Release/Mac/bin\"",
+				);
+				MACH_O_TYPE = mh_execute;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					OpenGL,
+					"-framework",
+					AppKit,
+					"-lz",
+					"-lpng",
+					"-ljpeg",
+					"-lR5_Basic",
+					"-lR5_Math",
+					"-lR5_Serialization",
+					"-lR5_Core",
+					"-lR5_UI",
+					"-lR5_Font",
+					"-lR5_Image",
+					"-lR5_SysWindow",
+					"-lR5_OpenGL",
+					"-lR5_Render",
+					"-lR5_Sound",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -8678,6 +9216,24 @@
 			buildConfigurations = (
 				14DDF1B30E0CBA9A0015264B /* Debug */,
 				14DDF1B40E0CBA9A0015264B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		14E5FB13115FCC94002EED30 /* Build configuration list for PBXNativeTarget "Sound" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14E5FB14115FCC94002EED30 /* Debug */,
+				14E5FB15115FCC94002EED30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		14E5FB4F115FD163002EED30 /* Build configuration list for PBXNativeTarget "Dev11" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14E5FB50115FD163002EED30 /* Debug */,
+				14E5FB51115FD163002EED30 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

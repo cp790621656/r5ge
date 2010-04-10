@@ -12,7 +12,7 @@ struct ISoundInstance
 {
 	struct Effect
 	{
-		enum : byte
+		enum
 		{
 			None = 0,
 			Auditorium,
