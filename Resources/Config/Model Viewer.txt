@@ -5,7 +5,7 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Model Viewer"
-		Position = 84 85
+		Position = 128 133
 		Size = 900 600
 		Full Screen = false
 	}
@@ -84,6 +84,60 @@ Root
 
 		Layout
 		{
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Event Handling = "None"
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "488"
+					Shadow = true
+					Alignment = "Right"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Highlight = "Status Highlight"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 0.000000
+					Top Color = 0.000000 0.000000 0.000000 0.000000
+					Bottom Color = 0.000000 0.000000 0.000000 1.000000
+					Event Handling = "Normal"
+					Layer = 0
+
+					Label = "Status Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "R5 Model Viewer v.1.4.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Shadow = true
+						Alignment = "Center"
+						Event Handling = "None"
+						Layer = 1
+					}
+				}
+			}
+
 			Frame = "Options Frame"
 			{
 				Left = 0.000000 0.000000
@@ -244,60 +298,6 @@ Root
 					}
 				}
 			}
-
-			Frame = "Debug Frame"
-			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
-				Event Handling = "None"
-				Layer = 0
-
-				Label = "FPS"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 18.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "500"
-					Shadow = true
-					Alignment = "Right"
-					Event Handling = "None"
-					Layer = 1
-				}
-
-				Highlight = "Status Highlight"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
-					Top Color = 0.000000 0.000000 0.000000 0.000000
-					Bottom Color = 0.000000 0.000000 0.000000 1.000000
-					Event Handling = "Normal"
-					Layer = 0
-
-					Label = "Status Label"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "All unused materials were cleared away"
-						Shadow = true
-						Alignment = "Center"
-						Event Handling = "None"
-						Layer = 1
-					}
-				}
-			}
 		}
 	}
 
@@ -307,7 +307,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "../../DotC/Resources/Models/Held/axe.r5a"
+			Source = "../../DotC/Resources/Models/NPCs/peasant.r5a"
 		}
 	}
 
@@ -315,12 +315,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.001730 -0.299805 1.854140
-			Rotation = -0.030743 0.180896 -0.969126 0.164699
+			Position = 0.001267 0.018200 0.617190
+			Rotation = -0.031823 0.187256 -0.967918 0.164493
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 6.888650 50.000000
+			Dolly = 0.000000 1.628507 50.000000
 
 			Directional Light = "Default Light"
 			{
@@ -367,10 +367,10 @@ Root
 			Model Instance = "Default Instance"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 -1.000000 -0.000000
-				Scale = 10.000000
-				Min = -0.020162 -0.074253 -0.081270
-				Max = 0.019816 0.134214 0.452098
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Min = -0.239554 -0.124533 -0.000917
+				Max = 0.242087 0.160932 1.235296
 				Layer = 10
 				Model = "Default Model"
 			}

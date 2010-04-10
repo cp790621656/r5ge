@@ -32,24 +32,27 @@ public:
 
 protected:
 
-	String	mSource;	// Actual filename from which the font has been loaded
-	String	mLoadingFN;	// Temporary filename, internal use
-	byte	mSize;		// Font size (maximum height) in pixels
-	byte	mPadding;	// Padding between characters inside the image buffer
-	byte	mGlyphSize;	// Calculated glyph size that fits 'mSize' by 'mSize' glyph + 'mPadding'
-	Glyph	mGlyph[95];	// Actual glyph information for all printable characters
-	Memory	mBuffer;	// Memory buffer that will hold texture information
-	uint	mWidth;		// Width of the texture (it's always square)
+	String			mSource;	// Actual filename from which the font has been loaded
+	String			mLoadingFN;	// Temporary filename, internal use
+
+	byte			mSize;		// Font size (maximum height) in pixels
+	byte			mPadding;	// Padding between characters inside the image buffer
+	byte			mGlyphSize;	// Calculated glyph size that fits 'mSize' by 'mSize' glyph + 'mPadding'
+	Array<Glyph>	mGlyphs;	// Actual glyph information for all printable characters
+
+	Memory			mBuffer;	// Memory buffer that will hold texture information
+	uint			mWidth;		// Width of the texture (it's always square)
+	uint			mFormat;	// Texture format
 
 public:
 
-	Font() : mSize(0), mPadding(0), mGlyphSize(0), mWidth(0) {}
+	Font() : mSize(0), mPadding(0), mGlyphSize(0), mWidth(0), mFormat(ITexture::Format::Invalid) {}
 	~Font() { mBuffer.Release(); }
 
 private:
 
 	// INTERNAL: Returns the glyph width for the specified character
-	uint _GetCharWidth (byte ch) const { ch -= 32; return mGlyph[ch < 95 ? ch : 0].mWidth; }
+	uint _GetCharWidth (byte ch) const { ch -= 32; return mGlyphs[ch < mGlyphs.GetSize() ? ch : 0].mWidth; }
 
 public:
 
@@ -57,10 +60,21 @@ public:
 	const String&	GetSource()		const	{ return mSource; }
 	byte			GetSize()		const	{ return mSize; }
 	byte			GetPadding()	const	{ return mPadding; }
+	byte			GetGlyphSize()	const	{ return mGlyphSize; }
+
+	// Read-only access to glyphs
+	const Array<Glyph>&	GetGlyphs()	const	{ return mGlyphs; }
+
+	// All the functions necessary to create a texture
 	const Memory&	GetBuffer()		const	{ return mBuffer; }
 	uint			GetWidth()		const	{ return mWidth; }
-	const Glyph*	GetGlyphs()		const	{ return mGlyph; }
-	uint			GetGlyphCount() const	{ return 95; }
+	uint			GetFormat()		const	{ return mFormat; }
+
+	// Allows replacement of current glyphs
+	void SetGlyphs (byte fontSize, byte padding, byte glyphSize, const Array<Glyph>& glyphs);
+
+	// Allows replacement of the current texture
+	void SetBuffer (const void* buffer, uint width, uint format);
 
 	// Loads the specified font file, creating a font of specified size
 	bool Load (const String& filename, byte fontSize = 0, byte padding = 0);

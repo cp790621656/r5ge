@@ -39,7 +39,7 @@ bool GLFont::_Reload()
 		
 		if (mTex == 0) mTex = mGraphics->GetTexture(mName);
 
-		mTex->Set( buffer.GetBuffer(), width, width, 1, ITexture::Format::Luminance );
+		mTex->Set( buffer.GetBuffer(), width, width, 1, mFont.GetFormat() );
 		mTex->SetFiltering( ITexture::Filter::Nearest );
 		mTex->SetSerializable(false);
 

@@ -10,6 +10,13 @@
 using namespace R5;
 
 //============================================================================================================
+
+#define LOAD_DONE	printf("Loaded %s\n", filename.GetBuffer())
+#define SAVE_DONE	printf("Saved out '%s'\n", filename.GetBuffer())
+#define READ_ERROR	printf("ERROR: Unable to read '%s'\n", filename.GetBuffer())
+#define WRITE_ERROR printf("ERROR: Unable to write '%s'\n", filename.GetBuffer())
+
+//============================================================================================================
 // Save the texture portion of the font
 //============================================================================================================
 
@@ -23,13 +30,25 @@ bool SaveImage (const Font& font, const String& filename)
 		byte* tex = (byte*)img.Reserve(size, size, 1, ITexture::Format::RGBA);
 		const byte* buf = font.GetBuffer().GetBuffer();
 
-		for (uint i = 0, imax = size * size; i < imax; ++i)
+		if (font.GetFormat() == ITexture::Format::Luminance)
 		{
-			byte r = buf[i << 1];
-			byte a = buf[(i << 1) + 1];
+			for (uint i = 0, imax = size * size; i < imax; ++i)
+			{
+				byte r = buf[i << 1];
+				byte a = buf[(i << 1) + 1];
 
-			Color4ub& color = (Color4ub&)tex[i << 2];
-			color.Set(r, r, r, a);
+				Color4ub& color = (Color4ub&)tex[i << 2];
+				color.Set(r, r, r, a);
+			}
+		}
+		else if (font.GetFormat() == ITexture::Format::RGBA)
+		{
+			memcpy(tex, buf, size * size * 4);
+		}
+		else
+		{
+			printf("ERROR: Only Luminance and RGBA formats are supported!\n");
+			return false;
 		}
 		return img.Save(filename);
 	}
@@ -64,6 +83,8 @@ int main (int argc, char* argv[])
 #else
 			filename = "../../../Resources/Fonts/Arial.ttf";
 			//filename = "../../../Resources/Fonts/Arial 15.r5f";
+			//filename = "../../../Resources/Fonts/Arial 15.fd";
+			//filename = "../../../Resources/Fonts/Arial 15 - out.r5f";
 #endif
 			if (filename.EndsWith(".ttf"))
 			{
@@ -74,7 +95,6 @@ int main (int argc, char* argv[])
 					if (i+1 < argc && String(argv[i+1]) >> padding) ++i;
 				}
 #endif
-
 				Font font;
 
 				if (font.Load(filename, (byte)size, (byte)padding))
@@ -87,15 +107,9 @@ int main (int argc, char* argv[])
 					{
 						printf("Saved out '%s' (size %u, padding %u)\n", filename.GetBuffer(), size, padding);
 					}
-					else
-					{
-						printf("ERROR: Unable to write to '%s'\n", filename.GetBuffer());
-					}
+					else WRITE_ERROR;
 				}
-				else
-				{
-					printf("ERROR: Unable to read '%s'\n", filename.GetBuffer());
-				}
+				else READ_ERROR;
 			}
 			else if (filename.EndsWith(".r5f"))
 			{
@@ -103,38 +117,91 @@ int main (int argc, char* argv[])
 				
 				if (font.Load(filename))
 				{
-					printf("Loaded %s\n", filename.GetBuffer());
+					LOAD_DONE;
 
 					Memory mem;
 					mem.Append(font.GetSize());
 					mem.Append(font.GetPadding());
-					mem.Append(font.GetGlyphs(), font.GetGlyphCount() * sizeof(Font::Glyph));
+					mem.Append(font.GetGlyphSize());
+
+					const Array<Font::Glyph>& glyphs = font.GetGlyphs();
+					mem.Append(glyphs.GetSize());
+					mem.Append(glyphs.GetBuffer(), glyphs.GetSizeInMemory());
+
 					filename.Replace(".r5f", ".fd");
 
 					if (mem.Save(filename))
 					{
-						printf("Saved out '%s'\n", filename.GetBuffer());
+						SAVE_DONE;
 						filename.Replace(".fd", ".tga");
 						
 						// Save the texture
-						if (SaveImage(font, filename))
-						{
-							printf("Saved out '%s'\n", filename.GetBuffer());
-						}
-						else
-						{
-							printf("ERROR: Unable to write '%s'\n", filename.GetBuffer());
-						}
+						if (SaveImage(font, filename)) SAVE_DONE;
+						else WRITE_ERROR;
 					}
-					else
-					{
-						printf("ERROR: Unable to write '%s'\n", filename.GetBuffer());
-					}
+					else WRITE_ERROR;
 				}
-				else
+				else READ_ERROR;
+			}
+			else if (filename.EndsWith(".fd"))
+			{
+				Memory mem;
+				
+				if (mem.Load(filename))
 				{
-					printf("ERROR: Unable to read '%s'\n", filename.GetBuffer());
+					byte fontSize, padding, glyphSize;
+					uint count;
+
+					const byte* buffer = mem.GetBuffer();
+					uint buffSize = mem.GetSize();
+
+					// Extract the font size, padding, glyph size, and the number of glyphs
+					if (Memory::Extract(buffer, buffSize, fontSize) &&
+						Memory::Extract(buffer, buffSize, padding) &&
+						Memory::Extract(buffer, buffSize, glyphSize) &&
+						Memory::Extract(buffer, buffSize, count))
+					{
+						Array<Font::Glyph> glyphs;
+						Font::Glyph* ptr = glyphs.ExpandTo(count);
+
+						// Extract the glyphs
+						if (Memory::Extract(buffer, buffSize, ptr, glyphs.GetSizeInMemory()))
+						{
+							LOAD_DONE;
+
+							printf(" - Font Size:  %u\n", fontSize);
+							printf(" - Padding:    %u\n", padding);
+							printf(" - Glyph Size: %u\n", glyphSize);
+							printf(" - Glyphs:     %u\n", count);
+
+							Image img;
+			
+							filename.Replace(".fd", ".tga");
+
+							if (img.Load(filename) && img.IsValid() && img.GetWidth() == img.GetHeight())
+							{
+								LOAD_DONE;
+
+								printf(" - Glyphs:     %u\n", count);
+								printf(" - Texture:    %u (%s)\n", img.GetWidth(), ITexture::FormatToString(img.GetFormat()));
+
+								Font font;
+								font.SetGlyphs(fontSize, padding, glyphSize, glyphs);
+								font.SetBuffer(img.GetBuffer(), img.GetWidth(), img.GetFormat());
+
+								filename.Replace(".tga", ".r5f");
+
+								// Save the font
+								if (font.Save(filename)) SAVE_DONE;
+								else WRITE_ERROR;
+							}
+							else READ_ERROR;
+						}
+						else READ_ERROR;
+					}
+					else READ_ERROR;
 				}
+				else READ_ERROR;
 			}
 #ifndef _DEBUG
 		}

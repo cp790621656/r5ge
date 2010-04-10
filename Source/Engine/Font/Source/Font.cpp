@@ -71,6 +71,31 @@ bool _Locate (String& file)
 }
 
 //============================================================================================================
+// Allows replacement of current glyphs
+//============================================================================================================
+
+void Font::SetGlyphs (byte fontSize, byte padding, byte glyphSize, const Array<Glyph>& glyphs)
+{
+	mSize		= fontSize;
+	mPadding	= padding;
+	mGlyphSize	= glyphSize;
+	mGlyphs		= glyphs;
+}
+
+//============================================================================================================
+// Allows replacement of the current texture
+//============================================================================================================
+
+void Font::SetBuffer (const void* buffer, uint width, uint format)
+{
+	uint size = width * width;
+	size *= ITexture::GetBitsPerPixel(format) / 8;
+	mBuffer.Set(buffer, size);
+	mFormat = format;
+	mWidth = width;
+}
+
+//============================================================================================================
 // Loads the specified font file, creating a font of specified size
 //============================================================================================================
 
@@ -120,12 +145,19 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 		buffer += 5;
 		bufferSize -= 5;
 
-		return (Memory::Extract(buffer, bufferSize, mSize) &&
-				Memory::Extract(buffer, bufferSize, mPadding) &&
-				Memory::Extract(buffer, bufferSize, mGlyphSize) &&
-				Memory::Extract(buffer, bufferSize, mGlyph, sizeof(Glyph) * 95) &&
-				Memory::Extract(buffer, bufferSize, mWidth) &&
-				Decompress(buffer, bufferSize, mBuffer));
+		if (Memory::Extract(buffer, bufferSize, mSize) &&
+			Memory::Extract(buffer, bufferSize, mPadding) &&
+			Memory::Extract(buffer, bufferSize, mGlyphSize) &&
+			Memory::Extract(buffer, bufferSize, mWidth) &&
+			Memory::Extract(buffer, bufferSize, mFormat))
+		{
+			uint glyphs;
+
+			return (Memory::Extract(buffer, bufferSize, glyphs) &&
+					Memory::Extract(buffer, bufferSize, mGlyphs.ExpandTo(glyphs), sizeof(Glyph) * glyphs) &&
+					Decompress(buffer, bufferSize, mBuffer));
+		}
+		return false;
 	}
 
 #ifndef R5_USE_FREETYPE
@@ -206,8 +238,8 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 		ASSERT(mWidth <= 2048, "Requested font is excessively large");
 
 		// Allocate a new buffer to hold all pixel information
-		ushort* buffer = (ushort*)mBuffer.Resize(mWidth * mWidth * 2);
-		mBuffer.MemSet(0);
+		uint pixels = mWidth * mWidth;
+		ushort* buffer = (ushort*)mBuffer.Resize(pixels * 2);
 
 		if (buffer == 0)
 		{
@@ -216,8 +248,17 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 			return false;
 		}
 
+		// Default texture format is "Luminance": 8 bytes for greyscale color, 8 bytes for alpha
+		mFormat = ITexture::Format::Luminance;
+
+		// Set the entire texture to a white color with the alpha of 0
+		for (uint i = 0; i < pixels; ++i) buffer[i] = 0x00FF;
+
 		// Relative width of individual glyphs
 		float textureGlyphWidth = (float)mGlyphSize / mWidth;
+
+		// Standard 95 printable characters
+		mGlyphs.ExpandTo(95);
 
 		// Run through all glyphs again, but this time, save their bitmap information
 		for (uint y = 0; y < 10; ++y)
@@ -235,11 +276,11 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 				FT_Bitmap* bitmap = &face->glyph->bitmap;
 				FT_Glyph_Metrics* metrics = &face->glyph->metrics;
 
-				mGlyph[glyphIndex].mWidth	= (byte)(metrics->horiAdvance >> 6);
-				mGlyph[glyphIndex].mLeft	= textureGlyphWidth * x;
-				mGlyph[glyphIndex].mRight	= textureGlyphWidth * (x + 1);
-				mGlyph[glyphIndex].mTop		= textureGlyphWidth * (mWidth - y);
-				mGlyph[glyphIndex].mBottom	= textureGlyphWidth * (mWidth - y - 1);
+				mGlyphs[glyphIndex].mWidth	= (byte)(metrics->horiAdvance >> 6);
+				mGlyphs[glyphIndex].mLeft	= textureGlyphWidth * x;
+				mGlyphs[glyphIndex].mRight	= textureGlyphWidth * (x + 1);
+				mGlyphs[glyphIndex].mTop	= textureGlyphWidth * (mWidth - y);
+				mGlyphs[glyphIndex].mBottom	= textureGlyphWidth * (mWidth - y - 1);
 				
 				int left = metrics->horiBearingX >> 6;
 				int top  = face->glyph->bitmap_top;
@@ -247,9 +288,8 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 				int pixelOffsetX = left - topLeft.x;
 				int pixelOffsetY = topLeft.y - top;
 
-				uint textureX = x * mGlyphSize + pixelOffsetX;
-				uint textureY = y * mGlyphSize + pixelOffsetY;
-
+				uint textureX		= x * mGlyphSize + pixelOffsetX;
+				uint textureY		= y * mGlyphSize + pixelOffsetY;
 				uint bitmapWidth	= bitmap->width;
 				uint bitmapHeight	= bitmap->rows;
 				uint paddingOffset	= (mWidth - 1) * mPadding;
@@ -266,7 +306,7 @@ bool Font::Load (const byte* buffer, uint bufferSize, byte fontSize, byte paddin
 						if (pixel > 0)
 						{
 							// Texture should have the first character at the top-left corner,
-							// but (0, 0) is actually the bottom-right. This is why we flip the
+							// but (0, 0) is actually the bottom-left. This is why we flip the
 							// Y coordinate here, matching the flipped texCoords set above. Doing so
 							// makes the texture look upright when viewed, rather than upside-down.
 
@@ -299,8 +339,10 @@ bool Font::Save (Memory& mem) const
 	mem.Append(mSize);
 	mem.Append(mPadding);
 	mem.Append(mGlyphSize);
-	mem.Append(mGlyph, sizeof(Glyph) * 95);
 	mem.Append(mWidth);
+	mem.Append(mFormat);
+	mem.Append(mGlyphs.GetSize());
+	mem.Append(mGlyphs.GetBuffer(), mGlyphs.GetSizeInMemory());
 	return Compress(mBuffer, mem);
 }
 
@@ -479,7 +521,7 @@ bool Font::Print ( Vertices&		out,
 			{
 				ch -= 32;
 
-				const Glyph& glyph = mGlyph[ch < 95 ? ch : 0];
+				const Glyph& glyph = mGlyphs[ch < mGlyphs.GetSize() ? ch : 0];
 
 				x2 = x1 + mGlyphSize;
 

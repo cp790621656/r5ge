@@ -14,6 +14,7 @@ using namespace R5;
 // Used by options creation functions
 //============================================================================================================
 
+#define SHADOW		true
 #define OFFSET		23.0f
 #define WIDTH		350.0f
 #define SEPARATOR	0.35f
@@ -699,7 +700,7 @@ bool ModelViewer::CreateUI()
 			cancel->SetSkin(_skin);
 			cancel->SetFont(_font);
 			cancel->SetText("Cancel");
-			cancel->SetShadow(true);
+			cancel->SetShadow(SHADOW);
 
 			UIRegion& rgn = cancel->GetRegion();
 			rgn.SetLeft		(0.5f,  10.0f);
@@ -714,7 +715,7 @@ bool ModelViewer::CreateUI()
 			_fileOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
 			_fileOK->SetSkin(_skin);
 			_fileOK->SetFont(_font);
-			_fileOK->SetShadow(true);
+			_fileOK->SetShadow(SHADOW);
 
 			UIRegion& rgn = _fileOK->GetRegion();
 			rgn.SetLeft		(0.5f, -150.0f);
@@ -1047,7 +1048,7 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 		menu->SetSticky(true);
 		menu->SetSkin(_skin);
 		menu->SetText(name);
-		menu->SetShadow(true);
+		menu->SetShadow(SHADOW);
 		menu->SetAlignment( UILabel::Alignment::Center );
 		menu->SetFont(_font);
 		menu->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
@@ -1082,7 +1083,7 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 		btn->SetSkin(_skin);
 		btn->SetSticky(true);
 		btn->SetText(name);
-		btn->SetShadow(true);
+		btn->SetShadow(SHADOW);
 		btn->SetAlignment( UILabel::Alignment::Center );
 		btn->SetFont(_font);
 		btn->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
@@ -1163,7 +1164,7 @@ UIButton*	ModelViewer::AddButton (UIWidget* parent, uint line, const String& nam
 	btn->SetAlignment( UILabel::Alignment::Center );
 	btn->SetSkin(_skin);
 	btn->SetFont(_font);
-	btn->SetShadow(true);
+	btn->SetShadow(SHADOW);
 
 	return btn;
 }
@@ -1223,7 +1224,7 @@ UIList* ModelViewer::AddList (UIWidget* parent, uint line, const String& name, i
 	list->SetSkin(_skin);
 	list->SetSymbol("Down Arrow");
 	list->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
-	list->SetShadow(true);
+	list->SetShadow(SHADOW);
 
 	return list;
 }
