@@ -985,12 +985,12 @@ uint Mesh::Draw (IGraphics* graphics)
 {
 	uint result(0);
 
-	Lock();
-	{
 #ifdef _DEBUG
-		if (mGraphics != 0) ASSERT(mGraphics == graphics, "Graphics controller doesn't match!");
+	if (mGraphics != 0) ASSERT(mGraphics == graphics, "Graphics controller doesn't match!");
 #endif
 
+	Lock();
+	{
 		mGraphics = graphics;
 
 		// Determine the number of vertices

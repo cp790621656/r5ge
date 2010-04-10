@@ -196,17 +196,6 @@ void ModelViewer::Load()
 	// Release the model
 	mModel->Release(false, false, false);
 
-	// Release all meshes
-	Core::Meshes& meshes = mCore->GetAllMeshes();
-
-	meshes.Lock();
-	{
-		// NOTE: Meshes have to be released first as we are not in the graphics thread here
-		for (uint i = 0; i < meshes.GetSize(); ++i) meshes[i]->Release();
-		meshes.Clear();
-	}
-	meshes.Unlock();
-
 	// Load the model from the specified file
 	if ( mModel->Load(mLoadFilename) )
 	{
@@ -261,7 +250,7 @@ bool ModelViewer::CreateUI()
 		_font = mGraphics->GetFont("Arial 15");
 	}
 
-	if (_font == 0 || _skin == 0) return false;
+	if (_font == 0 || _skin == 0 || !_font->IsValid()) return false;
 
 	// Create the menu frame at the top of the screen
 	{
