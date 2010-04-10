@@ -13,9 +13,8 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.000000 0.000000 0.000000 1.000000
+		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 50.000000 150.000000
-		Skybox = "LDR Skybox 1"
 
 		Texture = "LDR Skybox 0"
 		{
@@ -56,7 +55,7 @@ Root
 			Wrap Mode = "Clamp to Edge"
 		}
 
-		Material = "Peasant"
+		Material = "Held Objects"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
@@ -65,41 +64,15 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Skinned_D"
+				Shader = "Deferred/D"
 
 				Textures = String[]
 				{
-					"Textures/Skins/peasant.jpg"
+					"Textures/Skins/held.jpg"
 				}
 			}
 
 			Technique = "Opaque"
-			{
-				Shader = "Forward/Skinned_D"
-
-				Textures = String[]
-				{
-					"Textures/Skins/peasant.jpg"
-				}
-			}
-		}
-
-		Material = "Chromatic"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.648961 0.635104 0.621247 1.000000
-			Glow = 0.796767
-			ADT = 0.000000
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/chromatic"
-
-				Textures = String[]
-				{
-					"LDR Skybox 1"
-				}
-			}
 		}
 	}
 
@@ -247,7 +220,7 @@ Root
 						Bottom = 0.000000 46.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "LDR Skybox 1"
+						Text = "Grey Color"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
@@ -290,7 +263,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "452"
+					Text = "500"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -303,7 +276,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.850000
+					Alpha = 0.000000
 					Top Color = 0.000000 0.000000 0.000000 0.000000
 					Bottom Color = 0.000000 0.000000 0.000000 1.000000
 					Event Handling = "Normal"
@@ -317,7 +290,7 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "R5 Model Viewer v.1.4.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Text = "All unused materials were cleared away"
 						Shadow = true
 						Alignment = "Center"
 						Event Handling = "None"
@@ -334,13 +307,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/teapot.r5b"
-
-			Limb = "Teapot"
-			{
-				Mesh = "Teapot"
-				Material = "Chromatic"
-			}
+			Source = "../../DotC/Resources/Models/Held/axe.r5a"
 		}
 	}
 
@@ -348,17 +315,17 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.459110 3.156539
-			Rotation = -0.160250 0.256554 -0.808406 0.504955
+			Position = 0.001730 -0.299805 1.854140
+			Rotation = -0.030743 0.180896 -0.969126 0.164699
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 11.830863 50.000000
+			Dolly = 0.000000 6.888650 50.000000
 
 			Directional Light = "Default Light"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.110849 0.045360 -0.376179 -0.919317
+				Rotation = 0.177846 -0.021280 0.116949 -0.977344
 				Scale = 1.000000
 				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
@@ -400,10 +367,10 @@ Root
 			Model Instance = "Default Instance"
 			{
 				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Min = -4.231425 -6.347139 -0.175709
-				Max = 4.231425 7.265358 6.488787
+				Rotation = 0.000000 0.000000 -1.000000 -0.000000
+				Scale = 10.000000
+				Min = -0.020162 -0.074253 -0.081270
+				Max = 0.019816 0.134214 0.452098
 				Layer = 10
 				Model = "Default Model"
 			}
@@ -421,6 +388,6 @@ Root
 		"Models/peasant.r5c"
 		"../../DotC/Resources/Models/NPCs/peasant.r5a"
 		"C:\Users\michaell\Documents\3dsmax\export\test.r5a"
-		"Models/teapot.r5b"
+		"../../DotC/Resources/Models/Held/axe.r5a"
 	}
 }
