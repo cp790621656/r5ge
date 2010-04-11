@@ -4,7 +4,7 @@ Root
 {
 	Window
 	{
-		Title = "Sound"
+		Title = "R5 Engine: Dev11 (Sound)"
 		Position = 679 161
 		Size = 886 610
 		Full Screen = false
@@ -352,16 +352,6 @@ Root
 	Core
 	{
 		Execute = "Config/Neon UI Skin.txt"
-
-		Model = "Teapot"
-		{
-			Source = "Models/teapot.r5b"
-		}
-
-		Model = "Plane"
-		{
-			Source = "Models/rect.r5a"
-		}
 	}
 
 	Scene
@@ -409,7 +399,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
-			Model = "Teapot"
+			Model = "Models/teapot.r5b"
 
 			Script = "OSSound"
 			{
@@ -423,7 +413,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 30.000000
-			Model = "Plane"
+			Model = "Models/rect.r5a"
 		}
 
 		Debug Camera = "Default Camera"
