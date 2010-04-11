@@ -43,6 +43,7 @@ Object::Object() :
 	mLayer			(10),
 	mRelativeScale	(1.0f),
 	mAbsoluteScale	(1.0f),
+	mCalcRelBounds	(true),
 	mCalcAbsBounds	(true),
 	mIncChildBounds	(true),
 	mIsDirty		(false),
@@ -396,6 +397,9 @@ void Object::Release (bool threadSafe)
 {
 	if (threadSafe) Lock();
 	{
+		mCalcRelBounds = true;
+		mCalcAbsBounds = true;
+
 		mRelativeBounds.Reset();
 		mCompleteBounds.Reset();
 
@@ -888,17 +892,18 @@ bool Object::SerializeTo (TreeNode& root) const
 		Lock();
 		{
 			TreeNode& node = root.AddChild( GetClassID(), mName );
-			node.AddChild("Position", mRelativePos);
-			node.AddChild("Rotation", mRelativeRot);
-			node.AddChild("Scale", mRelativeScale);
 
-			if (mRelativeBounds.IsValid())
+			if (!mRelativePos.IsZero())		node.AddChild("Position", mRelativePos);
+			if (!mRelativeRot.IsIdentity()) node.AddChild("Rotation", mRelativeRot);
+			if (mRelativeScale != 1.0f)		node.AddChild("Scale", mRelativeScale);
+
+			if (!mCalcRelBounds && mRelativeBounds.IsValid())
 			{
 				node.AddChild("Min", mRelativeBounds.GetMin());
 				node.AddChild("Max", mRelativeBounds.GetMax());
 			}
 
-			node.AddChild("Layer", mLayer);
+			if (mLayer != 10) node.AddChild("Layer", mLayer);
 
 			if (mShowOutline) node.AddChild("Show Outline", mShowOutline);
 
@@ -947,6 +952,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadS
 
 				if (value >> v)
 				{
+					mCalcRelBounds = false;
 					mRelativeBounds.Include(v);
 					mIsDirty = true;
 				}

@@ -410,7 +410,7 @@ void GLController::SetNormalize (bool val)
 {
 	if ( mNormalize != val )
 	{
-		if ((mNormalize = val) && (mShader == 0)) glEnable(GL_RESCALE_NORMAL);
+		if (mNormalize = val) glEnable(GL_RESCALE_NORMAL);
 		else glDisable(GL_RESCALE_NORMAL);
 	}
 }

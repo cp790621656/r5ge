@@ -48,7 +48,6 @@ void ModelInstance::OnUpdate()
 	if (mIsDirty)
 	{
 		mRecalculate = true;
-		mRelativeBounds = mCullBounds;
 
 		if (mModel != 0)
 		{
@@ -123,13 +122,6 @@ void ModelInstance::OnSerializeTo (TreeNode& node) const
 	if (mModel != 0)
 	{
 		node.AddChild( mModel->GetClassID(), mModel->GetName() );
-
-		if (mCullBounds.IsValid())
-		{
-			TreeNode& child = node.AddChild("Culling Bounds");
-			child.AddChild("Min", mCullBounds.GetMin());
-			child.AddChild("Max", mCullBounds.GetMax());
-		}
 	}
 }
 
@@ -156,29 +148,6 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& root)
 		}
 
 		SetModel(model, false);
-		return true;
-	}
-	else if ( tag == "Culling Bounds" )
-	{
-		Vector3f vMin, vMax;
-
-		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
-		{
-			const TreeNode& node	= root.mChildren[i];
-			const String&	myTag	= node.mTag;
-			const Variable& myVal	= node.mValue;
-
-			if ( myTag == "Min" )
-			{
-				myVal >> vMin;
-			}
-			else if ( myTag == "Max" )
-			{
-				myVal >> vMax;
-			}
-		}
-
-		mCullBounds.Set(vMin, vMax);
 		return true;
 	}
 	return false;

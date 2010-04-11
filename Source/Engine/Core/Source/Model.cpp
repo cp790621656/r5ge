@@ -197,11 +197,12 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 	}
 
 	// Last rendered model
-	static Model* lastModel = 0;
+	static const Model* lastModel = 0;
+	static const ITechnique* lastTech = 0;
 	uint mask = tech->GetMask();
 
 	// If the model has changed or the animation has been updated
-	bool updateSkin = (mAnimUpdated || lastModel != this);
+	bool updateSkin = (mAnimUpdated || lastModel != this || lastTech != tech);
 
 	// Go through every limb and render it
 	Lock();
@@ -258,6 +259,7 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 						// Remember the current values
 						mAnimUpdated	= false;
 						lastModel		= this;
+						lastTech		= tech;
 					}
 				}
 			}

@@ -58,6 +58,7 @@ protected:
 	Bounds		mRelativeBounds;	// Local bounds
 	Bounds		mAbsoluteBounds;	// Calculated bounds that include only this object
 	Bounds		mCompleteBounds;	// Calculated bounds that include the bounds of all children
+	bool		mCalcRelBounds;		// Whether relative bounds will be auto-calculated ('true' in most cases)
 	bool		mCalcAbsBounds;		// Whether absolute bounds will be auto-calculated ('true' in most cases)
 	bool		mIncChildBounds;	// Whether to include children when re-calculating the bounds ('true' in most cases)
 
@@ -210,7 +211,7 @@ public:
 	void SetRelativePosition ( const Vector3f& pos )	{ mRelativePos	  = pos;	mIsDirty = true; }
 	void SetRelativeRotation ( const Quaternion& rot )	{ mRelativeRot	  = rot;	mIsDirty = true; }
 	void SetRelativeScale	 ( float scale )			{ mRelativeScale  = scale;	mIsDirty = true; }
-	void SetRelativeBounds	 ( const Bounds& b )		{ mRelativeBounds = b;		mIsDirty = true; }
+	void SetRelativeBounds	 ( const Bounds& b )		{ mRelativeBounds = b;		mIsDirty = true; mCalcRelBounds = false; }
 
 	// Sets both relative and absolute values using provided absolute values
 	void SetAbsolutePosition ( const Vector3f& pos );

@@ -12,7 +12,6 @@ class ModelInstance : public Object
 protected:
 
 	Model*			 mModel;		// Pointer to the model that was instanced
-	Bounds			 mCullBounds;	// Custom minimum bounds used for culling, set in local space
 	mutable bool	 mRecalculate;	// Whether the matrix needs to be recalculated
 	mutable Matrix43 mMatrix;		// Calculated world transformation matrix
 
@@ -26,13 +25,11 @@ public:
 
 public:
 
-	Model*			GetModel()					{ return mModel;		}
-	const Model*	GetModel()			const	{ return mModel;		}
-	const Bounds&	GetCullBounds()		const	{ return mCullBounds;	}
-	const Matrix43&	GetMatrix()			const;
+	Model*			GetModel()			{ return mModel; }
+	const Model*	GetModel()	const	{ return mModel; }
+	const Matrix43&	GetMatrix()	const;
 
-	void SetModel		(Model* model, bool threadSafe = true);
-	void SetCullBounds	(const Bounds& bounds)	{ mCullBounds = bounds;	mIsDirty = true; }
+	void SetModel (Model* model, bool threadSafe = true);
 
 protected:
 
