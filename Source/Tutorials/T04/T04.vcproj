@@ -170,6 +170,10 @@
 			RelativePath=".\T04.cpp"
 			>
 		</File>
+		<File
+			RelativePath="..\..\..\Resources\Config\T04.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

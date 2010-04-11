@@ -126,8 +126,8 @@ void TestApp::Run()
 		// Find the UISlider defined inside the "T04" resource file
 		UISlider* slider = mUI->FindWidget<UISlider>("First Slider");
 
-		// Add a script to the slider that we've created above. This will in turn create a label on top
-		// of our slider and will later trigger the script's OnValueChange function, updating tha label's value.
+		// Add a script to the slider that we've created above. This will in turn create a label on top of
+		// our slider and will later trigger the script's OnValueChange function, updating the label's value.
 		slider->AddScript<SliderCaption>();
 
 		mCam = mScene.FindObject<DebugCamera>("Default Camera");

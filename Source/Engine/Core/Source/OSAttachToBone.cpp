@@ -5,7 +5,7 @@ using namespace R5;
 // The owner's absolute coordinates need to be calculated in the update
 //============================================================================================================
 
-void BoneAttachment::OnUpdate()
+void OSAttachToBone::OnUpdate()
 {
 	// If this script is not running on a model instance, we might as well just destroy it
 	const ModelInstance* parent = R5_CAST(ModelInstance, mObject->GetParent());
@@ -41,7 +41,7 @@ void BoneAttachment::OnUpdate()
 // Serialization -- Save
 //============================================================================================================
 
-void BoneAttachment::OnSerializeTo (TreeNode& node) const
+void OSAttachToBone::OnSerializeTo (TreeNode& node) const
 {
 	node.AddChild("Bone", mName);
 }
@@ -50,7 +50,7 @@ void BoneAttachment::OnSerializeTo (TreeNode& node) const
 // Serialization -- Load
 //============================================================================================================
 
-void BoneAttachment::OnSerializeFrom (const TreeNode& node)
+void OSAttachToBone::OnSerializeFrom (const TreeNode& node)
 {
 	if (node.mTag == "Bone")
 	{

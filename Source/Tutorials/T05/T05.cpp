@@ -92,11 +92,12 @@ void TestApp::Run()
 	model->PlayAnimation("Run");
 
 	// Now comes the instancing part. We want to create an instance of this model inside our world.
-	// In order to keep it simple we just add it to the scene as-is, and won't even bother changing
-	// its default orientation.
+	// In order to keep it simple we just add it to the scene as-is, but with an enlarged scale,
+	// as the model is quite small by default.
 
 	ModelInstance* instance = mScene.AddObject<ModelInstance>("First Instance");
 	instance->SetModel(model);
+	instance->SetRelativeScale(10.0f);
 
 	// And that's all there is to it! You can play additional animations by using the Model::PlayAnimation
 	// function, but keep in mind that "Run" animation we played above is a high layer animation, which

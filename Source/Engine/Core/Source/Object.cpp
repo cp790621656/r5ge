@@ -29,7 +29,7 @@ void RegisterDefaultObjects()
 
 void RegisterDefaultScripts()
 {
-	Script::Register<BoneAttachment>();
+	Script::Register<OSAttachToBone>();
 }
 
 //============================================================================================================

@@ -4,7 +4,7 @@ Root
 {
 	Window
 	{
-		Title = "Tutorial 10: Object Scripts"
+		Title = "Tutorial 11: Uniquely Animated Models"
 		Position = 100 100
 		Size = 900 600
 		Full Screen = false
@@ -16,47 +16,29 @@ Root
 		Background Color = 0.000000 0.000000 0.000000 0.000000
 		Fog Range = 30.000000 75.000000
 	}
-
+	
 	Scene
 	{
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.024645 0.165179 -0.975162 0.145494
+			Scale = 1.000000
+			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 6.000000 20.000000
 
 			Directional Light = "First Light"
 			{
+				Position = 0.000000 0.000000 0.000000
+				Rotation = 0.000000 0.000000 0.000000 1.000000
+				Scale = 1.000000
+				Layer = 10
 				Ambient = 0.150000 0.150000 0.150000
 				Diffuse = 1.000000 1.000000 1.000000
 				Specular = 1.000000 1.000000 1.000000
 				Brightness = 1.000000
 			}
-		}
-
-		Model Instance = "First"
-		{
-			Position = 0.000000 3.000000 0.000000
-			Model = "Models/peasant.r5a"
-			Script = "NameTag"
-			Script = "OSPlayIdleAnimations"
-		}
-
-		Model Instance = "Second"
-		{
-			Position = 1.000000 -2.000000 0.000000
-			Layer = 10
-			Model = "Models/peasant.r5a"
-			Script = "NameTag"
-		}
-
-		Model Instance = "Third"
-		{
-			Position = -2.000000 1.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Model = "Models/peasant.r5a"
-			Script = "NameTag"
 		}
 	}
 }

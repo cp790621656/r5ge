@@ -7,16 +7,16 @@
 // Script that binds its owner to the specified bone of the owner's parent
 //============================================================================================================
 
-class BoneAttachment : public Script
+class OSAttachToBone : public Script
 {
 	String mName;
 	uint mBoneIndex;
 
 public:
 
-	BoneAttachment() : mBoneIndex(-1) {}
+	OSAttachToBone() : mBoneIndex(-1) {}
 
-	R5_DECLARE_INHERITED_CLASS("Bone Attachment", BoneAttachment, Script, Script);
+	R5_DECLARE_INHERITED_CLASS("OSAttachToBone", OSAttachToBone, Script, Script);
 
 	// Reset the index of the bone, forcing it to be found again by its name next Update
 	void Reset() { mBoneIndex = -1; }

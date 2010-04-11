@@ -591,12 +591,10 @@ bool UIManager::SerializeTo (TreeNode& root) const
 		Lock();
 		{
 			TreeNode& node = root.AddChild("UI");
-			TreeNode& skin = node.AddChild("Default Skin");
-			TreeNode& font = node.AddChild("Default Font");
 
-			if (mDefaultSkin != 0) skin.mValue = mDefaultSkin->GetName();
-			if (mDefaultFont != 0) font.mValue = mDefaultFont->GetName();
-			node.AddChild("Tooltip Delay", mTtDelay);
+			if (mDefaultSkin != 0) node.AddChild("Default Skin", mDefaultSkin->GetName());
+			if (mDefaultFont != 0) node.AddChild("Default Font", mDefaultFont->GetName());
+			if (mTtDelay != 1.0f)  node.AddChild("Tooltip Delay", mTtDelay);
 
 			// Serialize all skins
 			const PointerArray<UISkin>& allSkins = mSkins.GetAllValues();
@@ -635,6 +633,9 @@ bool UIManager::SerializeTo (TreeNode& root) const
 				// Don't save empty nodes
 				if (!layout.HasChildren()) node.mChildren.Shrink();
 			}
+
+			// Remove this node if it's empty
+			if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
 		}
 		Unlock();
 		return true;

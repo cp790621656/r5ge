@@ -163,7 +163,7 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	if ((*mCore << "Config/T10.txt") && (*mCore << "Config/Neon UI Skin.txt"))
+	if (*mCore << "Config/T10.txt")
 	{
 		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 

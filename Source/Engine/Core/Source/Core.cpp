@@ -592,6 +592,9 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 			}
 		}
 		mModels.Unlock();
+
+		// Remove this node if it's empty
+		if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
 	}
 
 	// Save out the scenegraph only if there is something to save

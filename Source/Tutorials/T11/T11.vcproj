@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="T03"
-	ProjectGUID="{11312B60-0300-4337-8982-8C0CB5382D12}"
-	RootNamespace="T03"
+	Name="T11"
+	ProjectGUID="{11312B60-1100-5337-8982-8C0CB5382D12}"
+	RootNamespace="T11"
 	>
 	<Platforms>
 		<Platform
@@ -167,11 +167,11 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\T03.cpp"
+			RelativePath=".\T11.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\Resources\Config\T03.txt"
+			RelativePath="..\..\..\Resources\Config\T11.txt"
 			>
 		</File>
 	</Files>

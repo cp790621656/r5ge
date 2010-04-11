@@ -85,6 +85,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -153,6 +156,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -162,6 +168,10 @@
 	<Files>
 		<File
 			RelativePath=".\T06.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\Resources\Config\T06.txt"
 			>
 		</File>
 	</Files>

@@ -455,7 +455,15 @@
 				Name="Include"
 				>
 				<File
-					RelativePath=".\Include\BoneAttachment.h"
+					RelativePath=".\Include\OSAttachToBone.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\OSPlayAnimations.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\OSPlayIdleAnimations.h"
 					>
 				</File>
 				<File
@@ -467,7 +475,15 @@
 				Name="Source"
 				>
 				<File
-					RelativePath=".\Source\BoneAttachment.cpp"
+					RelativePath=".\Source\OSAttachToBone.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\OSPlayAnimations.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\OSPlayIdleAnimations.cpp"
 					>
 				</File>
 				<File

@@ -5,7 +5,24 @@ using namespace R5;
 // Registered script types
 //============================================================================================================
 
-Hash<Script::CreateDelegate> gScriptTypes;
+Hash<Script::CreateDelegate> g_scriptTypes;
+
+//============================================================================================================
+// Registers common scripts that belong to the Core
+//============================================================================================================
+
+void _RegisterDefaultScripts()
+{
+	static bool doOnce = true;
+
+	if (doOnce)
+	{
+		doOnce = false;
+		Script::Register<OSAttachToBone>();
+		Script::Register<OSPlayAnimations>();
+		Script::Register<OSPlayIdleAnimations>();
+	}
+}
 
 //============================================================================================================
 // INTERNAL: Registers a new script of the specified type
@@ -13,9 +30,11 @@ Hash<Script::CreateDelegate> gScriptTypes;
 
 void Script::_Register(const String& type, const CreateDelegate& func)
 {
-	gScriptTypes.Lock();
-	gScriptTypes[type] = func;
-	gScriptTypes.Unlock();
+	if (!g_scriptTypes.IsValid()) _RegisterDefaultScripts();
+
+	g_scriptTypes.Lock();
+	g_scriptTypes[type] = func;
+	g_scriptTypes.Unlock();
 }
 
 //============================================================================================================
@@ -24,13 +43,15 @@ void Script::_Register(const String& type, const CreateDelegate& func)
 
 Script* Script::_Create(const String& type)
 {
+	if (!g_scriptTypes.IsValid()) _RegisterDefaultScripts();
+
 	Script* ptr (0);
-	gScriptTypes.Lock();
+	g_scriptTypes.Lock();
 	{
-		const CreateDelegate* callback = gScriptTypes.GetIfExists(type);
+		const CreateDelegate* callback = g_scriptTypes.GetIfExists(type);
 		if (callback != 0) ptr = (*callback)();
 	}
-	gScriptTypes.Unlock();
+	g_scriptTypes.Unlock();
 	return ptr;
 }
 
