@@ -10,7 +10,7 @@ extern R5::Random randomGen;
 SmokeEmitter::SmokeEmitter()
 {
 	mLifetime		= 3000;
-	mMaxParticles	= 10;
+	mMaxParticles	= 20;
 	mFrequency		= mLifetime / mMaxParticles;
 	mActiveTime		= -1;
 }

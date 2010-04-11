@@ -10,7 +10,7 @@ extern R5::Random randomGen;
 FireEmitter::FireEmitter()
 {
 	mLifetime		= 1000;
-	mMaxParticles	= 15;
+	mMaxParticles	= 30;
 	mFrequency		= mLifetime / mMaxParticles;
 	mActiveTime		= -1;
 

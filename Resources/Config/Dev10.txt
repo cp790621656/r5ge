@@ -46,6 +46,105 @@ Root
 	}
 
 	Core
+	{
+		Model Template = "Torch"
+		{
+			Source = "Models/Held/torch.r5a"
+	
+			OnSerialize
+			{
+				Point Light = "Torchlight"
+				{
+					Position = 0.000000 0.000000 0.35
+					Scale = 0.150000
+					Layer = 1
+					Ambient = 0.150000 0.050000 0.000000
+					Diffuse = 1.000000 0.750000 0.250000
+					Specular = 1.000000 1.000000 1.000000
+					Brightness = 1.000000
+					Range = 30.000000
+					Power = 1.2500000
+
+					Script = "OSTorchlight"
+
+					Fire Emitter = "Fire 0"
+					{
+						Position = 0.000000 0.000000 0.000000
+						Scale = 0.45
+						Layer = 10
+						Texture = "Textures/Billboards/fire.jpg"
+						Technique = "Particle"
+
+						Smoke Emitter = "Smoke 0"
+						{
+							Position = 0.000000 0.000000 0.000000
+							Rotation = 0.000000 0.000000 0.000000 1.000000
+							Scale = 1.000000
+							Layer = 10
+							Texture = "Textures/Billboards/smoke.png"
+							Technique = "Particle"
+						}
+					}
+				}
+			}
+		}
+		
+		Model Template = "Peasant"
+		{
+			Source = "Models/NPCs/Peasant.r5a"
+
+			OnSerialize
+			{
+				Script = "OSPlayIdleAnimations"
+
+				Script = "OSPlayAnimations"
+				{
+					Animations = String[]
+					{
+						"Torch"
+						"Weapon"
+						"Combat: Idle"
+					}
+				}
+				
+				Object = "Attachment - Right Hand"
+				{
+					Position = 0.06 0 0
+					Rotation = 1 0 0
+					
+					Script = "OSAttachToBone"
+					{
+						Bone = "Bip01 R Hand"
+					}
+					
+					Model Instance = "Right Hand"
+					{
+						Scale = 1.000000
+						Layer = 10
+						Model = "Models/Held/sword.r5a"
+					}
+				}
+	
+				Object = "Attachment - Left Hand"
+				{
+					Position = 0.06 0 0
+					Rotation = 0.707 -0.707 0 0
+	
+					Script = "OSAttachToBone"
+					{
+						Bone = "Bip01 L Hand"
+					}
+	
+					Model Instance = "Left Hand"
+					{
+						Scale = 1.000000
+						Layer = 10
+						Model = "Torch"
+					}
+				}
+			}
+		}
+	}
 
 	Scene
 	{
@@ -53,73 +152,18 @@ Root
 		{
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 0.250000
 			Layer = 10
-			Model = "Models/peasant.r5a"
-			
-			Object = "Attachment - Left Hand"
-			{
-				Position = 0.15 0 0
-				Rotation = 0 1 0 0
-
-				Script = "Bone Attachment"
-				{
-					Bone = "Bip01 L Hand"
-				}
-
-				Model Instance = "Torch"
-				{
-					Scale = 1.000000
-					Layer = 10
-					Model = "Models/torch.r5a"
-
-					Point Light = "First Light"
-					{
-						Position = 0.000000 0.000000 3.5
-						Rotation = 0.000000 0.000000 0.000000 1.000000
-						Scale = 1.000000
-						Layer = 1
-						Ambient = 0.150000 0.050000 0.000000
-						Diffuse = 1.000000 0.750000 0.250000
-						Specular = 1.000000 1.000000 1.000000
-						Brightness = 1.000000
-						Range = 20.000000
-						Power = 2.000000
-						
-						Script = "Torchlight"
-	
-						Fire Emitter = "Fire 0"
-						{
-							Position = 0.000000 0.000000 0.000000
-							Rotation = 0.000000 0.000000 0.000000 1.000000
-							Scale = 0.666660
-							Layer = 10
-							Texture = "Textures/Billboards/fire.jpg"
-							Technique = "Particle"
-	
-							Smoke Emitter = "Smoke 0"
-							{
-								Position = 0.000000 0.000000 0.000000
-								Rotation = 0.000000 0.000000 0.000000 1.000000
-								Scale = 1.000000
-								Layer = 10
-								Texture = "Textures/Billboards/whitefire.png"
-								Technique = "Particle"
-							}
-						}
-					}
-				}
-			}
+			Model = "Peasant"
 		}
 
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 2.000000
+			Position = 0.000000 0.000000 0.6000
 			Rotation = 0.024589 0.134162 -0.974424 -0.178590
 			Scale = 1.000000
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 5.999748 30.000000
+			Dolly = 0.000000 2.0 10.000000
 		}
 	}
 }

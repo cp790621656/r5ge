@@ -175,7 +175,7 @@ bool DebugCamera::OnScroll (const Vector2i& pos, float delta)
 	if (mSplineV.IsEmpty() && Float::IsNotZero(delta))
 	{
 		mHasMovement = true;
-		mDollyMovement -= delta * 0.02f;
+		mDollyMovement -= delta * 0.001f * Float::Clamp(mDolly.y, 1.0f, 10.0f);
 		return true;
 	}
 	return false;

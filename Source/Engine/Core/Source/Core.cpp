@@ -360,7 +360,7 @@ bool Core::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 	if (mUI && mUI->OnKeyPress(pos, key, isDown)) return true;
 
 	// If we have a key event listener, let it respond
-	if (mOnKey) return mOnKey(pos, key, isDown);
+	if (mOnKey && mOnKey(pos, key, isDown)) return true;
 
 	// Default behavior with no set listener
 	if (mWin != 0 && !isDown)

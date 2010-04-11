@@ -51,6 +51,7 @@ class TestApp
 	Core*			mCore;
 	Scene			mScene;
 	DebugCamera*	mCam;
+	Model*			mModel;
 
 public:
 
@@ -58,11 +59,12 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
+	bool OnKey (const Vector2i& pos, byte key, bool isDown);
 };
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp() : mCam(0), mModel(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -91,20 +93,12 @@ void TestApp::Run()
 	{
 		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
-		ModelInstance* ins = mScene.FindObject<ModelInstance>("Peasant");
-
-		if (ins != 0)
-		{
-			Model* model = ins->GetModel();
-			model->PlayAnimation("Walk");
-			model->PlayAnimation("Torch");
-		}
-
 		if (mCam != 0)
 		{
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
 			mCore->SetListener( bind(&Object::MouseMove, mCam) );
 			mCore->SetListener( bind(&Object::Scroll, mCam) );
+			mCore->SetListener( bind(&TestApp::OnKey, this) );
 
 			while (mCore->Update());
 		}
@@ -122,6 +116,33 @@ void TestApp::OnDraw()
 	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
 	mScene.DrawAllForward(false);
 	PostProcess::Bloom(mGraphics, result.mColor, 1.0f);
+}
+
+//============================================================================================================
+// React to key events
+//============================================================================================================
+
+bool TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
+{
+	if (mModel == 0)
+	{
+		ModelInstance* ins = mScene.FindObject<ModelInstance>("Peasant");
+		if (ins != 0) mModel = ins->GetModel();
+	}
+
+	if (mModel != 0 && !isDown)
+	{
+		if		(key == Key::One)	mModel->PlayAnimation("Combat: Attack - Feint");
+		else if (key == Key::Two)	mModel->PlayAnimation("Combat: Attack - Stab");
+		else if (key == Key::Three) mModel->PlayAnimation("Combat: Attack - Swing");
+		else if (key == Key::Four)	mModel->PlayAnimation("Combat: Attack - Dodge Combo");
+		else if (key == Key::Five)	mModel->PlayAnimation("Combat: Attack - Slash Combo");
+		else if (key == Key::Six)	mModel->PlayAnimation("Combat: Attack - Dodge Combo");
+		else if (key == Key::Q)		mModel->PlayAnimation("Combat: Dodge");
+		else if (key == Key::W)		mModel->PlayAnimation("Combat: Block");
+		else if (key == Key::Grave)	mModel->PlayAnimation("Combat: Hit");
+	}
+	return false;
 }
 
 //============================================================================================================
