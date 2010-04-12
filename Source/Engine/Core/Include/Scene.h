@@ -73,7 +73,7 @@ public:
 	// Returns the draw parameters that get passed to the deferred draw process
 	Deferred::DrawParams& GetDrawParams() { return mParams; }
 
-	// Activating this function will mean that the scene will be rendered to a render target of specified size
+	// Activating this function will mean that the scene will be rendered to the specified target
 	void SetRenderTarget (IRenderTarget* target) { mTarget = target; }
 
 	// Changes the camera's perspective to the specified values. All objects get culled.

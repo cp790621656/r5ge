@@ -313,13 +313,28 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, DrawParams& param
 
 	if (normal == 0)
 	{
-		normal		= graphics->CreateRenderTexture();
-		depth		= graphics->CreateRenderTexture();
-		matDiff		= graphics->CreateRenderTexture();
-		matSpec		= graphics->CreateRenderTexture();
-		lightDiff	= graphics->CreateRenderTexture();
-		lightSpec	= graphics->CreateRenderTexture();
-		final		= graphics->CreateRenderTexture();
+		if (params.mRenderTarget == 0)
+		{
+			// Rendering to screen should reuse the same textures
+			normal		= graphics->GetTexture("[Generated] Normal");
+			depth		= graphics->GetTexture("[Generated] Depth");
+			matDiff		= graphics->GetTexture("[Generated] Diffuse Material");
+			matSpec		= graphics->GetTexture("[Generated] Specular Material");
+			lightDiff	= graphics->GetTexture("[Generated] Light Diffuse");
+			lightSpec	= graphics->GetTexture("[Generated] Light Specular");
+			final		= graphics->GetTexture("[Generated] Final");
+		}
+		else
+		{
+			// Rendering to an off-screen buffer should use temporary textures
+			normal		= graphics->CreateRenderTexture();
+			depth		= graphics->CreateRenderTexture();
+			matDiff		= graphics->CreateRenderTexture();
+			matSpec		= graphics->CreateRenderTexture();
+			lightDiff	= graphics->CreateRenderTexture();
+			lightSpec	= graphics->CreateRenderTexture();
+			final		= graphics->CreateRenderTexture();
+		}
 	}
 
 	// Use the specified size if possible, viewport size otherwise
