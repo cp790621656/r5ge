@@ -173,20 +173,8 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-
-	// Draw the scene using the deferred approach
-	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
-
-	// Add transparent objects via forward rendering
-	mObjects += mScene.Draw(mForward);
-
-	// Draw the result onto the screen
-	//PostProcess::DepthOfField(mGraphics, mScene.GetDrawParams(), result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
-	PostProcess::None(mGraphics, mScene.GetDrawParams(), result.mColor);
-
-	// Save statistics
-	mObjects = result.mObjects;
-	mStats	 = mGraphics->GetFrameStats();
+	mObjects = mScene.Draw();
+	mStats = mGraphics->GetFrameStats();
 }
 
 //============================================================================================================

@@ -64,7 +64,7 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	mScene.DrawAllForward();
+	mScene.Draw();
 }
 
 //============================================================================================================

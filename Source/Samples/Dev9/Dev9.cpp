@@ -219,7 +219,7 @@ void TestApp::DrawLeaves(void* param)
 			// Off-screen target
 			mOffscreen.SetRenderTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
-			mOffscreen.Draw("Diffuse Map");
+			mOffscreen._Draw("Diffuse Map");
 			mGraphics->Flush();
 
 			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
@@ -241,7 +241,7 @@ void TestApp::DrawLeaves(void* param)
 			mGraphics->Clear();
 
 			mOffscreen.SetRenderTarget(normalTarget);
-			mOffscreen.Draw("Normal Map");
+			mOffscreen._Draw("Normal Map");
 			mGraphics->Flush();
 		}
 

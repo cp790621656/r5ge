@@ -34,14 +34,11 @@ private:
 	// Default techniques, only filled if used. Cached here for speed.
 	Array<const ITechnique*> mForward;
 
-	// Optional render target used by the scene -- created automatically when needed
-	IRenderTarget*	mTarget;
-
 public:
 
 	R5_DECLARE_SOLO_CLASS("Scene");
 
-	Scene (Object* root = 0) : mRoot(root), mTarget(0) {}
+	Scene (Object* root = 0) : mRoot(root) {}
 
 	// Finds a child object of the specified name and type
 	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
@@ -55,9 +52,14 @@ public:
 		return mRoot->AddObject<Type>(name, threadSafe);
 	}
 
+public:
+
 	// It should be possible to change the root of the scene if desired
 	Object* GetRoot() { return mRoot; }
 	void SetRoot (Object* root) { mRoot = root; }
+
+	// Activating this function will mean that the scene will be rendered to the specified target
+	void SetRenderTarget (IRenderTarget* target) { mParams.mRenderTarget = target; }
 
 	// Retrieves the default draw parameters for modification
 	Techniques& GetDeferredTechniques()	{ return mParams.mDrawTechniques; }
@@ -73,9 +75,6 @@ public:
 	// Returns the draw parameters that get passed to the deferred draw process
 	Deferred::DrawParams& GetDrawParams() { return mParams; }
 
-	// Activating this function will mean that the scene will be rendered to the specified target
-	void SetRenderTarget (IRenderTarget* target) { mTarget = target; }
-
 	// Changes the camera's perspective to the specified values. All objects get culled.
 	void Cull (const Camera* cam);
 	void Cull (const CameraController& cam);
@@ -84,21 +83,26 @@ public:
 	// Casts a ray into the screen at the specified mouse position
 	Array<RaycastHit>& Raycast (const Vector2i& screenPos);
 
-	// Convenience function: draws the scene using default forward rendering techniques
+	// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
+	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f());
+
+	// Advanced: Draws the scene using default forward rendering techniques
 	uint DrawAllForward (bool clearScreen = true);
 
-	// Convenience function: draws the scene using default deferred rendering techniques
+	// Advanced: Draws the scene using default deferred rendering techniques
 	// PostProcess: 0 (do nothing), 1 = draw to screen as-is, 2 = bloom
 	Deferred::DrawResult DrawAllDeferred (byte ssao = 0, byte postProcess = 1);
 
-	// Draws the scene using the specified technique
-	uint Draw (const String& technique);
+public:
 
-	// Draws the scene using the specified technique
-	uint Draw (const ITechnique* technique);
+	// Advanced: Draws the scene using the specified technique
+	uint _Draw (const String& technique);
 
-	// Draws the scene using the specified techniques
-	uint Draw (const Techniques& techniques, bool insideOut = false);
+	// Advanced: Draws the scene using the specified technique
+	uint _Draw (const ITechnique* technique);
+
+	// Advanced: Draws the scene using the specified techniques
+	uint _Draw (const Techniques& techniques, bool insideOut = false);
 
 private:
 

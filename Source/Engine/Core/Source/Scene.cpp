@@ -67,7 +67,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		Vector3f dir (rot.GetForward());
 
 		// Set up the view and projection matrices
-		graphics->SetActiveRenderTarget(mTarget);
+		graphics->SetActiveRenderTarget(mParams.mRenderTarget);
 		graphics->ResetModelViewMatrix();
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
@@ -124,6 +124,76 @@ Array<RaycastHit>& Scene::Raycast (const Vector2i& screenPos)
 }
 
 //============================================================================================================
+// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
+//============================================================================================================
+
+uint Scene::Draw (float bloom, const Vector3f& focalRange)
+{
+	if (mRoot != 0)
+	{
+		IGraphics* graphics = mRoot->mCore->GetGraphics();
+
+		if (mParams.mDrawTechniques.IsEmpty())
+		{
+			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
+			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
+		}
+
+		if (mForward.IsEmpty())
+		{
+			mForward.Expand() = graphics->GetTechnique("Wireframe");
+			mForward.Expand() = graphics->GetTechnique("Transparent");
+			mForward.Expand() = graphics->GetTechnique("Particle");
+			mForward.Expand() = graphics->GetTechnique("Glow");
+			mForward.Expand() = graphics->GetTechnique("Glare");
+		}
+
+		// Set the draw callback
+		if (!mParams.mDrawCallback)
+		{
+			mParams.mDrawCallback = bind(&Scene::_Draw, this);
+		}
+
+		// Draw the scene using the deferred techniques
+		Deferred::DrawResult result = Deferred::DrawScene(graphics, mParams, mQueue.mLights);
+
+		// Draw the scene using forward rendering techniques
+		result.mObjects += DrawAllForward(false);
+
+		// Post-processing
+		if (bloom != 0.0f)
+		{
+			if (focalRange.IsZero())
+			{
+				// Only bloom
+				PostProcess::Bloom(graphics, mParams, result.mColor, 1.0f);
+			}
+			else
+			{
+				// Bloom and depth-of-field
+				PostProcess::Both(graphics, mParams, result.mColor, result.mDepth, bloom,
+					focalRange.x, focalRange.y, focalRange.z);
+			}
+		}
+		else if (!focalRange.IsZero())
+		{
+			// Only depth-of-field
+			PostProcess::DepthOfField(graphics, mParams, result.mColor, result.mDepth,
+				focalRange.x, focalRange.y, focalRange.z);
+		}
+		else
+		{
+			// No post-processing
+			PostProcess::None(graphics, mParams, result.mColor);
+		}
+
+		// Return the number of rendered objects
+		return result.mObjects;
+	}
+	return 0;
+}
+
+//============================================================================================================
 // Convenience function: Draws the scene using default forward rendering techniques
 //============================================================================================================
 
@@ -144,7 +214,7 @@ uint Scene::DrawAllForward (bool clearScreen)
 		}
 
 		if (clearScreen) graphics->Clear();
-		return Draw(mForward);
+		return _Draw(mForward);
 	}
 	return 0;
 }
@@ -164,7 +234,7 @@ Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 		// Set the draw callback
 		if (!mParams.mDrawCallback)
 		{
-			mParams.mDrawCallback = bind(&Scene::Draw, this);
+			mParams.mDrawCallback = bind(&Scene::_Draw, this);
 		}
 
 		// Set the list of techniques used to draw the scene
@@ -176,7 +246,6 @@ Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 
 		// Update the potentially changed parameters
 		mParams.mAOLevel = ssao;
-		mParams.mRenderTarget = mTarget;
 
 		// Draw the scene
 		result = Deferred::DrawScene(graphics, mParams, mQueue.mLights);
@@ -199,12 +268,12 @@ Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::Draw (const String& technique)
+uint Scene::_Draw (const String& technique)
 {
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
-		return Draw(graphics->GetTechnique(technique));
+		return _Draw(graphics->GetTechnique(technique));
 	}
 	return 0;
 }
@@ -213,18 +282,18 @@ uint Scene::Draw (const String& technique)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::Draw (const ITechnique* technique)
+uint Scene::_Draw (const ITechnique* technique)
 {
 	mTechs.Clear();
 	mTechs.Expand() = technique;
-	return Draw(mTechs);
+	return _Draw(mTechs);
 }
 
 //============================================================================================================
 // Draw the specified scene
 //============================================================================================================
 
-uint Scene::Draw (const Techniques& techniques, bool insideOut)
+uint Scene::_Draw (const Techniques& techniques, bool insideOut)
 {
 	uint result(0);
 
