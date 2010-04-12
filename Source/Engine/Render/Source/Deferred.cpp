@@ -329,47 +329,38 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, DrawParams& param
 	const ITexture* lightmap (0);
 	DrawResult result;
 
+	// Background color
+	Color4f color (params.mRenderTarget == 0 ? graphics->GetBackgroundColor() :
+				params.mRenderTarget->GetBackgroundColor());
+
 	// Made constant so it can be quickly changed for testing purposes
-	const uint HDRFormat = ITexture::Format::RGB16F;
+	const uint HDRFormat = (color.a == 1.0f) ? ITexture::Format::RGB16F : ITexture::Format::RGBA16F;
 
 	// Deferred rendering target
 	{
 		if (diffuseTarget == 0)
 		{
 			diffuseTarget = graphics->CreateRenderTarget();
-			diffuseTarget->AttachDepthTexture( depth );
-			diffuseTarget->AttachStencilTexture( depth );
-			diffuseTarget->AttachColorTexture( 0, matDiff, HDRFormat );
-			diffuseTarget->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
-			diffuseTarget->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
-			diffuseTarget->UseSkybox(true);
+			diffuseTarget->AttachDepthTexture(depth);
+			diffuseTarget->AttachStencilTexture(depth);
+			diffuseTarget->AttachColorTexture(0, matDiff, HDRFormat);
+			diffuseTarget->AttachColorTexture(1, matSpec, ITexture::Format::RGBA);
+			diffuseTarget->AttachColorTexture(2, normal,  ITexture::Format::RGBA);
+			diffuseTarget->UseSkybox(params.mRenderTarget == 0 || params.mRenderTarget->IsUsingSkybox());
 		}
 
 		// Setting size only changes it if it's different
 		diffuseTarget->SetSize(size);
-
-		// Active background color
-		if (params.mUseColor)
-		{
-			diffuseTarget->SetBackgroundColor(params.mColor);
-			diffuseTarget->UseSkybox(false);
-		}
-		else
-		{
-			Color4f color (graphics->GetBackgroundColor());
-			color.a = 1.0f;
-			diffuseTarget->SetBackgroundColor(color);
-			diffuseTarget->UseSkybox(true);
-		}
+		diffuseTarget->SetBackgroundColor(color);
 
 		// Deferred rendering -- encoding pass
 		if (params.mDrawCallback && params.mDrawTechniques.IsValid())
 		{
-			graphics->SetCulling( IGraphics::Culling::Back );
-			graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+			graphics->SetCulling(IGraphics::Culling::Back);
+			graphics->SetActiveDepthFunction(IGraphics::Condition::Less);
 
 			graphics->SetStencilTest(false);
-			graphics->SetActiveRenderTarget( diffuseTarget );
+			graphics->SetActiveRenderTarget(diffuseTarget);
 			graphics->Clear(true, true, true);
 
 			// Set up the stencil test
@@ -408,16 +399,16 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, DrawParams& param
 		if (lightTarget == 0)
 		{
 			lightTarget = graphics->CreateRenderTarget();
-			lightTarget->AttachDepthTexture( depth );
-			lightTarget->AttachStencilTexture( depth );
-			lightTarget->AttachColorTexture( 0, lightDiff, HDRFormat );
-			lightTarget->AttachColorTexture( 1, lightSpec, HDRFormat );
-			lightTarget->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+			lightTarget->AttachDepthTexture(depth);
+			lightTarget->AttachStencilTexture(depth);
+			lightTarget->AttachColorTexture(0, lightDiff, HDRFormat);
+			lightTarget->AttachColorTexture(1, lightSpec, HDRFormat);
+			lightTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 			lightTarget->UseSkybox(false);
 		}
 		
-		lightTarget->SetSize( size );
-		graphics->SetActiveRenderTarget( lightTarget );
+		lightTarget->SetSize(size);
+		graphics->SetActiveRenderTarget(lightTarget);
 		graphics->Clear(true, false, false);
 		DrawLights(graphics, depth, normal, lightmap, lights);
 		result.mObjects += lights.GetSize();
@@ -429,15 +420,15 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, DrawParams& param
 		if (finalTarget == 0)
 		{
 			finalTarget = graphics->CreateRenderTarget();
-			finalTarget->AttachDepthTexture( depth );
-			finalTarget->AttachStencilTexture( depth );
-			finalTarget->AttachColorTexture( 0, final, HDRFormat );
-			finalTarget->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+			finalTarget->AttachDepthTexture(depth);
+			finalTarget->AttachStencilTexture(depth);
+			finalTarget->AttachColorTexture(0, final, HDRFormat);
+			finalTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 			finalTarget->UseSkybox(false);
 		}
 
-		finalTarget->SetSize( size );
-		graphics->SetActiveRenderTarget( finalTarget );
+		finalTarget->SetSize(size);
+		graphics->SetActiveRenderTarget(finalTarget);
 		Combine(graphics, matDiff, matSpec, lightDiff, lightSpec);
 	}
 

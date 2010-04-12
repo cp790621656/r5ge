@@ -44,14 +44,12 @@ namespace Deferred
 		TechniqueList	mDrawTechniques;	// List of techniques used to draw the scene
 		byte			mAOLevel;			// Ambient Occlusion level: 0 = none, 1 = low, 2 = high
 		bool			mInsideOut;			// Whether to draw inside out (useful for reflections)
-		Color4ub		mColor;				// Background color
-		bool			mUseColor;			// Whether to use the background color (overrides the skybox)
 
 		IRenderTarget*			mRenderTarget;	// Render target we should be using
 		Array<ITexture*>		mTextures;		// Cached textures
 		Array<IRenderTarget*>	mTargets;		// Cached render targets
 
-		DrawParams() : mAOLevel(0), mInsideOut(false), mUseColor(false), mRenderTarget(0) {}
+		DrawParams() : mAOLevel(0), mInsideOut(false), mRenderTarget(0) {}
 	};
 
 	// Registers a new light source type
