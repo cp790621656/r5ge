@@ -47,12 +47,18 @@ Root
 					Top = 0.000000 0.000000
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
-					Texture = "Scene 2: Color"
+					Texture = "Secondary Target"
 					Ignore Alpha = false
 					Event Handling = "Normal"
 					Layer = 1
 					UIScript = "USMoveCamera"
 				}
+			}
+			
+			Stats = "Game Stats"
+			{
+				Left = 1 -150
+				Bottom = 0 250
 			}
 		}
 	}
@@ -66,74 +72,48 @@ Root
 	{
 		Debug Camera = "Camera 0"
 		{
-			Position = 0.000000 0.000000 2.000000
-			Rotation = -0.233075 0.140222 -0.497754 0.823562
-			Scale = 1.000000
-			Layer = 10
+			Position = 0.000000 0.000000 0.600000
+			Rotation = -0.024238 0.112673 -0.972085 0.204373
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 14.001606 50.000000
+			Dolly = 0.000000 1.897729 15.000000
 		}
 
 		Model Instance = "Plane"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 30.000000
-			Min = -2.000000 -2.000000 0.000000
-			Max = 2.000000 2.000000 0.000000
-			Layer = 10
 			Model = "Models/rect.r5a"
 		}
 
 		Object = "Scene 1"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
-			Layer = 10
-
 			Debug Camera = "Camera 1"
 			{
-				Position = 0.000000 0.000000 2.000000
-				Rotation = -0.231574 -0.130069 0.470374 0.841549
-				Scale = 1.000000
-				Layer = 10
-				Range = 0.300000 100.000000 90.000000
-				Dolly = 0.000000 14.001606 50.000000
+				Position = 0.000000 0.000000 1.000000
+				Rotation = 0.029436 0.138777 -0.967555 -0.209075
+				Range = 0.100000 5.000000 45.000000
+				Dolly = 0.000000 1.000000 5.000000
 			}
 
 			Directional Light = "First Light"
 			{
-				Position = -7.000000 -7.000000 2.000000
-				Rotation = -0.388141 0.160773 -0.347273 0.838391
-				Scale = 1.000000
-				Layer = 10
-				Ambient = 0.000000 0.000000 0.000000
+				Rotation = 0.091038 0.335930 -0.904437 -0.246692
+				Ambient = 0.200000 0.200000 0.200000
 				Diffuse = 1.000000 1.000000 1.000000
 				Specular = 1.000000 1.000000 1.000000
 				Brightness = 1.000000
 
 				Directional Billboard = "Test 0"
 				{
-					Position = 0.000000 0.000000 0.000000
-					Rotation = 0.000000 0.000000 0.000000 1.000000
-					Scale = 1.000000
-					Layer = 10
 					Color = 0xffffffff
 					Texture = "Textures/Billboards/light.jpg"
 					Technique = "Glow"
 				}
 			}
 
-			Model Instance = "Teapot"
+			Model Instance = "Peasant"
 			{
-				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Min = -4.231425 -6.347139 -0.175709
-				Max = 4.231425 7.265358 6.488787
-				Layer = 10
-				Model = "Models/teapot.r5b"
+				Model = "Models/peasant.r5a"
+				Script = "OSPlayIdleAnimations"
 			}
 		}
 	}

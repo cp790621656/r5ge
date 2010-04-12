@@ -9,6 +9,8 @@
 
 namespace Deferred
 {
+	typedef ITexture* ITexturePtr;
+	typedef IRenderTarget* IRenderTargetPtr;
 	typedef Array<const ITechnique*> TechniqueList;
 
 	// Delegate for the normal drawing callback. It expects a technique used to render the scene.
@@ -40,13 +42,16 @@ namespace Deferred
 	{
 		DrawCallback	mDrawCallback;		// Actual draw callback -- will receive the list of techniques
 		TechniqueList	mDrawTechniques;	// List of techniques used to draw the scene
-		Vector2i		mSize;				// Size that the final textures should be using (default: screen)
 		byte			mAOLevel;			// Ambient Occlusion level: 0 = none, 1 = low, 2 = high
 		bool			mInsideOut;			// Whether to draw inside out (useful for reflections)
 		Color4ub		mColor;				// Background color
 		bool			mUseColor;			// Whether to use the background color (overrides the skybox)
 
-		DrawParams() : mAOLevel(0), mInsideOut(false), mUseColor(false) {}
+		IRenderTarget*			mRenderTarget;	// Render target we should be using
+		Array<ITexture*>		mTextures;		// Cached textures
+		Array<IRenderTarget*>	mTargets;		// Cached render targets
+
+		DrawParams() : mAOLevel(0), mInsideOut(false), mUseColor(false), mRenderTarget(0) {}
 	};
 
 	// Registers a new light source type
@@ -61,5 +66,5 @@ namespace Deferred
 	void DrawPointLights (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
 
 	// Deferred rendering draw function -- does all the setup and rendering into off-screen buffers
-	DrawResult DrawScene (IGraphics* graphics, const Light::List& lights, const DrawParams& params);
+	DrawResult DrawScene (IGraphics* graphics, DrawParams& params, const Light::List& lights);
 };

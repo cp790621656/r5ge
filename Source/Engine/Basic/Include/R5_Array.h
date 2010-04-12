@@ -36,11 +36,30 @@ public:
 		BASE::mSize = 0;
 	}
 
-	inline Type* ExpandTo(uint count)
+	inline Type* ExpandTo(uint count, bool clearMemory = false)
 	{
 		BASE::Reserve(count);
-		if (BASE::mSize < count) BASE::mSize = count;
+
+		if (BASE::mSize < count)
+		{
+			if (clearMemory)
+			{
+				memset(BASE::mArray + BASE::mSize, 0, sizeof(Type) * (count - BASE::mSize));
+			}
+			BASE::mSize = count;
+		}
 		return BASE::mArray;
+	}
+
+	inline Type& Get (uint index)
+	{
+		if (index >= BASE::mSize)
+		{
+			uint start = BASE::mSize;
+			ExpandTo(index + 1);
+			memset(BASE::mArray + start, 0, sizeof(Type) * (BASE::mSize - start));
+		}
+		return BASE::mArray[index];
 	}
 
 	inline void Shrink()

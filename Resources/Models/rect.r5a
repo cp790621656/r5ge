@@ -12,12 +12,25 @@ Root
 			Specular = 0.000000 0.000000 0.000000 0.200000
 			Glow = 0.000000
 			ADT = 0.003922
-			Technique = "Opaque Depth"
+			
 			Technique = "Opaque"
+			{
+				Shader = "Forward/D
+				
+				Textures = String[]
+				{
+					"Textures/sand/beach.jpg"
+				}
+			}
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/Material"
+				Shader = "Deferred/D"
+				
+				Textures = String[]
+				{
+					"Textures/sand/beach.jpg"
+				}
 			}
 		}
 	}

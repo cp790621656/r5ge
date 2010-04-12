@@ -113,7 +113,7 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 	Deferred::DrawResult result = mScene.DrawAllDeferred(0, 0);
 	mScene.DrawAllForward(false);
-	PostProcess::Bloom(mGraphics, result.mColor, 1.0f);
+	PostProcess::Bloom(mGraphics, mScene.GetDrawParams(), result.mColor, 1.0f);
 }
 
 //============================================================================================================

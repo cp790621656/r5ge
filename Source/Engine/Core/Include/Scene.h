@@ -34,11 +34,14 @@ private:
 	// Default techniques, only filled if used. Cached here for speed.
 	Array<const ITechnique*> mForward;
 
+	// Optional render target used by the scene -- created automatically when needed
+	IRenderTarget*	mTarget;
+
 public:
 
 	R5_DECLARE_SOLO_CLASS("Scene");
 
-	Scene (Object* root = 0) : mRoot(root) {}
+	Scene (Object* root = 0) : mRoot(root), mTarget(0) {}
 
 	// Finds a child object of the specified name and type
 	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
@@ -66,6 +69,12 @@ public:
 
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
 	const Light::List& GetVisibleLights (const Vector3f& pos);
+
+	// Returns the draw parameters that get passed to the deferred draw process
+	Deferred::DrawParams& GetDrawParams() { return mParams; }
+
+	// Activating this function will mean that the scene will be rendered to a render target of specified size
+	void SetRenderTarget (IRenderTarget* target) { mTarget = target; }
 
 	// Changes the camera's perspective to the specified values. All objects get culled.
 	void Cull (const Camera* cam);

@@ -82,10 +82,12 @@ struct IGraphicsManager
 
 	// Managed unnamed resources
 	virtual IVBO*			CreateVBO()=0;
+	virtual ITexture*		CreateRenderTexture()=0;
 	virtual IRenderTarget*	CreateRenderTarget()=0;
 
 	// Resource removal
 	virtual void DeleteVBO			(const IVBO*			ptr)=0;
+	virtual void DeleteTexture		(const ITexture*		ptr)=0;
 	virtual void DeleteRenderTarget	(const IRenderTarget*	ptr)=0;
 
 	// Managed named resources (to release their memory just call their ::Release() function)

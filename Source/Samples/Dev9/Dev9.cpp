@@ -215,6 +215,9 @@ void TestApp::DrawLeaves(void* param)
 		{
 			mGraphics->SetActiveRenderTarget(diffuseTarget);
 			mGraphics->Clear();
+
+			// Off-screen target
+			mOffscreen.SetRenderTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
 			mOffscreen.Draw("Diffuse Map");
 			mGraphics->Flush();
@@ -236,6 +239,8 @@ void TestApp::DrawLeaves(void* param)
 		{
 			mGraphics->SetActiveRenderTarget(normalTarget);
 			mGraphics->Clear();
+
+			mOffscreen.SetRenderTarget(normalTarget);
 			mOffscreen.Draw("Normal Map");
 			mGraphics->Flush();
 		}

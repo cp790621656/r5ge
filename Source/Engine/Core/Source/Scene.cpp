@@ -67,6 +67,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		Vector3f dir (rot.GetForward());
 
 		// Set up the view and projection matrices
+		graphics->SetActiveRenderTarget(mTarget);
 		graphics->ResetModelViewMatrix();
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
@@ -175,18 +176,19 @@ Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
 
 		// Update the potentially changed parameters
 		mParams.mAOLevel = ssao;
+		mParams.mRenderTarget = mTarget;
 
 		// Draw the scene
-		result = Deferred::DrawScene(graphics, mQueue.mLights, mParams);
+		result = Deferred::DrawScene(graphics, mParams, mQueue.mLights);
 
 		// Post-process step
 		if (postProcess == 2)
 		{
-			PostProcess::Bloom(graphics, result.mColor, 1.0f);
+			PostProcess::Bloom(graphics, mParams, result.mColor, 1.0f);
 		}
 		else if (postProcess == 1)
 		{
-			PostProcess::None(graphics, result.mColor);
+			PostProcess::None(graphics, mParams, result.mColor);
 		}
 		return result;
 	}

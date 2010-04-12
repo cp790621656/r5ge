@@ -1,6 +1,10 @@
 #include "../Include/_All.h"
 using namespace R5;
 
+typedef ITexture*				ITexturePtr;
+typedef IRenderTarget*			IRenderTargetPtr;
+typedef Deferred::DrawParams	DrawParams;
+
 //============================================================================================================
 // Depth of field shader callback function
 //============================================================================================================
@@ -54,27 +58,31 @@ void BlurCommon ( IGraphics*		graphics,
 //============================================================================================================
 
 void BlurDownsample (IGraphics*			graphics,
+					 DrawParams&		params,
 					 const ITexture*	color,
 					 const ITexture*	depth,
 					 const IShader*		replacement,
-					 const IShader*		postprocess,
-					 IRenderTarget*		target)
+					 const IShader*		postprocess)
 {
 	static const ITechnique* technique  = graphics->GetTechnique("Post Process");
 	static IShader*			blurH		= graphics->GetShader("[R5] Horizontal Blur");
 	static IShader*			blurV		= graphics->GetShader("[R5] Vertical Blur");
-	static IRenderTarget*	target00	= 0;
-	static IRenderTarget*	target01	= 0;
-	static IRenderTarget*	target10	= 0;
-	static IRenderTarget*	target11	= 0;
-	static IRenderTarget*	target20	= 0;
-	static IRenderTarget*	target21	= 0;
-	static ITexture*		texture00	= 0;
-	static ITexture*		texture01	= 0;
-	static ITexture*		texture10	= 0;
-	static ITexture*		texture11	= 0;
-	static ITexture*		texture20	= 0;
-	static ITexture*		texture21	= 0;
+
+	params.mTargets.ExpandTo(9, true);
+	params.mTextures.ExpandTo(13, true);
+
+	IRenderTargetPtr&	target00	= params.mTargets[3];
+	IRenderTargetPtr&	target01	= params.mTargets[4];
+	IRenderTargetPtr&	target10	= params.mTargets[5];
+	IRenderTargetPtr&	target11	= params.mTargets[6];
+	IRenderTargetPtr&	target20	= params.mTargets[7];
+	IRenderTargetPtr&	target21	= params.mTargets[8];
+	ITexturePtr&		texture00	= params.mTextures[7];
+	ITexturePtr&		texture01	= params.mTextures[8];
+	ITexturePtr&		texture10	= params.mTextures[9];
+	ITexturePtr&		texture11	= params.mTextures[10];
+	ITexturePtr&		texture20	= params.mTextures[11];
+	ITexturePtr&		texture21	= params.mTextures[12];
 
 	// Initialize the common render targets and textures the first time this function is executed
 	if (target00 == 0)
@@ -88,12 +96,12 @@ void BlurDownsample (IGraphics*			graphics,
 		target20  = graphics->CreateRenderTarget();
 		target21  = graphics->CreateRenderTarget();
 
-		texture00 = graphics->GetTexture("[Generated] Half 0");
-		texture01 = graphics->GetTexture("[Generated] Half 1");
-		texture10 = graphics->GetTexture("[Generated] Quarter 0");
-		texture11 = graphics->GetTexture("[Generated] Quarter 1");
-		texture20 = graphics->GetTexture("[Generated] Eighth 0");
-		texture21 = graphics->GetTexture("[Generated] Eighth 1");
+		texture00 = graphics->CreateRenderTexture();
+		texture01 = graphics->CreateRenderTexture();
+		texture10 = graphics->CreateRenderTexture();
+		texture11 = graphics->CreateRenderTexture();
+		texture20 = graphics->CreateRenderTexture();
+		texture21 = graphics->CreateRenderTexture();
 
 		target00->AttachColorTexture(0, texture00, format);
 		target01->AttachColorTexture(0, texture01, format);
@@ -103,9 +111,10 @@ void BlurDownsample (IGraphics*			graphics,
 		target21->AttachColorTexture(0, texture21, format);
 	}
 
-	// Always resize targets to match the viewport
-	Vector2i half (graphics->GetViewport() / 2);
-	Vector2i quarter (half / 2);
+	// Always resize targets to match the render target
+	Vector2i target (params.mRenderTarget == 0 ? graphics->GetViewport() : params.mRenderTarget->GetSize());
+	Vector2i half	(target  / 2);
+	Vector2i quarter(half	 / 2);
 	Vector2i eighth (quarter / 2);
 
 	// Target 0
@@ -145,7 +154,7 @@ void BlurDownsample (IGraphics*			graphics,
 	BlurCommon(graphics, target20, target21, texture11, texture20, blurH, blurV);
 
 	// Draw to the render target
-	graphics->SetActiveRenderTarget(target);
+	graphics->SetActiveRenderTarget(params.mRenderTarget);
 	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
 
 	// Clear the target
@@ -166,11 +175,11 @@ void BlurDownsample (IGraphics*			graphics,
 // No post-processing
 //============================================================================================================
 
-void PostProcess::None (IGraphics* graphics, const ITexture* color)
+void PostProcess::None (IGraphics* graphics, DrawParams& params, const ITexture* color)
 {
 	static const ITechnique* technique = graphics->GetTechnique("Post Process");
 
-	graphics->SetActiveRenderTarget(0);
+	graphics->SetActiveRenderTarget(params.mRenderTarget);
 	graphics->SetActiveProjection(IGraphics::Projection::Orthographic);
 	graphics->SetActiveTechnique(technique);
 	graphics->SetActiveMaterial(0);
@@ -182,7 +191,7 @@ void PostProcess::None (IGraphics* graphics, const ITexture* color)
 // Bloom post-processing effect
 //============================================================================================================
 
-void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float threshold, IRenderTarget* target)
+void PostProcess::Bloom (IGraphics* graphics, DrawParams& params, const ITexture* color, float threshold)
 {
 	uint format = color->GetFormat();
 
@@ -201,11 +210,11 @@ void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float thres
 			replacement->RegisterUniform("threshold", &SetThreshold);
 		}
 
-		BlurDownsample (graphics, color, 0, replacement, final, target);
+		BlurDownsample(graphics, params, color, 0, replacement, final);
 	}
-	else if (target == 0)
+	else
 	{
-		PostProcess::None(graphics, color);
+		PostProcess::None(graphics, params, color);
 	}
 }
 
@@ -213,13 +222,13 @@ void PostProcess::Bloom (IGraphics* graphics, const ITexture* color, float thres
 // Depth of Field effect
 //============================================================================================================
 
-void PostProcess::DepthOfField (IGraphics*		graphics,
-								const ITexture* color,
-								const ITexture* depth,
-								float			focalDistance,
-								float			focalMin,
-								float			focalMax,
-								IRenderTarget*	target)
+void PostProcess::DepthOfField (IGraphics*			graphics,
+								DrawParams&			params,
+								const ITexture*		color,
+								const ITexture*		depth,
+								float				focalDistance,
+								float				focalMin,
+								float				focalMax)
 {
 	static IShader* dof	= 0;
 
@@ -234,20 +243,21 @@ void PostProcess::DepthOfField (IGraphics*		graphics,
 		dof->RegisterUniform("focusRange", &SetFocusRange);
 	}
 
-	BlurDownsample (graphics, color, depth, 0, dof, target);
+	BlurDownsample(graphics, params, color, depth, 0, dof);
 }
 
 //============================================================================================================
 // Both depth-of-field as well as bloom effects
 //============================================================================================================
 
-void PostProcess::Both (IGraphics*		graphics,
-						const ITexture*	color,
-						const ITexture*	depth,
-						float			threshold,
-						float			focalDistance,
-						float			focalMin,
-						float			focalMax)
+void PostProcess::Both (IGraphics*			graphics,
+						DrawParams&			params,
+						const ITexture*		color,
+						const ITexture*		depth,
+						float				threshold,
+						float				focalDistance,
+						float				focalMin,
+						float				focalMax)
 {
 	uint format = color->GetFormat();
 	if (format == ITexture::Format::Invalid) format = ITexture::Format::RGB16F;
@@ -257,8 +267,8 @@ void PostProcess::Both (IGraphics*		graphics,
 	{
 		// We want to reuse the specular light texture as it's no longer needed at this point, and it happens
 		// to be the least useful texture in general. Reusing it saves the need to create another one.
-		static ITexture* intrimColor = graphics->GetTexture("[Generated] Specular Light");
-		static IRenderTarget* target = 0;
+		ITexturePtr&		intrimColor = params.mTextures.Get(5);
+		IRenderTargetPtr&	target		= params.mTargets.Get(13);
 
 		if (target == 0)
 		{
@@ -270,15 +280,22 @@ void PostProcess::Both (IGraphics*		graphics,
 		// The target's size should match the color texture's size
 		target->SetSize(color->GetSize());
 
+		// Replace
+		IRenderTarget* saved = params.mRenderTarget;
+		params.mRenderTarget = target;
+
 		// Apply depth of field first
-		DepthOfField(graphics, color, depth, focalDistance, focalMin, focalMax, target);
+		DepthOfField(graphics, params, color, depth, focalDistance, focalMin, focalMax);
+
+		// Restore
+		params.mRenderTarget = saved;
 
 		// Bloom follows afterwards
-		Bloom(graphics, intrimColor, threshold, 0);
+		Bloom(graphics, params, intrimColor, threshold);
 	}
 	else
 	{
 		// Only apply depth of field
-		DepthOfField(graphics, color, depth, focalDistance, focalMin, focalMax, 0);
+		DepthOfField(graphics, params, color, depth, focalDistance, focalMin, focalMax);
 	}
 }

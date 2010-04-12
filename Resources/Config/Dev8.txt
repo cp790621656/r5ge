@@ -71,25 +71,6 @@ Root
 					Bottom Color = 0 0 0 0.3
 				}
 			}
-			
-			Window = "X-Ray Window"
-			{
-				Left = 0 20
-				Right = 0 320
-				Top = 0 20
-				Bottom = 0 220
-				Skin = "Default"
-				Font = "Arial 15"
-				Titlebar Height = 22
-				Text = "Screen Space Normal X-Ray"
-				
-				Shaded Area = "X-Ray Area"
-				{
-					Shader = "Other/Xray"
-					Texture 0 = "[Generated] Normal"
-					Receives Events = false
-				}
-			}
 		}
 	}
 

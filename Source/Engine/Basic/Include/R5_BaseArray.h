@@ -80,6 +80,7 @@ namespace Unfinished
 			if (count > mAllocated)
 			{
 				mAllocated = ((mAllocated << 1) > count) ? (mAllocated << 1) : count;
+				if (mAllocated < 8) mAllocated = 8;
 				
 				if (mArray == 0)
 				{

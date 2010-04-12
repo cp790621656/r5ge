@@ -206,6 +206,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\..\Resources\Config\Dev7.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -670,6 +670,20 @@ IVBO* GLGraphics::CreateVBO()
 }
 
 //============================================================================================================
+// Creates a new temporary texture resource
+//============================================================================================================
+
+ITexture* GLGraphics::CreateRenderTexture()
+{
+	static uint counter = 0;
+	mTempTex.Lock();
+	GLTexture* tex = new GLTexture(String("[Generated] Render Texture %u", counter), this);
+	mTempTex.Expand() = tex;
+	mTempTex.Unlock();
+	return tex;
+}
+
+//============================================================================================================
 // Creates a new frame buffer object
 // NOTE: Intentionally not thread-safe as this function should only be called from the graphics thread
 //============================================================================================================
@@ -951,22 +965,58 @@ IFont* GLGraphics::GetFont (const String& name, bool createIfMissing)
 
 void GLGraphics::DeleteVBO (const IVBO* ptr)
 {
-	if (ptr != 0)
+	if (ptr == 0) return;
+
+	mVbos.Lock();
 	{
-		mVbos.Lock();
+		FOREACH(i, mVbos)
 		{
-			for (uint i = 0; i < mVbos.GetSize(); ++i)
+			if (mVbos[i] == ptr)
 			{
-				if ( mVbos[i] == ptr )
-				{
-					delete mVbos[i];
-					mVbos[i] = 0;
-					break;
-				}
+				delete mVbos[i];
+				mVbos[i] = 0;
+				break;
 			}
 		}
-		mVbos.Unlock();
 	}
+	mVbos.Unlock();
+}
+
+//============================================================================================================
+// Deletes a previously created texture
+//============================================================================================================
+
+void GLGraphics::DeleteTexture (const ITexture* ptr)
+{
+	if (ptr == 0) return;
+
+	mTempTex.Lock();
+	{
+		FOREACH(i, mTempTex)
+		{
+			if (mTempTex[i] == ptr)
+			{
+				mTempTex.DeleteAt(i);
+				mTempTex.Unlock();
+				return;
+			}
+		}
+	}
+	mTempTex.Unlock();
+
+	mTextures.Lock();
+	{
+		FOREACH(i, mTextures)
+		{
+			if (mTextures[i] == ptr)
+			{
+				mTextures.DeleteAt(i);
+				mTextures.Unlock();
+				return;
+			}
+		}
+	}
+	mTextures.Unlock();
 }
 
 //============================================================================================================
@@ -975,14 +1025,15 @@ void GLGraphics::DeleteVBO (const IVBO* ptr)
 
 void GLGraphics::DeleteRenderTarget (const IRenderTarget* ptr)
 {
+	if (ptr == 0) return;
+
 	mFbos.Lock();
 	{
-		for (uint i = 0; i < mFbos.GetSize(); ++i)
+		FOREACH(i, mFbos)
 		{
 			if ( mFbos[i] == ptr )
 			{
-				delete mFbos[i];
-				mFbos[i] = 0;
+				mFbos.DeleteAt(i);
 				break;
 			}
 		}

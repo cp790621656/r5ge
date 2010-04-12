@@ -33,6 +33,7 @@ protected:
 	Techniques			mTechs;
 	Materials			mMaterials;
 	Textures			mTextures;
+	Textures			mTempTex;
 	Shaders				mShaders;
 	Fonts				mFonts;
 	SubShaders			mSubShaders;
@@ -86,10 +87,12 @@ public:
 
 	// Managed unnamed resources
 	virtual IVBO*			CreateVBO();
+	virtual ITexture*		CreateRenderTexture();
 	virtual IRenderTarget*	CreateRenderTarget();
 
 	// Resource removal
 	virtual void DeleteVBO			(const IVBO*			ptr);
+	virtual void DeleteTexture		(const ITexture*		ptr);
 	virtual void DeleteRenderTarget	(const IRenderTarget*	ptr);
 
 	// Managed named resources

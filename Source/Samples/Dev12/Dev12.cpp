@@ -87,6 +87,22 @@ void TestApp::Run()
 
 		if (g_cam0 != 0 && g_cam1 != 0)
 		{
+			// Create the second render target
+			// NOTE: If rendering to a deferred target, 'depth' is not required
+			ITexture* color = mGraphics->GetTexture("Secondary Target");
+			ITexture* depth = mGraphics->CreateRenderTexture();
+			IRenderTarget* rt = mGraphics->CreateRenderTarget();
+
+			// Secondary render target will always be 300x200
+			rt->AttachColorTexture(0, color, ITexture::Format::RGBA);
+			rt->AttachDepthTexture(depth);
+			rt->SetBackgroundColor( Color4f(0, 0, 0, 0) );
+			rt->SetSize( Vector2i(300, 200) );
+
+			// Scene 1 will now be rendered into this render target
+			mScene1.SetRoot( mScene0.FindObject<Object>("Scene 1") );
+			mScene1.SetRenderTarget(rt);
+
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
 			mCore->SetListener( bind(&Object::MouseMove, g_cam0) );
 			mCore->SetListener( bind(&Object::Scroll, g_cam0) );
@@ -102,27 +118,11 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	static IRenderTarget* rt = 0;
-
-	if (rt == 0)
-	{
-		ITexture* depth = mGraphics->GetTexture("Scene 2: Depth");
-		ITexture* color = mGraphics->GetTexture("Scene 2: Color");
-
-		rt = mGraphics->CreateRenderTarget();
-		rt->AttachDepthTexture(depth);
-		rt->AttachColorTexture(0, color, ITexture::Format::RGBA);
-		rt->SetSize( Vector2i(300, 200) );
-		rt->SetBackgroundColor( Color4f(0, 0, 0, 0) );
-	}
-
 	// Draw the off-screen scene
-	mGraphics->SetActiveRenderTarget(rt);
 	mScene1.Cull(g_cam1);
 	mScene1.DrawAllForward();
 
 	// Draw the main scene
-	mGraphics->SetActiveRenderTarget(0);
 	mScene0.Cull(g_cam0);
 	mScene0.DrawAllForward();
 }

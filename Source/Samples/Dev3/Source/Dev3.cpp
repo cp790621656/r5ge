@@ -181,8 +181,8 @@ void TestApp::OnDraw()
 	mObjects += mScene.Draw(mForward);
 
 	// Draw the result onto the screen
-	//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
-	PostProcess::None(mGraphics, result.mColor);
+	//PostProcess::DepthOfField(mGraphics, mScene.GetDrawParams(), result.mColor, result.mDepth, 20.0f, 7.0f, 14.0f);
+	PostProcess::None(mGraphics, mScene.GetDrawParams(), result.mColor);
 
 	// Save statistics
 	mObjects = result.mObjects;

@@ -294,18 +294,38 @@ void Combine (
 // Deferred rendering draw function -- does all the setup and renders into off-screen buffers
 //============================================================================================================
 
-Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List& lights, const DrawParams& params)
+Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, DrawParams& params, const Light::List& lights)
 {
-	static ITexture*	normal		= graphics->GetTexture("[Generated] Normal");
-	static ITexture*	depth		= graphics->GetTexture("[Generated] Depth");
-	static ITexture*	matDiff		= graphics->GetTexture("[Generated] Diffuse Material");
-	static ITexture*	matSpec		= graphics->GetTexture("[Generated] Specular Material");
-	static ITexture*	lightDiff	= graphics->GetTexture("[Generated] Diffuse Light");
-	static ITexture*	lightSpec	= graphics->GetTexture("[Generated] Specular Light");
-	static ITexture*	final		= graphics->GetTexture("[Generated] Final");
+	params.mTargets.ExpandTo(3, true);
+	params.mTextures.ExpandTo(7, true);
+
+	ITexturePtr& normal		= params.mTextures[0];
+	ITexturePtr& depth		= params.mTextures[1];
+	ITexturePtr& matDiff	= params.mTextures[2];
+	ITexturePtr& matSpec	= params.mTextures[3];
+	ITexturePtr& lightDiff	= params.mTextures[4];
+	ITexturePtr& lightSpec	= params.mTextures[5];
+	ITexturePtr& final		= params.mTextures[6];
+
+	IRenderTargetPtr& diffuseTarget = params.mTargets[0];
+	IRenderTargetPtr& lightTarget	= params.mTargets[1];
+	IRenderTargetPtr& finalTarget	= params.mTargets[2];
+
+	if (normal == 0)
+	{
+		normal		= graphics->CreateRenderTexture();
+		depth		= graphics->CreateRenderTexture();
+		matDiff		= graphics->CreateRenderTexture();
+		matSpec		= graphics->CreateRenderTexture();
+		lightDiff	= graphics->CreateRenderTexture();
+		lightSpec	= graphics->CreateRenderTexture();
+		final		= graphics->CreateRenderTexture();
+	}
 
 	// Use the specified size if possible, viewport size otherwise
-	Vector2i size (params.mSize == 0 ? graphics->GetActiveViewport() : params.mSize);
+	Vector2i size (params.mRenderTarget == 0 ? graphics->GetActiveViewport() :
+		params.mRenderTarget->GetSize());
+
 	const ITexture* lightmap (0);
 	DrawResult result;
 
@@ -314,34 +334,32 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 
 	// Deferred rendering target
 	{
-		static IRenderTarget* target = 0;
-
-		if (target == 0)
+		if (diffuseTarget == 0)
 		{
-			target = graphics->CreateRenderTarget();
-			target->AttachDepthTexture( depth );
-			target->AttachStencilTexture( depth );
-			target->AttachColorTexture( 0, matDiff, HDRFormat );
-			target->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
-			target->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
-			target->UseSkybox(true);
+			diffuseTarget = graphics->CreateRenderTarget();
+			diffuseTarget->AttachDepthTexture( depth );
+			diffuseTarget->AttachStencilTexture( depth );
+			diffuseTarget->AttachColorTexture( 0, matDiff, HDRFormat );
+			diffuseTarget->AttachColorTexture( 1, matSpec, ITexture::Format::RGBA );
+			diffuseTarget->AttachColorTexture( 2, normal,  ITexture::Format::RGBA );
+			diffuseTarget->UseSkybox(true);
 		}
 
 		// Setting size only changes it if it's different
-		target->SetSize(size);
+		diffuseTarget->SetSize(size);
 
 		// Active background color
 		if (params.mUseColor)
 		{
-			target->SetBackgroundColor(params.mColor);
-			target->UseSkybox(false);
+			diffuseTarget->SetBackgroundColor(params.mColor);
+			diffuseTarget->UseSkybox(false);
 		}
 		else
 		{
 			Color4f color (graphics->GetBackgroundColor());
 			color.a = 1.0f;
-			target->SetBackgroundColor(color);
-			target->UseSkybox(true);
+			diffuseTarget->SetBackgroundColor(color);
+			diffuseTarget->UseSkybox(true);
 		}
 
 		// Deferred rendering -- encoding pass
@@ -351,7 +369,7 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 			graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 
 			graphics->SetStencilTest(false);
-			graphics->SetActiveRenderTarget( target );
+			graphics->SetActiveRenderTarget( diffuseTarget );
 			graphics->Clear(true, true, true);
 
 			// Set up the stencil test
@@ -386,22 +404,20 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 
 	// Light contribution
 	{
-		static IRenderTarget* target = 0;
-
-		// Scene Light contribution target
-		if (target == 0)
+		// Scene Light contribution lightTarget
+		if (lightTarget == 0)
 		{
-			target = graphics->CreateRenderTarget();
-			target->AttachDepthTexture( depth );
-			target->AttachStencilTexture( depth );
-			target->AttachColorTexture( 0, lightDiff, HDRFormat );
-			target->AttachColorTexture( 1, lightSpec, HDRFormat );
-			target->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
-			target->UseSkybox(false);
+			lightTarget = graphics->CreateRenderTarget();
+			lightTarget->AttachDepthTexture( depth );
+			lightTarget->AttachStencilTexture( depth );
+			lightTarget->AttachColorTexture( 0, lightDiff, HDRFormat );
+			lightTarget->AttachColorTexture( 1, lightSpec, HDRFormat );
+			lightTarget->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+			lightTarget->UseSkybox(false);
 		}
 		
-		target->SetSize( size );
-		graphics->SetActiveRenderTarget( target );
+		lightTarget->SetSize( size );
+		graphics->SetActiveRenderTarget( lightTarget );
 		graphics->Clear(true, false, false);
 		DrawLights(graphics, depth, normal, lightmap, lights);
 		result.mObjects += lights.GetSize();
@@ -409,21 +425,19 @@ Deferred::DrawResult Deferred::DrawScene (IGraphics* graphics, const Light::List
 
 	// Combine the light contribution with material
 	{
-		static IRenderTarget* target = 0;
-
-		// Final color target
-		if (target == 0)
+		// Final color finalTarget
+		if (finalTarget == 0)
 		{
-			target = graphics->CreateRenderTarget();
-			target->AttachDepthTexture( depth );
-			target->AttachStencilTexture( depth );
-			target->AttachColorTexture( 0, final, HDRFormat );
-			target->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
-			target->UseSkybox(false);
+			finalTarget = graphics->CreateRenderTarget();
+			finalTarget->AttachDepthTexture( depth );
+			finalTarget->AttachStencilTexture( depth );
+			finalTarget->AttachColorTexture( 0, final, HDRFormat );
+			finalTarget->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+			finalTarget->UseSkybox(false);
 		}
 
-		target->SetSize( size );
-		graphics->SetActiveRenderTarget( target );
+		finalTarget->SetSize( size );
+		graphics->SetActiveRenderTarget( finalTarget );
 		Combine(graphics, matDiff, matSpec, lightDiff, lightSpec);
 	}
 
