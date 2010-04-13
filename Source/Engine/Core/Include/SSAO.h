@@ -9,16 +9,15 @@
 
 namespace SSAO
 {
+	typedef Scene::ITexturePtr		ITexturePtr;
+	typedef Scene::IRenderTargetPtr	IRenderTargetPtr;
+
 	// Parameters used by the SSAO shaders: blur consideration range and SSAO's strength
 	void SetParams (float range, float strength);
 
 	// Low quality approach
-	const ITexture* Low (	IGraphics*		graphics,
-							const ITexture*	depth,
-							const ITexture*	normal );
+	const ITexture* Low (IGraphics* graphics, Deferred::Storage& storage);
 
 	// High quality approach
-	const ITexture* High (	IGraphics*		graphics,
-							const ITexture*	depth,
-							const ITexture*	normal );
+	const ITexture* High (IGraphics* graphics, Deferred::Storage& storage);
 };

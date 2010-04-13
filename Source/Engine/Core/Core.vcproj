@@ -309,15 +309,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\FillParams.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\Resource.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Include\Scene.h"
 					>
 				</File>
 				<File
@@ -364,10 +356,6 @@
 				</File>
 				<File
 					RelativePath=".\Source\Resource.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\Scene.cpp"
 					>
 				</File>
 				<File
@@ -431,6 +419,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Source\Light.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Source\PointLight.cpp"
 					>
 				</File>
@@ -440,6 +432,10 @@
 				>
 				<File
 					RelativePath=".\Include\DirectionalLight.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Light.h"
 					>
 				</File>
 				<File
@@ -499,6 +495,10 @@
 				Name="Include"
 				>
 				<File
+					RelativePath=".\Include\DrawDeferred.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\DrawGroup.h"
 					>
 				</File>
@@ -514,10 +514,30 @@
 					RelativePath=".\Include\DrawQueue.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Include\FillParams.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\PostProcess.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\Scene.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\SSAO.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source"
 				>
+				<File
+					RelativePath=".\Source\DrawDeferred.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Source\DrawGroup.cpp"
 					>
@@ -532,6 +552,18 @@
 				</File>
 				<File
 					RelativePath=".\Source\DrawQueue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\PostProcess.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\Scene.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\SSAO.cpp"
 					>
 				</File>
 			</Filter>

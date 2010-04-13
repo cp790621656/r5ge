@@ -131,7 +131,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Header Files"
+			Name="Include"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
@@ -224,13 +224,13 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Include\Light.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Include\Uniform.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Source"
+			>
 		</Filter>
 	</Files>
 	<Globals>

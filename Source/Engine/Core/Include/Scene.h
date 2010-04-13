@@ -7,32 +7,26 @@
 // The root of the scenegraph hierarchy
 //============================================================================================================
 
-class Scene
+class Scene : public Deferred::Storage
 {
 public:
 
-	typedef Array<const ITechnique*> Techniques;
+	typedef ITexture*			ITexturePtr;
+	typedef IRenderTarget*		IRenderTargetPtr;
+	typedef Array<RaycastHit>	RayHits;
 
 private:
 
-	Object*		mRoot;		// Scene's root
-	Frustum		mFrustum;	// Viewing frustum used for culling
-	DrawQueue	mQueue;		// Draw queue created by the culling process
-	Techniques	mTechs;		// Cached list of techniques, for convenience reasons
-	Vector2i	mLastRay;	// Last mouse position used to cast a ray into the screen
-
+	Object*		mRoot;			// Scene's root
+	Frustum		mFrustum;		// Viewing frustum used for culling
+	DrawQueue	mQueue;			// Draw queue created by the culling process
+	Techniques	mTechs;			// Cached list of techniques, for convenience reasons
+	Vector2i	mLastRay;		// Last mouse position used to cast a ray into the screen
 	Vector3f	mLastCamPos;
 	Quaternion	mLastCamRot;
 	Vector3f	mLastCamRange;
-
-	// List of raycast hits after running a raycast in the direction of the ray cast from the mouse
-	Array<RaycastHit> mHits;
-
-	// Deferred draw parameters. Saved for convenience and speed.
-	Deferred::DrawParams mParams;
-
-	// Default techniques, only filled if used. Cached here for speed.
-	Array<const ITechnique*> mForward;
+	RayHits		mHits;			// List of raycast hits after running a raycast in the direction of the ray cast from the mouse
+	Techniques	mForward;		// Default techniques, only filled if used. Cached here for speed.
 
 public:
 
@@ -59,10 +53,10 @@ public:
 	void SetRoot (Object* root) { mRoot = root; }
 
 	// Activating this function will mean that the scene will be rendered to the specified target
-	void SetRenderTarget (IRenderTarget* target) { mParams.mRenderTarget = target; }
+	void SetRenderTarget (IRenderTarget* target) { mRenderTarget = target; }
 
 	// Retrieves the default draw parameters for modification
-	Techniques& GetDeferredTechniques()	{ return mParams.mDrawTechniques; }
+	Techniques& GetDeferredTechniques()	{ return mDrawTechniques; }
 	Techniques& GetForwardTechniques()	{ return mForward; }
 
 	// These functions are valid after Cull() has been called
@@ -72,26 +66,23 @@ public:
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
 	const Light::List& GetVisibleLights (const Vector3f& pos);
 
-	// Returns the draw parameters that get passed to the deferred draw process
-	Deferred::DrawParams& GetDrawParams() { return mParams; }
-
 	// Changes the camera's perspective to the specified values. All objects get culled.
 	void Cull (const Camera* cam);
 	void Cull (const CameraController& cam);
 	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
 
 	// Casts a ray into the screen at the specified mouse position
-	Array<RaycastHit>& Raycast (const Vector2i& screenPos);
-
-	// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
-	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f());
+	RayHits& Raycast (const Vector2i& screenPos);
 
 	// Advanced: Draws the scene using default forward rendering techniques
 	uint DrawAllForward (bool clearScreen = true);
 
 	// Advanced: Draws the scene using default deferred rendering techniques
 	// PostProcess: 0 (do nothing), 1 = draw to screen as-is, 2 = bloom
-	Deferred::DrawResult DrawAllDeferred (byte ssao = 0, byte postProcess = 1);
+	uint DrawAllDeferred (byte ssao = 0, byte postProcess = 1);
+
+	// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
+	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f());
 
 public:
 

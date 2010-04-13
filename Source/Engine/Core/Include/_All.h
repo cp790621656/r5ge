@@ -8,7 +8,7 @@
 #ifndef _CORE_INCLUDE_H
 #define _CORE_INCLUDE_H
 
-#include "../../Render/Include/_All.h"
+#include "../../Interface/Include/_All.h"
 
 #ifdef _DEBUG
  #ifndef ASSERT_IF_UNLOCKED
@@ -22,6 +22,8 @@ namespace R5
 {
 	class Object;
 
+	#include "Light.h"					// Light source
+	#include "DrawDeferred.h"			// Deferred rendering functionality
 	#include "DrawGroup.h"				// Class managing an array of drawable objects
 	#include "DrawList.h"				// All drawable objects are separated by techniques into different lists
 	#include "DrawLayer.h"				// Drawable objects can be placed on different layers
@@ -72,6 +74,8 @@ namespace R5
 	#include "OSPlayAnimations.h"		// Script that activates the specified animations (works best with looping anims)
 
 	#include "Scene.h"					// Scene root
+	#include "PostProcess.h"			// Deferred post-processing effects
+	#include "SSAO.h"					// Sceen-space ambient occlusion
 	#include "UpdateList.h"				// Container for registered update callbacks
 	#include "EventDispatcher.h"		// Event dispatcher has the ability to register event handling callbacks
 	#include "Core.h"					// Engine Core

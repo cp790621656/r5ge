@@ -107,14 +107,19 @@ void TestApp::OnDraw()
 	// Cull the scene like before, building the lists of visible objects and lights
 	mScene.Cull(mCam);
 
-	// Draw our scene using all default deferred rendering techniques, which includes our "Deferred"
-	// technique used by the model. As a bonus we can also add a bloom post-processing effect.
-	mScene.DrawAllDeferred(0, 2);
+	// Draw our scene using the default combination of deferred and forward rendering techniques, which
+	// includes our "Deferred" technique used by the model. Default list of techniques includes all solid
+	// geometry rendered using the deferred approach, followed by forward-rendered transparent geometry,
+	// glow/glare, particle effects, etc. The default Draw() function comes built-in with post-processing
+	// functionality for bloom and depth-of-field effects. Passing '1' for the 'bloom' parameter enables
+	// bloom of values above '1', which is the HDR bloom effect on videocards that support it. If you're
+	// curious about depth-of-field, try passing Vector3f(15.0f, 5.0f, 10.0f) as the 'focalRange' parameter.
 
-	// Note that the function above is a convenience function, just like 'DrawAllForward' function we used
-	// before. As such, its functionality, while perfect for small demos, can also be limiting. You are
+	mScene.Draw(1.0f);
+
+	// Note that this function is a convenience function, just like 'DrawAllForward' function we used
+	// before. As such, its functionality, while suitable for most applications, can also be limiting. You are
 	// more than welcome to take a look at what's happening inside it and bypass it altogether if desired.
-	// In doing so you can also add additional post-processing effects, such as depth-of-field.
 }
 
 //============================================================================================================

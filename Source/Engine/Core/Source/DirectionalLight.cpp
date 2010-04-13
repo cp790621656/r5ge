@@ -21,7 +21,7 @@ DirectionalLight::DirectionalLight() :
 	if (doOnce)
 	{
 		doOnce = false;
-		Deferred::RegisterLight(mLight.mSubtype, Deferred::DrawDirectionalLights);
+		Light::Register<DirectionalLight>();
 	}
 }
 
@@ -34,6 +34,32 @@ void DirectionalLight::_UpdateColors()
 	mLight.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
 	mLight.mDiffuse  = Color4f(mDiffuse  * mBrightness, 1.0f);
 	mLight.mSpecular = Color4f(mSpecular * mBrightness, 1.0f);
+}
+
+//============================================================================================================
+// Add all directional light contribution
+//============================================================================================================
+
+void DirectionalLight::_Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap)
+{
+	static IShader* dirShader0	 = graphics->GetShader("[R5] Light/Directional");
+	static IShader* dirShader1	 = graphics->GetShader("[R5] Light/DirectionalAO");
+
+	IShader* shader = (lightmap != 0) ? dirShader1 : dirShader0;
+
+	// No depth test as directional light has no volume
+	graphics->SetActiveTexture(2, lightmap);
+	graphics->SetDepthTest(false);
+	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+	graphics->ResetModelViewMatrix();
+	graphics->SetActiveShader(shader);
+
+	// Run through all directional lights
+	for (uint i = 0; i < lights.GetSize(); ++i)
+	{
+		graphics->SetActiveLight(i, lights[i].mLight);
+		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+	}
 }
 
 //============================================================================================================

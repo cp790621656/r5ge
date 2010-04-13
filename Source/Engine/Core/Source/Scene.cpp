@@ -67,7 +67,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		Vector3f dir (rot.GetForward());
 
 		// Set up the view and projection matrices
-		graphics->SetActiveRenderTarget(mParams.mRenderTarget);
+		graphics->SetActiveRenderTarget(mRenderTarget);
 		graphics->ResetModelViewMatrix();
 		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
@@ -96,7 +96,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 // Casts a ray into the screen at the specified mouse position
 //============================================================================================================
 
-Array<RaycastHit>& Scene::Raycast (const Vector2i& screenPos)
+Scene::RayHits& Scene::Raycast (const Vector2i& screenPos)
 {
 	if (mRoot != 0 && (mHits.IsEmpty() || mLastRay != screenPos))
 	{
@@ -121,76 +121,6 @@ Array<RaycastHit>& Scene::Raycast (const Vector2i& screenPos)
 		mHits.Sort();
 	}
 	return mHits;
-}
-
-//============================================================================================================
-// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
-//============================================================================================================
-
-uint Scene::Draw (float bloom, const Vector3f& focalRange)
-{
-	if (mRoot != 0)
-	{
-		IGraphics* graphics = mRoot->mCore->GetGraphics();
-
-		if (mParams.mDrawTechniques.IsEmpty())
-		{
-			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
-			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
-		}
-
-		if (mForward.IsEmpty())
-		{
-			mForward.Expand() = graphics->GetTechnique("Wireframe");
-			mForward.Expand() = graphics->GetTechnique("Transparent");
-			mForward.Expand() = graphics->GetTechnique("Particle");
-			mForward.Expand() = graphics->GetTechnique("Glow");
-			mForward.Expand() = graphics->GetTechnique("Glare");
-		}
-
-		// Set the draw callback
-		if (!mParams.mDrawCallback)
-		{
-			mParams.mDrawCallback = bind(&Scene::_Draw, this);
-		}
-
-		// Draw the scene using the deferred techniques
-		Deferred::DrawResult result = Deferred::DrawScene(graphics, mParams, mQueue.mLights);
-
-		// Draw the scene using forward rendering techniques
-		result.mObjects += DrawAllForward(false);
-
-		// Post-processing
-		if (bloom != 0.0f)
-		{
-			if (focalRange.IsZero())
-			{
-				// Only bloom
-				PostProcess::Bloom(graphics, mParams, result.mColor, 1.0f);
-			}
-			else
-			{
-				// Bloom and depth-of-field
-				PostProcess::Both(graphics, mParams, result.mColor, result.mDepth, bloom,
-					focalRange.x, focalRange.y, focalRange.z);
-			}
-		}
-		else if (!focalRange.IsZero())
-		{
-			// Only depth-of-field
-			PostProcess::DepthOfField(graphics, mParams, result.mColor, result.mDepth,
-				focalRange.x, focalRange.y, focalRange.z);
-		}
-		else
-		{
-			// No post-processing
-			PostProcess::None(graphics, mParams, result.mColor);
-		}
-
-		// Return the number of rendered objects
-		return result.mObjects;
-	}
-	return 0;
 }
 
 //============================================================================================================
@@ -223,45 +153,112 @@ uint Scene::DrawAllForward (bool clearScreen)
 // Convenience function: draws the scene using default deferred rendering techniques
 //============================================================================================================
 
-Deferred::DrawResult Scene::DrawAllDeferred (byte ssao, byte postProcess)
+uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 {
-	Deferred::DrawResult result;
+	uint count (0);
 
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
 		// Set the draw callback
-		if (!mParams.mDrawCallback)
+		if (!mDrawCallback)
 		{
-			mParams.mDrawCallback = bind(&Scene::_Draw, this);
+			mDrawCallback = bind(&Scene::_Draw, this);
 		}
 
 		// Set the list of techniques used to draw the scene
-		if (mParams.mDrawTechniques.IsEmpty())
+		if (mDrawTechniques.IsEmpty())
 		{
-			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
-			mParams.mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
+			mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
+			mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
 		}
 
 		// Update the potentially changed parameters
-		mParams.mAOLevel = ssao;
+		mAOLevel = ssao;
 
 		// Draw the scene
-		result = Deferred::DrawScene(graphics, mParams, mQueue.mLights);
+		count = Deferred::Draw(graphics, *this, mQueue.mLights);
 
 		// Post-process step
 		if (postProcess == 2)
 		{
-			PostProcess::Bloom(graphics, mParams, result.mColor, 1.0f);
+			PostProcess::Bloom(graphics, *this, 1.0f);
 		}
 		else if (postProcess == 1)
 		{
-			PostProcess::None(graphics, mParams, result.mColor);
+			PostProcess::None(graphics, *this);
 		}
-		return result;
 	}
-	return result;
+	return count;
+}
+
+//============================================================================================================
+// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
+//============================================================================================================
+
+uint Scene::Draw (float bloom, const Vector3f& focalRange)
+{
+	if (mRoot != 0)
+	{
+		IGraphics* graphics = mRoot->mCore->GetGraphics();
+
+		if (mDrawTechniques.IsEmpty())
+		{
+			mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
+			mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
+		}
+
+		if (mForward.IsEmpty())
+		{
+			mForward.Expand() = graphics->GetTechnique("Wireframe");
+			mForward.Expand() = graphics->GetTechnique("Transparent");
+			mForward.Expand() = graphics->GetTechnique("Particle");
+			mForward.Expand() = graphics->GetTechnique("Glow");
+			mForward.Expand() = graphics->GetTechnique("Glare");
+		}
+
+		// Set the draw callback
+		if (!mDrawCallback)
+		{
+			mDrawCallback = bind(&Scene::_Draw, this);
+		}
+
+		// Draw the scene using the deferred techniques
+		uint count = Deferred::Draw(graphics, *this, mQueue.mLights);
+
+		// Draw the scene using forward rendering techniques
+		count += DrawAllForward(false);
+
+		// Post-processing
+		if (bloom != 0.0f)
+		{
+			if (focalRange.IsZero())
+			{
+				// Only bloom
+				PostProcess::Bloom(graphics, *this, 1.0f);
+			}
+			else
+			{
+				// Bloom and depth-of-field
+				PostProcess::Both(graphics, *this, bloom, focalRange.x, focalRange.y, focalRange.z);
+			}
+		}
+		else if (!focalRange.IsZero())
+		{
+			// Only depth-of-field
+			PostProcess::DepthOfField(graphics, *this, focalRange.x, focalRange.y, focalRange.z);
+		}
+		else
+		{
+			// No post-processing
+			PostProcess::None(graphics, *this);
+		}
+
+		// Return the number of rendered objects
+		return count;
+	}
+	return 0;
 }
 
 //============================================================================================================

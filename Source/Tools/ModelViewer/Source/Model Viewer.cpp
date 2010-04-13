@@ -129,11 +129,9 @@ void ModelViewer::OnDraw()
 		}
 	}
 
-	Deferred::DrawResult result;
-
 	// Deferred rendering part
 	{
-		static Deferred::TechniqueList ft;
+		static Deferred::Storage::Techniques ft;
 
 		if (ft.IsEmpty())
 		{
@@ -143,7 +141,7 @@ void ModelViewer::OnDraw()
 		}
 
 		// Draw the scene using the deferred approach
-		result = mScene.DrawAllDeferred(mParams.mSsao, 0);
+		mScene.DrawAllDeferred(mParams.mSsao, 0);
 
 		// Draw the grid and all forward-rendered objects last
 		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
@@ -151,32 +149,21 @@ void ModelViewer::OnDraw()
 		mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Draw the scene using the forward rendering approach, adding glow and glare effects
-		mScene.Draw(ft);
+		mScene._Draw(ft);
 	}
 
 	// Post-processing part
 	if (mParams.mBloom)
 	{
 		// Apply a post-processing effect
-		PostProcess::Bloom(mGraphics, result.mColor, mParams.mThreshold);
+		PostProcess::Bloom(mGraphics, mScene, mParams.mThreshold);
 		//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 15.0f, 5.0f, 15.0f);
 	}
 	else
 	{
 		// Don't apply any effects -- simply draw this texture directly to the screen
-		PostProcess::None(mGraphics, result.mColor);
+		PostProcess::None(mGraphics, mScene);
 	}
-}
-
-//============================================================================================================
-// Callback triggered from inside the deferred DrawScene function
-//============================================================================================================
-
-uint ModelViewer::OnDeferredDraw (const Deferred::TechniqueList& techs, bool insideOut)
-{
-	//mGraphics->SetActiveTechnique(techs[0]);
-	//mGraphics->Draw( IGraphics::Drawable::Grid );
-	return mScene.Draw(techs, insideOut);
 }
 
 //============================================================================================================

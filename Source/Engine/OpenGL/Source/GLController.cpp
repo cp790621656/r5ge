@@ -1102,7 +1102,7 @@ void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 // Activates and/or changes light properties for the specified light
 //============================================================================================================
 
-void GLController::SetActiveLight (uint index, const Light* ptr)
+void GLController::SetActiveLight (uint index, const ILight* ptr)
 {
 	CHECK_GL_ERROR;
 
@@ -1141,7 +1141,7 @@ void GLController::SetActiveLight (uint index, const Light* ptr)
 				glEnable(index);
 			}
 
-			if (ptr->mType == Light::Type::Directional)
+			if (ptr->mType == ILight::Type::Directional)
 			{
 				Vector3f dir (ptr->mDir);
 
@@ -1164,7 +1164,7 @@ void GLController::SetActiveLight (uint index, const Light* ptr)
 				glLightfv(index, GL_POSITION, Quaternion(pos.x, pos.y, pos.z, 1.0f));
 
 				// Point lights are marked by having a cutoff of 180
-				if (ptr->mType == Light::Type::Point)
+				if (ptr->mType == ILight::Type::Point)
 				{
 					glLightf(index, GL_SPOT_CUTOFF, 180.0f);
 				}

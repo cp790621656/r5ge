@@ -209,7 +209,7 @@ public:
 	virtual void SetActiveProjection		( uint projection );
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid );
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr );
-	virtual void SetActiveLight				( uint index, const Light* ptr );
+	virtual void SetActiveLight				( uint index, const ILight* ptr );
 	virtual void SetActiveDepthFunction		( uint condition );
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask );
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass );

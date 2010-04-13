@@ -24,7 +24,7 @@ PointLight::PointLight() :
 	if (doOnce)
 	{
 		doOnce = false;
-		Deferred::RegisterLight(mLight.mSubtype, Deferred::DrawPointLights);
+		Light::Register<PointLight>();
 	}
 }
 
@@ -45,6 +45,118 @@ inline void PointLight::_UpdateAtten()
 {
 	mLight.mAtten.x = mRange * mAbsoluteScale;
 	mLight.mAtten.y = mPower;
+}
+
+//============================================================================================================
+// Add all point light contribution
+//============================================================================================================
+
+void PointLight::_Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap)
+{
+	static IShader* dirShader0	 = graphics->GetShader("[R5] Light/Point");
+	static IShader* dirShader1	 = graphics->GetShader("[R5] Light/PointAO");
+
+	IShader* shader = (lightmap != 0) ? dirShader1 : dirShader0;
+
+	graphics->SetActiveTexture(2, lightmap);
+	graphics->SetActiveProjection( IGraphics::Projection::Perspective );
+
+	float nearClip = graphics->GetCameraRange().x;
+	const Vector3f& camPos = graphics->GetCameraPosition();
+	
+	static IVBO* vbo = 0;
+	static IVBO* ibo = 0;
+	static uint indexCount = 0;
+
+	if (vbo == 0)
+	{
+		vbo = graphics->CreateVBO();
+		ibo = graphics->CreateVBO();
+
+		Array<Vector3f> vertices;
+		Array<ushort> indices;
+		Shape::Icosahedron(vertices, indices, 1);
+		indexCount = indices.GetSize();
+
+		vbo->Set(vertices, IVBO::Type::Vertex);
+		ibo->Set(indices,  IVBO::Type::Index);
+	}
+
+	// Enable depth testing as point lights have a definite volume
+	graphics->SetDepthTest(true);
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, vbo, 0, IGraphics::DataType::Float, 3, 12 );
+
+	// Disable all active lights except the first
+	for (uint b = lights.GetSize(); b > 1; )
+		graphics->SetActiveLight(--b, 0);
+
+	// Save the view matrix as it won't be changing
+	const Matrix43& view = graphics->GetViewMatrix();
+	Matrix43 mat;
+
+	// Run through all point lights
+	for (uint i = 0; i < lights.GetSize(); ++i)
+	{
+		const Light::Entry& entry = lights[i];
+
+		// Copy the light information as we'll be modifying it
+		Light light (*entry.mLight);
+
+		// The range of the light is stored in the first attenuation parameter. The 6.5%
+		// increase is there because the generated sphere goes up to (and never exceeds)
+		// the radius of 1. However this means that the drawn triangles can actually be
+		// closer as the sphere is never perfectly round. Thus we increase the radius by
+		// this amount in order to avoid any visible edges when drawing the light. Note
+		// that 6.5% is based on observation only. For icosahedrons of 2 iterations this
+		// multiplier can be reduced down to 2%.
+
+		float range (light.mAtten.x * 1.065f);
+
+		// Distance to the light source
+		float dist (light.mPos.GetDistanceTo(camPos) > (range + nearClip * 2.0f));
+
+		// Start with the view matrix and apply the light's world transforms
+		mat = view;
+		mat.PreTranslate(light.mPos);
+		mat.PreScale(range);
+
+		// Set the matrix that will be used to transform this light and to draw it at the correct position
+		graphics->SetModelViewMatrix(mat);
+
+		// Reset the light's position as it will be transformed by the matrix we set above.
+		// This is done in order to avoid an extra matrix switch, taking advantage of the
+		// fact that OpenGL transforms light coordinates by the current ModelView matrix.
+		light.mPos = Vector3f();
+
+		// First light activates the shader
+		if (i == 0) graphics->SetActiveShader(shader);
+
+		// Activate the light at the matrix-transformed origin
+		graphics->SetActiveLight(0, &light);
+
+		if (dist)
+		{
+			// The camera is outside the sphere -- regular rendering approach
+			graphics->SetCulling( IGraphics::Culling::Back );
+			graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+		}
+		else
+		{
+			// The camera is inside the sphere -- draw the inner side, and only
+			// on pixels that are closer to the camera than the light's range.
+
+			graphics->SetCulling( IGraphics::Culling::Front );
+			graphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
+		}
+
+		// Draw the light's sphere at the matrix-transformed position
+		graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
+	}
+
+	// Restore important states
+	graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+	graphics->SetCulling(IGraphics::Culling::Back);
+	graphics->ResetModelViewMatrix();
 }
 
 //============================================================================================================

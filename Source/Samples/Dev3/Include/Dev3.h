@@ -26,8 +26,6 @@ class TestApp
 	uint		mObjects;
 	FrameStats	mStats;
 
-	Scene::Techniques mForward;
-
 public:
 
 	TestApp();

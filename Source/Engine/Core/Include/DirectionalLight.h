@@ -19,10 +19,18 @@ protected:
 
 	DirectionalLight();
 
+private:
+
+	// Update the 'mParams' light colors
+	void _UpdateColors();
+
 public:
 
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Directional Light", DirectionalLight, Object, Object);
+
+	// Callback that draws point lights
+	static void _Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
 
 	const Color3f&	GetAmbient()	const { return mAmbient;	}
 	const Color3f&	GetDiffuse()	const { return mDiffuse;	}
@@ -35,9 +43,6 @@ public:
 	void SetBrightness	(float val)			{ mBrightness	= val;	_UpdateColors(); }
 
 protected:
-
-	// Update the 'mParams' light colors
-	void _UpdateColors();
 
 	// Update the light parameters
 	virtual void OnUpdate();

@@ -135,10 +135,6 @@ void TestApp::Init()
 			//gl->SetRelativeScale(4.0f);
 		}
 	}
-
-	// Techniques we'll be using for forward rendering
-	mForward.Expand() = glow;
-	//mForward.Expand()  = glare;
 }
 
 //============================================================================================================

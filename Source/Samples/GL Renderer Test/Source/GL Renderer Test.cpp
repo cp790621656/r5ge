@@ -173,15 +173,15 @@ public:
 
 		mGraphics->SetActiveColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
-		Light light0;
-		light0.mType = Light::Type::Point;
+		ILight light0;
+		light0.mType = ILight::Type::Point;
 		light0.mDiffuse.Set( 1, 0, 0 );
 		light0.mPos.Set(4, 4, 1);
 		light0.mAtten.Set(0, 0.1f, 0.003f);
 		light0.mDiffuse.Set(1.0f, 0.0f, 0.0f);
 
-		Light light1;
-		light1.mType = Light::Type::Directional;
+		ILight light1;
+		light1.mType = ILight::Type::Directional;
 		light1.mDir.Set(3, 3, -1);
 		light1.mAmbient.Set( 0.2f, 0.2f, 0.2f);
 		light1.mDiffuse.Set( 1, 1, 1 );

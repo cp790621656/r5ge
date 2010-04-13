@@ -9,28 +9,22 @@
 
 namespace PostProcess
 {
-	typedef Deferred::DrawParams DrawParams;
-
 	// No post-processing
-	void None  (IGraphics* graphics, DrawParams& params, const ITexture* color);
+	void None  (IGraphics* graphics, Deferred::Storage& storage);
 
 	// Bloom post-processing effect
-	void Bloom (IGraphics* graphics, DrawParams& params, const ITexture* color, float threshold);
+	void Bloom (IGraphics* graphics, Deferred::Storage& storage, float threshold);
 
 	// Depth of field effect
 	void DepthOfField ( IGraphics*			graphics,
-						DrawParams&			params,
-						const ITexture*		color,
-						const ITexture*		depth,
+						Deferred::Storage&	storage,
 						float				focalDistance,	// Distance to the focal point
 						float				focalMin,		// Distance from focal point that still gets 100% focus
 						float				focalMax);		// Distance from focal point that gets 0% focus
 
 	// Both depth of field as well as bloom effects
 	void Both (	IGraphics*			graphics,
-				DrawParams&			params,
-				const ITexture*		color,
-				const ITexture*		depth,
+				Deferred::Storage&	storage,
 				float				threshold,			// Depth of field threshold (1.0 if using HDR)
 				float				focalDistance,		// Distance to the 100% focal point
 				float				focalMin,			// Distance from focal point that still gets 100% focus

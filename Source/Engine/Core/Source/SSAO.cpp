@@ -71,21 +71,35 @@ const ITexture* GetRandomizedNormalmap (IGraphics* graphics)
 // Low quality SSAO
 //============================================================================================================
 
-const ITexture* SSAO::Low ( IGraphics*		graphics,
-							const ITexture*	depth,
-							const ITexture*	normal )
+const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 {
-	static ITechnique*		post		= graphics->GetTechnique("Post Process");
-	static IShader*			ssao		= graphics->GetShader("[R5] SSAO/Sample");
-	static IShader*			blurH		= graphics->GetShader("[R5] SSAO/Horizontal Blur");
-	static IShader*			blurV		= graphics->GetShader("[R5] SSAO/Vertical Blur");
-	static IRenderTarget*	ssaoTarget	= graphics->CreateRenderTarget();
-	static IRenderTarget*	blurTarget0	= graphics->CreateRenderTarget();
-	static IRenderTarget*	blurTarget1	= graphics->CreateRenderTarget();
-	static ITexture*		lightmap	= graphics->GetTexture("[Generated] Lightmap Low");
-	static ITexture*		blurTex0	= graphics->GetTexture("[Generated] SSAO Blur 0 Low");
-	static ITexture*		blurTex1	= graphics->GetTexture("[Generated] SSAO Blur 1 Low");
-	static const ITexture*	random		= GetRandomizedNormalmap(graphics);
+	static ITechnique*		post	= graphics->GetTechnique("Post Process");
+	static IShader*			ssao	= graphics->GetShader("[R5] SSAO/Sample");
+	static IShader*			blurH	= graphics->GetShader("[R5] SSAO/Horizontal Blur");
+	static IShader*			blurV	= graphics->GetShader("[R5] SSAO/Vertical Blur");
+	static const ITexture*	random	= GetRandomizedNormalmap(graphics);
+
+	IRenderTargetPtr& ssaoTarget	= storage.mTempTargets[10];
+	IRenderTargetPtr& blurTarget0	= storage.mTempTargets[11];
+	IRenderTargetPtr& blurTarget1	= storage.mTempTargets[12];
+
+	ITexturePtr& lightmap = storage.mTempTextures[14];
+	ITexturePtr& blurTex0 = storage.mTempTextures[15];
+	ITexturePtr& blurTex1 = storage.mTempTextures[16];
+
+	if (ssaoTarget == 0)
+	{
+		ssaoTarget	= graphics->CreateRenderTarget();
+		blurTarget0	= graphics->CreateRenderTarget();
+		lightmap	= graphics->CreateRenderTexture();
+		blurTex0	= graphics->CreateRenderTexture();
+	}
+
+	if (blurTarget1 == 0)
+	{
+		blurTarget1	= graphics->CreateRenderTarget();
+		blurTex1	= graphics->CreateRenderTexture();
+	}
 
 	if (!ssaoTarget->HasColor())
 	{
@@ -106,7 +120,8 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 		blurTarget1->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 	}
 
-	Vector2i size (graphics->GetViewport());
+	Vector2i size (storage.mRenderTarget == 0 ? graphics->GetViewport() :
+		storage.mRenderTarget->GetSize());
 
 	ssaoTarget->SetSize(size / 2);
 	blurTarget0->SetSize(size);
@@ -120,13 +135,14 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	graphics->SetActiveMaterial(0);
+	graphics->Flush();
 
 	// SSAO contribution pass
 	{
 		graphics->SetActiveRenderTarget( ssaoTarget );
 		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
-		graphics->SetActiveTexture( 0, depth );
-		graphics->SetActiveTexture( 1, normal );
+		graphics->SetActiveTexture( 0, storage.mOutDepth );
+		graphics->SetActiveTexture( 1, storage.mOutNormal );
 		graphics->SetActiveTexture( 2, random );
 		graphics->SetActiveShader ( ssao );
 
@@ -143,7 +159,7 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 		graphics->SetActiveRenderTarget( blurTarget0 );
 		if (i == 0) graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
 		graphics->SetActiveTexture( 0, result );
-		graphics->SetActiveTexture( 1, depth );
+		graphics->SetActiveTexture( 1, storage.mOutDepth );
 		graphics->SetActiveShader( blurH );
 		blurTex0->SetFiltering(ITexture::Filter::Linear);
 		graphics->Draw( IGraphics::Drawable::InvertedQuad );
@@ -152,7 +168,7 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 		// Blur the SSAO texture vertically
 		graphics->SetActiveRenderTarget( blurTarget1 );
 		graphics->SetActiveTexture( 0, result );
-		graphics->SetActiveTexture( 1, depth );
+		graphics->SetActiveTexture( 1, storage.mOutDepth );
 		graphics->SetActiveShader( blurV );
 		blurTex1->SetFiltering(ITexture::Filter::Linear);
 		graphics->Draw( IGraphics::Drawable::InvertedQuad );
@@ -165,19 +181,26 @@ const ITexture* SSAO::Low ( IGraphics*		graphics,
 // High quality SSAO
 //============================================================================================================
 
-const ITexture* SSAO::High ( IGraphics*			graphics,
-							 const ITexture*	depth,
-							 const ITexture*	normal )
+const ITexture* SSAO::High (IGraphics* graphics, Deferred::Storage& storage)
 {
-	static ITechnique*		post		= graphics->GetTechnique("Post Process");
-	static IShader*			ssao		= graphics->GetShader("[R5] SSAO/Sample");
-	static IShader*			blurH		= graphics->GetShader("[R5] SSAO/Horizontal Blur");
-	static IShader*			blurV		= graphics->GetShader("[R5] SSAO/Vertical Blur");
-	static IRenderTarget*	ssaoTarget	= graphics->CreateRenderTarget();
-	static IRenderTarget*	blurTarget	= graphics->CreateRenderTarget();
-	static ITexture*		blurTex		= graphics->GetTexture("[Generated] SSAO Blur High");
-	static const ITexture*	random		= GetRandomizedNormalmap(graphics);
-	static ITexture*		lightmap	= graphics->GetTexture("[Generated] Lightmap High");
+	static ITechnique*		post	= graphics->GetTechnique("Post Process");
+	static IShader*			ssao	= graphics->GetShader("[R5] SSAO/Sample");
+	static IShader*			blurH	= graphics->GetShader("[R5] SSAO/Horizontal Blur");
+	static IShader*			blurV	= graphics->GetShader("[R5] SSAO/Vertical Blur");
+	static const ITexture*	random	= GetRandomizedNormalmap(graphics);
+
+	IRenderTargetPtr&	ssaoTarget	= storage.mTempTargets[10];
+	IRenderTargetPtr&	blurTarget	= storage.mTempTargets[11];
+	ITexturePtr&		lightmap	= storage.mTempTextures[14];
+	ITexturePtr&		blurTex		= storage.mTempTextures[15];
+
+	if (ssaoTarget == 0)
+	{
+		ssaoTarget	= graphics->CreateRenderTarget();
+		blurTarget	= graphics->CreateRenderTarget();
+		lightmap	= graphics->CreateRenderTexture();
+		blurTex		= graphics->CreateRenderTexture();
+	}
 
 	if (!ssaoTarget->HasColor())
 	{
@@ -194,7 +217,8 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 		blurTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 	}
 
-	Vector2i size (graphics->GetViewport());
+	Vector2i size (storage.mRenderTarget == 0 ? graphics->GetViewport() :
+		storage.mRenderTarget->GetSize());
 
 	ssaoTarget->SetSize(size);
 	blurTarget->SetSize(size);
@@ -207,13 +231,14 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	graphics->SetActiveMaterial(0);
+	graphics->Flush();
 
 	// SSAO contribution pass
 	{
 		graphics->SetActiveRenderTarget( ssaoTarget );
 		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
-		graphics->SetActiveTexture( 0, depth );
-		graphics->SetActiveTexture( 1, normal );
+		graphics->SetActiveTexture( 0, storage.mOutDepth );
+		graphics->SetActiveTexture( 1, storage.mOutNormal );
 		graphics->SetActiveTexture( 2, random );
 		graphics->SetActiveShader ( ssao );
 
@@ -227,7 +252,7 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 		// Blur the SSAO texture horizontally
 		graphics->SetActiveRenderTarget( blurTarget );
 		graphics->SetActiveTexture( 0, lightmap );
-		graphics->SetActiveTexture( 1, depth );
+		graphics->SetActiveTexture( 1, storage.mOutDepth );
 		graphics->SetActiveShader( blurH );
 		blurTex->SetFiltering(ITexture::Filter::Linear);
 		graphics->Draw( IGraphics::Drawable::InvertedQuad );
@@ -235,7 +260,7 @@ const ITexture* SSAO::High ( IGraphics*			graphics,
 		// Blur the SSAO texture vertically
 		graphics->SetActiveRenderTarget( ssaoTarget );
 		graphics->SetActiveTexture( 0, blurTex );
-		graphics->SetActiveTexture( 1, depth );
+		graphics->SetActiveTexture( 1, storage.mOutDepth );
 		graphics->SetActiveShader( blurV );
 		graphics->Draw( IGraphics::Drawable::InvertedQuad );
 	}

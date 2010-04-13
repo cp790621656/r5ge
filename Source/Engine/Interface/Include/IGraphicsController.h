@@ -180,7 +180,7 @@ public:
 	virtual void SetActiveProjection		( uint projection )=0;
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid )=0;
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr )=0;
-	virtual void SetActiveLight				( uint index, const Light* ptr )=0;
+	virtual void SetActiveLight				( uint index, const ILight* ptr )=0;
 	virtual void SetActiveDepthFunction		( uint condition )=0;
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask )=0;
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass )=0;
