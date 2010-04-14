@@ -816,9 +816,9 @@ float Model::GetTimeToAnimationEnd (const Animation* anim)
 	{
 		Lock();
 		{
-			for (uint i = mActiveAnims.GetSize(); i > 0; )
+			FOREACH(i, mActiveAnims)
 			{
-				ActiveAnimation* aa = mActiveAnims[--i];
+				ActiveAnimation* aa = mActiveAnims[i];
 
 				if (aa != 0 && aa->mAnimation == anim)
 				{

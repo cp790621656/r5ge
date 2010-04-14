@@ -145,10 +145,10 @@ public:
 	// Retrieves the specified animation, creating it if necessary
 	Animation* GetAnimation (const String& name, bool createIfMissing = false);
 
-	// Finds and plays the requested animation
+	// Finds and plays the requested animation. Responses use PlayResponse.
 	uint PlayAnimation (const String& name, float strength = 1.0f, const AnimationEnd& onAnimEnd = 0);
 
-	// Convenience function -- plays the requested animation
+	// Convenience function -- plays the requested animation. Responses use PlayResponse.
 	uint PlayAnimation (const Animation* anim, float strength = 1.0f, const AnimationEnd& onAnimEnd = 0);
 
 	// Convenience function -- finds and stops the requested animation

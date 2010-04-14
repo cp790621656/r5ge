@@ -185,9 +185,9 @@ Script* Object::_AddScript (const String& type)
 
 	Script* ptr (0);
 
-	for (uint i = mScripts.GetSize(); i > 0; )
+	FOREACH(i, mScripts)
 	{
-		Script* script = mScripts[--i];
+		Script* script = mScripts[i];
 
 		if ( script != 0 && type == script->GetClassID() )
 		{
@@ -218,9 +218,9 @@ Script* Object::_GetScript (const String& type)
 {
 	Script* ptr (0);
 
-	for (uint i = mScripts.GetSize(); i > 0; )
+	FOREACH(i, mScripts)
 	{
-		Script* script = mScripts[--i];
+		Script* script = mScripts[i];
 
 		if ( script != 0 && type == script->GetClassID() )
 		{

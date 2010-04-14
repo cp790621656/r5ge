@@ -27,10 +27,11 @@ void UILabel::OnFill (UIQueue* queue)
 
 	if (tex != 0 && tex == queue->mTex)
 	{
-		uint width = Float::RoundToUInt(mRegion.GetCalculatedWidth());
+		float wf = mRegion.GetCalculatedWidth();
+		uint width = Float::RoundToUInt(wf);
 
-		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
-		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
+		Color4ub color	( mColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos	( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		const IFont* font = GetFont();
 		ASSERT(font != 0, "Font is null? What?");
@@ -41,7 +42,7 @@ void UILabel::OnFill (UIQueue* queue)
 			mStart = mEnd - font->CountChars( mText, width, 0, 0xFFFFFFFF, true, false, mTags );
 
 			// Position needs to be adjusted by the difference between label's width and the length of the text
-			pos.x += width - font->GetLength( mText, mStart, mEnd, mTags );
+			pos.x += wf - font->GetLength( mText, mStart, mEnd, mTags );
 		}
 		else
 		{
@@ -53,16 +54,13 @@ void UILabel::OnFill (UIQueue* queue)
 			if ( mAlignment == Alignment::Center )
 			{
 				uint size = font->GetLength( mText, mStart, mEnd, mTags );
-				if (size < width) pos.x += (width - size) / 2;
+				if (size < width) pos.x += (wf - size) * 0.5f;
 			}
 		}
 
 		// Adjust the height in order to center the text as necessary
 		float difference = mRegion.GetCalculatedHeight() - height;
 		pos.y += difference * 0.5f;
-
-		//pos.x = Float::Floor(pos.x + 0.5f);
-		//pos.y = Float::Floor(pos.y + 0.5f);
 
 		// Drop a shadow if requested
 		if (mShadow)
