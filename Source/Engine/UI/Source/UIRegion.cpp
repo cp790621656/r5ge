@@ -148,10 +148,10 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
 		float bottom = pr.mTop  + mRelativeBottom.mAbsolute + mRelativeBottom.mRelative * height;
 
 		// Pixel-align the result
-		left	= Float::Round(left);
-		right	= Float::Round(right);
-		top		= Float::Round(top);
-		bottom	= Float::Round(bottom);
+		//left		= Float::Round(left);
+		//right		= Float::Round(right);
+		//top		= Float::Round(top);
+		//bottom	= Float::Round(bottom);
 
 		if (right < left) right = left;
 		if (bottom < top) bottom = top;

@@ -62,6 +62,10 @@ void UILabel::OnFill (UIQueue* queue)
 		float difference = mRegion.GetCalculatedHeight() - height;
 		pos.y += difference * 0.5f;
 
+		// Make the font pixel-perfect so it's as clear as possible
+		pos.x = Float::Floor(pos.x);
+		pos.y = Float::Floor(pos.y);
+
 		// Drop a shadow if requested
 		if (mShadow)
 		{
