@@ -44,7 +44,7 @@ void main()
     vec3 diffuse = mix(refractedColor, reflectedColor, fresnelFactor);
 
     // Mix reflected and refracted colors
-    gl_FragData[0] = vec4(gl_FrontMaterial.diffuse.rgb * diffuse, gl_FrontMaterial.diffuse.a);
+    gl_FragData[0] = vec4(gl_FrontMaterial.diffuse.rgb * diffuse * gl_Color.rgb, gl_FrontMaterial.diffuse.a);
     gl_FragData[1] = vec4(gl_FrontMaterial.specular.rgb, gl_FrontMaterial.emission.a);
     gl_FragData[2] = vec4(normalize(normal) * 0.5 + 0.5, gl_FrontMaterial.specular.a);
 }

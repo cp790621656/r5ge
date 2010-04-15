@@ -60,14 +60,17 @@ public:
 
 	typedef SubMesh* SubMeshPtr;
 
-	PointerArray<SubMesh>	m_array;
-	uint					mCount;
-	bool					mHasTexCoords;
-	bool					mHasWeights;
+	PointerArray<SubMesh> m_array;
+
+	uint mCount;
+	bool mHasTexCoords0;
+	bool mHasTexCoords1;
+	bool mHasColors;
+	bool mHasWeights;
 
 public:
 
-	MultiMesh() : mCount(0), mHasTexCoords(false), mHasWeights(false) {}
+	MultiMesh() : mCount(0), mHasTexCoords0(false), mHasTexCoords1(false), mHasColors(false), mHasWeights(false) {}
 
 	SubMeshPtr& GetSubMesh(uint id)
 	{
@@ -499,15 +502,12 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 	bool	multiMat	= (maxMtl != 0 && maxMtl->IsMultiMtl() == TRUE);
 
 	Vector3f v, n;
-	Vector2f t;
+	Vector2f t0, t1;
+	Color4ub col;
 
 	// Create an array of cross-indices: an index of R5 bone for every Max bone present in the skin
 	int boneCount = (onlyVertices || skin == 0 ? 0 : skin->GetNumBones());
 	Array<uint> boneIndices ( boneCount );
-
-	// Remember whether the mesh has texture coordinates and bone weights
-	myMultiMesh.mHasTexCoords	= !onlyVertices && (maxMesh.tvFace != 0);
-	myMultiMesh.mHasWeights		= !onlyVertices && (boneCount > 0);
 
 	for (int i = 0; i < boneCount; ++i)
 	{
@@ -522,12 +522,29 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 	// Apparently parity determines whether the indices are clockwise or counter-clockwise
 	bool reverseIndices = (tm.Parity() == 1);
 
+	// Vertex colors, texCoords0, texCoords1
+	::TVFace* mapFaces0 = maxMesh.mapFaces(0);
+	::TVFace* mapFaces1 = maxMesh.mapFaces(1);
+	::TVFace* mapFaces2 = maxMesh.mapFaces(2);
+	::UVVert* mapVerts0 = maxMesh.mapVerts(0);
+	::UVVert* mapVerts1 = maxMesh.mapVerts(1);
+	::UVVert* mapVerts2 = maxMesh.mapVerts(2);
+
+	// Remember whether the mesh has texture coordinates and bone weights
+	myMultiMesh.mHasTexCoords0	= !onlyVertices && (mapVerts1 != 0);
+	myMultiMesh.mHasTexCoords1	= !onlyVertices && (mapVerts2 != 0);
+	myMultiMesh.mHasColors		= !onlyVertices && (mapVerts0 != 0);
+	myMultiMesh.mHasWeights		= !onlyVertices && (boneCount > 0);
+
 	// Run through all faces and collect vertex information into a multi-mesh
 	for (uint iFace = 0; iFace < faceCount; ++iFace)
 	{
 		if (maxMesh.faces == 0) continue;
 
 		::Face& face = maxMesh.faces[iFace];
+		::TVFace* mapFace0 = (mapFaces0) == 0 ? 0 : &mapFaces0[iFace];
+		::TVFace* mapFace1 = (mapFaces1) == 0 ? 0 : &mapFaces1[iFace];
+		::TVFace* mapFace2 = (mapFaces2) == 0 ? 0 : &mapFaces2[iFace];
 
 		unsigned short	mtlId	(multiMat ? maxMesh.getFaceMtlIndex(iFace) : 0);
 		SubMesh*		myMesh	(myMultiMesh.GetSubMesh(mtlId));
@@ -550,11 +567,26 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 				n = tm.VectorTransform( GetVertexNormal(maxMesh, iFace, iVert) );
 				n.Normalize();
 
-				// If texture coordinates are present, use them
-				if (maxMesh.tvFace != 0)
+				// Vertex colors
+				if (mapFace0 != 0)
 				{
-					TVFace& tvFace = maxMesh.tvFace[iFace];
-					t = maxMesh.getTVert( tvFace.t[iVert] );
+					DWORD index = mapFace0->t[iVert];
+					::UVVert& vert = mapVerts0[index];
+					col.Set(Float::ToRangeByte(vert.x), Float::ToRangeByte(vert.y), Float::ToRangeByte(vert.z), 255);
+				}
+
+				// Texture coordinates 0
+				if (mapFace1 != 0)
+				{
+					DWORD index = mapFace1->t[iVert];
+					t0 = mapVerts1[index];
+				}
+
+				// Texture coordinates 1
+				if (mapFace2 != 0)
+				{
+					DWORD index = mapFace2->t[iVert];
+					t1 = mapVerts2[index];
 				}
 			}
 
@@ -576,7 +608,7 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 						break;
 					}
 				}
-				else if (myVertices[c].Matches(v, n, t))
+				else if (myVertices[c].Matches(v, n, t0, t1, col))
 				{
 					// Existing entry -- remember the index
 					myIndex = c;
@@ -591,7 +623,7 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 				Vertex& vertex = myVertices.Expand();
 
 				// Set the vertex position, normal, and texture coordinates, then clear all bone weights
-				vertex.Set(v, n, t);
+				vertex.Set(v, n, t0, t1, col);
 				vertex.ClearBoneWeights();
 
 				// If there is a skin present, run through all influences of this vertex and assign the bone weights
@@ -737,7 +769,9 @@ void R5MaxExporter::_CreateLimbs (  MultiMesh&		myMultiMesh,
 
 			// Get the mesh and copy over the list of vertices and indices
 			Mesh* myMesh			= GetMesh(myName);
-			myMesh->mHasTexCoords	= myMultiMesh.mHasTexCoords;
+			myMesh->mHasTexCoords0	= myMultiMesh.mHasTexCoords0;
+			myMesh->mHasTexCoords1	= myMultiMesh.mHasTexCoords1;
+			myMesh->mHasColors		= myMultiMesh.mHasColors;
 			myMesh->mHasWeights		= myMultiMesh.mHasWeights;
 
 			myMesh->mVertices.CopyMemory( mySub->mVertices );
@@ -1235,8 +1269,10 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				}
 
 				// Billboard clouds don't need to save normals, texture coordinates, or bone information
-				mesh->mHasTexCoords = false;
-				mesh->mHasWeights	= false;
+				mesh->mHasTexCoords0	= false;
+				mesh->mHasTexCoords1	= false;
+				mesh->mHasColors		= false;
+				mesh->mHasWeights		= false;
 			}
 			else
 			{
@@ -1252,14 +1288,38 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 			}
 
 			// Save the texture coordinates if they are present
-			if (mesh->mHasTexCoords)
+			if (mesh->mHasTexCoords0)
 			{
 				Array<Vector2f>& tc = node.AddChild("TexCoords 0").mValue.ToVector2fArray();
 
 				for (uint b = 0; b < vertices; ++b)
 				{
 					const Vertex& v = mesh->mVertices[b];
-					tc.Expand() = v.mTc;
+					tc.Expand() = v.mTc0;
+				}
+			}
+
+			// Second set of texture coordinates
+			if (mesh->mHasTexCoords1)
+			{
+				Array<Vector2f>& tc = node.AddChild("TexCoords 1").mValue.ToVector2fArray();
+
+				for (uint b = 0; b < vertices; ++b)
+				{
+					const Vertex& v = mesh->mVertices[b];
+					tc.Expand() = v.mTc1;
+				}
+			}
+
+			// Vertex colors
+			if (mesh->mHasColors)
+			{
+				Array<Color4ub>& colors = node.AddChild("Colors").mValue.ToColor4ubArray();
+
+				for (uint b = 0; b < vertices; ++b)
+				{
+					const Vertex& v = mesh->mVertices[b];
+					colors.Expand() = v.mColor;
 				}
 			}
 

@@ -12,8 +12,9 @@ void main()
 
 	// R5_IMPLEMENT_INSTANCING vertex normal tangent
 
-	gl_Position = gl_ModelViewProjectionMatrix * vertex;
-	_texCoord	= gl_MultiTexCoord0.xy;
-	_normal 	= gl_NormalMatrix * normal;
-	_tangent	= gl_NormalMatrix * tangent;
+	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
+	gl_FrontColor 	= gl_Color;
+	_texCoord		= gl_MultiTexCoord0.xy;
+	_normal 		= gl_NormalMatrix * normal;
+	_tangent		= gl_NormalMatrix * tangent;
 }

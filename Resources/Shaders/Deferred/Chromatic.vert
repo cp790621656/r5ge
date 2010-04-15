@@ -10,9 +10,9 @@ varying vec3 _eyeDir;
 
 void main()
 {
-    gl_Position = ftransform();
-
-    _texCoord   = gl_MultiTexCoord0.xy;
-    _normal     = gl_NormalMatrix * gl_Normal;
-    _eyeDir     = (gl_ModelViewMatrix * gl_Vertex).xyz;
+    gl_Position 	= ftransform();
+	gl_FrontColor 	= gl_Color;
+    _texCoord   	= gl_MultiTexCoord0.xy;
+    _normal     	= gl_NormalMatrix * gl_Normal;
+    _eyeDir     	= (gl_ModelViewMatrix * gl_Vertex).xyz;
 }

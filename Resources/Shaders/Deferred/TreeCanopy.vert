@@ -59,8 +59,9 @@ void main()
 						offset.z );
 
 	// Calculate the remaining values
-	gl_Position = gl_ProjectionMatrix * vertex;
-	_normal 	= gl_NormalMatrix * _normal;
-    _tangent	= gl_NormalMatrix * _tangent;
-	_texCoord	= gl_MultiTexCoord0.xy;
+	gl_Position 	= gl_ProjectionMatrix * vertex;
+	gl_FrontColor	= gl_Color;
+	_normal 		= gl_NormalMatrix * _normal;
+    _tangent		= gl_NormalMatrix * _tangent;
+	_texCoord		= gl_MultiTexCoord0.xy;
 }

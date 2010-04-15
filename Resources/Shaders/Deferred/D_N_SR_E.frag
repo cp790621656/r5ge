@@ -39,7 +39,7 @@ void main()
     float fresnelFactor = texmap.g * min( fresnelBias + fresnelScale * pow(dotProduct, fresnelPower), 1.0 );
 
     // Mix the current diffuse with the reflected color using the fresnel factor
-    diffuse.rgb = mix(diffuse.rgb, reflectedColor, fresnelFactor);
+    diffuse.rgb = mix(diffuse.rgb * gl_Color.rgb, reflectedColor, fresnelFactor);
 
     // Encode the values
     gl_FragData[0] = diffuse;

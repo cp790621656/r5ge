@@ -11,6 +11,7 @@ void main()
 	// R5_IMPLEMENT_SKINNING vertex normal
 
 	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
+	gl_FrontColor 	= gl_Color;
 	_texCoord 		= gl_MultiTexCoord0.xy;
 	_normal 		= gl_NormalMatrix * normal;
 }

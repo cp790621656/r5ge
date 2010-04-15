@@ -37,8 +37,9 @@ void main()
 	vertex.xyz += wind * ((windOffset * 0.025 + 0.025) * windStrength * R5_worldScale);
 
 	// Calculate the remaining values
-	gl_Position = gl_ModelViewProjectionMatrix * vertex;
-    _normal 	= gl_NormalMatrix * _normal;
-    _tangent	= gl_NormalMatrix * _tangent;
-    _texCoord   = gl_MultiTexCoord0.xy;
+	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
+	gl_FrontColor	= gl_Color;
+    _normal 		= gl_NormalMatrix * _normal;
+    _tangent		= gl_NormalMatrix * _tangent;
+    _texCoord   	= gl_MultiTexCoord0.xy;
 }

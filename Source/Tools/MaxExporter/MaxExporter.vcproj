@@ -59,10 +59,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib core.lib geom.lib maxutil.lib mesh.lib paramblk2.lib"
-				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\bin\$(ProjectName).gup"
+				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\bin\R5_$(ProjectName).gup"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 				GenerateDebugInformation="true"
+				AssemblyDebug="1"
 				ProgramDatabaseFile="$(IntDir)\$(TargetName).pdb"
 				TargetMachine="1"
 			/>
@@ -89,7 +90,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;$(TargetDir)\R5 Max Exporter.gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;copy /y &quot;$(IntDir)\R5 Max Exporter.pdb&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;"
+				CommandLine="copy /y &quot;$(TargetDir)\R5_$(ProjectName).gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;copy /y &quot;$(IntDir)\R5_$(ProjectName).pdb&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -133,7 +134,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="comctl32.lib core.lib geom.lib maxutil.lib mesh.lib paramblk2.lib"
-				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\bin\$(ProjectName).gup"
+				OutputFile="$(SolutionDir)..\$(ConfigurationName)\Win\bin\R5_$(ProjectName).gup"
 				AdditionalLibraryDirectories="$(SolutionDir)..\$(ConfigurationName)\Win\lib"
 				ProgramDatabaseFile=""
 				OptimizeReferences="2"
@@ -164,7 +165,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;$(TargetDir)\R5 Max Exporter.gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;"
+				CommandLine="copy /y &quot;$(TargetDir)\R5_$(ProjectName).gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;"
 			/>
 		</Configuration>
 	</Configurations>

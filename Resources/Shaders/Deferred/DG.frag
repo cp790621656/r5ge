@@ -8,7 +8,7 @@ void main()
 {
 	vec4 diffuseMap = texture2D(R5_texture0, _texCoord);
 
-	gl_FragData[0] = vec4(gl_FrontMaterial.diffuse.rgb * diffuseMap.rgb, gl_FrontMaterial.diffuse.a);
+	gl_FragData[0] = gl_FrontMaterial.diffuse * diffuseMap * gl_Color;
 	gl_FragData[1] = vec4(gl_FrontMaterial.specular.rgb, _glow);
 	gl_FragData[2] = vec4(normalize(_normal) * 0.5 + 0.5, gl_FrontMaterial.specular.a);
 }

@@ -871,7 +871,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 
 			if (mSimpleMaterial)
 			{
-				// Disable simple material
+				// Disable the simple material
 				SetSimpleMaterial(false);
 
 				// Update the saved material properties
@@ -1318,7 +1318,12 @@ void GLController::SetActiveVertexAttribute(
 		{
 			case Attribute::Position:	glDisableClientState(GL_VERTEX_ARRAY);			break;
 			case Attribute::Normal:		glDisableClientState(GL_NORMAL_ARRAY);			break;
-			case Attribute::Color:		glDisableClientState(GL_COLOR_ARRAY);			break;
+			case Attribute::Color:
+			{
+				glDisableClientState(GL_COLOR_ARRAY);
+				glColor4ub(255, 255, 255, 255);
+				break;
+			}
 			case Attribute::TexCoord0:	glDisableClientState(GL_TEXTURE_COORD_ARRAY);	break;
 			default:					glDisableVertexAttribArray(attribute);			break;
 		};

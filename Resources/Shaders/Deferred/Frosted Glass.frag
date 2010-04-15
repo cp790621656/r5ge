@@ -43,7 +43,7 @@ void main()
     float fresnelFactor = min( fresnelBias + fresnelScale * pow(dotProduct, fresnelPower), 1.0 );
 
     // Mix reflected and refracted colors
-    vec3 diffuse = mix(gl_FrontMaterial.diffuse.rgb * refractedColor, reflectedColor, fresnelFactor);
+    vec3 diffuse = mix(gl_FrontMaterial.diffuse.rgb * gl_Color.rgb * refractedColor, reflectedColor, fresnelFactor);
     
     // Encode the values
     gl_FragData[0] = vec4(diffuse, gl_FrontMaterial.diffuse.a);

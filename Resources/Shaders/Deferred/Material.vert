@@ -7,6 +7,7 @@ void main()
 
 	// R5_IMPLEMENT_INSTANCING vertex normal
 
-    gl_Position = gl_ModelViewProjectionMatrix * vertex;
-	_normal 	= gl_NormalMatrix * normal;
+	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
+	gl_FrontColor 	= gl_Color;
+	_normal 		= gl_NormalMatrix * normal;
 }

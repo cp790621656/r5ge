@@ -16,17 +16,30 @@ public:
 	{
 		Vector3f	mPos;				// 12 bytes - 12
 		Vector3f	mNormal;			// 12 bytes - 24
-		Vector2f	mTc;				//  8 bytes - 32
-		Vector3f	mTangent;			// 12 bytes - 44
-		Color4f		mBoneWeights;		// 16 bytes - 40
+		Vector2f	mTc0;				//  8 bytes - 32
+		Vector2f	mTc1;				//  8 bytes - 40
+		Color4ub	mColor;				//  4 bytes - 44
+		Color4f		mBoneWeights;		// 16 bytes - 60
 		Color4ub	mBoneIndices;		//  4 bytes - 64
 
-		operator const float*()													{ return &mPos.x; }
-		void Set	 (const Vector3f& v, const Vector3f& n, const Vector2f& t)	{ mPos = v; mNormal = n; mTc = t; }
-		bool Matches (const Vector3f& v, const Vector3f& n, const Vector2f& t)	{ return (mPos == v && mNormal == n && mTc == t); }
+		operator const float*() { return &mPos.x; }
+
+		void Set (const Vector3f& v, const Vector3f& n, const Vector2f& t0, const Vector2f& t1, const Color4ub& c)
+		{
+			mPos	= v;
+			mNormal = n;
+			mTc0	= t0;
+			mTc1	= t1;
+			mColor	= c;
+		}
+
+		bool Matches (const Vector3f& v, const Vector3f& n, const Vector2f& t0, const Vector2f& t1, const Color4ub& c)
+		{
+			return (mPos == v && mNormal == n && mTc0 == t0 && mTc1 == t1 && mColor == c);
+		}
 
 		void AddBoneWeight (unsigned char boneIndex, float weight);
-		void ClearBoneWeights()													{ mBoneIndices = 0; mBoneWeights = 0.0f; }
+		void ClearBoneWeights() { mBoneIndices = 0; mBoneWeights = 0.0f; }
 		void NormalizeBoneWeights();
 	};
 
@@ -65,11 +78,15 @@ public:
 		String			mName;
 		VertexArray		mVertices;
 		IndexArray		mIndices;
-		bool			mHasTexCoords;
+		bool			mHasTexCoords0;
+		bool			mHasTexCoords1;
+		bool			mHasColors;
 		bool			mHasWeights;
 		bool			mClouds;
 
-		Mesh (const String& name) : mName(name), mHasTexCoords(false), mHasWeights(false), mClouds(false) {}
+		Mesh (const String& name) : mName(name), mHasTexCoords0(false), mHasTexCoords1(false),
+			mHasColors(false), mHasWeights(false), mClouds(false) {}
+
 		const String& GetName() const { return mName; }
 	};
 

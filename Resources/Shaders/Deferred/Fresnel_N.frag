@@ -36,7 +36,7 @@ void main()
 
     // Refracted color
     vec3 refractedVector = R5_inverseViewRotationMatrix * refract(eyeDir, normal, refractRatio);
-    vec3 refractedColor  = textureCube(R5_texture1, refractedVector).rgb;
+    vec3 refractedColor  = textureCube(R5_texture1, refractedVector).rgb * gl_Color.rgb;
 
     // Appoximation of the fresnel equation
     float dotProduct = max(0.0, 1.0 + dot(eyeDir, normal));
