@@ -854,6 +854,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 
 			SetADT(0.003921568627451f);
 			SetActiveShader(0);
+			SetSimpleMaterial(true);
 			SetActiveColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 			CHECK_GL_ERROR;
 			return false;
@@ -1004,12 +1005,9 @@ bool GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms
 
 void GLController::SetActiveColor (const Color& color)
 {
-	SetSimpleMaterial(true);
-
-	if (mMatDiff != color)
+	if (mColor != color)
 	{
-		mMaterial = (const IMaterial*)(-1);
-		mMatDiff = color;
+		mColor = color;
 		glColor4fv(color.GetColor4f());
 	}
 }
@@ -1260,8 +1258,23 @@ void GLController::SetActiveVertexAttribute(
 	BufferEntry& buffer = mBuffers[attribute];
 
 	bool changed = false;
+	bool isEnabled = (ptr != 0 || (vbo != 0 && vbo->IsValid()));
 
-	if ( ptr != 0 || (vbo != 0 && vbo->IsValid()) )
+	if (attribute == Attribute::Color)
+	{
+		if (isEnabled)
+		{
+			// Invalidate the local color -- we'll be using an array
+			mColor = Color4f(-1.0f);
+		}
+		else
+		{
+			// Reset the color back to white
+			SetActiveColor( Color4f(1.0f) );
+		}
+	}
+
+	if (isEnabled)
 	{
 		if ( !buffer.mEnabled )
 		{
@@ -1318,12 +1331,7 @@ void GLController::SetActiveVertexAttribute(
 		{
 			case Attribute::Position:	glDisableClientState(GL_VERTEX_ARRAY);			break;
 			case Attribute::Normal:		glDisableClientState(GL_NORMAL_ARRAY);			break;
-			case Attribute::Color:
-			{
-				glDisableClientState(GL_COLOR_ARRAY);
-				glColor4ub(255, 255, 255, 255);
-				break;
-			}
+			case Attribute::Color:		glDisableClientState(GL_COLOR_ARRAY);			break;
 			case Attribute::TexCoord0:	glDisableClientState(GL_TEXTURE_COORD_ARRAY);	break;
 			default:					glDisableVertexAttribArray(attribute);			break;
 		};

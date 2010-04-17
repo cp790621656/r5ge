@@ -87,6 +87,7 @@ protected:
 	bool		mResetProj;			// Whether to reset the projection matrix before drawing the next object
 	bool		mInstancing;		// Whether instancing is currently active
 
+	Color		mColor;				// Current active vertex color
 	Color		mMatDiff;			// Active diffuse and ambient color
 	Color		mMatSpec;			// Active specular color
 	float		mMatGlow;			// Active material glow (emission alpha value)
