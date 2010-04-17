@@ -33,7 +33,7 @@ namespace Deferred
 		const ITexture* mOutNormal;		// Final eye space normal texture
 		const ITexture* mOutLightmap;	// Final eye space lightmap (SSAO)
 
-		Deferred::Storage() : mRenderTarget(0), mAOLevel(0), mInsideOut(false),
+		Storage() : mRenderTarget(0), mAOLevel(0), mInsideOut(false),
 			mOutColor(0), mOutDepth(0), mOutNormal(0), mOutLightmap(0) {}
 	};
 

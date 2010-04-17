@@ -32,7 +32,7 @@ private:
 public:
 
 	// Registers a new light source type that will be used for deferred rendering
-	template <typename Type> static void Register() { _Register( HashKey(Type::ClassID()), &Type::_Draw ); }
+	template <typename T> static void Register() { _Register( HashKey(T::ClassID()), &T::_Draw ); }
 
 	// Draw the lights
 	static void Draw(IGraphics*			graphics,

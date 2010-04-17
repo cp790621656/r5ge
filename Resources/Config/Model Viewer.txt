@@ -262,7 +262,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "484"
+					Text = "252"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -275,7 +275,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.258825
+					Alpha = 0.036550
 					Top Color = 0.000000 0.000000 0.000000 0.000000
 					Bottom Color = 0.000000 0.000000 0.000000 1.000000
 					Event Handling = "Normal"
@@ -315,7 +315,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.001267 0.018200 0.617190
-			Rotation = -0.031823 0.187256 -0.967918 0.164493
+			Rotation = -0.027302 0.174721 -0.972438 0.151957
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 1.628507 50.000000
 
