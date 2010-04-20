@@ -11,7 +11,8 @@ extern bool g_skinToVBO;
 #define IF_VERTEX				if (mFormat.mVertex		!= 0xFFFFFFFF)
 #define IF_NORMAL				if (mFormat.mNormal		!= 0xFFFFFFFF)
 #define IF_TANGENT				if (mFormat.mTangent	!= 0xFFFFFFFF)
-#define IF_TEXCOORD				if (mFormat.mTexCoord	!= 0xFFFFFFFF)
+#define IF_TEXCOORD0			if (mFormat.mTexCoord0	!= 0xFFFFFFFF)
+#define IF_TEXCOORD1			if (mFormat.mTexCoord1	!= 0xFFFFFFFF)
 #define IF_COLOR				if (mFormat.mColor		!= 0xFFFFFFFF)
 #define IF_BONEINDEX			if (mFormat.mBoneIndex	!= 0xFFFFFFFF)
 #define IF_BONEWEIGHT			if (mFormat.mBoneWeight	!= 0xFFFFFFFF)
@@ -21,7 +22,8 @@ extern bool g_skinToVBO;
 #define CURRENT_VERTEX		(*((Vector3f*)(current + mFormat.mVertex)))
 #define CURRENT_NORMAL		(*((Vector3f*)(current + mFormat.mNormal)))
 #define CURRENT_TANGENT		(*((Vector3f*)(current + mFormat.mTangent)))
-#define CURRENT_TEXCOORD	(*((Vector2f*)(current + mFormat.mTexCoord)))
+#define CURRENT_TEXCOORD0	(*((Vector2f*)(current + mFormat.mTexCoord0)))
+#define CURRENT_TEXCOORD1	(*((Vector2f*)(current + mFormat.mTexCoord1)))
 #define CURRENT_COLOR		(*((Color4ub*)(current + mFormat.mColor)))
 #define CURRENT_BONEINDEX	(*((Color4ub*)(current + mFormat.mBoneIndex)))
 #define CURRENT_BONEWEIGHT	(*((Color4f*)(current + mFormat.mBoneWeight)))
@@ -174,7 +176,8 @@ void Mesh::_Clear()
 	mV.Clear();
 	mN.Clear();
 	mT.Clear();
-	mTc.Clear();
+	mTc0.Clear();
+	mTc1.Clear();
 	mC.Clear();
 	mBi.Clear();
 	mBw.Clear();
@@ -225,7 +228,7 @@ void Mesh::_CalculateNormalsAndTangents()
 	bool calculateNormals  = (mV.GetSize() != mN.GetSize());
 
 	// We can only calculate tangents if the texture coordinates are available
-	bool calculateTangents = (mV.GetSize() == mTc.GetSize());
+	bool calculateTangents = (mV.GetSize() == mTc0.GetSize());
 
 	// If we should calculate normals, clear the existing normal array
 	if (calculateNormals)
@@ -281,9 +284,9 @@ void Mesh::_CalculateNormalsAndTangents()
 
 			if (calculateTangents)
 			{
-				const Vector2f& t0 ( mTc[i0] );
-				const Vector2f& t1 ( mTc[i1] );
-				const Vector2f& t2 ( mTc[i2] );
+				const Vector2f& t0 ( mTc0[i0] );
+				const Vector2f& t1 ( mTc0[i1] );
+				const Vector2f& t2 ( mTc0[i2] );
 
 				Vector2f t10 (t1 - t0);
 				Vector2f t20 (t2 - t0);
@@ -437,31 +440,37 @@ void Mesh::Update ( bool rebuildBuffers,
 		// Recalculate the vertex format
 		mFormat.Clear();
 
-		if (mV.IsValid()) 
+		if (mV.IsValid())
 		{
 			mFormat.mVertex	    = mFormat.mFullSize;
 			mFormat.mFullSize  += mV.GetElementSize();
 			mFormat.mTransSize += mV.GetElementSize();
 		}
 
-		if (mN.IsValid()) 
+		if (mN.IsValid())
 		{
 			mFormat.mNormal	    = mFormat.mFullSize;
 			mFormat.mFullSize  += mN.GetElementSize();
 			mFormat.mTransSize += mN.GetElementSize();
 		}
 
-		if (mT.IsValid()) 
+		if (mT.IsValid())
 		{
 			mFormat.mTangent	= mFormat.mFullSize;
 			mFormat.mFullSize  += mT.GetElementSize();
 			mFormat.mTransSize += mT.GetElementSize();
 		}
 
-		if (mTc.IsValid()) 
+		if (mTc0.IsValid())
 		{
-			mFormat.mTexCoord	= mFormat.mFullSize;
-			mFormat.mFullSize  += mTc.GetElementSize();
+			mFormat.mTexCoord0	= mFormat.mFullSize;
+			mFormat.mFullSize  += mTc0.GetElementSize();
+		}
+
+		if (mTc1.IsValid())
+		{
+			mFormat.mTexCoord1	= mFormat.mFullSize;
+			mFormat.mFullSize  += mTc1.GetElementSize();
 		}
 
 		if (mC.IsValid())
@@ -492,10 +501,11 @@ void Mesh::Update ( bool rebuildBuffers,
 		uint size = mIndices.IsValid() ? mIndices.GetSize() : mV.GetSize();
 
 		System::Log("[MESH]    Updated '%s'", mName.GetBuffer());
-		System::Log("          - %u vertices (%u: V%c%c%c%c%c%c)", mV.GetSize(), mFormat.mFullSize,
+		System::Log("          - %u vertices (%u: V%c%c%c%c%c%c%c)", mV.GetSize(), mFormat.mFullSize,
 			(mN.IsValid()	? 'N' : '-'),
 			(mT.IsValid()	? 'T' : '-'),
-			(mTc.IsValid()	? 'X' : '-'),
+			(mTc0.IsValid()	? '1' : '-'),
+			(mTc1.IsValid()	? '2' : '-'),
 			(mC.IsValid()	? 'C' : '-'),
 			(mBw.IsValid()	? 'B' : '-'),
 			(mBi.IsValid()	? 'I' : '-'));
@@ -519,7 +529,8 @@ uint Mesh::GetSizeInMemory() const
 	size += mN.GetSizeInMemory();
 	size += mT.GetSizeInMemory();
 	size += mC.GetSizeInMemory();
-	size += mTc.GetSizeInMemory();
+	size += mTc0.GetSizeInMemory();
+	size += mTc1.GetSizeInMemory();
 	size += mBw.GetSizeInMemory();
 	size += mBi.GetSizeInMemory();
 
@@ -966,7 +977,7 @@ uint Mesh::GetNumberOfVertices() const
 
 		if (vertices == 0)
 		{
-			vertices = mTc.GetSize();
+			vertices = mTc0.GetSize();
 
 			if (vertices == 0)
 			{
@@ -1001,13 +1012,14 @@ uint Mesh::Draw (IGraphics* graphics)
 		{
 #ifdef _DEBUG
 			// All sizes must match up
-			ASSERT(mV.IsEmpty()  || mV.GetSize()  == vertices, "Size mismatch!");
-			ASSERT(mN.IsEmpty()  || mN.GetSize()  == vertices, "Size mismatch!");
-			ASSERT(mT.IsEmpty()  || mT.GetSize()  == vertices, "Size mismatch!");
-			ASSERT(mC.IsEmpty()  || mC.GetSize()  == vertices, "Size mismatch!");
-			ASSERT(mTc.IsEmpty() || mTc.GetSize() == vertices, "Size mismatch!");
-			ASSERT(mBi.IsEmpty() || mBi.GetSize() == vertices, "Size mismatch!");
-			ASSERT(mBw.IsEmpty() || mBw.GetSize() == vertices, "Size mismatch!");
+			ASSERT(mV.IsEmpty()   || mV.GetSize()	== vertices, "Size mismatch!");
+			ASSERT(mN.IsEmpty()   || mN.GetSize()	== vertices, "Size mismatch!");
+			ASSERT(mT.IsEmpty()   || mT.GetSize()	== vertices, "Size mismatch!");
+			ASSERT(mC.IsEmpty()	  || mC.GetSize()	== vertices, "Size mismatch!");
+			ASSERT(mTc0.IsEmpty() || mTc0.GetSize() == vertices, "Size mismatch!");
+			ASSERT(mTc1.IsEmpty() || mTc1.GetSize() == vertices, "Size mismatch!");
+			ASSERT(mBi.IsEmpty()  || mBi.GetSize()	== vertices, "Size mismatch!");
+			ASSERT(mBw.IsEmpty()  || mBw.GetSize()	== vertices, "Size mismatch!");
 #endif
 			// Update the size of the VBO
 			mVboSize = mFormat.mFullSize * vertices;
@@ -1033,7 +1045,8 @@ uint Mesh::Draw (IGraphics* graphics)
 					IF_VERTEX		CURRENT_VERTEX		= mV[i];
 					IF_NORMAL		CURRENT_NORMAL		= mN[i];
 					IF_TANGENT		CURRENT_TANGENT		= mT[i];
-					IF_TEXCOORD		CURRENT_TEXCOORD	= mTc[i];
+					IF_TEXCOORD0	CURRENT_TEXCOORD0	= mTc0[i];
+					IF_TEXCOORD1	CURRENT_TEXCOORD1	= mTc1[i];
 					IF_COLOR		CURRENT_COLOR		= mC[i];
 					IF_BONEINDEX	CURRENT_BONEINDEX	= mBi[i];
 					IF_BONEWEIGHT	CURRENT_BONEWEIGHT	= mBw[i];
@@ -1070,24 +1083,47 @@ uint Mesh::Draw (IGraphics* graphics)
 
 			// Texture coordinates
 			{
-				IF_TEXCOORD
+				IF_TEXCOORD0
 				{
 					if (mVbo != 0)
 					{
 						// Texture coordinates are in the VBO
 						graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, mVbo,
-							mFormat.mTexCoord, IGraphics::DataType::Float, 2, mFormat.mFullSize );
+							mFormat.mTexCoord0, IGraphics::DataType::Float, 2, mFormat.mFullSize );
 					}
 					else
 					{
 						// No VBO support
-						graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, mTc );
+						graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, mTc0 );
 					}
 				}
 				else
 				{
 					// No texture coordinates
 					graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, 0 );
+				}
+			}
+
+			// Secondary texture coordinates
+			{
+				IF_TEXCOORD1
+				{
+					if (mVbo != 0)
+					{
+						// Texture coordinates are in the VBO
+						graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1, mVbo,
+							mFormat.mTexCoord1, IGraphics::DataType::Float, 2, mFormat.mFullSize );
+					}
+					else
+					{
+						// No VBO support
+						graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1, mTc1 );
+					}
+				}
+				else
+				{
+					// No texture coordinates
+					graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1, 0 );
 				}
 			}
 
@@ -1328,10 +1364,19 @@ bool Mesh::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			{
 				if (value.IsVector2fArray())
 				{
-					mTc.CopyMemory(value.AsVector2fArray());
+					mTc0.CopyMemory(value.AsVector2fArray());
 					success = true;
 					buffers = true;
 					texCoords = true;
+				}
+			}
+			else if ( tag == "TexCoords 1" )
+			{
+				if (value.IsVector2fArray())
+				{
+					mTc1.CopyMemory(value.AsVector2fArray());
+					success = true;
+					buffers = true;
 				}
 			}
 			else if ( tag == "Colors" )
@@ -1421,10 +1466,16 @@ bool Mesh::SerializeTo (TreeNode& root) const
 				child.mValue.ToVector3fArray().CopyMemory(mN);
 			}
 
-			if (mT.IsValid())
+			if (mTc0.IsValid())
 			{
 				TreeNode& child = node.AddChild("TexCoords 0");
-				child.mValue.ToVector2fArray().CopyMemory(mTc);
+				child.mValue.ToVector2fArray().CopyMemory(mTc0);
+			}
+
+			if (mTc1.IsValid())
+			{
+				TreeNode& child = node.AddChild("TexCoords 1");
+				child.mValue.ToVector2fArray().CopyMemory(mTc1);
 			}
 
 			if (mC.IsValid())

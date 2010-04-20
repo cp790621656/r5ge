@@ -27,7 +27,8 @@ public:
 		uint mTransSize;
 		uint mVertex;
 		uint mNormal;
-		uint mTexCoord;
+		uint mTexCoord0;
+		uint mTexCoord1;
 		uint mTangent;
 		uint mColor;
 		uint mBoneIndex;
@@ -41,7 +42,8 @@ public:
 			mTransSize	= 0;
 			mVertex		= 0xFFFFFFFF;
 			mNormal		= 0xFFFFFFFF;
-			mTexCoord	= 0xFFFFFFFF;
+			mTexCoord0	= 0xFFFFFFFF;
+			mTexCoord1	= 0xFFFFFFFF;
 			mTangent	= 0xFFFFFFFF;
 			mColor		= 0xFFFFFFFF;
 			mBoneIndex	= 0xFFFFFFFF;
@@ -55,7 +57,8 @@ private:
 	Vertices			mV;					// Vertex positions
 	Normals				mN;					// Normals
 	Tangents			mT;					// Tangents (calculated)
-	TexCoords			mTc;				// Texture coordinates
+	TexCoords			mTc0;				// Texture coordinates #1
+	TexCoords			mTc1;				// Texture coordinates #2
 	Colors				mC;					// Vertex colors
 	BoneIndices			mBi;				// Bone indices
 	BoneWeights			mBw;				// Bone weights
@@ -124,7 +127,7 @@ public: // These functions should only be used after the mesh has been locked
 	Vertices&		GetVertexArray()		{ ASSERT_IF_UNLOCKED; return mV;		}
 	Normals&		GetNormalArray()		{ ASSERT_IF_UNLOCKED; return mN;		}
 	Tangents&		GetTangentArray()		{ ASSERT_IF_UNLOCKED; return mT;		}
-	TexCoords&		GetTexCoordArray()		{ ASSERT_IF_UNLOCKED; return mTc;		}
+	TexCoords&		GetTexCoordArray()		{ ASSERT_IF_UNLOCKED; return mTc0;		}
 	Colors&			GetColorArray()			{ ASSERT_IF_UNLOCKED; return mC;		}
 	BoneWeights&	GetBoneWeightArray()	{ ASSERT_IF_UNLOCKED; return mBw;		}
 	BoneIndices&	GetBoneIndexArray()		{ ASSERT_IF_UNLOCKED; return mBi;		}
@@ -158,7 +161,7 @@ public:
 	bool HasVertices()	const	{ return mV.IsValid() || mTv.IsValid(); }
 	bool HasNormals()	const	{ return mN.IsValid() || mTn.IsValid(); }
 	bool HasTangents()	const	{ return mT.IsValid() || mTt.IsValid(); }
-	bool HasTexCoords()	const	{ return mTc.IsValid();	}
+	bool HasTexCoords()	const	{ return mTc0.IsValid();	}
 	bool HasColors()	const	{ return mC.IsValid(); }
 	bool HasBoneInfo()	const	{ return mBw.IsValid() && mBi.IsValid(); }
 	bool HasIndices()	const	{ return mIndices.IsValid(); }
