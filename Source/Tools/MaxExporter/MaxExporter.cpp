@@ -11,10 +11,62 @@
 #pragma comment(lib, "R5_Serialization.lib")
 
 //============================================================================================================
-// Overriding scale applied on export
+// External configuration
 //============================================================================================================
 
-float g_globalScale = 0.2f;
+struct Config
+{
+	float		mScale;
+	float		mPrecision;
+	bool		mCleanKeys;
+	bool		mBruteForce;
+	bool		mSmoothPos;
+	bool		mSmoothRot;
+	TreeNode	mSkeleton;
+	TreeNode	mGraphics;
+
+	Config() : mScale(1.0f), mPrecision(0.00001f), mCleanKeys(true), mBruteForce(false), mSmoothPos(true), mSmoothRot(true) {}
+
+	bool Load (const char* filename);
+};
+
+Config g_config;
+
+//============================================================================================================
+// Load an external configuration file, if present
+//============================================================================================================
+
+bool Config::Load (const char* filename)
+{
+	String full (filename);
+	String ext (System::GetExtensionFromFilename(full));
+	String file;
+
+	// +1 to account for the dot
+	full.GetString(file, 0, full.GetLength() - (ext.GetLength() + 1));
+	file << "_config.r5a";
+
+	TreeNode root;
+
+	if (root.Load(file.GetBuffer()))
+	{
+		FOREACH(i, root.mChildren)
+		{
+			const TreeNode& node = root.mChildren[i];
+
+			if		(node.mTag == "Scale")				node.mValue >> mScale;
+			else if (node.mTag == "Precision")			node.mValue >> mPrecision;
+			else if (node.mTag == "Clean Keys")			node.mValue >> mCleanKeys;
+			else if (node.mTag == "Brute Force")		node.mValue >> mBruteForce;
+			else if (node.mTag == "Smooth Positions")	node.mValue >> mSmoothPos;
+			else if (node.mTag == "Smooth Rotations")	node.mValue >> mSmoothRot;
+			else if (node.mTag == "Skeleton")			mSkeleton = node;
+			else if (node.mTag == "Graphics")			mGraphics = node;
+		}
+		return true;
+	}
+	return false;
+}
 
 //============================================================================================================
 // Converts Max' matrix into R5's matrix. It's a straight copy since they match. There is something
@@ -192,36 +244,32 @@ bool IsBone (::INode* node)
 // Matching functions
 //============================================================================================================
 
-inline bool IsAMatch (const Vector3f& v0, const Vector3f& v1, bool precise)
+inline bool IsAMatch (const Vector3f& v0, const Vector3f& v1)
 {
-	float threshold = (precise ? 0.0001f : 0.001f);
-
-	return	Float::Abs(v0.x - v1.x) < threshold &&
-			Float::Abs(v0.y - v1.y) < threshold &&
-			Float::Abs(v0.z - v1.z) < threshold;
+	return	Float::Abs(v0.x - v1.x) <= g_config.mPrecision &&
+			Float::Abs(v0.y - v1.y) <= g_config.mPrecision &&
+			Float::Abs(v0.z - v1.z) <= g_config.mPrecision;
 }
 
 //============================================================================================================
 
-inline bool IsAMatch (const Quaternion& q0, const Quaternion& q1, bool precise)
+inline bool IsAMatch (const Quaternion& q0, const Quaternion& q1)
 {
-	if (!precise) return GetAngle(q0, q1) < 0.0017f;
-
-	return (Float::Abs(q0.x - q1.x) < 0.0001f &&
-			Float::Abs(q0.y - q1.y) < 0.0001f &&
-			Float::Abs(q0.z - q1.z) < 0.0001f &&
-			Float::Abs(q0.w - q1.w) < 0.0001f) ||
-		   (Float::Abs(q0.x + q1.x) < 0.0001f &&
-			Float::Abs(q0.y + q1.y) < 0.0001f &&
-			Float::Abs(q0.z + q1.z) < 0.0001f &&
-			Float::Abs(q0.w + q1.w) < 0.0001f);
+	return (Float::Abs(q0.x - q1.x) <= g_config.mPrecision &&
+			Float::Abs(q0.y - q1.y) <= g_config.mPrecision &&
+			Float::Abs(q0.z - q1.z) <= g_config.mPrecision &&
+			Float::Abs(q0.w - q1.w) <= g_config.mPrecision) ||
+		   (Float::Abs(q0.x + q1.x) <= g_config.mPrecision &&
+			Float::Abs(q0.y + q1.y) <= g_config.mPrecision &&
+			Float::Abs(q0.z + q1.z) <= g_config.mPrecision &&
+			Float::Abs(q0.w + q1.w) <= g_config.mPrecision);
 }
 
 //============================================================================================================
 // Removes all duplicate or useless keys from the array
 //============================================================================================================
 
-void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
+void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos)
 {
 	typedef R5MaxExporter::PosKey PosKey;
 
@@ -238,7 +286,7 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 			PosKey& previous = keys[--i];
 
 			// If the center frame matches the other two, just drop it
-			if ( IsAMatch(current.mPos, next.mPos, precise) && IsAMatch(current.mPos, previous.mPos, precise) )
+			if ( IsAMatch(current.mPos, next.mPos) && IsAMatch(current.mPos, previous.mPos) )
 			{
 				keys.RemoveAt(i+1);
 				eliminated = true;
@@ -248,7 +296,7 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 			float range = (float)(next.mTime - previous.mTime);
 			float time  = (float)(current.mTime - previous.mTime);
 
-			if ( IsAMatch(current.mPos, Interpolation::Linear(previous.mPos, next.mPos, time / range), precise) )
+			if ( IsAMatch(current.mPos, Interpolation::Linear(previous.mPos, next.mPos, time / range)) )
 			{
 				keys.RemoveAt(i+1);
 				eliminated = true;
@@ -258,13 +306,13 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 
 	if (keys.GetSize() > 1)
 	{
-		if ( IsAMatch(keys[0].mPos, keys[1].mPos, precise) )
+		if ( IsAMatch(keys[0].mPos, keys[1].mPos) )
 		{
 			if (keys.GetSize() == 2)
 			{
 				keys.Shrink();
 			}
-			else if ( IsAMatch(keys[0].mPos, pos, precise) )
+			else if ( IsAMatch(keys[0].mPos, pos) )
 			{
 				keys.RemoveAt(0);
 			}
@@ -276,7 +324,7 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 		uint back = keys.GetSize() - 1;
 		uint prev = back - 1;
 
-		if ( IsAMatch(keys[back].mPos, keys[prev].mPos, precise) )
+		if ( IsAMatch(keys[back].mPos, keys[prev].mPos) )
 		{
 			keys.Shrink();
 		}
@@ -284,7 +332,7 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 
 	if (keys.GetSize() == 1)
 	{
-		if ( IsAMatch(keys[0].mPos, pos, precise) )
+		if ( IsAMatch(keys[0].mPos, pos) )
 		{
 			keys.Shrink();
 		}
@@ -293,7 +341,7 @@ void CleanKeys (R5MaxExporter::PosKeys& keys, const Vector3f& pos, bool precise)
 
 //============================================================================================================
 
-void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precise)
+void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot)
 {
 	typedef R5MaxExporter::RotKey RotKey;
 
@@ -310,7 +358,7 @@ void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precis
 			RotKey& previous = keys[--i];
 
 			// If the center frame matches the other two, just drop it
-			if ( IsAMatch(current.mRot, next.mRot, precise) && IsAMatch(current.mRot, previous.mRot, precise) )
+			if ( IsAMatch(current.mRot, next.mRot) && IsAMatch(current.mRot, previous.mRot) )
 			{
 				keys.RemoveAt(i+1);
 				eliminated = true;
@@ -320,7 +368,7 @@ void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precis
 			float range = (float)(next.mTime - previous.mTime);
 			float time  = (float)(current.mTime - previous.mTime);
 
-			if ( IsAMatch(current.mRot, Interpolation::Slerp(previous.mRot, next.mRot, time / range), precise) )
+			if ( IsAMatch(current.mRot, Interpolation::Slerp(previous.mRot, next.mRot, time / range)) )
 			{
 				keys.RemoveAt(i+1);
 				eliminated = true;
@@ -330,13 +378,13 @@ void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precis
 
 	if (keys.GetSize() > 1)
 	{
-		if ( IsAMatch(keys[0].mRot, keys[1].mRot, precise) )
+		if ( IsAMatch(keys[0].mRot, keys[1].mRot) )
 		{
 			if (keys.GetSize() == 2)
 			{
 				keys.Shrink();
 			}
-			else if ( IsAMatch(keys[0].mRot, rot, precise) )
+			else if ( IsAMatch(keys[0].mRot, rot) )
 			{
 				keys.RemoveAt(0);
 			}
@@ -349,7 +397,7 @@ void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precis
 		uint back = keys.GetSize() - 1;
 		uint prev = back - 1;
 
-		if ( IsAMatch(keys[back].mRot, keys[prev].mRot, precise) )
+		if ( IsAMatch(keys[back].mRot, keys[prev].mRot) )
 		{
 			keys.Shrink();
 		}
@@ -358,7 +406,7 @@ void CleanKeys (R5MaxExporter::RotKeys& keys, const Quaternion& rot, bool precis
 	// If the first rotation matches the bind pose, it's safe to get rid of it
 	if (keys.GetSize() == 1)
 	{
-		if ( IsAMatch(keys[0].mRot, rot, precise) )
+		if ( IsAMatch(keys[0].mRot, rot) )
 		{
 			keys.Shrink();
 		}
@@ -591,7 +639,7 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 			}
 
 			// Adjust by position scale
-			v *= g_globalScale;
+			v *= g_config.mScale;
 
 			// We need to check to see if the vertex/normal/texcoord combo already exists in the list
 			uint myIndex = -1;
@@ -841,7 +889,7 @@ void R5MaxExporter::_ExportKeys( Bone* bone, ::INode* node, ::INode* parent, ::I
 		PosKey& kf	 = bone->mPosKeys.Expand();
 		kf.mTime	 = (uint)(time / GetTicksPerFrame());
 		kf.mPos		 = myMat;
-		kf.mPos		*= g_globalScale;
+		kf.mPos		*= g_config.mScale;
 	}
 
 	// Same thing with the rotation keyframes
@@ -893,7 +941,7 @@ void R5MaxExporter::_ExportFull( Bone* bone, ::INode* node, ::INode* parent, ::I
 		PosKey& pk	= bone->mPosKeys.Expand();
 		pk.mTime	= (uint)i;
 		pk.mPos		= myMat;
-		pk.mPos		*= g_globalScale;
+		pk.mPos		*= g_config.mScale;
 
 		RotKey& rk	= bone->mRotKeys.Expand();
 		rk.mTime	= (uint)i;
@@ -935,32 +983,20 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 		// Set the bone's bind pose orientation
 		bone->mPos = myMat;
 		bone->mRot = myMat;
-		bone->mPos *= g_globalScale;
+		bone->mPos *= g_config.mScale;
 	}
 
-	// Unfortunately bipeds require insane precision in order to export them out properly
-	bool precise = isBiped;/* && (isBipedRoot		||
-				   (bone->mName.BeginsWith("Bip")	&&
-				   (bone->mName.Contains("Spine")	||
-					bone->mName.Contains("Pelvis")	||
-					bone->mName.Contains("L Thigh")	||
-					bone->mName.Contains("R Thigh")	||
-					bone->mName.Contains("L Calf")	||
-					bone->mName.Contains("R Calf"))));*/
+	bool precise = isBiped || g_config.mBruteForce;
 
-	// If this bone can be exported low precision, do so now
+	// If this bone can be exported with low precision, do so now
 	if (!precise)
 	{
 		_ExportKeys(bone, node, parent, interval);
 
-		// NOTE: The root bone's rotation going into the animation should match its rotation when
-		// the animation ends. Uncommenting this line will force-write root bone's keys at each
-		// keyframe -- something that's not needed if the rule above is followed.
-
-		//if (!isBipedRoot)
+		if (g_config.mCleanKeys)
 		{
-			CleanKeys (bone->mPosKeys, bone->mPos, precise);
-			CleanKeys (bone->mRotKeys, bone->mRot, precise);
+			CleanKeys (bone->mPosKeys, bone->mPos);
+			CleanKeys (bone->mRotKeys, bone->mRot);
 		}
 
 		// If we happen to get no keys out of the process, let's try the high precision next
@@ -972,10 +1008,10 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	{
 		_ExportFull(bone, node, parent, interval);
 
-		//if (!isBipedRoot)
+		if (g_config.mCleanKeys)
 		{
-			CleanKeys (bone->mPosKeys, bone->mPos, precise);
-			CleanKeys (bone->mRotKeys, bone->mRot, precise);
+			CleanKeys (bone->mPosKeys, bone->mPos);
+			CleanKeys (bone->mRotKeys, bone->mRot);
 		}
 	}
 }
@@ -1053,26 +1089,13 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 		TreeNode& core		= root.AddChild("Core");
 		TreeNode& model		= root.AddChild("Template");
 
-		// Try to load an external material file
-		{
-			String matFileName;
-			matFileName << "_graphics.r5a";
-
-			if (graphics.Load(matFileName.GetBuffer()))
-			{
-				// Loading from a file wipes out the tag's value
-				graphics.mTag = "Graphics";
-			}
-			else
-			{
-				// No material file loaded -- all materials should not be serialized on app save
-				graphics.AddChild("Serializable", false);
-			}
-		}
-
 		// None of this information should be serialized out on app save
 		core.AddChild ("Serializable", false);
 		model.AddChild("Serializable", false);
+
+		// Use the external configuration if present
+		if (g_config.mGraphics.IsValid()) graphics = g_config.mGraphics;
+		else graphics.AddChild("Serializable", false);
 
 		// Not all bones may end up getting saved out, and we need to keep track of that
 		Array<byte> boneIndices;
@@ -1100,13 +1123,10 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 		// Save the skeleton
 		if (mBones.IsValid())
 		{
-			TreeNode& skel = core.mChildren.Expand();
+			TreeNode& skel = core.AddChild("Skeleton");
 
-			// Load the optional skeleton file that may contain saved animations
-			String skelFileName;
-			skelFileName << "_skeleton.r5a";
-			skel.Load(skelFileName.GetBuffer());
-			skel.mTag = "Skeleton";
+			// Use the external configuration if present
+			if (g_config.mSkeleton.IsValid()) skel = g_config.mSkeleton;
 
 			// Go through all available bones
 			for (uint i = 0; i < mBones.GetSize(); ++i)
@@ -1145,7 +1165,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				// Save all position keyframes if they are present
 				if (bone.mPosKeys.IsValid())
 				{
-					posNode.AddChild("Smooth", bone.mSpline);
+					posNode.AddChild("Smooth", bone.mSpline && g_config.mSmoothPos);
 
 					Array<ushort>& frames = posNode.AddChild("Frames").mValue.ToUShortArray();
 					Array<Vector3f>& values = posNode.AddChild("Values").mValue.ToVector3fArray();
@@ -1161,7 +1181,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				// Same with the rotation keyframes
 				if (bone.mRotKeys.IsValid())
 				{
-					rotNode.AddChild("Smooth", bone.mSpline);
+					rotNode.AddChild("Smooth", bone.mSpline && g_config.mSmoothRot);
 
 					Array<ushort>& frames = rotNode.AddChild("Frames").mValue.ToUShortArray();
 					Array<Quaternion>& values = rotNode.AddChild("Values").mValue.ToQuaternionArray();
@@ -1395,9 +1415,8 @@ int R5MaxExporter::DoExport (	const char*		filename,
 		mMeshes.Release();
 		mMaterials.Release();
 
-		// If we can load an overriding scale property, use it
-		String scale;
-		if (scale.Load("_scale.txt")) scale >> g_globalScale;
+		// Load the external configuration, if present
+		g_config.Load(filename);
 
 		// Enum all bones first
 		mStage = 0;
