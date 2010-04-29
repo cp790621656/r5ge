@@ -113,7 +113,7 @@ void Animation::Fill (const Bones& bones)
 					{
 						const Bone::PosKey& key = posKeys[b];
 						if (key.mFrame < start) continue;
-						if (key.mFrame > end  ) continue;
+						if (key.mFrame > end  ) break;
 
 						// Relative time position of this keyframe in 0 to 1 range
 						float time = Float::Clamp( invLength * (key.mFrame - start), 0.0f, 1.0f );
@@ -125,7 +125,7 @@ void Animation::Fill (const Bones& bones)
 					{
 						const Bone::RotKey& key = rotKeys[b];
 						if (key.mFrame < start) continue;
-						if (key.mFrame > end  ) continue;
+						if (key.mFrame > end  ) break;
 
 						// Relative time position of this keyframe in 0 to 1 range
 						float time = Float::Clamp( invLength * (key.mFrame - start), 0.0f, 1.0f );
@@ -139,7 +139,7 @@ void Animation::Fill (const Bones& bones)
 					// We need to run through the list of animated bones and add
 					// the first frame as the last in order to create a seamless animation.
 
-					for (uint i = 0; i < mBones.GetSize(); ++i)
+					FOREACH(i, mBones)
 					{
 						AnimatedBone& animBone = mBones[i];
 
