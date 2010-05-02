@@ -72,6 +72,7 @@ namespace R5
 	#include "OSAttachToBone.h"			// Script that binds its owner to the specified bone of the owner's parent
 	#include "OSPlayIdleAnimations.h"	// Script that automatically starts playing idle animations found on the model
 	#include "OSPlayAnimations.h"		// Script that activates the specified animations (works best with looping anims)
+	#include "OSRotate.h"				// Script that rotates the owner
 
 	#include "Scene.h"					// Scene root
 	#include "PostProcess.h"			// Deferred post-processing effects

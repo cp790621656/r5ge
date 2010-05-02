@@ -463,6 +463,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\OSRotate.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\Script.h"
 					>
 				</File>
@@ -480,6 +484,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\OSPlayIdleAnimations.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\OSRotate.cpp"
 					>
 				</File>
 				<File

@@ -185,8 +185,9 @@ void ModelTemplate::SetSource (ModelTemplate* temp)
 					}
 
 					// Copy over other parameters
-					mSkeleton	= temp->GetSkeleton();
-					mFilename	= temp->GetFilename();
+					mSkeleton		= temp->GetSkeleton();
+					mFilename		= temp->GetFilename();
+					mOnSerialize	= temp->GetOnSerialize();
 
 					// Update the skeletal information
 					_OnSkeletonChanged();

@@ -21,6 +21,7 @@ void _RegisterDefaultScripts()
 		Script::Register<OSAttachToBone>();
 		Script::Register<OSPlayAnimations>();
 		Script::Register<OSPlayIdleAnimations>();
+		Script::Register<OSRotate>();
 	}
 }
 

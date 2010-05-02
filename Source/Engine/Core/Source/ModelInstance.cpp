@@ -26,15 +26,17 @@ void ModelInstance::SetModel (Model* model, bool threadSafe)
 		mIsDirty = true;
 		if (mModel != 0) mModel->_Decrement();
 		mModel = model;
-		if (mModel != 0) mModel->_Increment();
-
-		ModelTemplate* temp = mModel;
-
-		while (temp != 0)
+		
+		if (mModel != 0)
 		{
-			TreeNode& onSerialize = temp->GetOnSerialize();	
-			if (onSerialize.HasChildren()) SerializeFrom(onSerialize, false, threadSafe);
-			temp = temp->GetSource();
+			mModel->_Increment();
+
+			TreeNode& onSerialize = mModel->GetOnSerialize();
+
+			if (onSerialize.HasChildren())
+			{
+				SerializeFrom(onSerialize, false, threadSafe);
+			}
 		}
 	}
 }
