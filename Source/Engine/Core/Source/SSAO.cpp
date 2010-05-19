@@ -87,33 +87,37 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 	ITexturePtr& blurTex0 = storage.mTempTextures[15];
 	ITexturePtr& blurTex1 = storage.mTempTextures[16];
 
+	if (!ssaoTarget->HasColor())
+	{
+		ssao->RegisterUniform ("properties", &SetSSAOProperties);
+		blurH->RegisterUniform("properties", &SetSSAOProperties);
+		blurV->RegisterUniform("properties", &SetSSAOProperties);
+	}
+
 	if (ssaoTarget == 0)
 	{
 		ssaoTarget	= graphics->CreateRenderTarget();
-		blurTarget0	= graphics->CreateRenderTarget();
 		lightmap	= graphics->CreateRenderTexture();
+
+		// Screen space ambient occlusion target
+		ssaoTarget->AttachColorTexture( 0, lightmap, ITexture::Format::Alpha );
+		ssaoTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
+	}
+
+	if (blurTarget0 == 0)
+	{
+		blurTarget0	= graphics->CreateRenderTarget();
 		blurTex0	= graphics->CreateRenderTexture();
+
+		// Horizontal Blur texture target
+		blurTarget0->AttachColorTexture( 0, blurTex0, ITexture::Format::Alpha );
+		blurTarget0->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 	}
 
 	if (blurTarget1 == 0)
 	{
 		blurTarget1	= graphics->CreateRenderTarget();
 		blurTex1	= graphics->CreateRenderTexture();
-	}
-
-	if (!ssaoTarget->HasColor())
-	{
-		ssao->RegisterUniform ("properties", &SetSSAOProperties);
-		blurH->RegisterUniform("properties", &SetSSAOProperties);
-		blurV->RegisterUniform("properties", &SetSSAOProperties);
-
-		// Screen space ambient occlusion target
-		ssaoTarget->AttachColorTexture( 0, lightmap, ITexture::Format::Alpha );
-		ssaoTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-
-		// Horizontal Blur texture target
-		blurTarget0->AttachColorTexture( 0, blurTex0, ITexture::Format::Alpha );
-		blurTarget0->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
 		// Vertical Blur texture target
 		blurTarget1->AttachColorTexture( 0, blurTex1, ITexture::Format::Alpha );
