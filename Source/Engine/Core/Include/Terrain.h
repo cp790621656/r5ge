@@ -58,5 +58,5 @@ protected:
 	virtual void OnSerializeTo (TreeNode& root) const;
 
 	// Called when the object is being loaded
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 };

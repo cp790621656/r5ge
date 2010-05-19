@@ -58,6 +58,6 @@ public:
 	R5_DECLARE_INHERITED_CLASS("Menu", UIMenu, UIAnimatedButton, UIWidget);
 
 	// Serialization
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 	virtual void OnSerializeTo (TreeNode& root) const;
 };

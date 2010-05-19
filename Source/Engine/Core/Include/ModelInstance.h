@@ -44,5 +44,5 @@ protected:
 
 	// Serialization to and from the scenegraph tree
 	virtual void OnSerializeTo	 (TreeNode& node) const;
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 };

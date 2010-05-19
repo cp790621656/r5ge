@@ -131,10 +131,10 @@ void ModelInstance::OnSerializeTo (TreeNode& node) const
 // Serialization -- Load
 //============================================================================================================
 
-bool ModelInstance::OnSerializeFrom (const TreeNode& root)
+bool ModelInstance::OnSerializeFrom (const TreeNode& node)
 {
-	const String&	tag   = root.mTag;
-	const Variable&	value = root.mValue;
+	const String&	tag   = node.mTag;
+	const Variable&	value = node.mValue;
 
 	if ( tag == Model::ClassID() )
 	{

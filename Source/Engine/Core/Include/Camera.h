@@ -36,5 +36,5 @@ public:
 
 	// Serialization
 	virtual void OnSerializeTo	 (TreeNode& root) const;
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 };

@@ -38,16 +38,16 @@ void Terrain::OnSerializeTo (TreeNode& root) const
 // Called when the object is being loaded
 //============================================================================================================
 
-bool Terrain::OnSerializeFrom (const TreeNode& root)
+bool Terrain::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == IMaterial::ClassID())
+	if (node.mTag == IMaterial::ClassID())
 	{
 		IGraphics* graphics = mCore->GetGraphics();
 
 		if (graphics != 0)
 		{
-			mMat = graphics->GetMaterial( root.mValue.IsString() ?
-				root.mValue.AsString() : root.mValue.GetString() );
+			mMat = graphics->GetMaterial( node.mValue.IsString() ?
+				node.mValue.AsString() : node.mValue.GetString() );
 		}
 		return true;
 	}

@@ -285,19 +285,19 @@ void Emitter::OnSerializeTo (TreeNode& root) const
 // Serialiation -- Load
 //============================================================================================================
 
-bool Emitter::OnSerializeFrom (const TreeNode& root)
+bool Emitter::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == ITexture::ClassID())
+	if (node.mTag == ITexture::ClassID())
 	{
 		IGraphics* graphics = mCore->GetGraphics();
-		if (graphics != 0) SetTexture( graphics->GetTexture(root.mValue.GetString()) );
+		if (graphics != 0) SetTexture( graphics->GetTexture(node.mValue.GetString()) );
 		return true;
 	}
-	else if (root.mTag == ITechnique::ClassID())
+	else if (node.mTag == ITechnique::ClassID())
 	{
 		IGraphics* graphics = mCore->GetGraphics();
-		mTech = graphics->GetTechnique( root.mValue.IsString() ? root.mValue.AsString() :
-			root.mValue.GetString(), true );
+		mTech = graphics->GetTechnique( node.mValue.IsString() ? node.mValue.AsString() :
+			node.mValue.GetString(), true );
 	}
 	return false;
 }

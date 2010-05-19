@@ -133,8 +133,8 @@ bool UIAnimatedButton::OnSerializeFrom (const TreeNode& node)
 // Serialization - Save
 //============================================================================================================
 
-void UIAnimatedButton::OnSerializeTo (TreeNode& node) const
+void UIAnimatedButton::OnSerializeTo (TreeNode& root) const
 {
-	UIButton::OnSerializeTo(node);
-	node.AddChild("Animation Time", mAnimTime);
+	UIButton::OnSerializeTo(root);
+	root.AddChild("Animation Time", mAnimTime);
 }

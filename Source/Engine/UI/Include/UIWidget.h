@@ -230,7 +230,7 @@ public:
 
 	// Serialization
 	virtual void OnSerializeTo (TreeNode& root) const {}
-	virtual bool OnSerializeFrom (const TreeNode& root) { return false; }
+	virtual bool OnSerializeFrom (const TreeNode& node) { return false; }
 
 protected:
 

@@ -250,10 +250,10 @@ void PointLight::OnSerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-bool PointLight::OnSerializeFrom (const TreeNode& root)
+bool PointLight::OnSerializeFrom (const TreeNode& node)
 {
-	const String&	tag   = root.mTag;
-	const Variable&	value = root.mValue;
+	const String&	tag   = node.mTag;
+	const Variable&	value = node.mValue;
 
 	float val (0.0f);
 	Color3f color;

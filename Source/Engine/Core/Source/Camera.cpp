@@ -36,9 +36,9 @@ void Camera::OnSerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-bool Camera::OnSerializeFrom (const TreeNode& root)
+bool Camera::OnSerializeFrom (const TreeNode& node)
 {
-	if (root.mTag == "Range") root.mValue >> mRelativeRange;
+	if (node.mTag == "Range") node.mValue >> mRelativeRange;
 	else return false;
 	return true;
 }

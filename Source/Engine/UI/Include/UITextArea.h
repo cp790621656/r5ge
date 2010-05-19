@@ -129,6 +129,6 @@ public:
 	virtual void OnScroll (const Vector2i& pos, float delta);
 
 	// Serialization
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 	virtual void OnSerializeTo (TreeNode& root) const;
 };

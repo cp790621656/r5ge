@@ -55,7 +55,7 @@ public:
 	virtual void OnFill (UIQueue* queue);
 
 	// Serialization
-	virtual bool OnSerializeFrom (const TreeNode& root);
+	virtual bool OnSerializeFrom (const TreeNode& node);
 	virtual void OnSerializeTo (TreeNode& root) const;
 
 	// Events

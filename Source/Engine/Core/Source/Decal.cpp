@@ -245,13 +245,13 @@ void Decal::OnSerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-bool Decal::OnSerializeFrom (const TreeNode& root)
+bool Decal::OnSerializeFrom (const TreeNode& node)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 	if (graphics == 0) return false;
 
-	const String&	tag   = root.mTag;
-	const Variable&	value = root.mValue;
+	const String&	tag   = node.mTag;
+	const Variable&	value = node.mValue;
 
 	if (tag == "Shader")
 	{
@@ -259,13 +259,13 @@ bool Decal::OnSerializeFrom (const TreeNode& root)
 	}
 	else if (tag == "Color")
 	{
-		if (root.mValue.IsColor4f())
+		if (value.IsColor4f())
 		{
-			SetColor(root.mValue.AsColor4f());
+			SetColor(value.AsColor4f());
 		}
-		else if (root.mValue.IsColor4ub())
+		else if (value.IsColor4ub())
 		{
-			SetColor(root.mValue.AsColor4ub());
+			SetColor(value.AsColor4ub());
 		}
 	}
 	else if (tag == "Textures")

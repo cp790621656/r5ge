@@ -55,7 +55,8 @@ AS_IS int WINAPI DllMain( HINSTANCE hinstDLL, ULONG fdwReason, LPVOID lpvReserve
 	{
 		initDone = true;
 		g_hInstance = hinstDLL;
-		::InitCustomControls( g_hInstance );
+		::DisableThreadLibraryCalls(g_hInstance);
+		//::InitCustomControls(g_hInstance);
 		::InitCommonControls();
 	}
 	return 1;

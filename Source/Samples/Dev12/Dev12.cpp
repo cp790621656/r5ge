@@ -42,7 +42,7 @@ class TestApp : Thread::Lockable
 	UI*				mUI;
 	Core*			mCore;
 
-	Scene			mScene0;
+	Scene			mScene;
 	Scene			mScene1;
 
 public:
@@ -60,7 +60,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene0);
+	mCore		= new Core(mWin, mGraphics, mUI, mScene);
 
 	UIScript::Register<USMoveCamera>();
 }
@@ -81,9 +81,9 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev12.txt")
 	{
-		mScene1.SetRoot( mScene0.FindObject<Object>("Scene 1") );
-		g_cam0 = mScene0.FindObject<Camera>("Camera 0");
-		g_cam1 = mScene0.FindObject<Camera>("Camera 1");
+		mScene1.SetRoot( mScene.FindObject<Object>("Scene 1") );
+		g_cam0 = mScene.FindObject<Camera>("Camera 0");
+		g_cam1 = mScene.FindObject<Camera>("Camera 1");
 
 		if (g_cam0 != 0 && g_cam1 != 0)
 		{
@@ -100,7 +100,7 @@ void TestApp::Run()
 			rt->SetSize( Vector2i(300, 200) );
 
 			// Scene 1 will now be rendered into this render target
-			mScene1.SetRoot( mScene0.FindObject<Object>("Scene 1") );
+			mScene1.SetRoot( mScene.FindObject<Object>("Scene 1") );
 			mScene1.SetRenderTarget(rt);
 
 			mCore->SetListener( bind(&TestApp::OnDraw, this) );
@@ -123,8 +123,8 @@ void TestApp::OnDraw()
 	mScene1.DrawAllForward();
 
 	// Draw the main scene
-	mScene0.Cull(g_cam0);
-	mScene0.DrawAllForward();
+	mScene.Cull(g_cam0);
+	mScene.DrawAllForward();
 }
 
 //============================================================================================================
