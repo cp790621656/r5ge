@@ -301,15 +301,15 @@ void GLTexture::_CheckForSource()
 		const String& source = mTex[0].GetSource();
 
 		// Jpegs start with DXT3 compression by default
-		if (source.Contains(".jpg")) mRequestedFormat = Format::DXT3;
+		if (source.EndsWith(".jpg")) mRequestedFormat = Format::DXT3;
 
 		// As a convenience, if the texture's name contains the format, use it
-		if		(source.Contains(".Alpha."))		mRequestedFormat = Format::Alpha;
-		else if (source.Contains(".Luminance."))	mRequestedFormat = Format::Luminance;
-		else if (source.Contains(".RGB."))			mRequestedFormat = Format::RGB;
-		else if (source.Contains(".RGBA."))			mRequestedFormat = Format::RGBA;
-		else if (source.Contains(".DXT3."))			mRequestedFormat = Format::DXT3;
-		else if (source.Contains(".DXT5."))			mRequestedFormat = Format::DXT5;
+		if		(source.Contains("_Alpha"))		mRequestedFormat = Format::Alpha;
+		else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
+		else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
+		else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;
+		else if (source.Contains("_DXT3"))		mRequestedFormat = Format::DXT3;
+		else if (source.Contains("_DXT5"))		mRequestedFormat = Format::DXT5;
 
 		if (mRequestedFormat != Format::Optimal)
 			mFormat = _GetSupportedFormat(mRequestedFormat);
