@@ -25,7 +25,7 @@ struct ITexture
 			DXT3			= 0x0B, // 0x00 1011:  4 channels, x4 compression with sharp alpha
 			DXTN			= 0x0C,	// 0x00 1100:  4 channels, x4 compression with B component stored in alpha (meant for normal maps)
 			DXT5			= 0x0D, // 0x00 1101:  4 channels, x4 compression with interpolated gradient alpha
-			Float			= 0x11,	// 0001 0001:  4-bit floating point alpha channel (will be converted to RGBA16F)
+			Float			= 0x11,	// 0001 0001:  4-bit floating point alpha channel
 			RGB16F			= 0x14,	// 0001 0100:  16-bit floating point format (R16 G16 B16)
 			RGBA16F			= 0x15,	// 0001 0101:  16-bit floating point format (R16 G16 B16 A16)
 			RGB32F			= 0x24,	// 0010 0100:  32-bit floating point format (R32 G32 B32)
@@ -245,7 +245,7 @@ public: //======================================================================
 
 	static uint GetBitsPerPixel (uint format)
 	{
-		switch ( format )
+		switch (format)
 		{
 			case Format::Alpha:			return 8;
 			case Format::Luminance:		return 16;

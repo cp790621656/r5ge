@@ -149,34 +149,6 @@ Root
 						Layer = 1
 					}
 
-					List = "Rendering Method"
-					{
-						Left = 0.400000 3.000000
-						Right = 1.000000 -3.000000
-						Top = 0.000000 4.000000
-						Bottom = 0.000000 24.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "Deferred"
-						Shadow = true
-						Alignment = "Left"
-						State = "Enabled"
-						Sticky = false
-						Animation Time = 0.150000
-						Menu
-
-						Entries = String[]
-						{
-							"Deferred"
-							"Low Quality SSAO"
-							"High Quality SSAO"
-						}
-
-						Event Handling = "Normal"
-						Layer = 0
-						UIScript = "USEventListener"
-					}
-
 					Checkbox = "Bloom Checkbox"
 					{
 						Left = 0.400000 5.000000
@@ -241,6 +213,34 @@ Root
 						Layer = 0
 						UIScript = "USEventListener"
 					}
+
+					List = "Rendering Method"
+					{
+						Left = 0.400000 3.000000
+						Right = 1.000000 -3.000000
+						Top = 0.000000 4.000000
+						Bottom = 0.000000 24.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "Deferred"
+						Shadow = true
+						Alignment = "Left"
+						State = "Enabled"
+						Sticky = false
+						Animation Time = 0.150000
+						Menu
+
+						Entries = String[]
+						{
+							"Deferred"
+							"Low Quality SSAO"
+							"High Quality SSAO"
+						}
+
+						Event Handling = "Normal"
+						Layer = 0
+						UIScript = "USEventListener"
+					}
 				}
 			}
 
@@ -262,7 +262,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "252"
+					Text = "904"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -275,7 +275,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.036550
+					Alpha = 0.850000
 					Top Color = 0.000000 0.000000 0.000000 0.000000
 					Bottom Color = 0.000000 0.000000 0.000000 1.000000
 					Event Handling = "Normal"
@@ -315,9 +315,9 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.001267 0.018200 0.617190
-			Rotation = -0.027302 0.174721 -0.972438 0.151957
+			Rotation = -0.023486 0.168678 -0.975976 0.135891
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 1.628507 50.000000
+			Dolly = 0.000000 1.974951 50.000000
 
 			Directional Light = "Default Light"
 			{

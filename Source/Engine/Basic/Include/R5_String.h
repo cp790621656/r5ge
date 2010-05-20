@@ -107,6 +107,7 @@ public:
 
 	uint	Find		( const String& phrase, bool caseSensitive = true, uint from = 0, uint to = 0xFFFFFFFF, bool reverse = false ) const;
 	uint	Replace		( const String& match, const String& replacement, bool caseSensitive = false );
+	bool	Contains	( const String& phrase ) const { return (Find(phrase, false) != mLength); }
 
 	void	Reserve		( uint newSize );
 	char*	Resize		( uint newSize );

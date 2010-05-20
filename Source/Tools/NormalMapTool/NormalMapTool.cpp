@@ -40,8 +40,6 @@ int main (int argc, char* argv[])
 
 			if (filename.BeginsWith("-"))
 			{
-				filename.GetLength();
-
 				if (filename == "-x")
 				{
 					x = true;

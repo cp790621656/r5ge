@@ -300,12 +300,19 @@ void GLTexture::_CheckForSource()
 
 		const String& source = mTex[0].GetSource();
 
-		// Default jpegs to DXT3 compression. All other formats use their native formats.
-		if ( source.Find(".jpg", false) != source.GetLength() )
-		{
-			mRequestedFormat = Format::DXT3;
+		// Jpegs start with DXT3 compression by default
+		if (source.Contains(".jpg")) mRequestedFormat = Format::DXT3;
+
+		// As a convenience, if the texture's name contains the format, use it
+		if		(source.Contains(".Alpha."))		mRequestedFormat = Format::Alpha;
+		else if (source.Contains(".Luminance."))	mRequestedFormat = Format::Luminance;
+		else if (source.Contains(".RGB."))			mRequestedFormat = Format::RGB;
+		else if (source.Contains(".RGBA."))			mRequestedFormat = Format::RGBA;
+		else if (source.Contains(".DXT3."))			mRequestedFormat = Format::DXT3;
+		else if (source.Contains(".DXT5."))			mRequestedFormat = Format::DXT5;
+
+		if (mRequestedFormat != Format::Optimal)
 			mFormat = _GetSupportedFormat(mRequestedFormat);
-		}
 	}
 }
 
