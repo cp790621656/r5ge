@@ -86,6 +86,9 @@ public:
 	// Sets the matrix to a simplified orthographic projection
 	void SetToScreen (float width, float height);
 
+	// Sets the matrix to an orthographic box
+	void SetToBox (float width, float height, float depth);
+
 	// Sets the matrix to a centered orthographic projection (useful for decals and directional shadows)
 	void SetToOrtho (float width, float height, float near, float far);
 

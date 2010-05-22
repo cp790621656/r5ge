@@ -225,6 +225,33 @@ void Matrix43::SetToScreen (float width, float height)
 }
 
 //============================================================================================================
+// Sets the matrix to an orthographic box
+//============================================================================================================
+
+void Matrix43::SetToBox (float width, float height, float depth)
+{
+	mF[ 0] =  2.0f / width;
+	mF[ 1] =  0.0f;
+	mF[ 2] =  0.0f;
+	mF[ 3] =  0.0f;
+
+	mF[ 4] =  0.0f;
+	mF[ 5] = -2.0f / height;
+	mF[ 6] =  0.0f;
+	mF[ 7] =  0.0f;
+
+	mF[ 8] =  0.0f;
+	mF[ 9] =  0.0f;
+	mF[10] = -2.0f / depth;
+	mF[11] =  0.0f;
+
+	mF[12] =  0.0f;
+	mF[13] =  0.0f;
+	mF[14] =  0.0f;
+	mF[15] =  1.0f;
+}
+
+//============================================================================================================
 // Sets the matrix to a centered orthographic projection
 //============================================================================================================
 
@@ -247,8 +274,8 @@ void Matrix43::SetToOrtho (float width, float height, float near, float far)
 	mF[10] = -2.0f / depth;
 	mF[11] =  0.0f;
 
-	mF[12] = 0.0f;
-	mF[13] = 0.0f;
+	mF[12] =  0.0f;
+	mF[13] =  0.0f;
 	mF[14] = -(far + near) / depth;
 	mF[15] =  1.0f;
 }
