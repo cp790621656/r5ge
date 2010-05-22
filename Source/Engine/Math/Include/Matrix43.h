@@ -83,7 +83,14 @@ public:
 					 const Vector3f& dir,						// Normalized lookAt direction
 					 const Vector3f& up );						// Normalized up vector
 
+	// Sets the matrix to a simplified orthographic projection
 	void SetToScreen (float width, float height);
+
+	// Sets the matrix to a centered orthographic projection (useful for decals and directional shadows)
+	void SetToOrtho (float width, float height, float near, float far);
+
+	// Sets the matrix to a full orthographic projection
+	void SetToOrtho (float minX, float minY, float maxX, float maxY, float near, float far);
 
 	// Sets the matrix transform using a translation and a scale component
 	void SetToTransform (const Vector3f& pos, float scale);
