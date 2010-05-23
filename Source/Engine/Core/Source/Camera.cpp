@@ -9,7 +9,7 @@ void Camera::SetAbsoluteRange (const Vector3f& range)
 {
 	mRelativeRange.x = range.x / mAbsoluteScale;
 	mRelativeRange.y = range.y / mAbsoluteScale;
-	mRelativeRange.y = range.z;
+	mRelativeRange.z = range.z;
 }
 
 //============================================================================================================
