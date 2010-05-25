@@ -5,7 +5,6 @@
 //											www.nextrevision.com
 //============================================================================================================
 // Container for registered update callbacks
-// TODO: Is it now obsolete with the addition of scripts?
 //============================================================================================================
 
 class UpdateList
@@ -27,7 +26,7 @@ private:
 		Callback	callback;
 	};
 
-	Array<UpdateEntry>		mUpdate;
+	Array<UpdateEntry> mUpdate;
 
 public:
 

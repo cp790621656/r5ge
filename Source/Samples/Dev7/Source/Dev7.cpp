@@ -59,7 +59,7 @@ void TestApp::OnDraw()
 	mScene.Cull(mCam);
 
 	mGraphics->Clear();
-	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
+	mGraphics->SetScreenProjection( false );
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 
 	mScene.DrawAllForward(false);

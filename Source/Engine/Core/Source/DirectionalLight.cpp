@@ -50,7 +50,7 @@ void DirectionalLight::_Draw (IGraphics* graphics, const Light::List& lights, co
 	// No depth test as directional light has no volume
 	graphics->SetActiveTexture(2, lightmap);
 	graphics->SetDepthTest(false);
-	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+	graphics->SetScreenProjection( true );
 	graphics->ResetModelViewMatrix();
 	graphics->SetActiveShader(shader);
 

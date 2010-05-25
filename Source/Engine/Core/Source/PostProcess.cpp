@@ -39,7 +39,7 @@ void BlurCommon ( IGraphics*		graphics,
 				  const IShader*	shader1 )
 {
 	graphics->SetActiveRenderTarget( target0 );
-	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+	graphics->SetScreenProjection( true );
 	graphics->SetActiveTexture( 0, texture0 );
 	graphics->SetActiveShader( shader0 );
 	graphics->Draw( IGraphics::Drawable::InvertedQuad );
@@ -151,7 +151,7 @@ void BlurDownsample (IGraphics*			graphics,
 
 	// Draw to the render target
 	graphics->SetActiveRenderTarget(storage.mRenderTarget);
-	graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+	graphics->SetScreenProjection( true );
 
 	// Clear the target
 	//if (target != 0) graphics->Clear(true, false, false);
@@ -176,7 +176,7 @@ void PostProcess::None (IGraphics* graphics, Deferred::Storage& storage)
 	static const ITechnique* technique = graphics->GetTechnique("Post Process");
 
 	graphics->SetActiveRenderTarget(storage.mRenderTarget);
-	graphics->SetActiveProjection(IGraphics::Projection::Orthographic);
+	graphics->SetScreenProjection(true);
 	graphics->SetActiveTechnique(technique);
 	graphics->SetActiveMaterial(0);
 	graphics->SetActiveTexture(0, storage.mOutColor);

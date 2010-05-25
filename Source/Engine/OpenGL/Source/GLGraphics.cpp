@@ -62,7 +62,8 @@ GLSubShader* GLGraphics::GetGLSubShader (const String& filename, bool createIfMi
 bool GLGraphics::IsPointVisible (const Vector3f& v)
 {
 	// Reset the ModelView matrix as the query is affected by it
-	ResetModelViewMatrix();
+	ResetModelMatrix();
+	ResetViewMatrix();
 
 	// Convert the 3D point to screen coordinates
 	Vector2i screen (ConvertTo2D(v));
@@ -331,7 +332,7 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 
 		if (color)
 		{
-			SetActiveProjection(IGraphics::Projection::Perspective);
+			SetScreenProjection(false);
 			Draw(Drawable::Skybox);
 		}
 	}
@@ -462,9 +463,10 @@ uint GLGraphics::Draw (uint drawable)
 		glColor3ub(255, 255, 255);
 
 		// Overwrite the ModelView matrix, changing it to use the current camera's position as origin
+		ResetModelMatrix();
 		Matrix43 view = GetViewMatrix();
-		view.PreTranslate(mEye);
-		SetModelViewMatrix(view);
+		view.PreTranslate(GetCameraPosition());
+		SetViewMatrix(view);
 
 		// Set all active vertex attributes
 		SetActiveVertexAttribute( Attribute::Normal,	 0, 0, 0, 0, 0 );
@@ -480,7 +482,7 @@ uint GLGraphics::Draw (uint drawable)
 		result = DrawIndices( mSkyboxIBO, Primitive::Triangle, 36 );
 
 		// Reset the ModelView matrix back to its default values
-		ResetModelViewMatrix();
+		ResetViewMatrix();
 		return 12;
 	}
 	else if (drawable == Drawable::FullscreenQuad)
@@ -533,7 +535,8 @@ uint GLGraphics::Draw (uint drawable)
 	}
 	else if (drawable == Drawable::Plane)
 	{
-		ResetModelViewMatrix();
+		ResetModelMatrix();
+		ResetViewMatrix();
 		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
@@ -569,7 +572,8 @@ uint GLGraphics::Draw (uint drawable)
 		SetBlending(Blending::None);
 		SetActiveMaterial((const IMaterial*)0);
 
-		ResetModelViewMatrix();
+		ResetModelMatrix();
+		ResetViewMatrix();
 		_ActivateMatrices();
 
 		glBegin(GL_LINES);
@@ -746,6 +750,14 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 				{
 					// Group for objects with transparency, drawn after solids -- default everything
 					tech->SetSorting(ITechnique::Sorting::BackToFront);
+				}
+				else if (name == "Depth")
+				{
+					tech->SetFog(false);
+					tech->SetColorWrite(false);
+					tech->SetAlphaTest(false);
+					tech->SetLighting(ITechnique::Lighting::None);
+					tech->SetBlending(ITechnique::Blending::None);
 				}
 				else if (name == "Glow")
 				{

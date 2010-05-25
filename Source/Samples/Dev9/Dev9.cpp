@@ -228,7 +228,7 @@ void TestApp::DrawLeaves(void* param)
 			mGraphics->SetAlphaTest(false);
 			mGraphics->SetBlending(IGraphics::Blending::None);
 			mGraphics->SetActiveRenderTarget(diffuseTarget);
-			mGraphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+			mGraphics->SetScreenProjection( true );
 			mGraphics->SetActiveTexture(0, temp0);
 			mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
 			mGraphics->Draw( IGraphics::Drawable::InvertedQuad );

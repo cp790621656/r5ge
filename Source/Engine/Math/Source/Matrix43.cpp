@@ -236,7 +236,7 @@ void Matrix43::SetToBox (float width, float height, float depth)
 	mF[ 3] =  0.0f;
 
 	mF[ 4] =  0.0f;
-	mF[ 5] = -2.0f / height;
+	mF[ 5] =  2.0f / height;
 	mF[ 6] =  0.0f;
 	mF[ 7] =  0.0f;
 
@@ -265,7 +265,7 @@ void Matrix43::SetToOrtho (float width, float height, float near, float far)
 	mF[ 3] =  0.0f;
 
 	mF[ 4] =  0.0f;
-	mF[ 5] = -2.0f / height;
+	mF[ 5] =  2.0f / height;
 	mF[ 6] =  0.0f;
 	mF[ 7] =  0.0f;
 
@@ -296,7 +296,7 @@ void Matrix43::SetToOrtho (float minX, float minY, float maxX, float maxY, float
 	mF[ 3] =  0.0f;
 
 	mF[ 4] =  0.0f;
-	mF[ 5] = -2.0f / height;
+	mF[ 5] =  2.0f / height;
 	mF[ 6] =  0.0f;
 	mF[ 7] =  0.0f;
 
@@ -306,7 +306,7 @@ void Matrix43::SetToOrtho (float minX, float minY, float maxX, float maxY, float
 	mF[11] =  0.0f;
 
 	mF[12] = -(minX + maxX) / width;
-	mF[13] =  (minY + maxY) / height;
+	mF[13] = -(minY + maxY) / height;
 	mF[14] = -(far  + near) / depth;
 	mF[15] =  1.0f;
 }

@@ -87,13 +87,6 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 	ITexturePtr& blurTex0 = storage.mTempTextures[15];
 	ITexturePtr& blurTex1 = storage.mTempTextures[16];
 
-	if (!ssaoTarget->HasColor())
-	{
-		ssao->RegisterUniform ("properties", &SetSSAOProperties);
-		blurH->RegisterUniform("properties", &SetSSAOProperties);
-		blurV->RegisterUniform("properties", &SetSSAOProperties);
-	}
-
 	if (ssaoTarget == 0)
 	{
 		ssaoTarget	= graphics->CreateRenderTarget();
@@ -102,6 +95,10 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 		// Screen space ambient occlusion target
 		ssaoTarget->AttachColorTexture( 0, lightmap, ITexture::Format::Alpha );
 		ssaoTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
+
+		ssao->RegisterUniform ("properties", &SetSSAOProperties);
+		blurH->RegisterUniform("properties", &SetSSAOProperties);
+		blurV->RegisterUniform("properties", &SetSSAOProperties);
 	}
 
 	if (blurTarget0 == 0)
@@ -144,7 +141,7 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 	// SSAO contribution pass
 	{
 		graphics->SetActiveRenderTarget( ssaoTarget );
-		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		graphics->SetScreenProjection( true );
 		graphics->SetActiveTexture( 0, storage.mOutDepth );
 		graphics->SetActiveTexture( 1, storage.mOutNormal );
 		graphics->SetActiveTexture( 2, random );
@@ -161,7 +158,7 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 	{
 		// Blur the SSAO texture horizontally
 		graphics->SetActiveRenderTarget( blurTarget0 );
-		if (i == 0) graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		if (i == 0) graphics->SetScreenProjection( true );
 		graphics->SetActiveTexture( 0, result );
 		graphics->SetActiveTexture( 1, storage.mOutDepth );
 		graphics->SetActiveShader( blurH );
@@ -240,7 +237,7 @@ const ITexture* SSAO::High (IGraphics* graphics, Deferred::Storage& storage)
 	// SSAO contribution pass
 	{
 		graphics->SetActiveRenderTarget( ssaoTarget );
-		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		graphics->SetScreenProjection( true );
 		graphics->SetActiveTexture( 0, storage.mOutDepth );
 		graphics->SetActiveTexture( 1, storage.mOutNormal );
 		graphics->SetActiveTexture( 2, random );

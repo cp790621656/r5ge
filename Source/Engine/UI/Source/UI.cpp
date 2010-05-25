@@ -93,7 +93,7 @@ void UI::OnPreDraw() const
 	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );
 	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
 	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
-	mGraphics->SetActiveProjection		( IGraphics::Projection::Orthographic );
+	mGraphics->SetScreenProjection		( true );
 }
 
 //============================================================================================================

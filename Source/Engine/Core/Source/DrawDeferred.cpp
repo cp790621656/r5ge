@@ -172,7 +172,7 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 		graphics->SetBlending(IGraphics::Blending::None);
 		graphics->SetCulling(IGraphics::Culling::Back);
 
-		graphics->SetActiveProjection( IGraphics::Projection::Orthographic );
+		graphics->SetScreenProjection( true );
 		graphics->SetActiveMaterial(0);
 		graphics->SetActiveShader(shader);
 		graphics->SetActiveTexture( 0, matDiff );

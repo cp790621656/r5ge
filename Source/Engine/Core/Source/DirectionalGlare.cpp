@@ -29,7 +29,7 @@ uint DirectionalGlare::OnDraw (uint group, const ITechnique* tech, bool insideOu
 	IGraphics* graphics = mCore->GetGraphics();
 
 	const Vector3f& camPos = graphics->GetCameraPosition();
-	const Vector2f& camRange = graphics->GetCameraRange();
+	const Vector3f& camRange = graphics->GetCameraRange();
 
 	// Horizon offset
 	Vector3f offset (mAbsoluteRot.GetForward() * camRange.y);

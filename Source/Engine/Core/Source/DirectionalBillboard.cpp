@@ -12,7 +12,7 @@ uint DirectionalBillboard::OnDraw (uint group, const ITechnique* tech, bool insi
 	Matrix43 mat (graphics->GetViewMatrix());
 
 	const Vector3f& camPos = graphics->GetCameraPosition();
-	const Vector2f& camRange = graphics->GetCameraRange();
+	const Vector3f& camRange = graphics->GetCameraRange();
 	mat.PreTranslate(camPos - mAbsoluteRot.GetForward() * camRange.y);
 	mat.ReplaceScaling(mAbsoluteScale * camRange.y * 0.1f);
 

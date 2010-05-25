@@ -174,7 +174,7 @@ bool Core::Update()
 			mModels.Unlock();
 
 			// Pre-update callbacks
-			mPre.Execute();
+			mPreList.Execute();
 
 			// Update the entire scene
 			if (mRoot.GetFlag(Object::Flag::Enabled))
@@ -183,24 +183,27 @@ bool Core::Update()
 			}
 
 			// Post-update callbacks
-			mPost.Execute();
+			mPostList.Execute();
 
 			// The UI should only be updated if the window is not minimized
 			if (mUI != 0 && !minimized) mUI->Update();
 
 			// Post-GUI updates
-			mLate.Execute();
+			mLateList.Execute();
 		}
 
 		// If we have an OnDraw listener, call it
-		if (mOnDraw && !minimized)
+		if (!minimized)
 		{
 			// Start the drawing process
 			mWin->BeginFrame();
 			if (mGraphics != 0)	mGraphics->BeginFrame();
 
-			// Draw the scene
-			mOnDraw();
+			// Draw process callbacks
+			mDrawList.Execute();
+
+			// DEPRECATED: Draw the scene
+			if (mOnDraw) mOnDraw();
 
 			// Draw the UI
 			if (mUI != 0) mUI->Draw();

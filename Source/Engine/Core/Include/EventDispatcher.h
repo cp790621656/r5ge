@@ -4,7 +4,9 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Event dispatcher has the ability to register event handling callbacks
+// Event dispatcher has the ability to register event handling callbacks and is used by the Core class.
+// Note that this functionality pre-dates object and widget scripts, and should only be used in select cases.
+// It's usually a more elegant solution to add a custom script to an object somewhere in the scene.
 //============================================================================================================
 
 class EventDispatcher
@@ -27,22 +29,24 @@ protected:
 	SerializeFromDelegate	mOnFrom;
 	SerializeToDelegate		mOnTo;
 	
-	UpdateList	mPre;		// Called prior to scene update
-	UpdateList	mPost;		// Called after the scene update
-	UpdateList	mLate;		// Called after the GUI update
+	UpdateList	mPreList;	// Called prior to scene update
+	UpdateList	mPostList;	// Called after the scene update
+	UpdateList	mLateList;	// Called after the GUI update
+	UpdateList	mDrawList;	// Called during the draw process
 
 public:
 
 	// Event listener registration
-	void SetListener (const OnDrawDelegate&			callback)	{ mOnDraw		= callback; }
+	void SetListener (const OnDrawDelegate&			callback)	{ mOnDraw		= callback; } // Deprecated, use AddOnDraw
 	void SetListener (const OnKeyDelegate&			callback)	{ mOnKey		= callback; }
 	void SetListener (const OnMouseMoveDelegate&	callback)	{ mOnMouseMove	= callback; }
 	void SetListener (const OnScrollDelegate&		callback)	{ mOnScroll		= callback; }
-	void SetListener (const SerializeFromDelegate&	callback)	{ mOnFrom		= callback; }
-	void SetListener (const SerializeToDelegate&	callback)	{ mOnTo			= callback; }
+	void SetListener (const SerializeFromDelegate&	callback)	{ mOnFrom		= callback; } // Deprecated, use scripts
+	void SetListener (const SerializeToDelegate&	callback)	{ mOnTo			= callback; } // Deprecated, use scripts
 
 	// Update callback registration
-	void AddOnPreUpdate	 (const UpdateList::Callback& callback, float delay = 0.0f) { mPre.Add(callback, delay); }
-	void AddOnPostUpdate (const UpdateList::Callback& callback, float delay = 0.0f) { mPost.Add(callback, delay); }
-	void AddOnLateUpdate (const UpdateList::Callback& callback, float delay = 0.0f) { mLate.Add(callback, delay); }
+	void AddOnPreUpdate	 (const UpdateList::Callback& callback, float delay = 0.0f) { mPreList.Add(callback, delay); }
+	void AddOnPostUpdate (const UpdateList::Callback& callback, float delay = 0.0f) { mPostList.Add(callback, delay); }
+	void AddOnLateUpdate (const UpdateList::Callback& callback, float delay = 0.0f) { mLateList.Add(callback, delay); }
+	void AddOnDraw		 (const UpdateList::Callback& callback, float delay = 0.0f) { mDrawList.Add(callback, delay); }
 };

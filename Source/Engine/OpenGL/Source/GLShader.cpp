@@ -132,7 +132,7 @@ void GLShader::SetUniform_PixelSize (const String& name, Uniform& uniform)
 
 void GLShader::SetUniform_ClipRange (const String& name, Uniform& uniform)
 {
-	const Vector2f& range = mGraphics->GetCameraRange();
+	const Vector3f& range = mGraphics->GetCameraRange();
 	uniform = Quaternion(range.x,
 						 range.y,
 						 range.x * range.y,

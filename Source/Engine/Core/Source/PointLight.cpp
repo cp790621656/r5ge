@@ -59,7 +59,7 @@ void PointLight::_Draw (IGraphics* graphics, const Light::List& lights, const IT
 	IShader* shader = (lightmap != 0) ? dirShader1 : dirShader0;
 
 	graphics->SetActiveTexture(2, lightmap);
-	graphics->SetActiveProjection( IGraphics::Projection::Perspective );
+	graphics->SetScreenProjection( false );
 
 	float nearClip = graphics->GetCameraRange().x;
 	const Vector3f& camPos = graphics->GetCameraPosition();

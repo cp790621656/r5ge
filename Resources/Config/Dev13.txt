@@ -1,0 +1,72 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Dev13 (Shadows)"
+		Position = 165 143
+		Size = 900 600
+		Full Screen = false
+	}
+
+	Graphics
+	{
+		Default AF = 8
+		Background Color = 0.25 0.25 0.25 1.000000
+		Fog Range = 100.000000 100.000000
+	}
+
+	UI
+	{
+		Default Skin = "Default"
+		Default Font = "Arial 15"
+
+		Layout
+		{
+			Stats = "Game Stats"
+			{
+				Left = 1.000000 -150.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 0.000000 250.000000
+				Alpha = 1.000000
+				Font = "Arial 15"
+				Event Handling = "Normal"
+				Layer = 0
+			}
+			
+			Picture = "Test"
+			{
+				Right = 0 256
+				Bottom = 0 256
+				Texture = "Test"
+			}
+		}
+	}
+
+	Scene
+	{
+		Debug Camera = "Default Camera"
+		{
+			Position = -0.901637 -0.396084 0.809464
+			Rotation = -0.256698 0.001887 -0.007112 0.966464
+			Range = 1.000000 100.000000 90.000000
+			Dolly = 0.000000 19.752630 50.000000
+		}
+
+		Directional Light = "First Light"
+		{
+			Rotation = -0.477128 -0.101366 0.181409 0.853912
+			Ambient = 0.300000 0.300000 0.300000
+			Diffuse = 0.700000 0.700000 0.700000
+			Specular = 1.000000 1.000000 1.000000
+			Brightness = 1.000000
+		}
+
+		Model Instance = "Test Scene"
+		{
+			Model = "Models/shadow test.r5a"
+		}
+	}
+}

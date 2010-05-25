@@ -107,15 +107,8 @@ GLController::GLController() :
 	mThickness			(1.0f),
 	mNormalize			(false),
 	mDepthOffset		(false),
-	mFov				(0),
 	mAf					(0),
 	mSimpleMaterial		(false),
-	mActiveLightCount	(0),
-	mProjection			(Projection::Orthographic),
-	mResetModel			(false),
-	mResetView			(false),
-	mResetProj			(false),
-	mInstancing			(false),
 	mMatGlow			(0.0f),
 	mTarget				(0),
 	mTechnique			(0),
@@ -168,8 +161,9 @@ void GLController::SetFog (bool val)
 		}
 		else
 		{
-			glFogf(GL_FOG_START, mClipRange.y);
-			glFogf(GL_FOG_END, mClipRange.y);
+			const Vector3f& range = GetCameraRange();
+			glFogf(GL_FOG_START, range.y);
+			glFogf(GL_FOG_END, range.y);
 			glDisable(GL_FOG);
 		}
 	}
@@ -433,18 +427,15 @@ void GLController::SetDepthOffset (bool val)
 }
 
 //============================================================================================================
-// Changes the viewport dimensions
+// Changes the screen dimensions
 //============================================================================================================
 
-void GLController::SetViewport(const Vector2i& size)
+void GLController::SetViewport (const Vector2i& size)
 {
 	if (mSize != size)
 	{
 		mSize = size;
-		glViewport(0, 0, mSize.x, mSize.y);
-		mProj.mRecalculate = true;
-		mResetProj = true;
-		_ProjHasChanged();
+		if (mTarget == 0) mTrans.SetTargetSize(mSize);
 	}
 }
 
@@ -493,247 +484,24 @@ const IGraphics::DeviceInfo& GLController::GetDeviceInfo() const
 }
 
 //============================================================================================================
-// Retrieves the model (world) matrix
-//============================================================================================================
-
-const Matrix43& GLController::GetModelMatrix()
-{
-	if (!mModel.mOverwritten && mModel.mRecalculate)
-	{
-		mModel.mRecalculate = false;
-		mModel.mMat.SetToIdentity();
-	}
-	return mModel.mMat;
-}
-
-//============================================================================================================
-// Retrieves the view matrix
-//============================================================================================================
-
-const Matrix43& GLController::GetViewMatrix()
-{
-	if (mView.mRecalculate)
-	{
-		mView.mRecalculate = false;
-		mView.mMat.SetToView(mEye, mDir, mUp);
-	}
-	return mView.mMat;
-}
-
-//============================================================================================================
-// Retrieves the projection matrix
-//============================================================================================================
-
-const Matrix44& GLController::GetProjectionMatrix()
-{
-	if (mProj.mRecalculate)
-	{
-		mProj.mRecalculate = false;
-		Vector2i size ( (mTarget != 0) ? mTarget->GetSize() : mSize );
-		mProj.mMat.SetToProjection( mFov, (float)size.x / size.y, mClipRange.x, mClipRange.y );
-	}
-	return mProj.mMat;
-}
-
-//============================================================================================================
-// Retrieves the Model * View matrix
-//============================================================================================================
-
-const Matrix43& GLController::GetModelViewMatrix()
-{
-	// If the ModelView matrix has been overwritten, use it as-is
-	if (mMV.mOverwritten) return mMV.mMat;
-
-	// If the model matrix hasn't been set, ModelView matrix is the view matrix
-	if (!mModel.mOverwritten) return GetViewMatrix();
-
-	// Recalculate the ModelView matrix if need be
-	if (mMV.mRecalculate)
-	{
-		mMV.mRecalculate = false;
-		mMV.mMat = GetModelMatrix() * GetViewMatrix();
-	}
-	return mMV.mMat;
-}
-
-//============================================================================================================
-// Retrieves the View * Projection matrix used for frustum culling
-//============================================================================================================
-
-const Matrix44& GLController::GetModelViewProjMatrix()
-{
-	if (mMVP.mRecalculate)
-	{
-		mMVP.mRecalculate = false;
-		mMVP.mMat = GetModelViewMatrix() * GetProjectionMatrix();
-	}
-	return mMVP.mMat;
-}
-
-//============================================================================================================
-// Retrieves the inverse view matrix used in converting view space to world space
-//============================================================================================================
-
-const Matrix43& GLController::GetInverseModelViewMatrix()
-{
-	if (mIMV.mRecalculate)
-	{
-		mIMV.mRecalculate = false;
-		mIMV.mMat = GetModelViewMatrix();
-		mIMV.mMat.Invert();
-	}
-	return mIMV.mMat;
-}
-
-//============================================================================================================
-// Retrieves the inverse projection matrix used in converting screen space to view space
-//============================================================================================================
-
-const Matrix44& GLController::GetInverseProjMatrix()
-{
-	if (mIP.mRecalculate)
-	{
-		mIP.mRecalculate = false;
-		mIP.mMat = GetProjectionMatrix();
-		mIP.mMat.Invert();
-	}
-	return mIP.mMat;
-}
-
-//============================================================================================================
-// Retrieves (and updates if necessary) the inverse ModelView * Projection matrix used in converting 2D to 3D
-//============================================================================================================
-
-const Matrix44& GLController::GetInverseMVPMatrix()
-{
-	if (mIMVP.mRecalculate)
-	{
-		mIMVP.mRecalculate = false;
-		mIMVP.mMat = GetModelViewProjMatrix();
-		mIMVP.mMat.Invert();
-	}
-	return mIMVP.mMat;
-}
-
-//============================================================================================================
-// Sets the model matrix to the specified value
-//============================================================================================================
-
-void GLController::SetModelMatrix (const Matrix43& mat)
-{
-	mModel.mMat			= mat;
-	mModel.mRecalculate	= false;
-	mModel.mOverwritten	= true;
-	mMV.mOverwritten	= false;
-	mResetModel			= true;
-	_WorldHasChanged();
-}
-
-//============================================================================================================
-// Resets the model matrix to identity
-//============================================================================================================
-
-void GLController::ResetModelMatrix()
-{
-	if (mModel.mOverwritten)
-	{
-		mModel.mOverwritten	= false;
-		mModel.mRecalculate = true;
-		mResetModel			= true;
-		_WorldHasChanged();
-	}
-}
-
-//============================================================================================================
-// Changes the view matrix to the specified value
-//============================================================================================================
-
-void GLController::SetModelViewMatrix (const Matrix43& mat)
-{
-	// ModelView now has a valid value and it doesn't need to be recalculated
-	mMV.mMat			= mat;
-	mMV.mOverwritten	= true;
-	mMV.mRecalculate	= false;
-
-	// The view has changed
-	mResetModel			= true;
-	mMVP.mRecalculate	= true;
-	mIMV.mRecalculate	= true;
-	mIMVP.mRecalculate	= true;
-}
-
-//============================================================================================================
-// Resets the view matrix to camera's POV
-//============================================================================================================
-
-void GLController::ResetModelViewMatrix()
-{
-	if (mMV.mOverwritten)
-	{
-		mMV.mOverwritten	= false;
-		mMV.mRecalculate	= true;
-		mResetView			= true;
-		_WorldHasChanged();
-	}
-
-	// Ensure that the model matrix is reset to identity
-	ResetModelMatrix();
-}
-
-//============================================================================================================
-// Changes the ModelView matrix
+// Convenience function -- sets the view matrix
 //============================================================================================================
 
 void GLController::SetCameraOrientation (const Vector3f& eye, const Vector3f& dir, const Vector3f& up)
 {
-	if (mEye != eye	|| mDir != dir || mUp != up)
-	{
-		mEye = eye;
-		mDir = dir;
-		mUp	 = up;
-
-		// View matrix needs to be recalculated
-		mView.mRecalculate	= true;
-		mResetView			= true;
-		_WorldHasChanged();
-	}
-
-	// Ensure that the model matrix is reset to identity
-	ResetModelMatrix();
+	mTrans.CancelModelMatrixOverride();
+	mTrans.CancelViewMatrixOverride();
+	mTrans.SetViewMatrix(eye, dir, up);
 }
 
 //============================================================================================================
-// Changes the far clipping plane
+// Convenience function -- sets the projection matrix
 //============================================================================================================
 
 void GLController::SetCameraRange (const Vector3f& range)
 {
-	// Ignore stupid values
-	if (range.y > 1.0f)
-	{
-		// Minimum allowed precision is 10000:1
-		Vector2f copy (range);
-		float minNear = copy.y * 0.0001f;
-		if (copy.x < minNear) copy.x = minNear;
-
-		if ( mClipRange != copy )
-		{
-			mClipRange = copy;
-			mProj.mRecalculate = true;
-			mResetProj = true;
-			_ProjHasChanged();
-		}
-	}
-
-	float deg = Float::Clamp(range.z, 1.0f, 180.0f);
-
-	if ( Float::IsNotZero(mFov - deg) )
-	{
-		mFov = deg;
-		mProj.mRecalculate = true;
-		mResetProj = true;
-		_ProjHasChanged();
-	}
+	mTrans.CancelProjectionMatrixOverride();
+	mTrans.SetProjectionRange(range);
 }
 
 //============================================================================================================
@@ -742,41 +510,20 @@ void GLController::SetCameraRange (const Vector3f& range)
 
 void GLController::SetActiveRenderTarget (const IRenderTarget* tar)
 {
-	// If the target is changing...
 	if (mTarget != tar)
 	{
-		if (tar)
+		if (tar != 0)
 		{
 			// If the target has been specified, we'll be rendering to an off-screen buffer
-			Vector2i activeSize ( mTarget ? mTarget->GetSize() : mSize );
-			const Vector2i& size ( tar->GetSize() );
-
-			// Activate it
 			tar->Activate();
-
-			// If the size is different from what's currently active, adjust the viewport
-			if ( activeSize != size )
-			{
-				glViewport(0, 0, size.x, size.y);
-				mProj.mRecalculate = true;
-				mResetProj = true;
-				_ProjHasChanged();
-			}
+			mTrans.SetTargetSize(tar->GetSize());
 		}
 		// Should be rendering to screen, but a target is currently active
-		else if (mTarget)
+		else if (mTarget != 0)
 		{
 			// Deactivate the off-screen target
 			mTarget->Deactivate();
-
-			// If the size is changing, adjust the viewport
-			if ( mSize != mTarget->GetSize() )
-			{
-				glViewport(0, 0, mSize.x, mSize.y);
-				mProj.mRecalculate = true;
-				mResetProj = true;
-				_ProjHasChanged();
-			}
+			mTrans.SetTargetSize(mSize);
 		}
 		CHECK_GL_ERROR;
 
@@ -1013,30 +760,6 @@ void GLController::SetActiveColor (const Color& color)
 }
 
 //============================================================================================================
-// Changes the camera projection and updates the matrices
-//============================================================================================================
-
-void GLController::SetActiveProjection (uint projection)
-{
-	if (mProjection != projection)
-	{
-		mProjection = projection;
-
-		if ( projection == Projection::Orthographic )
-		{
-			mResetView = true;
-			mResetProj = true;
-			SetActiveVertexAttribute(Attribute::Normal, 0, 0, 0, 0, 0);
-		}
-		else
-		{
-			mResetView = true;
-			mResetProj = true;
-		}
-	}
-}
-
-//============================================================================================================
 // Activates the vertex buffer object
 //============================================================================================================
 
@@ -1121,7 +844,6 @@ void GLController::SetActiveLight (uint index, const ILight* ptr)
 		{
 			if (active)
 			{
-				--mActiveLightCount;
 				active = false;
 				glDisable(index);
 			}
@@ -1134,7 +856,6 @@ void GLController::SetActiveLight (uint index, const ILight* ptr)
 			// Activate the light
 			if (!active)
 			{
-				++mActiveLightCount;
 				active = true;
 				glEnable(index);
 			}
@@ -1144,8 +865,7 @@ void GLController::SetActiveLight (uint index, const ILight* ptr)
 				Vector3f dir (ptr->mDir);
 
 				// Automatically adjust the light position to always be in view space
-				if (mProjection == Projection::Orthographic)
-					dir %= GetModelViewMatrix();
+				if (mTrans.mIs2D) dir %= GetModelViewMatrix();
 
 				// Set the light's position
 				glLightfv(index, GL_POSITION, Quaternion(-dir.x, -dir.y, -dir.z, 0.0f));
@@ -1155,8 +875,7 @@ void GLController::SetActiveLight (uint index, const ILight* ptr)
 				Vector3f pos (ptr->mPos);
 
 				// Automatically adjust the light position to always be in view space
-				if (mProjection == Projection::Orthographic)
-					pos *= GetModelViewMatrix();
+				if (mTrans.mIs2D) pos *= GetModelViewMatrix();
 
 				// Set the light's position
 				glLightfv(index, GL_POSITION, Quaternion(pos.x, pos.y, pos.z, 1.0f));
@@ -1387,91 +1106,6 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 }
 
 //============================================================================================================
-// Activate all appropriate matrices
-//============================================================================================================
-
-void GLController::_ActivateMatrices()
-{
-	if (mResetModel || mResetView || mResetProj)
-	{
-		if (mProjection == Projection::Orthographic)
-		{
-			Vector2i activeSize ( mTarget ? mTarget->GetSize() : mSize );
-			Matrix43 mat( activeSize.x, activeSize.y );
-
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(mat.mF);
-			++mStats.mMatSwitches;
-		}
-		else
-		{
-			if (mResetProj)
-			{
-				glMatrixMode(GL_PROJECTION);
-				glLoadMatrixf(GetProjectionMatrix().mF);
-				++mStats.mMatSwitches;
-			}
-
-			// Resetting the world matrix usually implies resetting the view as well
-			if (mResetModel || mResetView)
-			{
-				// If the active shader supports pseudo-instancing, take advantage of that
-				if ( mShader != 0 && mShader->GetFlag(IShader::Flag::Instanced) )
-				{
-					const Matrix43& mat = GetModelMatrix();
-
-					// Scale parameter needs to be updated each time the matrix changed
-					if (mShader->GetFlag(IShader::Flag::WorldScale))
-					{
-						mShader->SetUniform("R5_worldScale", mat.GetScale());
-					}
-
-					// When a shader supporting instancing is enabled, feed it the world matrix
-					glMultiTexCoord4fv(GL_TEXTURE2, mat.mColumn0);
-					glMultiTexCoord4fv(GL_TEXTURE3, mat.mColumn1);
-					glMultiTexCoord4fv(GL_TEXTURE4, mat.mColumn2);
-					glMultiTexCoord4fv(GL_TEXTURE5, mat.mColumn3);
-
-					// If the view has changed, or we haven't been using instancing before, set the MV
-					if (mResetView || !mInstancing)
-					{
-						glMatrixMode(GL_MODELVIEW);
-						glLoadMatrixf(GetViewMatrix().mF);
-						++mStats.mMatSwitches;
-						mInstancing = true;
-					}
-				}
-				else
-				{
-					// Scale parameter needs to be updated each time the matrix changed
-					if (mShader != 0 && mShader->GetFlag(IShader::Flag::WorldScale))
-					{
-						mShader->SetUniform("R5_worldScale", GetModelMatrix().GetScale());
-					}
-
-					// No pseudo-instancing support -- just use the ModelView matrix
-					glMatrixMode(GL_MODELVIEW);
-					glLoadMatrixf(GetModelViewMatrix().mF);
-					++mStats.mMatSwitches;
-					mInstancing = false;
-				}
-			}
-			else if (mResetProj)
-			{
-				// Always end with ModelView
-				glMatrixMode(GL_MODELVIEW);
-			}
-		}
-		mResetModel = false;
-		mResetView	= false;
-		mResetProj	= false;
-	}
-}
-
-//============================================================================================================
 // Changes the currently active texture unit
 //============================================================================================================
 
@@ -1531,27 +1165,4 @@ bool GLController::_BindTexture (uint glType, uint glID)
 		return true;
 	}
 	return false;
-}
-
-//============================================================================================================
-// Marks all world-affected matrices as needing to be recalculated
-//============================================================================================================
-
-void GLController::_WorldHasChanged()
-{
-	mMV.mRecalculate	= true;
-	mMVP.mRecalculate	= true;
-	mIMV.mRecalculate	= true;
-	mIMVP.mRecalculate	= true;
-}
-
-//============================================================================================================
-// Marks all projection-affected matrices as needing to be recalculated
-//============================================================================================================
-
-void GLController::_ProjHasChanged()
-{
-	mIP.mRecalculate	= true;
-	mMVP.mRecalculate	= true;
-	mIMVP.mRecalculate	= true;
 }

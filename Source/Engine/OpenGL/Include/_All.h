@@ -14,6 +14,7 @@
 
 namespace R5
 {
+	#include "GLTransform.h"	// Model, view and projection matrices bundled into one class
 	#include "GLVBO.h"			// OpenGL Vertex Buffer Object
 	#include "GLFBO.h"			// Frame Buffer Object
 	#include "GLTexture.h"		// Regular 2D texture

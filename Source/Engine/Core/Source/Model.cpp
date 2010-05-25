@@ -287,7 +287,7 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 		graphics->SetActiveTechnique(0);
 		graphics->SetActiveMaterial	(0);
 
-		const Matrix43& world = graphics->GetModelMatrix();
+		Matrix43 world (graphics->GetModelMatrix());
 
 		// Run through all transforms and draw colored XYZ axes at each bone's position
 		for (uint i = 0; i < mTransforms.GetSize(); ++i)

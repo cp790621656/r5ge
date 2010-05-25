@@ -67,10 +67,10 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		Vector3f dir (rot.GetForward());
 
 		// Set up the view and projection matrices
+		graphics->SetScreenProjection(false);
 		graphics->SetActiveRenderTarget(mRenderTarget);
-		graphics->ResetModelViewMatrix();
-		graphics->SetCameraRange(range);
 		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
+		graphics->SetCameraRange(range);
 
 		bool camChanged = (mLastCamPos != pos || mLastCamRot != rot || mLastCamRange != range);
 
@@ -89,6 +89,35 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 
 		// Cull the scene
 		_Cull(graphics, mFrustum, pos, dir, camChanged);
+	}
+}
+
+//============================================================================================================
+// Cull the scene using the specified pre-calculated matrices
+//============================================================================================================
+
+void Scene::Cull (const Matrix43& view, const Matrix44& proj)
+{
+	if (mRoot != 0)
+	{
+		IGraphics* graphics (mRoot->mCore->GetGraphics());
+		Vector3f dir (Vector3f(0.0f, 1.0f, 0.0f) % view);
+
+		// Set up the view and projection matrices
+		graphics->SetScreenProjection(false);
+		graphics->SetActiveRenderTarget(mRenderTarget);
+		graphics->ResetModelMatrix();
+		graphics->SetViewMatrix(view);
+		graphics->SetProjectionMatrix(proj);
+
+		// Update the frustum
+		mFrustum.Update( graphics->GetModelViewProjMatrix() );
+
+		// Raycast hits are no longer valid
+		mHits.Clear();
+
+		// Cull the scene
+		_Cull(graphics, mFrustum, Vector3f() * view, dir, true);
 	}
 }
 
@@ -299,7 +328,7 @@ uint Scene::_Draw (const Techniques& techniques, bool insideOut)
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
 		// Reset to perspective projection
-		graphics->SetActiveProjection( IGraphics::Projection::Perspective );
+		graphics->SetScreenProjection( false );
 
 		// Draw the scene
 		result += mQueue.Draw(graphics, techniques, insideOut);

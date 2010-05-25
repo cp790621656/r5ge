@@ -14,15 +14,6 @@ struct IGraphicsController
 	typedef ITechnique::Culling		Culling;
 	typedef ITechnique::Sorting		Sorting;
 
-	struct Projection
-	{
-		enum
-		{
-			Orthographic = 0,
-			Perspective
-		};
-	};
-
 	struct DataType
 	{
 		enum
@@ -144,8 +135,7 @@ public:
 	virtual const Vector3f&		GetCameraPosition()		const=0;
 	virtual const Vector3f&		GetCameraDirection()	const=0;
 	virtual const Vector3f&		GetCameraUpVector()		const=0;
-	virtual const Vector2f&		GetCameraRange()		const=0;
-	virtual float				GetCameraFOV()			const=0;
+	virtual const Vector3f&		GetCameraRange()		const=0;
 
 	// Matrix retrieval
 	virtual const Matrix43&		GetModelMatrix()=0;
@@ -157,15 +147,33 @@ public:
 	virtual const Matrix44&		GetInverseProjMatrix()=0;
 	virtual const Matrix44&		GetInverseMVPMatrix()=0;
 
-	// Model matrix manipulation -- resets the View matrix back to default
+	// Model matrix manipulation
 	virtual void SetModelMatrix (const Matrix43& mat)=0;
 	virtual void ResetModelMatrix()=0;
 
-	// ModelView matrix manipulation
-	virtual void SetModelViewMatrix (const Matrix43& mat)=0;
-	virtual void ResetModelViewMatrix()=0;
+	// View matrix manipulation
+	virtual void SetViewMatrix (const Matrix43& mat)=0;
+	virtual void ResetViewMatrix()=0;
 
-	// Camera control functions. Range X = near, Y = far, Z = field of view, in degrees.
+	// Convenience function -- legacy functionality support
+	void ResetModelViewMatrix()
+	{
+		ResetModelMatrix();
+		ResetViewMatrix();
+	}
+
+	// Convenience function -- legacy functionality support
+	void SetModelViewMatrix (const Matrix43& mat)
+	{
+		ResetModelMatrix();
+		SetViewMatrix(mat);
+	}
+
+	// Projection matrix manipulation
+	virtual void SetProjectionMatrix (const Matrix44& mat)=0;
+	virtual void ResetProjectionMatrix()=0;
+
+	// Convenience camera control functions. Range X = near, Y = far, Z = field of view (in degrees)
 	virtual void SetCameraOrientation		( const Vector3f& eye, const Vector3f& dir, const Vector3f& up )=0;
 	virtual void SetCameraRange				( const Vector3f& range )=0;
 
@@ -177,7 +185,7 @@ public:
 	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false )=0;
 	virtual void SetActiveSkybox			( const ITexture* ptr )=0;
 	virtual void SetActiveColor				( const Color& c )=0;
-	virtual void SetActiveProjection		( uint projection )=0;
+	virtual void SetScreenProjection		( bool screen )=0;
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid )=0;
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr )=0;
 	virtual void SetActiveLight				( uint index, const ILight* ptr )=0;

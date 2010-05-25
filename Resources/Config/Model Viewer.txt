@@ -149,6 +149,21 @@ Root
 						Layer = 1
 					}
 
+					Slider = "Bloom Slider"
+					{
+						Left = 0.400000 24.000000
+						Right = 1.000000 -5.000000
+						Top = 0.000000 50.000000
+						Bottom = 0.000000 66.000000
+						Alpha = 1.000000
+						Value = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Animation Time = 0.000000
+						Event Handling = "Normal"
+						Layer = 0
+						UIScript = "USEventListener"
+					}
+
 					Checkbox = "Bloom Checkbox"
 					{
 						Left = 0.400000 5.000000
@@ -164,21 +179,6 @@ Root
 						Animation Time = 0.150000
 						Event Handling = "Normal"
 						Tooltip = "Turning this on will make bright areas glow"
-						Layer = 0
-						UIScript = "USEventListener"
-					}
-
-					Slider = "Bloom Slider"
-					{
-						Left = 0.400000 24.000000
-						Right = 1.000000 -5.000000
-						Top = 0.000000 50.000000
-						Bottom = 0.000000 66.000000
-						Alpha = 1.000000
-						Value = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Animation Time = 0.000000
-						Event Handling = "Normal"
 						Layer = 0
 						UIScript = "USEventListener"
 					}
@@ -262,7 +262,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "904"
+					Text = "408"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -275,7 +275,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.850000
+					Alpha = 0.000000
 					Top Color = 0.000000 0.000000 0.000000 0.000000
 					Bottom Color = 0.000000 0.000000 0.000000 1.000000
 					Event Handling = "Normal"
@@ -289,7 +289,7 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "R5 Model Viewer v.1.5.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Text = "This model has no associated skeleton and thus cannot have any animations"
 						Shadow = true
 						Alignment = "Center"
 						Event Handling = "None"
@@ -306,7 +306,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "../../DotC/Resources/Models/NPCs/peasant.r5a"
+			Source = "Models/shadow test.r5a"
 		}
 	}
 
@@ -314,10 +314,10 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.001267 0.018200 0.617190
-			Rotation = -0.023486 0.168678 -0.975976 0.135891
+			Position = 0.000000 0.000000 1.607505
+			Rotation = 0.235734 -0.000190 0.000782 -0.971817
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 1.974951 50.000000
+			Dolly = 0.000000 29.337124 50.000000
 
 			Directional Light = "Default Light"
 			{
@@ -349,8 +349,8 @@ Root
 		{
 			Model Instance = "Default Instance"
 			{
-				Min = -0.239554 -0.124533 -0.000917
-				Max = 0.242087 0.160932 1.235296
+				Min = -12.923103 -12.923103 -3.388047
+				Max = 12.923103 12.923103 6.603057
 				Model = "Default Model"
 			}
 		}
@@ -358,7 +358,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/peasant.r5a"
 		"Models/tree.r5a"
 		"Config/Materials.txt"
 		"Models/box.r5a"
@@ -368,5 +367,6 @@ Root
 		"../../DotC/Resources/Models/NPCs/peasant.r5a"
 		"C:\Users\michaell\Documents\3dsmax\export\test.r5a"
 		"../../DotC/Resources/Models/Held/axe.r5a"
+		"Models/shadow test.r5a"
 	}
 }

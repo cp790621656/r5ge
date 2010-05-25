@@ -213,7 +213,7 @@ public:
 			mGraphics->BeginFrame();
 
 			mGraphics->SetActiveRenderTarget(0);
-			mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
+			mGraphics->SetScreenProjection( false );
 			mGraphics->SetLighting(true);
 			mGraphics->SetActiveLight( 0, &light0 );
 			mGraphics->SetActiveLight( 1, &light1 );
