@@ -6,12 +6,25 @@
 //------------------------------------------------------------------------------------------------------------
 // Required libraries: Basic, Math, Serialization, Core, OpenGL, SysWindow, Font, Image, UI, Render
 //============================================================================================================
+// TODO: Object's OnMouseMove and similar functionality should be removed, replaced with scripts.
+// TODO: Object::GetTransformedBounds(rot, onlyVisible), should recurse through children
+// TODO: Remove the need for a second Cull() call on the scene
+// TODO: SetShadowMatrix() should be a built-in function -- likely at Core level
+//============================================================================================================
 
 #include "../../Engine/OpenGL/Include/_All.h"
 #include "../../Engine/Core/Include/_All.h"
 #include "../../Engine/UI/Include/_All.h"
 
 using namespace R5;
+
+//============================================================================================================
+// A matrix is needed in order to transform vertices into light's texture space
+//============================================================================================================
+
+Matrix44 g_shadowMat;
+
+void SetShadowMatrix (const String& name, Uniform& data) { data = g_shadowMat; }
 
 //============================================================================================================
 
@@ -24,6 +37,7 @@ class TestApp : Thread::Lockable
 	Scene			mCamScene;
 	Scene			mLightScene;
 	Camera*			mCam;
+	Object*			mLight;
 
 public:
 
@@ -31,16 +45,20 @@ public:
 	~TestApp();
 	void Run();
 	float OnDraw();
+	bool MouseMove (const Vector2i& pos, const Vector2i& delta);
 };
 
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mLight(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mCamScene);
+
+	IShader* shader = mGraphics->GetShader("Forward/Shadowed_Material");
+	if (shader != 0) shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
 }
 
 //============================================================================================================
@@ -60,24 +78,21 @@ void TestApp::Run()
     if (*mCore << "Config/Dev13.txt")
 	{
 		mCam = mCamScene.FindObject<Camera>("Default Camera");
+		mLight = mCamScene.FindObject<Object>("First Light");
 
-		if (mCam != 0)
+		if (mCam != 0 && mLight != 0)
 		{
-			//// Create the second render target
-			//// NOTE: If rendering to a deferred target, 'depth' is not required
+			// Create the light's render target
 			IRenderTarget* rt = mGraphics->CreateRenderTarget();
-
-			// Secondary render target will always be 300x200
-			rt->AttachColorTexture(0, mGraphics->GetTexture("Test"));
-			rt->AttachDepthTexture(mGraphics->CreateRenderTexture());
-			rt->SetSize( Vector2i(512, 512) );
+			rt->AttachDepthTexture(mGraphics->GetTexture("Light Depth"));
+			rt->SetSize( Vector2i(1024, 1024) );
 
 			// Light scene will now be rendered into this render target
 			mLightScene.SetRoot( mCamScene.GetRoot() );
 			mLightScene.SetRenderTarget(rt);
 
 			// Set the listener callbacks
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
+			mCore->SetListener( bind(&TestApp::MouseMove, this) );
 			mCore->SetListener( bind(&Object::Scroll, mCam) );
 
 			// Draw callback
@@ -93,28 +108,19 @@ void TestApp::Run()
 
 //============================================================================================================
 
-Matrix44 g_shadowMat;
-
-void SetShadowMatrix (const String& name, Uniform& data) { data = g_shadowMat; }
-
 float TestApp::OnDraw()
 {
 	// Cull the scene from the camera's perspective
 	mCamScene.Cull(mCam);
 
-	// Inverse modelview matrix for the camera
-	//Matrix43 imv (mCam->GetAbsolutePosition(), mCam->GetAbsoluteRotation(), mCam->GetAbsoluteScale());
-	//imv.Invert();
+	// Save the inverse modelview matrix -- it's needed for the shadow matrix
+	Matrix43 inverseCameraMV (mGraphics->GetInverseModelViewMatrix());
 
-	// Get the scene's calculated bounds and the light's inverse rotation
-	// TODO: I need something like GetVisibleBounds() at scene level
+	// Get the scene's calculated bounds
 	Bounds bounds = mCamScene.GetRoot()->GetCompleteBounds();
-	static Object* light = mCamScene.GetRoot()->FindObject<Object>("First Light");
-	light->SetAbsolutePosition(Vector3f());
-	light->SetAbsoluteRotation(mCam->GetAbsoluteRotation());
 
 	// Light's current rotation
-	Quaternion rot (light->GetAbsoluteRotation());
+	Quaternion rot (mLight->GetAbsoluteRotation());
 
 	Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
 	Vector3f center (bounds.GetCenter());
@@ -137,32 +143,48 @@ float TestApp::OnDraw()
 	// Cull the light's scene
 	mLightScene.Cull(center, rot, proj);
 
-	// Bias matrix transforming -1 to 1 range into 0 to 1
-	//static Matrix43 bias (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
+	// Create a matrix that will transform the coordinates from camera's
+	// modelview space to light's texture space
+	{
+		// Bias matrix transforming -1 to 1 range into 0 to 1
+		static Matrix43 bias (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
 
-	//// Inverse camera view * light's modelview * bias
-	//g_shadowMat = imv;
-	//g_shadowMat *= mGraphics->GetModelViewProjMatrix();
-	//g_shadowMat *= bias;
+		// Tweak the projection matrix in order to remove z-fighting
+		proj.Translate(Vector3f(0.0f, 0.0f, -0.1f / size.y));
 
-	//// Activate 
-	//static IShader* shader = mGraphics->GetShader("Forward/shadowed_material");
-	//if (shader != 0) shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
+		// Inverse camera view * light's modelview * bias
+		g_shadowMat  = inverseCameraMV;
+		g_shadowMat *= mGraphics->GetModelViewMatrix();
+		g_shadowMat *= proj;
+		g_shadowMat *= bias;
+	}
 
 	// Draw the scene from the light's point of view
-	//mLightScene._Draw("Depth");
-	mLightScene.DrawAllForward();
-
-	// TODO: Fix the need for this!
-	//mCamScene.Cull(mCam);
-	//mCamScene.DrawAllForward();
-	mGraphics->SetActiveRenderTarget(0);
 	mGraphics->Clear();
+	mLightScene._Draw("Depth");
 
-	// NOTES: For some reason the view matrix from the camera's scene gets inherited into the light's scene.
-	// This shouldn't be happening, since I am manually forcing the view matrix using mLightScene.Cull().
-	// This means that something is overwriting my value, and it's up to me to figure out what it is.
+	// Draw the shadowed scene
+	mCamScene.Cull(mCam);
+	mGraphics->Clear();
+	mCamScene._Draw("Shadowed");
 	return 0.0f;
+}
+
+//============================================================================================================
+
+bool TestApp::MouseMove (const Vector2i& pos, const Vector2i& delta)
+{
+	if (mCore->IsKeyDown(Key::L))
+	{
+		Quaternion rot (mLight->GetRelativeRotation());
+		rot *= Quaternion(0.25f * DEG2RAD(delta.y), 0.0f, 0.25f * DEG2RAD(delta.x));
+		mLight->SetRelativeRotation(rot);
+	}
+	else
+	{
+		mCam->MouseMove(pos, delta);
+	}
+	return true;
 }
 
 //============================================================================================================

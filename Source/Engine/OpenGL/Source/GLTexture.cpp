@@ -414,14 +414,27 @@ void GLTexture::_Create()
 	// Bind the texture
 	_BindTexture(mGlType, mGlID);
 
-	// Depth and 3D textures should not be filtered
-	if ((mFormat & ITexture::Format::Depth) != 0 || mGlType == GL_TEXTURE_3D)
-	{
-		mFilter = Filter::Nearest;
-	}
+	bool isDepth = ((mFormat & ITexture::Format::Depth) != 0);
+	bool is3D = (mGlType == GL_TEXTURE_3D);
+
+	// Depth and 3D textures should not be mip-mapped
+	if ( mFilter > Filter::Linear && (is3D || isDepth) )
+		 mFilter = Filter::Linear;
 
 	// ATI drivers seem to like it when the texture filtering is set prior to texture data
 	mActiveFilter = mFilter;
+
+	if (isDepth)
+	{
+		// Compare depth
+		glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+		glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
+	}
+	else
+	{
+		// No comparison
+		glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+	}
 
 	glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
 	glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());

@@ -44,9 +44,9 @@ void main()
 			// PCF
 			{
 				// 30 degree rotated 2x2 kernel
-		        float offsetT = 1.0 / 512.0;
-		        float offsetX = 0.866 * offsetT;
-		        float offsetY = 0.5 * offsetT;
+				float offsetT = 1.0 / 1024.0;
+				float offsetX = 0.866 * offsetT;
+				float offsetY = 0.5 * offsetT;
 
 				shadowFactor += shadow2D(R5_texture0, coordPos + vec3(-offsetX,  offsetY, 0.0)).r;
 				shadowFactor += shadow2D(R5_texture0, coordPos + vec3(-offsetX, -offsetY, 0.0)).r;
@@ -57,7 +57,7 @@ void main()
 
 			// Shadow simply drops the diffuse light's intensity
 			diffuseFactor  = min(diffuseFactor, shadowFactor);
-			specularFactor = min(specularFactor, shadowFactor);
+			specularFactor = min(specularFactor, diffuseFactor);
 		}
 		else
 		{

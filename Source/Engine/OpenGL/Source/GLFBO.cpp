@@ -367,7 +367,7 @@ void GLFBO::Activate() const
 						clearMask |= GL_COLOR_BUFFER_BIT;
 
 						// Set the size of the texture to match the render target's size
-						tex->SetFiltering(ITexture::Filter::Nearest);
+						tex->SetFiltering(ITexture::Filter::Linear);
 						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
 						tex->Set(0, mSize.x, mSize.y, 1, format, format);
 					}
@@ -415,7 +415,7 @@ void GLFBO::Activate() const
 				if (mDepthTex->GetSize() != mSize || mDepthTex->GetFormat() != depthFormat)
 				{
 					clearMask |= GL_DEPTH_BUFFER_BIT;
-					mDepthTex->SetFiltering(ITexture::Filter::Nearest);
+					mDepthTex->SetFiltering(ITexture::Filter::Linear);
 					mDepthTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
 					mDepthTex->Set(0, mSize.x, mSize.y, 1, depthFormat, depthFormat);
 				}
@@ -440,8 +440,8 @@ void GLFBO::Activate() const
 				if (mStencilTex->GetSize() != mSize || mStencilTex->GetFormat() != stencilFormat)
 				{
 					clearMask |= GL_STENCIL_BUFFER_BIT;
+					mStencilTex->SetFiltering(ITexture::Filter::Linear);
 					mStencilTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
-					mStencilTex->SetFiltering(ITexture::Filter::Nearest);
 					mStencilTex->Set(0, mSize.x, mSize.y, 1, stencilFormat, stencilFormat);
 				}
 

@@ -420,7 +420,7 @@ void GLController::SetDepthOffset (bool val)
 		if (mDepthOffset = val)
 		{
 			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(0, -1);
+			glPolygonOffset(1, 0);
 		}
 		else glDisable(GL_POLYGON_OFFSET_FILL);
 	}

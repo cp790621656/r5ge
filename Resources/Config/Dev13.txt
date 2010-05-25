@@ -36,12 +36,12 @@ Root
 				Layer = 0
 			}
 			
-			Picture = "Test"
-			{
-				Right = 0 256
-				Bottom = 0 256
-				Texture = "Test"
-			}
+			//Picture = "Light Diffuse"
+			//{
+			//	Right = 0 256
+			//	Bottom = 0 256
+			//	Texture = "Light Diffuse"
+			//}
 		}
 	}
 
