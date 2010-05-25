@@ -97,9 +97,6 @@ void TestApp::OnDraw()
 	// Clear the screen
 	mGraphics->Clear();
 
-	// Activate the perspective projection
-	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
-
 	// Draw a simple 20x20 grid centered at (0, 0, 0)
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 }

@@ -88,7 +88,6 @@ void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
 	mGraphics->Clear();
-	mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 

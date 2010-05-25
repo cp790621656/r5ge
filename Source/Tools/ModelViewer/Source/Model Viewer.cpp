@@ -144,7 +144,7 @@ void ModelViewer::OnDraw()
 		mScene.DrawAllDeferred(mParams.mSsao, 0);
 
 		// Draw the grid and all forward-rendered objects last
-		mGraphics->SetActiveProjection( IGraphics::Projection::Perspective );
+		mGraphics->SetScreenProjection(false);
 		mGraphics->SetActiveTechnique(ft[0]);
 		mGraphics->Draw( IGraphics::Drawable::Grid );
 
