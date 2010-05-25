@@ -83,6 +83,60 @@ Root
 
 		Layout
 		{
+			Frame = "Debug Frame"
+			{
+				Left = 0.000000 0.000000
+				Right = 1.000000 0.000000
+				Top = 0.000000 0.000000
+				Bottom = 1.000000 0.000000
+				Alpha = 1.000000
+				Event Handling = "None"
+				Layer = 0
+
+				Label = "FPS"
+				{
+					Left = 0.000000 3.000000
+					Right = 1.000000 -3.000000
+					Top = 0.000000 3.000000
+					Bottom = 0.000000 18.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "492"
+					Shadow = true
+					Alignment = "Right"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				Highlight = "Status Highlight"
+				{
+					Left = 0.000000 0.000000
+					Right = 1.000000 0.000000
+					Top = 1.000000 -20.000000
+					Bottom = 1.000000 0.000000
+					Alpha = 0.000000
+					Top Color = 0.000000 0.000000 0.000000 0.000000
+					Bottom Color = 0.000000 0.000000 0.000000 1.000000
+					Event Handling = "Normal"
+					Layer = 0
+
+					Label = "Status Label"
+					{
+						Left = 0.000000 0.000000
+						Right = 1.000000 0.000000
+						Top = 0.000000 0.000000
+						Bottom = 1.000000 0.000000
+						Alpha = 1.000000
+						Color = 1.000000 1.000000 1.000000
+						Text = "R5 Model Viewer v.1.5.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Shadow = true
+						Alignment = "Center"
+						Event Handling = "None"
+						Layer = 1
+					}
+				}
+			}
+
 			Frame = "Options Frame"
 			{
 				Left = 0.000000 0.000000
@@ -243,60 +297,6 @@ Root
 					}
 				}
 			}
-
-			Frame = "Debug Frame"
-			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
-				Event Handling = "None"
-				Layer = 0
-
-				Label = "FPS"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 18.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "408"
-					Shadow = true
-					Alignment = "Right"
-					Event Handling = "None"
-					Layer = 1
-				}
-
-				Highlight = "Status Highlight"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
-					Top Color = 0.000000 0.000000 0.000000 0.000000
-					Bottom Color = 0.000000 0.000000 0.000000 1.000000
-					Event Handling = "Normal"
-					Layer = 0
-
-					Label = "Status Label"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "This model has no associated skeleton and thus cannot have any animations"
-						Shadow = true
-						Alignment = "Center"
-						Event Handling = "None"
-						Layer = 1
-					}
-				}
-			}
 		}
 	}
 
@@ -306,7 +306,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "Models/shadow test.r5a"
+			Source = "Models/dummy.r5a"
 		}
 	}
 
@@ -314,10 +314,10 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 1.607505
-			Rotation = 0.235734 -0.000190 0.000782 -0.971817
+			Position = 2.302428 7.103235 4.796464
+			Rotation = 0.074179 -0.150332 0.884080 -0.436234
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 29.337124 50.000000
+			Dolly = 0.000000 35.605442 50.000000
 
 			Directional Light = "Default Light"
 			{
@@ -349,8 +349,7 @@ Root
 		{
 			Model Instance = "Default Instance"
 			{
-				Min = -12.923103 -12.923103 -3.388047
-				Max = 12.923103 12.923103 6.603057
+				Show Outline = true
 				Model = "Default Model"
 			}
 		}
@@ -358,8 +357,6 @@ Root
 
 	File History = String[]
 	{
-		"Models/tree.r5a"
-		"Config/Materials.txt"
 		"Models/box.r5a"
 		"Models/torch.r5a"
 		"Models/fern.r5a"
@@ -368,5 +365,7 @@ Root
 		"C:\Users\michaell\Documents\3dsmax\export\test.r5a"
 		"../../DotC/Resources/Models/Held/axe.r5a"
 		"Models/shadow test.r5a"
+		"Models/dummy.r5a"
+		"Models/peasant.r5a"
 	}
 }

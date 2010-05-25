@@ -70,7 +70,7 @@ public:
 	void Cull (const Camera* cam);
 	void Cull (const CameraController& cam);
 	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
-	void Cull (const Matrix43& view, const Matrix44& proj);
+	void Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj);
 
 	// Casts a ray into the screen at the specified mouse position
 	RayHits& Raycast (const Vector2i& screenPos);

@@ -103,46 +103,51 @@ float TestApp::OnDraw()
 	mCamScene.Cull(mCam);
 
 	// Inverse modelview matrix for the camera
-	Matrix43 imv (mGraphics->GetInverseModelViewMatrix());
+	//Matrix43 imv (mCam->GetAbsolutePosition(), mCam->GetAbsoluteRotation(), mCam->GetAbsoluteScale());
+	//imv.Invert();
 
 	// Get the scene's calculated bounds and the light's inverse rotation
+	// TODO: I need something like GetVisibleBounds() at scene level
 	Bounds bounds = mCamScene.GetRoot()->GetCompleteBounds();
 	static Object* light = mCamScene.GetRoot()->FindObject<Object>("First Light");
+	light->SetAbsolutePosition(Vector3f());
+	light->SetAbsoluteRotation(mCam->GetAbsoluteRotation());
+
+	// Light's current rotation
 	Quaternion rot (light->GetAbsoluteRotation());
 
-	Quaternion inv (rot);
-	inv.Invert();
+	Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
+	Vector3f center (bounds.GetCenter());
+
+	// Reset the bounds to be based at the center of the original bounds
+	bounds.Reset();
+	bounds.Include(center + extents);
+	bounds.Include(center - extents);
 
 	// Transform the scene's bounds into light space
-	bounds.Transform(Vector3f(), inv, 1.0f);
+	bounds.Transform(Vector3f(), -rot, 1.0f);
 
-	const Vector3f& max (bounds.GetMax());
-	const Vector3f& min (bounds.GetMin());
-	const Vector3f& center (bounds.GetCenter());
-	Vector3f extents (max - center);
+	// Transformed size of the scene
+	Vector3f size (bounds.GetMax() - bounds.GetMin());
 
-	// View matrix should be positioned at the edge of the scene looking inward
-	Matrix43 view;
-	view.SetToView(center - Vector3f(0.0f, extents.y, 0.0f), rot.GetForward(), rot.GetUp());
-
-	// Projection matrix should be an ortho box
+	// Projection matrix should be an ortho box large enough to hold the entire transformed scene
 	Matrix44 proj;
-	proj.SetToBox(max.x - min.x, max.z - min.z, max.y - min.y);
+	proj.SetToBox(size.x, size.z, size.y);
 
 	// Cull the light's scene
-	mLightScene.Cull(view, proj);
+	mLightScene.Cull(center, rot, proj);
 
 	// Bias matrix transforming -1 to 1 range into 0 to 1
-	static Matrix43 bias (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
+	//static Matrix43 bias (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
 
-	// Inverse camera view * light's modelview * bias
-	g_shadowMat = imv;
-	g_shadowMat *= mGraphics->GetModelViewProjMatrix();
-	g_shadowMat *= bias;
+	//// Inverse camera view * light's modelview * bias
+	//g_shadowMat = imv;
+	//g_shadowMat *= mGraphics->GetModelViewProjMatrix();
+	//g_shadowMat *= bias;
 
-	// Activate 
-	static IShader* shader = mGraphics->GetShader("Forward/shadowed_material");
-	if (shader != 0) shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
+	//// Activate 
+	//static IShader* shader = mGraphics->GetShader("Forward/shadowed_material");
+	//if (shader != 0) shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
 
 	// Draw the scene from the light's point of view
 	//mLightScene._Draw("Depth");

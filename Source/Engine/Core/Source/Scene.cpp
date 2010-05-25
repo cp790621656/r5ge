@@ -63,15 +63,6 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 {
 	if (mRoot != 0)
 	{
-		IGraphics* graphics (mRoot->mCore->GetGraphics());
-		Vector3f dir (rot.GetForward());
-
-		// Set up the view and projection matrices
-		graphics->SetScreenProjection(false);
-		graphics->SetActiveRenderTarget(mRenderTarget);
-		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
-		graphics->SetCameraRange(range);
-
 		bool camChanged = (mLastCamPos != pos || mLastCamRot != rot || mLastCamRange != range);
 
 		if (camChanged)
@@ -80,6 +71,15 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 			mLastCamRot		= rot;
 			mLastCamRange	= range;
 		}
+
+		IGraphics* graphics (mRoot->mCore->GetGraphics());
+		Vector3f dir (rot.GetForward());
+
+		// Set up the view and projection matrices
+		graphics->SetScreenProjection(false);
+		graphics->SetActiveRenderTarget(mRenderTarget);
+		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
+		graphics->SetCameraRange(range);
 
 		// Update the frustum
 		mFrustum.Update( graphics->GetModelViewProjMatrix() );
@@ -93,31 +93,34 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 }
 
 //============================================================================================================
-// Cull the scene using the specified pre-calculated matrices
+// Culls the scene's objects given the specified camera position, rotation, and projection
 //============================================================================================================
 
-void Scene::Cull (const Matrix43& view, const Matrix44& proj)
+void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj)
 {
 	if (mRoot != 0)
 	{
+		mLastCamPos = pos;
+		mLastCamRot = rot;
+		mLastCamRange.Set(0.0f, 0.0f, 0.0f);
+
 		IGraphics* graphics (mRoot->mCore->GetGraphics());
-		Vector3f dir (Vector3f(0.0f, 1.0f, 0.0f) % view);
+		Vector3f dir (rot.GetForward());
 
 		// Set up the view and projection matrices
 		graphics->SetScreenProjection(false);
 		graphics->SetActiveRenderTarget(mRenderTarget);
-		graphics->ResetModelMatrix();
-		graphics->SetViewMatrix(view);
+		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
 		graphics->SetProjectionMatrix(proj);
 
 		// Update the frustum
-		mFrustum.Update( graphics->GetModelViewProjMatrix() );
+		mFrustum.Update(graphics->GetModelViewProjMatrix());
 
 		// Raycast hits are no longer valid
 		mHits.Clear();
 
 		// Cull the scene
-		_Cull(graphics, mFrustum, Vector3f() * view, dir, true);
+		_Cull(graphics, mFrustum, mLastCamPos, dir, true);
 	}
 }
 
