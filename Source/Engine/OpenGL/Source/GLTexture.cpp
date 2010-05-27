@@ -270,8 +270,10 @@ GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mTimestamp			(Time::GetMilliseconds()),
 	mWrapMode			(WrapMode::Default),
 	mFilter				(Filter::Default),
+	mCompareMode		(CompareMode::Default),
 	mActiveWrapMode		(WrapMode::Default),
 	mActiveFilter		(Filter::Default),
+	mActiveCompareMode	(CompareMode::Default),
 	mMipmapsGenerated	(false),
 	mRegenMipmap		(false),
 	mActiveAF			(0),
@@ -366,10 +368,12 @@ void GLTexture::_InternalRelease(bool delayExecution)
 	mSize.y				= 0;
 	mDepth				= 0;
 	mSizeInMemory		= 0;
-	mWrapMode			= WrapMode::Default;
-	mFilter				= Filter::Default;
+	//mWrapMode			= WrapMode::Default;		// Intentionally commented out
+	//mFilter			= Filter::Default;
+	//mCompareMode		= CompareMode::Default;
 	mActiveWrapMode		= WrapMode::Default;
 	mActiveFilter		= Filter::Default;
+	mActiveCompareMode	= CompareMode::Default;
 	mMipmapsGenerated	= false;
 	mActiveAF			= 0;
 	mSerializable		= true;
@@ -423,18 +427,6 @@ void GLTexture::_Create()
 
 	// ATI drivers seem to like it when the texture filtering is set prior to texture data
 	mActiveFilter = mFilter;
-
-	//if (isDepth)
-	//{
-	//	// Compare depth
-	//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
-	//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
-	//}
-	//else
-	//{
-	//	// No comparison
-	//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
-	//}
 
 	glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
 	glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());
@@ -744,6 +736,30 @@ uint GLTexture::_GetOrCreate()
 			CHECK_GL_ERROR;
 		}
 
+		// Texture color compare mode
+		if (mActiveCompareMode != mCompareMode)
+		{
+			mActiveCompareMode = mCompareMode;
+
+			if (!active)
+			{
+				active = true;
+				_BindTexture( mGlType, mGlID );
+			}
+
+			if (mCompareMode == CompareMode::Shadow)
+			{
+				// Compare depth
+				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
+			}
+			else
+			{
+				// No comparison
+				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+			}
+		}
+
 		if (mRegenMipmap && mGlType == GL_TEXTURE_2D)
 		{
 			mRegenMipmap = false;
@@ -886,6 +902,19 @@ void GLTexture::SetFiltering (uint filtering)
 	if (mFilter != filtering)
 	{
 		mFilter = filtering;
+		if (mTex[0].GetSource().IsValid()) mSerializable = true;
+	}
+}
+
+//============================================================================================================
+// Changes the texture's color compare mode
+//============================================================================================================
+
+void GLTexture::SetCompareMode (uint compareMode)
+{
+	if (mCompareMode != compareMode)
+	{
+		mCompareMode = compareMode;
 		if (mTex[0].GetSource().IsValid()) mSerializable = true;
 	}
 }
@@ -1116,6 +1145,11 @@ bool GLTexture::SerializeTo (TreeNode& root) const
 		node.AddChild("Format", ITexture::FormatToString(mRequestedFormat));
 		node.AddChild("Filtering", ITexture::FilterToString(mFilter));
 		node.AddChild("Wrap Mode", ITexture::WrapModeToString(mWrapMode));
+
+		if (mCompareMode != CompareMode::Default)
+		{
+			node.AddChild("Compare Mode", ITexture::CompareModeToString(mCompareMode));
+		}
 	}
 	mLock.Unlock();
 	return true;
@@ -1155,9 +1189,10 @@ bool GLTexture::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			else if (value.IsString())
 			{
 				const String& s = value.AsString();
-				if		(tag == "Format")		format		= ITexture::StringToFormat(s);
-				else if (tag == "Filtering")	mFilter		= ITexture::StringToFilter(s);
-				else if (tag == "Wrap Mode")	mWrapMode	= ITexture::StringToWrapMode(s);
+				if		(tag == "Format")		format			= ITexture::StringToFormat(s);
+				else if (tag == "Filtering")	mFilter			= ITexture::StringToFilter(s);
+				else if (tag == "Wrap Mode")	mWrapMode		= ITexture::StringToWrapMode(s);
+				else if (tag == "Compare Mode")	mCompareMode	= ITexture::StringToCompareMode(s);
 			}
 		}
 

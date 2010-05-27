@@ -25,10 +25,14 @@ protected:
 	uint		mDepth;				// Depth of the texture
 	ulong		mSizeInMemory;		// Size in video memory that the texture is currently taking up
 	ulong		mTimestamp;			// Timestamp of the last time GetTextureID() was called
+
 	uint		mWrapMode;			// Texture wrapping setting
+	uint		mCompareMode;		// Texture compare mode
 	uint		mFilter;			// Texture filtering setting
 	uint		mActiveWrapMode;	// Active wrapping setting
 	uint		mActiveFilter;		// Active filtering
+	uint		mActiveCompareMode;	// Active color compare mode
+
 	int			mInFormat;			// Cached internal GL format
 	uint		mDataType;			// Cached internal data type
 	bool		mMipmapsGenerated;	// Whether mip-maps were generated
@@ -82,6 +86,7 @@ public:
 	virtual uint	GetFormat()			const	{ return mFormat;		}
 	virtual uint	GetFiltering()		const	{ return mFilter;		}
 	virtual uint	GetWrapMode()		const	{ return mWrapMode;		}
+	virtual uint	GetCompareMode()	const	{ return mCompareMode;	}
 	virtual ulong	GetSizeInMemory()	const	{ return mSizeInMemory;	}
 	virtual uint	GetMaxSize()		const;
 	virtual uint	GetTextureID()		const	{ return (const_cast<GLTexture*>(this))->_GetOrCreate(); }
@@ -96,8 +101,9 @@ public:
 	virtual bool GetBuffer (Memory& mem);
 
 	// Wrapping mode and filtering
-	virtual void SetWrapMode  (uint wrapMode);
+	virtual void SetWrapMode (uint wrapMode);
 	virtual void SetFiltering (uint filtering);
+	virtual void SetCompareMode (uint compareMode);
 	virtual void InvalidateMipmap() { mRegenMipmap = true; }
 
 	// Load a single texture from the specified file

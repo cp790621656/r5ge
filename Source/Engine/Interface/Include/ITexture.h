@@ -79,6 +79,15 @@ struct ITexture
 		};
 	};
 
+	struct CompareMode
+	{
+		enum
+		{
+			Default = 0,	// Default comparison (off)
+			Shadow,			// Texture comparison meant for shadows (needed for shadow2D series of shader functions)
+		};
+	};
+
 protected:
 
 	uint mUID;
@@ -105,10 +114,11 @@ public: //======================================================================
 	virtual uint	GetFormat()			const=0;	// Texture's format
 	virtual uint	GetFiltering()		const=0;	// No filtering, linear filtering, mip-map, anisotropic
 	virtual uint	GetWrapMode()		const=0;	// Whether the texture is repeated, clamped, or mirrored
+	virtual uint	GetCompareMode()	const=0;	// Returns the texture compare mode used by this texture
 	virtual ulong	GetSizeInMemory()	const=0;	// Buffer size in bytes
 	virtual uint	GetMaxSize()		const=0;	// Returns the maximum possible texture width/height
 	virtual uint	GetTextureID()		const=0;	// Returns the bound texture ID, updates the timestamp
-	virtual uint	GetType()			const=0;	// Current ITexture::Type
+	virtual uint	GetType()			const=0;	// Returns the current ITexture::Type
 	virtual ulong	GetLastUsedTime()	const=0;	// Returns the last timestamp when GetTextureID() was called
 
 	// Returns the valid path to the texture's source
@@ -119,8 +129,9 @@ public: //======================================================================
 	virtual bool GetBuffer (Memory& mem)=0;
 
 	// Wrapping mode and filtering
-	virtual void SetWrapMode  (uint wrapMode )=0;
+	virtual void SetWrapMode (uint wrapMode )=0;
 	virtual void SetFiltering (uint filtering)=0;
+	virtual void SetCompareMode (uint compareMode)=0;
 	virtual void InvalidateMipmap()=0;
 
 	// Load a single texture from the specified file
@@ -218,6 +229,11 @@ public: //======================================================================
 		else								return WrapMode::Default;
 	}
 
+	static uint StringToCompareMode (const String& value)
+	{
+		return (value == "Shadow") ? CompareMode::Shadow : CompareMode::Default;
+	}
+
 	static const char* FilterToString (uint val)
 	{
 		switch (val)
@@ -241,6 +257,11 @@ public: //======================================================================
 			case WrapMode::ClampToOne:		return "Clamp to One";
 		}
 		return "Default";
+	}
+
+	static const char* CompareModeToString (uint val)
+	{
+		return (val == CompareMode::Shadow) ? "Shadow" : "Default";
 	}
 
 	static uint GetBitsPerPixel (uint format)

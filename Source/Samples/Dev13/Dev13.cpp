@@ -128,8 +128,6 @@ void TestApp::Run()
 
 float TestApp::OnDraw()
 {
-	// TODO: Texture compare mode must be set properly. Question is where to put it? It doesn't belong
-	//		 with the depth textures, as evidenced by broken Dev4 and others.
 	Vector2i targetSize = mWin->GetSize();
 
 	static IRenderTarget* camTarget = 0;
@@ -146,6 +144,9 @@ float TestApp::OnDraw()
 
 	if (lightTarget == 0)
 	{
+		// Color comparison meant for shadows
+		lightDepth->SetCompareMode(ITexture::CompareMode::Shadow);
+
 		lightTarget = mGraphics->CreateRenderTarget();
 		lightTarget->AttachDepthTexture(lightDepth);
 		lightTarget->SetSize( Vector2i(1024, 1024) );
@@ -219,8 +220,10 @@ float TestApp::OnDraw()
 		lightScene._Draw("Depth");
 	}
 
+	bool soft = true;
+
 	static IRenderTarget* shadowTarget = 0;
-	static ITexture* hardShadow = mGraphics->CreateRenderTexture();
+	static ITexture* hardShadow = (soft) ? mGraphics->CreateRenderTexture() : mGraphics->GetTexture("Shadowmap");
 
 	// Create the hard shadow texture
 	{
@@ -239,23 +242,26 @@ float TestApp::OnDraw()
 		CreateShadow(mGraphics, mCamScene, lightDepth, camDepth, shadowMat);
 	}
 
-	static IRenderTarget* blurTarget = 0;
-
-	// Create the soft shadow texture
+	if (soft)
 	{
-		if (blurTarget == 0)
+		static IRenderTarget* blurTarget = 0;
+
+		// Create the soft shadow texture
 		{
-			blurTarget = mGraphics->CreateRenderTarget();
-			blurTarget->AttachColorTexture(0, mGraphics->GetTexture("Shadowmap"), hardShadow->GetFormat());
-			blurTarget->SetBackgroundColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
+			if (blurTarget == 0)
+			{
+				blurTarget = mGraphics->CreateRenderTarget();
+				blurTarget->AttachColorTexture(0, mGraphics->GetTexture("Shadowmap"), hardShadow->GetFormat());
+				blurTarget->SetBackgroundColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+
+			// Update the render target's properties
+			blurTarget->SetSize(targetSize);
+
+			// Blur the shadow
+			mCamScene.SetRenderTarget(blurTarget);
+			PostProcess::Blur(mGraphics, mCamScene);
 		}
-
-		// Update the render target's properties
-		blurTarget->SetSize(targetSize);
-
-		// Blur the shadow
-		mCamScene.SetRenderTarget(blurTarget);
-		PostProcess::Blur(mGraphics, mCamScene);
 	}
 
 	// Restore the scene's render target
