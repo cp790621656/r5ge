@@ -7,7 +7,7 @@
 // Deferred lighting final combination shader
 //============================================================================================================
 
-static const char* g_deferredCombine = {
+static const char* g_combineDeferred = {
 "uniform sampler2D   R5_texture0;\n"    // Material Diffuse (RGB)
 "uniform sampler2D   R5_texture1;\n"    // Material Specular (RGB) + Self-Illumination (A)
 "uniform sampler2D   R5_texture2;\n"    // Light Diffuse (RGB)

@@ -42,7 +42,7 @@ void DirectionalLight::_UpdateColors()
 
 void DirectionalLight::_Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap)
 {
-	static IShader* dirShader0	 = graphics->GetShader("[R5] Light/Directional");
+	static IShader* dirShader0	 = graphics->GetShader("[R5] Directional Light");
 	static IShader* dirShader1	 = graphics->GetShader("[R5] Light/DirectionalAO");
 
 	IShader* shader = (lightmap != 0) ? dirShader1 : dirShader0;

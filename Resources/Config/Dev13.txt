@@ -36,12 +36,13 @@ Root
 				Layer = 0
 			}
 			
-			//Picture = "Light Diffuse"
-			//{
-			//	Right = 0 256
-			//	Bottom = 0 256
-			//	Texture = "Light Diffuse"
-			//}
+			Picture = "Debug"
+			{
+				Right = 0 300
+				Bottom = 0 200
+				Texture = "Shadowmap"
+				Ignore Alpha = true
+			}
 		}
 	}
 

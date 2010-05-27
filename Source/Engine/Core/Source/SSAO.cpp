@@ -74,9 +74,9 @@ const ITexture* GetRandomizedNormalmap (IGraphics* graphics)
 const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 {
 	static ITechnique*		post	= graphics->GetTechnique("Post Process");
-	static IShader*			ssao	= graphics->GetShader("[R5] SSAO/Sample");
-	static IShader*			blurH	= graphics->GetShader("[R5] SSAO/Horizontal Blur");
-	static IShader*			blurV	= graphics->GetShader("[R5] SSAO/Vertical Blur");
+	static IShader*			ssao	= graphics->GetShader("[R5] Sample SSAO");
+	static IShader*			blurH	= graphics->GetShader("[R5] Blur - Horizontal SSAO");
+	static IShader*			blurV	= graphics->GetShader("[R5] Blur - Vertical SSAO");
 	static const ITexture*	random	= GetRandomizedNormalmap(graphics);
 
 	IRenderTargetPtr& ssaoTarget	= storage.mTempTargets[10];
@@ -185,9 +185,9 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 const ITexture* SSAO::High (IGraphics* graphics, Deferred::Storage& storage)
 {
 	static ITechnique*		post	= graphics->GetTechnique("Post Process");
-	static IShader*			ssao	= graphics->GetShader("[R5] SSAO/Sample");
-	static IShader*			blurH	= graphics->GetShader("[R5] SSAO/Horizontal Blur");
-	static IShader*			blurV	= graphics->GetShader("[R5] SSAO/Vertical Blur");
+	static IShader*			ssao	= graphics->GetShader("[R5] Sample SSAO");
+	static IShader*			blurH	= graphics->GetShader("[R5] Blur - Horizontal SSAO");
+	static IShader*			blurV	= graphics->GetShader("[R5] Blur - Vertical SSAO");
 	static const ITexture*	random	= GetRandomizedNormalmap(graphics);
 
 	IRenderTargetPtr&	ssaoTarget	= storage.mTempTargets[10];

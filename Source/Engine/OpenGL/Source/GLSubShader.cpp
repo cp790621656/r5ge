@@ -15,7 +15,7 @@ using namespace R5;
 // Prints the specified shader log
 //============================================================================================================
 
-void R5::PrintDebugLog (const String& log, const String& code)
+void R5::CreateDebugLog (Array<String>& out, const String& log, const String& code)
 {
 	Array<String> lines;
 	String debug(log), left, right;
@@ -34,9 +34,7 @@ void R5::PrintDebugLog (const String& log, const String& code)
 	for (uint i = 0; i < lines.GetSize(); ++i)
 	{
 		const String& line (lines[i]);
-
-		// Standard log entry with the error message
-		System::Log("          - %s", line.GetBuffer());
+		out.Expand() = line;
 
 		// If we have source code to work with, let's find the lines the errors are referencing
 		if (code.IsValid())
@@ -67,7 +65,7 @@ void R5::PrintDebugLog (const String& log, const String& code)
 						// Get this line
 						String errorLine;
 						code.GetLine(errorLine, offset);
-						if (errorLine.IsValid()) System::Log("          - %s", errorLine.GetBuffer());
+						if (errorLine.IsValid()) out.Expand() = errorLine.GetBuffer();
 						break;
 					}
 					else
@@ -79,7 +77,6 @@ void R5::PrintDebugLog (const String& log, const String& code)
 			}
 		}
 	}
-	System::FlushLog();
 }
 
 //============================================================================================================
@@ -329,32 +326,34 @@ void GLSubShader::_Init()
 	// Shaders that begin with [R5] are built-in
 	if (mName.BeginsWith("[R5]"))
 	{
-		if		(mName == "[R5] Deferred/Combine")		mCode = g_deferredCombine;
+		if		(mName == "[R5] Combine Deferred")		mCode = g_combineDeferred;
 		else if (mName == "[R5] Horizontal Blur")		mCode = g_blurH;
 		else if (mName == "[R5] Vertical Blur")			mCode = g_blurV;
-		else if (mName == "[R5] Bloom/Blur")			mCode = g_bloomBlur;
-		else if (mName == "[R5] Bloom/Apply")			mCode = g_bloomApply;
+		else if (mName == "[R5] Combine Blur")			mCode = g_combineAverageBlur;
+		else if (mName == "[R5] Combine Mono Blur")		mCode = g_combineMonoBlur;
+		else if (mName == "[R5] Bloom Blur")			mCode = g_blurBloom;
+		else if (mName == "[R5] Combine Bloom")			mCode = g_combineBloom;
 		else if (mName == "[R5] Depth of Field")		mCode = g_dof;
-		else if (mName == "[R5] SSAO/Sample")			mCode = g_ssaoSample;
-		else if (mName == "[R5] SSAO/Vertical Blur")
+		else if (mName == "[R5] Sample SSAO")			mCode = g_ssaoSample;
+		else if (mName == "[R5] Blur - Vertical SSAO")
 		{
 			mCode  = g_ssaoBlur;
 			mCode << g_ssaoBlurV;
 		}
-		else if (mName == "[R5] SSAO/Horizontal Blur")
+		else if (mName == "[R5] Blur - Horizontal SSAO")
 		{
 			mCode  = g_ssaoBlur;
 			mCode << g_ssaoBlurH;
 		}
-		else if (mName.BeginsWith("[R5] Light"))
+		else if (mName.Contains("Light"))
 		{
 			// Light shaders are compiled from multiple sources in order to reduce code repetition
-			bool ao = mName.EndsWith("AO");
+			bool ao = mName.Contains("AO");
 			mCode = (ao ? g_lightPrefixAO : g_lightPrefix);
 			mCode << g_lightCommon;
 
 			// Light-specific code
-			if (mName.BeginsWith("[R5] Light/Directional"))
+			if (mName.Contains("Directional"))
 			{
 				mCode << g_lightDirectional;
 				mCode << g_lightBody;
@@ -509,13 +508,29 @@ bool GLSubShader::_Compile()
 			System::Log( "[SHADER]  '%s' has FAILED to compile!", mName.GetBuffer() );
 
 			// Print the debug log if there is something to print
-			R5::PrintDebugLog(log, mCode);
+			Array<String> lines;
+			R5::CreateDebugLog(lines, log, mCode);
+
+			if (lines.IsValid())
+			{
+				FOREACH(i, lines)
+				{
+					System::Log("          - %s", lines[i].GetBuffer());
+				}
+				System::FlushLog();
+			}
 
 #ifdef _DEBUG
 			// Trigger an assert
 			String errMsg ("Failed to compile '");
 			errMsg << mName;
 			errMsg << "'!";
+			
+			FOREACH(i, lines)
+			{
+				errMsg << "\n\n";
+				errMsg << lines[i];
+			}
 			ASSERT(false, errMsg.GetBuffer());
 #endif
 			// Delete the shader and release the code, making this sub-shader invalid

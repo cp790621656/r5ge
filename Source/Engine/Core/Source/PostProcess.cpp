@@ -10,10 +10,7 @@ typedef IRenderTarget*		IRenderTargetPtr;
 
 Quaternion g_focus;
 
-void SetFocusRange (const String& name, Uniform& uniform)
-{
-	uniform = g_focus;
-}
+void SetFocusRange (const String& name, Uniform& uniform) { uniform = g_focus; }
 
 //============================================================================================================
 // Bloom power callback function
@@ -21,10 +18,15 @@ void SetFocusRange (const String& name, Uniform& uniform)
 
 float g_threshold = 0.75f;
 
-void SetThreshold (const String& name, Uniform& uniform)
-{
-	uniform = g_threshold;
-}
+void SetThreshold (const String& name, Uniform& uniform) { uniform = g_threshold; }
+
+//============================================================================================================
+// Blur sharpness callback function
+//============================================================================================================
+
+float g_sharpness = 1.0f;
+
+void SetSharpness (const String& name, Uniform& uniform) { uniform = g_sharpness; }
 
 //============================================================================================================
 // Blurring effect -- common part
@@ -66,6 +68,9 @@ void BlurDownsample (IGraphics*			graphics,
 	static const ITechnique* technique  = graphics->GetTechnique("Post Process");
 	static IShader*			blurH		= graphics->GetShader("[R5] Horizontal Blur");
 	static IShader*			blurV		= graphics->GetShader("[R5] Vertical Blur");
+
+	storage.mTempTargets.ExpandTo(32, true);
+	storage.mTempTextures.ExpandTo(32, true);
 
 	IRenderTargetPtr&	target00	= storage.mTempTargets[3];
 	IRenderTargetPtr&	target01	= storage.mTempTargets[4];
@@ -165,6 +170,9 @@ void BlurDownsample (IGraphics*			graphics,
 	// Use the pre-process shader to combine all textures
 	graphics->SetActiveShader( postprocess );
 	graphics->Draw( IGraphics::Drawable::InvertedQuad );
+
+	// Update the final color texture
+	storage.mOutColor = (storage.mRenderTarget == 0) ? 0 : storage.mRenderTarget->GetColorTexture(0);
 }
 
 //============================================================================================================
@@ -181,6 +189,29 @@ void PostProcess::None (IGraphics* graphics, Deferred::Storage& storage)
 	graphics->SetActiveMaterial(0);
 	graphics->SetActiveTexture(0, storage.mOutColor);
 	graphics->Draw( IGraphics::Drawable::InvertedQuad );
+
+	// Update the final color texture
+	storage.mOutColor = (storage.mRenderTarget == 0) ? 0 : storage.mRenderTarget->GetColorTexture(0);
+}
+
+//============================================================================================================
+// Gaussian blur
+//============================================================================================================
+
+void PostProcess::Blur (IGraphics* graphics, Deferred::Storage& storage, float sharpness)
+{
+	static IShader* combineBlur = graphics->GetShader("[R5] Combine Blur");
+	static IShader* combineMonoBlur = 0;
+
+	g_sharpness = sharpness;
+
+	if (combineMonoBlur == 0)
+	{
+		combineMonoBlur = graphics->GetShader("[R5] Combine Mono Blur");
+		combineMonoBlur->RegisterUniform("sharpness", &SetSharpness);
+	}
+
+	BlurDownsample(graphics, storage, storage.mOutColor, 0, 0, (sharpness == 1.0f) ? combineBlur : combineMonoBlur);
 }
 
 //============================================================================================================
@@ -196,13 +227,12 @@ void PostProcess::Bloom (IGraphics* graphics, Deferred::Storage& storage, float 
 	{
 		g_threshold = threshold;
 
-		static IShader*	final = 0;
+		static IShader*	final = graphics->GetShader("[R5] Combine Bloom");
 		static IShader*	replacement	= 0;
 
-		if (final == 0)
+		if (replacement == 0)
 		{
-			final = graphics->GetShader("[R5] Bloom/Apply");
-			replacement = graphics->GetShader("[R5] Bloom/Blur");
+			replacement = graphics->GetShader("[R5] Bloom Blur");
 			replacement->RegisterUniform("threshold", &SetThreshold);
 		}
 
@@ -273,24 +303,17 @@ void PostProcess::Both (IGraphics*	graphics,
 		target->SetSize(storage.mOutColor->GetSize());
 
 		// Replace the render target
-		IRenderTarget* saved = storage.mRenderTarget;
+		IRenderTarget* final = storage.mRenderTarget;
 		storage.mRenderTarget = target;
 
 		// Apply depth of field first
 		DepthOfField(graphics, storage, focalDistance, focalMin, focalMax);
 
 		// Restore the render target
-		storage.mRenderTarget = saved;
-
-		// Replace the color texture
-		const ITexture* previous = storage.mOutColor;
-		storage.mOutColor = intrimColor;
+		storage.mRenderTarget = final;
 
 		// Bloom everything
 		Bloom(graphics, storage, threshold);
-
-		// Restore the final texture
-		storage.mOutColor = previous;
 	}
 	else
 	{

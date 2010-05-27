@@ -28,7 +28,7 @@ protected:
 	Vector2i			mSize;
 	ITexture*			mDepthTex;
 	ITexture*			mStencilTex;
-	TextureEntry*		mAttachment;
+	Array<TextureEntry> mAttachments;
 	mutable Array<uint>	mBuffers;
 	Color4f				mBackground;
 	bool				mUsesSkybox;
@@ -66,6 +66,10 @@ public:
 	virtual bool AttachColorTexture		(uint bufferIndex, ITexture* tex, uint format = ITexture::Format::RGB);
 	virtual bool AttachDepthTexture		(ITexture* tex);
 	virtual bool AttachStencilTexture	(ITexture* tex);
+
+	virtual const ITexture* GetColorTexture (uint bufferIndex) const { return (bufferIndex < mAttachments.GetSize()) ? mAttachments[bufferIndex].mTex : 0; }
+	virtual const ITexture* GetDepthTexture () const { return mDepthTex; }
+	virtual const ITexture* GetStencilTexture () const { return mStencilTex; }
 
 	virtual bool HasColor()		const;
 	virtual bool HasDepth()		const { return mDepthTex != 0; }

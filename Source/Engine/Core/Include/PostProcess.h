@@ -12,6 +12,9 @@ namespace PostProcess
 	// No post-processing
 	void None  (IGraphics* graphics, Deferred::Storage& storage);
 
+	// Gaussian blur
+	void Blur (IGraphics* graphics, Deferred::Storage& storage, float sharpness = 1.0f);
+
 	// Bloom post-processing effect
 	void Bloom (IGraphics* graphics, Deferred::Storage& storage, float threshold);
 

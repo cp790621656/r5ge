@@ -64,10 +64,10 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 	uint count (0);
 
 	// Update the final textures
-	storage.mOutColor	= final;
-	storage.mOutDepth	= depth;
-	storage.mOutNormal	= normal;
-	storage.mOutLightmap	= 0;
+	storage.mOutColor	 = final;
+	storage.mOutDepth	 = depth;
+	storage.mOutNormal	 = normal;
+	storage.mOutLightmap = 0;
 
 	// Deferred rendering target
 	{
@@ -161,7 +161,7 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 			finalTarget->UseSkybox(false);
 		}
 
-		static IShader* shader = graphics->GetShader("[R5] Deferred/Combine");
+		static IShader* shader = graphics->GetShader("[R5] Combine Deferred");
 
 		finalTarget->SetSize(size);
 		graphics->SetActiveRenderTarget(finalTarget);

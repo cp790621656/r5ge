@@ -7,7 +7,7 @@
 // Bloom post-processing effect
 //============================================================================================================
 
-static const char* g_bloomBlur = {
+static const char* g_blurBloom = {
 "uniform sampler2D	 R5_texture0;\n"
 "uniform vec2		 R5_pixelSize;\n"
 "uniform float		 threshold;\n"
@@ -28,7 +28,7 @@ static const char* g_bloomBlur = {
 
 //============================================================================================================
 
-static const char* g_bloomApply = {
+static const char* g_combineBloom = {
 "uniform sampler2D	 R5_texture0;\n"
 "uniform sampler2D	 R5_texture1;\n"
 "uniform sampler2D	 R5_texture2;\n"

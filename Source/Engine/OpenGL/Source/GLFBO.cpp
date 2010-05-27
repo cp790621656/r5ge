@@ -75,13 +75,12 @@ GLFBO::GLFBO(IGraphics* graphics) :
 	mFbo		(0),
 	mDepthTex	(0),
 	mStencilTex	(0),
-	mAttachment	(0),
 	mUsesSkybox	(true),
 	mIsDirty	(true)
 {
 	mBackground.Set(0, 0, 0, 1);
 	ASSERT( g_caps.mMaxFBOAttachments != 0, "Frame Buffer Objects are not supported?" );
-	mAttachment = new TextureEntry[ g_caps.mMaxFBOAttachments ];
+	mAttachments.ExpandTo(g_caps.mMaxFBOAttachments);
 }
 
 //============================================================================================================
@@ -90,11 +89,7 @@ GLFBO::GLFBO(IGraphics* graphics) :
 
 void GLFBO::_InternalRelease (bool delayExecution)
 {
-	if (mAttachment != 0)
-	{
-		delete [] mAttachment;
-		mAttachment = 0;
-	}
+	mAttachments.Clear();
 
 	if (mFbo != 0)
 	{
@@ -172,13 +167,13 @@ bool GLFBO::SetSize (const Vector2i& size)
 
 bool GLFBO::AttachColorTexture (uint bufferIndex, ITexture* tex, uint format)
 {
-	if ( bufferIndex < g_caps.mMaxFBOAttachments )
+	if ( bufferIndex < mAttachments.GetSize() )
 	{
-		if ( tex != mAttachment[bufferIndex].mTex )
+		if ( tex != mAttachments[bufferIndex].mTex )
 		{
 			mLock.Lock();
 			{
-				TextureEntry& entry (mAttachment[bufferIndex]);
+				TextureEntry& entry (mAttachments[bufferIndex]);
 				entry.mTex		= tex;
 				entry.mFormat	= format;
 				mIsDirty		= true;
@@ -194,7 +189,7 @@ bool GLFBO::AttachColorTexture (uint bufferIndex, ITexture* tex, uint format)
 						// Check to see if we have formats that don't match
 						for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
 						{
-							TextureEntry& current (mAttachment[i]);
+							TextureEntry& current (mAttachments[i]);
 
 							if (current.mFormat != format &&
 								current.mFormat != ITexture::Format::Invalid)
@@ -216,7 +211,7 @@ bool GLFBO::AttachColorTexture (uint bufferIndex, ITexture* tex, uint format)
 					{
 						for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
 						{
-							TextureEntry& current (mAttachment[i]);
+							TextureEntry& current (mAttachments[i]);
 							if (current.mFormat != ITexture::Format::Invalid)
 								current.mFormat  = ITexture::Format::RGBA;
 						}
@@ -279,9 +274,9 @@ bool GLFBO::AttachStencilTexture (ITexture* tex)
 
 bool GLFBO::HasColor() const
 {
-	for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
+	FOREACH(i, mAttachments)
 	{
-		const ITexture* tex ( mAttachment[i].mTex );
+		const ITexture* tex ( mAttachments[i].mTex );
 		if (tex != 0) return true;
 	}
 	return false;
@@ -309,9 +304,9 @@ void GLFBO::Activate() const
 	}
 
 #ifdef _DEBUG
-	for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
+	FOREACH(i, mAttachments)
 	{
-		ITexture* tex ( mAttachment[i].mTex );
+		ITexture* tex ( mAttachments[i].mTex );
 
 		if (tex != 0 && tex->GetFiltering() > ITexture::Filter::Linear)
 		{
@@ -339,13 +334,13 @@ void GLFBO::Activate() const
 			uint clearMask = 0;
 
 			// Run through all attachments and bind their textures
-			for (uint i = 0; i < g_caps.mMaxFBOAttachments; ++i)
+			FOREACH(i, mAttachments)
 			{
-				ITexture* tex ( mAttachment[i].mTex );
+				ITexture* tex ( mAttachments[i].mTex );
 
 				if (tex != 0)
 				{
-					uint format = mAttachment[i].mFormat;
+					uint format = mAttachments[i].mFormat;
 
 					// Auto-adjust unsupported RGB30A2 textures to be RGBA
 					if (!g_caps.mMixedAttachments)

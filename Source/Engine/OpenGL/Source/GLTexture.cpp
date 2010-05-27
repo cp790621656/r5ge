@@ -424,17 +424,17 @@ void GLTexture::_Create()
 	// ATI drivers seem to like it when the texture filtering is set prior to texture data
 	mActiveFilter = mFilter;
 
-	if (isDepth)
-	{
-		// Compare depth
-		glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
-		glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
-	}
-	else
-	{
-		// No comparison
-		glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
-	}
+	//if (isDepth)
+	//{
+	//	// Compare depth
+	//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+	//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
+	//}
+	//else
+	//{
+	//	// No comparison
+	//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+	//}
 
 	glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
 	glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());

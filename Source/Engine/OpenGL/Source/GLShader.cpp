@@ -499,11 +499,29 @@ bool GLShader::_Link()
 		}
 		else
 		{
-			R5::PrintDebugLog(log, "");
+			// Print the debug log if there is something to print
+			Array<String> lines;
+			R5::CreateDebugLog(lines, log, "");
+
+			if (lines.IsValid())
+			{
+				FOREACH(i, lines)
+				{
+					System::Log("          - %s", lines[i].GetBuffer());
+				}
+				System::FlushLog();
+			}
+
 #ifdef _DEBUG
 			String errMsg ("Failed to link '");
 			errMsg << mName;
 			errMsg << "'!";
+
+			FOREACH(i, lines)
+			{
+				errMsg << "\n\n";
+				errMsg << lines[i];
+			}
 			ASSERT(false, errMsg.GetBuffer());
 #endif
 			// Release this shader

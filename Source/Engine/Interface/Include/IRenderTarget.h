@@ -29,6 +29,10 @@ struct IRenderTarget
 	virtual bool AttachDepthTexture		(ITexture* tex)=0;
 	virtual bool AttachStencilTexture	(ITexture* tex)=0;
 
+	virtual const ITexture* GetColorTexture (uint bufferIndex) const=0;
+	virtual const ITexture* GetDepthTexture () const=0;
+	virtual const ITexture* GetStencilTexture () const=0;
+
 	virtual bool HasColor()		const=0;
 	virtual bool HasDepth()		const=0;
 	virtual bool HasStencil()	const=0;

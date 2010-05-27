@@ -11,24 +11,24 @@ Root
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
+			
+			Technique = "Depth"
+			Technique = "Opaque"
 
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"
 			}
 
-			Technique = "Shadowed"
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
-					"Light Depth"
+					"Shadowmap"
 				}
 			}
-			
-			Technique = "Opaque"
-			Technique = "Depth"
 		}
 
 		Material = "Material #35 - Purple"
@@ -37,23 +37,23 @@ Root
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
 
+            Technique = "Depth"
+			Technique = "Opaque"
+
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"
 			}
 
-			Technique = "Shadowed"
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
-					"Light Depth"
+					"Shadowmap"
 				}
 			}
-			
-			Technique = "Opaque"
-			Technique = "Depth"
 		}
 
 		Material = "Material #35 - Green"
@@ -62,23 +62,23 @@ Root
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
 
+            Technique = "Depth"
+			Technique = "Opaque"
+
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"
 			}
 
-			Technique = "Shadowed"
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
-					"Light Depth"
+					"Shadowmap"
 				}
 			}
-			
-			Technique = "Opaque"
-			Technique = "Depth"
 		}
 
 		Material = "Material #35 - Blue"
@@ -87,23 +87,23 @@ Root
 			Specular = 0.684000 0.684000 0.684000 0.100000
 			Glow = 0.000000
 
+            Technique = "Depth"
+			Technique = "Opaque"
+
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"
 			}
 
-			Technique = "Shadowed"
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
-					"Light Depth"
+					"Shadowmap"
 				}
 			}
-			
-			Technique = "Opaque"
-			Technique = "Depth"
 		}
 
 		Material = "Material #35 - Bright Red"
@@ -112,23 +112,23 @@ Root
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
 
+            Technique = "Depth"
+			Technique = "Opaque"
+
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"
 			}
 
-			Technique = "Shadowed"
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
-					"Light Depth"
+					"Shadowmap"
 				}
 			}
-			
-			Technique = "Opaque"
-			Technique = "Depth"
 		}
 
 		Material = "Material #35 - Lime"
@@ -137,23 +137,23 @@ Root
 			Specular = 0.900000 0.900000 0.900000 0.170000
 			Glow = 0.000000
 
+            Technique = "Depth"
+			Technique = "Opaque"
+
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"
 			}
 
-			Technique = "Shadowed"
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
-					"Light Depth"
+					"Shadowmap"
 				}
 			}
-			
-			Technique = "Opaque"
-			Technique = "Depth"
 		}
 	}
 

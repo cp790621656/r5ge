@@ -34,10 +34,10 @@ void UIShadedArea::OnFill (UIQueue* queue)
 
 		Color4ub color (255, 255, 255, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) );
 
-		v.Expand().Set( left,  top,		0.0f, 0.0f, color );
-		v.Expand().Set( left,  bottom,	0.0f, 1.0f, color );
-		v.Expand().Set( right, bottom,	1.0f, 1.0f, color );
-		v.Expand().Set( right, top,		1.0f, 0.0f, color );
+		v.Expand().Set( left,  top,		0.0f, 1.0f, color );
+		v.Expand().Set( left,  bottom,	0.0f, 0.0f, color );
+		v.Expand().Set( right, bottom,	1.0f, 0.0f, color );
+		v.Expand().Set( right, top,		1.0f, 1.0f, color );
 	}
 }
 
@@ -87,25 +87,10 @@ bool UIShadedArea::OnSerializeFrom (const TreeNode& node)
 		}
 		return true;
 	}
-	// LEGACY FORMAT SUPPORT, WILL BE REMOVED
-	else if (node.mTag.BeginsWith(ITexture::ClassID()))
+	else if (node.mTag == "Texture")
 	{
-		String left, right;
-		
-		if (node.mTag.Split(left, ' ', right))
-		{
-			if (left == "Texture")
-			{
-				uint index (0);
-
-				if (right >> index)
-				{
-					SetTexture(index, mUI->GetTexture( value.IsString() ?
-						value.AsString() : value.GetString() ));
-				}
-				return true;
-			}
-		}
+		SetTexture(0, mUI->GetTexture(node.mValue.GetString()));
+		return true;
 	}
 	return false;
 }

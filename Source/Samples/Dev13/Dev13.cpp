@@ -24,7 +24,38 @@ using namespace R5;
 
 Matrix44 g_shadowMat;
 
-void SetShadowMatrix (const String& name, Uniform& data) { data = g_shadowMat; }
+void SetShadowMatrix (const String& name, Uniform& uniform) { uniform = g_shadowMat; }
+
+//============================================================================================================
+// Creates a shadow by comparing light's depth to camera's depth
+//============================================================================================================
+
+void CreateShadow (IGraphics* graphics, Deferred::Storage& storage, const ITexture* lightDepth, const ITexture* camDepth, const Matrix44& mat)
+{
+	static IShader* shader = 0;
+	static const ITechnique* technique = graphics->GetTechnique("Post Process");
+
+	if (shader == 0)
+	{
+		shader = graphics->GetShader("Other/Shadow");
+		shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
+	}
+
+	g_shadowMat = mat;
+
+	graphics->SetActiveRenderTarget(storage.mRenderTarget);
+	graphics->SetScreenProjection(true);
+	graphics->SetActiveTechnique(technique);
+	graphics->SetActiveMaterial(0);
+	graphics->SetActiveShader(shader);
+	graphics->SetActiveTexture(0, camDepth);
+	graphics->SetActiveTexture(1, lightDepth);
+	graphics->Clear();
+	graphics->Draw( IGraphics::Drawable::InvertedQuad );
+
+	// Update the final color texture
+	storage.mOutColor = (storage.mRenderTarget == 0) ? 0 : storage.mRenderTarget->GetColorTexture(0);
+}
 
 //============================================================================================================
 
@@ -35,7 +66,6 @@ class TestApp : Thread::Lockable
 	UI*				mUI;
 	Core*			mCore;
 	Scene			mCamScene;
-	Scene			mLightScene;
 	Camera*			mCam;
 	Object*			mLight;
 
@@ -56,9 +86,6 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mLight(0)
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mCamScene);
-
-	IShader* shader = mGraphics->GetShader("Forward/Shadowed_Material");
-	if (shader != 0) shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
 }
 
 //============================================================================================================
@@ -82,15 +109,6 @@ void TestApp::Run()
 
 		if (mCam != 0 && mLight != 0)
 		{
-			// Create the light's render target
-			IRenderTarget* rt = mGraphics->CreateRenderTarget();
-			rt->AttachDepthTexture(mGraphics->GetTexture("Light Depth"));
-			rt->SetSize( Vector2i(1024, 1024) );
-
-			// Light scene will now be rendered into this render target
-			mLightScene.SetRoot( mCamScene.GetRoot() );
-			mLightScene.SetRenderTarget(rt);
-
 			// Set the listener callbacks
 			mCore->SetListener( bind(&TestApp::MouseMove, this) );
 			mCore->SetListener( bind(&Object::Scroll, mCam) );
@@ -110,63 +128,145 @@ void TestApp::Run()
 
 float TestApp::OnDraw()
 {
-	// Cull the scene from the camera's perspective
-	mCamScene.Cull(mCam);
+	// TODO: Texture compare mode must be set properly. Question is where to put it? It doesn't belong
+	//		 with the depth textures, as evidenced by broken Dev4 and others.
+	Vector2i targetSize = mWin->GetSize();
 
-	// Save the inverse modelview matrix -- it's needed for the shadow matrix
-	Matrix43 inverseCameraMV (mGraphics->GetInverseModelViewMatrix());
+	static IRenderTarget* camTarget = 0;
+	static IRenderTarget* lightTarget = 0;
+	
+	static ITexture* camDepth = mGraphics->GetTexture("Camera Depth");
+	static ITexture* lightDepth = mGraphics->GetTexture("Light Depth");
 
-	// Get the scene's calculated bounds
-	Bounds bounds = mCamScene.GetRoot()->GetCompleteBounds();
-
-	// Light's current rotation
-	Quaternion rot (mLight->GetAbsoluteRotation());
-
-	Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
-	Vector3f center (bounds.GetCenter());
-
-	// Reset the bounds to be based at the center of the original bounds
-	bounds.Reset();
-	bounds.Include(center + extents);
-	bounds.Include(center - extents);
-
-	// Transform the scene's bounds into light space
-	bounds.Transform(Vector3f(), -rot, 1.0f);
-
-	// Transformed size of the scene
-	Vector3f size (bounds.GetMax() - bounds.GetMin());
-
-	// Projection matrix should be an ortho box large enough to hold the entire transformed scene
-	Matrix44 proj;
-	proj.SetToBox(size.x, size.z, size.y);
-
-	// Cull the light's scene
-	mLightScene.Cull(center, rot, proj);
-
-	// Create a matrix that will transform the coordinates from camera's
-	// modelview space to light's texture space
+	if (camTarget == 0)
 	{
+		camTarget = mGraphics->CreateRenderTarget();
+		camTarget->AttachDepthTexture(camDepth);
+	}
+
+	if (lightTarget == 0)
+	{
+		lightTarget = mGraphics->CreateRenderTarget();
+		lightTarget->AttachDepthTexture(lightDepth);
+		lightTarget->SetSize( Vector2i(1024, 1024) );
+	}
+
+	// Update the render target's size
+	camTarget->SetSize(targetSize);
+
+	// Cull the scene from the camera's perspective and draw it into the "Camera Depth" texture
+	mCamScene.SetRenderTarget(camTarget);
+	mCamScene.Cull(mCam);
+	mGraphics->Clear();
+	mCamScene._Draw("Depth");
+
+	// Matrix that will transform camera space to light space
+	Matrix44 shadowMat;
+
+	// Calculate the transformation matrix
+	{
+		// Use the same root
+		Object* root = mCamScene.GetRoot();
+
+		// Save the inverse modelview-projection matrix -- it's needed for the shadow matrix
+		Matrix44 inverseCameraMVP (mGraphics->GetInverseMVPMatrix());
+
+		// Light's rotation
+		Quaternion rot (mLight->GetAbsoluteRotation());
+
+		// Get the scene's calculated bounds and extents
+		Bounds bounds (root->GetCompleteBounds());
+		Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
+		Vector3f center (bounds.GetCenter());
+
+		// Transform the scene's bounds into light space
+		bounds.Reset();
+		bounds.Include(center + extents);
+		bounds.Include(center - extents);
+		bounds.Transform(Vector3f(), -rot, 1.0f);
+
+		// Transformed size of the scene
+		Vector3f size (bounds.GetMax() - bounds.GetMin());
+
+		// Projection matrix should be an ortho box large enough to hold the entire transformed scene
+		Matrix44 proj;
+		proj.SetToBox(size.x, size.z, size.y);
+
+		// Cull the light's scene
+		// NOTE: Object's IsVisible flag is set on Cull... but it's called multiple times. Issue?
+		static Scene lightScene;
+		lightScene.SetRoot(root);
+		lightScene.SetRenderTarget(lightTarget);
+		lightScene.Cull(center, rot, proj);
+
+		// Create a matrix that will transform the coordinates from camera to light space
 		// Bias matrix transforming -1 to 1 range into 0 to 1
-		static Matrix43 bias (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
+		static Matrix43 mvpToScreen (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
+		static Matrix43 screenToMVP (Vector3f(-1.0f, -1.0f, -1.0f), 2.0f);
 
 		// Tweak the projection matrix in order to remove z-fighting
 		proj.Translate(Vector3f(0.0f, 0.0f, -0.1f / size.y));
 
-		// Inverse camera view * light's modelview * bias
-		g_shadowMat  = inverseCameraMV;
-		g_shadowMat *= mGraphics->GetModelViewMatrix();
-		g_shadowMat *= proj;
-		g_shadowMat *= bias;
+		// Inverse camera view * light's modelview * mvpToScreen
+		shadowMat  = screenToMVP;
+		shadowMat *= inverseCameraMVP;
+		shadowMat *= mGraphics->GetModelViewMatrix();
+		shadowMat *= proj;
+		shadowMat *= mvpToScreen;
+
+		// Draw the scene from the light's point of view, creating the "Light Depth" texture
+		mGraphics->Clear();
+		lightScene._Draw("Depth");
 	}
 
-	// Draw the scene from the light's point of view
-	mGraphics->Clear();
-	mLightScene._Draw("Depth");
+	static IRenderTarget* shadowTarget = 0;
+	static ITexture* hardShadow = mGraphics->CreateRenderTexture();
 
-	// Draw the shadowed scene
+	// Create the hard shadow texture
+	{
+		if (shadowTarget == 0)
+		{
+			shadowTarget = mGraphics->CreateRenderTarget();
+			shadowTarget->AttachColorTexture(0, hardShadow, ITexture::Format::Alpha);
+			shadowTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
+		}
+
+		// Update the render target's properties
+		shadowTarget->SetSize(targetSize);
+
+		// Create the shadow texture
+		mCamScene.SetRenderTarget(shadowTarget);
+		CreateShadow(mGraphics, mCamScene, lightDepth, camDepth, shadowMat);
+	}
+
+	static IRenderTarget* blurTarget = 0;
+
+	// Create the soft shadow texture
+	{
+		if (blurTarget == 0)
+		{
+			blurTarget = mGraphics->CreateRenderTarget();
+			blurTarget->AttachColorTexture(0, mGraphics->GetTexture("Shadowmap"), hardShadow->GetFormat());
+			blurTarget->SetBackgroundColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+
+		// Update the render target's properties
+		blurTarget->SetSize(targetSize);
+
+		// Blur the shadow
+		mCamScene.SetRenderTarget(blurTarget);
+		PostProcess::Blur(mGraphics, mCamScene);
+	}
+
+	// Restore the scene's render target
+	mCamScene.SetRenderTarget(0);
+
+	// TODO: Shouldn't need a second cull
 	mCamScene.Cull(mCam);
+
+	// Draw the scene using the generated shadow map
 	mGraphics->Clear();
-	mCamScene._Draw("Shadowed");
+	mCamScene._Draw("Shadowed Opaque");
 	return 0.0f;
 }
 
@@ -176,9 +276,23 @@ bool TestApp::MouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if (mCore->IsKeyDown(Key::L))
 	{
-		Quaternion rot (mLight->GetRelativeRotation());
-		rot *= Quaternion(0.25f * DEG2RAD(delta.y), 0.0f, 0.25f * DEG2RAD(delta.x));
-		mLight->SetRelativeRotation(rot);
+		Quaternion relativeRot (mLight->GetRelativeRotation());
+
+		// Horizontal
+		{
+			Quaternion rotQuat ( Vector3f(0.0f, 0.0f, 1.0f), 0.25f * DEG2RAD(delta.x) );
+			relativeRot = rotQuat * relativeRot;
+			relativeRot.Normalize();
+		}
+
+		// Vertical
+		{
+			Quaternion rotQuat ( relativeRot.GetRight(), 0.25f * DEG2RAD(delta.y) );
+			relativeRot = rotQuat * relativeRot;
+			relativeRot.Normalize();
+		}
+
+		mLight->SetRelativeRotation(relativeRot);
 	}
 	else
 	{
