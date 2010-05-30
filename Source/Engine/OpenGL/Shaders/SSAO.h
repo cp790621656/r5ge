@@ -8,8 +8,8 @@
 //============================================================================================================
 
 static const char* g_ssaoBlur = {
-"uniform sampler2D	R5_texture0;\n"		// AO texture
-"uniform sampler2D	R5_texture1;\n"		// Depth texture
+"uniform sampler2D	R5_texture0;\n"		// Depth texture
+"uniform sampler2D	R5_texture1;\n"		// AO texture
 "uniform vec2		R5_pixelSize;\n"
 "uniform vec4		R5_clipRange;\n"
 "uniform vec2		properties;\n"		// X = focus range, Y = power
@@ -17,7 +17,7 @@ static const char* g_ssaoBlur = {
 // Get the distance to the specified texture coordinate
 "float GetDistance (in vec2 texCoord)\n"
 "{\n"
-"	float depth = texture2D(R5_texture1, texCoord).r;\n"
+"	float depth = texture2D(R5_texture0, texCoord).r;\n"
 "	return R5_clipRange.z / (R5_clipRange.y - depth * R5_clipRange.w);\n"
 "}\n"
 
@@ -32,8 +32,8 @@ static const char* g_ssaoBlur = {
 // Get the AO contribution at the specified texture coordinate
 "float GetContribution (in float originalAO, in float dist, in vec2 texCoord)\n"
 "{\n"
-"	float currentAO = texture2D(R5_texture0, texCoord).r;\n"
 "	float factor = GetFactor(dist, texCoord);\n"
+"	float currentAO = texture2D(R5_texture1, texCoord).r;\n"
 "	return mix(currentAO, originalAO, factor);\n"
 "}\n"};
 
@@ -52,7 +52,7 @@ static const char* g_ssaoBlurV = {
 "	float o2 = R5_pixelSize.y * 3.5;\n"
 "	float o3 = R5_pixelSize.y * 5.5;\n"
 
-"	float ao = texture2D(R5_texture0, tc).r;\n"
+"	float ao = texture2D(R5_texture1, tc).r;\n"
 
 "	ao = GetContribution(ao, dist, vec2(tc.x, tc.y - o3)) +\n"
 "		 GetContribution(ao, dist, vec2(tc.x, tc.y - o2)) +\n"
@@ -79,7 +79,7 @@ static const char* g_ssaoBlurH = {
 "	float o2 = R5_pixelSize.y * 3.5;\n"
 "	float o3 = R5_pixelSize.y * 5.5;\n"
 
-"	float ao = texture2D(R5_texture0, tc).r;\n"
+"	float ao = texture2D(R5_texture1, tc).r;\n"
 
 "	ao = GetContribution(ao, dist, vec2(tc.x - o3, tc.y)) +\n"
 "		 GetContribution(ao, dist, vec2(tc.x - o2, tc.y)) +\n"

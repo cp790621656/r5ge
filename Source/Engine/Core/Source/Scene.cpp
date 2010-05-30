@@ -340,8 +340,9 @@ uint Scene::_Draw (const Techniques& techniques, bool insideOut)
 		graphics->SetNormalize(false);
 
 		// Automatically set output depth and color textures
-		mOutDepth = (mRenderTarget == 0) ? 0 : mRenderTarget->GetDepthTexture();
-		mOutColor = (mRenderTarget == 0) ? 0 : mRenderTarget->GetColorTexture(0);
+		const IRenderTarget* target = graphics->GetActiveRenderTarget();
+		mOutDepth = (target == 0) ? 0 : target->GetDepthTexture();
+		mOutColor = (target == 0) ? 0 : target->GetColorTexture(0);
 	}
 	return result;
 }

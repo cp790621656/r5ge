@@ -63,12 +63,6 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 	const uint HDRFormat = (color.a == 1.0f) ? ITexture::Format::RGB16F : ITexture::Format::RGBA16F;
 	uint count (0);
 
-	// Update the final textures
-	storage.mOutColor	 = final;
-	storage.mOutDepth	 = depth;
-	storage.mOutNormal	 = normal;
-	storage.mOutLightmap = 0;
-
 	// Deferred rendering target
 	{
 		if (diffuseTarget == 0)
@@ -106,6 +100,12 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 			// Draw the scene using the deferred approach
 			count += storage.mDrawCallback(storage.mDrawTechniques, storage.mInsideOut);
 		}
+
+		// Update the textures for the SSAO functions below
+		storage.mOutColor	 = 0;
+		storage.mOutDepth	 = depth;
+		storage.mOutNormal	 = normal;
+		storage.mOutLightmap = 0;
 
 		// Screen-space ambient occlusion pass
 		if (storage.mAOLevel > 0)
@@ -180,6 +180,9 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 		graphics->SetActiveTexture( 2, lightDiff );
 		graphics->SetActiveTexture( 3, lightSpec );
 		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+
+		// 'final' texture now contains our final color
+		storage.mOutColor = final;
 	}
 	return count;
 }

@@ -133,6 +133,7 @@ public:
 	virtual const ITechnique*	GetActiveTechnique()	const	{ return mTechnique;	}
 	virtual const IShader*		GetActiveShader()		const	{ return mShader;		}
 	virtual const Vector2i&		GetActiveViewport()		const	{ return (mTarget == 0) ? mSize : mTarget->GetSize(); }
+	virtual const IRenderTarget* GetActiveRenderTarget() const	{ return mTarget; }
 
 	// Camera orientation retrieval
 	virtual const Vector3f&		GetCameraPosition()		const	{ return mTrans.mView.pos;		}

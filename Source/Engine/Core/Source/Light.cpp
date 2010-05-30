@@ -49,7 +49,7 @@ void Light::Draw (
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
 
-	// We are using 3 textures -- depth, view space normal (with shininess in alpha), and the ao lightmap
+	// We are using 2 textures
 	graphics->SetActiveTexture(0, depth);
 	graphics->SetActiveTexture(1, normal);
 

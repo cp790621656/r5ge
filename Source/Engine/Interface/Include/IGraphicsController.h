@@ -130,6 +130,7 @@ public:
 	virtual const ITechnique*	GetActiveTechnique()	const=0;
 	virtual const IShader*		GetActiveShader()		const=0;
 	virtual const Vector2i&		GetActiveViewport()		const=0;
+	virtual const IRenderTarget* GetActiveRenderTarget() const=0;
 
 	// Camera orientation retrieval
 	virtual const Vector3f&		GetCameraPosition()		const=0;

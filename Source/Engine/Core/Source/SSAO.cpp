@@ -133,40 +133,42 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 	graphics->SetActiveMaterial(0);
 	graphics->Flush();
 
+	const ITexture* depth  = storage.mOutDepth;
+	const ITexture* normal = storage.mOutNormal;
+
 	// SSAO contribution pass
 	{
-		graphics->SetActiveRenderTarget( ssaoTarget );
-		graphics->SetScreenProjection( true );
-		graphics->SetActiveTexture( 0, storage.mOutDepth );
-		graphics->SetActiveTexture( 1, storage.mOutNormal );
-		graphics->SetActiveTexture( 2, random );
-		graphics->SetActiveShader ( ssao );
+		graphics->SetActiveRenderTarget(ssaoTarget);
+		graphics->SetScreenProjection(true);
+		graphics->SetActiveTexture(0, depth);
+		graphics->SetActiveTexture(1, normal);
+		graphics->SetActiveTexture(2, random);
+		graphics->SetActiveShader(ssao);
 
 		lightmap->SetFiltering(ITexture::Filter::Linear);
 		graphics->Draw(IGraphics::Drawable::InvertedQuad);
 	}
 
 	ITexture* result = lightmap;
+	graphics->SetActiveTexture(0, depth);
 
 	// SSAO blur passes
 	for (uint i = 0; i < BLUR_PASSES; ++i)
 	{
 		// Blur the SSAO texture horizontally
-		graphics->SetActiveRenderTarget( blurTarget0 );
-		graphics->SetActiveTexture( 0, result );
-		graphics->SetActiveTexture( 1, storage.mOutDepth );
-		graphics->SetActiveShader( blurH );
+		graphics->SetActiveRenderTarget(blurTarget0);
+		graphics->SetActiveTexture(1, result);
+		graphics->SetActiveShader(blurH);
 		blurTex0->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+		graphics->Draw(IGraphics::Drawable::InvertedQuad);
 		result = blurTex0;
 
 		// Blur the SSAO texture vertically
-		graphics->SetActiveRenderTarget( blurTarget1 );
-		graphics->SetActiveTexture( 0, result );
-		graphics->SetActiveTexture( 1, storage.mOutDepth );
-		graphics->SetActiveShader( blurV );
+		graphics->SetActiveRenderTarget(blurTarget1);
+		graphics->SetActiveTexture(1, result);
+		graphics->SetActiveShader(blurV);
 		blurTex1->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+		graphics->Draw(IGraphics::Drawable::InvertedQuad);
 		result = blurTex1;
 	}
 	return result;
@@ -228,14 +230,17 @@ const ITexture* SSAO::High (IGraphics* graphics, Deferred::Storage& storage)
 	graphics->SetActiveMaterial(0);
 	graphics->Flush();
 
+	const ITexture* depth  = storage.mOutDepth;
+	const ITexture* normal = storage.mOutNormal;
+
 	// SSAO contribution pass
 	{
-		graphics->SetActiveRenderTarget( ssaoTarget );
-		graphics->SetScreenProjection( true );
-		graphics->SetActiveTexture( 0, storage.mOutDepth );
-		graphics->SetActiveTexture( 1, storage.mOutNormal );
-		graphics->SetActiveTexture( 2, random );
-		graphics->SetActiveShader ( ssao );
+		graphics->SetActiveRenderTarget(ssaoTarget);
+		graphics->SetScreenProjection(true);
+		graphics->SetActiveTexture(0, depth);
+		graphics->SetActiveTexture(1, normal);
+		graphics->SetActiveTexture(2, random);
+		graphics->SetActiveShader(ssao);
 
 		lightmap->SetFiltering(ITexture::Filter::Linear);
 		graphics->Draw(IGraphics::Drawable::InvertedQuad);
@@ -245,19 +250,17 @@ const ITexture* SSAO::High (IGraphics* graphics, Deferred::Storage& storage)
 	for (uint i = 0; i < BLUR_PASSES; ++i)
 	{
 		// Blur the SSAO texture horizontally
-		graphics->SetActiveRenderTarget( blurTarget );
-		graphics->SetActiveTexture( 0, lightmap );
-		graphics->SetActiveTexture( 1, storage.mOutDepth );
-		graphics->SetActiveShader( blurH );
+		graphics->SetActiveRenderTarget(blurTarget);
+		graphics->SetActiveTexture(1, lightmap);
+		graphics->SetActiveShader(blurH);
 		blurTex->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+		graphics->Draw(IGraphics::Drawable::InvertedQuad);
 
 		// Blur the SSAO texture vertically
-		graphics->SetActiveRenderTarget( ssaoTarget );
-		graphics->SetActiveTexture( 0, blurTex );
-		graphics->SetActiveTexture( 1, storage.mOutDepth );
-		graphics->SetActiveShader( blurV );
-		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+		graphics->SetActiveRenderTarget(ssaoTarget);
+		graphics->SetActiveTexture(1, blurTex);
+		graphics->SetActiveShader(blurV);
+		graphics->Draw(IGraphics::Drawable::InvertedQuad);
 	}
 	return lightmap;
 }
