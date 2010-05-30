@@ -28,9 +28,9 @@ void SetShadowMatrix (const String& name, Uniform& uniform) { uniform = g_shadow
 
 //============================================================================================================
 
-Vector2f g_lightDepthPixelSize;
+Vector2f g_shadowOffset;
 
-void SetLightDepthPixelSize (const String& name, Uniform& uniform) { uniform = g_lightDepthPixelSize; }
+void SetShadowOffset (const String& name, Uniform& uniform) { uniform = g_shadowOffset; }
 
 //============================================================================================================
 
@@ -51,14 +51,15 @@ void CreateShadow (IGraphics* graphics, Deferred::Storage& storage, const ITextu
 	{
 		shader = graphics->GetShader("Other/Shadow");
 		shader->RegisterUniform("shadowMatrix", SetShadowMatrix);
-		shader->RegisterUniform("lightDepthPixelSize", SetLightDepthPixelSize);
+		shader->RegisterUniform("lightDepthPixelSize", SetShadowOffset);
 	}
 
 	g_shadowMat = mat;
-	g_lightDepthPixelSize = lightDepth->GetSize();
+	g_shadowOffset = lightDepth->GetSize();
 
-	g_lightDepthPixelSize.x = 1.0f / g_lightDepthPixelSize.x;
-	g_lightDepthPixelSize.y = 1.0f / g_lightDepthPixelSize.y;
+	// 1-pixel 30 degree rotated kernel (0.866, 0.5) multiplied by 2
+	g_shadowOffset.x = (1.0f / g_shadowOffset.x) * 1.732f;
+	g_shadowOffset.y = (1.0f / g_shadowOffset.y);
 
 	graphics->SetActiveRenderTarget(storage.mRenderTarget);
 	graphics->SetScreenProjection(true);
