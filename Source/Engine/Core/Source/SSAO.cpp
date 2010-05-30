@@ -130,11 +130,6 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 
 	// Set up the active states
 	graphics->SetActiveTechnique(post);
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	graphics->SetActiveMaterial(0);
 	graphics->Flush();
 
@@ -158,7 +153,6 @@ const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
 	{
 		// Blur the SSAO texture horizontally
 		graphics->SetActiveRenderTarget( blurTarget0 );
-		if (i == 0) graphics->SetScreenProjection( true );
 		graphics->SetActiveTexture( 0, result );
 		graphics->SetActiveTexture( 1, storage.mOutDepth );
 		graphics->SetActiveShader( blurH );

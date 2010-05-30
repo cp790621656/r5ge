@@ -427,6 +427,14 @@ uint GLGraphics::Draw (uint drawable)
 {
 	uint result (0);
 
+	// Arrays are not used for draw operations below
+	SetActiveVertexAttribute( Attribute::Normal,	 0, 0, 0, 0, 0 );
+	SetActiveVertexAttribute( Attribute::Tangent,	 0, 0, 0, 0, 0 );
+	SetActiveVertexAttribute( Attribute::Color,		 0, 0, 0, 0, 0 );
+	SetActiveVertexAttribute( Attribute::BoneIndex,  0, 0, 0, 0, 0 );
+	SetActiveVertexAttribute( Attribute::BoneWeight, 0, 0, 0, 0, 0 );
+	SetActiveVertexAttribute( Attribute::TexCoord1,	 0, 0, 0, 0, 0 );
+
 	if (drawable == Drawable::Skybox)
 	{
 		if (mSkybox == 0) return result;
@@ -464,17 +472,11 @@ uint GLGraphics::Draw (uint drawable)
 
 		// Overwrite the ModelView matrix, changing it to use the current camera's position as origin
 		ResetModelMatrix();
-		Matrix43 view = GetViewMatrix();
+		Matrix43 view (GetViewMatrix());
 		view.PreTranslate(GetCameraPosition());
 		SetViewMatrix(view);
 
 		// Set all active vertex attributes
-		SetActiveVertexAttribute( Attribute::Normal,	 0, 0, 0, 0, 0 );
-		SetActiveVertexAttribute( Attribute::Color,		 0, 0, 0, 0, 0 );
-		SetActiveVertexAttribute( Attribute::Tangent,	 0, 0, 0, 0, 0 );
-		SetActiveVertexAttribute( Attribute::BoneIndex,  0, 0, 0, 0, 0 );
-		SetActiveVertexAttribute( Attribute::BoneWeight, 0, 0, 0, 0, 0 );
-		SetActiveVertexAttribute( Attribute::TexCoord1,	 0, 0, 0, 0, 0 );
 		SetActiveVertexAttribute( Attribute::TexCoord0, mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 		SetActiveVertexAttribute( Attribute::Position,	mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 
@@ -485,7 +487,11 @@ uint GLGraphics::Draw (uint drawable)
 		ResetViewMatrix();
 		return 12;
 	}
-	else if (drawable == Drawable::FullscreenQuad)
+
+	// All draw operations that follow don't use texture coordinate arrays
+	SetActiveVertexAttribute(IGraphics::Attribute::TexCoord0, 0, 0, 0, 0, 0);
+
+	if (drawable == Drawable::FullscreenQuad)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
 
@@ -681,7 +687,7 @@ ITexture* GLGraphics::CreateRenderTexture()
 {
 	static uint counter = 0;
 	mTempTex.Lock();
-	GLTexture* tex = new GLTexture(String("[Generated] Render Texture %u", counter), this);
+	GLTexture* tex = new GLTexture(String("[Generated] Render Texture %u", counter++), this);
 	mTempTex.Expand() = tex;
 	mTempTex.Unlock();
 	return tex;

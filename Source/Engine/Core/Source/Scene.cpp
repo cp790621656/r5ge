@@ -338,6 +338,10 @@ uint Scene::_Draw (const Techniques& techniques, bool insideOut)
 
 		// Restore the potentially altered default state
 		graphics->SetNormalize(false);
+
+		// Automatically set output depth and color textures
+		mOutDepth = (mRenderTarget == 0) ? 0 : mRenderTarget->GetDepthTexture();
+		mOutColor = (mRenderTarget == 0) ? 0 : mRenderTarget->GetColorTexture(0);
 	}
 	return result;
 }

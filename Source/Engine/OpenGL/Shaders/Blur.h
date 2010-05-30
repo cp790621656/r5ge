@@ -44,38 +44,3 @@ static const char* g_blurV = {
 "					texture2D(R5_texture0, vec2(tc.x, tc.y + o2))) * 0.25;\n"
 "}\n"
 };
-
-
-//============================================================================================================
-// TODO: Improve the blur itself. If this is the only thing that's needed for shadows, why have everything else?
-//============================================================================================================
-
-static const char* g_combineAverageBlur = {
-"uniform sampler2D	R5_texture1;\n"
-
-"void main()\n"
-"{\n"
-"	float a = pow(texture2D(R5_texture1, gl_TexCoord[0].xy).r, 2.0);\n"
-"	gl_FragColor = vec4(a);\n"
-"}\n"
-};
-
-//============================================================================================================
-
-static const char* g_combineMonoBlur = {
-"uniform sampler2D	R5_texture0;\n"
-"uniform sampler2D	R5_texture1;\n"
-"uniform sampler2D	R5_texture2;\n"
-"uniform sampler2D	R5_texture3;\n"
-"uniform float		sharpness;\n"
-
-"void main()\n"
-"{\n"
-"	float intensity =	(texture2D(R5_texture0, gl_TexCoord[0].xy).r +\n"
-"						 texture2D(R5_texture1, gl_TexCoord[0].xy).r +\n"
-"						 texture2D(R5_texture2, gl_TexCoord[0].xy).r +\n"
-"						 texture2D(R5_texture3, gl_TexCoord[0].xy).r) * 0.25;\n"
-"	intensity = pow(intensity, sharpness);\n"
-"	gl_FragColor = vec4(intensity);\n"
-"}\n"
-};

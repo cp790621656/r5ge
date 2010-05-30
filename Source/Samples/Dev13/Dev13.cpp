@@ -27,10 +27,22 @@ Matrix44 g_shadowMat;
 void SetShadowMatrix (const String& name, Uniform& uniform) { uniform = g_shadowMat; }
 
 //============================================================================================================
+
+Vector2f g_lightDepthPixelSize;
+
+void SetLightDepthPixelSize (const String& name, Uniform& uniform) { uniform = g_lightDepthPixelSize; }
+
+//============================================================================================================
+
+Vector4f g_depthRange;
+
+void SetDepthRange (const String& name, Uniform& uniform) { uniform = g_depthRange; }
+
+//============================================================================================================
 // Creates a shadow by comparing light's depth to camera's depth
 //============================================================================================================
 
-void CreateShadow (IGraphics* graphics, Deferred::Storage& storage, const ITexture* lightDepth, const ITexture* camDepth, const Matrix44& mat)
+void CreateShadow (IGraphics* graphics, Deferred::Storage& storage, const ITexture* lightDepth, const Matrix44& mat)
 {
 	static IShader* shader = 0;
 	static const ITechnique* technique = graphics->GetTechnique("Post Process");
@@ -38,23 +50,85 @@ void CreateShadow (IGraphics* graphics, Deferred::Storage& storage, const ITextu
 	if (shader == 0)
 	{
 		shader = graphics->GetShader("Other/Shadow");
-		shader->RegisterUniform("R5_shadowMatrix", SetShadowMatrix);
+		shader->RegisterUniform("shadowMatrix", SetShadowMatrix);
+		shader->RegisterUniform("lightDepthPixelSize", SetLightDepthPixelSize);
 	}
 
 	g_shadowMat = mat;
+	g_lightDepthPixelSize = lightDepth->GetSize();
+
+	g_lightDepthPixelSize.x = 1.0f / g_lightDepthPixelSize.x;
+	g_lightDepthPixelSize.y = 1.0f / g_lightDepthPixelSize.y;
 
 	graphics->SetActiveRenderTarget(storage.mRenderTarget);
 	graphics->SetScreenProjection(true);
 	graphics->SetActiveTechnique(technique);
 	graphics->SetActiveMaterial(0);
 	graphics->SetActiveShader(shader);
-	graphics->SetActiveTexture(0, camDepth);
+	graphics->SetActiveTexture(0, storage.mOutDepth);
 	graphics->SetActiveTexture(1, lightDepth);
 	graphics->Clear();
 	graphics->Draw( IGraphics::Drawable::InvertedQuad );
 
 	// Update the final color texture
 	storage.mOutColor = (storage.mRenderTarget == 0) ? 0 : storage.mRenderTarget->GetColorTexture(0);
+}
+
+//============================================================================================================
+// Blur the shadow, creating a soft outline
+//============================================================================================================
+
+void BlurShadow (IGraphics* graphics, Deferred::Storage& storage, float near, float far, uint passes = 1)
+{
+	static IRenderTarget* blurTarget0 = 0;
+	static IRenderTarget* blurTarget1 = 0;
+
+	static ITexture* blurTex0 = graphics->CreateRenderTexture();
+	static ITexture* blurTex1 = graphics->GetTexture("Shadowmap");
+
+	static IShader*	blurH = graphics->GetShader("Other/blurShadowH");
+	static IShader* blurV = graphics->GetShader("Other/blurShadowV");
+
+	if (blurTarget0 == 0)
+	{
+		blurTarget0 = graphics->CreateRenderTarget();
+		blurTarget0->AttachColorTexture(0, blurTex0, storage.mOutColor->GetFormat());
+
+		blurTarget1 = graphics->CreateRenderTarget();
+		blurTarget1->AttachColorTexture(0, blurTex1, storage.mOutColor->GetFormat());
+
+		blurH->RegisterUniform("depthRange", SetDepthRange);
+		blurV->RegisterUniform("depthRange", SetDepthRange);
+	}
+
+	Vector2i targetSize (storage.mOutColor->GetSize());
+	blurTarget0->SetSize(targetSize);
+	blurTarget1->SetSize(targetSize);
+
+	// Update the depth range
+	g_depthRange.Set(near, far, near * far, far - near);
+
+	static const ITechnique* technique = graphics->GetTechnique("Post Process");
+
+	graphics->SetScreenProjection(true);
+	graphics->SetActiveTechnique(technique);
+	graphics->SetActiveMaterial(0);
+	graphics->SetActiveTexture(1, storage.mOutDepth);
+
+	for (uint i = 0; i < passes; ++i)
+	{
+		graphics->SetActiveRenderTarget(blurTarget0);
+		graphics->SetActiveShader(blurH);
+		graphics->SetActiveTexture(0, storage.mOutColor);
+		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+		storage.mOutColor = blurTex0;
+
+		graphics->SetActiveRenderTarget(blurTarget1);
+		graphics->SetActiveShader(blurV);
+		graphics->SetActiveTexture(0, storage.mOutColor);
+		graphics->Draw( IGraphics::Drawable::InvertedQuad );
+		storage.mOutColor = blurTex1;
+	}
 }
 
 //============================================================================================================
@@ -149,7 +223,7 @@ float TestApp::OnDraw()
 
 		lightTarget = mGraphics->CreateRenderTarget();
 		lightTarget->AttachDepthTexture(lightDepth);
-		lightTarget->SetSize( Vector2i(1024, 1024) );
+		lightTarget->SetSize( Vector2i(2048, 2048) );
 	}
 
 	// Update the render target's size
@@ -239,29 +313,14 @@ float TestApp::OnDraw()
 
 		// Create the shadow texture
 		mCamScene.SetRenderTarget(shadowTarget);
-		CreateShadow(mGraphics, mCamScene, lightDepth, camDepth, shadowMat);
+		CreateShadow(mGraphics, mCamScene, lightDepth, shadowMat);
 	}
 
+	// Blur the shadow creating a soft outline
 	if (soft)
 	{
-		static IRenderTarget* blurTarget = 0;
-
-		// Create the soft shadow texture
-		{
-			if (blurTarget == 0)
-			{
-				blurTarget = mGraphics->CreateRenderTarget();
-				blurTarget->AttachColorTexture(0, mGraphics->GetTexture("Shadowmap"), hardShadow->GetFormat());
-				blurTarget->SetBackgroundColor(Color4f(1.0f, 1.0f, 1.0f, 1.0f));
-			}
-
-			// Update the render target's properties
-			blurTarget->SetSize(targetSize);
-
-			// Blur the shadow
-			mCamScene.SetRenderTarget(blurTarget);
-			PostProcess::Blur(mGraphics, mCamScene);
-		}
+		const Vector3f& range = mCam->GetAbsoluteRange();
+		BlurShadow(mGraphics, mCamScene, range.x, range.y);
 	}
 
 	// Restore the scene's render target

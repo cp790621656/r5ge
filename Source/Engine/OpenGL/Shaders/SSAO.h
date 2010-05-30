@@ -30,7 +30,7 @@ static const char* g_ssaoBlur = {
 "}\n"
 
 // Get the AO contribution at the specified texture coordinate
-"float GetContribution(in float originalAO, in float dist, in vec2 texCoord)\n"
+"float GetContribution (in float originalAO, in float dist, in vec2 texCoord)\n"
 "{\n"
 "	float currentAO = texture2D(R5_texture0, texCoord).r;\n"
 "	float factor = GetFactor(dist, texCoord);\n"

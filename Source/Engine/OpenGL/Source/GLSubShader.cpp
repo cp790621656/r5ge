@@ -329,8 +329,6 @@ void GLSubShader::_Init()
 		if		(mName == "[R5] Combine Deferred")		mCode = g_combineDeferred;
 		else if (mName == "[R5] Horizontal Blur")		mCode = g_blurH;
 		else if (mName == "[R5] Vertical Blur")			mCode = g_blurV;
-		else if (mName == "[R5] Combine Blur")			mCode = g_combineAverageBlur;
-		else if (mName == "[R5] Combine Mono Blur")		mCode = g_combineMonoBlur;
 		else if (mName == "[R5] Bloom Blur")			mCode = g_blurBloom;
 		else if (mName == "[R5] Combine Bloom")			mCode = g_combineBloom;
 		else if (mName == "[R5] Depth of Field")		mCode = g_dof;

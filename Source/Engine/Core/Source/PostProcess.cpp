@@ -21,14 +21,6 @@ float g_threshold = 0.75f;
 void SetThreshold (const String& name, Uniform& uniform) { uniform = g_threshold; }
 
 //============================================================================================================
-// Blur sharpness callback function
-//============================================================================================================
-
-float g_sharpness = 1.0f;
-
-void SetSharpness (const String& name, Uniform& uniform) { uniform = g_sharpness; }
-
-//============================================================================================================
 // Blurring effect -- common part
 //============================================================================================================
 
@@ -192,26 +184,6 @@ void PostProcess::None (IGraphics* graphics, Deferred::Storage& storage)
 
 	// Update the final color texture
 	storage.mOutColor = (storage.mRenderTarget == 0) ? 0 : storage.mRenderTarget->GetColorTexture(0);
-}
-
-//============================================================================================================
-// Gaussian blur
-//============================================================================================================
-
-void PostProcess::Blur (IGraphics* graphics, Deferred::Storage& storage, float sharpness)
-{
-	static IShader* combineBlur = graphics->GetShader("[R5] Combine Blur");
-	static IShader* combineMonoBlur = 0;
-
-	g_sharpness = sharpness;
-
-	if (combineMonoBlur == 0)
-	{
-		combineMonoBlur = graphics->GetShader("[R5] Combine Mono Blur");
-		combineMonoBlur->RegisterUniform("sharpness", &SetSharpness);
-	}
-
-	BlurDownsample(graphics, storage, storage.mOutColor, 0, 0, (sharpness == 1.0f) ? combineBlur : combineMonoBlur);
 }
 
 //============================================================================================================
