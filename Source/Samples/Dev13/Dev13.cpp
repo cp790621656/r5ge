@@ -202,105 +202,127 @@ void TestApp::Run()
 
 float TestApp::OnDraw()
 {
-	Vector2i targetSize = mWin->GetSize();
+	// Render target's size
+	const Vector2i targetSize = mWin->GetSize();
 
-	static IRenderTarget* camTarget = 0;
-	static IRenderTarget* lightTarget = 0;
-	
-	static ITexture* camDepth = mGraphics->GetTexture("Camera Depth");
-	static ITexture* lightDepth = mGraphics->GetTexture("Light Depth");
+	// Light's texture width and height
+	const short lightTexSize = 2048;
 
-	if (camTarget == 0)
-	{
-		camTarget = mGraphics->CreateRenderTarget();
-		camTarget->AttachDepthTexture(camDepth);
-	}
+	// Whether to create soft shadows
+	const bool soft = true;
 
-	if (lightTarget == 0)
-	{
-		// Color comparison meant for shadows
-		lightDepth->SetCompareMode(ITexture::CompareMode::Shadow);
+	mCamScene.mTempTargets.ExpandTo (32, true);
+	mCamScene.mTempTextures.ExpandTo(32, true);
 
-		lightTarget = mGraphics->CreateRenderTarget();
-		lightTarget->AttachDepthTexture(lightDepth);
-		lightTarget->SetSize( Vector2i(2048, 2048) );
-	}
-
-	// Update the render target's size
-	camTarget->SetSize(targetSize);
-
-	// Cull the scene from the camera's perspective and draw it into the "Camera Depth" texture
-	mCamScene.SetRenderTarget(camTarget);
-	mCamScene.Cull(mCam);
-	mGraphics->Clear();
-	mCamScene._Draw("Depth");
+	// Scene's depth from the light's point of view
+	Scene::ITexturePtr& lightDepth = mCamScene.mTempTextures[18];
 
 	// Matrix that will transform camera space to light space
 	Matrix44 shadowMat;
 
-	// Calculate the transformation matrix
+	// Generate the 'lightDepth' texture and calculate the 'shadowMat' transformation matrix
 	{
-		// Use the same root
-		Object* root = mCamScene.GetRoot();
+		Scene::IRenderTargetPtr&	camTarget	= mCamScene.mTempTargets[14];
+		Scene::IRenderTargetPtr&	lightTarget = mCamScene.mTempTargets[15];
+		Scene::ITexturePtr&			camDepth	= mCamScene.mTempTextures[17];
 
-		// Save the inverse modelview-projection matrix -- it's needed for the shadow matrix
-		Matrix44 inverseCameraMVP (mGraphics->GetInverseMVPMatrix());
+		if (camTarget == 0)
+		{
+			// Create the temporary textures
+			camDepth	= mGraphics->CreateRenderTexture();
+			lightDepth	= mGraphics->CreateRenderTexture();
 
-		// Light's rotation
-		Quaternion rot (mLight->GetAbsoluteRotation());
+			// Set up the camera render target
+			camTarget = mGraphics->CreateRenderTarget();
+			camTarget->AttachDepthTexture(camDepth);
 
-		// Get the scene's calculated bounds and extents
-		Bounds bounds (root->GetCompleteBounds());
-		Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
-		Vector3f center (bounds.GetCenter());
+			// Color comparison meant for shadows
+			lightDepth->SetCompareMode(ITexture::CompareMode::Shadow);
 
-		// Transform the scene's bounds into light space
-		bounds.Reset();
-		bounds.Include(center + extents);
-		bounds.Include(center - extents);
-		bounds.Transform(Vector3f(), -rot, 1.0f);
+			// Set up the light render target
+			lightTarget = mGraphics->CreateRenderTarget();
+			lightTarget->AttachDepthTexture(lightDepth);
+		}
 
-		// Transformed size of the scene
-		Vector3f size (bounds.GetMax() - bounds.GetMin());
+		// Update the render target's size
+		camTarget->SetSize(targetSize);
 
-		// Projection matrix should be an ortho box large enough to hold the entire transformed scene
-		Matrix44 proj;
-		proj.SetToBox(size.x, size.z, size.y);
+		// Use that dimension for the texture
+		lightTarget->SetSize( Vector2i(lightTexSize, lightTexSize) );
 
-		// Cull the light's scene
-		// NOTE: Object's IsVisible flag is set on Cull... but it's called multiple times. Issue?
-		static Scene lightScene;
-		lightScene.SetRoot(root);
-		lightScene.SetRenderTarget(lightTarget);
-		lightScene.Cull(center, rot, proj);
+		// Cull the scene from the camera's perspective and draw it into the "Camera Depth" texture
+		mCamScene.SetRenderTarget(camTarget);
+		mCamScene.Cull(mCam);
+		mCamScene.Draw("Depth");
 
-		// Create a matrix that will transform the coordinates from camera to light space
-		// Bias matrix transforming -1 to 1 range into 0 to 1
-		static Matrix43 mvpToScreen (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
-		static Matrix43 screenToMVP (Vector3f(-1.0f, -1.0f, -1.0f), 2.0f);
+		// Calculate the transformation matrix
+		{
+			// Use the same root
+			Object* root = mCamScene.GetRoot();
 
-		// Tweak the projection matrix in order to remove z-fighting
-		proj.Translate(Vector3f(0.0f, 0.0f, -0.1f / size.y));
+			// Save the inverse modelview-projection matrix -- it's needed for the shadow matrix
+			Matrix44 inverseCameraMVP (mGraphics->GetInverseMVPMatrix());
 
-		// Inverse camera view * light's modelview * mvpToScreen
-		shadowMat  = screenToMVP;
-		shadowMat *= inverseCameraMVP;
-		shadowMat *= mGraphics->GetModelViewMatrix();
-		shadowMat *= proj;
-		shadowMat *= mvpToScreen;
+			// Light's rotation
+			Quaternion rot (mLight->GetAbsoluteRotation());
 
-		// Draw the scene from the light's point of view, creating the "Light Depth" texture
-		mGraphics->Clear();
-		lightScene._Draw("Depth");
+			// Get the scene's calculated bounds and extents
+			Bounds bounds (root->GetCompleteBounds());
+			Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
+			Vector3f center (bounds.GetCenter());
+
+			// Transform the scene's bounds into light space
+			bounds.Reset();
+			bounds.Include(center + extents);
+			bounds.Include(center - extents);
+			bounds.Transform(Vector3f(), -rot, 1.0f);
+
+			// Transformed size of the scene
+			Vector3f size (bounds.GetMax() - bounds.GetMin());
+
+			// Projection matrix should be an ortho box large enough to hold the entire transformed scene
+			Matrix44 proj;
+			proj.SetToBox(size.x, size.z, size.y);
+
+			// Cull the light's scene
+			// NOTE: Object's IsVisible flag is set on Cull... but it's called multiple times.
+			// TODO: Figure out what to do with the isVisible flag: (isVisible |= actuallyVisible)?
+			static Scene lightScene;
+			lightScene.SetRoot(root);
+			lightScene.SetRenderTarget(lightTarget);
+			lightScene.Cull(center, rot, proj);
+
+			// Create a matrix that will transform the coordinates from camera to light space
+			// Bias matrix transforming -1 to 1 range into 0 to 1
+			static Matrix43 mvpToScreen (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
+			static Matrix43 screenToMVP (Vector3f(-1.0f, -1.0f, -1.0f), 2.0f);
+
+			// Tweak the projection matrix in order to remove z-fighting
+			proj.Translate(Vector3f(0.0f, 0.0f, -(200.0f / lightTexSize) / size.y));
+
+			// Inverse camera view * light's modelview * mvpToScreen
+			shadowMat  = screenToMVP;
+			shadowMat *= inverseCameraMVP;
+			shadowMat *= mGraphics->GetModelViewMatrix();
+			shadowMat *= proj;
+			shadowMat *= mvpToScreen;
+
+			// Draw the scene from the light's point of view, creating the "Light Depth" texture
+			lightScene.Draw("Depth");
+		}
 	}
 
-	bool soft = true;
+	// TODO: Remove the dependency on having to rely on a texture called "Shadowmap". As a reminder,
+	// this is currently needed because "Shadowmap" is referenced from material configuration files.
+	// Unfortunately this isn't right, as each render target will have its own shadowmap.
+	// NOTE: This won't be a problem once deferred rendering is used.
 
-	static IRenderTarget* shadowTarget = 0;
 	static ITexture* hardShadow = (soft) ? mGraphics->CreateRenderTexture() : mGraphics->GetTexture("Shadowmap");
 
-	// Create the hard shadow texture
+	// Create the hard shadow texture by comparing the projection of light's depth onto the camera's depth
 	{
+		static IRenderTarget* shadowTarget = 0;
+
 		if (shadowTarget == 0)
 		{
 			shadowTarget = mGraphics->CreateRenderTarget();
@@ -323,15 +345,10 @@ float TestApp::OnDraw()
 		BlurShadow(mGraphics, mCamScene, range.x, range.y);
 	}
 
-	// Restore the scene's render target
-	mCamScene.SetRenderTarget(0);
-
-	// TODO: Shouldn't need a second cull
-	mCamScene.Cull(mCam);
-
 	// Draw the scene using the generated shadow map
-	mGraphics->Clear();
-	mCamScene._Draw("Shadowed Opaque");
+	mCamScene.SetRenderTarget(0);
+	mCamScene.ActivateMatrices();
+	mCamScene.Draw("Shadowed Opaque");
 	return 0.0f;
 }
 

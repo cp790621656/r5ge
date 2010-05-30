@@ -21,10 +21,13 @@ private:
 	Frustum		mFrustum;		// Viewing frustum used for culling
 	DrawQueue	mQueue;			// Draw queue created by the culling process
 	Techniques	mTechs;			// Cached list of techniques, for convenience reasons
+
 	Vector2i	mLastRay;		// Last mouse position used to cast a ray into the screen
-	Vector3f	mLastCamPos;
-	Quaternion	mLastCamRot;
-	Vector3f	mLastCamRange;
+	Vector3f	mLastCamPos;	// Last camera position
+	Quaternion	mLastCamRot;	// Last camera rotation
+	Vector3f	mLastCamRange;	// Last camera range
+	Matrix44	mLastProj;		// Last projection matrix
+
 	RayHits		mHits;			// List of raycast hits after running a raycast in the direction of the ray cast from the mouse
 	Techniques	mForward;		// Default techniques, only filled if used. Cached here for speed.
 
@@ -72,6 +75,10 @@ public:
 	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
 	void Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj);
 
+	// Re-activates the scene's matrices on the graphics controller
+	// NOTE: You don't need to call this if you're calling Cull()
+	void ActivateMatrices();
+
 	// Casts a ray into the screen at the specified mouse position
 	RayHits& Raycast (const Vector2i& screenPos);
 
@@ -88,13 +95,13 @@ public:
 public:
 
 	// Advanced: Draws the scene using the specified technique
-	uint _Draw (const String& technique);
+	uint Draw (const String& technique, bool clearScreen = true);
 
 	// Advanced: Draws the scene using the specified technique
-	uint _Draw (const ITechnique* technique);
+	uint Draw (const ITechnique* technique, bool clearScreen = true);
 
 	// Advanced: Draws the scene using the specified techniques
-	uint _Draw (const Techniques& techniques, bool insideOut = false);
+	uint Draw (const Techniques& techniques, bool clearScreen = true, bool insideOut = false);
 
 private:
 

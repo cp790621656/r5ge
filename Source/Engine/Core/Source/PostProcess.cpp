@@ -246,12 +246,12 @@ void PostProcess::DepthOfField (IGraphics*	graphics,
 // Both depth-of-field as well as bloom effects
 //============================================================================================================
 
-void PostProcess::Both (IGraphics*	graphics,
-						Deferred::Storage&	storage,
-						float		threshold,
-						float		focalDistance,
-						float		focalMin,
-						float		focalMax)
+void PostProcess::Both (IGraphics* graphics,
+						Deferred::Storage& storage,
+						float threshold,
+						float focalDistance,
+						float focalMin,
+						float focalMax)
 {
 	uint format = storage.mOutColor->GetFormat();
 	if (format == ITexture::Format::Invalid) format = ITexture::Format::RGB16F;

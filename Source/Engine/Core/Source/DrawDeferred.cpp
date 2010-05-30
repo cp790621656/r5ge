@@ -98,7 +98,7 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 												 IGraphics::Operation::Replace );
 
 			// Draw the scene using the deferred approach
-			count += storage.mDrawCallback(storage.mDrawTechniques, storage.mInsideOut);
+			count += storage.mDrawCallback(storage.mDrawTechniques, false, storage.mInsideOut);
 		}
 
 		// Update the textures for the SSAO functions below

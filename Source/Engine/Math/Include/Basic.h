@@ -19,11 +19,22 @@ inline float log2 (float x)
 // Checks if the given integer is a power of two
 //============================================================================================================
 
-inline bool IsPowerOfTwo(uint iVal)
+inline bool IsPowerOfTwo (uint val)
 {
 	uint i = 2;
-	while (i < iVal) i = i << 1;
-	return (i == iVal);
+	while (i < val) i = i << 1;
+	return (i == val);
+}
+
+//============================================================================================================
+// Rounds the number up to the next power-of-two
+//============================================================================================================
+
+inline uint NextPowerOfTwo (uint val)
+{
+	uint i = 2;
+	while (i < val) i = i << 1;
+	return i;
 }
 
 //============================================================================================================

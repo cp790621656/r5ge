@@ -72,14 +72,12 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 			mLastCamRange	= range;
 		}
 
-		IGraphics* graphics (mRoot->mCore->GetGraphics());
-		Vector3f dir (rot.GetForward());
+		// Activate the matrices
+		ActivateMatrices();
 
-		// Set up the view and projection matrices
-		graphics->SetScreenProjection(false);
-		graphics->SetActiveRenderTarget(mRenderTarget);
-		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
-		graphics->SetCameraRange(range);
+		// Save the projection matrix
+		IGraphics* graphics (mRoot->mCore->GetGraphics());
+		mLastProj = graphics->GetProjectionMatrix();
 
 		// Update the frustum
 		mFrustum.Update( graphics->GetModelViewProjMatrix() );
@@ -88,7 +86,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		mHits.Clear();
 
 		// Cull the scene
-		_Cull(graphics, mFrustum, pos, dir, camChanged);
+		_Cull(graphics, mFrustum, pos, mLastCamRot.GetForward(), camChanged);
 	}
 }
 
@@ -100,27 +98,46 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& pr
 {
 	if (mRoot != 0)
 	{
+		// Save the specified values
+		mLastProj	= proj;
 		mLastCamPos = pos;
 		mLastCamRot = rot;
 		mLastCamRange.Set(0.0f, 0.0f, 0.0f);
 
-		IGraphics* graphics (mRoot->mCore->GetGraphics());
-		Vector3f dir (rot.GetForward());
-
-		// Set up the view and projection matrices
-		graphics->SetScreenProjection(false);
-		graphics->SetActiveRenderTarget(mRenderTarget);
-		graphics->SetCameraOrientation( pos, dir, rot.GetUp() );
-		graphics->SetProjectionMatrix(proj);
+		// Activate the matrices
+		ActivateMatrices();
 
 		// Update the frustum
+		IGraphics* graphics (mRoot->mCore->GetGraphics());
 		mFrustum.Update(graphics->GetModelViewProjMatrix());
 
 		// Raycast hits are no longer valid
 		mHits.Clear();
 
 		// Cull the scene
-		_Cull(graphics, mFrustum, mLastCamPos, dir, true);
+		_Cull(graphics, mFrustum, mLastCamPos, mLastCamRot.GetForward(), true);
+	}
+}
+
+//============================================================================================================
+// Re-activates the scene's matrices on the graphics controller
+//============================================================================================================
+
+void Scene::ActivateMatrices()
+{
+	IGraphics* graphics (mRoot->mCore->GetGraphics());
+
+	graphics->SetScreenProjection(false);
+	graphics->SetActiveRenderTarget(mRenderTarget);
+	graphics->SetCameraOrientation(mLastCamPos, mLastCamRot.GetForward(), mLastCamRot.GetUp());
+	
+	if (mLastCamRange.x > 0.0f)
+	{
+		graphics->SetCameraRange(mLastCamRange);
+	}
+	else
+	{
+		graphics->SetProjectionMatrix(mLastProj);
 	}
 }
 
@@ -174,9 +191,7 @@ uint Scene::DrawAllForward (bool clearScreen)
 			mForward.Expand() = graphics->GetTechnique("Glow");
 			mForward.Expand() = graphics->GetTechnique("Glare");
 		}
-
-		if (clearScreen) graphics->Clear();
-		return _Draw(mForward);
+		return Draw(mForward, clearScreen);
 	}
 	return 0;
 }
@@ -196,7 +211,7 @@ uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 		// Set the draw callback
 		if (!mDrawCallback)
 		{
-			mDrawCallback = bind(&Scene::_Draw, this);
+			mDrawCallback = bind(&Scene::Draw, this);
 		}
 
 		// Set the list of techniques used to draw the scene
@@ -253,7 +268,7 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange)
 		// Set the draw callback
 		if (!mDrawCallback)
 		{
-			mDrawCallback = bind(&Scene::_Draw, this);
+			mDrawCallback = bind(&Scene::Draw, this);
 		}
 
 		// Draw the scene using the deferred techniques
@@ -297,12 +312,12 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::_Draw (const String& technique)
+uint Scene::Draw (const String& technique, bool clearScreen)
 {
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
-		return _Draw(graphics->GetTechnique(technique));
+		return Draw(graphics->GetTechnique(technique), clearScreen);
 	}
 	return 0;
 }
@@ -311,24 +326,27 @@ uint Scene::_Draw (const String& technique)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::_Draw (const ITechnique* technique)
+uint Scene::Draw (const ITechnique* technique, bool clearScreen)
 {
 	mTechs.Clear();
 	mTechs.Expand() = technique;
-	return _Draw(mTechs);
+	return Draw(mTechs, clearScreen);
 }
 
 //============================================================================================================
 // Draw the specified scene
 //============================================================================================================
 
-uint Scene::_Draw (const Techniques& techniques, bool insideOut)
+uint Scene::Draw (const Techniques& techniques, bool clearScreen, bool insideOut)
 {
 	uint result(0);
 
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
+
+		// Clear the screen if needed
+		if (clearScreen) graphics->Clear();
 
 		// Reset to perspective projection
 		graphics->SetScreenProjection( false );

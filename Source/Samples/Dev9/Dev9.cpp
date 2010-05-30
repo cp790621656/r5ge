@@ -213,13 +213,10 @@ void TestApp::DrawLeaves(void* param)
 
 		// Draw the scene into the diffuse map target
 		{
-			mGraphics->SetActiveRenderTarget(diffuseTarget);
-			mGraphics->Clear();
-
 			// Off-screen target
 			mOffscreen.SetRenderTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
-			mOffscreen._Draw("Diffuse Map");
+			mOffscreen.Draw("Diffuse Map");
 			mGraphics->Flush();
 
 			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
@@ -237,11 +234,9 @@ void TestApp::DrawLeaves(void* param)
 
 		// Draw the scene into the normal map target
 		{
-			mGraphics->SetActiveRenderTarget(normalTarget);
-			mGraphics->Clear();
-
 			mOffscreen.SetRenderTarget(normalTarget);
-			mOffscreen._Draw("Normal Map");
+			mOffscreen.ActivateMatrices();
+			mOffscreen.Draw("Normal Map");
 			mGraphics->Flush();
 		}
 

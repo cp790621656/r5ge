@@ -32,16 +32,8 @@ Root
 				Bottom = 0.000000 250.000000
 				Alpha = 1.000000
 				Font = "Arial 15"
-				Event Handling = "Normal"
+				Event Handling = "None"
 				Layer = 0
-			}
-			
-			Picture = "Debug"
-			{
-				Right = 0 300
-				Bottom = 0 200
-				Texture = "Shadowmap"
-				Ignore Alpha = true
 			}
 		}
 	}
