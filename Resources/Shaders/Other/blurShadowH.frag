@@ -1,7 +1,6 @@
 uniform sampler2D R5_texture0;	// Shadow lightmap
 uniform sampler2D R5_texture1;	// Depth texture
 
-uniform vec2 R5_pixelSize;
 uniform vec4 depthRange;		// R5_clipRange can't be used since we're drawing in 2D
 
 // Get the distance to the specified texture coordinate
@@ -30,9 +29,9 @@ void main()
 	float originalValue = texture2D(R5_texture0, tc).r;
 	float variance = pixelSize * depthRange.w * 10.0;
 
-    // The closer to the camera the larger is the area we can sample
+	// The closer to the camera the larger is the area we can sample
 	float strength = (1.0 - originalDistance / depthRange.w);
-	strength = max(0.75, strength * strength * 3.0);
+	strength = 0.5 + strength * strength * strength * 4.0;
 	pixelSize = pixelSize * strength;
 
 	// Pixel offsets
@@ -40,7 +39,7 @@ void main()
 	float o2 = o1 + pixelSize;
 	float o3 = o2 + pixelSize;
 
-    // Calculate the color based on sampled contributions
+	// Calculate the color based on sampled contributions
 	float final =
 		GetContribution(originalDistance, originalValue, vec2(tc.x - o3, tc.y), variance) +
 		GetContribution(originalDistance, originalValue, vec2(tc.x + o3, tc.y), variance) +
