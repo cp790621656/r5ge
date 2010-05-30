@@ -150,7 +150,7 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 
 	// Combine the light contribution with material
 	{
-		// Final color finalTarget
+		// Final color target
 		if (finalTarget == 0)
 		{
 			finalTarget = graphics->CreateRenderTarget();

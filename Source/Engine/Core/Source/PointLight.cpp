@@ -91,7 +91,7 @@ void PointLight::_Draw (IGraphics* graphics, const Light::List& lights, const IT
 		graphics->SetActiveLight(--b, 0);
 
 	// Save the view matrix as it won't be changing
-	const Matrix43& view = graphics->GetViewMatrix();
+	Matrix43 view (graphics->GetViewMatrix());
 	Matrix43 mat;
 
 	// Run through all point lights
