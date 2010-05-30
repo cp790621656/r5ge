@@ -49,5 +49,5 @@ void main()
 	 	GetContribution(originalDistance, originalValue, vec2(tc.x - o1, tc.y), variance) +
 	 	GetContribution(originalDistance, originalValue, vec2(tc.x + o1, tc.y), variance);
 
-	gl_FragColor = vec4(final / 4.0);
+	gl_FragColor = vec4(final / 6.0);
 }

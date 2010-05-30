@@ -14,10 +14,10 @@ struct IShader
 	{
 		enum
 		{
-			Skinned		= 0x1,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
-			Instanced	= 0x2,	// The shader has a pseudo-instancing component
-			Billboarded	= 0x4,	// The shader is meant for a billboarded quad (or a series of quads)
-			WorldScale	= 0x8,	// The shader has the R5_worldScale parameter.
+			Skinned		= 0x01,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
+			Instanced	= 0x02,	// The shader has a pseudo-instancing component
+			Billboarded	= 0x04,	// The shader is meant for a billboarded quad (or a series of quads)
+			WorldScale	= 0x08,	// The shader has the R5_worldScale parameter.
 		};
 	};
 

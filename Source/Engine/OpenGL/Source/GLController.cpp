@@ -806,7 +806,7 @@ void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 			// If the specified texture has been bound and it happens to be null
 			if (_BindTexture(glType, glID) && (glID == 0) && (textureUnit < 8))
 			{
-				// We must also disable the appropriate 
+				// We must also disable the appropriate texture coordinate buffer
 				BufferEntry& buffer = mBuffers[ Attribute::TexCoord0 + textureUnit ];
 
 				if (buffer.mEnabled)
