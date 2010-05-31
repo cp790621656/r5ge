@@ -30,8 +30,8 @@ void main()
 	float variance = pixelSize * depthRange.w * 10.0;
 
 	// The closer to the camera the larger is the area we can sample
- 	float strength = (1.0 - originalDistance / depthRange.w);
-	strength = 0.5 + strength * strength * strength * 4.0;
+	float strength = (1.0 - originalDistance / depthRange.w);
+	strength = max(0.75, strength * strength * 3.0);
 	pixelSize = pixelSize * strength;
 
 	// Pixel offsets
@@ -44,9 +44,9 @@ void main()
 		GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y - o3), variance) +
 		GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y + o3), variance) +
 		GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y - o2), variance) +
-	 	GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y + o2), variance) +
-	 	GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y - o1), variance) +
-	 	GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y + o1), variance);
+		GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y + o2), variance) +
+		GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y - o1), variance) +
+		GetContribution(originalDistance, originalValue, vec2(tc.x, tc.y + o1), variance);
 
 	gl_FragColor = vec4(final / 6.0);
 }

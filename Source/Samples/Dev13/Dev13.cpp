@@ -51,15 +51,15 @@ void CreateShadow (IGraphics* graphics, Deferred::Storage& storage, const ITextu
 	{
 		shader = graphics->GetShader("Other/Shadow");
 		shader->RegisterUniform("shadowMatrix", SetShadowMatrix);
-		shader->RegisterUniform("lightDepthPixelSize", SetShadowOffset);
+		shader->RegisterUniform("shadowOffset", SetShadowOffset);
 	}
 
 	g_shadowMat = mat;
 	g_shadowOffset = lightDepth->GetSize();
 
 	// 1-pixel 30 degree rotated kernel (0.866, 0.5) multiplied by 2
-	g_shadowOffset.x = (1.0f / g_shadowOffset.x) * 1.732f;
-	g_shadowOffset.y = (1.0f / g_shadowOffset.y);
+	g_shadowOffset.x = 1.732f	/ g_shadowOffset.x;
+	g_shadowOffset.y = 1.0f		/ g_shadowOffset.y;
 
 	graphics->SetActiveRenderTarget(storage.mRenderTarget);
 	graphics->SetScreenProjection(true);
