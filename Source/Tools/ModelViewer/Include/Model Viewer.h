@@ -39,7 +39,7 @@ public:
 	UIHighlight*	mSbHighlight;
 	UILabel*		mSbLabel;
 	float			mTimestamp;
-	bool			mResetCamera;
+	uint			mResetCamera;
 	String			mLoadFilename;
 	Array<String>	mSavedHistory;
 

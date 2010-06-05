@@ -5,31 +5,84 @@
 // Dev0 is a temporary testing application. Its source code and purpose change frequently.
 //============================================================================================================
 
-// Include R5
-#include "../../../Engine/Interface/Include/_All.h"
-
-// For some strange reason FMOD doesn't link unless <windows.h> is included prior to its header files.
-#include <windows.h>
-
-// Include FMod
-#include "../Include/fmod.hpp"
-#include "../Include/fmod_errors.h"
-#pragma comment(lib, "fmodex.lib")
-
+#include "../../../Engine/Serialization/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
-// FMod error check
+
+struct Vertex
+{
+	Vector3f pos;
+	Vector3f normal;
+	Vector2f texCoord;
+
+	bool Matches (const Vector3f& p, const Vector3f& n, const Vector2f& tc)
+	{
+		return (p == pos && n == normal && tc == texCoord);
+	}
+
+	void Set (const Vector3f& p, const Vector3f& n, const Vector2f& tc)
+	{
+		pos = p;
+		normal = n;
+		texCoord = tc;
+	}
+};
+
 //============================================================================================================
 
-bool FMODCheck (FMOD_RESULT result)
+struct Index
 {
-	if (result != FMOD_OK)
+	uint pi;
+	uint ni;
+	uint ti;
+
+	Index() : pi(0), ni(0), ti(0) {}
+};
+
+//============================================================================================================
+
+ushort Add (Array<Vertex>& verts, const Vector3f& p, const Vector3f& n, const Vector2f& tc)
+{
+	FOREACH(i, verts)
 	{
-		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-		return false;
+		if (verts[i].Matches(p, n, tc))
+		{
+			return (ushort)i;
+		}
 	}
-	return true;
+	verts.Expand().Set(p, n, tc);
+	return (ushort)(verts.GetSize() - 1);
+}
+
+//============================================================================================================
+
+void Finish (Array<Vertex>& verts, Array<ushort>& idx, bool save)
+{
+	static uint counter (0);
+	static TreeNode root ("Root");
+	static TreeNode& core = root.AddChild("Core");
+
+	TreeNode& mesh = core.AddChild("Mesh", String("Weapon %u", counter++));
+
+	Array<Vector3f>& vout = mesh.AddChild("Vertices").mValue.ToVector3fArray();
+	Array<Vector3f>& nout = mesh.AddChild("Normals").mValue.ToVector3fArray();
+	Array<Vector2f>& tout = mesh.AddChild("TexCoords 0").mValue.ToVector2fArray();
+
+	mesh.AddChild("Triangles", idx);
+
+	FOREACH(i, verts)
+	{
+		Vertex& v = verts[i];
+		vout.Expand() = v.pos;
+		nout.Expand() = v.normal;
+		tout.Expand() = v.texCoord;
+	}
+
+	verts.Clear();
+	idx.Clear();
+
+	if (save) root.Save("weapons.r5a");
 }
 
 //============================================================================================================
@@ -45,54 +98,118 @@ int main (int argc, char* argv[])
 #endif
 	System::SetCurrentPath("../../../Resources/");
 
-	printf("FMOD Sound System, copyright © Firelight Technologies Pty, Ltd., 1994-2010.\n");
+	String pack;
 
-	FMOD::System* system (0);
-    FMOD_RESULT result = FMOD::System_Create(&system);
-    if (!FMODCheck(result)) return 0;
-
-	uint version (0);
-    result = system->getVersion(&version);
-    if (!FMODCheck(result)) return 0;
-
-    if (version < FMOD_VERSION)
-    {
-        printf("Error! You are using an old version of FMOD %08x. This program requires %08x\n",
-			version, FMOD_VERSION);
-        getchar();
-        return 0;
-    }
-
-    result = system->init(32, FMOD_INIT_NORMAL, NULL);
-    if (!FMODCheck(result)) return 0;
-
-	printf("Creating the sound... ");
-	FMOD::Sound* sound = 0;
-	result = system->createStream("Sound/cAudioTheme1.ogg", FMOD_LOOP_NORMAL, 0, &sound);
-	printf(" done.\n");
-
-	if (FMODCheck(result))
+	if (pack.Load("c:/temp/weaponpack/weapons.obj"))
 	{
-		// Just for the fun of it, set a preset
-		FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_SEWERPIPE;
-		system->setReverbProperties(&prop);
+		uint offset(0), stage(0);
+		String line, word;
 
-		// Play the sound
-		FMOD::Channel* channel (0);
-		result = system->playSound(FMOD_CHANNEL_FREE, sound, false, &channel);
+		// Raw data
+		Array<Vector3f> rawV, rawN;
+		Array<Vector2f> rawTC;
+		Array<Index> rawI;
 
-		if (FMODCheck(result))
+		// Final data
+		Array<Vertex> verts;
+		Array<ushort> idx;
+		
+		for (;;)
 		{
-			system->update();
-			printf("Press Enter key to stop playback\n");
-			getchar();
+			offset = pack.GetLine(line, offset);
+
+			if (line.IsEmpty())
+			{
+				if (stage == 1)
+				{
+					stage = 0;
+					Finish(verts, idx, true);
+				}
+				break;
+			}
+
+			if (line[0] == 'v')
+			{
+				if (stage == 1)
+				{
+					stage = 0;
+					Finish(verts, idx, false);
+				}
+
+				if (line[1] == ' ')
+				{
+					Vector3f& v = rawV.Expand();
+
+					if (sscanf(line.GetBuffer(), "v %f %f %f", &v.x, &v.y, &v.z) != 3)
+					{
+						printf("Parsing error\n");
+					}
+				}
+				else if (line[1] == 't')
+				{
+					Vector2f& v = rawTC.Expand();
+
+					if (sscanf(line.GetBuffer(), "vt %f %f", &v.x, &v.y) != 2)
+					{
+						printf("Parsing error\n");
+					}
+				}
+				else if (line[1] == 'n')
+				{
+					Vector3f& v = rawN.Expand();
+
+					if (sscanf(line.GetBuffer(), "vn %f %f %f", &v.x, &v.y, &v.z) != 3)
+					{
+						printf("Parsing error\n");
+					}
+				}
+			}
+			else if (line[0] == 'f' && line[1] == ' ')
+			{
+				stage = 1;
+				rawI.Clear();
+
+				for (uint wordOffset = 2;;)
+				{
+					wordOffset = line.GetWord(word, wordOffset);
+					if (word.IsEmpty()) break;
+
+					Index& index = rawI.Expand();
+
+					if (sscanf(word.GetBuffer(), "%u/%u/%u", &index.pi, &index.ti, &index.ni) != 3)
+					{
+						printf("Parsing error\n");
+					}
+					else
+					{
+						// OBJ's index is 1-based
+						--index.pi;
+						--index.ti;
+						--index.ni;
+					}
+				}
+
+				if (rawI.GetSize() == 3 || rawI.GetSize() == 4)
+				{
+					idx.Expand() = Add(verts, rawV[rawI[0].pi], rawN[rawI[0].ni], rawTC[rawI[0].ti]);
+					idx.Expand() = Add(verts, rawV[rawI[1].pi], rawN[rawI[1].ni], rawTC[rawI[1].ti]);
+					idx.Expand() = Add(verts, rawV[rawI[2].pi], rawN[rawI[2].ni], rawTC[rawI[2].ti]);
+				
+					if (rawI.GetSize() == 4)
+					{
+						idx.Expand() = Add(verts, rawV[rawI[2].pi], rawN[rawI[2].ni], rawTC[rawI[2].ti]);
+						idx.Expand() = Add(verts, rawV[rawI[3].pi], rawN[rawI[3].ni], rawTC[rawI[3].ti]);
+						idx.Expand() = Add(verts, rawV[rawI[0].pi], rawN[rawI[0].ni], rawTC[rawI[0].ti]);
+					}
+				}
+				else
+				{
+					printf("Unexpected number of vertex entries\n");
+				}
+			}
 		}
 	}
-
-	result = system->release();
-	if (!FMODCheck(result)) return 0;
-
-	printf("Done! Press Enter to exit.\n");
+	printf("Done!\n");
 	getchar();
 	return 0;
 }

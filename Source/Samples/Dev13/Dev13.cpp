@@ -8,8 +8,9 @@
 //============================================================================================================
 // TODO: Object's OnMouseMove and similar functionality should be removed, replaced with scripts.
 // TODO: Object::GetTransformedBounds(rot, onlyVisible), should recurse through children
-// TODO: Remove the need for a second Cull() call on the scene
 // TODO: SetShadowMatrix() should be a built-in function -- likely at Core level
+// Theirs: 0.1103 0.2466 0.6431
+// Mine:   0.1429 0.2857 0.5714
 //============================================================================================================
 
 #include "../../Engine/OpenGL/Include/_All.h"

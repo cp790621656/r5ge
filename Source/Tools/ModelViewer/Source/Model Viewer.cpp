@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbLabel(0), mTimestamp(0), mResetCamera(false)
+ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbLabel(0), mTimestamp(0), mResetCamera(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
@@ -98,9 +98,9 @@ void ModelViewer::OnDraw()
 	mScene.Cull(mCam);
 
 	// If there was a request to reset the viewpoint, now should be a good time as we know what's visible
-	if (mResetCamera)
+	if (mResetCamera > 0 && mResetCamera++ > 1)
 	{
-		mResetCamera = false;
+		mResetCamera = 0;
 		const Bounds& bounds = mInst->GetAbsoluteBounds();
 
 		if (bounds.IsValid())
@@ -149,7 +149,7 @@ void ModelViewer::OnDraw()
 		mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Draw the scene using the forward rendering approach, adding glow and glare effects
-		mScene._Draw(ft);
+		mScene.Draw(ft, false);
 	}
 
 	// Post-processing part
@@ -214,7 +214,7 @@ bool ModelViewer::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 		}
 		else if ( key == Key::F9 )
 		{
-			mResetCamera = true;
+			mResetCamera = 1;
 		}
 		else if ( key == Key::Escape )
 		{

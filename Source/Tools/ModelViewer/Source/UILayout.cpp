@@ -203,7 +203,7 @@ void ModelViewer::Load()
 		_loadFrame->Hide();
 		mInst->SetDirty();
 		mModel->SetDirty();
-		mResetCamera = true;
+		mResetCamera = 1;
 		SetStatusText( String("Loaded '%s'", mLoadFilename.GetBuffer()) );
 	}
 	else
@@ -1618,7 +1618,7 @@ void ModelViewer::OnViewMenuSelection (UIWidget* widget)
 
 		if (item == RESET_CAMERA)
 		{
-			mResetCamera = true;
+			mResetCamera = 1;
 		}
 		else if (item == RESET_WINDOW)
 		{

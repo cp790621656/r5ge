@@ -47,15 +47,12 @@ void ModelInstance::SetModel (Model* model, bool threadSafe)
 
 void ModelInstance::OnUpdate()
 {
-	if (mIsDirty)
+	if (mModel != 0)
 	{
-		mRecalculate = true;
-
-		if (mModel != 0)
-		{
-			mRelativeBounds.Include( mModel->GetBounds() );
-		}
+		if (mModel->IsDirty()) mIsDirty = true;
+		mRelativeBounds = mModel->GetBounds();
 	}
+	if (mIsDirty) mRecalculate = true;
 }
 
 //============================================================================================================
