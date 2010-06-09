@@ -1334,12 +1334,29 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 			// Vertex colors
 			if (mesh->mHasColors)
 			{
-				Array<Color4ub>& colors = node.AddChild("Colors").mValue.ToColor4ubArray();
+				bool saveColors = false;
 
-				for (uint b = 0; b < vertices; ++b)
+				FOREACH(b, mesh->mVertices)
 				{
 					const Vertex& v = mesh->mVertices[b];
-					colors.Expand() = v.mColor;
+
+					// If all colors are just plain white, there is no point in saving them
+					if (v.mColor != -1)
+					{
+						saveColors = true;
+						break;
+					}
+				}
+
+				if (saveColors)
+				{
+					Array<Color4ub>& colors = node.AddChild("Colors").mValue.ToColor4ubArray();
+
+					for (uint b = 0; b < vertices; ++b)
+					{
+						const Vertex& v = mesh->mVertices[b];
+						colors.Expand() = v.mColor;
+					}
 				}
 			}
 
