@@ -302,8 +302,9 @@ void GLTexture::_CheckForSource()
 
 		const String& source = mTex[0].GetSource();
 
-		// Jpegs start with DXT3 compression by default
+		// Use DXT compression unless specified otherwise
 		if (source.EndsWith(".jpg")) mRequestedFormat = Format::DXT3;
+		else mRequestedFormat = Format::DXT5;
 
 		// As a convenience, if the texture's name contains the format, use it
 		if		(source.Contains("_Alpha"))		mRequestedFormat = Format::Alpha;
