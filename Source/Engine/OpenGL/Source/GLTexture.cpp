@@ -307,7 +307,8 @@ void GLTexture::_CheckForSource()
 		else mRequestedFormat = Format::DXT5;
 
 		// As a convenience, if the texture's name contains the format, use it
-		if		(source.Contains("_Alpha"))		mRequestedFormat = Format::Alpha;
+		if		(source.Contains("_Alpha") ||
+				 source.Contains("_Glow"))		mRequestedFormat = Format::Alpha;
 		else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
 		else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
 		else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;
