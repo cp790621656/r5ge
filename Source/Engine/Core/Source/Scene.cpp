@@ -283,7 +283,7 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange)
 			if (focalRange.IsZero())
 			{
 				// Only bloom
-				PostProcess::Bloom(graphics, *this, 1.0f);
+				PostProcess::Bloom(graphics, *this, bloom);
 			}
 			else
 			{

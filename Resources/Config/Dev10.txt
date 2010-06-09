@@ -16,6 +16,19 @@ Root
 		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 100.000000 200.000000
 		
+		//Texture = "Environment Map"
+		//{
+		//	Positive X = "Textures/Skyboxes/test_px.jpg"
+		//	Negative X = "Textures/Skyboxes/test_nx.jpg"
+		//	Positive Y = "Textures/Skyboxes/test_py.jpg"
+		//	Negative Y = "Textures/Skyboxes/test_ny.jpg"
+		//	Positive Z = "Textures/Skyboxes/test_pz.jpg"
+		//	Negative Z = "Textures/Skyboxes/test_nz.jpg"
+		//	Format = "DXT1"
+		//	Filtering = "Anisotropic"
+		//	Wrap Mode = "Clamp to Edge"
+		//}
+		
 		Material = "Peasant"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -43,10 +56,50 @@ Root
 				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 		}
+		
+		//Material = "Weapons"
+		//{
+		//	Diffuse = 1.000000 1.000000 1.000000 1.000000
+		//	Specular = 1.000000 1.000000 1.000000 0.650000
+		//	Glow = 0.000000
+		//	ADT = 0.003922
+
+		//	Technique = "Deferred"
+		//	{
+		//		Shader = "Deferred/D_GSR"
+
+		//		Textures = String[]
+		//		{
+		//			"C:/Projects/DotC/Resources/Textures/Skins/weapons.r5t"
+		//			"C:/Projects/DotC/Resources/Textures/Skins/weapons_glow.png"
+		//			"Environment map"
+		//		}
+		//	}
+		//}
 	}
 
 	Core
 	{
+		//Execute = "C:/Projects/DotC/Resources/Models/Held/weapons.r5a"
+	
+		//Model Template = "Weapon0"
+		//{
+		//	Limb = "Weapon"
+		//	{
+		//		Mesh = "sword.009"
+		//		Material = "Weapons"
+		//	}
+		//}
+		
+		//Model Template = "Weapon1"
+		//{
+		//	Limb = "Weapon"
+		//	{
+		//		Mesh = "sword.025"
+		//		Material = "Weapons"
+		//	}
+		//}
+	
 		Model Template = "Torch"
 		{
 			Source = "Models/Held/torch.r5a"
@@ -109,7 +162,7 @@ Root
 				
 				Object = "Attachment - Right Hand"
 				{
-					Position = 0.06 0 0
+					Position = 0.06 0 0.0
 					Rotation = 1 0 0
 					
 					Script = "OSAttachToBone"
@@ -119,16 +172,17 @@ Root
 					
 					Model Instance = "Right Hand"
 					{
-						Scale = 1.000000
+						//Scale = 0.06
 						Layer = 10
 						Model = "Models/Held/sword.r5a"
+						//Model = "Weapon0"
 					}
 				}
 	
 				Object = "Attachment - Left Hand"
 				{
 					Position = 0.06 0 0
-					Rotation = 0.707 -0.707 0 0
+					Rotation = 0.707 0.707 0 0
 	
 					Script = "OSAttachToBone"
 					{
@@ -137,9 +191,10 @@ Root
 	
 					Model Instance = "Left Hand"
 					{
-						Scale = 1.000000
+						//Scale = 0.06
 						Layer = 10
 						Model = "Torch"
+						//Model = "Weapon1"
 					}
 				}
 			}
@@ -154,6 +209,14 @@ Root
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Layer = 10
 			Model = "Peasant"
+		}
+		
+		Directional Light = "Sunlight"
+		{
+			Rotation = -1 -1 -1
+			Ambient = 0.15 0.15 0.2
+			Specular = 1 1 1
+			Diffuse = 1.2 1.2 1.15
 		}
 
 		Debug Camera = "Default Camera"
