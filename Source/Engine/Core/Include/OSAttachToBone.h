@@ -9,12 +9,15 @@
 
 class OSAttachToBone : public Script
 {
+protected:
+
 	String mName;
 	uint mBoneIndex;
 
-public:
-
+	// Use the AddScript<> template to add new scripts
 	OSAttachToBone() : mBoneIndex(-1) {}
+
+public:
 
 	R5_DECLARE_INHERITED_CLASS("OSAttachToBone", OSAttachToBone, Script, Script);
 

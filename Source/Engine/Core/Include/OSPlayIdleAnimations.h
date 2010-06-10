@@ -9,13 +9,16 @@
 
 class OSPlayIdleAnimations : public Script
 {
+protected:
+
 	Model*	mModel;
 	ulong	mTimeToPlay;
 	bool	mIdleLoop;
 
 	Array<Animation*> mIdleAnims;
 
-private:
+	// Use the AddScript<> template to add new scripts
+	OSPlayIdleAnimations() : mModel(0), mTimeToPlay(0), mIdleLoop(false) {}
 
 	// Immediately plays a random idle animation
 	void Play();
@@ -26,8 +29,6 @@ private:
 public:
 
 	R5_DECLARE_INHERITED_CLASS("OSPlayIdleAnimations", OSPlayIdleAnimations, Script, Script);
-
-	OSPlayIdleAnimations() : mModel(0), mTimeToPlay(0), mIdleLoop(false) {}
 
 	// When the script initializes, gather all idle animations
 	virtual void OnInit();

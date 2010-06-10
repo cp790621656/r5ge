@@ -46,7 +46,7 @@ private:
 
 protected:
 
-	// It's not possible to create just plain scripts -- they need to be derived from
+	// Use the AddScript<> template to add new scripts
 	Script() : mEnabled(true), mSerializable(true) {}
 
 	// Convenience function meant to be used from inside the protected functions

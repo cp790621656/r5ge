@@ -9,14 +9,17 @@
 
 class OSRotate : public Script
 {
+protected:
+
 	Vector3f mAxis;
 	float mRate;
+
+	// Use the AddScript<> template to add new scripts
+	OSRotate() : mAxis(0.0f, 0.0f, 1.0f), mRate(1.0f) {}
 
 public:
 
 	R5_DECLARE_INHERITED_CLASS("OSRotate", OSRotate, Script, Script);
-
-	OSRotate() : mAxis(0.0f, 0.0f, 1.0f), mRate(1.0f) {}
 
 	const Vector3f& GetAxis() const { return mAxis; }
 	float GetRate() const { return mRate; }

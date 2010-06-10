@@ -14,9 +14,10 @@ protected:
 	Vector3f mRelativeRange;	// X = Near, Y = Far, Z = FOV
 	Vector3f mAbsoluteRange;
 
-public:
-
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Camera() : mRelativeRange(0.3f, 100.0f, 90.0f) {}
+
+public:
 
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Camera", Camera, Object, Object);

@@ -9,7 +9,12 @@
 
 class OSPlayAnimations : public Script
 {
-	Array<String>	mAnims;
+protected:
+
+	Array<String> mAnims;
+
+	// Use the AddScript<> template to add new scripts
+	OSPlayAnimations() {}
 
 public:
 

@@ -29,6 +29,14 @@ private:
 	OnStateDelegate			mOnStateChange;
 	OnValueDelegate			mOnValueChange;
 
+protected:
+
+	// Use the AddScript<> macro to add new scripts
+	USEventListener() {}
+
+	// UIManager is the only class that should be able to access the constructor directly
+	friend class UIManager;
+
 public:
 
 	R5_DECLARE_INHERITED_CLASS("USEventListener", USEventListener, UIScript, UIScript);
