@@ -14,6 +14,7 @@ protected:
 	Vector3f	mAlpha;			// Alpha factors for smooth interpolation (start, current, target)
 	float		mTimeStamp;		// Timestamp used for gradual alpha changes
 
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Glare() : mTimeStamp(0.0f) {}
 
 public:

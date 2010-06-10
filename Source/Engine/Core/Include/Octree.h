@@ -48,9 +48,10 @@ protected:
 	bool		mPartitioned;	// Whether the tree has been partitioned
 	bool		mCustomFill;	// Whether the virtual OnFill function will be called
 
-public:
-
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Octree();
+
+public:
 
 	R5_DECLARE_INHERITED_CLASS("Octree", Octree, Object, Object);
 

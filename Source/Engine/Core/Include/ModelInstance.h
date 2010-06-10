@@ -15,15 +15,15 @@ protected:
 	mutable bool	 mRecalculate;	// Whether the matrix needs to be recalculated
 	mutable Matrix43 mMatrix;		// Calculated world transformation matrix
 
-public:
-
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	ModelInstance() : mModel(0), mRecalculate(false) {}
-	~ModelInstance() { SetModel(0); }
+
+public:
 
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Model Instance", ModelInstance, Object, Object);
 
-public:
+	~ModelInstance() { SetModel(0); }
 
 	Model*			GetModel()			{ return mModel; }
 	const Model*	GetModel()	const	{ return mModel; }

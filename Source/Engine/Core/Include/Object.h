@@ -98,7 +98,7 @@ private:
 
 protected:
 
-	// Objects should never be created manually. Use AddObject<> template instead.
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Object();
 
 public:

@@ -30,6 +30,7 @@ protected:
 
 	const IMaterial* mMat;
 
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Terrain() : mMat(0) {}
 
 public:

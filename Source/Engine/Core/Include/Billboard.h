@@ -15,6 +15,7 @@ protected:
 	const ITexture*		mTex;		// Texture used to draw the Billboard
 	const ITechnique*	mTech;		// Technique used by the billboard
 
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Billboard() : mColor(0xFFFFFFFF), mTex(0), mTech(0) { mCalcAbsBounds = false; }
 
 public:

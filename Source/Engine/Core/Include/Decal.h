@@ -18,7 +18,7 @@ protected:
 	// Textures passed to the decal
 	Array<const ITexture*> mTextures;
 
-	// Constructor is protected -- it should never be created using 'new'
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	Decal();
 
 public:

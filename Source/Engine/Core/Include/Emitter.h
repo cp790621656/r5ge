@@ -49,6 +49,9 @@ protected:
 	uint			mLastVisible;	// Calculated: Timestamp of when the emitter was last visible
 	bool			mUpdated;		// Whether the particle positions need to be updated
 
+	// Objects should never be created manually. Use the AddObject<> template instead.
+	Emitter();
+
 private:
 
 	Array<Vector3f>		mPositions;	// Array of positions sent to the videocard
@@ -58,8 +61,6 @@ private:
 public:
 
 	R5_DECLARE_ABSTRACT_CLASS("Emitter", Object);
-
-	Emitter();
 
 	const ITexture*		GetTexture()	const	{ return mTex;		}
 	const ITechnique*	GetTechnique()	const	{ return mTech;		}

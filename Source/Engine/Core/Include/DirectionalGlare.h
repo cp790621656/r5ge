@@ -11,6 +11,7 @@ class DirectionalGlare : public Glare
 {
 protected:
 
+	// Objects should never be created manually. Use the AddObject<> template instead.
 	DirectionalGlare() {}
 
 public:
