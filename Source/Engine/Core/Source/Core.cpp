@@ -322,6 +322,15 @@ ModelTemplate* Core::GetModelTemplate (const String& name, bool createIfMissing)
 }
 
 //============================================================================================================
+// Whether Core is currently executing one or more scripts
+//============================================================================================================
+
+bool Core::IsExecuting() const
+{
+	return (g_threadCount != 0);
+}
+
+//============================================================================================================
 // Load the specified file
 //============================================================================================================
 
@@ -425,6 +434,7 @@ void Core::OnResize(const Vector2i& size)
 
 bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
+	Thread::Increment(g_threadCount);
 	bool serializable = true;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
@@ -531,6 +541,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 	}
 	// Something may have changed, update the scene
 	mIsDirty = true;
+	Thread::Decrement(g_threadCount);
 	return true;
 }
 

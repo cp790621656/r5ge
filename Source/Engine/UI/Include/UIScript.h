@@ -76,7 +76,7 @@ public:
 	virtual void OnFocus		(bool gotFocus)									{}
 	virtual void OnStateChange	(uint state, bool isSet)						{}
 	virtual void OnValueChange	()												{}
-	virtual void OnUpdate		()												{}
+	virtual void OnUpdate		(bool areaChanged)								{}
 	virtual void OnSerializeTo	(TreeNode& node) const							{}
 	virtual void OnSerializeFrom(const TreeNode& root)							{}
 };

@@ -327,6 +327,54 @@ void UIWidget::SetKeyboardFocus()
 }
 
 //============================================================================================================
+// ADVANCED: Immediately deletes all child widgets
+//============================================================================================================
+
+void UIWidget::DestroyAllWidgets()
+{
+	mDeletedWidgets.Release();
+
+	if (mChildren.IsValid())
+	{
+		SetDirty();
+
+		for (uint i = mChildren.GetSize(); i > 0; )
+		{
+			UIWidget* widget = mChildren[--i];
+
+			if (widget != 0)
+			{
+				mUI->RemoveAllReferencesTo(widget);
+			}
+		}
+		mChildren.Release();
+	}
+}
+
+//============================================================================================================
+// ADVANCED: Immediately deletes all attached scripts
+//============================================================================================================
+
+void UIWidget::DestroyAllScripts()
+{
+	mDeletedScripts.Release();
+
+	if (mScripts.IsValid())
+	{
+		// Run through all scripts
+		for (uint i = mScripts.GetSize(); i > 0; )
+		{
+			// Remove the reference to this widget
+			if (mScripts[--i] != 0)
+			{
+				mScripts[i]->mWidget = 0;
+			}
+		}
+		mScripts.Release();
+	}
+}
+
+//============================================================================================================
 // Calls OnTextureChanged() and recurses through children
 //============================================================================================================
 
@@ -357,7 +405,7 @@ bool UIWidget::_Update (bool areaChanged)
 	if (mScripts.IsValid())
 	{
 		for (uint i = mScripts.GetSize(); i > 0; )
-			mScripts[--i]->OnUpdate();
+			mScripts[--i]->OnUpdate(areaChanged);
 	}
 
 	const UIRegion& region ( GetSubRegion() );
@@ -527,54 +575,6 @@ void UIWidget::Fill (UIQueue* queue)
 				child->Fill(queue);
 			}
 		}
-	}
-}
-
-//============================================================================================================
-// Immediately deletes all child widgets
-//============================================================================================================
-
-void UIWidget::DestroyAllWidgets()
-{
-	mDeletedWidgets.Release();
-
-	if (mChildren.IsValid())
-	{
-		SetDirty();
-
-		for (uint i = mChildren.GetSize(); i > 0; )
-		{
-			UIWidget* widget = mChildren[--i];
-
-			if (widget != 0)
-			{
-				mUI->RemoveAllReferencesTo(widget);
-			}
-		}
-		mChildren.Release();
-	}
-}
-
-//============================================================================================================
-// Immediately deletes all attached scripts
-//============================================================================================================
-
-void UIWidget::DestroyAllScripts()
-{
-	mDeletedScripts.Release();
-
-	if (mScripts.IsValid())
-	{
-		// Run through all scripts
-		for (uint i = mScripts.GetSize(); i > 0; )
-		{
-			// Remove the reference to this widget
-			if (mScripts[--i] != 0)
-			{
-				mScripts[i]->mWidget = 0;
-			}
-		}
-		mScripts.Release();
 	}
 }
 

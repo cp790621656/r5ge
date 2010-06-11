@@ -92,6 +92,9 @@ public:
 	Skeleton*		GetSkeleton		(const String& name, bool createIfMissing = true);
 	ModelTemplate*	GetModelTemplate(const String& name, bool createIfMissing = true);
 
+	// Whether Core is currently executing one or more scripts
+	bool IsExecuting() const;
+
 	// It's useful to know the current key states
 	bool IsKeyDown (byte key) { return mIsKeyDown[key]; }
 

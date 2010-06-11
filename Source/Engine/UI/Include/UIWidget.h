@@ -147,6 +147,12 @@ public:
 	bool Update (const Vector2i& size,   bool parentChanged = false) { return _Update( mRegion.Update(size,   parentChanged) ); }
 	bool Update (const UIRegion& parent, bool parentChanged = false) { return _Update( mRegion.Update(parent, parentChanged) ); }
 
+	// ADVANCED: Immediately deletes all child widgets
+	void DestroyAllWidgets();
+
+	// ADVANCED: Immediately deletes all attached scripts
+	void DestroyAllScripts();
+
 	// Calls OnTextureChanged() and recurses through children
 	void _TextureChanged (const ITexture* ptr);
 
@@ -166,12 +172,6 @@ protected:
 
 	// Calls OnFill() on itself then recurses through all non-UIFrame children.
 	void Fill (UIQueue* queue);
-
-	// Immediately deletes all child widgets
-	void DestroyAllWidgets();
-
-	// Immediately deletes all attached scripts
-	void DestroyAllScripts();
 
 	// Convenience function, seeing as most areas will use the built-in layer
 	void OnDirty (const ITexture* tex) { OnDirty(tex, mLayer, 0); }
