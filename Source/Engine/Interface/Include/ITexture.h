@@ -154,6 +154,17 @@ public: //======================================================================
 						uint			dataFormat,
 						uint			textureFormat = Format::Optimal )=0;
 
+	// Assign the cube map data manually
+	virtual bool Set(	const void*	up,
+						const void*	down,
+						const void*	north,
+						const void*	east,
+						const void*	south,
+						const void*	west,
+						uint width, uint height,
+						uint dataFormat,
+						uint textureFormat = Format::Optimal )=0;
+
 	// Serialization
 	virtual bool IsSerializable() const=0;
 	virtual void SetSerializable(bool val)=0;

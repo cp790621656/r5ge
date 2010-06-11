@@ -9,6 +9,7 @@
 
 #include "../../../Engine/OpenGL/Include/_All.h"
 #include "../../../Engine/Core/Include/_All.h"
+#include "../../../Engine/Noise/Include/_All.h"
 
 namespace R5
 {

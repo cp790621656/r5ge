@@ -302,18 +302,23 @@ void GLTexture::_CheckForSource()
 
 		const String& source = mTex[0].GetSource();
 
-		// Use DXT compression unless specified otherwise
-		if (source.EndsWith(".jpg")) mRequestedFormat = Format::DXT3;
-		else mRequestedFormat = Format::DXT5;
-
 		// As a convenience, if the texture's name contains the format, use it
-		if		(source.Contains("_Alpha") ||
-				 source.Contains("_Glow"))		mRequestedFormat = Format::Alpha;
-		else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
-		else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
-		else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;
-		else if (source.Contains("_DXT3"))		mRequestedFormat = Format::DXT3;
-		else if (source.Contains("_DXT5"))		mRequestedFormat = Format::DXT5;
+		if (mRequestedFormat == Format::Optimal)
+		{
+			if		(source.Contains("_Alpha") ||
+					 source.Contains("_Glow"))		mRequestedFormat = Format::Alpha;
+			else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
+			else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
+			else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;
+			else if (source.Contains("_DXT3"))		mRequestedFormat = Format::DXT3;
+			else if (source.Contains("_DXT5"))		mRequestedFormat = Format::DXT5;
+			else if (mSize.x > 128 || mSize.y > 128)
+			{
+				// Use DXT compression unless specified otherwise
+				if (source.EndsWith(".jpg")) mRequestedFormat = Format::DXT3;
+				else mRequestedFormat = Format::DXT5;
+			}
+		}
 
 		if (mRequestedFormat != Format::Optimal)
 			mFormat = _GetSupportedFormat(mRequestedFormat);
@@ -1111,6 +1116,71 @@ bool GLTexture::Set (const void*	buffer,
 
 			mType	= (mDepth > 1) ? Type::ThreeDimensional : Type::TwoDimensional;
 			mFormat = _GetSupportedFormat((format == Format::Optimal) ? dataFormat : format);
+		}
+	}
+	mLock.Unlock();
+	return retVal;
+}
+
+//============================================================================================================
+// Assign the cube map data manually
+//============================================================================================================
+
+bool GLTexture::Set(const void*	up,
+					const void*	down,
+					const void*	north,
+					const void*	east,
+					const void*	south,
+					const void*	west,
+					uint width, uint height,
+					uint dataFormat,
+					uint format)
+{
+	bool retVal (false);
+
+	mLock.Lock();
+	{
+		uint wrapMode	= mWrapMode;
+		uint filter		= mFilter;
+
+		_InternalRelease(true);
+
+		mWrapMode	= wrapMode;
+		mFilter		= filter;
+
+		if (up != 0 && down != 0 && north != 0 && east != 0 && south != 0 && west != 0)
+		{
+			mSize.x = width;
+			mSize.y = height;
+			mDepth = 1;
+
+			void* p0 = mTex[0].Reserve(width, height, 1, dataFormat);
+			void* p1 = mTex[1].Reserve(width, height, 1, dataFormat);
+			void* p2 = mTex[2].Reserve(width, height, 1, dataFormat);
+			void* p3 = mTex[3].Reserve(width, height, 1, dataFormat);
+			void* p4 = mTex[4].Reserve(width, height, 1, dataFormat);
+			void* p5 = mTex[5].Reserve(width, height, 1, dataFormat);
+
+			if (p0 != 0 && p1 != 0 && p2 != 0 && p3 != 0 && p4 != 0 && p5 != 0)
+			{
+				memcpy(p0, east,	mTex[0].GetSize());
+				memcpy(p1, west,	mTex[1].GetSize());
+				memcpy(p2, north,	mTex[2].GetSize());
+				memcpy(p3, south,	mTex[3].GetSize());
+				memcpy(p4, up,		mTex[4].GetSize());
+				memcpy(p5, down,	mTex[5].GetSize());
+
+				retVal = true;
+			}
+
+			if (retVal)
+			{
+				mCheckForSource  = false;
+				mRequestedFormat = format;
+
+				mType	= Type::EnvironmentCubeMap;
+				mFormat = _GetSupportedFormat((format == Format::Optimal) ? dataFormat : format);
+			}
 		}
 	}
 	mLock.Unlock();

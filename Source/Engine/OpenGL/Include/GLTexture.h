@@ -126,6 +126,17 @@ public:
 						uint			dataFormat,
 						uint			format = Format::Optimal );
 
+	// Assign the cube map data manually
+	virtual bool Set(	const void*	up,
+						const void*	down,
+						const void*	north,
+						const void*	east,
+						const void*	south,
+						const void*	west,
+						uint width, uint height,
+						uint dataFormat,
+						uint textureFormat = Format::Optimal );
+
 	// Adjusts the anisotropic filtering level for all textures
 	static void SetDefaultAF (uint level);
 

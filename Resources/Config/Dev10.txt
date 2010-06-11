@@ -16,19 +16,6 @@ Root
 		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 100.000000 200.000000
 		
-		//Texture = "Environment Map"
-		//{
-		//	Positive X = "Textures/Skyboxes/test_px.jpg"
-		//	Negative X = "Textures/Skyboxes/test_nx.jpg"
-		//	Positive Y = "Textures/Skyboxes/test_py.jpg"
-		//	Negative Y = "Textures/Skyboxes/test_ny.jpg"
-		//	Positive Z = "Textures/Skyboxes/test_pz.jpg"
-		//	Negative Z = "Textures/Skyboxes/test_nz.jpg"
-		//	Format = "DXT1"
-		//	Filtering = "Anisotropic"
-		//	Wrap Mode = "Clamp to Edge"
-		//}
-		
 		Material = "Peasant"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -57,48 +44,48 @@ Root
 			}
 		}
 		
-		//Material = "Weapons"
-		//{
-		//	Diffuse = 1.000000 1.000000 1.000000 1.000000
-		//	Specular = 1.000000 1.000000 1.000000 0.650000
-		//	Glow = 0.000000
-		//	ADT = 0.003922
+		Material = "Weapons"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 1.000000 1.000000 1.000000 0.650000
+			Glow = 0.000000
+			ADT = 0.003922
 
-		//	Technique = "Deferred"
-		//	{
-		//		Shader = "Deferred/D_GSR"
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/D_SRG_E"
 
-		//		Textures = String[]
-		//		{
-		//			"C:/Projects/DotC/Resources/Textures/Skins/weapons.r5t"
-		//			"C:/Projects/DotC/Resources/Textures/Skins/weapons_glow.png"
-		//			"Environment map"
-		//		}
-		//	}
-		//}
+				Textures = String[]
+				{
+					"C:/Projects/DotC/Resources/Textures/Skins/weapons_rgb.png"
+					"C:/Projects/DotC/Resources/Textures/Skins/weapons_rgb_srg.png"
+					"Environment map"
+				}
+			}
+		}
 	}
 
 	Core
 	{
-		//Execute = "C:/Projects/DotC/Resources/Models/Held/weapons.r5a"
+		Execute = "C:/Projects/DotC/Resources/Models/Held/weapons.r5a"
 	
-		//Model Template = "Weapon0"
-		//{
-		//	Limb = "Weapon"
-		//	{
-		//		Mesh = "sword.009"
-		//		Material = "Weapons"
-		//	}
-		//}
+		Model Template = "Weapon0"
+		{
+			Limb = "Weapon"
+			{
+				Mesh = "sword.007"
+				Material = "Weapons"
+			}
+		}
 		
-		//Model Template = "Weapon1"
-		//{
-		//	Limb = "Weapon"
-		//	{
-		//		Mesh = "sword.025"
-		//		Material = "Weapons"
-		//	}
-		//}
+		Model Template = "Weapon1"
+		{
+			Limb = "Weapon"
+			{
+				Mesh = "sword.008"
+				Material = "Weapons"
+			}
+		}
 	
 		Model Template = "Torch"
 		{
@@ -172,10 +159,10 @@ Root
 					
 					Model Instance = "Right Hand"
 					{
-						//Scale = 0.06
+						Scale = 0.06
 						Layer = 10
-						Model = "Models/Held/sword.r5a"
-						//Model = "Weapon0"
+						//Model = "Models/Held/sword.r5a"
+						Model = "Weapon0"
 					}
 				}
 	
@@ -191,10 +178,10 @@ Root
 	
 					Model Instance = "Left Hand"
 					{
-						//Scale = 0.06
+						Scale = 0.06
 						Layer = 10
-						Model = "Torch"
-						//Model = "Weapon1"
+						//Model = "Torch"
+						Model = "Weapon1"
 					}
 				}
 			}

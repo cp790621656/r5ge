@@ -12,6 +12,9 @@ using namespace R5;
 
 R5::Random randomGen;
 
+//ModelInstance* g_inst0 = 0;
+//ModelInstance* g_inst1 = 0;
+
 //============================================================================================================
 // Script that adds torchlight-like flickering to the point light it's attached to
 //============================================================================================================
@@ -89,6 +92,17 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/Dev10.txt")
 	{
+		Noise noise;
+		noise.SetSeed(7654321);
+		noise.SetSize(32, 32);
+		noise.SetSeamless(false);
+		noise.ApplyFilter("Simple");
+		void* ptr = noise.GetBuffer();
+
+		ITexture* tex = mGraphics->GetTexture("Environment Map");
+		tex->Set(ptr, ptr, ptr, ptr, ptr, ptr, 32, 32, ITexture::Format::Float, ITexture::Format::Alpha);
+		tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
+
 		mCam = mScene.FindObject<DebugCamera>("Default Camera");
 
 		if (mCam != 0)
