@@ -4,12 +4,11 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Dev7 - Particle Effects
+// Dev10: Animations
 //============================================================================================================
 
 #include "../../../Engine/OpenGL/Include/_All.h"
 #include "../../../Engine/Core/Include/_All.h"
-#include "../../../Engine/Noise/Include/_All.h"
 
 namespace R5
 {
