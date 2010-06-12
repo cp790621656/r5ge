@@ -16,8 +16,7 @@ void OSPlayIdleAnimations::Play()
 	if (mIdleAnims.IsValid())
 	{
 		g_rand.SetSeed(g_rand.GenerateUint() + (uint)Time::GetMilliseconds());
-		float factor = g_rand.GenerateFloat();
-		uint index = Float::RoundToUInt(factor * (mIdleAnims.GetSize() - 1));
+		uint index = g_rand.GenerateUint() % mIdleAnims.GetSize();
 
 		if (mIdleLoop)
 		{
