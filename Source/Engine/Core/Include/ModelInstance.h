@@ -29,7 +29,7 @@ public:
 	const Model*	GetModel()	const	{ return mModel; }
 	const Matrix43&	GetMatrix()	const;
 
-	void SetModel (Model* model, bool threadSafe = true);
+	void SetModel (Model* model, bool runOnSerialize = true, bool threadSafe = true);
 
 protected:
 

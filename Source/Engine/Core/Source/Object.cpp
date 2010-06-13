@@ -140,9 +140,9 @@ Object* Object::_AddObject (const String& type, const String& name)
 // INTERNAL: Finds an object in the scene
 //============================================================================================================
 
-Object* Object::_FindObject (const String& name, bool recursive, bool threadSafe)
+const Object* Object::_FindObject (const String& name, bool recursive, bool threadSafe) const
 {
-	Object* node (0);
+	const Object* node (0);
 
 	if (mChildren.IsValid())
 	{
@@ -214,13 +214,13 @@ Script* Object::_AddScript (const String& type)
 // INTERNAL: Retrieves a script of specified type
 //============================================================================================================
 
-Script* Object::_GetScript (const String& type)
+const Script* Object::_GetScript (const String& type) const
 {
-	Script* ptr (0);
+	const Script* ptr (0);
 
 	FOREACH(i, mScripts)
 	{
-		Script* script = mScripts[i];
+		const Script* script = mScripts[i];
 
 		if ( script != 0 && type == script->GetClassID() )
 		{

@@ -116,11 +116,13 @@ private:
 	// INTERNAL: Creates a new object of specified type
 	static Object* _Create (const String& type);
 
-	Object*	_AddObject	(const String& type, const String& name);
-    Object*	_FindObject	(const String& name, bool recursive = true, bool threadSafe = true);
-	Script* _AddScript	(const String& type);
-	Script* _GetScript	(const String& type);
+	// INTERNAL: Use templates instead of these functions
+	Object*			_AddObject	(const String& type, const String& name);
+	const Object*	_FindObject	(const String& name, bool recursive = true, bool threadSafe = true) const;
+	Script*			_AddScript	(const String& type);
+	const Script*	_GetScript	(const String& type) const;
 
+	// INTERNAL: Use the AddObject<> template instead
 	void _Add	(Object* ptr);
 	void _Remove(Object* ptr);
 
@@ -311,9 +313,18 @@ public:
 	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
 	{
 		if (threadSafe) Lock();
-		Object* obj = _FindObject(name, recursive, threadSafe);
+		const Object* obj = _FindObject(name, recursive, threadSafe);
 		if (threadSafe) Unlock();
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+	}
+
+	// Finds a child object of the specified name and type
+	template <typename Type> const Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true) const
+	{
+		if (threadSafe) Lock();
+		const Object* obj = _FindObject(name, recursive, threadSafe);
+		if (threadSafe) Unlock();
+		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (const Type*)obj : 0;
 	}
 
 	// Creates a new child of specified type and name
@@ -329,9 +340,18 @@ public:
 	template <typename Type> Type* GetScript(bool threadSafe = true)
 	{
 		if (threadSafe) Lock();
-		Script* script = _GetScript(Type::ClassID());
+		const Script* script = _GetScript(Type::ClassID());
 		if (threadSafe) Unlock();
 		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+	}
+
+	// Retrieves an existing script on the object
+	template <typename Type> const Type* GetScript(bool threadSafe = true) const
+	{
+		if (threadSafe) Lock();
+		const Script* script = _GetScript(Type::ClassID());
+		if (threadSafe) Unlock();
+		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (const Type*)script : 0;
 	}
 
 	// Adds a new script to the object (only one script of each type can be active on the object)
@@ -347,7 +367,7 @@ public:
 	template <typename Type> void RemoveScript(bool threadSafe = true)
 	{
 		if (threadSafe) Lock();
-		Script* script = _GetScript(Type::ClassID());
+		Script* script = (Script*)_GetScript(Type::ClassID());
 		if (script != 0) script->DestroySelf(false);
 		if (threadSafe) Unlock();
 	}

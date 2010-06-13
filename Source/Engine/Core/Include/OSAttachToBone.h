@@ -24,6 +24,9 @@ public:
 	// Reset the index of the bone, forcing it to be found again by its name next Update
 	void Reset() { mBoneIndex = -1; }
 
+	// Name of the associated bone
+	const String& GetBone() const { return mName; }
+
 	// Set the bone by name
 	void SetBone (const String& name) { mName = name; mBoneIndex = -1; }
 
