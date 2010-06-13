@@ -352,7 +352,7 @@ uint Scene::Draw (const Techniques& techniques, bool clearScreen, bool insideOut
 		graphics->SetScreenProjection( false );
 
 		// Draw the scene
-		result += mQueue.Draw(graphics, techniques, insideOut);
+		result += mQueue.Draw(*this, graphics, techniques, insideOut);
 
 		// Restore the potentially altered default state
 		graphics->SetNormalize(false);

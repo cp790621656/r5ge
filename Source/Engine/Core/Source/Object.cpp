@@ -817,13 +817,13 @@ void Object::Fill (FillParams& params)
 // Draws the object with the specified technique
 //============================================================================================================
 
-uint Object::Draw (uint group, const ITechnique* tech, bool insideOut)
+uint Object::Draw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	uint result (0);
 
 	if (!mIgnore.Get(Ignore::Draw))
 	{
-		result += OnDraw(group, tech, insideOut);
+		result += OnDraw(storage, group, tech, insideOut);
 	}
 
 	// Debugging functionality

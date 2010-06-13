@@ -34,7 +34,23 @@ namespace Deferred
 		const ITexture* mOutLightmap;	// Final eye space lightmap (SSAO)
 
 		Storage() : mRenderTarget(0), mAOLevel(0), mInsideOut(false),
-			mOutColor(0), mOutDepth(0), mOutNormal(0), mOutLightmap(0) {}
+			mOutColor(0), mOutDepth(0), mOutNormal(0), mOutLightmap(0)
+		{
+			mTempTextures.ExpandTo(32, true);
+			mTempTargets.ExpandTo(32, true);
+		}
+
+		// ADVANCED FUNCTIONALITY:
+		// The following textures are available during deferred OnDraw callbacks, but Graphics::Flush()
+		// must be called first. Be careful using these -- keep in mind that the engine is writing to
+		// the very same textures while you're accessing them, so don't read/write on more than 1 pixel
+		// at a time, or you will get unpredictable results. Ideal usage would be for soft particles:
+		// depth write is off during their process, making it safe to use for sampling purposes.
+
+		const ITexture* GetDepth()				const { return mTempTextures[0]; }
+		const ITexture* GetNormal()				const { return mTempTextures[1]; }
+		const ITexture* GetMaterialDiffuse()	const { return mTempTextures[2]; }
+		const ITexture* GetMaterialSpecular()	const { return mTempTextures[3]; }
 	};
 
 	// Draw the scene using the deferred rendering approach

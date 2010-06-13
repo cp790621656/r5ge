@@ -67,5 +67,5 @@ protected:
 	virtual bool OnFill (FillParams& params);
 
 	// Run through all renderable nodes and draw them
-	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut);
 };

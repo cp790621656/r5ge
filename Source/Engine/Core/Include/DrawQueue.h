@@ -51,5 +51,5 @@ public:
 	void Sort() { for (uint i = 0; i < 32; ++i) mLayers[i].Sort(); }
 
 	// Draw the scene
-	uint Draw (IGraphics* graphics, const Techniques& techniques, bool insideOut);
+	uint Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques, bool insideOut);
 };

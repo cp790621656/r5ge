@@ -40,9 +40,6 @@ public:
 
 protected:
 
-	// Initialize the starting textures
-	virtual void OnInit();
-
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 
@@ -50,7 +47,7 @@ protected:
 	virtual bool OnFill (FillParams& params);
 
 	// Draws the light on-screen if it's visible
-	virtual uint OnDraw (uint group, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut);
 
 	// Serialization
 	virtual void OnSerializeTo	  (TreeNode& node) const;

@@ -120,7 +120,7 @@ bool QuadTree::OnFill (FillParams& params)
 // Run through all renderable nodes and draw them
 //============================================================================================================
 
-uint QuadTree::OnDraw (uint group, const ITechnique* tech, bool insideOut)
+uint QuadTree::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	for (uint i = 0, imax = mRenderable.GetSize(); i < imax; ++i)
 	{

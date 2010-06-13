@@ -45,7 +45,7 @@ void Glare::OnUpdate()
 // Draw the billboard
 //============================================================================================================
 
-uint Glare::OnDraw (uint group, const ITechnique* tech, bool insideOut)
+uint Glare::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	// IGraphics::IsVisible() check is affected by the ModelView matrix
 	IGraphics* graphics = mCore->GetGraphics();

@@ -45,5 +45,5 @@ public:
 
 	void Sort()  { mEntries.Sort();  }
 	void Clear() { mEntries.Clear(); }
-	uint Draw (const ITechnique* tech, bool insideOut);
+	uint Draw (const Deferred::Storage& storage, const ITechnique* tech, bool insideOut);
 };

@@ -7,14 +7,11 @@ using namespace R5;
 
 uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Light::List& lights)
 {
-	storage.mTempTargets.ExpandTo(32, true);
-	storage.mTempTextures.ExpandTo(32, true);
-
 	typedef ITexture*		ITexturePtr;
 	typedef IRenderTarget*	IRenderTargetPtr;
 
-	ITexturePtr& normal		= storage.mTempTextures[0];
-	ITexturePtr& depth		= storage.mTempTextures[1];
+	ITexturePtr& depth		= storage.mTempTextures[0];
+	ITexturePtr& normal		= storage.mTempTextures[1];
 	ITexturePtr& matDiff	= storage.mTempTextures[2];
 	ITexturePtr& matSpec	= storage.mTempTextures[3];
 	ITexturePtr& lightDiff	= storage.mTempTextures[4];
@@ -30,8 +27,8 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 		if (storage.mRenderTarget == 0)
 		{
 			// Rendering to screen should reuse the same textures
-			normal		= graphics->GetTexture("[Generated] Normal");
 			depth		= graphics->GetTexture("[Generated] Depth");
+			normal		= graphics->GetTexture("[Generated] Normal");
 			matDiff		= graphics->GetTexture("[Generated] Diffuse Material");
 			matSpec		= graphics->GetTexture("[Generated] Specular Material");
 			lightDiff	= graphics->GetTexture("[Generated] Light Diffuse");
@@ -41,8 +38,8 @@ uint Deferred::Draw (IGraphics* graphics, Deferred::Storage& storage, const Ligh
 		else
 		{
 			// Rendering to an off-screen buffer should use temporary textures
-			normal		= graphics->CreateRenderTexture();
 			depth		= graphics->CreateRenderTexture();
+			normal		= graphics->CreateRenderTexture();
 			matDiff		= graphics->CreateRenderTexture();
 			matSpec		= graphics->CreateRenderTexture();
 			lightDiff	= graphics->CreateRenderTexture();

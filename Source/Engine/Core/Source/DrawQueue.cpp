@@ -5,7 +5,7 @@ using namespace R5;
 // Draw the scene
 //============================================================================================================
 
-uint DrawQueue::Draw (IGraphics* graphics, const Techniques& techniques, bool insideOut)
+uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques, bool insideOut)
 {
 	uint result(0);
 	uint mask = 0;
@@ -54,7 +54,7 @@ uint DrawQueue::Draw (IGraphics* graphics, const Techniques& techniques, bool in
 					}
 
 					// Draw everything on this layer using this technique
-					result += layer.Draw(tech, insideOut);
+					result += layer.Draw(storage, tech, insideOut);
 				}
 			}
 		}

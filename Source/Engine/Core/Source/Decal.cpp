@@ -41,20 +41,6 @@ void OnSetRight		(const String& name, Uniform& uni) { uni = g_right;		}
 void OnSetUp		(const String& name, Uniform& uni) { uni = g_up;		}
 
 //============================================================================================================
-// Initialize the starting textures
-//============================================================================================================
-
-void Decal::OnInit()
-{
-	IGraphics* graphics = mCore->GetGraphics();
-
-	mTextures.Expand() = graphics->GetTexture("[Generated] Depth");
-	mTextures.Expand() = graphics->GetTexture("[Generated] Normal");
-	mTextures.Expand() = graphics->GetTexture("[Generated] Diffuse Material");
-	mTextures.Expand() = graphics->GetTexture("[Generated] Specular Material");
-}
-
-//============================================================================================================
 // Changes the shader to the specified one
 //============================================================================================================
 
@@ -128,11 +114,19 @@ bool Decal::OnFill (FillParams& params)
 // Draws the decal
 //============================================================================================================
 
-uint Decal::OnDraw (uint group, const ITechnique* tech, bool insideOut)
+uint Decal::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	static IVBO* vbo = 0;
 	static IVBO* ibo = 0;
 	static uint indexCount = 0;
+
+	const ITexture* depth	 = storage.GetDepth();
+	const ITexture* normal	 = storage.GetNormal();
+	const ITexture* diffuse	 = storage.GetMaterialDiffuse();
+	const ITexture* specular = storage.GetMaterialSpecular();
+
+	// These textures are only available during the deferred process -- and so are decals
+	if (depth == 0 || normal == 0 || diffuse == 0 || specular == 0) return 0;
 
 	IGraphics* graphics = mCore->GetGraphics();
 
@@ -172,9 +166,15 @@ uint Decal::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 	// ATI cards seem to clamp gl_FrontMaterial.diffuse in 0-1 range
 	if (mShader != 0) mShader->SetUniform("g_color", mColor);
 
-	// Bind all textures
+	// Activate the 4 mandatory textures
+	graphics->SetActiveTexture(0, depth);
+	graphics->SetActiveTexture(1, normal);
+	graphics->SetActiveTexture(2, diffuse);
+	graphics->SetActiveTexture(3, specular);
+
+	// Activate optional textures
 	for (uint i = 0; i < mTextures.GetSize(); ++i)
-		graphics->SetActiveTexture(i, mTextures[i]);
+		graphics->SetActiveTexture(i+4, mTextures[i]);
 
 	// Distance from the center to the farthest corner of the box before it starts getting clipped
 	float range = mAbsoluteScale * 1.732f + graphics->GetCameraRange().x;
@@ -278,8 +278,12 @@ bool Decal::OnSerializeFrom (const TreeNode& node)
 
 			for (uint i = 0; i < list.GetSize(); ++i)
 			{
-				const ITexture* tex = graphics->GetTexture(list[i]);
-				if (tex != 0) mTextures.Expand() = tex;
+				// Skip legacy functionality
+				if (!list[i].BeginsWith("[Generated]"))
+				{
+					const ITexture* tex = graphics->GetTexture(list[i]);
+					if (tex != 0) mTextures.Expand() = tex;
+				}
 			}
 		}
 	}
