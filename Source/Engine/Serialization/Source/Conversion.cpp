@@ -200,9 +200,24 @@ bool operator >> (const String& s, Quaternion& q)
 		}
 
 		Vector3f dir;
+
 		if ( s >> dir )
 		{
-			q.SetFromDirection(dir);
+			float a = Float::Abs(dir.x);
+			float b = Float::Abs(dir.y);
+			float c = Float::Abs(dir.z);
+
+			if (a + b + c > 3.0f)
+			{
+				dir.x = DEG2RAD(dir.x);
+				dir.y = DEG2RAD(dir.y);
+				dir.z = DEG2RAD(dir.z);
+				q.SetFromEuler(dir);
+			}
+			else
+			{
+				q.SetFromDirection(dir);
+			}
 			return true;
 		}
 	}

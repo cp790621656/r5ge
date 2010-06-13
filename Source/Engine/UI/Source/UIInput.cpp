@@ -236,6 +236,7 @@ bool UIInput::OnSerializeFrom (const TreeNode& node)
 		if (node.mValue.IsStringArray())
 		{
 			mHistory = node.mValue.AsStringArray();
+			if (mMaxHistorySize < mHistory.GetSize()) mMaxHistorySize = mHistory.GetSize();
 		}
 		else // Legacy format support, will be removed
 		{

@@ -1009,7 +1009,22 @@ bool Variable::operator >> (Quaternion& value) const
 	}
 	else if (IsVector3f())
 	{
-		value.SetFromDirection( AsVector3f() );
+		Vector3f dir (AsVector3f());
+		float a = Float::Abs(dir.x);
+		float b = Float::Abs(dir.y);
+		float c = Float::Abs(dir.z);
+
+		if (a + b + c > 3.0f)
+		{
+			dir.x = DEG2RAD(dir.x);
+			dir.y = DEG2RAD(dir.y);
+			dir.z = DEG2RAD(dir.z);
+			value.SetFromEuler(dir);
+		}
+		else
+		{
+			value.SetFromDirection(dir);
+		}
 		return true;
 	}
 	return false;
