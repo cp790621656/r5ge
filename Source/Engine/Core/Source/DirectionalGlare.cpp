@@ -24,7 +24,7 @@ void DirectionalGlare::OnUpdate()
 // Draw the glare
 //============================================================================================================
 
-uint DirectionalGlare::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint DirectionalGlare::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

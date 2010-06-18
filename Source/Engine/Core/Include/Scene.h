@@ -58,6 +58,9 @@ public:
 	// Activating this function will mean that the scene will be rendered to the specified target
 	void SetRenderTarget (IRenderTarget* target) { mRenderTarget = target; }
 
+	// Whether to draw the scene culling front-faces instead of back (for reflections)
+	void SetDrawInsideOut (bool val) { mInsideOut = val; }
+
 	// Retrieves the default draw parameters for modification
 	Techniques& GetDeferredTechniques()	{ return mDrawTechniques; }
 	Techniques& GetForwardTechniques()	{ return mForward; }
@@ -92,16 +95,14 @@ public:
 	// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
 	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f());
 
-public:
-
 	// Advanced: Draws the scene using the specified technique
 	uint Draw (const String& technique, bool clearScreen = true);
 
 	// Advanced: Draws the scene using the specified technique
-	uint Draw (const ITechnique* technique, bool clearScreen = true);
+	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen = true);
 
 	// Advanced: Draws the scene using the specified techniques
-	uint Draw (const Techniques& techniques, bool clearScreen = true, bool insideOut = false);
+	uint DrawWithTechniques (const Techniques& techniques, bool clearScreen = true);
 
 private:
 

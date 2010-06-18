@@ -4,22 +4,25 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Distant screen-aligned glare
+// Class containing common functionality that can be used by draw scripts
 //============================================================================================================
 
-class DirectionalGlare : public Glare
+class OSDraw : public Script
 {
 protected:
 
-	// Objects should never be created manually. Use the AddObject<> template instead.
-	DirectionalGlare() {}
+	Core*			mCore;
+	IGraphics*		mGraphics;
+	OSSceneRoot*	mRoot;
+	Scene			mScene;
+
+	OSDraw() : mCore(0), mGraphics(0), mRoot(0) {}
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Directional Glare", DirectionalGlare, Glare, Object);
+	R5_DECLARE_ABSTRACT_CLASS("OSDraw", Script);
 
-protected:
-
-	virtual void OnUpdate();
-	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech);
+	virtual void OnInit();
+	virtual void OnDestroy();
+	virtual float OnDraw()=0;
 };

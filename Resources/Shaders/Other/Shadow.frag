@@ -1,5 +1,5 @@
-uniform sampler2D		R5_texture0;
-uniform sampler2DShadow R5_texture1;
+uniform sampler2D		R5_texture0;	// Camera's depth texture
+uniform sampler2DShadow R5_texture1;	// Lights' depth texture
 uniform mat4			shadowMatrix;
 uniform vec2			shadowOffset;
 

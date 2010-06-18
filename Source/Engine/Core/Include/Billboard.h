@@ -34,7 +34,7 @@ protected:
 
 	virtual void OnUpdate();
 	virtual bool OnFill (FillParams& params);
-	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech);
 
 	// Draws the actual billboard reusing the common buffers
 	void DrawBillboard();

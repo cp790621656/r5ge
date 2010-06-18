@@ -49,7 +49,9 @@ Object::Object() :
 	mIsDirty		(false),
 	mHasMoved		(true),
 	mSerializable	(true),
-	mShowOutline	(false)
+	mShowOutline	(false),
+	mLastFilltime	(0),
+	mVisibility		(0)
 {
 	mFlags.Set(Flag::Enabled | Flag::BoxCollider);
 }
@@ -602,6 +604,8 @@ bool Object::Scroll (const Vector2i& pos, float delta)
 
 void Object::Update (bool threadSafe)
 {
+	mVisibility = 0;
+
 	if (mParent != 0 && mFlags.Get(Flag::Enabled))
 	{
 		if (threadSafe) Lock();
@@ -770,11 +774,16 @@ void Object::Fill (FillParams& params)
 	if (mFlags.Get(Flag::Enabled))
 	{
 		// Cull the bounding volume if it's available. Note that we check the absolute bounds but actually
-		// use the complete bounds. This is because complete bounds can be valid even if absolute aren't.
+		// use the com(plete bounds. This is because complete bounds can be valid even if absolute aren't.
 		bool isVisible = mAbsoluteBounds.IsValid() ? params.mFrustum.IsVisible(mCompleteBounds) : true;
 
-		mFlags.Set(Flag::Visible, isVisible);
+		// If the object is visible, increment the visibility counter
+		if (isVisible) ++mVisibility;
 
+		// Update the 'visible' flag
+		mFlags.Set(Flag::Visible, mVisibility > 0);
+
+		// If the object is visible, fill the render queue
 		if (isVisible)
 		{
 			Lock();
@@ -817,13 +826,13 @@ void Object::Fill (FillParams& params)
 // Draws the object with the specified technique
 //============================================================================================================
 
-uint Object::Draw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Object::Draw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
 {
 	uint result (0);
 
 	if (!mIgnore.Get(Ignore::Draw))
 	{
-		result += OnDraw(storage, group, tech, insideOut);
+		result += OnDraw(storage, group, tech);
 	}
 
 	// Debugging functionality

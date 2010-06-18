@@ -35,6 +35,14 @@ Root
 				Event Handling = "None"
 				Layer = 0
 			}
+			
+			Picture = "Shadowmap"
+			{
+				Right = 0 300
+				Bottom = 0 200
+				Texture = "Shadowmap"
+				Ignore Alpha = true
+			}
 		}
 	}
 
@@ -46,6 +54,7 @@ Root
 			Rotation = -0.256698 0.001887 -0.007112 0.966464
 			Range = 1.000000 50.000000 90.000000
 			Dolly = 0.000000 19.752630 50.000000
+			Script = "OSDrawForward"
 		}
 
 		Directional Light = "First Light"
@@ -55,6 +64,7 @@ Root
 			Diffuse = 0.700000 0.700000 0.700000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
+			Script = "OSShadowCreator"
 		}
 
 		Model Instance = "Test Scene"

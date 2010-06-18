@@ -30,5 +30,5 @@ protected:
 	virtual void OnUpdate();
 
 	// Draw the glare
-	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech);
 };

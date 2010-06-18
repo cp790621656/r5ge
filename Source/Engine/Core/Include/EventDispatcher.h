@@ -45,8 +45,12 @@ public:
 	void SetListener (const SerializeToDelegate&	callback)	{ mOnTo			= callback; } // Deprecated, use scripts
 
 	// Update callback registration
-	void AddOnPreUpdate	 (const UpdateList::Callback& callback, float delay = 0.0f) { mPreList.Add(callback, delay); }
-	void AddOnPostUpdate (const UpdateList::Callback& callback, float delay = 0.0f) { mPostList.Add(callback, delay); }
-	void AddOnLateUpdate (const UpdateList::Callback& callback, float delay = 0.0f) { mLateList.Add(callback, delay); }
-	void AddOnDraw		 (const UpdateList::Callback& callback, float delay = 0.0f) { mDrawList.Add(callback, delay); }
+	void AddOnPreUpdate		(const UpdateList::Callback& callback, float delay = 0.0f)	{ mPreList.Add(callback, delay); }
+	void RemoveOnPreUpdate	(const UpdateList::Callback& callback)						{ mPreList.Remove(callback); }
+	void AddOnPostUpdate	(const UpdateList::Callback& callback, float delay = 0.0f)	{ mPostList.Add(callback, delay); }
+	void RemoveOnPostUpdate	(const UpdateList::Callback& callback)						{ mPostList.Remove(callback); }
+	void AddOnLateUpdate	(const UpdateList::Callback& callback, float delay = 0.0f)	{ mLateList.Add(callback, delay); }
+	void RemoveOnLateUpdate	(const UpdateList::Callback& callback)						{ mLateList.Remove(callback); }
+	void AddOnDraw			(const UpdateList::Callback& callback, float delay = 0.0f)	{ mDrawList.Add(callback, delay); }
+	void RemoveOnDraw		(const UpdateList::Callback& callback)						{ mDrawList.Remove(callback); }
 };

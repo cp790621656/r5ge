@@ -114,7 +114,7 @@ bool Decal::OnFill (FillParams& params)
 // Draws the decal
 //============================================================================================================
 
-uint Decal::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Decal::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
 {
 	static IVBO* vbo = 0;
 	static IVBO* ibo = 0;
@@ -181,6 +181,7 @@ uint Decal::OnDraw (const Deferred::Storage& storage, uint group, const ITechniq
 
 	// Invert the depth testing and culling if the camera is inside the box
 	bool invert = mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) < range;
+	bool insideOut = storage.mInsideOut;
 
 	if (invert)
 	{

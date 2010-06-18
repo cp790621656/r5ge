@@ -69,17 +69,21 @@ namespace R5
 	#include "Terrain.h"				// Simple terrain implementation using QuadTree
 	#include "Octree.h"					// Octree-partitioned space
 
-	#include "OSAttachToBone.h"			// Script that binds its owner to the specified bone of the owner's parent
-	#include "OSPlayIdleAnimations.h"	// Script that automatically starts playing idle animations found on the model
-	#include "OSPlayAnimations.h"		// Script that activates the specified animations (works best with looping anims)
-	#include "OSRotate.h"				// Script that rotates the owner
-
 	#include "Scene.h"					// Scene root
 	#include "PostProcess.h"			// Deferred post-processing effects
 	#include "SSAO.h"					// Sceen-space ambient occlusion
 	#include "UpdateList.h"				// Container for registered update callbacks
 	#include "EventDispatcher.h"		// Event dispatcher has the ability to register event handling callbacks
 	#include "Core.h"					// Engine Core
+
+	#include "OSAttachToBone.h"			// Script that binds its owner to the specified bone of the owner's parent
+	#include "OSPlayIdleAnimations.h"	// Script that automatically starts playing idle animations found on the model
+	#include "OSPlayAnimations.h"		// Script that activates the specified animations (works best with looping anims)
+	#include "OSRotate.h"				// Script that rotates the owner
+	#include "OSSceneRoot.h"			// Represents the root of the scene that's used by other scripts
+	#include "OSShadowCreator.h"		// Adds a new rendering step that draws the scene's shadows
+	#include "OSDraw.h"					// Class containing common functionality that can be used by draw scripts
+	#include "OSDrawForward.h"			// Draw the scene using forward rendering
 };
 
 #endif

@@ -36,7 +36,7 @@ void DrawList::Clear()
 // Draw all objects in the list
 //============================================================================================================
 
-uint DrawList::Draw (const Deferred::Storage& storage, const ITechnique* tech, bool insideOut)
+uint DrawList::Draw (const Deferred::Storage& storage, const ITechnique* tech)
 {
 	PointerArray<DrawGroup>& groups = mGroups.GetAllValues();
 
@@ -62,7 +62,7 @@ uint DrawList::Draw (const Deferred::Storage& storage, const ITechnique* tech, b
 		if (sort) group->Sort();
 
 		// Draw the group
-		retVal = group->Draw(storage, tech, insideOut);
+		retVal = group->Draw(storage, tech);
 	}
 	return retVal;
 }

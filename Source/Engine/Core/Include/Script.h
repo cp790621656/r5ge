@@ -63,6 +63,10 @@ public:
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();
 
+	// Access to the owner of the script
+	Object* GetOwner() { return mObject; }
+	const Object* GetOwner() const { return mObject; }
+
 	// Convenience function: mObject->GetCore()->IsKeyDown(key);
 	bool IsKeyDown (uint key);
 

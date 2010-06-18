@@ -33,6 +33,9 @@ public:
 	// Adds a new update function to the list, executed after an optional delay in seconds
 	void Add (const Callback& callback, float delay = 0.0f);
 
+	// Removes the specified function from the list
+	void Remove (const Callback& callback);
+
 	// Runs through all update listeners and calls them as necessary
 	void Execute();
 };

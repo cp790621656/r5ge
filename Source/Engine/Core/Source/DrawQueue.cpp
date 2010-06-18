@@ -5,7 +5,7 @@ using namespace R5;
 // Draw the scene
 //============================================================================================================
 
-uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques, bool insideOut)
+uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques)
 {
 	uint result(0);
 	uint mask = 0;
@@ -34,7 +34,7 @@ uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, con
 				if ( tech != 0 && (layer.mMask & tech->GetMask()) != 0 )
 				{
 					// Activate the technique
-					graphics->SetActiveTechnique(tech, insideOut);
+					graphics->SetActiveTechnique(tech, storage.mInsideOut);
 
 					// Activate all lights
 					if (tech->GetLighting() != IGraphics::Lighting::None)
@@ -54,7 +54,7 @@ uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, con
 					}
 
 					// Draw everything on this layer using this technique
-					result += layer.Draw(storage, tech, insideOut);
+					result += layer.Draw(storage, tech);
 				}
 			}
 		}

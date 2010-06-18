@@ -191,7 +191,7 @@ uint Scene::DrawAllForward (bool clearScreen)
 			mForward.Expand() = graphics->GetTechnique("Glow");
 			mForward.Expand() = graphics->GetTechnique("Glare");
 		}
-		return Draw(mForward, clearScreen);
+		return DrawWithTechniques(mForward, clearScreen);
 	}
 	return 0;
 }
@@ -211,7 +211,7 @@ uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 		// Set the draw callback
 		if (!mDrawCallback)
 		{
-			mDrawCallback = bind(&Scene::Draw, this);
+			mDrawCallback = bind(&Scene::DrawWithTechniques, this);
 		}
 
 		// Set the list of techniques used to draw the scene
@@ -268,7 +268,7 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange)
 		// Set the draw callback
 		if (!mDrawCallback)
 		{
-			mDrawCallback = bind(&Scene::Draw, this);
+			mDrawCallback = bind(&Scene::DrawWithTechniques, this);
 		}
 
 		// Draw the scene using the deferred techniques
@@ -316,8 +316,9 @@ uint Scene::Draw (const String& technique, bool clearScreen)
 {
 	if (mRoot != 0)
 	{
-		IGraphics* graphics = mRoot->mCore->GetGraphics();
-		return Draw(graphics->GetTechnique(technique), clearScreen);
+		mTechs.Clear();
+		mTechs.Expand() = mRoot->mCore->GetGraphics()->GetTechnique(technique);
+		return DrawWithTechniques(mTechs, clearScreen);
 	}
 	return 0;
 }
@@ -326,18 +327,18 @@ uint Scene::Draw (const String& technique, bool clearScreen)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::Draw (const ITechnique* technique, bool clearScreen)
+uint Scene::DrawWithTechnique (const ITechnique* technique, bool clearScreen)
 {
 	mTechs.Clear();
 	mTechs.Expand() = technique;
-	return Draw(mTechs, clearScreen);
+	return DrawWithTechniques(mTechs, clearScreen);
 }
 
 //============================================================================================================
 // Draw the specified scene
 //============================================================================================================
 
-uint Scene::Draw (const Techniques& techniques, bool clearScreen, bool insideOut)
+uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearScreen)
 {
 	uint result(0);
 
@@ -352,7 +353,7 @@ uint Scene::Draw (const Techniques& techniques, bool clearScreen, bool insideOut
 		graphics->SetScreenProjection( false );
 
 		// Draw the scene
-		result += mQueue.Draw(*this, graphics, techniques, insideOut);
+		result += mQueue.Draw(*this, graphics, techniques);
 
 		// Restore the potentially altered default state
 		graphics->SetNormalize(false);

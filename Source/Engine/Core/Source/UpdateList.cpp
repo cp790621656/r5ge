@@ -17,6 +17,28 @@ void UpdateList::Add (const Callback& callback, float delay)
 }
 
 //============================================================================================================
+// Removes the specified function from the list
+//============================================================================================================
+
+void UpdateList::Remove (const Callback& callback)
+{
+	mUpdate.Lock();
+	{
+		FOREACH(i, mUpdate)
+		{
+			UpdateEntry& entry = mUpdate[i];
+
+			if (entry.callback == callback)
+			{
+				mUpdate.RemoveAt(i);
+				break;
+			}
+		}
+	}
+	mUpdate.Unlock();
+}
+
+//============================================================================================================
 // Runs through all update listeners and calls them as necessary
 //============================================================================================================
 
