@@ -41,10 +41,6 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mLight(0)
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI, mCamScene);
-
-	Script::Register<OSSceneRoot>();
-	Script::Register<OSDrawForward>();
-	Script::Register<OSShadowCreator>();
 }
 
 //============================================================================================================
