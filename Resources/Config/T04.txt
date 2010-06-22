@@ -57,6 +57,7 @@ Root
 					Animation Time = 0.000000
 					Receives Events = true
 					Layer = 0
+					UIScript = "USSliderCaption"
 				}
 			}
 		}
@@ -71,6 +72,7 @@ Root
 			Scale = 1.000000
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 10.000000 20.000000
+			Script = "OSDrawForward"
 		}
 	}
 }

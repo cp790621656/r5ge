@@ -65,6 +65,7 @@ Root
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
 			Script = "OSShadowCreator"
+			Script = "OSRotateLight"
 		}
 
 		Model Instance = "Test Scene"

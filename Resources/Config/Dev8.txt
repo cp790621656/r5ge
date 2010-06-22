@@ -83,6 +83,11 @@ Root
 			Scale = 1.000000
 			Range = 1.000000 100.000000 90.000000
 			Dolly = 0.000000 16.752741 50.000000
+
+			Script = "OSDrawDeferred"
+			{
+				SSAO = 1
+			}
 		}
 
 		Directional Light = "First Light"

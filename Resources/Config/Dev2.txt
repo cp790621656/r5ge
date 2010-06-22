@@ -72,6 +72,7 @@ Root
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 14.000118 30.000000
+			Script = "OSDrawForward"
 		}
 
 		Directional Light = "First Light"

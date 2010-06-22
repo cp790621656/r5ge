@@ -54,6 +54,7 @@ Root
 			Rotation = -0.126044 0.270991 -0.865276 0.402460
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 17.999975 30.000000
+			Script = "OSDrawForward"
 
 			Directional Light = "First Light"
 			{

@@ -82,6 +82,7 @@ Root
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 14.001606 50.000000
+			Script = "OSDrawDeferred"
 		}
 
 		Directional Light = "First Light"

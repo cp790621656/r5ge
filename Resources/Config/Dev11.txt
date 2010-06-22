@@ -5,8 +5,8 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Dev11 (Sound)"
-		Position = 679 161
-		Size = 886 610
+		Position = 100 100
+		Size = 900 600
 		Full Screen = false
 	}
 
@@ -425,6 +425,7 @@ Root
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 27.999767 30.000000
 			Script = "OSAudioListener"
+			Script = "OSDrawDeferred"
 		}
 	}
 }

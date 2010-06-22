@@ -68,63 +68,15 @@ Root
 
 		Layout
 		{
-			Frame = "Debug Frame"
+			Stats = "Game"
 			{
 				Left = 0.000000 5.000000
-				Right = 1.000000 0.000000
+				Right = 0.000000 200.000000
 				Top = 0.000000 5.000000
 				Bottom = 1.000000 0.000000
 				Alpha = 1.000000
-				Receives Events = false
+				Event Handling = "None"
 				Layer = 0
-
-				Label = "Triangles"
-				{
-					Left = 0.000000 5.000000
-					Right = 1.000000 200.000000
-					Top = 0.000000 5.000000
-					Bottom = 0.000000 15.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "TRI: 4746"
-					Shadow = true
-					Alignment = "Left"
-					Receives Events = true
-					Layer = 0
-				}
-
-				Label = "FPS"
-				{
-					Left = 0.000000 5.000000
-					Right = 1.000000 200.000000
-					Top = 0.000000 25.000000
-					Bottom = 0.000000 40.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "FPS: 192"
-					Shadow = true
-					Alignment = "Left"
-					Receives Events = true
-					Layer = 0
-				}
-
-				Label = "Info"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 -5.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
-					Text = "SSAO: High Quality (S)"
-					Shadow = true
-					Alignment = "Center"
-					Receives Events = true
-					Layer = 0
-				}
 			}
 		}
 	}
@@ -138,6 +90,11 @@ Root
 			Scale = 1.000000
 			Range = 1.000000 100.000000 90.000000
 			Dolly = 0.000000 16.752741 50.000000
+
+			Script = "OSDrawDeferred"
+			{
+				SSAO = 1
+			}
 		}
 
 		Directional Light = "First Light"

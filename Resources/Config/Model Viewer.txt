@@ -280,7 +280,7 @@ Root
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "472"
+					Text = "360"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -293,7 +293,7 @@ Root
 					Right = 1.000000 0.000000
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
-					Alpha = 0.792200
+					Alpha = 0.850000
 					Top Color = 0.000000 0.000000 0.000000 0.000000
 					Bottom Color = 0.000000 0.000000 0.000000 1.000000
 					Event Handling = "Normal"
@@ -324,7 +324,7 @@ Root
 
 		Model = "Default Model"
 		{
-			Source = "weapons.r5a"
+			Source = "Models/peasant.r5a"
 		}
 	}
 
@@ -332,10 +332,10 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 26.000000 1.306004 -0.003318
-			Rotation = -0.050942 -0.105910 0.894926 0.430459
+			Position = 0.001267 0.018200 0.617190
+			Rotation = 0.031823 -0.187256 0.967918 -0.164493
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 7.095580 50.000000
+			Dolly = 0.000000 1.628507 50.000000
 
 			Directional Light = "Default Light"
 			{
@@ -367,7 +367,6 @@ Root
 		{
 			Model Instance = "Default Instance"
 			{
-				Show Outline = true
 				Model = "Default Model"
 			}
 		}
