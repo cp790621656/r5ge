@@ -19,21 +19,13 @@ class TestApp
 	IGraphics*	mGraphics;
 	UI*			mUI;
 	Core*		mCore;
-	Scene		mScene;
-	Camera*		mCam;
-	bool		mFlag;
-	String		mDebug;
-	uint		mObjects;
-	FrameStats	mStats;
 
 public:
 
 	TestApp();
 	~TestApp();
 
-	void  Init();
-	void  Run();
-	void  OnDraw();
-	float UpdateStats();
+	void Init();
+	void Run();
 };
 }

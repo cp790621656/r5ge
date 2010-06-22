@@ -20,8 +20,6 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 
 public:
 
@@ -33,11 +31,11 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 }
 
 //============================================================================================================
@@ -87,39 +85,16 @@ void TestApp::Run()
 		// Find and reuse the skybox created in the previous tutorial
 		method->SetTexture(0, mGraphics->GetTexture("Skybox"));
 
-		// The rest of this function hasn't changed
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
+		// That's all there is to it, with one exception: OSDrawForward script attached to the camera has
+		// been replaced with OSDrawDeferred. Deferred method uses a combination of deferred techniques
+		// followed by transparent and blended objects rendered via forward rendering (such as lens flare
+		// effects, particles, glow/glare billboards, etc). You can pass additional parameters to the
+		// OSDrawDeferred function such as "Bloom" to adjust the amount of bloom, "Focal Range" to change
+		// where and how depth-of-field effect happens, and "SSAO" to add screen-space ambient occlusion.
 
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
+		// Enter the message processing loop
 		while (mCore->Update());
 	}
-}
-
-//============================================================================================================
-// The drawing process changes a fair bit. We will be going through the Draw library now.
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	// Cull the scene like before, building the lists of visible objects and lights
-	mScene.Cull(mCam);
-
-	// Draw our scene using the default combination of deferred and forward rendering techniques, which
-	// includes our "Deferred" technique used by the model. Default list of techniques includes all solid
-	// geometry rendered using the deferred approach, followed by forward-rendered transparent geometry,
-	// glow/glare, particle effects, etc. The default Draw() function comes built-in with post-processing
-	// functionality for bloom and depth-of-field effects. Passing '1' for the 'bloom' parameter enables
-	// bloom of values above '1', which is the HDR bloom effect on videocards that support it. If you're
-	// curious about depth-of-field, try passing Vector3f(15.0f, 5.0f, 10.0f) as the 'focalRange' parameter.
-
-	mScene.Draw(1.0f);
-
-	// Note that this function is a convenience function, just like 'DrawAllForward' function we used
-	// before. As such, its functionality, while suitable for most applications, can also be limiting. You are
-	// more than welcome to take a look at what's happening inside it and bypass it altogether if desired.
 }
 
 //============================================================================================================

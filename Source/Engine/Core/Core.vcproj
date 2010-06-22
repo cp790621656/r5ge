@@ -455,7 +455,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\OSAudioListener.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\OSDraw.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Include\OSDrawDeferred.h"
 					>
 				</File>
 				<File
@@ -496,6 +504,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\OSDraw.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\OSDrawDeferred.cpp"
 					>
 				</File>
 				<File

@@ -19,8 +19,6 @@ class TestApp
 	IGraphics*	mGraphics;
 	UI*			mUI;
 	Core*		mCore;
-	Camera*		mCam;
-	Scene		mScene;
 
 public:
 

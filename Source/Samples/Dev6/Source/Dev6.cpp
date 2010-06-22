@@ -8,7 +8,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mTech(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
 
 	mCore->SetSleepDelay(0);
 }
@@ -35,9 +35,7 @@ void TestApp::Run()
 
 		if (mCam != 0)
 		{
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
+			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
 			for (uint i = 0; i < 7; ++i) mDebug[i] = mUI->FindWidget<UILabel>(String("Debug %u", i));
 
@@ -55,6 +53,7 @@ void TestApp::Run()
 					inst->SetModel( (((x + y) & 1) == 0) ? model0 : model1 );
 					inst->SetRelativePosition( Vector3f(2.0f * x, 2.0f * y, 0.0f) );
 					inst->SetRelativeRotation( Vector3f(0.0f, -1.0f, 0.0f) );
+					inst->SetRelativeScale(5.0f);
 					inst->SetSerializable(false);
 				}
 			}

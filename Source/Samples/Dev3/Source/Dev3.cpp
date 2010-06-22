@@ -50,12 +50,12 @@ public:
 // Constructor and destructor
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mObjects(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	// Register a new script type that can be created via AddScript<> template
 	Script::Register<SpinScript>();
@@ -81,19 +81,19 @@ void TestApp::Init()
 {
 	Object* obj[4];
 
-	obj[0] = mScene.AddObject<Object>("Lights 0");
+	obj[0] = mCore->GetRoot()->AddObject<Object>("Lights 0");
 	obj[0]->SetSerializable(false);
 	obj[0]->AddScript<SpinScript>()->Set(0.0f, 0.01f, 1.0f, 0.93f);
 
-	obj[1] = mScene.AddObject<Object>("Lights 1");
+	obj[1] = mCore->GetRoot()->AddObject<Object>("Lights 1");
 	obj[1]->SetSerializable(false);
 	obj[1]->AddScript<SpinScript>()->Set(0.01f, 0.0f, 1.0f, -0.68f);
 
-	obj[2] = mScene.AddObject<Object>("Lights 2");
+	obj[2] = mCore->GetRoot()->AddObject<Object>("Lights 2");
 	obj[2]->SetSerializable(false);
 	obj[2]->AddScript<SpinScript>()->Set(0.01f, -0.01f, 1.0f, 0.47f);
 
-	obj[3] = mScene.AddObject<Object>("Lights 3");
+	obj[3] = mCore->GetRoot()->AddObject<Object>("Lights 3");
 	obj[3]->SetSerializable(false);
 	obj[3]->AddScript<SpinScript>()->Set(-0.005f, 0.015f, 1.0f, -1.8f);
 
@@ -145,55 +145,10 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev3.txt")
 	{
-		mCam = mScene.FindObject<Camera>("Default Camera");
-
-		if (mCam != 0)
-		{
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->AddOnPostUpdate( bind(&TestApp::UpdateStats, this) );
-
-			Init();
-
-			while (mCore->Update());
-		}
+		Init();
+		while (mCore->Update());
 		//*mCore >> "Config/Dev3.txt";
 	}
-}
-
-//============================================================================================================
-// Draw callback
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mObjects = mScene.Draw();
-	mStats = mGraphics->GetFrameStats();
-}
-
-//============================================================================================================
-// Registered update listener callback
-//============================================================================================================
-
-float TestApp::UpdateStats()
-{
-	static UILabel* fps = mUI->FindWidget<UILabel>("FPS");
-	static UILabel* tri = mUI->FindWidget<UILabel>("Triangles");
-	static UILabel* obj = mUI->FindWidget<UILabel>("Objects");
-	static UILabel* db0 = mUI->FindWidget<UILabel>("Debug 0");
-	static UILabel* db1 = mUI->FindWidget<UILabel>("Debug 1");
-
-	if (tri) tri->SetText( String("TRI: %u", mStats.mTriangles) );
-	if (fps) fps->SetText( String("FPS: %u", Time::GetFPS()) );
-	if (obj) obj->SetText( String("%u objects", mObjects) );
-	if (db0) db0->SetText( String("DC[[FF5555]%u[FFFFFF]] BB[[FF5555]%u[FFFFFF]] TX[[FF5555]%u[FFFFFF]]",
-		mStats.mDrawCalls, mStats.mBufferBinds, mStats.mTexSwitches) );
-	if (db1) db1->SetText( String("SH[[FF5555]%u[FFFFFF]] TC[[FF5555]%u[FFFFFF]] LS[[FF5555]%u[FFFFFF]]",
-		mStats.mShaderSwitches, mStats.mTechSwitches, mStats.mLightSwitches) );
-
-	return 0.25f;
 }
 
 //============================================================================================================

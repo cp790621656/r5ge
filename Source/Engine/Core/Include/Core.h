@@ -38,21 +38,21 @@ protected:
 	Array<String>	mExecuted;			// Executed resources, for serialization purposes
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
 
+public:
+
+	// Default constructor
+	Core (IWindow* window, IGraphics* graphics, IUI* gui = 0, IAudio* audio = 0);
+
+	// Convenience constructor -- sets the scene's root to the root of the game object tree
+	Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio, Scene& scene);
+
+	// Destructor will wait for all threads to finish before exiting
+	~Core();
+
 private:
 
 	// Default initialization function used by the constructors
 	void Init();
-
-public:
-
-	// Default constructor
-	Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio = 0);
-
-	// Convenience constructor -- sets the scene's root to the root of the game object tree
-	Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene, IAudio* audio = 0);
-
-	// Destructor will wait for all threads to finish before exiting
-	~Core();
 
 public:
 

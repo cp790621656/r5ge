@@ -40,6 +40,9 @@ namespace Deferred
 			mTempTargets.ExpandTo(32, true);
 		}
 
+		// Releases all associated resources
+		void Release (IGraphics* graphics);
+
 		// ADVANCED FUNCTIONALITY:
 		// The following textures are available during deferred OnDraw callbacks, but Graphics::Flush()
 		// must be called first. Be careful using these -- keep in mind that the engine is writing to

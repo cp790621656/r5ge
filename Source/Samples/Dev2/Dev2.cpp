@@ -23,8 +23,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 	Vector3f		mScale;
 	Vector3f		mOffset;
 
@@ -46,12 +44,12 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 }
 
 //============================================================================================================
@@ -71,15 +69,7 @@ void TestApp::Run()
 	if (*mCore << "Config/Dev2.txt")
 	{
 		GenerateTerrain();
-
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
 		while (mCore->Update());
-
 		//*mCore >> "Config/Dev2.txt";
 	}
 }
@@ -88,7 +78,7 @@ void TestApp::Run()
 
 void TestApp::GenerateTerrain()
 {
-	Terrain* terrain = mScene.FindObject<Terrain>("First Terrain");
+	Terrain* terrain = mCore->GetRoot()->FindObject<Terrain>("First Terrain");
 	if (terrain == 0) return;
 
 	mScale.Set(40.0f, 40.0f, 12.0f);
@@ -293,14 +283,6 @@ IMaterial* TestApp::GenerateMountains (Noise& heightMap, Array<Color4ub>& normal
 
 	// Use the mountain material
 	return mGraphics->GetMaterial("Mountains");
-}
-
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward();
 }
 
 //============================================================================================================

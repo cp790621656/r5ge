@@ -23,17 +23,17 @@ using namespace R5;
 // label, but will actually create it to begin with. Then all we have to do is attach it to our slider.
 //============================================================================================================
 
-class SliderCaption : public UIScript
+class USSliderCaption : public UIScript
 {
 	UISlider*	mSlider;
 	UILabel*	mLabel;
 
+	USSliderCaption() : mSlider(0), mLabel(0) {}
+
 public:
 
-	SliderCaption() : mSlider(0), mLabel(0) {}
-
 	// Declare this script type
-	R5_DECLARE_INHERITED_CLASS("SliderCaption", SliderCaption, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS("USSliderCaption", USSliderCaption, UIScript, UIScript);
 
 	// Init function gets called when the script is first being initialized
 	virtual void OnInit()
@@ -49,6 +49,7 @@ public:
 			mLabel->SetEventHandling( UIWidget::EventHandling::None );
 			mLabel->SetAlignment(UILabel::Alignment::Center);
 			mLabel->SetShadow(true);
+			mLabel->SetLayer(1);
 		}
 		else
 		{
@@ -75,8 +76,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	Core*			mCore;
 	UI*				mUI;
-	DebugCamera*	mCam;
-	Scene			mScene;
 
 public:
 
@@ -88,15 +87,15 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	// Register our UI script so that it can be created via the UIWidget::AddScript<> template
-	UIScript::Register<SliderCaption>();
+	UIScript::Register<USSliderCaption>();
 }
 
 //============================================================================================================
@@ -116,26 +115,17 @@ TestApp::~TestApp()
 void TestApp::Run()
 {
 	// The bulk of the config for this tutorial takes place inside "T04.txt" file. Previous tutorial was
-	// simply saved to a file, and this file is used by this tutorial. You can uncomment the ">>" line at the
-	// end of this function to enable persistent behavior (slider's value will be saved for next time).
-	// Note though that the label that was on top of the slider has been removed for this tutorial as it's
-	// now being added by the script we're attaching to the slider.
+	// simply saved to a file, and this file is used by this tutorial with one addition: the script above
+	// (USSliderCaption) was added to the slider. You can uncomment the ">>" line at the end of this
+	// function to enable persistent behavior (slider's value will be saved for next time). You can
+	// also choose to add that script via code instead using the UIWidget::AddScript<> template.
 
 	if ((*mCore << "Config/T04.txt") && (*mCore << "Config/Default UI Skin.txt"))
 	{
-		// Find the UISlider defined inside the "T04" resource file
-		UISlider* slider = mUI->FindWidget<UISlider>("First Slider");
+		// Register our custom grid-drawing function
+		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
-		// Add a script to the slider that we've created above. This will in turn create a label on top of
-		// our slider and will later trigger the script's OnValueChange function, updating the label's value.
-		slider->AddScript<SliderCaption>();
-
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
+		// Enter the message processing loop
 		while (mCore->Update());
 
 		//*mCore >> "Config/T04.txt";
@@ -148,8 +138,6 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mScene.Cull(mCam);
-	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 

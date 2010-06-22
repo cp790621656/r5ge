@@ -263,7 +263,7 @@ void GLGraphics::Release()
 		for (uint i = 0; i < mDelegates.GetSize(); ++i)
 		{
 			DelegateEntry& entry = mDelegates[i];
-			entry.callback(entry.param);
+			entry.callback(this, entry.param);
 		}
 		mDelegates.Release();
 
@@ -277,7 +277,7 @@ void GLGraphics::Release()
 // Adds a delayed callback function that should be executed on the next frame (at BeginFrame)
 //============================================================================================================
 
-void GLGraphics::ExecuteBeforeNextFrame(DelayedDelegate callback, void* param)
+void GLGraphics::ExecuteBeforeNextFrame(const DelayedDelegate& callback, void* param)
 {
 	mDelegates.Lock();
 	{
@@ -398,7 +398,7 @@ void GLGraphics::BeginFrame()
 			for (int i = 0, imax = mDelegates.GetSize(); i < imax; ++i)
 			{
 				DelegateEntry& entry = mDelegates[i];
-				entry.callback(entry.param);
+				entry.callback(this, entry.param);
 			}
 			mDelegates.Clear();
 		}

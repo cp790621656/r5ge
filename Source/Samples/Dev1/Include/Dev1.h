@@ -12,8 +12,6 @@ class TestApp
 	IGraphics*	mGraphics;
 	UI*			mUI;
 	Core*		mCore;
-	Camera*		mCam;
-	Scene		mScene;
 
 public:
 
@@ -21,9 +19,6 @@ public:
 	~TestApp();
 
 	void Run();
-	void OnDraw();
-	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
-
 	void OnChangeDelegate	 (UIWidget* widget);
 	void OnBrightnessChange	 (UIWidget* widget);
 	void OnRangeChange		 (UIWidget* widget);

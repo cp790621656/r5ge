@@ -20,8 +20,6 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 
 public:
 
@@ -33,11 +31,11 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 }
 
 //============================================================================================================
@@ -60,18 +58,19 @@ void TestApp::Run()
 
 	// Add and position the camera -- future tutorials will be setting
 	// this up in the resource files, so I hope you understand what's going on!
-	mCam = mScene.AddObject<DebugCamera>("Default Camera");
-	mCam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
-	mCam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
-	mCam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
+	DebugCamera* cam = mCore->GetRoot()->AddObject<DebugCamera>("Default Camera");
+	cam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
+	cam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
+	cam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
+	cam->AddScript<OSDrawForward>();
 
 	// Let's attach a directional light source to the camera just so that we can see the scene.
-	DirectionalLight* light = mCam->AddObject<DirectionalLight>("First Light");
+	DirectionalLight* light = cam->AddObject<DirectionalLight>("First Light");
 
 	// Faint ambient color
 	light->SetAmbient( Color3f(0.15f, 0.15f, 0.15f) );
 
-	// Make the light's diffuse color oversaturated, adding vibrance to the scene
+	// Make the light's diffuse color over-saturated, adding vibrancy to the scene
 	light->SetDiffuse( Color3f(1.25f, 1.25f, 1.25f) );
 
 	// Here we create a new model template. Note that creating a model will NOT place it into the scene.
@@ -95,7 +94,7 @@ void TestApp::Run()
 	// In order to keep it simple we just add it to the scene as-is, but with an enlarged scale,
 	// as the model is quite small by default.
 
-	ModelInstance* instance = mScene.AddObject<ModelInstance>("First Instance");
+	ModelInstance* instance = mCore->GetRoot()->AddObject<ModelInstance>("First Instance");
 	instance->SetModel(model);
 	instance->SetRelativeScale(10.0f);
 
@@ -103,30 +102,9 @@ void TestApp::Run()
 	// function, but keep in mind that "Run" animation we played above is a high layer animation, which
 	// means that it covers lower layer animations (which includes all idle animations). In addition,
 	// animations that are played on the same layer replace each other. As an example, both "Run" and "Walk"
-	// animations sit on layer 2, so when one is played, it gradually replaces the other as it fades in.
-
-	mCore->SetListener( bind(&TestApp::OnDraw, this) );
-	mCore->SetListener( bind(&Object::MouseMove, mCam) );
-	mCore->SetListener( bind(&Object::Scroll, mCam) );
+	// sit on the same layer, so when one is played it gradually replaces the other as it fades in.
 
 	while (mCore->Update());
-}
-
-//============================================================================================================
-// We add a new function call here: Scene::Draw()
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	// Cull our scene like before
-	mScene.Cull(mCam);
-
-	// Draw our scene using all forward rendering techniques. This function exists for convenience
-	// reasons, and it automatically changes projection back to perspective and clears the screen.
-	mScene.DrawAllForward();
-
-	// Add the grid at the end, just to show that we can still do manual rendering afterwards.
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

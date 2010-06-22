@@ -78,6 +78,7 @@ void UI::OnPreDraw() const
 	mGameStats = mGraphics->GetFrameStats();
 	mUIStats.Clear();
 
+	mGraphics->SetActiveRenderTarget	( 0 );
 	mGraphics->SetFog					( false );
 	mGraphics->SetDepthTest				( false );
 	mGraphics->SetDepthWrite			( false );

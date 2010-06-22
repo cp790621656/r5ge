@@ -20,8 +20,6 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 
 public:
 
@@ -33,11 +31,11 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 }
 
 //============================================================================================================
@@ -134,26 +132,8 @@ void TestApp::Run()
 		// simply use the CPU instead. Visually there is no difference, but for optimal performance
 		// I recommend adding animation code to all the shaders that will be used by animated models.
 
-		// The rest of the tutorial is identical to the previous
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
 		while (mCore->Update());
 	}
-}
-
-//============================================================================================================
-// Drawing hasn't changed since the previous tutorial
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward();
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

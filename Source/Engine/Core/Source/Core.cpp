@@ -40,6 +40,41 @@ R5_THREAD_FUNCTION(WorkerThread, ptr)
 }
 
 //============================================================================================================
+// Core constructor and destructor
+//============================================================================================================
+
+Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio) :
+	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
+{
+	Init();
+}
+
+//============================================================================================================
+
+Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio, Scene& scene) :
+	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
+{
+	Init();
+	scene.SetRoot(&mRoot);
+}
+
+//============================================================================================================
+
+Core::~Core()
+{
+	// Ensure that the core won't be deleted until all worker threads finish
+	while (g_threadCount > 0) Thread::Sleep(1);
+	if (mWin != 0) mWin->SetGraphics(0);
+	g_core = 0;
+
+	// We no longer need the improved timer frequency
+	Thread::ImproveTimerFrequency(false);
+
+	// Root has to be released explicitly as it has to be cleared before meshes
+	mRoot.Release();
+}
+
+//============================================================================================================
 // Default initialization function
 //============================================================================================================
 
@@ -71,41 +106,6 @@ void Core::Init()
 
 	// Automatically assign the graphics controller to the window
 	if (mWin != 0) mWin->SetGraphics(mGraphics);
-}
-
-//============================================================================================================
-// Core constructor and destructor
-//============================================================================================================
-
-Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio) :
-	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
-{
-	Init();
-}
-
-//============================================================================================================
-
-Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, Scene& scene, IAudio* audio) :
-	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
-{
-	Init();
-	scene.SetRoot(&mRoot);
-}
-
-//============================================================================================================
-
-Core::~Core()
-{
-	// Ensure that the core won't be deleted until all worker threads finish
-	while (g_threadCount > 0) Thread::Sleep(1);
-	if (mWin != 0) mWin->SetGraphics(0);
-	g_core = 0;
-
-	// We no longer need the improved timer frequency
-	Thread::ImproveTimerFrequency(false);
-
-	// Root has to be released explicitly as it has to be cleared before meshes
-	mRoot.Release();
 }
 
 //============================================================================================================
@@ -199,13 +199,10 @@ bool Core::Update()
 			mWin->BeginFrame();
 			if (mGraphics != 0)	mGraphics->BeginFrame();
 
-			// Draw process callbacks
-			mDrawList.Execute();
+			// Trigger all registered draw callbacks
+			if (!HandleOnDraw()) mGraphics->Clear();
 
-			// DEPRECATED: Draw the scene
-			if (mOnDraw) mOnDraw();
-
-			// Draw the UI
+			// Draw the UI after everything else
 			if (mUI != 0) mUI->Draw();
 
 			// Finish the drawing process
@@ -369,10 +366,12 @@ bool Core::OnChar(byte key)
 bool Core::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 {
 	mIsKeyDown[key] = isDown;
+
+	// Let the UI handle this event first
 	if (mUI && mUI->OnKeyPress(pos, key, isDown)) return true;
 
-	// If we have a key event listener, let it respond
-	if (mOnKey && mOnKey(pos, key, isDown)) return true;
+	// If the UI doesn't handle it, let the registered callbacks have at it
+	if (HandleOnKey(pos, key, isDown)) return true;
 
 	// Default behavior with no set listener
 	if (mWin != 0 && !isDown)
@@ -404,7 +403,7 @@ bool Core::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 {
 	mMousePos = pos;
 	if (mUI && mUI->OnMouseMove(pos, delta)) return true;
-	return (mOnMouseMove) ? mOnMouseMove(pos, delta) : false;
+	return HandleOnMouseMove(pos, delta);
 }
 
 //============================================================================================================
@@ -414,7 +413,7 @@ bool Core::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 bool Core::OnScroll(const Vector2i& pos, float delta)
 {
 	if (mUI && mUI->OnScroll(pos, delta)) return true;
-	return (mOnScroll) ? mOnScroll(pos, delta) : false;
+	return HandleOnScroll(pos, delta);
 }
 
 //============================================================================================================
@@ -536,8 +535,6 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				}
 			}
 		}
-		// Registered serialization callback
-		else if (mOnFrom) mOnFrom(node);
 	}
 	// Something may have changed, update the scene
 	mIsDirty = true;
@@ -633,9 +630,6 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 		}
 	}
 	mRoot.Unlock();
-
-	// Registered serialization callback
-	if (mOnTo) mOnTo(root);
 	return true;
 }
 

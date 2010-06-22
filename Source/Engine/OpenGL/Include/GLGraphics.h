@@ -65,7 +65,7 @@ public:
 	virtual void Release();
 
 	// Adds a delayed callback function that should be executed on the next frame (at BeginFrame)
-	virtual void ExecuteBeforeNextFrame(DelayedDelegate callback, void* param);
+	virtual void ExecuteBeforeNextFrame(const DelayedDelegate& callback, void* param);
 
 	// Clear the screen or the off-screen target, rendering the skybox if necessary (pre-render)
 	virtual void Clear (bool color = true, bool depth = true, bool stencil = true);

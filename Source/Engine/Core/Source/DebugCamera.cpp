@@ -12,6 +12,36 @@ DebugCamera::DebugCamera() :
 	mHasMovement	(false) {}
 
 //============================================================================================================
+// Register the event listener callbacks
+//============================================================================================================
+
+void DebugCamera::OnInit()
+{
+	static bool doOnce = true;
+
+	// NOTE: This camera is only meant for debugging purposes, and as such no advanced functionality
+	// is supported. If more than one debug camera exists in the scene, only the first one will respond
+	// to events. You are more than welcome to create your own camera with proper script-controlled logic.
+
+	if (doOnce)
+	{
+		doOnce = false;
+		mCore->AddOnMouseMove(bind(&DebugCamera::MouseMove, this), 100);
+		mCore->AddOnScroll(bind(&DebugCamera::Scroll, this), 100);
+	}
+}
+
+//============================================================================================================
+// Remove the event listener callbacks
+//============================================================================================================
+
+void DebugCamera::OnDestroy()
+{
+	mCore->RemoveOnScroll(bind(&DebugCamera::Scroll, this));
+	mCore->RemoveOnMouseMove(bind(&DebugCamera::MouseMove, this));
+}
+
+//============================================================================================================
 // Stops the camera in its tracks
 //============================================================================================================
 
@@ -137,7 +167,7 @@ Vector3f DebugCamera::_UpdateOffsetPosition()
 // Respond to mouse movement
 //============================================================================================================
 
-bool DebugCamera::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+uint DebugCamera::MouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if (mSplineV.IsEmpty())
 	{
@@ -146,39 +176,39 @@ bool DebugCamera::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 			mHasMovement = true;
 			mRotMovement.x -= delta.x * 0.0002f;
 			mRotMovement.y -= delta.y * 0.0002f;
-			return true;
+			return EventDispatcher::EventResponse::Handled;
 		}
 		else if (mCore->IsKeyDown(Key::MouseRight))
 		{
 			mHasMovement = true;
 			Vector3f delta3 (delta.x * 0.0025f, -delta.y * 0.0025f, 0.0f);
 			mPosMovement += delta3 * mRelativeRot;
-			return true;
+			return EventDispatcher::EventResponse::Handled;
 		}
 		else if (mCore->IsKeyDown(Key::MouseMiddle))
 		{
 			mHasMovement = true;
 			Vector3f delta3 (delta.x * 0.0025f, 0.0f, -delta.y * 0.0025f);
 			mPosMovement += delta3 * mRelativeRot;
-			return true;
+			return EventDispatcher::EventResponse::Handled;
 		}
 	}
-	return false;
+	return EventDispatcher::EventResponse::NotHandled;
 }
 
 //============================================================================================================
 // Respond to scrolling events
 //============================================================================================================
 
-bool DebugCamera::OnScroll (const Vector2i& pos, float delta)
+uint DebugCamera::Scroll (const Vector2i& pos, float delta)
 {
 	if (mSplineV.IsEmpty() && Float::IsNotZero(delta))
 	{
 		mHasMovement = true;
 		mDollyMovement -= delta * 0.001f * Float::Clamp(mDolly.y, 1.0f, 10.0f);
-		return true;
+		return EventDispatcher::EventResponse::Handled;
 	}
-	return false;
+	return EventDispatcher::EventResponse::NotHandled;
 }
 
 //============================================================================================================

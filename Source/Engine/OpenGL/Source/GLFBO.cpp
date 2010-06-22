@@ -55,7 +55,7 @@ bool IsFBOComplete (bool displayError = true)
 // Delayed callback executed by the GLGraphics manager (buffers should only be released on the graphics thread)
 //============================================================================================================
 
-void DeleteFBO(void* ptr)
+void DeleteFBO (IGraphicsManager* graphics, void* ptr)
 {
 	uint fbo = (uint)(ulong)ptr;
 
@@ -100,7 +100,7 @@ void GLFBO::_InternalRelease (bool delayExecution)
 		else
 		{
 			// Optimized version for when we are inside the graphics thread
-			DeleteFBO((void*)mFbo);
+			DeleteFBO(mGraphics, (void*)mFbo);
 		}
 		mFbo = 0;
 	}

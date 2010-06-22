@@ -24,5 +24,5 @@ public:
 
 	virtual void OnInit();
 	virtual void OnDestroy();
-	virtual float OnDraw()=0;
+	virtual void OnDraw()=0;
 };

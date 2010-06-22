@@ -23,8 +23,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 	Vector3f		mScale;
 	Vector3f		mOffset;
 
@@ -43,12 +41,12 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 }
 
 //============================================================================================================
@@ -70,7 +68,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T09.txt")
 	{
 		// Find our terrain -- it's now loaded from the resource file
-		Terrain* terrain = mScene.FindObject<Terrain>("First Terrain");
+		Terrain* terrain = mCore->GetRoot()->FindObject<Terrain>("First Terrain");
 
 		if (terrain != 0)
 		{
@@ -138,27 +136,9 @@ void TestApp::Run()
 			// And now we have a 2048x2048 terrain rendered in only 2048 triangles.
 		}
 
-		// The rest of the Update function remains unchanged
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
 		while (mCore->Update());
-
 		//*mCore >> "Config/T09.txt";
 	}
-}
-
-//============================================================================================================
-// The drawing function simply draws the entire scene with the default techniques
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward();
 }
 
 //============================================================================================================

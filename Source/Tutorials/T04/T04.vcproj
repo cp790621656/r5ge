@@ -85,9 +85,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -156,9 +153,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -166,6 +160,10 @@
 	<References>
 	</References>
 	<Files>
+		<File
+			RelativePath="..\..\..\Resources\Config\Default UI Skin.txt"
+			>
+		</File>
 		<File
 			RelativePath=".\T04.cpp"
 			>

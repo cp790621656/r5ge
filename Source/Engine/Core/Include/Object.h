@@ -228,15 +228,6 @@ public:
 	void OverrideAbsoluteRotation (const Quaternion& rot)	{ mAbsoluteRot	 = rot;		}
 	void OverrideAbsoluteScale	  (float scale)				{ mAbsoluteScale = scale;	}
 
-	// Key press event notifier
-	bool KeyPress (const Vector2i& pos, byte key, bool isDown);
-
-	// Mouse movement event notification
-	bool MouseMove (const Vector2i& pos, const Vector2i& delta);
-
-	// Mouse scrolling event notification
-	bool Scroll (const Vector2i& pos, float delta);
-
 	// Convenience function -- force-updates the object based on the parent's absolute values
 	void Update (bool threadSafe = true);
 
@@ -269,15 +260,6 @@ protected:
 
 	// Function called just before the child gets removed
 	virtual void OnRemoveChild (Object* obj) {}
-
-	// Called by a manually triggered function: key press event notification
-	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { return false; }
-
-	// Called by a manually triggered function: mouse movement event notification
-	virtual bool OnMouseMove (const Vector2i& pos, const Vector2i& delta) { return false; }
-
-	// Called by a manually triggered function: mouse scroll event notification
-	virtual bool OnScroll (const Vector2i& pos, float delta) { return false; }
 
 	// Called prior to object's Update function, before absolute coordinates are calculated
 	virtual void OnPreUpdate();

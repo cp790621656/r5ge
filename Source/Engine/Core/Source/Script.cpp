@@ -24,7 +24,9 @@ void _RegisterDefaultScripts()
 		Script::Register<OSRotate>();
 		Script::Register<OSSceneRoot>();
 		Script::Register<OSDrawForward>();
+		Script::Register<OSDrawDeferred>();
 		Script::Register<OSShadowCreator>();
+		Script::Register<OSAudioListener>();
 	}
 }
 

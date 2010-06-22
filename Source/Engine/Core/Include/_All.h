@@ -84,6 +84,8 @@ namespace R5
 	#include "OSShadowCreator.h"		// Adds a new rendering step that draws the scene's shadows
 	#include "OSDraw.h"					// Class containing common functionality that can be used by draw scripts
 	#include "OSDrawForward.h"			// Draw the scene using forward rendering
+	#include "OSDrawDeferred.h"			// Draw the scene using deferred rendering
+	#include "OSAudioListener.h"		// Updates the sound listener's position every update
 };
 
 #endif

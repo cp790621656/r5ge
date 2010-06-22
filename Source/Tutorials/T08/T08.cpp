@@ -23,8 +23,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 
 	Array<const ITechnique*> mTechniques;
 
@@ -42,12 +40,12 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mTerrain(0), mLabel(0)
+TestApp::TestApp() : mTerrain(0), mLabel(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 }
 
 //============================================================================================================
@@ -85,7 +83,7 @@ void TestApp::Run()
 		noise.ApplyFilter("Fractal").Set(2.0f, 0.65f);
 
 		// Now that we have our heightmap, we should create our terrain.
-		mTerrain = mScene.AddObject<Terrain>("First Terrain");
+		mTerrain = mCore->GetRoot()->AddObject<Terrain>("First Terrain");
 
 		// We want to partition our terrain into an 8 by 8 grid. This will create 64 subdivisions
 		// that the terrain will use together with frustum culling to automatically discard portions
@@ -138,7 +136,7 @@ void TestApp::Run()
 		ITechnique* wireframe = mGraphics->GetTechnique("Wireframe");
 
 		// Save it for our Draw function
-		mTechniques.Expand() = wireframe;
+		//mTechniques.Expand() = wireframe;
 
 		// We'll be using a custom material to draw our terrain. Let's just give it the same name.
 		IMaterial* mat = mGraphics->GetMaterial("Terrain");
@@ -160,13 +158,11 @@ void TestApp::Run()
 
 		mLabel = mUI->FindWidget<UILabel>("Status");
 
-		// The rest of the Update function should be quite familiar to you.
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
+		// Add a custom draw function that will update the label showing us how much of the terrain is
+		// actually visible at any given time. Look below to see exactly what it does.
+		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
+		// Enter the message processing loop
 		while (mCore->Update());
 	}
 }
@@ -177,9 +173,6 @@ void TestApp::Run()
 
 void TestApp::OnDraw()
 {
-	mScene.Cull(mCam);
-	mScene.DrawAllForward();
-
 	// Since we have an on-screen label to play with, let's show how much of the terrain is currently visible
 	if (mLabel != 0) mLabel->SetText( String("%.0f%%", mTerrain->GetVisibility() * 100.0f) );
 }

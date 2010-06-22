@@ -13,8 +13,8 @@
 
 using namespace R5;
 
-Camera*	g_cam0 = 0;
-Camera*	g_cam1 = 0;
+DebugCamera* g_cam0 = 0;
+DebugCamera* g_cam1 = 0;
 
 //============================================================================================================
 
@@ -60,7 +60,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
 
 	UIScript::Register<USMoveCamera>();
 }
@@ -82,8 +82,8 @@ void TestApp::Run()
     if (*mCore << "Config/Dev12.txt")
 	{
 		mScene1.SetRoot( mScene.FindObject<Object>("Scene 1") );
-		g_cam0 = mScene.FindObject<Camera>("Camera 0");
-		g_cam1 = mScene.FindObject<Camera>("Camera 1");
+		g_cam0 = mScene.FindObject<DebugCamera>("Camera 0");
+		g_cam1 = mScene.FindObject<DebugCamera>("Camera 1");
 
 		if (g_cam0 != 0 && g_cam1 != 0)
 		{
@@ -103,9 +103,7 @@ void TestApp::Run()
 			mScene1.SetRoot( mScene.FindObject<Object>("Scene 1") );
 			mScene1.SetRenderTarget(rt);
 
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&Object::MouseMove, g_cam0) );
-			mCore->SetListener( bind(&Object::Scroll, g_cam0) );
+			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
 			while (mCore->Update());
 

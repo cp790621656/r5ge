@@ -19,8 +19,8 @@ class TestApp
 	IGraphics*	mGraphics;
 	UI*			mUI;
 	Core*		mCore;
-	Camera*		mCam;
-	Scene		mScene;
+
+	OSDrawDeferred*	mDraw;
 
 public:
 
@@ -28,7 +28,6 @@ public:
 	~TestApp();
 
 	void Run();
-	void OnDraw();
-	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
+	uint OnKeyPress (const Vector2i& pos, byte key, bool isDown);
 };
 }

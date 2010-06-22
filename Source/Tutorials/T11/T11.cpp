@@ -91,8 +91,6 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
-	DebugCamera*	mCam;
-	Scene			mScene;
 
 public:
 
@@ -104,11 +102,11 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 }
 
 //============================================================================================================
@@ -128,27 +126,9 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/T11.txt")
 	{
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
 		while (mCore->Update());
-
 		//*mCore >> "Config/T11.txt";
 	}
-}
-
-//============================================================================================================
-// Nothing changes in the OnDraw function from the previous tutorial
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward(true);
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

@@ -23,8 +23,7 @@ struct TreeNode
 	Variable		mValue;
 	Array<TreeNode>	mChildren;
 
-	TreeNode() {}
-	TreeNode(const char* tag) { mTag = tag; }
+	TreeNode(const char* tag = "Root") { mTag = tag; }
 	TreeNode(const String& s) { mTag = s; }
 
 	void Lock()		{ mChildren.Lock(); }
@@ -33,7 +32,7 @@ struct TreeNode
 	// Release all memory used by the class
 	void Release()
 	{
-		mTag.Release();
+		mTag = "Root";
 		mValue.Release();
 		mChildren.Release();
 	}

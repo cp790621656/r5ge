@@ -20,11 +20,9 @@ using namespace R5;
 
 class TestApp
 {
-	IWindow*		mWin;
-	IGraphics*		mGraphics;
-	Core*			mCore;
-	DebugCamera*	mCam;
-	Scene			mScene;
+	IWindow*	mWin;
+	IGraphics*	mGraphics;
+	Core*		mCore;
 
 public:
 
@@ -39,11 +37,11 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 }
 
 //============================================================================================================
@@ -68,7 +66,7 @@ ModelInstance* TestApp::CreateNewInstance (ModelTemplate* temp, const String& mo
 	model->SetSource(temp);
 
 	// Create a new instance of the model above
-	ModelInstance* inst = mScene.AddObject<ModelInstance>(instanceName);
+	ModelInstance* inst = mCore->GetRoot()->AddObject<ModelInstance>(instanceName);
 	inst->SetModel(model);
 	inst->AddScript<OSPlayIdleAnimations>();
 	return inst;
@@ -90,28 +88,10 @@ void TestApp::Run()
 		CreateNewInstance(temp, "Peasant 1", "Second")->SetRelativePosition(Vector3f(1, -2, 0));
 		CreateNewInstance(temp, "Peasant 2", "Third")->SetRelativePosition(Vector3f(-2, 1, 0));
 
-		// Continue on with the rest of the application
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
 		while (mCore->Update());
 
 		//*mCore >> "Config/T12.txt";
 	}
-}
-
-//============================================================================================================
-// Nothing changes in the OnDraw function from the previous tutorial
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward(true);
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

@@ -42,8 +42,8 @@ public:
 
 	void Run();
 	void OnDraw();
-	void DrawLeaves(void* param);
-	void SaveTextures(void* param);
+	void DrawLeaves (IGraphicsManager* graphics, void* param);
+	void SaveTextures (IGraphicsManager* graphics, void* param);
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
 
 	void OnShowTexture	(UIWidget* widget, uint state, bool isSet);
@@ -51,13 +51,11 @@ public:
 	void OnGenerate		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void OnSave			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void Generate();
-	void OnSerializeTo	(TreeNode& node) const;
-	bool OnSerializeFrom(const TreeNode& node);
 };
 
 //============================================================================================================
 
-TestApp::TestApp() : mBranch(0), mSeed(0), mOriginalD(0), mOriginalN(0), mFinalD(0), mFinalN(0),
+TestApp::TestApp() : mBranch(0), mSeed(2711135145), mOriginalD(0), mOriginalN(0), mFinalD(0), mFinalN(0),
 	mSize(0), mTilt(0), mCount(0), mFinal(0)
 {
 	mWin		= new GLWindow();
@@ -92,9 +90,7 @@ TestApp::~TestApp()
 void TestApp::Run()
 {
 	// Core event listeners
-	mCore->SetListener( bind(&TestApp::OnSerializeTo,	this) );
-	mCore->SetListener( bind(&TestApp::OnSerializeFrom, this) );
-	mCore->SetListener( bind(&TestApp::OnDraw,			this) );
+	mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
 	// UI callbacks can be bound even before the actual widgets are loaded
 	mUI->SetOnKey		 ("Save",			bind(&TestApp::OnSave,			this));
@@ -126,12 +122,6 @@ void TestApp::Run()
 		{
 			// Default camera's orientation comes from the configuration file
 			mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-			if (mCam != 0)
-			{
-				mCore->SetListener( bind(&Object::Scroll, mCam) );
-				mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			}
 
 			// Off-screen camera is not serialized, but is rather created here
 			DebugCamera* cam = mOffscreen.AddObject<DebugCamera>("Off-screen Camera");
@@ -180,7 +170,7 @@ void TestApp::OnDraw()
 // Cull and draw the leaves into an off-screen buffer
 //============================================================================================================
 
-void TestApp::DrawLeaves(void* param)
+void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 {
 	static DebugCamera* offCam = mOffscreen.FindObject<DebugCamera>("Off-screen Camera");
 
@@ -216,7 +206,7 @@ void TestApp::DrawLeaves(void* param)
 			// Off-screen target
 			mOffscreen.SetRenderTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
-			mOffscreen.Draw("Diffuse Map");
+			mOffscreen.DrawWithTechnique("Diffuse Map");
 			mGraphics->Flush();
 
 			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
@@ -236,7 +226,7 @@ void TestApp::DrawLeaves(void* param)
 		{
 			mOffscreen.SetRenderTarget(normalTarget);
 			mOffscreen.ActivateMatrices();
-			mOffscreen.Draw("Normal Map");
+			mOffscreen.DrawWithTechnique("Normal Map");
 			mGraphics->Flush();
 		}
 
@@ -261,7 +251,7 @@ void TestApp::DrawLeaves(void* param)
 // Callback executed on the graphics thread, saves the leaf textures
 //============================================================================================================
 
-void TestApp::SaveTextures(void* param)
+void TestApp::SaveTextures (IGraphicsManager* graphics, void* param)
 {
 	Memory diffuse, normal;
 
@@ -525,29 +515,6 @@ void TestApp::Generate()
 		}
 		mBranch->Unlock();
 	}
-}
-
-//============================================================================================================
-// Save the seed used to generate the branch when serializing out
-//============================================================================================================
-
-void TestApp::OnSerializeTo (TreeNode& node) const
-{
-	node.AddChild("Seed", mSeed);
-}
-
-//============================================================================================================
-// Load the previously saved seed used to generate the branch
-//============================================================================================================
-
-bool TestApp::OnSerializeFrom (const TreeNode& node)
-{
-	if (node.mTag == "Seed")
-	{
-		node.mValue >> mSeed;
-		return true;
-	}
-	return false;
 }
 
 //============================================================================================================

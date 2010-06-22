@@ -18,12 +18,12 @@ struct USDestroyWindow : public UIScript
 
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	UIScript::Register<USDestroyWindow>();
 }
@@ -44,27 +44,8 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Basic Application.txt")
 	{
-		mCam = mScene.FindObject<Camera>("Default Camera");
-
-		if (mCam != 0)
-		{
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
-
-			while (mCore->Update());
-
-			//*mCore >> "Config/Basic Application.txt";
-		}
+		while (mCore->Update());
 	}
-}
-
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.Draw();
 }
 
 //============================================================================================================

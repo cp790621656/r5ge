@@ -4,7 +4,8 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Development Testing Application
+// Model Viewer -- Legacy application that keeps getting "patched", but not rewritten. As such its code is
+// crap, but it does what it's supposed to do -- allows viewing and modification of basic model properties.
 //============================================================================================================
 
 class ModelViewer
@@ -55,9 +56,9 @@ public:
 	float UpdateFPS();
 	void  SetStatusText (const String& text, const Color3f& color = Color3f(1.0f));
 
-	bool OnKeyPress		(const Vector2i& pos, byte key, bool isDown);
-	bool OnMouseMove	(const Vector2i& pos, const Vector2i& delta);
-	bool OnScroll		(const Vector2i& pos, float delta);
+	uint OnKeyPress		(const Vector2i& pos, byte key, bool isDown);
+	uint OnMouseMove	(const Vector2i& pos, const Vector2i& delta);
+	uint OnScroll		(const Vector2i& pos, float delta);
 	bool SerializeFrom	(const TreeNode& root);
 	void SerializeTo	(TreeNode& root) const;
 

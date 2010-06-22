@@ -7,7 +7,7 @@
 // The root of the scenegraph hierarchy
 //============================================================================================================
 
-class Scene : public Deferred::Storage
+class Scene : protected Deferred::Storage
 {
 public:
 
@@ -37,6 +37,9 @@ public:
 
 	Scene (Object* root = 0) : mRoot(root) {}
 
+	// Since Deferred::Storage is inherited via 'protected', it's a good idea to allow access
+	Deferred::Storage& GetDeferredStorage() { return *this; }
+
 	// Finds a child object of the specified name and type
 	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
 	{
@@ -50,6 +53,9 @@ public:
 	}
 
 public:
+
+	// Forward the release event to deferred storage
+	void Release() { if (mRoot != 0) Deferred::Storage::Release(mRoot->GetGraphics()); }
 
 	// It should be possible to change the root of the scene if desired
 	Object* GetRoot() { return mRoot; }
@@ -89,14 +95,13 @@ public:
 	uint DrawAllForward (bool clearScreen = true);
 
 	// Advanced: Draws the scene using default deferred rendering techniques
-	// PostProcess: 0 (do nothing), 1 = draw to screen as-is, 2 = bloom
 	uint DrawAllDeferred (byte ssao = 0, byte postProcess = 1);
 
 	// Draw the scene using the default combination of deferred rendering and forward rendering approaches.
-	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f());
+	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f(), byte ssao = 0);
 
 	// Advanced: Draws the scene using the specified technique
-	uint Draw (const String& technique, bool clearScreen = true);
+	uint DrawWithTechnique (const String& technique, bool clearScreen = true);
 
 	// Advanced: Draws the scene using the specified technique
 	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen = true);

@@ -28,5 +28,5 @@ public:
 	virtual void OnDestroy();
 
 	// Draw callback
-	virtual float OnDraw();
+	virtual void OnDraw();
 };

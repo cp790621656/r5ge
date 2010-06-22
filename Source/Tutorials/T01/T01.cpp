@@ -44,7 +44,7 @@ TestApp::TestApp() : mCam(0)
 
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics, 0, 0, mScene);
 }
 
 //============================================================================================================
@@ -74,12 +74,17 @@ void TestApp::Run()
 	// Move the camera back 10 units
 	mCam->SetDolly(Vector3f(0.0f, 10.0f, 20.0f));
 
-	// Register our draw function -- it will be called every frame unless the window is minimized
-	mCore->SetListener( bind(&TestApp::OnDraw, this) );
+	// Note that the debug camera is a convenience camera. It registers itself as a listener for mouse move
+	// and key events so you don't have to. With any other camera you will have to create a script to handle
+	// how it reacts to various keys -- but we'll cover scripts in the next tutorial.
 
-	// We want all mouse movement and scroll events to go directly to the camera
-	mCore->SetListener( bind(&Object::MouseMove, mCam) );
-	mCore->SetListener( bind(&Object::Scroll, mCam) );
+	// Register our draw function -- it will be called every frame unless the window is minimized.
+	// By default the priority of the function is 1000, and higher priority callbacks are called. first.
+	mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
+
+	// Note that it's easier to simply add "OSDrawForward" or "OSDrawDeferred" script to the camera
+	// and that will take care of drawing the scene for you using forward or deferred rendering, respectively.
+	// Doing that won't let you manually draw things however, such as the grid we're adding below.
 
 	// Enter the message processing loop
 	while (mCore->Update());

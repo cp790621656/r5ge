@@ -246,10 +246,10 @@ TestApp::TestApp()
 	mClosed		= 0;
 
 	mWin->Create("R5 Engine: Dev5 (Pathfinding)", 100, 100, WIDTH, HEIGHT, IWindow::Style::Normal);
-	
+
 	mGraphics->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
-	mCore->SetListener( bind(&TestApp::OnKeyPress, this) );
+	mCore->AddOnKey( bind(&TestApp::OnKeyPress, this) );
 
 	IFont* font0 = mGraphics->GetFont("Arial 12");
 	IFont* font1 = mGraphics->GetFont("Arial 15");
@@ -336,7 +336,6 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	mCore->SetListener( bind(&TestApp::OnDraw, this) );
 	while ( mCore->Update() );
 }
 
@@ -390,15 +389,6 @@ void TestApp::Update()
 }
 
 //============================================================================================================
-// Since the UI is drawn automatically, all we need to do is clear the screen.
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mGraphics->Clear();
-}
-
-//============================================================================================================
 // Delegate triggered when a key is pressed over the grid
 //============================================================================================================
 
@@ -447,28 +437,32 @@ void TestApp::OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2
 // Application keypress callback
 //============================================================================================================
 
-bool TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+uint TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown)
 	{
 		if ( key == Key::Escape )
 		{
 			mCore->Shutdown();
+			return 1;
 		}
 		else if ( key == Key::F5 )
 		{
 			mWin->SetStyle( mWin->GetStyle() == IWindow::Style::FullScreen ?
 				IWindow::Style::Normal : IWindow::Style::FullScreen);
+			return 1;
 		}
 		else if ( key == Key::F6 )
 		{
 			mWin->SetSize( Vector2i(900, 600) );
 			mWin->SetStyle(IWindow::Style::Normal);
+			return 1;
 		}
 		else if ( key == Key::R )
 		{
 			Restart();
 			Update();
+			return 1;
 		}
 		else if ( key == Key::S )
 		{
@@ -489,6 +483,7 @@ bool TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 					}
 				}
 			}
+			return 1;
 		}
 		else if ( key == Key::E )
 		{
@@ -509,6 +504,7 @@ bool TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 					}
 				}
 			}
+			return 1;
 		}
 		else if ( key == Key::A )
 		{
@@ -517,6 +513,7 @@ bool TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 				Advance();
 				Update();
 			}
+			return 1;
 		}
 		else if ( key == Key::C )
 		{
@@ -531,19 +528,22 @@ bool TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 
 				mStatus->SetText( String("Iterations: %u", iterations) );
 			}
+			return 1;
 		}
 		else if ( key == Key::O )
 		{
 			if (++g_overestimation > 4) g_overestimation = 0;
 			mStatus->SetText( String("Overestimation: %u%%", g_overestimation * 25) );
+			return 1;
 		}
 		else if ( key == Key::B )
 		{
 			g_backtracking = !g_backtracking;
 			mStatus->SetText( g_backtracking ? "Backtracking is ON" : "Backtracking is OFF" );
+			return 1;
 		}
 	}
-	return true;
+	return 0;
 }
 
 

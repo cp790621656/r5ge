@@ -77,6 +77,6 @@ public:
 	void OnDraw();
 	void OnHighlightKey  (UIWidget* ptr, const Vector2i& pos, byte key, bool isDown);
 	void OnHighlightMove (UIWidget* ptr, const Vector2i& pos, const Vector2i& delta);
-	bool OnKeyPress (const Vector2i& pos, byte key, bool isDown);
+	uint OnKeyPress (const Vector2i& pos, byte key, bool isDown);
 };
 }; // namespace R5

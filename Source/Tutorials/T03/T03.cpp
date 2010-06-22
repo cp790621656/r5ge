@@ -22,8 +22,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	Core*			mCore;
 	UI*				mUI;
-	DebugCamera*	mCam;
-	Scene			mScene;
 	UILabel*		mLabel;
 
 public:
@@ -38,12 +36,12 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mLabel(0)
+TestApp::TestApp() : mLabel(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 }
 
 //============================================================================================================
@@ -68,12 +66,10 @@ void TestApp::Run()
 		// Create a simple UI window via code
 		CreateWindow();
 
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
+		// Add our custom grid-drawing callback
+		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
+		// Enter the message processing loop
 		while (mCore->Update());
 
 		//*mCore >> "Config/T03.txt";
@@ -81,13 +77,11 @@ void TestApp::Run()
 }
 
 //============================================================================================================
-// The OnDraw function hasn't changed
+// The OnDraw function hasn't changed since the previous tutorial
 //============================================================================================================
 
 void TestApp::OnDraw()
 {
-	mScene.Cull(mCam);
-	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
@@ -186,7 +180,7 @@ void TestApp::CreateWindow()
 			// label's text. Setting the layer to '1' prevents that behavior. Note that this feature
 			// should not be overused too much as each new layer creates a new draw call. Widgets on
 			// the same layer using the same texture will be drawn in a single draw call. For example,
-			// 100 different labels all using the default font added to a window? Single draw call.
+			// 100 different labels all using the default font added to one window? Single draw call.
 			// Likewise if a widget will be changing frequently (such as a label that's updated every
 			// single frame -- FPS?) -- you might want to place it on a different layer than widgets
 			// that won't be updated frequently, just so that the infrequent widgets won't get polled

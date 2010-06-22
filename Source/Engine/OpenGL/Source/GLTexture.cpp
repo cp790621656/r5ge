@@ -27,7 +27,7 @@ inline void _DeleteTexture (uint& texid)
 // Delayed callback executed by the GLGraphics manager (textures should only be released on the graphics thread)
 //============================================================================================================
 
-void DeleteTexture(void* ptr)
+void DeleteTexture (IGraphicsManager* graphics, void* ptr)
 {
 	uint texid = (uint)(ulong)ptr;
 	_DeleteTexture(texid);
@@ -348,7 +348,7 @@ void GLTexture::_InternalRelease(bool delayExecution)
 			// OpenGL textures should only be destroyed on the graphics thread
 			if (Thread::GetID() == ((GLGraphics*)mGraphics)->GetThreadID())
 			{
-				DeleteTexture((void*)mGlID);
+				DeleteTexture(mGraphics, (void*)mGlID);
 			}
 			else
 			{

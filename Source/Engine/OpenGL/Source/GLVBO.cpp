@@ -6,7 +6,7 @@ using namespace R5;
 // Delayed callback executed by the GLGraphics manager (buffers should only be released on the graphics thread)
 //============================================================================================================
 
-void DeleteBuffer(void* ptr)
+void DeleteBuffer (IGraphicsManager* graphics, void* ptr)
 {
 	uint vbo = (uint)(ulong)ptr;
 	glDeleteBuffers(1, &vbo);

@@ -17,8 +17,8 @@ void OSDraw::OnInit()
 	// Set the root of the scene
 	mScene.SetRoot(mRoot->GetOwner());
 
-	// Add a draw callback
-	mCore->AddOnDraw(bind(&OSDraw::OnDraw, this));
+	// Add the draw callback to a high priority so that it's drawn before the default (1000) callbacks
+	mCore->AddOnDraw( bind(&OSDraw::OnDraw, this), 10000 );
 }
 
 //============================================================================================================
@@ -27,5 +27,7 @@ void OSDraw::OnInit()
 
 void OSDraw::OnDestroy()
 {
-	mCore->RemoveOnDraw(bind(&OSDraw::OnDraw, this));
+	if (mCore == 0) mCore = mObject->GetCore();
+	if (mCore != 0) mCore->RemoveOnDraw( bind(&OSDraw::OnDraw, this) );
+	mScene.Release();
 }

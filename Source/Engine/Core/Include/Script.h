@@ -89,15 +89,6 @@ protected:
 	// Callback triggered when DestroySelf() gets called
 	virtual void OnDestroy() {}
 
-	// Key event notification
-	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { return false; }
-
-	// Mouse movement event notification
-	virtual bool OnMouseMove (const Vector2i& pos, const Vector2i& delta) { return false; }
-
-	// Mouse scroll event notification
-	virtual bool OnScroll (const Vector2i& pos, float delta) { return false; }
-
 	// Called prior to object's Update function
 	virtual void OnPreUpdate() { mIgnore.Set(Ignore::PreUpdate, true); }
 

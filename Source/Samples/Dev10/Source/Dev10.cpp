@@ -47,8 +47,6 @@ class TestApp
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 	Model*			mModel;
 
 public:
@@ -57,16 +55,16 @@ public:
 	~TestApp();
 	void Run();
 	void OnDraw();
-	bool OnKey (const Vector2i& pos, byte key, bool isDown);
+	uint OnKey (const Vector2i& pos, byte key, bool isDown);
 };
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0), mModel(0)
+TestApp::TestApp() : mModel(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 
 	// Register the new fire and smoke emitters
 	Object::Register<FireEmitter>();
@@ -89,40 +87,20 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/Dev10.txt")
 	{
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		if (mCam != 0)
-		{
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
-			mCore->SetListener( bind(&TestApp::OnKey, this) );
-
-			while (mCore->Update());
-		}
+		mCore->AddOnKey(bind(&TestApp::OnKey, this));
+		while (mCore->Update());
 	}
-	//*mCore >> "Config/Dev10.txt";
-}
-
-//============================================================================================================
-// Scene::Draw()
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.Draw(1.0f);
 }
 
 //============================================================================================================
 // React to key events
 //============================================================================================================
 
-bool TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
+uint TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
 {
 	if (mModel == 0)
 	{
-		ModelInstance* ins = mScene.FindObject<ModelInstance>("Peasant");
+		ModelInstance* ins = mCore->GetRoot()->FindObject<ModelInstance>("Peasant");
 		if (ins != 0) mModel = ins->GetModel();
 	}
 
@@ -137,8 +115,10 @@ bool TestApp::OnKey (const Vector2i& pos, byte key, bool isDown)
 		else if (key == Key::Q)		mModel->PlayAnimation("Combat: Dodge");
 		else if (key == Key::W)		mModel->PlayAnimation("Combat: Block");
 		else if (key == Key::Grave)	mModel->PlayAnimation("Combat: Hit");
+		else if (key == Key::Escape) mWin->Close();
+		return EventDispatcher::EventResponse::Handled;
 	}
-	return false;
+	return EventDispatcher::EventResponse::NotHandled;
 }
 
 //============================================================================================================

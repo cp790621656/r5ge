@@ -14,16 +14,60 @@
 using namespace R5;
 
 //============================================================================================================
+// Light source control script
+//============================================================================================================
 
-class TestApp : Thread::Lockable
+class OSRotateLight : public Script
+{
+public:
+
+	R5_DECLARE_INHERITED_CLASS("OSRotateLight", OSRotateLight, Script, Script);
+
+	virtual void OnInit()
+	{
+		mObject->GetCore()->AddOnMouseMove( bind(&OSRotateLight::OnMouseMove, this) );
+	}
+
+	virtual void OnDestroy()
+	{
+		mObject->GetCore()->RemoveOnMouseMove( bind(&OSRotateLight::OnMouseMove, this) );
+	}
+
+	uint OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+	{
+		if (mObject->GetCore()->IsKeyDown(Key::MouseRight))
+		{
+			Quaternion relativeRot (mObject->GetRelativeRotation());
+
+			// Horizontal
+			{
+				Quaternion rotQuat ( Vector3f(0.0f, 0.0f, 1.0f), 0.25f * DEG2RAD(delta.x) );
+				relativeRot = rotQuat * relativeRot;
+				relativeRot.Normalize();
+			}
+
+			// Vertical
+			{
+				Quaternion rotQuat ( relativeRot.GetRight(), 0.25f * DEG2RAD(delta.y) );
+				relativeRot = rotQuat * relativeRot;
+				relativeRot.Normalize();
+			}
+
+			mObject->SetRelativeRotation(relativeRot);
+			return EventDispatcher::EventResponse::Handled;
+		}
+		return EventDispatcher::EventResponse::NotHandled;
+	}
+};
+
+//============================================================================================================
+
+class TestApp
 {
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-	Scene			mCamScene;
-	Camera*			mCam;
-	Object*			mLight;
 
 public:
 
@@ -35,12 +79,14 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0), mLight(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mCamScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
+
+	Script::Register<OSRotateLight>();
 }
 
 //============================================================================================================
@@ -59,54 +105,8 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev13.txt")
 	{
-		mCam = mCamScene.FindObject<Camera>("Default Camera");
-		mLight = mCamScene.FindObject<Object>("First Light");
-
-		if (mCam != 0 && mLight != 0)
-		{
-			// Set the listener callbacks
-			// TODO: Why have this SetListener stuff for the camera here? Create a generic camera script,
-			// and have this script set its own listener automatically.
-			mCore->SetListener( bind(&TestApp::MouseMove, this) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
-
-			// Update and draw the scene
-			while (mCore->Update()) {}
-
-			//*mCore >> "Config/Dev13.txt";
-		}
+		while (mCore->Update());
 	}
-}
-
-//============================================================================================================
-
-bool TestApp::MouseMove (const Vector2i& pos, const Vector2i& delta)
-{
-	if (mCore->IsKeyDown(Key::L))
-	{
-		Quaternion relativeRot (mLight->GetRelativeRotation());
-
-		// Horizontal
-		{
-			Quaternion rotQuat ( Vector3f(0.0f, 0.0f, 1.0f), 0.25f * DEG2RAD(delta.x) );
-			relativeRot = rotQuat * relativeRot;
-			relativeRot.Normalize();
-		}
-
-		// Vertical
-		{
-			Quaternion rotQuat ( relativeRot.GetRight(), 0.25f * DEG2RAD(delta.y) );
-			relativeRot = rotQuat * relativeRot;
-			relativeRot.Normalize();
-		}
-
-		mLight->SetRelativeRotation(relativeRot);
-	}
-	else
-	{
-		mCam->MouseMove(pos, delta);
-	}
-	return true;
 }
 
 //============================================================================================================

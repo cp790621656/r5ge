@@ -10,7 +10,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mCore(0), mCam(0), mUI(0), mRegenera
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
 
 	mCore->SetSleepDelay(5);
 
@@ -112,10 +112,7 @@ void TestApp::Run()
 
 		if (mCam != 0)
 		{
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
-
+			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 			while (mCore->Update());
 			//*mCore >> "Config/Noise Test.txt";
 		}

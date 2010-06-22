@@ -16,7 +16,6 @@
 
 namespace R5
 {
-	#include "../Include/OSAudioListener.h"
 	#include "../Include/OSSound.h"
 };
 
@@ -31,8 +30,6 @@ class TestApp : Thread::Lockable
 	UI*				mUI;
 	Core*			mCore;
 	Audio*			mAudio;
-	Scene			mScene;
-	DebugCamera*	mCam;
 
 	struct NamedSound
 	{
@@ -47,7 +44,6 @@ public:
 	TestApp();
 	~TestApp();
 	void Run();
-	void OnDraw();
 
 	void OnVolumeChange (UIWidget* widget);
 	void OnPlayClick	(UIWidget* widget, uint state, bool isSet);
@@ -61,27 +57,25 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam (0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI (mGraphics, mWin);
 	mAudio		= new Audio();
-	mCore		= new Core (mWin, mGraphics, mUI, mScene, mAudio);
+	mCore		= new Core (mWin, mGraphics, mUI, mAudio);
 
+	// NOTE: Ideally this should be done via scripts instead of like this
 	mUI->SetOnValueChange ("Volume",		bind(&TestApp::OnVolumeChange,		this));
 	mUI->SetOnStateChange ("Play",			bind(&TestApp::OnPlayClick,			this));
 	mUI->SetOnStateChange ("Stop",			bind(&TestApp::OnStopClick,			this));
 	mUI->SetOnStateChange ("Pause",			bind(&TestApp::OnPauseClick,		this));
 	mUI->SetOnStateChange ("Resume",		bind(&TestApp::OnResumeClick,		this));
-
 	mUI->SetOnValueChange ("Layer Volume",	bind(&TestApp::OnLayerVolumeChange,	this));
 	mUI->SetOnFocus		  ("Layer Value",	bind(&TestApp::OnLayerChanged,		this));
 
 	// Register the scripts
-	Script::Register<OSAudioListener>();
 	Script::Register<OSSound>();
-
 }
 
 //============================================================================================================
@@ -101,45 +95,26 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/Dev11.txt")
 	{
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		if (mCam != 0)
+		while (mCore->Update())
 		{
-			mCore->SetListener (bind(&TestApp::OnDraw, this) );
-			mCore->SetListener (bind(&Object::MouseMove, mCam) );
-			mCore->SetListener (bind(&Object::Scroll, mCam) );
-
-			while (mCore->Update())
+			Lock();
+			for (uint i = mSounds.GetSize(); i > 0;)
 			{
-				Lock();
-				for (uint i = mSounds.GetSize(); i > 0;)
-				{
-					NamedSound* namedSound = (NamedSound*)mSounds[--i];
+				NamedSound* namedSound = (NamedSound*)mSounds[--i];
 
-					if (namedSound->mSound != 0)
+				if (namedSound->mSound != 0)
+				{
+					if (!namedSound->mSound->IsPlaying() && !namedSound->mSound->IsPaused())
 					{
-						if (!namedSound->mSound->IsPlaying() && !namedSound->mSound->IsPaused())
-						{
-							namedSound->mSound->DestroySelf();
-							mSounds.Remove(namedSound);
-						}
+						namedSound->mSound->DestroySelf();
+						mSounds.Remove(namedSound);
 					}
 				}
-				Unlock();
 			}
+			Unlock();
 		}
 	}
 	//*mCore >> "Config/Dev11.txt";
-}
-
-//============================================================================================================
-// Scene::Draw()
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllDeferred(0, 2);
 }
 
 //============================================================================================================

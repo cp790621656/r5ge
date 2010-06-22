@@ -17,14 +17,15 @@
 using namespace R5;
 
 //============================================================================================================
+// You may notice that our class is visibly shorter than that of the previous tutorial. The scene is no longer
+// present, and neither is the camera. This is because we will render the scene using a built-in script.
+//============================================================================================================
 
 class TestApp
 {
-	IWindow*		mWin;
-	IGraphics*		mGraphics;
-	Core*			mCore;
-	DebugCamera*	mCam;
-	Scene			mScene;
+	IWindow*	mWin;
+	IGraphics*	mGraphics;
+	Core*		mCore;
 
 public:
 
@@ -36,11 +37,11 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
-	mCore		= new Core(mWin, mGraphics, 0, mScene);
+	mCore		= new Core(mWin, mGraphics);
 }
 
 //============================================================================================================
@@ -53,25 +54,26 @@ TestApp::~TestApp()
 }
 
 //============================================================================================================
-// Load the application's configuration, set up listeners and enter the message processing loop
+// Load the application's configuration, set up the custom OnDraw and enter the message processing loop
 //============================================================================================================
 
 void TestApp::Run()
 {
 	// First thing we want to do is load the resource file. In case you're wondering, this resource
-	// file was created by simply saving the previous tutorial with the opposite call (>>).
-	// See the end of this function for details.
+	// file was created by simply saving the previous tutorial with the opposite call (>>), and then
+	// adding the OSDrawForward script to the debug camera. You could also add this script to the
+	// camera manually via code like so: mCam->AddScript<OSDrawForward>();
+	// We will cover scripts in greater detail in a later tutorial.
 
 	if (*mCore << "Config/T02.txt")
 	{
-		// At this point our window has been created. Our camera has also been loaded, so now we just find it:
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
+		// Add a custom draw function that will be triggered at the end of the draw process:
+		// the OSDraw-based scripts register their callbacks with priority of 10000, which means that
+		// they will be called prior to this one.
 
-		// Register our listeners and enter the message processing loop, same as in the previous tutorial
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
+		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
+		// Enter the message processing loop
 		while (mCore->Update());
 
 		// You can also save your application here if you want, and doing so will make all the changes you
@@ -81,13 +83,15 @@ void TestApp::Run()
 }
 
 //============================================================================================================
-// The OnDraw function hasn't changed since the previous tutorial
+// In the OnDraw we no longer have to cull or clear the scene manually as that's done by the 'OSDrawForward'
+// script we've attached to the debug camera. That script will take care of clearing the screen and drawing
+// all the scene's objects using the forward rendering approach. We still want to draw the grid after
+// everything is done though, since our scene does not yet have anything in it and it's nice to draw at
+// least something that can be seen.
 //============================================================================================================
 
 void TestApp::OnDraw()
 {
-	mScene.Cull(mCam);
-	mGraphics->Clear();
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 

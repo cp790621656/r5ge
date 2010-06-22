@@ -11,6 +11,7 @@ void OSDrawForward::OnInit()
 
 	if (mCam == 0)
 	{
+		ASSERT(false, "You've attached OSDrawForward to something other than a camera, unable to proceed!");
 		DestroySelf();
 	}
 	else
@@ -44,7 +45,7 @@ void OSDrawForward::OnDestroy()
 // Draw the scene
 //============================================================================================================
 
-float OSDrawForward::OnDraw()
+void OSDrawForward::OnDraw()
 {
 	const OSSceneRoot::DrawShadows& shadows = mRoot->GetAllShadows();
 
@@ -67,7 +68,7 @@ float OSDrawForward::OnDraw()
 			mTarget->SetSize(mCore->GetWindow()->GetSize());
 			mScene.SetRenderTarget(mTarget);
 			mScene.Cull(mCam);
-			mScene.Draw("Depth");
+			mScene.DrawWithTechnique("Depth");
 		}
 
 		// Draw the shadows
@@ -81,12 +82,12 @@ float OSDrawForward::OnDraw()
 		{
 			mScene.SetRenderTarget(0);
 			mScene.ActivateMatrices();
-			mScene.Draw("Shadowed Opaque");
+			mScene.DrawWithTechnique("Shadowed Opaque");
 		}
 
 		// Add particles
 		{
-			static Scene::Techniques additive;
+			static Deferred::Storage::Techniques additive;
 
 			if (additive.IsEmpty())
 			{
@@ -99,5 +100,4 @@ float OSDrawForward::OnDraw()
 			mScene.DrawWithTechniques(additive, false);
 		}
 	}
-	return 0.0f;
 }

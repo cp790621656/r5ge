@@ -10,7 +10,7 @@
 struct IGraphicsManager
 {
 	// Delegate for a delayed callback that should be executed on the graphics thread
-	typedef FastDelegate<void (void* param)> DelayedDelegate;
+	typedef FastDelegate<void (IGraphicsManager* graphics, void* param)> DelayedDelegate;
 
 	struct Primitive
 	{
@@ -60,7 +60,7 @@ struct IGraphicsManager
 	virtual void Release()=0;
 
 	// Adds a delayed callback function that should be executed on the next frame (at BeginFrame)
-	virtual void ExecuteBeforeNextFrame(DelayedDelegate callback, void* param = 0)=0;
+	virtual void ExecuteBeforeNextFrame(const DelayedDelegate& callback, void* param = 0)=0;
 
 	// Clear the screen or the off-screen target, rendering the skybox if necessary (pre-render)
 	virtual void Clear (bool color = true, bool depth = true, bool stencil = true)=0;

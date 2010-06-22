@@ -58,8 +58,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-	Scene			mScene;
-	DebugCamera*	mCam;
 
 public:
 
@@ -71,12 +69,12 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	Script::Register<SlightRotation>();
 	Script::Register<SlowTwirl>();
@@ -100,24 +98,9 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/Dev8.txt")
 	{
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
-		while (mCore->Update()) {}
-
+		while (mCore->Update());
 		//*mCore >> "Config/Dev8.txt";
 	}
-}
-
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllDeferred(1);
 }
 
 //============================================================================================================

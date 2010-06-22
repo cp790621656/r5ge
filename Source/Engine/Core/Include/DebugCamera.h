@@ -41,6 +41,10 @@ public:
 	void AnimateTo (const Vector3f& pos, const Quaternion& rot, float delay) { AnimateTo(pos, rot, mDolly.y, delay); }
 	void AnimateTo (const Vector3f& pos, const Quaternion& rot, float dolly, float delay);
 
+	// Respond to mouse movement
+	uint MouseMove(const Vector2i& pos, const Vector2i& delta);
+	uint Scroll	(const Vector2i& pos, float delta);
+
 private:
 
 	// Updates the position and rotation based on the movement and returns the dolly-offset position
@@ -48,9 +52,9 @@ private:
 
 protected:
 
-	// Respond to mouse movement
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta);
-	virtual bool OnScroll	(const Vector2i& pos, float delta);
+	// Register the event listener callbacks
+	virtual void OnInit();
+	virtual void OnDestroy();
 
 	// Update functions differ as they need to use the dolly-offset relative position
 	virtual void OnPreUpdate();

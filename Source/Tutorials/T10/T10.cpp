@@ -16,27 +16,27 @@ using namespace R5;
 
 //============================================================================================================
 // Here we create a script that will be attached to our objects in the scene. In the resource file, when we
-// define model instances we add an additional property: Script = "NameTag". When the resource file is
-// loaded and the model instance is created, the NameTag script will be attached to the object, and will
+// define model instances we add an additional property: Script = "OSNameTag". When the resource file is
+// loaded and the model instance is created, the OSNameTag script will be attached to the object, and will
 // exist as long as the object exists (or until we choose to destroy it). Of course you can also add scripts
-// programmatically without having to use the resource files. Just use the handy template:
+// via code without having to use the resource files. Just use the handy template:
 //------------------------------------------------------------------------------------------------------------
-// object->AddScript<NameTag>();
+// object->AddScript<OSNameTag>();
 //============================================================================================================
 
-class NameTag : public Script
+class OSNameTag : public Script
 {
 	Core*		mCore;	// For convenience purposes we will remember the pointer to the Core
 	UILabel*	mLabel;	// This will be our on-screen label
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("NameTag", NameTag, Script, Script);
+	R5_DECLARE_INHERITED_CLASS("OSNameTag", OSNameTag, Script, Script);
 
-	NameTag() : mCore(0), mLabel(0) {}
+	OSNameTag() : mCore(0), mLabel(0) {}
 
 	// When the script is destroyed, we want to destroy the label it creates
-	virtual ~NameTag()
+	virtual ~OSNameTag()
 	{
 		if (mLabel != 0)
 		{
@@ -122,8 +122,6 @@ class TestApp
 	IGraphics*		mGraphics;
 	Core*			mCore;
 	UI*				mUI;
-	DebugCamera*	mCam;
-	Scene			mScene;
 
 public:
 
@@ -135,16 +133,16 @@ public:
 
 //============================================================================================================
 
-TestApp::TestApp() : mCam(0)
+TestApp::TestApp()
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	// This is important: In order for our script to be recognized it
 	// must first be registered. Let's do that now.
-	Script::Register<NameTag>();
+	Script::Register<OSNameTag>();
 }
 
 //============================================================================================================
@@ -165,27 +163,9 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/T10.txt")
 	{
-		mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
-		mCore->SetListener( bind(&TestApp::OnDraw, this) );
-		mCore->SetListener( bind(&Object::MouseMove, mCam) );
-		mCore->SetListener( bind(&Object::Scroll, mCam) );
-
 		while (mCore->Update());
-
 		//*mCore >> "Config/T10.txt";
 	}
-}
-
-//============================================================================================================
-// The OnDraw function is simple: cull the scene, draw it using forward rendering, and draw a grid
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward(true);
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

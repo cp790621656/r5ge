@@ -221,10 +221,8 @@ uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 			mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
 		}
 
-		// Update the potentially changed parameters
-		mAOLevel = ssao;
-
 		// Draw the scene
+		mAOLevel = ssao;
 		count = Deferred::Draw(graphics, *this, mQueue.mLights);
 
 		// Post-process step
@@ -244,18 +242,26 @@ uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 // Draw the scene using the default combination of deferred rendering and forward rendering approaches.
 //============================================================================================================
 
-uint Scene::Draw (float bloom, const Vector3f& focalRange)
+uint Scene::Draw (float bloom, const Vector3f& focalRange, byte ssao)
 {
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
+		// Set the draw callback
+		if (!mDrawCallback)
+		{
+			mDrawCallback = bind(&Scene::DrawWithTechniques, this);
+		}
+
+		// Default deferred draw techniques
 		if (mDrawTechniques.IsEmpty())
 		{
 			mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
 			mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
 		}
 
+		// Forward rendering techniques are missing 'opaque' when used with deferred rendering
 		if (mForward.IsEmpty())
 		{
 			mForward.Expand() = graphics->GetTechnique("Wireframe");
@@ -265,11 +271,8 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange)
 			mForward.Expand() = graphics->GetTechnique("Glare");
 		}
 
-		// Set the draw callback
-		if (!mDrawCallback)
-		{
-			mDrawCallback = bind(&Scene::DrawWithTechniques, this);
-		}
+		// Update the AO
+		mAOLevel = ssao;
 
 		// Draw the scene using the deferred techniques
 		uint count = Deferred::Draw(graphics, *this, mQueue.mLights);
@@ -312,7 +315,7 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::Draw (const String& technique, bool clearScreen)
+uint Scene::DrawWithTechnique (const String& technique, bool clearScreen)
 {
 	if (mRoot != 0)
 	{

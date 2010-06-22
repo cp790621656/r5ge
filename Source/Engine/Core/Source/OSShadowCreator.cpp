@@ -146,7 +146,7 @@ void OSShadowCreator::DrawLightDepth (const Matrix44& camIMVP)
 	}
 
 	// Draw the scene from the light's point of view, creating the "Light Depth" texture
-	mScene.Draw("Depth", true);
+	mScene.DrawWithTechnique("Depth", true);
 }
 
 //============================================================================================================

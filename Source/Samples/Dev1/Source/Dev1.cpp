@@ -1,14 +1,14 @@
 #include "../Include/Dev1.h"
 using namespace R5;
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	mUI->SetOnValueChange ("First Slider",	bind(&TestApp::OnChangeDelegate,	this));
 	mUI->SetOnValueChange ("Range",			bind(&TestApp::OnRangeChange,		this));
@@ -19,7 +19,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
 	mUI->SetOnStateChange ("Third Button",	bind(&TestApp::OnButtonStateChange,	this));
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 TestApp::~TestApp()
 {
@@ -29,66 +29,18 @@ TestApp::~TestApp()
 	if (mWin)		delete mWin;
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 void TestApp::Run()
 {
     if (*mCore << "Config/Dev1.txt")
 	{
-		mCam = mScene.FindObject<Camera>("Default Camera");
-
-		if (mCam != 0)
-		{
-			mCore->SetListener( bind(&TestApp::OnDraw, this) );
-			mCore->SetListener( bind(&TestApp::OnKeyPress, this) );
-			mCore->SetListener( bind(&Object::MouseMove, mCam) );
-			mCore->SetListener( bind(&Object::Scroll, mCam) );
-
-			while (mCore->Update());
-
-			//*mCore >> "Config/Dev1.txt";
-		}
+		while (mCore->Update());
+		//*mCore >> "Config/Dev1.txt";
 	}
 }
 
 //============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-	mScene.DrawAllForward();
-}
-
-//------------------------------------------------------------------------------------------------------------
-
-bool TestApp::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
-{
-	if (!isDown)
-	{
-		if ( key == Key::Escape )
-		{
-			mCore->Shutdown();
-		}
-		else if ( key == Key::H && isDown )
-		{
-			UIWindow* window = mUI->FindWidget<UIWindow>("First Window");
-			if (window) window->Show();
-		}
-		else if ( key == Key::F5 )
-		{
-			mWin->SetStyle( mWin->GetStyle() == IWindow::Style::FullScreen ?
-				IWindow::Style::Normal : IWindow::Style::FullScreen);
-		}
-		else if ( key == Key::F6 )
-		{
-			mWin->SetSize( Vector2i(900, 600) );
-			mWin->SetStyle(IWindow::Style::Normal);
-		}
-	}
-	return true;
-}
-
-//------------------------------------------------------------------------------------------------------------
 
 void TestApp::OnChangeDelegate (UIWidget* widget)
 {
@@ -104,7 +56,7 @@ void TestApp::OnChangeDelegate (UIWidget* widget)
 	}
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 void TestApp::OnBrightnessChange (UIWidget* widget)
 {
@@ -117,12 +69,12 @@ void TestApp::OnBrightnessChange (UIWidget* widget)
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
-		PointLight* light = mScene.FindObject<PointLight>("First Light");
+		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		if (light) light->SetBrightness(val);
 	}
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 void TestApp::OnRangeChange (UIWidget* widget)
 {
@@ -135,12 +87,12 @@ void TestApp::OnRangeChange (UIWidget* widget)
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.2f", val) );
 
-		PointLight* light = mScene.FindObject<PointLight>("First Light");
+		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		if (light) light->SetRange(val);
 	}
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 void TestApp::OnPowerChange (UIWidget* widget)
 {
@@ -153,12 +105,12 @@ void TestApp::OnPowerChange (UIWidget* widget)
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
-		PointLight* light = mScene.FindObject<PointLight>("First Light");
+		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		if (light) light->SetPower(val);
 	}
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 void TestApp::OnButtonStateChange (UIWidget* widget, uint state, bool isSet)
 {
@@ -179,7 +131,7 @@ void TestApp::OnButtonStateChange (UIWidget* widget, uint state, bool isSet)
 	}
 }
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
 R5_MAIN_FUNCTION
 {

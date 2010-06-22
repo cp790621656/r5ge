@@ -2,6 +2,35 @@
 using namespace R5;
 
 //============================================================================================================
+// Releases all associated resources
+//============================================================================================================
+
+void Deferred::Storage::Release (IGraphics* graphics)
+{
+	FOREACH(i, mTempTargets)
+	{
+		IRenderTarget* target = mTempTargets[i];
+
+		if (target != 0)
+		{
+			graphics->DeleteRenderTarget(target);
+			mTempTargets[i] = 0;
+		}
+	}
+
+	FOREACH(i, mTempTextures)
+	{
+		ITexture* tex = mTempTextures[i];
+
+		if (tex != 0)
+		{
+			graphics->DeleteTexture(tex);
+			mTempTextures[i] = 0;
+		}
+	}
+}
+
+//============================================================================================================
 // Draw the scene using the deferred rendering techniques
 //============================================================================================================
 

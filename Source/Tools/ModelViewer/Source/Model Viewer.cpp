@@ -8,15 +8,13 @@ ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbL
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
 
 	// Event listeners
-	mCore->SetListener( bind(&ModelViewer::OnDraw,			this) );
-	mCore->SetListener( bind(&ModelViewer::OnKeyPress,		this) );
-	mCore->SetListener( bind(&ModelViewer::OnMouseMove,		this) );
-	mCore->SetListener( bind(&ModelViewer::OnScroll,		this) );
-	mCore->SetListener( bind(&ModelViewer::SerializeFrom,	this) );
-	mCore->SetListener( bind(&ModelViewer::SerializeTo,		this) );
+	mCore->AddOnDraw	 ( bind(&ModelViewer::OnDraw,		this) );
+	mCore->AddOnKey		 ( bind(&ModelViewer::OnKeyPress,	this) );
+	mCore->AddOnMouseMove( bind(&ModelViewer::OnMouseMove,	this) );
+	mCore->AddOnScroll	 ( bind(&ModelViewer::OnScroll,		this) );
 
 	// Framerate update function
 	mCore->AddOnPostUpdate( bind(&ModelViewer::UpdateFPS, this) );
@@ -36,8 +34,12 @@ ModelViewer::~ModelViewer()
 
 void ModelViewer::Run()
 {
-	if (*mCore << "Config/Model Viewer.txt")
+	TreeNode root;
+
+	if (root.Load("Config/Model Viewer.txt") && mCore->SerializeFrom(root))
 	{
+		FOREACH(i, root.mChildren) SerializeFrom(root.mChildren[i]);
+
 		mCam			= mScene.FindObject<DebugCamera>	("Default Camera");
 		mLight			= mScene.FindObject<Light>			("Default Light");
 		mStage			= mScene.FindObject<Object>			("Stage");
@@ -61,7 +63,10 @@ void ModelViewer::Run()
 		mStage->SetRelativeRotation( Quaternion() );
 
 		// Save the current scene
-		*mCore >> "Config/Model Viewer.txt";
+		root.Release();
+		mCore->SerializeTo(root);
+		SerializeTo(root);
+		root.Save("Config/Model Viewer.txt");
 	}
 }
 
@@ -149,20 +154,20 @@ void ModelViewer::OnDraw()
 		mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Draw the scene using the forward rendering approach, adding glow and glare effects
-		mScene.Draw(ft, false);
+		mScene.DrawWithTechniques(ft, false);
 	}
 
 	// Post-processing part
 	if (mParams.mBloom)
 	{
 		// Apply a post-processing effect
-		PostProcess::Bloom(mGraphics, mScene, mParams.mThreshold);
+		PostProcess::Bloom(mGraphics, mScene.GetDeferredStorage(), mParams.mThreshold);
 		//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 15.0f, 5.0f, 15.0f);
 	}
 	else
 	{
 		// Don't apply any effects -- simply draw this texture directly to the screen
-		PostProcess::None(mGraphics, mScene);
+		PostProcess::None(mGraphics, mScene.GetDeferredStorage());
 	}
 }
 
@@ -200,50 +205,57 @@ void ModelViewer::SetStatusText (const String& text, const Color3f& color)
 // Responds to keypresses
 //============================================================================================================
 
-bool ModelViewer::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
+uint ModelViewer::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 {
 	if (!isDown)
 	{
 		if ( key == Key::F5 )
 		{
 			_ToggleFullscreen();
+			return 1;
 		}
 		else if ( key == Key::F6 )
 		{
 			_ResetWindow();
+			return 1;
 		}
 		else if ( key == Key::F9 )
 		{
 			mResetCamera = 1;
+			return 1;
 		}
 		else if ( key == Key::Escape )
 		{
 			mCore->Shutdown();
+			return 1;
 		}
 		else if (mCore->IsKeyDown(Key::LeftControl))
 		{
 			if ( key == Key::S )
 			{
 				OnFileSave();
+				return 1;
 			}
 			else if ( key == Key::A )
 			{
 				ShowSaveAsDialog();
+				return 1;
 			}
 			else if ( key == Key::O  )
 			{
 				ShowOpenDialog();
+				return 1;
 			}
 		}
 	}
-	return true;
+	return 0;
 }
 
 //============================================================================================================
 // Responds to mouse movement
 //============================================================================================================
 
-bool ModelViewer::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
+uint ModelViewer::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 {
 	if (mCam != 0)
 	{
@@ -257,6 +269,7 @@ bool ModelViewer::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 					Quaternion hori ( Vector3f(0.0f, 0.0f, 1.0f), 0.005f * delta.x );
 					Quaternion vert ( Vector3f(1.0f, 0.0f, 0.0f), 0.005f * delta.y );
 					mLight->SetRelativeRotation( hori * rot * vert );
+					return 1;
 				}
 			}
 			else if ( mCore->IsKeyDown(Key::M) )
@@ -267,23 +280,24 @@ bool ModelViewer::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 					Quaternion hori ( Vector3f(0.0f, 0.0f, 1.0f), -0.005f * delta.x );
 					Quaternion vert ( Vector3f(1.0f, 0.0f, 0.0f), -0.005f * delta.y );
 					mStage->SetRelativeRotation( hori * rot * vert );
+					return 1;
 				}
 			}
-			else mCam->MouseMove(pos, delta);
+			else return mCam->MouseMove(pos, delta);
 		}
-		else mCam->MouseMove(pos, delta);
+		else return mCam->MouseMove(pos, delta);
 	}
-	return true;
+	return 0;
 }
 
 //============================================================================================================
 // Responds to scroll events
 //============================================================================================================
 
-bool ModelViewer::OnScroll(const Vector2i& pos, float delta)
+uint ModelViewer::OnScroll(const Vector2i& pos, float delta)
 {
-	if (mCam) mCam->Scroll(pos, delta * 0.5f);
-	return true;
+	if (mCam) return mCam->Scroll(pos, delta * 0.5f);
+	return 0;
 }
 
 //============================================================================================================
