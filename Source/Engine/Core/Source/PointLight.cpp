@@ -227,7 +227,8 @@ bool PointLight::OnFill (FillParams& params)
 
 	if ( (mLight.mDiffuse.IsVisibleRGB() || mLight.mAmbient.IsVisibleRGB()) && range > 0.0001f )
 	{
-		params.mDrawQueue.Add(&mLight);
+		float dist = (params.mCamPos - mAbsolutePos).Magnitude() - range;
+		params.mDrawQueue.Add(&mLight, dist);
 	}
 	return true;
 }

@@ -57,7 +57,7 @@ void DirectionalLight::_Draw (IGraphics* graphics, const Light::List& lights, co
 	// Run through all directional lights
 	for (uint i = 0; i < lights.GetSize(); ++i)
 	{
-		graphics->SetActiveLight(i, lights[i].mLight);
+		graphics->SetActiveLight(0, lights[i].mLight);
 		graphics->Draw( IGraphics::Drawable::InvertedQuad );
 	}
 }

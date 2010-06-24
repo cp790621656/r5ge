@@ -29,7 +29,7 @@ public:
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Directional Light", DirectionalLight, Object, Object);
 
-	// Callback that draws point lights
+	// Callback that draws directional lights
 	static void _Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
 
 	const Color3f&	GetAmbient()	const { return mAmbient;	}

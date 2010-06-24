@@ -41,7 +41,7 @@ public:
 	void Clear() { mLights.Clear(); for (uint i = 0; i < 32; ++i) mLayers[i].Clear(); }
 
 	// Adds a new light to the draw queue
-	void Add (Light* light) { mLights.Expand() = light; }
+	void Add (Light* light, float distanceToCamera = 0.0f);
 
 	// Add a new object to the draw queue. The 'group' parameter can be a material,
 	// a texture, or anything else you might want to group similar objects by.
