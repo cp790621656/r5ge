@@ -243,6 +243,15 @@ public:
 	// Cast a ray into space and fill the list with objects that it intersected with
 	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe = true);
 
+	// Forward the OnKeyPress notification to the scripts
+	uint KeyPress (const Vector2i& pos, byte key, bool isDown);
+
+	// Forward the OnMouseMove notification to the scripts
+	uint MouseMove (const Vector2i& pos, const Vector2i& delta);
+
+	// Forward the OnScroll notification to the scripts
+	uint Scroll (const Vector2i& pos, float delta);
+
 	// Serialization
 	bool SerializeTo (TreeNode& root) const;
 	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false, bool threadSafe = true);
@@ -254,6 +263,9 @@ protected:
 
 	// The very first function called on the object -- called after the object's parent and root have been set
 	virtual void OnInit() {}
+
+	// Called before the object gets destroyed
+	virtual void OnDestroy() {}
 
 	// Function called when a new child object has been added
 	virtual void OnAddChild (Object* obj) {}

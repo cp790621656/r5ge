@@ -101,6 +101,11 @@ protected:
 	// Called when the scene draw queue is being filled
 	virtual void OnFill (FillParams& params) { mIgnore.Set(Ignore::Fill, true); }
 
+	// Key and mouse events
+	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { return false; }
+	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta) { return false; }
+	virtual bool OnScroll	(const Vector2i& pos, float delta)			 { return false; }
+
 	// Serialization
 	virtual void OnSerializeTo	(TreeNode& node) const {}
 	virtual void OnSerializeFrom(const TreeNode& node) {}

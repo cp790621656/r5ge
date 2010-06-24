@@ -6,21 +6,21 @@ using namespace R5;
 //============================================================================================================
 
 #define ADD_FUNCTION(val) \
-	void EventDispatcher::AddOn##val (const On##val##Delegate& callback, uint priority) \
+	void EventDispatcher::AddOn##val (const On##val##Delegate& callback, uint priority, bool threadSafe) \
 	{													\
-		mOn##val.Lock();								\
+		if (threadSafe) mOn##val.Lock();				\
 		{												\
-			mOn##val.Expand().Set(priority, callback);		\
+			mOn##val.Expand().Set(priority, callback);	\
 			mOn##val.Sort();							\
 		}												\
-		mOn##val.Unlock();								\
+		if (threadSafe) mOn##val.Unlock();				\
 	}													\
 														\
-	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback)	\
-	{								\
-		mOn##val.Lock();			\
-		mOn##val.Remove(callback);	\
-		mOn##val.Unlock();			\
+	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback, bool threadSafe) \
+	{										\
+		if (threadSafe) mOn##val.Lock();	\
+		mOn##val.Remove(callback);			\
+		if (threadSafe) mOn##val.Unlock();	\
 	}
 
 //============================================================================================================

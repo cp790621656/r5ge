@@ -383,6 +383,8 @@ void Object::DestroySelf (bool threadSafe)
 			}
 			mScripts.Unlock();
 
+			OnDestroy();
+
 			mParent->_Remove(this);
 			mParent->mDeletedObjects.Expand() = this;
 			mParent = 0;
@@ -816,6 +818,75 @@ void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit
 			if (threadSafe) Unlock();
 		}
 	}
+}
+
+//============================================================================================================
+// Forward the OnKeyPress notification to the scripts
+//============================================================================================================
+
+uint Object::KeyPress (const Vector2i& pos, byte key, bool isDown)
+{
+	bool retVal (false);
+
+	if (mFlags.Get(Flag::Enabled))
+	{
+		Lock();
+		{
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnKeyPress(pos, key, isDown);
+			}
+		}
+		Unlock();
+	}
+	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
+}
+
+//============================================================================================================
+// Forward the OnMouseMove notification to the scripts
+//============================================================================================================
+
+uint Object::MouseMove (const Vector2i& pos, const Vector2i& delta)
+{
+	bool retVal (false);
+
+	if (mFlags.Get(Flag::Enabled))
+	{
+		Lock();
+		{
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnMouseMove(pos, delta);
+			}
+		}
+		Unlock();
+	}
+	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
+}
+
+//============================================================================================================
+// Forward the OnScroll notification to the scripts
+//============================================================================================================
+
+uint Object::Scroll (const Vector2i& pos, float delta)
+{
+	bool retVal (false);
+
+	if (mFlags.Get(Flag::Enabled))
+	{
+		Lock();
+		{
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnScroll(pos, delta);
+			}
+		}
+		Unlock();
+	}
+	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
 
 //============================================================================================================

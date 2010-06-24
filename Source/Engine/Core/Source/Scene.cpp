@@ -1,6 +1,8 @@
 #include "../Include/_All.h"
 using namespace R5;
 
+void* g_lastScene = 0;
+
 //============================================================================================================
 // Retrieves active lights, sorting them front-to-back based on distance to the specified position
 //============================================================================================================
@@ -139,6 +141,7 @@ void Scene::ActivateMatrices()
 	{
 		graphics->SetProjectionMatrix(mLastProj);
 	}
+	g_lastScene = this;
 }
 
 //============================================================================================================
@@ -149,6 +152,9 @@ Scene::RayHits& Scene::Raycast (const Vector2i& screenPos)
 {
 	if (mRoot != 0 && (mHits.IsEmpty() || mLastRay != screenPos))
 	{
+		// Matrices must be activated prior to running a raycast
+		if (g_lastScene != this) ActivateMatrices();
+
 		mLastRay = screenPos;
 
 		IGraphics* graphics (mRoot->mCore->GetGraphics());
@@ -182,16 +188,23 @@ uint Scene::DrawAllForward (bool clearScreen)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
-		if (mForward.IsEmpty())
+		if (mQueue.IsValid())
 		{
-			mForward.Expand() = graphics->GetTechnique("Opaque");
-			mForward.Expand() = graphics->GetTechnique("Wireframe");
-			mForward.Expand() = graphics->GetTechnique("Transparent");
-			mForward.Expand() = graphics->GetTechnique("Particle");
-			mForward.Expand() = graphics->GetTechnique("Glow");
-			mForward.Expand() = graphics->GetTechnique("Glare");
+			if (mForward.IsEmpty())
+			{
+				mForward.Expand() = graphics->GetTechnique("Opaque");
+				mForward.Expand() = graphics->GetTechnique("Wireframe");
+				mForward.Expand() = graphics->GetTechnique("Transparent");
+				mForward.Expand() = graphics->GetTechnique("Particle");
+				mForward.Expand() = graphics->GetTechnique("Glow");
+				mForward.Expand() = graphics->GetTechnique("Glare");
+			}
+			return DrawWithTechniques(mForward, clearScreen);
 		}
-		return DrawWithTechniques(mForward, clearScreen);
+		else if (clearScreen)
+		{
+			graphics->Clear();
+		}
 	}
 	return 0;
 }
@@ -208,31 +221,38 @@ uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
-		// Set the draw callback
-		if (!mDrawCallback)
+		if (mQueue.IsValid())
 		{
-			mDrawCallback = bind(&Scene::DrawWithTechniques, this);
-		}
+			// Set the draw callback
+			if (!mDrawCallback)
+			{
+				mDrawCallback = bind(&Scene::DrawWithTechniques, this);
+			}
 
-		// Set the list of techniques used to draw the scene
-		if (mDrawTechniques.IsEmpty())
-		{
-			mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
-			mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
-		}
+			// Set the list of techniques used to draw the scene
+			if (mDrawTechniques.IsEmpty())
+			{
+				mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
+				mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
+			}
 
-		// Draw the scene
-		mAOLevel = ssao;
-		count = Deferred::Draw(graphics, *this, mQueue.mLights);
+			// Draw the scene
+			mAOLevel = ssao;
+			count = Deferred::Draw(graphics, *this, mQueue.mLights);
 
-		// Post-process step
-		if (postProcess == 2)
-		{
-			PostProcess::Bloom(graphics, *this, 1.0f);
+			// Post-process step
+			if (postProcess == 2)
+			{
+				PostProcess::Bloom(graphics, *this, 1.0f);
+			}
+			else if (postProcess == 1)
+			{
+				PostProcess::None(graphics, *this);
+			}
 		}
-		else if (postProcess == 1)
+		else
 		{
-			PostProcess::None(graphics, *this);
+			graphics->Clear();
 		}
 	}
 	return count;
@@ -244,71 +264,77 @@ uint Scene::DrawAllDeferred (byte ssao, byte postProcess)
 
 uint Scene::Draw (float bloom, const Vector3f& focalRange, byte ssao)
 {
+	uint count (0);
+
 	if (mRoot != 0)
 	{
 		IGraphics* graphics = mRoot->mCore->GetGraphics();
 
-		// Set the draw callback
-		if (!mDrawCallback)
+		if (mQueue.IsValid())
 		{
-			mDrawCallback = bind(&Scene::DrawWithTechniques, this);
-		}
-
-		// Default deferred draw techniques
-		if (mDrawTechniques.IsEmpty())
-		{
-			mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
-			mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
-		}
-
-		// Forward rendering techniques are missing 'opaque' when used with deferred rendering
-		if (mForward.IsEmpty())
-		{
-			mForward.Expand() = graphics->GetTechnique("Wireframe");
-			mForward.Expand() = graphics->GetTechnique("Transparent");
-			mForward.Expand() = graphics->GetTechnique("Particle");
-			mForward.Expand() = graphics->GetTechnique("Glow");
-			mForward.Expand() = graphics->GetTechnique("Glare");
-		}
-
-		// Update the AO
-		mAOLevel = ssao;
-
-		// Draw the scene using the deferred techniques
-		uint count = Deferred::Draw(graphics, *this, mQueue.mLights);
-
-		// Draw the scene using forward rendering techniques
-		count += DrawAllForward(false);
-
-		// Post-processing
-		if (bloom != 0.0f)
-		{
-			if (focalRange.IsZero())
+			// Set the draw callback
+			if (!mDrawCallback)
 			{
-				// Only bloom
-				PostProcess::Bloom(graphics, *this, bloom);
+				mDrawCallback = bind(&Scene::DrawWithTechniques, this);
+			}
+
+			// Default deferred draw techniques
+			if (mDrawTechniques.IsEmpty())
+			{
+				mDrawTechniques.Expand() = graphics->GetTechnique("Deferred");
+				mDrawTechniques.Expand() = graphics->GetTechnique("Decal");
+			}
+
+			// Forward rendering techniques are missing 'opaque' when used with deferred rendering
+			if (mForward.IsEmpty())
+			{
+				mForward.Expand() = graphics->GetTechnique("Wireframe");
+				mForward.Expand() = graphics->GetTechnique("Transparent");
+				mForward.Expand() = graphics->GetTechnique("Particle");
+				mForward.Expand() = graphics->GetTechnique("Glow");
+				mForward.Expand() = graphics->GetTechnique("Glare");
+			}
+
+			// Update the AO
+			mAOLevel = ssao;
+
+			// Draw the scene using the deferred techniques
+			count = Deferred::Draw(graphics, *this, mQueue.mLights);
+
+			// Draw the scene using forward rendering techniques
+			count += DrawAllForward(false);
+
+			// Post-processing
+			if (bloom != 0.0f)
+			{
+				if (focalRange.IsZero())
+				{
+					// Only bloom
+					PostProcess::Bloom(graphics, *this, bloom);
+				}
+				else
+				{
+					// Bloom and depth-of-field
+					PostProcess::Both(graphics, *this, bloom, focalRange.x, focalRange.y, focalRange.z);
+				}
+			}
+			else if (!focalRange.IsZero())
+			{
+				// Only depth-of-field
+				PostProcess::DepthOfField(graphics, *this, focalRange.x, focalRange.y, focalRange.z);
 			}
 			else
 			{
-				// Bloom and depth-of-field
-				PostProcess::Both(graphics, *this, bloom, focalRange.x, focalRange.y, focalRange.z);
+				// No post-processing
+				PostProcess::None(graphics, *this);
 			}
-		}
-		else if (!focalRange.IsZero())
-		{
-			// Only depth-of-field
-			PostProcess::DepthOfField(graphics, *this, focalRange.x, focalRange.y, focalRange.z);
 		}
 		else
 		{
-			// No post-processing
-			PostProcess::None(graphics, *this);
+			graphics->Clear();
 		}
-
-		// Return the number of rendered objects
-		return count;
 	}
-	return 0;
+	return count;
 }
 
 //============================================================================================================

@@ -22,6 +22,10 @@ public:
 
 	R5_DECLARE_ABSTRACT_CLASS("OSDraw", Script);
 
+	Scene& GetScene() { return mScene; }
+
+	void SetRenderTarget (IRenderTarget* target) { mScene.SetRenderTarget(target); }
+
 	virtual void OnInit();
 	virtual void OnDestroy();
 	virtual void OnDraw()=0;

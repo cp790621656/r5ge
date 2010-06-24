@@ -11,6 +11,10 @@ class Scene : protected Deferred::Storage
 {
 public:
 
+	typedef Array<const ITechnique*>	Techniques;
+	typedef Array<IRenderTarget*>		Targets;
+	typedef Array<ITexture*>			Textures;
+
 	typedef ITexture*			ITexturePtr;
 	typedef IRenderTarget*		IRenderTargetPtr;
 	typedef Array<RaycastHit>	RayHits;
