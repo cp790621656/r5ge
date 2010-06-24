@@ -821,6 +821,52 @@ void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit
 }
 
 //============================================================================================================
+// Subscribe to events with specified priority
+//============================================================================================================
+
+void Object::SubscribeToKeyPress (uint priority, bool threadSafe)
+{
+	mCore->AddOnKey( bind(&Object::KeyPress, this), priority, threadSafe );
+}
+
+//============================================================================================================
+
+void Object::SubscribeToMouseMove (uint priority, bool threadSafe)
+{
+	mCore->AddOnMouseMove( bind(&Object::MouseMove, this), priority, threadSafe );
+}
+
+//============================================================================================================
+
+void Object::SubscribeToScroll (uint priority, bool threadSafe)
+{
+	mCore->AddOnScroll( bind(&Object::Scroll, this), priority, threadSafe );
+}
+
+//============================================================================================================
+// Unsubscribe from events with specified priority
+//============================================================================================================
+
+void Object::UnsubscribeFromKeyPress (uint priority, bool threadSafe)
+{
+	mCore->RemoveOnKey( bind(&Object::KeyPress, this), priority, threadSafe );
+}
+
+//============================================================================================================
+
+void Object::UnsubscribeFromMouseMove (uint priority, bool threadSafe)
+{
+	mCore->RemoveOnMouseMove( bind(&Object::MouseMove, this), priority, threadSafe );
+}
+
+//============================================================================================================
+
+void Object::UnsubscribeFromScroll (uint priority, bool threadSafe)
+{
+	mCore->RemoveOnScroll( bind(&Object::Scroll, this), priority, threadSafe );
+}
+
+//============================================================================================================
 // Forward the OnKeyPress notification to the scripts
 //============================================================================================================
 

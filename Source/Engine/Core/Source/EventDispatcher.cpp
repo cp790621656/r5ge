@@ -16,10 +16,10 @@ using namespace R5;
 		if (threadSafe) mOn##val.Unlock();				\
 	}													\
 														\
-	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback, bool threadSafe) \
+	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback, uint priority, bool threadSafe) \
 	{										\
 		if (threadSafe) mOn##val.Lock();	\
-		mOn##val.Remove(callback);			\
+		mOn##val.Remove(Pair<On##val##Delegate>(priority, callback)); \
 		if (threadSafe) mOn##val.Unlock();	\
 	}
 

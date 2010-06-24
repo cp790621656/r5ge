@@ -23,17 +23,10 @@ public:
 
 	R5_DECLARE_INHERITED_CLASS("OSRotateLight", OSRotateLight, Script, Script);
 
-	virtual void OnInit()
-	{
-		mObject->GetCore()->AddOnMouseMove( bind(&OSRotateLight::OnMouseMove, this) );
-	}
+	virtual void OnInit()	 { mObject->SubscribeToMouseMove(1000); }
+	virtual void OnDestroy() { mObject->UnsubscribeFromMouseMove(1000); }
 
-	virtual void OnDestroy()
-	{
-		mObject->GetCore()->RemoveOnMouseMove( bind(&OSRotateLight::OnMouseMove, this) );
-	}
-
-	uint OnMouseMove (const Vector2i& pos, const Vector2i& delta)
+	virtual bool OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 	{
 		if (mObject->GetCore()->IsKeyDown(Key::MouseRight))
 		{
@@ -54,9 +47,9 @@ public:
 			}
 
 			mObject->SetRelativeRotation(relativeRot);
-			return EventDispatcher::EventResponse::Handled;
+			return true;
 		}
-		return EventDispatcher::EventResponse::NotHandled;
+		return false;
 	}
 };
 

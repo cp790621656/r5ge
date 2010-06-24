@@ -243,13 +243,23 @@ public:
 	// Cast a ray into space and fill the list with objects that it intersected with
 	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe = true);
 
-	// Forward the OnKeyPress notification to the scripts
+	// Subscribe to events with specified priority
+	void SubscribeToKeyPress	(uint priority, bool threadSafe = true);
+	void SubscribeToMouseMove	(uint priority, bool threadSafe = true);
+	void SubscribeToScroll		(uint priority, bool threadSafe = true);
+
+	// Unsubscribe from events with specified priority
+	void UnsubscribeFromKeyPress	(uint priority, bool threadSafe = true);
+	void UnsubscribeFromMouseMove	(uint priority, bool threadSafe = true);
+	void UnsubscribeFromScroll		(uint priority, bool threadSafe = true);
+
+	// Manually forward the OnKeyPress notification to the scripts
 	uint KeyPress (const Vector2i& pos, byte key, bool isDown);
 
-	// Forward the OnMouseMove notification to the scripts
+	// Manually forward the OnMouseMove notification to the scripts
 	uint MouseMove (const Vector2i& pos, const Vector2i& delta);
 
-	// Forward the OnScroll notification to the scripts
+	// Manually forward the OnScroll notification to the scripts
 	uint Scroll (const Vector2i& pos, float delta);
 
 	// Serialization

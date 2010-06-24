@@ -37,12 +37,12 @@ private:
 		Type callback;
 
 		Pair() {}
-		Pair(const Type& val) : priority(0), callback(val) {}
+		Pair(uint pri, const Type& val) : priority(pri), callback(val) {}
 
 		bool operator < (const Pair<Type>& val) const { return priority < val.priority; }
 		bool operator == (const Type& val) const { return callback == val; }
 		bool operator == (uint idx) const { return priority == idx; }
-		bool operator == (const Pair<Type>& val) { return callback == val.callback; }
+		bool operator == (const Pair<Type>& val) { return (callback == val.callback) && (priority == val.priority); }
 		void Set (uint idx, const Type& val) { priority = idx; callback = val; }
 	};
 
@@ -61,13 +61,13 @@ public:
 
 	// Event listener registration -- higher priority is handled first
 	void AddOnDraw			(const OnDrawDelegate& callback, uint priority = 1000, bool threadSafe = true);
-	void RemoveOnDraw		(const OnDrawDelegate& callback, bool threadSafe = true);
+	void RemoveOnDraw		(const OnDrawDelegate& callback, uint priority = 1000, bool threadSafe = true);
 	void AddOnKey			(const OnKeyDelegate& callback, uint priority = 1000, bool threadSafe = true);
-	void RemoveOnKey		(const OnKeyDelegate& callback, bool threadSafe = true);
+	void RemoveOnKey		(const OnKeyDelegate& callback, uint priority = 1000, bool threadSafe = true);
 	void AddOnMouseMove		(const OnMouseMoveDelegate& callback, uint priority = 1000, bool threadSafe = true);
-	void RemoveOnMouseMove	(const OnMouseMoveDelegate& callback, bool threadSafe = true);
+	void RemoveOnMouseMove	(const OnMouseMoveDelegate& callback, uint priority = 1000, bool threadSafe = true);
 	void AddOnScroll		(const OnScrollDelegate& callback, uint priority = 1000, bool threadSafe = true);
-	void RemoveOnScroll		(const OnScrollDelegate& callback, bool threadSafe = true);
+	void RemoveOnScroll		(const OnScrollDelegate& callback, uint priority = 1000, bool threadSafe = true);
 
 	// Update callback registration -- the execution delay is in seconds
 	void AddOnPreUpdate		(const UpdateList::Callback& callback, float delay = 0.0f)	{ mPreList.Add(callback, delay); }
