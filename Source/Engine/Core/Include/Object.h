@@ -133,8 +133,21 @@ private:
 
 public:
 
+	// Clears the object, removing all children and scripts
+	void Clear (bool threadSafe = true)
+	{
+		DestroyAllChildren(threadSafe);
+		DestroyAllScripts(threadSafe);
+	}
+
 	// Destroys the object -- this action is queued until next update
 	void DestroySelf (bool threadSafe = true);
+
+	// Destroys all of the object's children
+	void DestroyAllChildren (bool threadSafe = true);
+
+	// Destroys all of the object's scripts
+	void DestroyAllScripts (bool threadSafe = true);
 
 	// Release all resources associated with this object
 	void Release (bool threadSafe = true);

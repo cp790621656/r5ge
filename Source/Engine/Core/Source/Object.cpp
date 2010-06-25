@@ -369,28 +369,58 @@ uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 
 void Object::DestroySelf (bool threadSafe)
 {
-	if (mParent != 0)
+	if (threadSafe) Lock();
 	{
-		if (threadSafe) Lock();
-		{
-			mScripts.Lock();
-			{
-				FOREACH(i, mScripts)
-				{
-					Script* script = mScripts[i];
-					script->OnDestroy();
-				}
-			}
-			mScripts.Unlock();
+		DestroyAllScripts(false);
+		DestroyAllChildren(false);
 
+		if (mParent != 0)
+		{
 			OnDestroy();
 
 			mParent->_Remove(this);
 			mParent->mDeletedObjects.Expand() = this;
 			mParent = 0;
 		}
-		if (threadSafe) Unlock();
 	}
+	if (threadSafe) Unlock();
+}
+
+//============================================================================================================
+// Destroys all of the object's children
+//============================================================================================================
+
+void Object::DestroyAllChildren (bool threadSafe)
+{
+	if (threadSafe) Lock();
+	{
+		for (uint i = mChildren.GetSize(); i > 0; )
+		{
+			mChildren[--i]->DestroySelf(false);
+		}
+		mChildren.Clear();
+	}
+	if (threadSafe) Unlock();
+}
+
+//============================================================================================================
+// Destroys all of the object's scripts
+//============================================================================================================
+
+void Object::DestroyAllScripts (bool threadSafe)
+{
+	if (threadSafe) Lock();
+	{
+		FOREACH(i, mScripts)
+		{
+			Script* script = mScripts[i];
+			script->OnDestroy();
+			mDeletedScripts.Expand() = script;
+			mScripts[i] = 0;
+		}
+		mScripts.Clear();
+	}
+	if (threadSafe) Unlock();
 }
 
 //============================================================================================================
