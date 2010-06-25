@@ -32,7 +32,8 @@ bool DrawQueue::IsValid() const
 // Draw the scene
 //============================================================================================================
 
-uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques)
+uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques,
+					  bool useLighting)
 {
 	uint result(0);
 	uint mask = 0;
@@ -64,7 +65,7 @@ uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, con
 					graphics->SetActiveTechnique(tech, storage.mInsideOut);
 
 					// Activate all lights
-					if (tech->GetLighting() != IGraphics::Lighting::None)
+					if (useLighting && tech->GetLighting() != IGraphics::Lighting::None)
 					{
 						uint last = mLights.GetSize();
 

@@ -45,7 +45,7 @@ protected:
 	float		mAdt;				// Alpha testing will discard fragments with alpha less than this value
 	float		mThickness;			// Point and line size when drawing those primitives
 	bool		mNormalize;			// Whether to automatically normalize normals
-	bool		mDepthOffset;		// Whether depth offset is currently active
+	uint		mDepthOffset;		// Whether depth offset is currently active
 	Vector2i	mSize;				// Screen size
 	Vector2f	mFogRange;			// Fog range
 	uint		mAf;				// Current anisotropy level
@@ -96,7 +96,7 @@ public:
 	virtual void SetADT				(float val);
 	virtual void SetThickness		(float val);
 	virtual void SetNormalize		(bool val);
-	virtual void SetDepthOffset		(bool val);
+	virtual void SetDepthOffset		(uint val);
 	virtual void SetViewport		(const Vector2i& size);
 	virtual void SetFogRange		(const Vector2f& range);
 	virtual void SetBackgroundColor	(const Color4f& color);
@@ -124,7 +124,7 @@ public:
 	virtual float				GetADT()				const	{ return mAdt;			}
 	virtual float				GetThickness()			const	{ return mThickness;	}
 	virtual bool				GetNormalize()			const	{ return mNormalize;	}
-	virtual bool				GetDepthOffset()		const	{ return mDepthOffset;	}
+	virtual uint				GetDepthOffset()		const	{ return mDepthOffset;	}
 	virtual uint				GetDefaultAF()			const	{ return mAf;			}
 	virtual const Vector2i&		GetViewport()			const	{ return mSize;			}
 	virtual const Vector2f&		GetFogRange()			const	{ return mFogRange;		}

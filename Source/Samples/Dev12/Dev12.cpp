@@ -13,8 +13,7 @@
 
 using namespace R5;
 
-DebugCamera* g_cam0 = 0;
-DebugCamera* g_cam1 = 0;
+DebugCamera* g_offscreenCam = 0;
 
 //============================================================================================================
 
@@ -26,9 +25,9 @@ public:
 
 	virtual void OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 	{
-		if (g_cam1 != 0)
+		if (g_offscreenCam != 0)
 		{
-			g_cam1->MouseMove(pos, delta);
+			g_offscreenCam->MouseMove(pos, delta);
 		}
 	}
 };
@@ -41,9 +40,6 @@ class TestApp : Thread::Lockable
 	IGraphics*		mGraphics;
 	UI*				mUI;
 	Core*			mCore;
-
-	Scene			mScene;
-	Scene			mScene1;
 
 public:
 
@@ -60,7 +56,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	UIScript::Register<USMoveCamera>();
 }
@@ -81,11 +77,9 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev12.txt")
 	{
-		mScene1.SetRoot( mScene.FindObject<Object>("Scene 1") );
-		g_cam0 = mScene.FindObject<DebugCamera>("Camera 0");
-		g_cam1 = mScene.FindObject<DebugCamera>("Camera 1");
+		g_offscreenCam = mCore->GetRoot()->FindObject<DebugCamera>("Camera 1");
 
-		if (g_cam0 != 0 && g_cam1 != 0)
+		if (g_offscreenCam != 0)
 		{
 			// Create the second render target
 			// NOTE: If rendering to a deferred target, 'depth' is not required
@@ -99,30 +93,13 @@ void TestApp::Run()
 			rt->SetBackgroundColor( Color4f(0, 0, 0, 0) );
 			rt->SetSize( Vector2i(300, 200) );
 
-			// Scene 1 will now be rendered into this render target
-			mScene1.SetRoot( mScene.FindObject<Object>("Scene 1") );
-			mScene1.SetRenderTarget(rt);
-
-			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
-
-			while (mCore->Update());
-
-			//*mCore >> "Config/Dev12.txt";
+			OSDrawForward* draw = g_offscreenCam->GetScript<OSDrawForward>();
+			draw->SetRenderTarget(rt);
 		}
+
+		while (mCore->Update());
+		//*mCore >> "Config/Dev12.txt";
 	}
-}
-
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	// Draw the off-screen scene
-	mScene1.Cull(g_cam1);
-	mScene1.DrawAllForward();
-
-	// Draw the main scene
-	mScene.Cull(g_cam0);
-	mScene.DrawAllForward();
 }
 
 //============================================================================================================

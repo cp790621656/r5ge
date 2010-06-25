@@ -74,24 +74,36 @@ Root
 		{
 			Position = 0.000000 0.000000 0.600000
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
-			Range = 0.300000 100.000000 90.000000
+			Range = 0.300000 10.000000 90.000000
 			Dolly = 0.000000 1.897729 15.000000
+
+			Script = "OSDrawForward"
+			{
+				Shadows = true
+			}
 		}
 
 		Model Instance = "Plane"
 		{
-			Scale = 30.000000
+			Scale = 1.000000
 			Model = "Models/rect.r5a"
 		}
 
 		Object = "Scene 1"
 		{
+			Script = "OSSceneRoot"
+		
 			Debug Camera = "Camera 1"
 			{
 				Position = 0.000000 0.000000 1.000000
 				Rotation = 0.029436 0.138777 -0.967555 -0.209075
 				Range = 0.100000 5.000000 45.000000
 				Dolly = 0.000000 1.000000 5.000000
+
+				Script = "OSDrawForward"
+				{
+					//Shadows = true
+				}
 			}
 
 			Directional Light = "First Light"

@@ -73,6 +73,7 @@ namespace R5
 	#include "PostProcess.h"			// Deferred post-processing effects
 	#include "SSAO.h"					// Sceen-space ambient occlusion
 	#include "UpdateList.h"				// Container for registered update callbacks
+	#include "DirectionalShadow.h"		// Class that is capable of creating a directional shadow texture
 	#include "EventDispatcher.h"		// Event dispatcher has the ability to register event handling callbacks
 	#include "Core.h"					// Engine Core
 
@@ -81,7 +82,6 @@ namespace R5
 	#include "OSPlayAnimations.h"		// Script that activates the specified animations (works best with looping anims)
 	#include "OSRotate.h"				// Script that rotates the owner
 	#include "OSSceneRoot.h"			// Represents the root of the scene that's used by other scripts
-	#include "OSShadowCreator.h"		// Adds a new rendering step that draws the scene's shadows
 	#include "OSDraw.h"					// Class containing common functionality that can be used by draw scripts
 	#include "OSDrawForward.h"			// Draw the scene using forward rendering
 	#include "OSDrawDeferred.h"			// Draw the scene using deferred rendering

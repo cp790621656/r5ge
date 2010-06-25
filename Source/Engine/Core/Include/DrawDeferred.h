@@ -17,7 +17,7 @@ namespace Deferred
 		typedef Array<ITexture*>			Textures;
 
 		// Delegate for the normal drawing callback. It expects a technique used to render the scene.
-		typedef FastDelegate<uint (const Techniques& techniques, bool clearScreen)> DrawCallback;
+		typedef FastDelegate<uint (const Techniques& techniques, bool clearScreen, bool useLighting)> DrawCallback;
 
 		IRenderTarget*	mRenderTarget;	// Render target we should be using
 		DrawCallback	mDrawCallback;	// Actual draw callback -- will receive the list of techniques

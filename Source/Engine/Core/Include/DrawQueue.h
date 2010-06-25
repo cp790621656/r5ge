@@ -54,5 +54,6 @@ public:
 	void Sort() { for (uint i = 0; i < 32; ++i) mLayers[i].Sort(); }
 
 	// Draw the scene
-	uint Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques);
+	uint Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques,
+		bool useLighting = true);
 };

@@ -413,14 +413,14 @@ void GLController::SetNormalize (bool val)
 // Whether to offset depth testing of rendered geometry
 //============================================================================================================
 
-void GLController::SetDepthOffset (bool val)
+void GLController::SetDepthOffset (uint val)
 {
 	if ( mDepthOffset != val )
 	{
 		if (mDepthOffset = val)
 		{
 			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(1, 0);
+			glPolygonOffset(0, -(float)val);
 		}
 		else glDisable(GL_POLYGON_OFFSET_FILL);
 	}

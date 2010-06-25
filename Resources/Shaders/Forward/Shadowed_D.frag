@@ -1,6 +1,7 @@
 // R5_INCLUDE Shaders/Forward/D.vert
 
 uniform sampler2D R5_texture0;
+uniform sampler2D R5_texture1;
 uniform vec2 R5_pixelSize;
 
 varying vec2 _texCoord;
@@ -42,6 +43,7 @@ void main()
 	// Combine the colors
 	vec4 color  = vec4(diffuse.r, diffuse.g, diffuse.b, gl_FrontMaterial.diffuse.a);
 	color.rgb	= mix(color.rgb, gl_FrontMaterial.emission.rgb, gl_FrontMaterial.emission.a);
+	color.rgb  *= texture2D(R5_texture1, _texCoord).rgb;
 	color.rgb  += specular;
 	color.rgb	= mix(color.rgb, gl_Fog.color.rgb, _fogFactor);
 

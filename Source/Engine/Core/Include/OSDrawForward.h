@@ -11,11 +11,12 @@ class OSDrawForward : public OSDraw
 {
 protected:
 
-	Camera*			mCam;
-	ITexture*		mDepth;
-	IRenderTarget*	mTarget;
+	Camera*				mCam;
+	ITexture*			mDepthTexture;
+	IRenderTarget*		mDepthTarget;
+	DirectionalShadow	mShadow;
 
-	OSDrawForward() : mCam(0), mDepth(0), mTarget(0) {}
+	OSDrawForward() : mCam(0), mDepthTexture(0), mDepthTarget(0) {}
 
 public:
 

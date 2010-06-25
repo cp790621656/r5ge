@@ -13,16 +13,6 @@ Root
 			Glow = 0.000000
 			ADT = 0.003922
 			
-			Technique = "Opaque"
-			{
-				Shader = "Forward/D
-				
-				Textures = String[]
-				{
-					"Textures/sand/beach.jpg"
-				}
-			}
-
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/D"
@@ -32,11 +22,36 @@ Root
 					"Textures/sand/beach.jpg"
 				}
 			}
+			
+			Technique = "Opaque"
+			{
+				Shader = "Forward/D"
+				
+				Textures = String[]
+				{
+					"Textures/sand/beach.jpg"
+				}
+			}
+			
+			Technique = "Shadowed Opaque"
+			{
+				Shader = "Forward/Shadowed_D"
+				
+				Textures = String[]
+				{
+					"Shadowmap"
+					"Textures/sand/beach.jpg"
+				}
+			}
+			
+			Technique = "Depth"
 		}
 	}
 
 	Core
 	{
+		Serializable = false
+
 		Mesh = "Simple Rectangle"
 		{
 			Vertices = Float3[]

@@ -186,25 +186,17 @@ uint Scene::DrawAllForward (bool clearScreen)
 {
 	if (mRoot != 0)
 	{
-		IGraphics* graphics = mRoot->mCore->GetGraphics();
-
-		if (mQueue.IsValid())
+		if (mForward.IsEmpty())
 		{
-			if (mForward.IsEmpty())
-			{
-				mForward.Expand() = graphics->GetTechnique("Opaque");
-				mForward.Expand() = graphics->GetTechnique("Wireframe");
-				mForward.Expand() = graphics->GetTechnique("Transparent");
-				mForward.Expand() = graphics->GetTechnique("Particle");
-				mForward.Expand() = graphics->GetTechnique("Glow");
-				mForward.Expand() = graphics->GetTechnique("Glare");
-			}
-			return DrawWithTechniques(mForward, clearScreen);
+			IGraphics* graphics = mRoot->mCore->GetGraphics();
+			mForward.Expand() = graphics->GetTechnique("Opaque");
+			mForward.Expand() = graphics->GetTechnique("Wireframe");
+			mForward.Expand() = graphics->GetTechnique("Transparent");
+			mForward.Expand() = graphics->GetTechnique("Particle");
+			mForward.Expand() = graphics->GetTechnique("Glow");
+			mForward.Expand() = graphics->GetTechnique("Glare");
 		}
-		else if (clearScreen)
-		{
-			graphics->Clear();
-		}
+		return DrawWithTechniques(mForward, clearScreen);
 	}
 	return 0;
 }
@@ -341,13 +333,13 @@ uint Scene::Draw (float bloom, const Vector3f& focalRange, byte ssao)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::DrawWithTechnique (const String& technique, bool clearScreen)
+uint Scene::DrawWithTechnique (const String& technique, bool clearScreen, bool useLighting)
 {
 	if (mRoot != 0)
 	{
 		mTechs.Clear();
 		mTechs.Expand() = mRoot->mCore->GetGraphics()->GetTechnique(technique);
-		return DrawWithTechniques(mTechs, clearScreen);
+		return DrawWithTechniques(mTechs, clearScreen, useLighting);
 	}
 	return 0;
 }
@@ -356,18 +348,18 @@ uint Scene::DrawWithTechnique (const String& technique, bool clearScreen)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::DrawWithTechnique (const ITechnique* technique, bool clearScreen)
+uint Scene::DrawWithTechnique (const ITechnique* technique, bool clearScreen, bool useLighting)
 {
 	mTechs.Clear();
 	mTechs.Expand() = technique;
-	return DrawWithTechniques(mTechs, clearScreen);
+	return DrawWithTechniques(mTechs, clearScreen, useLighting);
 }
 
 //============================================================================================================
 // Draw the specified scene
 //============================================================================================================
 
-uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearScreen)
+uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearScreen, bool useLighting)
 {
 	uint result(0);
 
@@ -378,19 +370,22 @@ uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearScreen)
 		// Clear the screen if needed
 		if (clearScreen) graphics->Clear();
 
-		// Reset to perspective projection
-		graphics->SetScreenProjection( false );
+		if (mQueue.IsValid())
+		{
+			// Reset to perspective projection
+			graphics->SetScreenProjection( false );
 
-		// Draw the scene
-		result += mQueue.Draw(*this, graphics, techniques);
+			// Draw the scene
+			result += mQueue.Draw(*this, graphics, techniques, useLighting);
 
-		// Restore the potentially altered default state
-		graphics->SetNormalize(false);
+			// Restore the potentially altered default state
+			graphics->SetNormalize(false);
 
-		// Automatically set output depth and color textures
-		const IRenderTarget* target = graphics->GetActiveRenderTarget();
-		mOutDepth = (target == 0) ? 0 : target->GetDepthTexture();
-		mOutColor = (target == 0) ? 0 : target->GetColorTexture(0);
+			// Automatically set output depth and color textures
+			const IRenderTarget* target = graphics->GetActiveRenderTarget();
+			mOutDepth = (target == 0) ? 0 : target->GetDepthTexture();
+			mOutColor = (target == 0) ? 0 : target->GetColorTexture(0);
+		}
 	}
 	return result;
 }

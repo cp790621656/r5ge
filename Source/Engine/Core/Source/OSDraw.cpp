@@ -31,3 +31,21 @@ void OSDraw::OnDestroy()
 	if (mCore != 0) mCore->RemoveOnDraw( bind(&OSDraw::OnDraw, this) );
 	mScene.Release();
 }
+
+//============================================================================================================
+// Serialization -- Save
+//============================================================================================================
+
+void OSDraw::OnSerializeTo (TreeNode& node) const
+{
+	node.AddChild("Shadows", mShadows);
+}
+
+//============================================================================================================
+// Serialization -- Load
+//============================================================================================================
+
+void OSDraw::OnSerializeFrom (const TreeNode& node)
+{
+	if (node.mTag == "Shadows") node.mValue >> mShadows;
+}

@@ -32,6 +32,19 @@ Root
 					"Textures/Skins/peasant.jpg"
 				}
 			}
+			
+			Technique = "Shadowed Opaque"
+			{
+				Shader = "Forward/Shadowed_D"
+
+				Textures = String[]
+				{
+					"Shadowmap"
+					"Textures/Skins/peasant.jpg"
+				}
+			}
+			
+			Technique = "Depth"
 		}
 	}
 

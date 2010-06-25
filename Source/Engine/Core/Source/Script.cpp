@@ -25,7 +25,6 @@ void _RegisterDefaultScripts()
 		Script::Register<OSSceneRoot>();
 		Script::Register<OSDrawForward>();
 		Script::Register<OSDrawDeferred>();
-		Script::Register<OSShadowCreator>();
 		Script::Register<OSAudioListener>();
 	}
 }

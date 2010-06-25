@@ -100,7 +100,7 @@ public:
 	virtual void SetADT				(float val = 0.003921568627451f)=0;
 	virtual void SetThickness		(float val)=0;
 	virtual void SetNormalize		(bool val)=0;
-	virtual void SetDepthOffset		(bool val)=0;
+	virtual void SetDepthOffset		(uint val)=0;
 	virtual void SetViewport		(const Vector2i& size )=0;
 	virtual void SetFogRange		(const Vector2f& range)=0;
 	virtual void SetBackgroundColor	(const Color4f& color )=0;
@@ -121,7 +121,7 @@ public:
 	virtual float				GetADT()				const=0;
 	virtual float				GetThickness()			const=0;
 	virtual bool				GetNormalize()			const=0;
-	virtual bool				GetDepthOffset()		const=0;
+	virtual uint				GetDepthOffset()		const=0;
 	virtual uint				GetDefaultAF()			const=0;
 	virtual const Vector2i&		GetViewport()			const=0;
 	virtual const Vector2f&		GetFogRange()			const=0;

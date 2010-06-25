@@ -22,33 +22,46 @@ Vector4f g_depthRange;
 void SetDepthRange (const String& name, Uniform& uniform) { uniform = g_depthRange; }
 
 //============================================================================================================
-// Add this light to the draw script
+
+DirectionalShadow::DirectionalShadow() :
+	mCore				(0),
+	mGraphics			(0),
+	mTextureSize		(2048),
+	mBlurPasses			(1),
+	mLightDepthTarget	(0),
+	mShadowTarget		(0),
+	mBlurTarget0		(0),
+	mBlurTarget1		(0),
+	mLightDepthTex		(0),
+	mShadowTex			(0),
+	mBlurTex0			(0) {}
+
+//============================================================================================================
+// Initialization
 //============================================================================================================
 
-void OSShadowCreator::OnInit()
+void DirectionalShadow::Initialize (Core* core)
 {
-	// Register with the draw script
-	mRoot = OSSceneRoot::FindRootOf(mObject);
-	mRoot->AddShadow(bind(&OSShadowCreator::DrawShadow, this));
-
-	// For convenience
-	mCore		= mObject->GetCore();
-	mGraphics	= mObject->GetGraphics();
-
-	// Set the root of the scene
-	mScene.SetRoot(mRoot->GetOwner());
+	mCore = core;
+	mGraphics = core->GetGraphics();
 }
 
 //============================================================================================================
-// Remove this light from the draw script
+// Release unused resources
 //============================================================================================================
 
-void OSShadowCreator::OnDestroy()
+void DirectionalShadow::Release()
 {
-	if (mRoot != 0)
+	if (mBlurTarget1 != 0)
 	{
-		mRoot->RemoveShadow(bind(&OSShadowCreator::DrawShadow, this));
-		mRoot = 0;
+		mGraphics->DeleteRenderTarget(mBlurTarget1);
+		mBlurTarget1 = 0;
+	}
+
+	if (mBlurTarget0 != 0)
+	{
+		mGraphics->DeleteRenderTarget(mBlurTarget0);
+		mBlurTarget0 = 0;
 	}
 
 	if (mLightDepthTarget != 0)
@@ -61,6 +74,12 @@ void OSShadowCreator::OnDestroy()
 	{
 		mGraphics->DeleteRenderTarget(mShadowTarget);
 		mShadowTarget = 0;
+	}
+
+	if (mBlurTex0 != 0)
+	{
+		mGraphics->DeleteTexture(mBlurTex0);
+		mBlurTex0 = 0;
 	}
 
 	if (mLightDepthTex != 0)
@@ -80,7 +99,7 @@ void OSShadowCreator::OnDestroy()
 // Draw the scene from the light's perspective
 //============================================================================================================
 
-void OSShadowCreator::DrawLightDepth (const Matrix44& camIMVP)
+void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const Matrix44& camIMVP)
 {
 	if (mLightDepthTarget == 0)
 	{
@@ -93,16 +112,19 @@ void OSShadowCreator::DrawLightDepth (const Matrix44& camIMVP)
 		// Light target's depth texture doesn't change
 		mLightDepthTarget->AttachDepthTexture(mLightDepthTex);
 		mLightDepthTarget->SetSize( Vector2i(mTextureSize, mTextureSize) );
-
-		// Draw the scene into our render target
-		mScene.SetRenderTarget(mLightDepthTarget);
 	}
 
+	// Set up a temporary scene
+	static Scene tempScene;
+	tempScene.SetRoot(root);
+	tempScene.SetRenderTarget(mLightDepthTarget);
+
 	// Light's rotation
-	Quaternion rot (mObject->GetAbsoluteRotation());
+	Quaternion rot (dir);
 
 	// Get the scene's calculated bounds and extents
-	Bounds bounds (mScene.GetRoot()->GetCompleteBounds());
+	// TODO: Figure out a proper way of calculating the light frustum
+	Bounds bounds (root->GetCompleteBounds());
 	Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
 	Vector3f center (bounds.GetCenter());
 
@@ -120,7 +142,7 @@ void OSShadowCreator::DrawLightDepth (const Matrix44& camIMVP)
 	proj.SetToBox(size.x, size.z, size.y);
 
 	// Cull the light's scene
-	mScene.Cull(center, rot, proj);
+	tempScene.Cull(center, rot, proj);
 
 	// Create a matrix that will transform the coordinates from camera to light space
 	// Bias matrix transforming -1 to 1 range into 0 to 1
@@ -146,14 +168,14 @@ void OSShadowCreator::DrawLightDepth (const Matrix44& camIMVP)
 	}
 
 	// Draw the scene from the light's point of view, creating the "Light Depth" texture
-	mScene.DrawWithTechnique("Depth", true);
+	tempScene.DrawWithTechnique("Depth", true);
 }
 
 //============================================================================================================
 // Combine the camera's depth with the light's depth to create a shadow texture
 //============================================================================================================
 
-void OSShadowCreator::DrawShadows (const ITexture* camDepth)
+void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 {
 	if (camDepth != 0)
 	{
@@ -170,7 +192,6 @@ void OSShadowCreator::DrawShadows (const ITexture* camDepth)
 		// Render target that will be used to create the shadow
 		if (mShadowTarget == 0)
 		{
-			// TODO: Remove the "Shadowmap" name requirement here
 			mShadowTarget	= mGraphics->CreateRenderTarget();
 			mShadowTex		= mGraphics->GetTexture("Shadowmap");
 
@@ -200,25 +221,21 @@ void OSShadowCreator::DrawShadows (const ITexture* camDepth)
 // Blur the shadow, creating a soft outline
 //============================================================================================================
 
-void OSShadowCreator::BlurShadows (const ITexture* camDepth, float near, float far)
+void DirectionalShadow::BlurShadows (const ITexture* camDepth, float near, float far)
 {
-	static IRenderTarget* blurTarget0 = 0;
-	static IRenderTarget* blurTarget1 = 0;
-
-	static ITexture* blurTex0 = mGraphics->CreateRenderTexture();
-
 	static IShader*	blurH = mGraphics->GetShader("Other/blurShadowH");
 	static IShader* blurV = mGraphics->GetShader("Other/blurShadowV");
-
 	static const ITechnique* technique = mGraphics->GetTechnique("Post Process");
 
-	if (blurTarget0 == 0)
+	if (mBlurTarget0 == 0)
 	{
-		blurTarget0 = mGraphics->CreateRenderTarget();
-		blurTarget0->AttachColorTexture(0, blurTex0, mShadowTex->GetFormat());
+		mBlurTex0 = mGraphics->CreateRenderTexture();
 
-		blurTarget1 = mGraphics->CreateRenderTarget();
-		blurTarget1->AttachColorTexture(0, mShadowTex, mShadowTex->GetFormat());
+		mBlurTarget0 = mGraphics->CreateRenderTarget();
+		mBlurTarget0->AttachColorTexture(0, mBlurTex0, mShadowTex->GetFormat());
+
+		mBlurTarget1 = mGraphics->CreateRenderTarget();
+		mBlurTarget1->AttachColorTexture(0, mShadowTex, mShadowTex->GetFormat());
 
 		blurH->RegisterUniform("depthRange", SetDepthRange);
 		blurV->RegisterUniform("depthRange", SetDepthRange);
@@ -229,8 +246,8 @@ void OSShadowCreator::BlurShadows (const ITexture* camDepth, float near, float f
 
 	// Use the same size as the shadow texture
 	Vector2i size (mShadowTex->GetSize());
-	blurTarget0->SetSize(size);
-	blurTarget1->SetSize(size);
+	mBlurTarget0->SetSize(size);
+	mBlurTarget1->SetSize(size);
 
 	// Camera's depth texture needs to be on texture channel 1
 	mGraphics->SetScreenProjection(true);
@@ -241,14 +258,14 @@ void OSShadowCreator::BlurShadows (const ITexture* camDepth, float near, float f
 	// Blur the shadow texture using Gaussian blur
 	for (uint i = 0; i < mBlurPasses; ++i)
 	{
-		mGraphics->SetActiveRenderTarget(blurTarget0);
+		mGraphics->SetActiveRenderTarget(mBlurTarget0);
 		mGraphics->SetActiveShader(blurH);
 		mGraphics->SetActiveTexture(0, mShadowTex);
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 
-		mGraphics->SetActiveRenderTarget(blurTarget1);
+		mGraphics->SetActiveRenderTarget(mBlurTarget1);
 		mGraphics->SetActiveShader(blurV);
-		mGraphics->SetActiveTexture(0, blurTex0);
+		mGraphics->SetActiveTexture(0, mBlurTex0);
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 	}
 }
@@ -257,10 +274,11 @@ void OSShadowCreator::BlurShadows (const ITexture* camDepth, float near, float f
 // Draw the shadow
 //============================================================================================================
 
-ITexture* OSShadowCreator::DrawShadow (const Matrix44& imvp, const ITexture* depth, float near, float far)
+ITexture* DirectionalShadow::Draw (Object* root, const Vector3f& dir, const Matrix44& imvp,
+								   const ITexture* depth, float near, float far)
 {
 	// Draw the depth from the light's perspective
-	DrawLightDepth(imvp);
+	DrawLightDepth(root, dir, imvp);
 
 	// Create shadows by combining camera's depth with light's depth
 	DrawShadows(depth);
@@ -276,8 +294,9 @@ ITexture* OSShadowCreator::DrawShadow (const Matrix44& imvp, const ITexture* dep
 // Serialization -- Save
 //============================================================================================================
 
-void OSShadowCreator::OnSerializeTo (TreeNode& node) const
+void DirectionalShadow::SerializeTo (TreeNode& root) const
 {
+	TreeNode& node = root.AddChild("Shadows");
 	node.AddChild("Texture Size", mTextureSize);
 	node.AddChild("Blur Passes", mBlurPasses);
 }
@@ -286,8 +305,12 @@ void OSShadowCreator::OnSerializeTo (TreeNode& node) const
 // Serialization -- Load
 //============================================================================================================
 
-void OSShadowCreator::OnSerializeFrom (const TreeNode& node)
+void DirectionalShadow::SerializeFrom (const TreeNode& root)
 {
-	if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
-	else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
+	FOREACH(i, root.mChildren)
+	{
+		const TreeNode& node = root.mChildren[i];
+		if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
+		else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
+	}
 }

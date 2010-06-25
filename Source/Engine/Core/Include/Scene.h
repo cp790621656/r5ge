@@ -73,11 +73,12 @@ public:
 
 	// Retrieves the default draw parameters for modification
 	Techniques& GetDeferredTechniques()	{ return mDrawTechniques; }
-	Techniques& GetForwardTechniques()	{ return mForward; }
+	Techniques& GetForwardTehniques()	{ return mForward; }
 
 	// These functions are valid after Cull() has been called
-	const Frustum&		GetFrustum()		const { return mFrustum; }
-	const Light::List&	GetVisibleLights()	const { return mQueue.mLights;  }
+	const Frustum&		GetFrustum()		const	{ return mFrustum; }
+	const Light::List&	GetVisibleLights()	const	{ return mQueue.mLights;  }
+	IRenderTarget*		GetRenderTarget()			{ return mRenderTarget; }
 
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
 	const Light::List& GetVisibleLights (const Vector3f& pos);
@@ -105,13 +106,13 @@ public:
 	uint Draw (float bloom = 0.0f, const Vector3f& focalRange = Vector3f(), byte ssao = 0);
 
 	// Advanced: Draws the scene using the specified technique
-	uint DrawWithTechnique (const String& technique, bool clearScreen = true);
+	uint DrawWithTechnique (const String& technique, bool clearScreen = true, bool useLighting = true);
 
 	// Advanced: Draws the scene using the specified technique
-	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen = true);
+	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen = true, bool useLighting = true);
 
 	// Advanced: Draws the scene using the specified techniques
-	uint DrawWithTechniques (const Techniques& techniques, bool clearScreen = true);
+	uint DrawWithTechniques (const Techniques& techniques, bool clearScreen = true, bool useLighting = true);
 
 private:
 

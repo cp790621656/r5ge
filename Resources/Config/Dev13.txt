@@ -54,18 +54,30 @@ Root
 			Rotation = -0.256698 0.001887 -0.007112 0.966464
 			Range = 1.000000 50.000000 90.000000
 			Dolly = 0.000000 19.752630 50.000000
+
 			Script = "OSDrawForward"
+			{
+				Shadows = true
+			}
 		}
 
 		Directional Light = "First Light"
 		{
 			Rotation = -0.477128 -0.101366 0.181409 0.853912
-			Ambient = 0.300000 0.300000 0.300000
-			Diffuse = 0.700000 0.700000 0.700000
+			Ambient = 0.150000 0.150000 0.150000
+			Diffuse = 0.450000 0.450000 0.450000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
-			Script = "OSShadowCreator"
 			Script = "OSRotateLight"
+		}
+
+		Directional Light = "Second Light"
+		{
+			Rotation = -30 25 0
+			Ambient = 0.150000 0.150000 0.150000
+			Diffuse = 0.450000 0.450000 0.450000
+			Specular = 1.000000 1.000000 1.000000
+			Brightness = 1.000000
 		}
 
 		Model Instance = "Test Scene"

@@ -15,8 +15,9 @@ protected:
 	IGraphics*		mGraphics;
 	OSSceneRoot*	mRoot;
 	Scene			mScene;
+	bool			mShadows;
 
-	OSDraw() : mCore(0), mGraphics(0), mRoot(0) {}
+	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mShadows(false) {}
 
 public:
 
@@ -29,4 +30,7 @@ public:
 	virtual void OnInit();
 	virtual void OnDestroy();
 	virtual void OnDraw()=0;
+
+	virtual void OnSerializeTo (TreeNode& node) const;
+	virtual void OnSerializeFrom (const TreeNode& node);
 };
