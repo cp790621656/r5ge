@@ -113,6 +113,7 @@ void OSDrawForward::OnDraw()
 		{
 			// Adjust the technique's blending -- first pass should use normal blending, after that -- add
 			mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
+			mShadowed->SetDepthWrite(pass == 0);
 			mShadowed->SetSerializable(false);
 
 			// We'll now be drawing into the scene's render target
@@ -122,7 +123,7 @@ void OSDrawForward::OnDraw()
 			mScene.ActivateMatrices();
 
 			// Activate the light and the depth offset
-			mGraphics->SetDepthOffset(pass);
+			mGraphics->SetDepthOffset(pass == 0 ? 0 : 1);
 			mGraphics->SetActiveLight(0, light);
 
 			// Draw the scene with the shadowed technique
@@ -154,10 +155,17 @@ void OSDrawForward::OnDraw()
 
 		if (index > 0)
 		{
-			mGraphics->SetDepthOffset(pass++);
+			// The depth buffer should be already full at this point, so don't draw to it
+			mGraphics->SetDepthOffset(1);
 			mOpaque->SetBlending(IGraphics::Blending::Add);
+			mOpaque->SetDepthWrite(false);
+
+			// Draw the scene with all opaque techniques
 			mScene.DrawWithTechnique(mOpaque, false, false);
+
+			// Restore the default opaque technique values, just in case
 			mOpaque->SetBlending(IGraphics::Blending::Normal);
+			mOpaque->SetDepthWrite(true);
 			mOpaque->SetSerializable(false);
 		}
 	}
