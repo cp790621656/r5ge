@@ -28,6 +28,7 @@ struct ILight
 	Color4f		mSpecular;	// Specular color
 	Vector3f	mAtten;		// ILight's attenuation for point lights and spot lights
 	Vector3f	mSpot;		// Additional spotlight-only parameters
+	bool		mShadows;	// Whether the light casts shadows
 
-	ILight() : mType(Type::Directional), mSubtype(0) {}
+	ILight() : mType(Type::Directional), mSubtype(0), mShadows(false) {}
 };

@@ -57,107 +57,108 @@ void OSDrawForward::OnDraw()
 	mScene.Cull(mCam);
 	uint pass = 0;
 
-	if (mShadows)
+	// Get all visible lights
+	const Light::List& lights = mScene.GetVisibleLights();
+	Matrix44 imvp;
+
+	// Save the render target we're supposed to be using
+	IRenderTarget* target = mScene.GetRenderTarget();
+
+	// See if we have any directional lights
+	FOREACH(i, lights)
 	{
-		// Get all visible lights
-		const Light::List& lights = mScene.GetVisibleLights();
-		Matrix44 imvp;
+		ILight* light = lights[i].mLight;
 
-		// Save the render target we're supposed to be using
-		IRenderTarget* target = mScene.GetRenderTarget();
+		// Skip non-shadow casting lights
+		if (!light->mShadows) continue;
 
-		// See if we have any directional lights
+		// Skip non-directional lights
+		if (light->mType != ILight::Type::Directional) continue;
+
+		// Create the depth texture of what the camera sees -- but only once
+		if (pass == 0)
+		{
+			// Create the depth texture target
+			if (mDepthTarget == 0)
+			{
+				mDepthTarget = mGraphics->CreateRenderTarget();
+				mDepthTexture = mGraphics->CreateRenderTexture();
+				mDepthTarget->AttachDepthTexture(mDepthTexture);
+			}
+
+			// The depth target's size should match the scene's target
+			mDepthTarget->SetSize((target == 0) ? mCore->GetWindow()->GetSize() : target->GetSize());
+
+			// Activate the depth target
+			mGraphics->SetActiveRenderTarget(mDepthTarget);
+
+			// Draw the scene into the depth render target
+			mScene.DrawWithTechnique("Depth");
+
+			// Save the inverse modelview-projection matrix
+			imvp = mGraphics->GetInverseMVPMatrix();
+
+			// Disable all lights but the first
+			for (uint i = 1; i < 8; ++i) mGraphics->SetActiveLight(i, 0);
+		}
+
+		// Draw the shadows and associate the shadow texture with the shadowmap
+		{
+			const Vector3f& range = mCam->GetAbsoluteRange();
+			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), light->mDir,
+				imvp, mDepthTexture, range.x, range.y) );
+		}
+
+		// Draw the scene normally but with a shadow texture created above
+		{
+			// Adjust the technique's blending -- first pass should use normal blending, after that -- add
+			mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
+			mShadowed->SetSerializable(false);
+
+			// We'll now be drawing into the scene's render target
+			mGraphics->SetActiveRenderTarget(target);
+
+			// Activate the matrices (calculated in the Scene::Cull call at the top of the function)
+			mScene.ActivateMatrices();
+
+			// Activate the light and the depth offset
+			mGraphics->SetDepthOffset(pass);
+			mGraphics->SetActiveLight(0, light);
+
+			// Draw the scene with the shadowed technique
+			mScene.DrawWithTechnique(mShadowed, pass == 0, false);
+
+			// Remove the shadowmap association
+			mShadowmap->SetReplacement(0);
+		}
+
+		// Move on to the next pass
+		++pass;
+	}
+
+	// Now run through non-shadow casting lights and add them on top
+	if (pass > 0)
+	{
+		uint index (0);
+
 		FOREACH(i, lights)
 		{
-			// If we find a directional light, the scene should be drawn slightly different
-			if (lights[i].mLight->mType == ILight::Type::Directional)
+			ILight* light = lights[i].mLight;
+
+			if (!light->mShadows)
 			{
-				ILight* light = lights[i].mLight;
-
-				// Create the depth texture of what the camera sees -- but only once
-				if (pass == 0)
-				{
-					// Create the depth texture target
-					if (mDepthTarget == 0)
-					{
-						mDepthTarget = mGraphics->CreateRenderTarget();
-						mDepthTexture = mGraphics->CreateRenderTexture();
-						mDepthTarget->AttachDepthTexture(mDepthTexture);
-					}
-
-					// The depth target's size should match the scene's target
-					mDepthTarget->SetSize((target == 0) ? mCore->GetWindow()->GetSize() : target->GetSize());
-
-					// Activate the depth target
-					mGraphics->SetActiveRenderTarget(mDepthTarget);
-
-					// Draw the scene into the depth render target
-					mScene.DrawWithTechnique("Depth");
-
-					// Save the inverse modelview-projection matrix
-					imvp = mGraphics->GetInverseMVPMatrix();
-
-					// Disable all lights but the first
-					for (uint i = 1; i < 8; ++i) mGraphics->SetActiveLight(i, 0);
-				}
-
-				// Draw the shadows and associate the shadow texture with the shadowmap
-				{
-					const Vector3f& range = mCam->GetAbsoluteRange();
-					mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), light->mDir,
-						imvp, mDepthTexture, range.x, range.y) );
-				}
-
-				// Draw the scene normally but with a shadow texture created above
-				{
-					// Adjust the technique's blending -- first pass should use normal blending, after that -- add
-					mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
-					mShadowed->SetSerializable(false);
-
-					// We'll now be drawing into the scene's render target
-					mGraphics->SetActiveRenderTarget(target);
-
-					// Activate the matrices (calculated in the Scene::Cull call at the top of the function)
-					mScene.ActivateMatrices();
-
-					// Activate the light and the depth offset
-					mGraphics->SetDepthOffset(pass);
-					mGraphics->SetActiveLight(0, light);
-
-					// Draw the scene with the shadowed technique
-					mScene.DrawWithTechnique(mShadowed, pass == 0, false);
-
-					// Remove the shadowmap association
-					mShadowmap->SetReplacement(0);
-				}
-
-				// Move on to the next pass
-				++pass;
+				if (index == 0) mScene.ActivateMatrices();
+				mGraphics->SetActiveLight(index++, lights[i].mLight);
 			}
 		}
 
-		// Now run through point lights and add them on top
-		if (pass > 0)
+		if (index > 0)
 		{
-			uint index (0);
-
-			FOREACH(i, lights)
-			{
-				if (lights[i].mLight->mType == ILight::Type::Point)
-				{
-					if (index == 0) mScene.ActivateMatrices();
-					mGraphics->SetActiveLight(index++, lights[i].mLight);
-				}
-			}
-
-			if (index > 0)
-			{
-				mGraphics->SetDepthOffset(pass++);
-				mOpaque->SetBlending(IGraphics::Blending::Add);
-				mScene.DrawWithTechnique(mOpaque, false, false);
-				mOpaque->SetBlending(IGraphics::Blending::Normal);
-				mOpaque->SetSerializable(false);
-			}
+			mGraphics->SetDepthOffset(pass++);
+			mOpaque->SetBlending(IGraphics::Blending::Add);
+			mScene.DrawWithTechnique(mOpaque, false, false);
+			mOpaque->SetBlending(IGraphics::Blending::Normal);
+			mOpaque->SetSerializable(false);
 		}
 	}
 

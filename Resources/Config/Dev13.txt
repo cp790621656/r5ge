@@ -54,11 +54,7 @@ Root
 			Rotation = -0.256698 0.001887 -0.007112 0.966464
 			Range = 1.000000 50.000000 90.000000
 			Dolly = 0.000000 19.752630 50.000000
-
 			Script = "OSDrawForward"
-			{
-				Shadows = true
-			}
 		}
 
 		Directional Light = "First Light"
@@ -68,6 +64,7 @@ Root
 			Diffuse = 0.450000 0.450000 0.450000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
+			Shadows = true
 			Script = "OSRotateLight"
 		}
 
@@ -78,6 +75,7 @@ Root
 			Diffuse = 0.450000 0.450000 0.450000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
+			Shadows = true
 		}
 		
 		Point Light = "Third Light"

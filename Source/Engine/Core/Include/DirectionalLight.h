@@ -42,6 +42,10 @@ public:
 	void SetSpecular	(const Color3f& c)	{ mSpecular		= c;	_UpdateColors(); }
 	void SetBrightness	(float val)			{ mBrightness	= val;	_UpdateColors(); }
 
+	// Whether the light will be casting shadows
+	bool GetCastShadows() const { return mLight.mShadows;	}
+	void SetCastShadows(bool val) { mLight.mShadows = val; }
+
 protected:
 
 	// Update the light parameters

@@ -100,10 +100,11 @@ bool DirectionalLight::OnSerializeFrom (const TreeNode& node)
 	float f;
 	Color3f color;
 
-	if		( tag == "Ambient"		&& value >> color ) SetAmbient(color);
-	else if ( tag == "Diffuse" 		&& value >> color ) SetDiffuse(color);
-	else if ( tag == "Specular"		&& value >> color ) SetSpecular(color);
-	else if ( tag == "Brightness"	&& value >> f	  )	SetBrightness(f);
+	if		( tag == "Ambient"		&&  value >> color	) SetAmbient(color);
+	else if ( tag == "Diffuse" 		&&  value >> color	) SetDiffuse(color);
+	else if ( tag == "Specular"		&&  value >> color	) SetSpecular(color);
+	else if ( tag == "Brightness"	&&  value >> f		) SetBrightness(f);
+	else if ( tag == "Shadows")			value >> mLight.mShadows;
 	else return false;
 	return true;
 }
@@ -118,4 +119,5 @@ void DirectionalLight::OnSerializeTo (TreeNode& node) const
 	node.AddChild("Diffuse",	mDiffuse);
 	node.AddChild("Specular",	mSpecular);
 	node.AddChild("Brightness", mBrightness);
+	node.AddChild("Shadows",	mLight.mShadows);
 }
