@@ -92,6 +92,16 @@ uint GLTexture::GetMaxSize() const
 }
 
 //============================================================================================================
+// Retrieves the associated OpenGL texture ID
+//============================================================================================================
+
+uint GLTexture::GetTextureID() const
+{
+	if (mReplacement != 0) return mReplacement->GetTextureID();
+	return (const_cast<GLTexture*>(this))->_GetOrCreate();
+}
+
+//============================================================================================================
 // Adjusts the anisotropic filtering level for all textures
 //============================================================================================================
 
@@ -259,6 +269,7 @@ inline uint Create2DImage (uint glType, const void* buffer, uint width, uint hei
 GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mName				(name),
 	mGraphics			(graphics),
+	mReplacement		(0),
 	mCheckForSource		(true),
 	mType				(Type::Invalid),
 	mGlID				(0),
@@ -435,8 +446,8 @@ void GLTexture::_Create()
 	// ATI drivers seem to like it when the texture filtering is set prior to texture data
 	mActiveFilter = mFilter;
 
-	glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
-	glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());
+	glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, _GetGLMinFilter());
+	glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, _GetGLMagFilter());
 	CHECK_GL_ERROR;
 
 	// Figure out the appropriate texture format
@@ -643,8 +654,8 @@ uint GLTexture::_GetOrCreate()
 				_BindTexture( mGlType, mGlID );
 			}
 
-			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GetGLMinFilter());
-			glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, GetGLMagFilter());
+			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, _GetGLMinFilter());
+			glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, _GetGLMagFilter());
 			CHECK_GL_ERROR;
 		}
 
@@ -831,17 +842,17 @@ inline bool GLTexture::_BindTexture (uint glType, uint glID)
 // OpenGL minification filter
 //============================================================================================================
 
-inline uint GLTexture::GetGLMinFilter() const
+inline uint GLTexture::_GetGLMinFilter() const
 {
 	return ((mFilter & Filter::Mipmap) != 0) ? GL_LINEAR_MIPMAP_NEAREST :
-		(mFilter == Filter::Linear ? GL_LINEAR : GL_NEAREST);
+			(mFilter == Filter::Linear ? GL_LINEAR : GL_NEAREST);
 }
 
 //============================================================================================================
 // OpenGL magnification filter
 //============================================================================================================
 
-inline uint GLTexture::GetGLMagFilter() const
+inline uint GLTexture::_GetGLMagFilter() const
 {
 	return (mFilter == Filter::Nearest) ? GL_NEAREST : GL_LINEAR;
 }
@@ -852,8 +863,19 @@ inline uint GLTexture::GetGLMagFilter() const
 
 bool GLTexture::IsValid() const
 {
+	if (mReplacement != 0) return mReplacement->IsValid();
 	if (mCheckForSource) (const_cast<GLTexture*>(this))->_CheckForSource();
 	return (mFormat != Format::Invalid);
+}
+
+//============================================================================================================
+// Returns the valid path to the texture's source
+//============================================================================================================
+
+const String& GLTexture::GetSource (uint index) const
+{
+	if (mReplacement != 0) return mReplacement->GetSource(index);
+	return (index < 6 ? mTex[index].GetSource() : mTex[0].GetSource());
 }
 
 //============================================================================================================
@@ -862,6 +884,8 @@ bool GLTexture::IsValid() const
 
 bool GLTexture::GetBuffer (Memory& mem)
 {
+	if (mReplacement != 0) return mReplacement->GetBuffer(mem);
+
 	if (IsValid())
 	{
 		uint tex = GetTextureID();
@@ -893,6 +917,8 @@ bool GLTexture::GetBuffer (Memory& mem)
 
 void GLTexture::SetWrapMode (uint wrapMode)
 {
+	if (mReplacement != 0) return mReplacement->SetWrapMode(wrapMode);
+
 	if (mWrapMode != wrapMode)
 	{
 		mWrapMode = wrapMode;
@@ -906,6 +932,8 @@ void GLTexture::SetWrapMode (uint wrapMode)
 
 void GLTexture::SetFiltering (uint filtering)
 {
+	if (mReplacement != 0) return mReplacement->SetFiltering(filtering);
+
 	if (mFilter != filtering)
 	{
 		mFilter = filtering;
@@ -919,6 +947,8 @@ void GLTexture::SetFiltering (uint filtering)
 
 void GLTexture::SetCompareMode (uint compareMode)
 {
+	if (mReplacement != 0) return mReplacement->SetCompareMode(compareMode);
+
 	if (mCompareMode != compareMode)
 	{
 		mCompareMode = compareMode;
@@ -932,6 +962,8 @@ void GLTexture::SetCompareMode (uint compareMode)
 
 bool GLTexture::Load (const String& file, uint format)
 {
+	if (mReplacement != 0) return mReplacement->Load(file, format);
+
 	mLock.Lock();
 
 	// Release everything
@@ -969,6 +1001,8 @@ bool GLTexture::Load (	const String&	up,
 						const String&	west,
 						uint			format )
 {
+	if (mReplacement != 0) return mReplacement->Load(up, down, north, east, south, west, format);
+
 	mLock.Lock();
 	_InternalRelease(true);	
 
@@ -1040,6 +1074,8 @@ bool GLTexture::Set (const void*	buffer,
 					 uint			dataFormat,
 					 uint			format)
 {
+	if (mReplacement != 0) return mReplacement->Set(buffer, width, height, depth, dataFormat, format);
+
 	bool retVal (false);
 
 	mLock.Lock();
@@ -1136,6 +1172,11 @@ bool GLTexture::Set(const void*	up,
 					uint dataFormat,
 					uint format)
 {
+	if (mReplacement != 0)
+	{
+		return mReplacement->Set(up, down, north, east, south, west, width, height, dataFormat, format);
+	}
+
 	bool retVal (false);
 
 	mLock.Lock();
@@ -1193,6 +1234,8 @@ bool GLTexture::Set(const void*	up,
 
 bool GLTexture::SerializeTo (TreeNode& root) const
 {
+	if (mReplacement != 0) return mReplacement->SerializeTo(root);
+
 	if (mFormat == ITexture::Format::Invalid || mName.IsEmpty() || mTex[0].GetSource().IsEmpty() || !mSerializable)
 		return false;
 
@@ -1233,6 +1276,8 @@ bool GLTexture::SerializeTo (TreeNode& root) const
 
 bool GLTexture::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
+	if (mReplacement != 0) return mReplacement->SerializeFrom(root, forceUpdate);
+
 	// If the texture has already been created, don't bother
 	if (mGlID != 0 && !forceUpdate) return true;
 

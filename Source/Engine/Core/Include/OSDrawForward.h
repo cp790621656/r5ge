@@ -12,11 +12,16 @@ class OSDrawForward : public OSDraw
 protected:
 
 	Camera*				mCam;
+	ITexture*			mShadowmap;
 	ITexture*			mDepthTexture;
 	IRenderTarget*		mDepthTarget;
+	ITechnique*			mTechnique;
 	DirectionalShadow	mShadow;
 
-	OSDrawForward() : mCam(0), mDepthTexture(0), mDepthTarget(0) {}
+	Deferred::Storage::Techniques mComplete;
+	Deferred::Storage::Techniques mAdditive;
+
+	OSDrawForward() : mCam(0), mShadowmap(0), mDepthTexture(0), mDepthTarget(0), mTechnique(0) {}
 
 public:
 

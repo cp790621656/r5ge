@@ -39,7 +39,7 @@ Root
 				
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 					"Textures/sand/beach.jpg"
 				}
 			}

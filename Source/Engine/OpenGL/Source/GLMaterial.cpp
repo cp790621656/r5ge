@@ -118,8 +118,10 @@ void GLMaterial::ClearAllDrawMethods()
 	if (mMethods.IsValid())
 	{
 		mMethods.Lock();
-		mMethods.Clear();
-		mMask = 0;
+		{
+			mMethods.Clear();
+			mMask = 0;
+		}
 		mMethods.Unlock();
 	}
 }

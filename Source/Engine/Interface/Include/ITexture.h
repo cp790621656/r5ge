@@ -165,6 +165,14 @@ public: //======================================================================
 						uint dataFormat,
 						uint textureFormat = Format::Optimal )=0;
 
+	// Replacement texture that this texture is pointing to
+	virtual const ITexture* GetReplacement() const=0;
+
+	// Replacement textures can be used to temporarily (or permanently) replace one texture with another.
+	// This feature is most useful for frequently-changing textures, such as shadowmaps, as they tend to differ
+	// with each render target, but still need to be referenced by material techniques.
+	virtual void SetReplacement (ITexture* tex)=0;
+
 	// Serialization
 	virtual bool IsSerializable() const=0;
 	virtual void SetSerializable(bool val)=0;

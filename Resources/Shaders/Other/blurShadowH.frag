@@ -27,7 +27,9 @@ void main()
 	vec2 tc = gl_TexCoord[0].xy;
 	float originalDistance = GetDistance(tc);
 	float originalValue = texture2D(R5_texture0, tc).r;
-	float variance = pixelSize * depthRange.w * 10.0;
+ 
+ 	// 40 / 1920 -- distance allowance for blur
+ 	const float variance = 0.020833;
 
 	// The closer to the camera the larger is the area we can sample
 	float strength = (1.0 - originalDistance / depthRange.w);

@@ -26,7 +26,7 @@ Root
 
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 				}
 			}
 		}
@@ -51,7 +51,7 @@ Root
 
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 				}
 			}
 		}
@@ -76,7 +76,7 @@ Root
 
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 				}
 			}
 		}
@@ -101,7 +101,7 @@ Root
 
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 				}
 			}
 		}
@@ -126,7 +126,7 @@ Root
 
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 				}
 			}
 		}
@@ -151,7 +151,7 @@ Root
 
 				Textures = String[]
 				{
-					"Shadowmap"
+					"R5_Shadowmap"
 				}
 			}
 		}

@@ -18,6 +18,9 @@ void OSDrawForward::OnInit()
 	{
 		OSDraw::OnInit();
 		mShadow.Initialize(mObject->GetCore());
+
+		mShadowmap = mGraphics->GetTexture("R5_Shadowmap");
+		mTechnique = mGraphics->GetTechnique("Shadowed Opaque");
 	}
 }
 
@@ -97,19 +100,18 @@ void OSDrawForward::OnDraw()
 					for (uint i = 1; i < 8; ++i) mGraphics->SetActiveLight(i, 0);
 				}
 
-				// Draw the shadows
+				// Draw the shadows and associate the shadow texture with the shadowmap
 				{
 					const Vector3f& range = mCam->GetAbsoluteRange();
-					mShadow.Draw(mScene.GetRoot(), light->mDir, imvp, mDepthTexture, range.x, range.y);
+					mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), light->mDir,
+						imvp, mDepthTexture, range.x, range.y) );
 				}
 
 				// Draw the scene normally but with a shadow texture created above
 				{
-					static ITechnique* tech = mGraphics->GetTechnique("Shadowed Opaque");
-
 					// Adjust the technique's blending -- first pass should use normal blending, after that -- add
-					tech->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
-					tech->SetSerializable(false);
+					mTechnique->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
+					mTechnique->SetSerializable(false);
 
 					// We'll now be drawing into the scene's render target
 					mGraphics->SetActiveRenderTarget(target);
@@ -122,7 +124,10 @@ void OSDrawForward::OnDraw()
 					mGraphics->SetActiveLight(0, light);
 
 					// Draw the scene with the shadowed technique
-					mScene.DrawWithTechnique(tech, pass == 0, false);
+					mScene.DrawWithTechnique(mTechnique, pass == 0, false);
+
+					// Remove the shadowmap association
+					mShadowmap->SetReplacement(0);
 				}
 
 				// Move on to the next pass
@@ -134,33 +139,31 @@ void OSDrawForward::OnDraw()
 	// Add particles
 	if (pass == 0)
 	{
-		// Nothing has been drawn -- draw everything
-		static Deferred::Storage::Techniques complete;
-
-		if (complete.IsEmpty())
+		if (mComplete.IsEmpty())
 		{
-			complete.Expand() = mGraphics->GetTechnique("Opaque");
-			complete.Expand() = mGraphics->GetTechnique("Wireframe");
-			complete.Expand() = mGraphics->GetTechnique("Transparent");
-			complete.Expand() = mGraphics->GetTechnique("Particle");
-			complete.Expand() = mGraphics->GetTechnique("Glow");
-			complete.Expand() = mGraphics->GetTechnique("Glare");
+			mComplete.Expand() = mGraphics->GetTechnique("Opaque");
+			mComplete.Expand() = mGraphics->GetTechnique("Wireframe");
+			mComplete.Expand() = mGraphics->GetTechnique("Transparent");
+			mComplete.Expand() = mGraphics->GetTechnique("Particle");
+			mComplete.Expand() = mGraphics->GetTechnique("Glow");
+			mComplete.Expand() = mGraphics->GetTechnique("Glare");
 		}
-		mScene.DrawWithTechniques(complete, true, true);
+
+		// Nothing has been drawn -- draw everything
+		mScene.DrawWithTechniques(mComplete, true, true);
 	}
 	else
 	{
-		// Add additive objects after everything else has been drawn
-		static Deferred::Storage::Techniques additive;
-
-		if (additive.IsEmpty())
+		if (mAdditive.IsEmpty())
 		{
-			additive.Expand() = mGraphics->GetTechnique("Wireframe");
-			additive.Expand() = mGraphics->GetTechnique("Transparent");
-			additive.Expand() = mGraphics->GetTechnique("Particle");
-			additive.Expand() = mGraphics->GetTechnique("Glow");
-			additive.Expand() = mGraphics->GetTechnique("Glare");
+			mAdditive.Expand() = mGraphics->GetTechnique("Wireframe");
+			mAdditive.Expand() = mGraphics->GetTechnique("Transparent");
+			mAdditive.Expand() = mGraphics->GetTechnique("Particle");
+			mAdditive.Expand() = mGraphics->GetTechnique("Glow");
+			mAdditive.Expand() = mGraphics->GetTechnique("Glare");
 		}
-		mScene.DrawWithTechniques(additive, false, true);
+
+		// Add additive objects after everything else has been drawn
+		mScene.DrawWithTechniques(mAdditive, false, true);
 	}
 }

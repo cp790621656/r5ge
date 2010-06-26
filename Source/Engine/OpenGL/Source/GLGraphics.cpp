@@ -717,6 +717,88 @@ IRenderTarget* GLGraphics::CreateRenderTarget()
 }
 
 //============================================================================================================
+// Deletes a vertex buffer object if it can be found in the managed array
+//============================================================================================================
+
+void GLGraphics::DeleteVBO (const IVBO* ptr)
+{
+	if (ptr == 0) return;
+
+	mVbos.Lock();
+	{
+		FOREACH(i, mVbos)
+		{
+			if (mVbos[i] == ptr)
+			{
+				delete mVbos[i];
+				mVbos[i] = 0;
+				break;
+			}
+		}
+	}
+	mVbos.Unlock();
+}
+
+//============================================================================================================
+// Deletes a previously created texture
+//============================================================================================================
+
+void GLGraphics::DeleteTexture (const ITexture* ptr)
+{
+	if (ptr == 0) return;
+
+	mTempTex.Lock();
+	{
+		FOREACH(i, mTempTex)
+		{
+			if (mTempTex[i] == ptr)
+			{
+				mTempTex.DeleteAt(i);
+				mTempTex.Unlock();
+				return;
+			}
+		}
+	}
+	mTempTex.Unlock();
+
+	mTextures.Lock();
+	{
+		FOREACH(i, mTextures)
+		{
+			if (mTextures[i] == ptr)
+			{
+				mTextures.DeleteAt(i);
+				mTextures.Unlock();
+				return;
+			}
+		}
+	}
+	mTextures.Unlock();
+}
+
+//============================================================================================================
+// Deletes a frame buffer object if it can be found in the managed array
+//============================================================================================================
+
+void GLGraphics::DeleteRenderTarget (const IRenderTarget* ptr)
+{
+	if (ptr == 0) return;
+
+	mFbos.Lock();
+	{
+		FOREACH(i, mFbos)
+		{
+			if ( mFbos[i] == ptr )
+			{
+				mFbos.DeleteAt(i);
+				break;
+			}
+		}
+	}
+	mFbos.Unlock();
+}
+
+//============================================================================================================
 // Retrieves or creates a new render group -- contains several default presets for convenience
 //============================================================================================================
 
@@ -975,88 +1057,6 @@ IFont* GLGraphics::GetFont (const String& name, bool createIfMissing)
 		mFonts.Unlock();
 	}
 	return font;
-}
-
-//============================================================================================================
-// Deletes a vertex buffer object if it can be found in the managed array
-//============================================================================================================
-
-void GLGraphics::DeleteVBO (const IVBO* ptr)
-{
-	if (ptr == 0) return;
-
-	mVbos.Lock();
-	{
-		FOREACH(i, mVbos)
-		{
-			if (mVbos[i] == ptr)
-			{
-				delete mVbos[i];
-				mVbos[i] = 0;
-				break;
-			}
-		}
-	}
-	mVbos.Unlock();
-}
-
-//============================================================================================================
-// Deletes a previously created texture
-//============================================================================================================
-
-void GLGraphics::DeleteTexture (const ITexture* ptr)
-{
-	if (ptr == 0) return;
-
-	mTempTex.Lock();
-	{
-		FOREACH(i, mTempTex)
-		{
-			if (mTempTex[i] == ptr)
-			{
-				mTempTex.DeleteAt(i);
-				mTempTex.Unlock();
-				return;
-			}
-		}
-	}
-	mTempTex.Unlock();
-
-	mTextures.Lock();
-	{
-		FOREACH(i, mTextures)
-		{
-			if (mTextures[i] == ptr)
-			{
-				mTextures.DeleteAt(i);
-				mTextures.Unlock();
-				return;
-			}
-		}
-	}
-	mTextures.Unlock();
-}
-
-//============================================================================================================
-// Deletes a frame buffer object if it can be found in the managed array
-//============================================================================================================
-
-void GLGraphics::DeleteRenderTarget (const IRenderTarget* ptr)
-{
-	if (ptr == 0) return;
-
-	mFbos.Lock();
-	{
-		FOREACH(i, mFbos)
-		{
-			if ( mFbos[i] == ptr )
-			{
-				mFbos.DeleteAt(i);
-				break;
-			}
-		}
-	}
-	mFbos.Unlock();
 }
 
 //============================================================================================================

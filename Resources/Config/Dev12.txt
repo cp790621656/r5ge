@@ -102,7 +102,7 @@ Root
 
 				Script = "OSDrawForward"
 				{
-					//Shadows = true
+					Shadows = true
 				}
 			}
 

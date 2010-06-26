@@ -193,7 +193,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 		if (mShadowTarget == 0)
 		{
 			mShadowTarget	= mGraphics->CreateRenderTarget();
-			mShadowTex		= mGraphics->GetTexture("Shadowmap");
+			mShadowTex		= mGraphics->CreateRenderTexture();
 
 			mShadowTarget->AttachColorTexture(0, mShadowTex, ITexture::Format::Alpha);
 			mShadowTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
