@@ -487,10 +487,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\OSShadowCreator.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\Script.h"
 					>
 				</File>
@@ -531,10 +527,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Source\OSShadowCreator.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\Script.cpp"
 					>
 				</File>
@@ -546,6 +538,10 @@
 			<Filter
 				Name="Include"
 				>
+				<File
+					RelativePath=".\Include\DirectionalShadow.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Include\DrawDeferred.h"
 					>
@@ -586,6 +582,10 @@
 			<Filter
 				Name="Source"
 				>
+				<File
+					RelativePath=".\Source\DirectionalShadow.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Source\DrawDeferred.cpp"
 					>
