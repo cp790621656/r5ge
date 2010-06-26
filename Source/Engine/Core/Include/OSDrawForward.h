@@ -15,13 +15,14 @@ protected:
 	ITexture*			mShadowmap;
 	ITexture*			mDepthTexture;
 	IRenderTarget*		mDepthTarget;
-	ITechnique*			mTechnique;
+	ITechnique*			mOpaque;
+	ITechnique*			mShadowed;
 	DirectionalShadow	mShadow;
 
 	Deferred::Storage::Techniques mComplete;
 	Deferred::Storage::Techniques mAdditive;
 
-	OSDrawForward() : mCam(0), mShadowmap(0), mDepthTexture(0), mDepthTarget(0), mTechnique(0) {}
+	OSDrawForward() : mCam(0), mShadowmap(0), mDepthTexture(0), mDepthTarget(0), mOpaque(0), mShadowed(0) {}
 
 public:
 

@@ -79,6 +79,14 @@ Root
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
 		}
+		
+		Point Light = "Third Light"
+		{
+			Position = 0 0 1
+			Diffuse = 1.0 0.0 0.0
+			Range = 1.0
+			Brightness = 2
+		}
 
 		Model Instance = "Test Scene"
 		{

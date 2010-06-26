@@ -19,8 +19,9 @@ void OSDrawForward::OnInit()
 		OSDraw::OnInit();
 		mShadow.Initialize(mObject->GetCore());
 
-		mShadowmap = mGraphics->GetTexture("R5_Shadowmap");
-		mTechnique = mGraphics->GetTechnique("Shadowed Opaque");
+		mShadowmap	= mGraphics->GetTexture("R5_Shadowmap");
+		mOpaque		= mGraphics->GetTechnique("Opaque");
+		mShadowed	= mGraphics->GetTechnique("Shadowed Opaque");
 	}
 }
 
@@ -110,8 +111,8 @@ void OSDrawForward::OnDraw()
 				// Draw the scene normally but with a shadow texture created above
 				{
 					// Adjust the technique's blending -- first pass should use normal blending, after that -- add
-					mTechnique->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
-					mTechnique->SetSerializable(false);
+					mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
+					mShadowed->SetSerializable(false);
 
 					// We'll now be drawing into the scene's render target
 					mGraphics->SetActiveRenderTarget(target);
@@ -124,7 +125,7 @@ void OSDrawForward::OnDraw()
 					mGraphics->SetActiveLight(0, light);
 
 					// Draw the scene with the shadowed technique
-					mScene.DrawWithTechnique(mTechnique, pass == 0, false);
+					mScene.DrawWithTechnique(mShadowed, pass == 0, false);
 
 					// Remove the shadowmap association
 					mShadowmap->SetReplacement(0);
@@ -132,6 +133,30 @@ void OSDrawForward::OnDraw()
 
 				// Move on to the next pass
 				++pass;
+			}
+		}
+
+		// Now run through point lights and add them on top
+		if (pass > 0)
+		{
+			uint index (0);
+
+			FOREACH(i, lights)
+			{
+				if (lights[i].mLight->mType == ILight::Type::Point)
+				{
+					if (index == 0) mScene.ActivateMatrices();
+					mGraphics->SetActiveLight(index++, lights[i].mLight);
+				}
+			}
+
+			if (index > 0)
+			{
+				mGraphics->SetDepthOffset(pass++);
+				mOpaque->SetBlending(IGraphics::Blending::Add);
+				mScene.DrawWithTechnique(mOpaque, false, false);
+				mOpaque->SetBlending(IGraphics::Blending::Normal);
+				mOpaque->SetSerializable(false);
 			}
 		}
 	}
