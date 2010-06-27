@@ -419,10 +419,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Source\Light.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Source\PointLight.cpp"
 					>
 				</File>
@@ -435,7 +431,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\Light.h"
+					RelativePath=".\Include\LightSource.h"
 					>
 				</File>
 				<File
@@ -543,10 +539,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Include\DrawDeferred.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Include\DrawGroup.h"
 					>
 				</File>
@@ -578,16 +570,16 @@
 					RelativePath=".\Include\SSAO.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Include\TemporaryStorage.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source"
 				>
 				<File
 					RelativePath=".\Source\DirectionalShadow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Source\DrawDeferred.cpp"
 					>
 				</File>
 				<File
@@ -616,6 +608,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\SSAO.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\TemporaryStorage.cpp"
 					>
 				</File>
 			</Filter>

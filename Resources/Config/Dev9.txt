@@ -389,6 +389,8 @@ Root
 	{
 		Object = "Scene Root"
 		{
+			Script = "OSSceneRoot"
+		
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
@@ -483,6 +485,7 @@ Root
 				Layer = 10
 				Range = 1.000000 100.000000 90.000000
 				Dolly = 0.000000 40.855690 50.000000
+				Script = "OSDrawForward"
 			}
 
 			Directional Light = "First Light"

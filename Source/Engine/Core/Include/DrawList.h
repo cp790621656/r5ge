@@ -28,5 +28,5 @@ public:
 	void Clear();
 
 	// Draw all objects in the list
-	uint Draw (const Deferred::Storage& storage, const ITechnique* tech);
+	uint Draw (TemporaryStorage& storage, const ITechnique* tech, bool insideOut);
 };

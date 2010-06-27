@@ -7,17 +7,30 @@
 // Screen Space Ambient Occlusion post process effect functions
 //============================================================================================================
 
-namespace SSAO
+class SSAO
 {
-	typedef Scene::ITexturePtr		ITexturePtr;
-	typedef Scene::IRenderTargetPtr	IRenderTargetPtr;
+	ITexture*	mRandom;
+	ITechnique*	mPost;
 
-	// Parameters used by the SSAO shaders: blur consideration range and SSAO's strength
-	void SetParams (float range, float strength);
+	IShader*	mSSAO;
+	IShader*	mBlurH;
+	IShader*	mBlurV;
 
-	// Low quality approach
-	const ITexture* Low (IGraphics* graphics, Deferred::Storage& storage);
+	IRenderTarget* mSSAOTarget;
+	IRenderTarget* mBlurTarget0;
+	IRenderTarget* mBlurTarget1;
 
-	// High quality approach
-	const ITexture* High (IGraphics* graphics, Deferred::Storage& storage);
+	ITexture* mLightmap;
+	ITexture* mBlurTex0;
+	ITexture* mBlurTex1;
+
+	void CreateResources (TemporaryStorage& storage);
+
+public:
+
+	SSAO() : mRandom(0), mPost(0), mSSAO(0), mBlurH(0), mBlurV(0),
+		mSSAOTarget(0), mBlurTarget0(0), mBlurTarget1(0), mLightmap(0), mBlurTex0(0), mBlurTex1(0) {}
+
+	ITexture* Create (TemporaryStorage& storage, bool highQuality, uint passes,
+		float range, float strength, float sharpness);
 };

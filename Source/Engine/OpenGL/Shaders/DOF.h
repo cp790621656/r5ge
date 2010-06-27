@@ -15,9 +15,9 @@ static const char* g_dof = {
 "uniform vec4		 R5_clipRange;\n"	 // Near/far clipping range
 
 // Value 0 = center distance for the depth of field calculations
-// Value 1 = how far is the focus edge from the center (past which the original texture begins fading)
-// Value 2 = how far from the focus edge first downsample becomes 100%
-// Value 3 = how far from the focus edge second downsample becomes 100%
+// Value 1 = how far from the center the original texture starts fading
+// Value 2 = how far from the center first downsample becomes 100%
+// Value 3 = how far from the center second downsample becomes 100%
 "uniform vec4 focusRange;\n"
 
 "void main()\n"
@@ -30,12 +30,10 @@ static const char* g_dof = {
 "	dist = abs(dist - focusRange.x);\n"
 
 	// Distance from the first edge
-"	dist -= focusRange.y;\n"
-"	float factor0 = clamp((focusRange.z - dist) / focusRange.z, 0.0, 1.0);\n"
+"	float factor0 = clamp((focusRange.z - dist) / (focusRange.z - focusRange.y), 0.0, 1.0);\n"
 
 	// Distance from the second edge
-"	dist -= focusRange.z;\n"
-"	float factor1 = clamp((focusRange.w - dist) / focusRange.w, 0.0, 1.0);\n"
+"	float factor1 = clamp((focusRange.w - dist) / (focusRange.w - focusRange.z), 0.0, 1.0);\n"
 
 "	vec3 original	 = texture2D(R5_texture0, gl_TexCoord[0].xy).rgb;\n"
 "	vec3 downsample0 = texture2D(R5_texture2, gl_TexCoord[0].xy).rgb;\n"

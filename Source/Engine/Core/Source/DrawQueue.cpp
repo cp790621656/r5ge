@@ -5,9 +5,9 @@ using namespace R5;
 // Adds a new light to the draw queue
 //============================================================================================================
 
-void DrawQueue::Add (Light* light, float distanceToCamera)
+void DrawQueue::Add (LightSource* light, float distanceToCamera)
 {
-	Light::Entry& ent = mLights.Expand();
+	LightEntry& ent = mLights.Expand();
 	ent.mLight = light;
 	ent.mDistance = distanceToCamera;
 }
@@ -32,8 +32,8 @@ bool DrawQueue::IsValid() const
 // Draw the scene
 //============================================================================================================
 
-uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques,
-					  bool useLighting)
+uint DrawQueue::Draw (TemporaryStorage& storage, IGraphics* graphics, const Techniques& techniques,
+					  bool useLighting, bool insideOut)
 {
 	uint result(0);
 	uint mask = 0;
@@ -62,7 +62,7 @@ uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, con
 				if ( tech != 0 && (layer.mMask & tech->GetMask()) != 0 )
 				{
 					// Activate the technique
-					graphics->SetActiveTechnique(tech, storage.mInsideOut);
+					graphics->SetActiveTechnique(tech, insideOut);
 
 					// Activate all lights
 					if (useLighting && tech->GetLighting() != IGraphics::Lighting::None)
@@ -74,15 +74,20 @@ uint DrawQueue::Draw (const Deferred::Storage& storage, IGraphics* graphics, con
 							graphics->ResetModelViewMatrix();
 
 							for (uint i = 0; i < last; ++i)
-								graphics->SetActiveLight(i, mLights[i].mLight);
+							{
+								LightSource* light = mLights[i].mLight;
+								graphics->SetActiveLight(i, (light == 0) ? 0 : &light->GetProperties());
+							}
 
 							for (uint i = last; i < 8; ++i)
+							{
 								graphics->SetActiveLight(i, 0);
+							}
 						}
 					}
 
 					// Draw everything on this layer using this technique
-					result += layer.Draw(storage, tech);
+					result += layer.Draw(storage, tech, insideOut);
 				}
 			}
 		}

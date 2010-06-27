@@ -320,6 +320,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\Shadow.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\SSAO.h"
 				>
 			</File>

@@ -18,18 +18,31 @@
 //   Distance allows objects to be drawn back-to-front or front-to-back as needed.
 //============================================================================================================
 
+class LightSource;
 class DrawQueue
 {
 public:
 
 	typedef Array<const ITechnique*> Techniques;
 
+	struct LightEntry
+	{
+		LightSource*	mLight;
+		float	mDistance;
+
+		LightEntry() : mLight(0), mDistance(0.0f) {}
+		void operator = (LightSource* ptr) { mLight = ptr; }
+		bool operator < (const LightEntry& light) const { return mDistance < light.mDistance; }
+	};
+
+	typedef Array<LightEntry> Lights;
+
 private:
 
 	// Only the Scene class should be touching 'mLayers' directly
 	friend class Scene;
 
-	Light::List	mLights;
+	Lights		mLights;
 	DrawLayer	mLayers[32];
 
 public:
@@ -41,7 +54,7 @@ public:
 	void Clear() { mLights.Clear(); for (uint i = 0; i < 32; ++i) mLayers[i].Clear(); }
 
 	// Adds a new light to the draw queue
-	void Add (Light* light, float distanceToCamera = 0.0f);
+	void Add (LightSource* light, float distanceToCamera = 0.0f);
 
 	// Add a new object to the draw queue. The 'group' parameter can be a material,
 	// a texture, or anything else you might want to group similar objects by.
@@ -54,6 +67,6 @@ public:
 	void Sort() { for (uint i = 0; i < 32; ++i) mLayers[i].Sort(); }
 
 	// Draw the scene
-	uint Draw (const Deferred::Storage& storage, IGraphics* graphics, const Techniques& techniques,
-		bool useLighting = true);
+	uint Draw (TemporaryStorage& storage, IGraphics* graphics, const Techniques& techniques,
+		bool useLighting, bool insideOut);
 };

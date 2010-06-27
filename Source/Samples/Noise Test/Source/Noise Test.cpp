@@ -127,7 +127,7 @@ void TestApp::OnDraw()
 {
 	if (mRegenerate) Regenerate();
 	mScene.Cull(mCam);
-	mScene.DrawAllForward();
+	mScene.DrawWithTechnique("Opaque");
 }
 
 //============================================================================================================

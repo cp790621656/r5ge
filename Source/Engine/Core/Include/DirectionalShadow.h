@@ -22,17 +22,21 @@ protected:
 	ITexture*		mLightDepthTex;
 	ITexture*		mShadowTex;
 	ITexture*		mBlurTex0;
+	IShader*		mShadow;
+	IShader*		mBlurH;
+	IShader*		mBlurV;
+	ITechnique*		mPost;
 
 	// Internal functionality
 	void DrawLightDepth (Object* root, const Vector3f& dir, const Matrix44& camIMVP);
 	void DrawShadows (const ITexture* camDepth);
-	void BlurShadows (const ITexture* camDepth, float near, float far);
+	void BlurShadows (const ITexture* camDepth);
 
 public:
 
 	DirectionalShadow();
 
-	void Initialize (Core* core);
+	void Initialize (IGraphics* graphics);
 	void Release();
 
 	// Access to protected variables
@@ -46,9 +50,7 @@ public:
 		Object*			root,	// Root of the scene
 		const Vector3f& dir,	// Direction of the light
 		const Matrix44& imvp,	// Camera's inverse modelview-projection matrix
-		const ITexture* depth,	// Camera's depth
-		float			near,	// Camera's near clipping plane
-		float			far);	// Camera's far clipping plane
+		const ITexture* depth);	// Camera's depth
 
 	// Serialization
 	void SerializeTo (TreeNode& node) const;

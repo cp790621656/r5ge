@@ -40,7 +40,7 @@ protected:
 	virtual bool OnFill (FillParams& params);
 
 	// Draw the object using the specified technique
-	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech);
+	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut);
 
 	// Serialization to and from the scenegraph tree
 	virtual void OnSerializeTo	 (TreeNode& node) const;

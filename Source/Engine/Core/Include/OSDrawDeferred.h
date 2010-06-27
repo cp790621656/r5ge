@@ -14,9 +14,31 @@ protected:
 	Camera*		mCam;
 	float		mBloom;
 	Vector3f	mFocalRange;
-	uint		mSSAO;
+	uint		mAOQuality;
+	uint		mAOPasses;
+	Vector3f	mAOParams;
 
-	OSDrawDeferred() : mCam(0), mBloom(1.0f), mSSAO(0) {}
+	IShader*	mCombine;
+	ITexture*	mDepth;
+	ITexture*	mNormal;
+	ITexture*	mMatDiff;
+	ITexture*	mMatSpec;
+	ITexture*	mLightDiff;
+	ITexture*	mLightSpec;
+	ITexture*	mFinal;
+
+	SSAO		mSSAO;
+	PostProcess	mPostProcess;
+
+	IRenderTarget* mMaterialTarget;
+	IRenderTarget* mLightTarget;
+	IRenderTarget* mFinalTarget;
+
+	Array<const ITechnique*>	mDeferred;
+	Array<const ITechnique*>	mForward;
+	Array<bool>					mProcessedLight;
+
+	OSDrawDeferred();
 
 public:
 
@@ -31,11 +53,38 @@ public:
 	void SetFocalRange (const Vector3f& range) { mFocalRange = range; }
 
 	// Screen-space ambient occlusion level (0 = off, 1 = low, 2 = high)
-	byte GetSSAO() const { return (byte)mSSAO; }
-	void SetSSAO (byte val) { mSSAO = val; }
+	byte GetSSAO() const { return (byte)mAOQuality; }
+	void SetSSAO (byte val) { mAOQuality = val; }
+
+	// Number of blur passes for SSAO
+	uint GetAOBlurPasses() const { return mAOPasses; }
+	void SetAOBlurPasses (uint val) { mAOPasses = val; }
+
+	// Additional properties for SSAO: X = Range, Y = Strength, Z = Sharpness
+	const Vector3f& GetAOParams() const { return mAOParams; }
+	void SetAOParams (const Vector3f& v) { mAOParams = v; }
+
+public:
 
 	// Initialize the scene
 	virtual void OnInit();
+	virtual void OnDestroy() { mScene.Release(); }
+
+protected:
+
+	// Material encoding stage
+	void MaterialStage();
+
+	// Light encoding stage
+	void LightStage();
+
+	// Combine the light contribution with material
+	void CombineStage();
+
+	// Add forward-rendered objects and post-process effects
+	void PostProcessStage();
+
+public:
 
 	// Draw callback
 	virtual void OnDraw();

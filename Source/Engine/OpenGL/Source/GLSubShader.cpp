@@ -8,6 +8,7 @@
 #include "../Shaders/Blur.h"
 #include "../Shaders/Bloom.h"
 #include "../Shaders/DOF.h"
+#include "../Shaders/Shadow.h"
 
 using namespace R5;
 
@@ -332,16 +333,27 @@ void GLSubShader::_Init()
 		else if (mName == "[R5] Bloom Blur")			mCode = g_blurBloom;
 		else if (mName == "[R5] Combine Bloom")			mCode = g_combineBloom;
 		else if (mName == "[R5] Depth of Field")		mCode = g_dof;
+		else if (mName == "[R5] Shadow")				mCode = g_shadow;
 		else if (mName == "[R5] Sample SSAO")			mCode = g_ssaoSample;
-		else if (mName == "[R5] Blur - Vertical SSAO")
+		else if (mName == "[R5] Horizontal Depth-Respecting Blur")
 		{
-			mCode  = g_ssaoBlur;
-			mCode << g_ssaoBlurV;
+			mCode  = g_depthRespectingBlur;
+			mCode << g_depthRespectingBlurH;
 		}
-		else if (mName == "[R5] Blur - Horizontal SSAO")
+		else if (mName == "[R5] Vertical Depth-Respecting Blur")
+		{
+			mCode  = g_depthRespectingBlur;
+			mCode << g_depthRespectingBlurV;
+		}
+		else if (mName == "[R5] Horizontal SSAO Blur")
 		{
 			mCode  = g_ssaoBlur;
 			mCode << g_ssaoBlurH;
+		}
+		else if (mName == "[R5] Vertical SSAO Blur")
+		{
+			mCode  = g_ssaoBlur;
+			mCode << g_ssaoBlurV;
 		}
 		else if (mName.Contains("Light"))
 		{

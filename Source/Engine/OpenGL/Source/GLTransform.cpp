@@ -292,8 +292,6 @@ uint GLTransform::Activate (const IShader* shader)
 	}
 	else
 	{
-		static bool instancing = false;
-
 		// If the mode has been recently changed we should consider all matrices changed
 		if (mReset)
 		{
@@ -328,14 +326,14 @@ uint GLTransform::Activate (const IShader* shader)
 				glMultiTexCoord4fv(GL_TEXTURE4, m.mColumn2);
 				glMultiTexCoord4fv(GL_TEXTURE5, m.mColumn3);
 
-				if (mView.changed || !instancing)
+				if (mView.changed || !mInst)
 				{
 					// If the view has changed, or we haven't been using instancing before, set the view matrix
 					glMatrixMode(GL_MODELVIEW);
 					glLoadMatrixf(v.mF);
 
 					++switches;
-					instancing = true;
+					mInst = true;
 				}
 			}
 			else
@@ -345,7 +343,7 @@ uint GLTransform::Activate (const IShader* shader)
 				glLoadMatrixf(GetModelViewMatrix().mF);
 
 				++switches;
-				instancing = false;
+				mInst = false;
 			}
 		}
 		else if (mProj.changed)

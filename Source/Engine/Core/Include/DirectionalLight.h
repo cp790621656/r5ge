@@ -7,7 +7,7 @@
 // Directional light
 //============================================================================================================
 
-class DirectionalLight : public Object
+class DirectionalLight : public LightSource
 {
 protected:
 
@@ -15,7 +15,8 @@ protected:
 	Color3f		mDiffuse;		// Diffuse color
 	Color3f		mSpecular;		// Specular color
 	float		mBrightness;	// Light's brightness
-	Light		mLight;			// Light's outgoing parameters
+	IShader*	mShader0;
+	IShader*	mShader1;
 
 	DirectionalLight();
 
@@ -29,9 +30,6 @@ public:
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Directional Light", DirectionalLight, Object, Object);
 
-	// Callback that draws directional lights
-	static void _Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
-
 	const Color3f&	GetAmbient()	const { return mAmbient;	}
 	const Color3f&	GetDiffuse()	const { return mDiffuse;	}
 	const Color3f&	GetSpecular()	const { return mSpecular;	}
@@ -43,8 +41,8 @@ public:
 	void SetBrightness	(float val)			{ mBrightness	= val;	_UpdateColors(); }
 
 	// Whether the light will be casting shadows
-	bool GetCastShadows() const { return mLight.mShadows;	}
-	void SetCastShadows(bool val) { mLight.mShadows = val; }
+	bool GetCastShadows() const { return mProperties.mShadows;	}
+	void SetCastShadows(bool val) { mProperties.mShadows = val; }
 
 protected:
 
@@ -53,6 +51,9 @@ protected:
 
 	// Fill the renderable object and visible light lists
 	virtual bool OnFill (FillParams& params);
+
+	// Draw the light using deferred rendering
+	virtual void OnDrawLight (TemporaryStorage& storage, bool setStates);
 
 protected:
 

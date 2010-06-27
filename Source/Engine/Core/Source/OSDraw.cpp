@@ -27,7 +27,5 @@ void OSDraw::OnInit()
 
 void OSDraw::OnDestroy()
 {
-	if (mCore == 0) mCore = mObject->GetCore();
-	if (mCore != 0) mCore->RemoveOnDraw( bind(&OSDraw::OnDraw, this) );
-	mScene.Release();
+	mCore->RemoveOnDraw( bind(&OSDraw::OnDraw, this) );
 }

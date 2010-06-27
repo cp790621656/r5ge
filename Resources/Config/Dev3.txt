@@ -99,7 +99,11 @@ Root
 			Layer = 10
 			Range = 1.000000 200.000000 90.000000
 			Dolly = 0.000000 28.000000 50.000000
+
 			Script = "OSDrawDeferred"
+			{
+				Bloom = 0.0
+			}
 		}
 
 		Model Instance = "Teapot 7"

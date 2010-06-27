@@ -5,7 +5,7 @@ using namespace R5;
 // Draw the billboard
 //============================================================================================================
 
-uint DirectionalBillboard::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
+uint DirectionalBillboard::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

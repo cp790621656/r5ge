@@ -108,7 +108,7 @@ static const char* g_lightBody = {
 };
 
 //============================================================================================================
-// End of the shader for a directiona light
+// End of the shader for a directional light
 //============================================================================================================
 
 static const char* g_lightEndDir = {
@@ -118,8 +118,8 @@ static const char* g_lightEndDir = {
 };
 
 //============================================================================================================
-// End of the shader for a directiona light with Ambient Occlusion
-// NOTE: Ideally AO shouldn't affect the ambient channel. It does here just to make the effect more evident.
+// End of the shader for a directional light with Ambient Occlusion
+// NOTE: Ideally AO shouldn't affect the diffuse channel. It does here just to make the effect more evident.
 //============================================================================================================
 
 static const char* g_lightEndDirAO = {
@@ -141,7 +141,7 @@ static const char* g_lightEndPoint = {
 
 //============================================================================================================
 // End of the shader for a point light with Ambient Occlusion
-// NOTE: Ideally AO shouldn't affect the ambient channel. It does here just to make the effect more evident.
+// NOTE: Ideally AO shouldn't affect the diffuse channel. It does here just to make the effect more evident.
 //============================================================================================================
 
 static const char* g_lightEndPointAO = {

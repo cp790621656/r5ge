@@ -56,13 +56,13 @@ void DrawLayer::Add (Object* obj, uint mask, uint group, float distSquared)
 // Draw the scene
 //============================================================================================================
 
-uint DrawLayer::Draw (const Deferred::Storage& storage, const ITechnique* tech)
+uint DrawLayer::Draw (TemporaryStorage& storage, const ITechnique* tech, bool insideOut)
 {
 	uint index (tech->GetIndex()), retVal (0);
 
 	if (index < mList.GetSize())
 	{
-		retVal += mList[index].Draw(storage, tech);
+		retVal += mList[index].Draw(storage, tech, insideOut);
 	}
 	return retVal;
 }

@@ -22,8 +22,7 @@ namespace R5
 {
 	class Object;
 
-	#include "Light.h"					// Light source
-	#include "DrawDeferred.h"			// Deferred rendering functionality
+	#include "TemporaryStorage.h"		// Textures and render targets used in the draw process
 	#include "DrawGroup.h"				// Class managing an array of drawable objects
 	#include "DrawList.h"				// All drawable objects are separated by techniques into different lists
 	#include "DrawLayer.h"				// Drawable objects can be placed on different layers
@@ -40,9 +39,11 @@ namespace R5
 	#include "Glare.h"					// Screen-aligned billboard that fades out if it's obscured
 	#include "DirectionalBillboard.h"	// Billboard that always appears on the horizon
 	#include "DirectionalGlare.h"		// Glare version of the horizon billboard
+	#include "Emitter.h"				// Particle emitter system template
+	
+	#include "LightSource.h"			// Base class for a light source
 	#include "DirectionalLight.h"		// Directional light
 	#include "PointLight.h"				// Point light
-	#include "Emitter.h"				// Particle emitter system template
 
 	#include "Camera.h"					// Base camera class
 	#include "DebugCamera.h"			// Free movement camera, useful for debugging

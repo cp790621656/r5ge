@@ -19,8 +19,8 @@ protected:
 	ITechnique*			mShadowed;
 	DirectionalShadow	mShadow;
 
-	Deferred::Storage::Techniques mComplete;
-	Deferred::Storage::Techniques mAdditive;
+	Array<const ITechnique*> mComplete;
+	Array<const ITechnique*> mAdditive;
 
 	OSDrawForward() : mCam(0), mShadowmap(0), mDepthTexture(0), mDepthTarget(0), mOpaque(0), mShadowed(0) {}
 

@@ -106,7 +106,7 @@ public:
 	virtual bool IsUsingSubShader (const ISubShader* sub) const;
 
 	// Returns whether the shader is in a usable state
-	virtual bool IsValid() const { return mAdded.IsValid(); }
+	virtual bool IsValid() const;
 
 	// Force-updates the value of the specified uniform
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const;

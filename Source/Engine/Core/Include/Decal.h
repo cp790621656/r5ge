@@ -14,6 +14,7 @@ protected:
 	Matrix43	mMatrix;
 	IShader*	mShader;
 	Color4f		mColor;
+	uint		mMask;
 
 	// Textures passed to the decal
 	Array<const ITexture*> mTextures;
@@ -40,6 +41,9 @@ public:
 
 protected:
 
+	// Set the mask
+	virtual void OnInit();
+
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 
@@ -47,7 +51,7 @@ protected:
 	virtual bool OnFill (FillParams& params);
 
 	// Draws the light on-screen if it's visible
-	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech);
+	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut);
 
 	// Serialization
 	virtual void OnSerializeTo	  (TreeNode& node) const;

@@ -41,6 +41,12 @@ void OnSetRight		(const String& name, Uniform& uni) { uni = g_right;		}
 void OnSetUp		(const String& name, Uniform& uni) { uni = g_up;		}
 
 //============================================================================================================
+// Set the mask
+//============================================================================================================
+
+void Decal::OnInit() { mMask = mGraphics->GetTechnique("Decal")->GetMask(); }
+
+//============================================================================================================
 // Changes the shader to the specified one
 //============================================================================================================
 
@@ -94,7 +100,6 @@ bool Decal::OnFill (FillParams& params)
 {
 	if (mShader != 0)
 	{
-		static uint mask = mCore->GetGraphics()->GetTechnique("Decal")->GetMask();
 		uint group (0);
 
 		if (mTextures.IsValid() && mTextures.Back() != 0)
@@ -105,7 +110,7 @@ bool Decal::OnFill (FillParams& params)
 		{
 			group = mShader->GetUID();
 		}
-		params.mDrawQueue.Add(mLayer, this, mask, group, 0.0f);
+		params.mDrawQueue.Add(mLayer, this, mMask, group, 0.0f);
 	}
 	return true;
 }
@@ -114,27 +119,25 @@ bool Decal::OnFill (FillParams& params)
 // Draws the decal
 //============================================================================================================
 
-uint Decal::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
+uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
-	static IVBO* vbo = 0;
-	static IVBO* ibo = 0;
 	static uint indexCount = 0;
 
-	const ITexture* depth	 = storage.GetDepth();
-	const ITexture* normal	 = storage.GetNormal();
-	const ITexture* diffuse	 = storage.GetMaterialDiffuse();
-	const ITexture* specular = storage.GetMaterialSpecular();
+	IVBO* vbo = storage.GetVBO(2);
+	IVBO* ibo = storage.GetVBO(3);
+
+	const ITexture* depth	 = storage.GetRenderTexture(0);
+	const ITexture* normal	 = storage.GetRenderTexture(1);
+	const ITexture* diffuse	 = storage.GetRenderTexture(2);
+	const ITexture* specular = storage.GetRenderTexture(3);
 
 	// These textures are only available during the deferred process -- and so are decals
 	if (depth == 0 || normal == 0 || diffuse == 0 || specular == 0) return 0;
 
 	IGraphics* graphics = mCore->GetGraphics();
 
-	if (vbo == 0)
+	if (!vbo->IsValid())
 	{
-		vbo = graphics->CreateVBO();
-		ibo = graphics->CreateVBO();
-
 		Array<Vector3f> vertices;
 		Array<ushort> indices;
 		Shape::Box(vertices, indices);
@@ -181,7 +184,6 @@ uint Decal::OnDraw (const Deferred::Storage& storage, uint group, const ITechniq
 
 	// Invert the depth testing and culling if the camera is inside the box
 	bool invert = mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) < range;
-	bool insideOut = storage.mInsideOut;
 
 	if (invert)
 	{

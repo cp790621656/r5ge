@@ -139,7 +139,7 @@ bool Emitter::OnFill (FillParams& params)
 // Draws all particles
 //============================================================================================================
 
-uint Emitter::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
+uint Emitter::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

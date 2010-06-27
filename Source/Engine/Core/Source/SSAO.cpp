@@ -1,6 +1,5 @@
 #include "../Include/_All.h"
 using namespace R5;
-#define BLUR_PASSES 2
 
 //============================================================================================================
 // Callback triggered when updating the 'properties' uniform on the SSAO shader
@@ -8,27 +7,15 @@ using namespace R5;
 
 Vector2f g_params (1.0f, 4.0f);
 
-void SetSSAOProperties (const String& name, Uniform& data)
-{
-	data = g_params;
-}
-
-//============================================================================================================
-// Parameters used by the SSAO shaders: blur consideration range and SSAO's strength
-//============================================================================================================
-
-void SSAO::SetParams (float range, float strength)
-{
-	g_params.Set(range, strength);
-}
+void SetSSAOProperties (const String& name, Uniform& data) { data = g_params; }
 
 //============================================================================================================
 // Generates a random texture used by SSAO
 //============================================================================================================
 
-const ITexture* GetRandomizedNormalmap (IGraphics* graphics)
+ITexture* GetRandomizedNormalmap (IGraphics* graphics)
 {
-	static ITexture* random = graphics->GetTexture("[Generated] Random Offset");
+	ITexture* random = graphics->GetTexture("[Generated] Random Offset");
 
 	if (random->GetFormat() == ITexture::Format::Invalid)
 	{
@@ -68,199 +55,135 @@ const ITexture* GetRandomizedNormalmap (IGraphics* graphics)
 }
 
 //============================================================================================================
-// Low quality SSAO
+// Creates resources used by the SSAO process
 //============================================================================================================
 
-const ITexture* SSAO::Low (IGraphics* graphics, Deferred::Storage& storage)
+void SSAO::CreateResources (TemporaryStorage& storage)
 {
-	static ITechnique*		post	= graphics->GetTechnique("Post Process");
-	static IShader*			ssao	= graphics->GetShader("[R5] Sample SSAO");
-	static IShader*			blurH	= graphics->GetShader("[R5] Blur - Horizontal SSAO");
-	static IShader*			blurV	= graphics->GetShader("[R5] Blur - Vertical SSAO");
-	static const ITexture*	random	= GetRandomizedNormalmap(graphics);
+	IGraphics* graphics = storage.GetGraphics();
 
-	IRenderTargetPtr& ssaoTarget	= storage.mTempTargets[10];
-	IRenderTargetPtr& blurTarget0	= storage.mTempTargets[11];
-	IRenderTargetPtr& blurTarget1	= storage.mTempTargets[12];
+	mPost	= graphics->GetTechnique("Post Process");
+	mSSAO	= graphics->GetShader("[R5] Sample SSAO");
+	mBlurH	= graphics->GetShader("[R5] Horizontal SSAO Blur");
+	mBlurV	= graphics->GetShader("[R5] Vertical SSAO Blur");
 
-	ITexturePtr& lightmap = storage.mTempTextures[14];
-	ITexturePtr& blurTex0 = storage.mTempTextures[15];
-	ITexturePtr& blurTex1 = storage.mTempTextures[16];
+	mRandom = GetRandomizedNormalmap(graphics);
 
-	if (ssaoTarget == 0)
-	{
-		ssaoTarget	= graphics->CreateRenderTarget();
-		lightmap	= graphics->CreateRenderTexture();
+	mSSAOTarget	 = storage.GetRenderTarget(10);
+	mBlurTarget0 = storage.GetRenderTarget(11);
+	mBlurTarget1 = storage.GetRenderTarget(12);
 
-		// Screen space ambient occlusion target
-		ssaoTarget->AttachColorTexture( 0, lightmap, ITexture::Format::Alpha );
-		ssaoTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
+	mLightmap = storage.GetRenderTexture(14);
+	mBlurTex0 = storage.GetRenderTexture(15);
+	mBlurTex1 = storage.GetRenderTexture(16);
 
-		ssao->RegisterUniform ("properties", &SetSSAOProperties);
-		blurH->RegisterUniform("properties", &SetSSAOProperties);
-		blurV->RegisterUniform("properties", &SetSSAOProperties);
-	}
+	mLightmap->SetFiltering(ITexture::Filter::Linear);
+	mBlurTex0->SetFiltering(ITexture::Filter::Linear);
+	mBlurTex1->SetFiltering(ITexture::Filter::Linear);
 
-	if (blurTarget0 == 0)
-	{
-		blurTarget0	= graphics->CreateRenderTarget();
-		blurTex0	= graphics->CreateRenderTexture();
+	mSSAOTarget->AttachColorTexture( 0, mLightmap, ITexture::Format::Alpha );
+	mSSAOTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
-		// Horizontal Blur texture target
-		blurTarget0->AttachColorTexture( 0, blurTex0, ITexture::Format::Alpha );
-		blurTarget0->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-	}
+	mSSAO->RegisterUniform("properties", &SetSSAOProperties);
 
-	if (blurTarget1 == 0)
-	{
-		blurTarget1	= graphics->CreateRenderTarget();
-		blurTex1	= graphics->CreateRenderTexture();
+	mBlurTarget0->AttachColorTexture( 0, mBlurTex0, ITexture::Format::Alpha );
+	mBlurTarget0->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
-		// Vertical Blur texture target
-		blurTarget1->AttachColorTexture( 0, blurTex1, ITexture::Format::Alpha );
-		blurTarget1->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-	}
-
-	Vector2i size (storage.mRenderTarget == 0 ? graphics->GetViewport() :
-		storage.mRenderTarget->GetSize());
-
-	ssaoTarget->SetSize(size / 2);
-	blurTarget0->SetSize(size);
-	blurTarget1->SetSize(size);
-
-	// Set up the active states
-	graphics->SetActiveTechnique(post);
-	graphics->SetActiveMaterial(0);
-	graphics->Flush();
-
-	const ITexture* depth  = storage.mOutDepth;
-	const ITexture* normal = storage.mOutNormal;
-
-	// SSAO contribution pass
-	{
-		graphics->SetActiveRenderTarget(ssaoTarget);
-		graphics->SetScreenProjection(true);
-		graphics->SetActiveTexture(0, depth);
-		graphics->SetActiveTexture(1, normal);
-		graphics->SetActiveTexture(2, random);
-		graphics->SetActiveShader(ssao);
-
-		lightmap->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw(IGraphics::Drawable::InvertedQuad);
-	}
-
-	ITexture* result = lightmap;
-	graphics->SetActiveTexture(0, depth);
-
-	// SSAO blur passes
-	for (uint i = 0; i < BLUR_PASSES; ++i)
-	{
-		// Blur the SSAO texture horizontally
-		graphics->SetActiveRenderTarget(blurTarget0);
-		graphics->SetActiveTexture(1, result);
-		graphics->SetActiveShader(blurH);
-		blurTex0->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw(IGraphics::Drawable::InvertedQuad);
-		result = blurTex0;
-
-		// Blur the SSAO texture vertically
-		graphics->SetActiveRenderTarget(blurTarget1);
-		graphics->SetActiveTexture(1, result);
-		graphics->SetActiveShader(blurV);
-		blurTex1->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw(IGraphics::Drawable::InvertedQuad);
-		result = blurTex1;
-	}
-	return result;
+	mBlurTarget1->AttachColorTexture( 0, mBlurTex1, ITexture::Format::Alpha );
+	mBlurTarget1->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 }
 
 //============================================================================================================
 // High quality SSAO
 //============================================================================================================
 
-const ITexture* SSAO::High (IGraphics* graphics, Deferred::Storage& storage)
+ITexture* SSAO::Create (TemporaryStorage& storage, bool highQuality, uint passes, float range, float strength, float sharpness)
 {
-	static ITechnique*		post	= graphics->GetTechnique("Post Process");
-	static IShader*			ssao	= graphics->GetShader("[R5] Sample SSAO");
-	static IShader*			blurH	= graphics->GetShader("[R5] Blur - Horizontal SSAO");
-	static IShader*			blurV	= graphics->GetShader("[R5] Blur - Vertical SSAO");
-	static const ITexture*	random	= GetRandomizedNormalmap(graphics);
+	IGraphics*		graphics = storage.GetGraphics();
+	const ITexture* depth	 = storage.GetDepth();
+	const ITexture* normal	 = storage.GetNormal();
 
-	IRenderTargetPtr&	ssaoTarget	= storage.mTempTargets[10];
-	IRenderTargetPtr&	blurTarget	= storage.mTempTargets[11];
-	ITexturePtr&		lightmap	= storage.mTempTextures[14];
-	ITexturePtr&		blurTex		= storage.mTempTextures[15];
+	// Create necessary resources
+	if (mSSAOTarget == 0) CreateResources(storage);
 
-	if (ssaoTarget == 0)
+	// Update the shader values
+	g_params.Set(range, strength);
+
+	// Use the target size for dimensions
+	Vector2i size (storage.GetFinalTargetSize());
+
+	if (highQuality)
 	{
-		ssaoTarget	= graphics->CreateRenderTarget();
-		blurTarget	= graphics->CreateRenderTarget();
-		lightmap	= graphics->CreateRenderTexture();
-		blurTex		= graphics->CreateRenderTexture();
+		mSSAOTarget->SetSize(size);
+		mBlurTarget0->SetSize(size);
 	}
-
-	if (!ssaoTarget->HasColor())
+	else
 	{
-		ssao->RegisterUniform ("properties", &SetSSAOProperties);
-		blurH->RegisterUniform("properties", &SetSSAOProperties);
-		blurV->RegisterUniform("properties", &SetSSAOProperties);
-
-		// Screen space ambient occlusion target
-		ssaoTarget->AttachColorTexture( 0, lightmap, ITexture::Format::Alpha );
-		ssaoTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-
-		// Blur texture target
-		blurTarget->AttachColorTexture( 0, blurTex, ITexture::Format::Alpha );
-		blurTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
+		mBlurTarget0->SetSize(size);
+		mBlurTarget1->SetSize(size);
+		mSSAOTarget->SetSize(size / 2);
 	}
-
-	Vector2i size (storage.mRenderTarget == 0 ? graphics->GetViewport() :
-		storage.mRenderTarget->GetSize());
-
-	ssaoTarget->SetSize(size);
-	blurTarget->SetSize(size);
 
 	// Set up the active states
-	graphics->SetActiveTechnique(post);
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	graphics->SetActiveMaterial(0);
+	graphics->SetActiveTechnique(mPost);
 	graphics->Flush();
 
-	const ITexture* depth  = storage.mOutDepth;
-	const ITexture* normal = storage.mOutNormal;
-
 	// SSAO contribution pass
-	{
-		graphics->SetActiveRenderTarget(ssaoTarget);
-		graphics->SetScreenProjection(true);
-		graphics->SetActiveTexture(0, depth);
-		graphics->SetActiveTexture(1, normal);
-		graphics->SetActiveTexture(2, random);
-		graphics->SetActiveShader(ssao);
+	graphics->SetActiveRenderTarget(mSSAOTarget);
+	graphics->SetScreenProjection(true);
+	graphics->SetActiveTexture(0, depth);
+	graphics->SetActiveTexture(1, normal);
+	graphics->SetActiveTexture(2, mRandom);
+	graphics->SetActiveShader(mSSAO);
+	graphics->Draw(IGraphics::Drawable::InvertedQuad);
 
-		lightmap->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw(IGraphics::Drawable::InvertedQuad);
-	}
+	// Start with the lightmap texture
+	ITexture* result = mLightmap;
+	graphics->SetActiveTexture(2, 0);
 
 	// SSAO blur passes
-	for (uint i = 0; i < BLUR_PASSES; ++i)
+	if (highQuality)
 	{
-		// Blur the SSAO texture horizontally
-		graphics->SetActiveRenderTarget(blurTarget);
-		graphics->SetActiveTexture(1, lightmap);
-		graphics->SetActiveShader(blurH);
-		blurTex->SetFiltering(ITexture::Filter::Linear);
-		graphics->Draw(IGraphics::Drawable::InvertedQuad);
+		for (uint i = 0; i < passes; ++i)
+		{
+			// Blur the SSAO texture horizontally
+			graphics->SetActiveRenderTarget(mBlurTarget0);
+			graphics->SetActiveTexture(1, result);
+			graphics->SetActiveShader(mBlurH);
+			if (i == 0) mBlurH->SetUniform("threshold", Vector2f(1.0f / size.x, g_params.x / sharpness));
+			graphics->Draw(IGraphics::Drawable::InvertedQuad);
+			result = mBlurTex0;
 
-		// Blur the SSAO texture vertically
-		graphics->SetActiveRenderTarget(ssaoTarget);
-		graphics->SetActiveTexture(1, blurTex);
-		graphics->SetActiveShader(blurV);
-		graphics->Draw(IGraphics::Drawable::InvertedQuad);
+			// Blur the SSAO texture vertically
+			graphics->SetActiveRenderTarget(mSSAOTarget);
+			graphics->SetActiveTexture(1, result);
+			graphics->SetActiveShader(mBlurV);
+			if (i == 0) mBlurV->SetUniform("threshold", Vector2f(1.0f / size.y, g_params.x / sharpness));
+			graphics->Draw(IGraphics::Drawable::InvertedQuad);
+			result = mLightmap;
+		}
 	}
-	return lightmap;
+	else
+	{
+		for (uint i = 0; i < passes; ++i)
+		{
+			// Blur the SSAO texture horizontally
+			graphics->SetActiveRenderTarget(mBlurTarget0);
+			graphics->SetActiveTexture(1, result);
+			graphics->SetActiveShader(mBlurH);
+			if (i == 0) mBlurH->SetUniform("threshold", Vector2f(1.0f / size.x, g_params.x / sharpness));
+			graphics->Draw(IGraphics::Drawable::InvertedQuad);
+			result = mBlurTex0;
+
+			// Blur the SSAO texture vertically
+			graphics->SetActiveRenderTarget(mBlurTarget1);
+			graphics->SetActiveTexture(1, result);
+			graphics->SetActiveShader(mBlurV);
+			if (i == 0) mBlurV->SetUniform("threshold", Vector2f(1.0f / size.y, g_params.x / sharpness));
+			graphics->Draw(IGraphics::Drawable::InvertedQuad);
+			result = mBlurTex1;
+		}
+	}
+	return result;
 }

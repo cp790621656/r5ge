@@ -18,8 +18,6 @@ class TestApp
 	IGraphics*	mGraphics;		// Graphics controller
 	UI*			mUI;			// User interface manager
 	Core*		mCore;			// Engine core
-	Camera*		mCam;			// Main camera
-	Scene		mScene;			// Main scene
 	Scene		mOffscreen;		// Off-screen scene
 	Mesh*		mBranch;		// Generated mesh used to draw the cluster of leaves
 	uint		mSeed;			// Seed used for randomization
@@ -41,7 +39,6 @@ public:
 	~TestApp();
 
 	void Run();
-	void OnDraw();
 	void DrawLeaves (IGraphicsManager* graphics, void* param);
 	void SaveTextures (IGraphicsManager* graphics, void* param);
 	void Fill(Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoords& tc, Mesh::Colors& colors);
@@ -65,9 +62,6 @@ TestApp::TestApp() : mBranch(0), mSeed(2711135145), mOriginalD(0), mOriginalN(0)
 
 	Object* root = mCore->GetRoot();
 
-	// Scene that contains regular visible objects
-	mScene.SetRoot( root->AddObject<Object>("Scene Root") );
-
 	// Off-screen scene used for off-screen rendering
 	mOffscreen.SetRoot( root->AddObject<Object>("Off-screen Root") );
 	mOffscreen.GetRoot()->SetSerializable(false);
@@ -89,9 +83,6 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	// Core event listeners
-	mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
-
 	// UI callbacks can be bound even before the actual widgets are loaded
 	mUI->SetOnKey		 ("Save",			bind(&TestApp::OnSave,			this));
 	mUI->SetOnKey		 ("Generate",		bind(&TestApp::OnGenerate,		this));
@@ -120,9 +111,6 @@ void TestApp::Run()
 
 		// Camera setup
 		{
-			// Default camera's orientation comes from the configuration file
-			mCam = mScene.FindObject<DebugCamera>("Default Camera");
-
 			// Off-screen camera is not serialized, but is rather created here
 			DebugCamera* cam = mOffscreen.AddObject<DebugCamera>("Off-screen Camera");
 			cam->SetRelativeRotation( Vector3f(0.0f, 0.0f, -1.0f) );
@@ -152,18 +140,6 @@ void TestApp::Run()
 
 		//*mCore >> "Config/Dev9.txt";
 	}
-}
-
-//============================================================================================================
-// Draw the scene
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mGraphics->SetActiveRenderTarget(0);
-	mScene.Cull(mCam);
-	mScene.DrawAllForward();
-	mGraphics->Draw(IGraphics::Drawable::Grid);
 }
 
 //============================================================================================================
@@ -204,7 +180,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 		// Draw the scene into the diffuse map target
 		{
 			// Off-screen target
-			mOffscreen.SetRenderTarget(diffuseTarget);
+			mOffscreen.SetFinalTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
 			mOffscreen.DrawWithTechnique("Diffuse Map");
 			mGraphics->Flush();
@@ -224,7 +200,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 
 		// Draw the scene into the normal map target
 		{
-			mOffscreen.SetRenderTarget(normalTarget);
+			mOffscreen.SetFinalTarget(normalTarget);
 			mOffscreen.ActivateMatrices();
 			mOffscreen.DrawWithTechnique("Normal Map");
 			mGraphics->Flush();

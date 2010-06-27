@@ -20,7 +20,6 @@ struct ILight
 	};
 
 	byte		mType;		// Registered light type (directional, point, or spotlight)
-	uint		mSubtype;	// Additional identifier that can be used for a more complex light type
 	Vector3f	mPos;		// This light's position
 	Vector3f	mDir;		// This light's direction
 	Color4f		mAmbient;	// Ambient color
@@ -30,5 +29,5 @@ struct ILight
 	Vector3f	mSpot;		// Additional spotlight-only parameters
 	bool		mShadows;	// Whether the light casts shadows
 
-	ILight() : mType(Type::Directional), mSubtype(0), mShadows(false) {}
+	ILight() : mType(Type::Directional), mShadows(false) {}
 };

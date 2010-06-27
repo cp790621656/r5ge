@@ -17,7 +17,7 @@ void OSDrawForward::OnInit()
 	else
 	{
 		OSDraw::OnInit();
-		mShadow.Initialize(mObject->GetCore());
+		mShadow.Initialize(mGraphics);
 
 		mShadowmap	= mGraphics->GetTexture("R5_Shadowmap");
 		mOpaque		= mGraphics->GetTechnique("Opaque");
@@ -58,22 +58,22 @@ void OSDrawForward::OnDraw()
 	uint pass = 0;
 
 	// Get all visible lights
-	const Light::List& lights = mScene.GetVisibleLights();
+	const DrawQueue::Lights& lights = mScene.GetVisibleLights();
 	Matrix44 imvp;
 
 	// Save the render target we're supposed to be using
-	IRenderTarget* target = mScene.GetRenderTarget();
+	IRenderTarget* target = mScene.GetFinalTarget();
 
 	// See if we have any directional lights
 	FOREACH(i, lights)
 	{
-		ILight* light = lights[i].mLight;
+		const ILight& light = lights[i].mLight->GetProperties();
 
 		// Skip non-shadow casting lights
-		if (!light->mShadows) continue;
+		if (!light.mShadows) continue;
 
 		// Skip non-directional lights
-		if (light->mType != ILight::Type::Directional) continue;
+		if (light.mType != ILight::Type::Directional) continue;
 
 		// Create the depth texture of what the camera sees -- but only once
 		if (pass == 0)
@@ -104,9 +104,7 @@ void OSDrawForward::OnDraw()
 
 		// Draw the shadows and associate the shadow texture with the shadowmap
 		{
-			const Vector3f& range = mCam->GetAbsoluteRange();
-			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), light->mDir,
-				imvp, mDepthTexture, range.x, range.y) );
+			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), light.mDir, imvp, mDepthTexture) );
 		}
 
 		// Draw the scene normally but with a shadow texture created above
@@ -124,7 +122,7 @@ void OSDrawForward::OnDraw()
 
 			// Activate the light and the depth offset
 			mGraphics->SetDepthOffset(pass == 0 ? 0 : 1);
-			mGraphics->SetActiveLight(0, light);
+			mGraphics->SetActiveLight(0, &light);
 
 			// Draw the scene with the shadowed technique
 			mScene.DrawWithTechnique(mShadowed, pass == 0, false);
@@ -144,12 +142,12 @@ void OSDrawForward::OnDraw()
 
 		FOREACH(i, lights)
 		{
-			ILight* light = lights[i].mLight;
+			const ILight& light = lights[i].mLight->GetProperties();
 
-			if (!light->mShadows)
+			if (!light.mShadows)
 			{
 				if (index == 0) mScene.ActivateMatrices();
-				mGraphics->SetActiveLight(index++, lights[i].mLight);
+				mGraphics->SetActiveLight(index++, &light);
 			}
 		}
 

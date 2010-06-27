@@ -10,9 +10,8 @@
 static const char* g_ssaoBlur = {
 "uniform sampler2D	R5_texture0;\n"		// Depth texture
 "uniform sampler2D	R5_texture1;\n"		// AO texture
-"uniform vec2		R5_pixelSize;\n"
 "uniform vec4		R5_clipRange;\n"
-"uniform vec2		properties;\n"		// X = focus range, Y = power
+"uniform vec2		threshold;\n"		// X = pixel size threshold, Y = depth variance threshold
 
 // Get the distance to the specified texture coordinate
 "float GetDistance (in vec2 texCoord)\n"
@@ -25,7 +24,7 @@ static const char* g_ssaoBlur = {
 "float GetFactor (in float origin, in vec2 texCoord)\n"
 "{\n"
 "	float dist = GetDistance(texCoord);\n"
-"	dist = (origin - dist) / properties.x;\n"
+"	dist = (origin - dist) / threshold.y;\n"
 "	return min(abs(dist), 1.0);\n"
 "}\n"
 
@@ -48,9 +47,9 @@ static const char* g_ssaoBlurV = {
 
 "	float dist = GetDistance(tc);\n"
 
-"	float o1 = R5_pixelSize.y * 1.5;\n"
-"	float o2 = R5_pixelSize.y * 3.5;\n"
-"	float o3 = R5_pixelSize.y * 5.5;\n"
+"	float o1 = threshold.x * 1.5;\n"
+"	float o2 = threshold.x * 3.5;\n"
+"	float o3 = threshold.x * 5.5;\n"
 
 "	float ao = texture2D(R5_texture1, tc).r;\n"
 
@@ -75,9 +74,9 @@ static const char* g_ssaoBlurH = {
 
 "	float dist = GetDistance(tc);\n"
 
-"	float o1 = R5_pixelSize.y * 1.5;\n"
-"	float o2 = R5_pixelSize.y * 3.5;\n"
-"	float o3 = R5_pixelSize.y * 5.5;\n"
+"	float o1 = threshold.x * 1.5;\n"
+"	float o2 = threshold.x * 3.5;\n"
+"	float o3 = threshold.x * 5.5;\n"
 
 "	float ao = texture2D(R5_texture1, tc).r;\n"
 

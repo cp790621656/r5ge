@@ -94,6 +94,8 @@ void Core::Init()
 
 	// Root of the scene needs to know who owns it
 	mRoot.mCore = this;
+	mRoot.mGraphics = mGraphics;
+	mRoot.SetName("Root");
 
 	// All keys start as inactive
 	memset(mIsKeyDown, 0, sizeof(bool) * 256);

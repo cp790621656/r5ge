@@ -43,6 +43,7 @@ protected:
 	Object*		mParent;			// Object's parent
 	void*		mSubParent;			// Optional abstract sub-parent the object belongs to (such as a QuadTree node)
 	Core*		mCore;				// Engine's core that the object was created with
+	IGraphics*	mGraphics;			// Graphics manager, cached for convenience
 	byte		mLayer;				// Draw layer on which this object resides
 
 	Vector3f	mLastPos;			// Saved last relative position (used for velocity)
@@ -121,7 +122,9 @@ private:
 	// INTERNAL: Use templates instead of these functions
 	Object*			_AddObject	(const String& type, const String& name);
 	const Object*	_FindObject	(const String& name, bool recursive = true, bool threadSafe = true) const;
+	Script*			_AddScript	(const char* type);
 	Script*			_AddScript	(const String& type);
+	const Script*	_GetScript	(const char* type) const;
 	const Script*	_GetScript	(const String& type) const;
 
 	// INTERNAL: Use the AddObject<> template instead
@@ -157,10 +160,10 @@ public:
 	void Unlock()	const	{ mLock.Unlock(); }
 
 	// Retrieves the Core that was ultimately owns this object
-	inline Core* GetCore() { return mCore; }
+	Core* GetCore() { return mCore; }
 
 	// Convenience functionality
-	IGraphics* GetGraphics();
+	IGraphics* GetGraphics() { return mGraphics; }
 
 	// Returns whether the object is currently visible
 	bool IsVisible() const { return mFlags.Get(Flag::Visible) && (mParent == 0 && mParent->IsVisible()); }
@@ -251,7 +254,7 @@ public:
 	void Fill (FillParams& params);
 
 	// Draws the object with the specified technique
-	uint Draw (const Deferred::Storage& storage, uint group, const ITechnique* tech);
+	uint Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut);
 
 	// Cast a ray into space and fill the list with objects that it intersected with
 	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe = true);
@@ -313,7 +316,7 @@ protected:
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in
 	// OnFill. It should return the number of triangles rendered.
-	virtual uint OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech) { mIgnore.Set(Ignore::Draw, true); return 0; }
+	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut) { mIgnore.Set(Ignore::Draw, true); return 0; }
 
 	// Called when the object is being raycast into -- should return 'false' if children were already considered
 	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);

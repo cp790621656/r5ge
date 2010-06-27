@@ -17,14 +17,7 @@ void SetShadowOffset (const String& name, Uniform& uniform) { uniform = g_shadow
 
 //============================================================================================================
 
-Vector4f g_depthRange;
-
-void SetDepthRange (const String& name, Uniform& uniform) { uniform = g_depthRange; }
-
-//============================================================================================================
-
 DirectionalShadow::DirectionalShadow() :
-	mCore				(0),
 	mGraphics			(0),
 	mTextureSize		(2048),
 	mBlurPasses			(1),
@@ -34,16 +27,23 @@ DirectionalShadow::DirectionalShadow() :
 	mBlurTarget1		(0),
 	mLightDepthTex		(0),
 	mShadowTex			(0),
-	mBlurTex0			(0) {}
+	mBlurTex0			(0),
+	mShadow				(0),
+	mBlurH				(0),
+	mBlurV				(0),
+	mPost				(0) {}
 
 //============================================================================================================
 // Initialization
 //============================================================================================================
 
-void DirectionalShadow::Initialize (Core* core)
+void DirectionalShadow::Initialize (IGraphics* graphics)
 {
-	mCore = core;
-	mGraphics = core->GetGraphics();
+	mGraphics = graphics;
+
+	mBlurH	= graphics->GetShader("[R5] Horizontal Depth-Respecting Blur");
+	mBlurV	= graphics->GetShader("[R5] Vertical Depth-Respecting Blur");
+	mPost	= mGraphics->GetTechnique("Post Process");
 }
 
 //============================================================================================================
@@ -117,7 +117,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 	// Set up a temporary scene
 	static Scene tempScene;
 	tempScene.SetRoot(root);
-	tempScene.SetRenderTarget(mLightDepthTarget);
+	tempScene.SetFinalTarget(mLightDepthTarget);
 
 	// Light's rotation
 	Quaternion rot (dir);
@@ -179,14 +179,12 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 {
 	if (camDepth != 0)
 	{
-		static IShader* shader = 0;
-
 		// Shader that will be used to create the screen-space shadow
-		if (shader == 0)
+		if (mShadow == 0)
 		{
-			shader = mGraphics->GetShader("Other/Shadow");
-			shader->RegisterUniform("shadowMatrix", SetShadowMatrix);
-			shader->RegisterUniform("shadowOffset", SetShadowOffset);
+			mShadow = mGraphics->GetShader("[R5] Shadow");
+			mShadow->RegisterUniform("shadowMatrix", SetShadowMatrix);
+			mShadow->RegisterUniform("shadowOffset", SetShadowOffset);
 		}
 
 		// Render target that will be used to create the shadow
@@ -202,14 +200,12 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 		// The shadow texture should have the same dimensions as the depth texture
 		mShadowTarget->SetSize(camDepth->GetSize());
 
-		static const ITechnique* technique = mGraphics->GetTechnique("Post Process");
-
 		// Draw a full screen quad with the shader active, creating a full screen shadow texture
 		mGraphics->SetActiveRenderTarget(mShadowTarget);
 		mGraphics->SetScreenProjection(true);
-		mGraphics->SetActiveTechnique(technique);
+		mGraphics->SetActiveTechnique(mPost);
 		mGraphics->SetActiveMaterial(0);
-		mGraphics->SetActiveShader(shader);
+		mGraphics->SetActiveShader(mShadow);
 		mGraphics->SetActiveTexture(0, camDepth);
 		mGraphics->SetActiveTexture(1, mLightDepthTex);
 		mGraphics->Clear();
@@ -221,12 +217,8 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 // Blur the shadow, creating a soft outline
 //============================================================================================================
 
-void DirectionalShadow::BlurShadows (const ITexture* camDepth, float near, float far)
+void DirectionalShadow::BlurShadows (const ITexture* camDepth)
 {
-	static IShader*	blurH = mGraphics->GetShader("Other/blurShadowH");
-	static IShader* blurV = mGraphics->GetShader("Other/blurShadowV");
-	static const ITechnique* technique = mGraphics->GetTechnique("Post Process");
-
 	if (mBlurTarget0 == 0)
 	{
 		mBlurTex0 = mGraphics->CreateRenderTexture();
@@ -236,13 +228,7 @@ void DirectionalShadow::BlurShadows (const ITexture* camDepth, float near, float
 
 		mBlurTarget1 = mGraphics->CreateRenderTarget();
 		mBlurTarget1->AttachColorTexture(0, mShadowTex, mShadowTex->GetFormat());
-
-		blurH->RegisterUniform("depthRange", SetDepthRange);
-		blurV->RegisterUniform("depthRange", SetDepthRange);
 	}
-
-	// Update the depth range used by the shaders above
-	g_depthRange.Set(near, far, near * far, far - near);
 
 	// Use the same size as the shadow texture
 	Vector2i size (mShadowTex->GetSize());
@@ -251,21 +237,23 @@ void DirectionalShadow::BlurShadows (const ITexture* camDepth, float near, float
 
 	// Camera's depth texture needs to be on texture channel 1
 	mGraphics->SetScreenProjection(true);
-	mGraphics->SetActiveTechnique(technique);
+	mGraphics->SetActiveTechnique(mPost);
 	mGraphics->SetActiveMaterial(0);
-	mGraphics->SetActiveTexture(1, camDepth);
+	mGraphics->SetActiveTexture(0, camDepth);
 
 	// Blur the shadow texture using Gaussian blur
 	for (uint i = 0; i < mBlurPasses; ++i)
 	{
 		mGraphics->SetActiveRenderTarget(mBlurTarget0);
-		mGraphics->SetActiveShader(blurH);
-		mGraphics->SetActiveTexture(0, mShadowTex);
+		mGraphics->SetActiveShader(mBlurH);
+		if (i == 0) mBlurH->SetUniform("threshold", Vector2f(1.0f / 1920.0f, 40.0f / 1920.0f));
+		mGraphics->SetActiveTexture(1, mShadowTex);
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 
 		mGraphics->SetActiveRenderTarget(mBlurTarget1);
-		mGraphics->SetActiveShader(blurV);
-		mGraphics->SetActiveTexture(0, mBlurTex0);
+		mGraphics->SetActiveShader(mBlurV);
+		if (i == 0) mBlurV->SetUniform("threshold", Vector2f(1.0f / 1200.0f, 40.0f / 1200.0f));
+		mGraphics->SetActiveTexture(1, mBlurTex0);
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 	}
 }
@@ -274,8 +262,7 @@ void DirectionalShadow::BlurShadows (const ITexture* camDepth, float near, float
 // Draw the shadow
 //============================================================================================================
 
-ITexture* DirectionalShadow::Draw (Object* root, const Vector3f& dir, const Matrix44& imvp,
-								   const ITexture* depth, float near, float far)
+ITexture* DirectionalShadow::Draw (Object* root, const Vector3f& dir, const Matrix44& imvp, const ITexture* depth)
 {
 	// Draw the depth from the light's perspective
 	DrawLightDepth(root, dir, imvp);
@@ -284,7 +271,7 @@ ITexture* DirectionalShadow::Draw (Object* root, const Vector3f& dir, const Matr
 	DrawShadows(depth);
 
 	// Blur the shadow texture
-	if (mBlurPasses > 0) BlurShadows(depth, near, far);
+	if (mBlurPasses > 0) BlurShadows(depth);
 
 	// Shadow texture is the final result
 	return mShadowTex;

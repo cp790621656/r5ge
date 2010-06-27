@@ -36,7 +36,7 @@ bool Billboard::OnFill (FillParams& params)
 // Draw the billboard
 //============================================================================================================
 
-uint Billboard::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
+uint Billboard::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 	Matrix43 mat (graphics->GetViewMatrix());
@@ -74,7 +74,6 @@ void Billboard::DrawBillboard()
 	IGraphics* graphics = mCore->GetGraphics();
 	graphics->SetADT();
 	graphics->SetActiveShader(0);
-	graphics->SetActiveColor(mColor);
 	graphics->SetActiveMaterial(mTex);
 
 	// Set the buffers
@@ -86,6 +85,7 @@ void Billboard::DrawBillboard()
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,  0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, (Vector2f*)texcoords );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,	 (Vector2f*)vertices );
+	graphics->SetActiveColor(mColor);
 
 	// Draw the glow
 	graphics->DrawVertices (IGraphics::Primitive::Quad, 4);

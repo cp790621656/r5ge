@@ -86,7 +86,8 @@ Root
 
 			Script = "OSDrawDeferred"
 			{
-				SSAO = 1
+				AO Quality = 1
+				AO Blur Passes = 2
 			}
 		}
 

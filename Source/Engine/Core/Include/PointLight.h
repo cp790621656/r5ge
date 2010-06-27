@@ -7,7 +7,7 @@
 // Object point light
 //============================================================================================================
 
-class PointLight : public Object
+class PointLight : public LightSource
 {
 protected:
 
@@ -17,7 +17,8 @@ protected:
 	float		mBrightness;	// Light's brighness
 	float		mRange;			// Range of the light
 	float		mPower;			// Attenuation power
-	Light		mLight;			// Outgoing parameters
+	IShader*	mShader0;
+	IShader*	mShader1;
 
 	PointLight();
 
@@ -29,9 +30,6 @@ public:
 
 	// Object creation
 	R5_DECLARE_INHERITED_CLASS("Point Light", PointLight, Object, Object);
-
-	// Callback that draws point lights
-	static void _Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap);
 
 	const Color3f&	GetAmbient()	const { return mAmbient;	}
 	const Color3f&	GetDiffuse()	const { return mDiffuse;	}
@@ -54,6 +52,9 @@ protected:
 
 	// Fill the renderable object and visible light lists
 	virtual bool OnFill (FillParams& params);
+
+	// Draw the point light
+	virtual void OnDrawLight (TemporaryStorage& storage, bool setStates);
 
 protected:
 

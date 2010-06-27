@@ -22,5 +22,5 @@ struct DrawLayer
 	void Add (Object* obj, uint mask, uint group, float distSquared);
 
 	// Draw the scene
-	uint Draw (const Deferred::Storage& storage, const ITechnique* tech);
+	uint Draw (TemporaryStorage& storage, const ITechnique* tech, bool insideOut);
 };

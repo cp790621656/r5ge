@@ -126,6 +126,7 @@ Object* Object::_AddObject (const String& type, const String& name)
 			ptr->SetName(name);
 			ptr->mParent = this;
 			ptr->mIsDirty = true;
+			ptr->mGraphics = mCore->GetGraphics();
 			mChildren.Expand() = ptr;
 
 			// Inform the listeners that a new child has been added
@@ -175,6 +176,45 @@ const Object* Object::_FindObject (const String& name, bool recursive, bool thre
 // INTERNAL: Adds a script of specified type (or returns an existing one).
 //============================================================================================================
 
+Script* Object::_AddScript (const char* type)
+{
+	static bool doOnce = true;
+
+	if (doOnce)
+	{
+		doOnce = false;
+		RegisterDefaultScripts();
+	}
+
+	Script* ptr (0);
+
+	FOREACH(i, mScripts)
+	{
+		Script* script = mScripts[i];
+
+		if ( script != 0 && script->IsOfClass(type) )
+		{
+			ptr = script;
+			break;
+		}
+	}
+
+	if (ptr == 0)
+	{
+		ptr = Script::_Create(type);
+
+		if (ptr != 0)
+		{
+			ptr->mObject = this;
+			mScripts.Expand() = ptr;
+			ptr->OnInit();
+		}
+	}
+	return ptr;
+}
+
+//============================================================================================================
+
 Script* Object::_AddScript (const String& type)
 {
 	static bool doOnce = true;
@@ -191,7 +231,7 @@ Script* Object::_AddScript (const String& type)
 	{
 		Script* script = mScripts[i];
 
-		if ( script != 0 && type == script->GetClassID() )
+		if ( script != 0 && script->IsOfClass(type) )
 		{
 			ptr = script;
 			break;
@@ -216,6 +256,25 @@ Script* Object::_AddScript (const String& type)
 // INTERNAL: Retrieves a script of specified type
 //============================================================================================================
 
+const Script* Object::_GetScript (const char* type) const
+{
+	const Script* ptr (0);
+
+	FOREACH(i, mScripts)
+	{
+		const Script* script = mScripts[i];
+
+		if ( script != 0 && script->IsOfClass(type))
+		{
+			ptr = script;
+			break;
+		}
+	}
+	return ptr;
+}
+
+//============================================================================================================
+
 const Script* Object::_GetScript (const String& type) const
 {
 	const Script* ptr (0);
@@ -224,7 +283,7 @@ const Script* Object::_GetScript (const String& type) const
 	{
 		const Script* script = mScripts[i];
 
-		if ( script != 0 && type == script->GetClassID() )
+		if ( script != 0 && script->IsOfClass(type))
 		{
 			ptr = script;
 			break;
@@ -476,15 +535,6 @@ void Object::Release (bool threadSafe)
 		}
 	}
 	if (threadSafe) Unlock();
-}
-
-//============================================================================================================
-// Convenience functionality
-//============================================================================================================
-
-IGraphics* Object::GetGraphics()
-{
-	return (mCore != 0) ? mCore->GetGraphics() : 0;
 }
 
 //============================================================================================================
@@ -773,7 +823,7 @@ void Object::Fill (FillParams& params)
 
 				if (mShowOutline)
 				{
-					static ITechnique* wireframe = mCore->GetGraphics()->GetTechnique("Wireframe");
+					ITechnique* wireframe = GetGraphics()->GetTechnique("Wireframe");
 					params.mDrawQueue.Add(mLayer, this, wireframe->GetMask(), 0, 0.0f);
 				}
 			}
@@ -786,22 +836,21 @@ void Object::Fill (FillParams& params)
 // Draws the object with the specified technique
 //============================================================================================================
 
-uint Object::Draw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
+uint Object::Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	uint result (0);
 
 	if (!mIgnore.Get(Ignore::Draw))
 	{
-		result += OnDraw(storage, group, tech);
+		result += OnDraw(storage, group, tech, insideOut);
 	}
 
 	// Debugging functionality
 	if (mShowOutline && group == 0)
 	{
-		static IGraphics*  graphics  = mCore->GetGraphics();
-		static ITechnique* wireframe = graphics->GetTechnique("Wireframe");
+		IGraphics* graphics = mCore->GetGraphics();
 
-		if (tech == wireframe)
+		if (tech->GetName() == "Wireframe")
 		{
 			result += _DrawOutline(graphics, tech);
 		}

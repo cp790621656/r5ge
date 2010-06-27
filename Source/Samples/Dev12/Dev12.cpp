@@ -93,7 +93,7 @@ void TestApp::Run()
 			rt->SetBackgroundColor( Color4f(0, 0, 0, 0) );
 			rt->SetSize( Vector2i(300, 200) );
 
-			OSDrawForward* draw = g_offscreenCam->GetScript<OSDrawForward>();
+			OSDraw* draw = g_offscreenCam->GetScript<OSDraw>();
 			draw->SetRenderTarget(rt);
 		}
 

@@ -667,6 +667,22 @@ bool GLShader::IsUsingSubShader (const ISubShader* sub) const
 }
 
 //============================================================================================================
+// Returns whether the shader is in a usable state
+//============================================================================================================
+
+bool GLShader::IsValid() const
+{
+	if (!mAdded.IsValid()) return false;
+
+	FOREACH(i, mAdded)
+	{
+		ISubShader* sub = mAdded[i];
+		if (!sub->IsValid()) return false;
+	}
+	return true;
+}
+
+//============================================================================================================
 // Force-updates the value of the specified uniform
 //============================================================================================================
 

@@ -90,6 +90,7 @@ private:
 	// Allow the controller class to access private members for simplicity's sake
 	friend class GLController;
 
+	bool		mInst;	// Whether instancing is enabled
 	bool		mIs2D;	// Overriding 2D projection mode
 	bool		mReset;	// Manual matrix reset, used by 2D mode
 	Vector2i	mSize;	// Viewport size
@@ -104,7 +105,7 @@ private:
 
 public:
 
-	GLTransform() : mIs2D(false), mReset(false) {}
+	GLTransform() : mInst(false), mIs2D(false), mReset(false) {}
 
 	// Activates or deactivates 2D mode
 	void Set2DMode (bool active);

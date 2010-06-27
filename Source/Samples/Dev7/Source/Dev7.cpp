@@ -60,7 +60,7 @@ void TestApp::OnDraw()
 	mGraphics->SetScreenProjection( false );
 	mGraphics->Draw( IGraphics::Drawable::Grid );
 
-	mScene.DrawAllForward(false);
+	mScene.DrawWithTechnique("Particle", false, false);
 
 	static Object* place = mScene.FindObject<Object>("Stage");
 	if (place != 0) place->SetRelativeRotation( Quaternion(0.0f, 0.0f, Time::GetTime()) );

@@ -91,8 +91,8 @@ void TestApp::GenerateTerrain()
 	Array<Color4ub> colorMap;
 
 	// Generate the terrain heightMap
-	//IMaterial* mat = GenerateMountains(heightMap, normalMap, colorMap, finalSize);
-	IMaterial* mat = GenerateTest(heightMap, normalMap, colorMap, finalSize);
+	IMaterial* mat = GenerateMountains(heightMap, normalMap, colorMap, finalSize);
+	//IMaterial* mat = GenerateTest(heightMap, normalMap, colorMap, finalSize);
 
 	// Create the height map
 	Terrain::Heightmap hm (heightMap.GetBuffer(), finalSize, finalSize);

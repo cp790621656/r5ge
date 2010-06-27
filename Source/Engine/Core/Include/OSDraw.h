@@ -24,8 +24,11 @@ public:
 
 	Scene& GetScene() { return mScene; }
 
-	void SetRenderTarget (IRenderTarget* target) { mScene.SetRenderTarget(target); }
+	// Convenience functionality
+	void SetRenderTarget (IRenderTarget* target) { mScene.SetFinalTarget(target); }
+	IRenderTarget* GetRenderTarget() { mScene.GetFinalTarget(); }
 
+	// Virtual functionality
 	virtual void OnInit();
 	virtual void OnDestroy();
 	virtual void OnDraw()=0;

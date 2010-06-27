@@ -101,7 +101,7 @@ bool ModelInstance::OnFill (FillParams& params)
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint ModelInstance::OnDraw (const Deferred::Storage& storage, uint group, const ITechnique* tech)
+uint ModelInstance::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

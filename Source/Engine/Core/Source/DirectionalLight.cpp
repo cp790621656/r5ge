@@ -9,20 +9,12 @@ DirectionalLight::DirectionalLight() :
 	mAmbient	(0.0f),
 	mDiffuse	(1.0f),
 	mSpecular	(1.0f),
-	mBrightness	(1.0f)
+	mBrightness	(1.0f),
+	mShader0	(0),
+	mShader1	(0)
 {
-	mLight.mType = Light::Type::Directional;
-	mLight.mSubtype = HashKey(ClassID());
-
+	mProperties.mType = ILight::Type::Directional;
 	_UpdateColors();
-
-	static bool doOnce = true;
-
-	if (doOnce)
-	{
-		doOnce = false;
-		Light::Register<DirectionalLight>();
-	}
 }
 
 //============================================================================================================
@@ -31,35 +23,9 @@ DirectionalLight::DirectionalLight() :
 
 void DirectionalLight::_UpdateColors()
 {
-	mLight.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
-	mLight.mDiffuse  = Color4f(mDiffuse  * mBrightness, 1.0f);
-	mLight.mSpecular = Color4f(mSpecular * mBrightness, 1.0f);
-}
-
-//============================================================================================================
-// Add all directional light contribution
-//============================================================================================================
-
-void DirectionalLight::_Draw (IGraphics* graphics, const Light::List& lights, const ITexture* lightmap)
-{
-	static IShader* dirShader0	 = graphics->GetShader("[R5] Directional Light");
-	static IShader* dirShader1	 = graphics->GetShader("[R5] Light/DirectionalAO");
-
-	IShader* shader = (lightmap != 0) ? dirShader1 : dirShader0;
-
-	// No depth test as directional light has no volume
-	graphics->SetActiveTexture(2, lightmap);
-	graphics->SetDepthTest(false);
-	graphics->SetScreenProjection( true );
-	graphics->ResetModelViewMatrix();
-	graphics->SetActiveShader(shader);
-
-	// Run through all directional lights
-	for (uint i = 0; i < lights.GetSize(); ++i)
-	{
-		graphics->SetActiveLight(0, lights[i].mLight);
-		graphics->Draw( IGraphics::Drawable::InvertedQuad );
-	}
+	mProperties.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
+	mProperties.mDiffuse  = Color4f(mDiffuse  * mBrightness, 1.0f);
+	mProperties.mSpecular = Color4f(mSpecular * mBrightness, 1.0f);
 }
 
 //============================================================================================================
@@ -70,8 +36,8 @@ void DirectionalLight::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mLight.mPos = mAbsolutePos;
-		mLight.mDir = mAbsoluteRot.GetForward();
+		mProperties.mPos = mAbsolutePos;
+		mProperties.mDir = mAbsoluteRot.GetForward();
 	}
 }
 
@@ -81,11 +47,41 @@ void DirectionalLight::OnUpdate()
 
 bool DirectionalLight::OnFill (FillParams& params)
 {
-	if (mLight.mDiffuse.IsVisibleRGB() || mLight.mAmbient.IsVisibleRGB())
+	if (mProperties.mDiffuse.IsVisibleRGB() || mProperties.mAmbient.IsVisibleRGB())
 	{
-		params.mDrawQueue.Add(&mLight);
+		params.mDrawQueue.Add(this);
 	}
 	return true;
+}
+
+//============================================================================================================
+// Draw the light
+//============================================================================================================
+
+void DirectionalLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
+{
+	// Activate the proper states
+	if (setStates)
+	{
+		if (mShader0 == 0)
+		{
+			mShader0 = mGraphics->GetShader("[R5] Directional Light");
+			mShader1 = mGraphics->GetShader("[R5] Light/DirectionalAO");
+		}
+
+		IShader* shader = (storage.GetAO() == 0) ? mShader0 : mShader1;
+
+		// No depth test as directional light has no volume
+		mGraphics->SetActiveTexture(2, storage.GetAO());
+		mGraphics->SetDepthTest(false);
+		mGraphics->SetScreenProjection(true);
+		mGraphics->ResetModelViewMatrix();
+		mGraphics->SetActiveShader(shader);
+	}
+
+	// Draw the light
+	mGraphics->SetActiveLight(0, &mProperties);
+	mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 }
 
 //============================================================================================================
@@ -104,7 +100,7 @@ bool DirectionalLight::OnSerializeFrom (const TreeNode& node)
 	else if ( tag == "Diffuse" 		&&  value >> color	) SetDiffuse(color);
 	else if ( tag == "Specular"		&&  value >> color	) SetSpecular(color);
 	else if ( tag == "Brightness"	&&  value >> f		) SetBrightness(f);
-	else if ( tag == "Shadows")			value >> mLight.mShadows;
+	else if ( tag == "Shadows")			value >> mProperties.mShadows;
 	else return false;
 	return true;
 }
@@ -119,5 +115,5 @@ void DirectionalLight::OnSerializeTo (TreeNode& node) const
 	node.AddChild("Diffuse",	mDiffuse);
 	node.AddChild("Specular",	mSpecular);
 	node.AddChild("Brightness", mBrightness);
-	node.AddChild("Shadows",	mLight.mShadows);
+	node.AddChild("Shadows",	mProperties.mShadows);
 }
