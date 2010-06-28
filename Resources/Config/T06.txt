@@ -35,7 +35,11 @@ Root
 			Scale = 1.000000
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 16.000000 30.000000
+
 			Script = "OSDrawForward"
+			{
+				Grid = true
+			}
 
 			Directional Light = "First Light"
 			{

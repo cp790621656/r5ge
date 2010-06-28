@@ -577,6 +577,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetLighting(Lighting::None);
 		SetBlending(Blending::None);
 		SetActiveMaterial((const IMaterial*)0);
+		SetActiveVertexAttribute( Attribute::Color, 0, 0, 0, 0, 0 );
 
 		ResetModelMatrix();
 		ResetViewMatrix();

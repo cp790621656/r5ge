@@ -15,8 +15,9 @@ protected:
 	IGraphics*		mGraphics;
 	OSSceneRoot*	mRoot;
 	Scene			mScene;
+	bool			mGrid;
 
-	OSDraw() : mCore(0), mGraphics(0), mRoot(0) {}
+	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mGrid(false) {}
 
 public:
 
@@ -28,8 +29,16 @@ public:
 	void SetRenderTarget (IRenderTarget* target) { mScene.SetFinalTarget(target); }
 	IRenderTarget* GetRenderTarget() { mScene.GetFinalTarget(); }
 
+	// For debugging purposes it should be possible to display a simple grid at the origin
+	void SetShowGrid (bool val) { mGrid = val; }
+	bool IsShowinGrid() const { return mGrid; }
+
 	// Virtual functionality
 	virtual void OnInit();
 	virtual void OnDestroy();
 	virtual void OnDraw()=0;
+
+	// Serialization
+	virtual void OnSerializeTo	 (TreeNode& root) const;
+	virtual void OnSerializeFrom (const TreeNode& node);
 };

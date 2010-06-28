@@ -280,6 +280,11 @@ void OSDrawDeferred::PostProcessStage()
 	// Add forward rendering
 	mGraphics->ResetModelViewMatrix();
 	mGraphics->SetScreenProjection(false);
+
+	// Draw the grid if requested
+	if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
+
+	// Draw all objects with forward rendering techniques
 	mScene.DrawWithTechniques(mForward, false, true);
 	IRenderTarget* target = mScene.GetFinalTarget();
 
@@ -329,6 +334,7 @@ void OSDrawDeferred::OnDraw()
 
 void OSDrawDeferred::OnSerializeTo (TreeNode& root) const
 {
+	OSDraw::OnSerializeTo(root);
 	root.AddChild("Bloom",			mBloom);
 	root.AddChild("Focal Range",	mFocalRange);
 	root.AddChild("AO Quality",		mAOQuality);
@@ -347,4 +353,5 @@ void OSDrawDeferred::OnSerializeFrom (const TreeNode& node)
 	else if (node.mTag == "AO Quality")		node.mValue >> mAOQuality;
 	else if (node.mTag == "AO Blur Passes")	node.mValue >> mAOPasses;
 	else if (node.mTag == "AO Parameters")	node.mValue >> mAOParams;
+	else OSDraw::OnSerializeFrom(node);
 }

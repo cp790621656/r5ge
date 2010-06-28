@@ -3,18 +3,13 @@ using namespace R5;
 
 //============================================================================================================
 
-ModelViewer::ModelViewer() : mCam(0), mModel(0), mInst(0), mAnimate(false), mSbLabel(0), mTimestamp(0), mResetCamera(0)
+ModelViewer::ModelViewer() : mScene(0), mDraw(0), mCam(0), mModel(0), mInst(0),
+	mAnimate(false), mSbLabel(0), mTimestamp(0), mResetCamera(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
-
-	// Event listeners
-	mCore->AddOnDraw	 ( bind(&ModelViewer::OnDraw,		this) );
-	mCore->AddOnKey		 ( bind(&ModelViewer::OnKeyPress,	this) );
-	mCore->AddOnMouseMove( bind(&ModelViewer::OnMouseMove,	this) );
-	mCore->AddOnScroll	 ( bind(&ModelViewer::OnScroll,		this) );
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	// Framerate update function
 	mCore->AddOnPostUpdate( bind(&ModelViewer::UpdateFPS, this) );
@@ -40,10 +35,18 @@ void ModelViewer::Run()
 	{
 		FOREACH(i, root.mChildren) SerializeFrom(root.mChildren[i]);
 
-		mCam			= mScene.FindObject<DebugCamera>	("Default Camera");
-		mLight			= mScene.FindObject<Light>			("Default Light");
-		mStage			= mScene.FindObject<Object>			("Stage");
-		mInst			= mScene.FindObject<ModelInstance>	("Default Instance");
+		// Event listeners
+		mCore->AddOnKey		 ( bind(&ModelViewer::OnKeyPress,	this) );
+		mCore->AddOnMouseMove( bind(&ModelViewer::OnMouseMove,	this) );
+		mCore->AddOnScroll	 ( bind(&ModelViewer::OnScroll,		this) );
+		mCore->AddOnDraw	 ( bind(&ModelViewer::OnDraw,		this) );
+
+		Object* rootObj = mCore->GetRoot();
+
+		mCam			= rootObj->FindObject<DebugCamera>	("Default Camera");
+		mLight			= rootObj->FindObject<Light>		("Default Light");
+		mStage			= rootObj->FindObject<Object>		("Stage");
+		mInst			= rootObj->FindObject<ModelInstance>("Default Instance");
 		mSbHighlight	= mUI->FindWidget<UIHighlight>		("Status Highlight");
 		mSbLabel		= mUI->FindWidget<UILabel>			("Status Label");
 
@@ -52,6 +55,11 @@ void ModelViewer::Run()
 
 		// If something wasn't found, just exit
 		if (mCam == 0 || mLight == 0 || mStage == 0 || mInst == 0 || mModel == 0 || !CreateUI()) return;
+
+		// Deferred drawing
+		mDraw  = mCam->AddScript<OSDrawDeferred>();
+		mScene = &mDraw->GetScene();
+		mDraw->SetShowGrid(true);
 
 		// Display the current version
 		ShowAboutInfo();
@@ -99,9 +107,6 @@ void ModelViewer::OnDraw()
 		if (factor == 1.0f) mTimestamp = 0.0f;
 	}
 
-	// Prepare to draw the scene
-	mScene.Cull(mCam);
-
 	// If there was a request to reset the viewpoint, now should be a good time as we know what's visible
 	if (mResetCamera > 0 && mResetCamera++ > 1)
 	{
@@ -132,42 +137,6 @@ void ModelViewer::OnDraw()
 			mCam->Stop();
 			mCam->AnimateTo(center, dir, distance, 0.5f);
 		}
-	}
-
-	// Deferred rendering part
-	{
-		static Deferred::Storage::Techniques ft;
-
-		if (ft.IsEmpty())
-		{
-			ft.Expand() = mGraphics->GetTechnique("Wireframe");
-			ft.Expand() = mGraphics->GetTechnique("Glow");
-			ft.Expand() = mGraphics->GetTechnique("Glare");
-		}
-
-		// Draw the scene using the deferred approach
-		mScene.DrawAllDeferred(mParams.mSsao, 0);
-
-		// Draw the grid and all forward-rendered objects last
-		mGraphics->SetScreenProjection(false);
-		mGraphics->SetActiveTechnique(ft[0]);
-		mGraphics->Draw( IGraphics::Drawable::Grid );
-
-		// Draw the scene using the forward rendering approach, adding glow and glare effects
-		mScene.DrawWithTechniques(ft, false);
-	}
-
-	// Post-processing part
-	if (mParams.mBloom)
-	{
-		// Apply a post-processing effect
-		PostProcess::Bloom(mGraphics, mScene.GetDeferredStorage(), mParams.mThreshold);
-		//PostProcess::DepthOfField(mGraphics, result.mColor, result.mDepth, 15.0f, 5.0f, 15.0f);
-	}
-	else
-	{
-		// Don't apply any effects -- simply draw this texture directly to the screen
-		PostProcess::None(mGraphics, mScene.GetDeferredStorage());
 	}
 }
 

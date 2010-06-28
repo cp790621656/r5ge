@@ -32,7 +32,6 @@ public:
 	TestApp();
 	~TestApp();
 	void Run();
-	void OnDraw();
 };
 
 //============================================================================================================
@@ -63,16 +62,15 @@ void TestApp::Run()
 	// file was created by simply saving the previous tutorial with the opposite call (>>), and then
 	// adding the OSDrawForward script to the debug camera. You could also add this script to the
 	// camera manually via code like so: mCam->AddScript<OSDrawForward>();
-	// We will cover scripts in greater detail in a later tutorial.
+
+	// We will cover scripts in greater detail in a later tutorial, but for now all you have to know is this:
+	// with a draw script attached to the camera the scene will be drawn using all default techniques
+	// associated with that particular process. In this case we're using forward rendering. Since we don't
+	// actually have any objects in the scene at this point, we set "Grid = true" property on OSDrawForward,
+	// which can used for debugging purposes -- and is rather self-explanatory.
 
 	if (*mCore << "Config/T02.txt")
 	{
-		// Add a custom draw function that will be triggered at the end of the draw process:
-		// the OSDraw-based scripts register their callbacks with priority of 10000, which means that
-		// they will be called prior to this one.
-
-		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
-
 		// Enter the message processing loop
 		while (mCore->Update());
 
@@ -80,19 +78,6 @@ void TestApp::Run()
 		// make persistent. The next time you start up this application the camera will be where you left it.
 		//*mCore >> "Config/T02.txt";
 	}
-}
-
-//============================================================================================================
-// In the OnDraw we no longer have to cull or clear the scene manually as that's done by the 'OSDrawForward'
-// script we've attached to the debug camera. That script will take care of clearing the screen and drawing
-// all the scene's objects using the forward rendering approach. We still want to draw the grid after
-// everything is done though, since our scene does not yet have anything in it and it's nice to draw at
-// least something that can be seen.
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

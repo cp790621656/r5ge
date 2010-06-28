@@ -62,7 +62,7 @@ void TestApp::Run()
 	cam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
 	cam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
 	cam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
-	cam->AddScript<OSDrawForward>();
+	cam->AddScript<OSDrawForward>()->SetShowGrid(true);
 
 	// Let's attach a directional light source to the camera just so that we can see the scene.
 	DirectionalLight* light = cam->AddObject<DirectionalLight>("First Light");

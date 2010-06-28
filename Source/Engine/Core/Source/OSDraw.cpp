@@ -29,3 +29,21 @@ void OSDraw::OnDestroy()
 {
 	mCore->RemoveOnDraw( bind(&OSDraw::OnDraw, this) );
 }
+
+//============================================================================================================
+// Serialization -- Save
+//============================================================================================================
+
+void OSDraw::OnSerializeTo (TreeNode& root) const
+{
+	if (mGrid) root.AddChild("Grid", mGrid);
+}
+
+//============================================================================================================
+// Serialization -- Load
+//============================================================================================================
+
+void OSDraw::OnSerializeFrom (const TreeNode& node)
+{
+	if (node.mTag == "Grid") node.mValue >> mGrid;
+}

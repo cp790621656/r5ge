@@ -1871,9 +1871,12 @@ void ModelViewer::OnDrawMode (UIWidget* widget, uint state, bool isSet)
 	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
 
-	if		(value == "Deferred")			mParams.mSsao = 0;
-	else if (value == "Low Quality SSAO")	mParams.mSsao = 1;
-	else if (value == "High Quality SSAO")	mParams.mSsao = 2;
+	if (mDraw != 0)
+	{
+		if		(value == "Deferred")			mDraw->SetAOQuality(0);
+		else if (value == "Low Quality SSAO")	mDraw->SetAOQuality(1);
+		else if (value == "High Quality SSAO")	mDraw->SetAOQuality(2);
+	}
 }
 
 //============================================================================================================
@@ -1907,10 +1910,13 @@ void ModelViewer::OnBackground (UIWidget* widget, uint state, bool isSet)
 
 //============================================================================================================
 
+float g_bloom = 1.0f;
+
 void ModelViewer::OnBloomToggle	(UIWidget* widget, uint state, bool isSet)
 {
 	UICheckbox* chk = (UICheckbox*)widget;
-	mParams.mBloom = ((chk->GetState() & UICheckbox::State::Checked) != 0);
+	bool bloom = ((chk->GetState() & UICheckbox::State::Checked) != 0);
+	if (mDraw != 0) mDraw->SetBloom(bloom ? g_bloom : 0.0f);
 }
 
 //============================================================================================================
@@ -1918,7 +1924,7 @@ void ModelViewer::OnBloomToggle	(UIWidget* widget, uint state, bool isSet)
 void ModelViewer::OnBloomChange	(UIWidget* widget)
 {
 	UISlider* sld = (UISlider*)widget;
-	mParams.mThreshold = sld->GetValue();
+	if (mDraw != 0) mDraw->SetBloom(g_bloom = sld->GetValue());
 }
 
 //============================================================================================================

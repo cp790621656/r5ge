@@ -181,8 +181,12 @@ void OSDrawForward::OnDraw()
 			mComplete.Expand() = mGraphics->GetTechnique("Glare");
 		}
 
+		// Clear the screen and draw the grid if necessary
+		mGraphics->Clear();
+		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
+
 		// Nothing has been drawn -- draw everything
-		mScene.DrawWithTechniques(mComplete, true, true);
+		mScene.DrawWithTechniques(mComplete, false, true);
 	}
 	else
 	{
@@ -194,6 +198,9 @@ void OSDrawForward::OnDraw()
 			mAdditive.Expand() = mGraphics->GetTechnique("Glow");
 			mAdditive.Expand() = mGraphics->GetTechnique("Glare");
 		}
+
+		// Draw the grid if requested
+		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Add additive objects after everything else has been drawn
 		mScene.DrawWithTechniques(mAdditive, false, true);

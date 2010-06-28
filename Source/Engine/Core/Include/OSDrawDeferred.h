@@ -53,8 +53,8 @@ public:
 	void SetFocalRange (const Vector3f& range) { mFocalRange = range; }
 
 	// Screen-space ambient occlusion level (0 = off, 1 = low, 2 = high)
-	byte GetSSAO() const { return (byte)mAOQuality; }
-	void SetSSAO (byte val) { mAOQuality = val; }
+	uint GetAOQuality() const { return mAOQuality; }
+	void SetAOQuality (uint val) { mAOQuality = val; }
 
 	// Number of blur passes for SSAO
 	uint GetAOBlurPasses() const { return mAOPasses; }

@@ -29,7 +29,6 @@ public:
 	TestApp();
 	~TestApp();
 	void Run();
-	void OnDraw();
 	void CreateWindow();
 	void OnSliderChange(UIWidget* widget);
 };
@@ -66,23 +65,11 @@ void TestApp::Run()
 		// Create a simple UI window via code
 		CreateWindow();
 
-		// Add our custom grid-drawing callback
-		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
-
 		// Enter the message processing loop
 		while (mCore->Update());
 
 		//*mCore >> "Config/T03.txt";
 	}
-}
-
-//============================================================================================================
-// The OnDraw function hasn't changed since the previous tutorial
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

@@ -13,29 +13,19 @@ class ModelViewer
 	typedef DirectionalLight Light;
 	typedef IMaterial::DrawMethod DrawMethod;
 
-	struct DrawParams
-	{
-		bool	mGrid;
-		bool	mBloom;
-		uint	mSsao;
-		float	mThreshold;
-
-		DrawParams() : mGrid(true), mBloom(false), mSsao(0), mThreshold(0.75f) {}
-	};
-
 public:
 
 	IWindow*		mWin;
 	IGraphics*		mGraphics;
 	UIManager*		mUI;
 	Core*			mCore;
-	Scene			mScene;
+	Scene*			mScene;
+	OSDrawDeferred*	mDraw;
 	DebugCamera*	mCam;
 	Light*			mLight;
 	Object*			mStage;
 	ModelInstance*	mInst;
 	Model*			mModel;
-	DrawParams		mParams;
 	bool			mAnimate;
 	UIHighlight*	mSbHighlight;
 	UILabel*		mSbLabel;

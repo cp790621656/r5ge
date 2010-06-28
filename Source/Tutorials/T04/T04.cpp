@@ -82,7 +82,6 @@ public:
 	TestApp();
 	~TestApp();
 	void Run();
-	void OnDraw();
 };
 
 //============================================================================================================
@@ -122,23 +121,11 @@ void TestApp::Run()
 
 	if ((*mCore << "Config/T04.txt") && (*mCore << "Config/Default UI Skin.txt"))
 	{
-		// Register our custom grid-drawing function
-		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
-
 		// Enter the message processing loop
 		while (mCore->Update());
 
 		//*mCore >> "Config/T04.txt";
 	}
-}
-
-//============================================================================================================
-// The OnDraw function hasn't changed
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================
