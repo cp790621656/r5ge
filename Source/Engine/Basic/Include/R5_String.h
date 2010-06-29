@@ -100,6 +100,7 @@ public:
 	bool			IsEmpty()		const	{ return (mLength == 0) || (mLarge == 0 ? (mSmall[0] == 0) : (mLarge[0] == 0)); }
 	bool			IsInt()			const;
 	bool			IsFloat()		const;
+	uint			GetSize()		const	{ return mLength; } // For the FOREACH macro
 	uint			GetLength()		const	{ return mLength; }
 	uint			GetAllocated()	const	{ return mAllocated; }
 	char&			Expand()				{ Resize(mLength + 1); char* buff = GetBuffer() + mLength; *buff = 0; return *(buff - 1); }

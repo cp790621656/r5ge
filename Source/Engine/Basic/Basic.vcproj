@@ -174,6 +174,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\R5_FileDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\R5_Hash.cpp"
 				>
 			</File>
@@ -225,6 +229,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\R5_Defines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\R5_FileDialog.h"
 				>
 			</File>
 			<File

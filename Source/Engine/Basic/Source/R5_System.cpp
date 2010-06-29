@@ -2,8 +2,10 @@
 
 #ifdef _WINDOWS
   #include <direct.h>
+  #include <windows.h>
 #else
   #include <unistd.h>
+  #include <dirent.h>
   #define _chdir chdir
 #endif
 
@@ -215,4 +217,59 @@ String System::GetExtensionFromFilename (const String& in)
 		}
 	}
 	return "";
+}
+
+//============================================================================================================
+// Reads the contents of the specified folder, populating file and folder lists
+//============================================================================================================
+
+bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String>& files)
+{
+	String file;
+
+#ifdef _WINDOWS
+	WIN32_FIND_DATA info;
+	void* fileHandle = FindFirstFile((dir + "/*.*").GetBuffer(), &info);
+
+	if (fileHandle != INVALID_HANDLE_VALUE)
+	{
+		do 
+		{
+			file = info.cFileName;
+
+			if (!file.BeginsWith("."))
+			{
+				if ((info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
+				{
+					folders.Expand() = file;
+				}
+				else
+				{
+					files.Expand() = file;
+				}
+			}
+		}
+		while (FindNextFile(fileHandle, &info));
+	}
+
+#else
+	DIR* dp = opendir(dir.GetBuffer());
+	if (dp == 0) return false;
+	struct dirent* dirp = 0;
+
+	while ((dirp = readdir(dp)) != 0)
+	{
+		if (dirp->d_type == DT_DIR)
+		{
+			folders.Expand() = dirp->d_name;
+			if (folders.Back().BeginsWith(".")) folders.Shrink();
+		}
+		else
+		{
+			files.Expand() = dirp->d_name;
+		}
+	}
+    closedir(dp);
+#endif
+    return true;
 }
