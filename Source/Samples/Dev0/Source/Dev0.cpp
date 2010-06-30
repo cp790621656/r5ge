@@ -19,44 +19,49 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath(path.GetBuffer());
 	System::SetCurrentPath("../../../");
 #endif
-	System::SetCurrentPath("../../../Resources/");
-
+	TreeNode root;
 	Array<String> folders;
 	Array<String> files;
 
-	System::ReadFolder(".", folders, files);
+	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.0\n");
 
-	folders.Sort();
-	files.Sort();
-
-	FOREACH(i, folders)
+	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
 	{
-		printf("[%s]\n", folders[i].GetBuffer());
-	}
+		String command, url, path;
 
-	FOREACH(i, files)
+		FOREACH(i, root.mChildren)
+		{
+			const TreeNode& node = root.mChildren[i];
+			url = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
+			if (url.IsEmpty()) continue;
+
+			path = node.mTag;
+			if (!path.EndsWith("/")) path << "/";
+
+			if (!System::ReadFolder(path + ".svn", folders, files))
+			{
+				printf("\nChecking out %s\n\n", path.GetBuffer());
+				command = "svn checkout """;
+				command << url;
+				command << """ """;
+				command << path;
+				command << """";
+			}
+			else
+			{
+				printf("\nUpdating %s\n", path.GetBuffer());
+				command = "svn up """;
+				command << path;
+				command << """";
+			}
+			System::Execute(command.GetBuffer());
+		}
+	}
+	else
 	{
-		printf("%s\n", files[i].GetBuffer());
+		System::Execute("svn up");
 	}
-
-	FileDialog dlg;
-	dlg.AddFilter("R5 Ascii", "r5a");
-	dlg.AddFilter("R5 Binary", "r5b");
-	dlg.AddFilter("R5 Compressed", "r5c");
-	dlg.AddFilter("Test", "r5a|*.r5b");
-	dlg.AddFilter("All", "*");
-
-	if (dlg.Show("Open", true))
-	{
-		printf("Result: [%s]\n", dlg.GetFilename().GetBuffer());
-	}
-
-	if (dlg.Show("Save as...", false))
-	{
-		printf("Result: [%s]\n", dlg.GetFilename().GetBuffer());
-	}
-
-	printf("Done!\n");
+	printf("\nDone!\n");
 	getchar();
 	return 0;
 }

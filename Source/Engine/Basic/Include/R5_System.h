@@ -21,6 +21,7 @@ namespace System
 	};
 
 	uint	GetOS();											// Returns the current operating system
+	int		Execute					(const char* command);		// Executes the specified command via shell
 	bool	SetCurrentPath			(const char* path);			// _chdir()
 	void	Log						(const char* format, ...);	// Dumps a string into the log file
 	void	FlushLog();											// Flush the log file, saving out the contents

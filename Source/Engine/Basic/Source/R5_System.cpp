@@ -6,6 +6,7 @@
 #else
   #include <unistd.h>
   #include <dirent.h>
+  #include <stdlib.h>
   #define _chdir chdir
 #endif
 
@@ -50,6 +51,12 @@ uint System::GetOS() { return System::OS::Linux; }
 #else
 uint System::GetOS() { return System::OS::Unknown; }
 #endif
+
+//============================================================================================================
+// Executes the specified command via shell
+//============================================================================================================
+
+int System::Execute (const char* command) { return ::system(command); }
 
 //============================================================================================================
 // Changes the local working directory
@@ -230,27 +237,25 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 #ifdef _WINDOWS
 	WIN32_FIND_DATA info;
 	void* fileHandle = FindFirstFile((dir + "/*.*").GetBuffer(), &info);
+	if (fileHandle == INVALID_HANDLE_VALUE) return false;
 
-	if (fileHandle != INVALID_HANDLE_VALUE)
+	do 
 	{
-		do 
-		{
-			file = info.cFileName;
+		file = info.cFileName;
 
-			if (!file.BeginsWith("."))
+		if (!file.BeginsWith("."))
+		{
+			if ((info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
 			{
-				if ((info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
-				{
-					folders.Expand() = file;
-				}
-				else
-				{
-					files.Expand() = file;
-				}
+				folders.Expand() = file;
+			}
+			else
+			{
+				files.Expand() = file;
 			}
 		}
-		while (FindNextFile(fileHandle, &info));
 	}
+	while (FindNextFile(fileHandle, &info));
 
 #else
 	DIR* dp = opendir(dir.GetBuffer());
