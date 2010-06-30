@@ -23,7 +23,7 @@ int main (int argc, char* argv[])
 	Array<String> folders;
 	Array<String> files;
 
-	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.0\n");
+	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.1\n");
 
 	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
 	{

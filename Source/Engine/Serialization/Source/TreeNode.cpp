@@ -19,7 +19,7 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 		{
 			uint phraseEnd = from;
 			uint lastChar = from;
-			bool inQuotes = (ch == '"');
+			bool inQuotes = false;
 
 			// Find where this phrase ends
 			while (phraseEnd < to)
@@ -33,6 +33,10 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 				}
 				else
 				{
+					// Keep track of whether we're inside quoted strings or not
+					if (ch == '"') inQuotes = !inQuotes;
+
+					// Only process characters while we are not in quotes
 					if (!inQuotes)
 					{
 						// If we found a comment, the rest of the line should be ignored
@@ -44,13 +48,10 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 							}
 							break;
 						}
+
+						// If it's an end-of-phrase character, stop
+						if (ch < ' ' || ch == '=' || ch > '~' || ch == '{' || ch == '}') break;
 					}
-
-					// Keep track of whether we're in quotes or not
-					if (ch == '"') inQuotes = !inQuotes;
-
-					// If it's an end-of-phrase character, stop
-					if (ch < ' ' || ch == '=' || ch > '~' || ch == '{' || ch == '}') break;
 
 					// Remember the last valid character
 					lastChar = phraseEnd;
