@@ -5,7 +5,7 @@
 //											www.nextrevision.com
 //============================================================================================================
 
-template <typename T> struct Array;
+template <typename T> class Array;
 
 namespace System
 {

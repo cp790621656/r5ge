@@ -101,7 +101,6 @@ bool CheckDepthOnlyAttachmentSupport()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, 1, 1, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
-	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_GL_ERROR;
 	
@@ -110,8 +109,9 @@ bool CheckDepthOnlyAttachmentSupport()
 	if (fbo == 0) return false;
 	
 	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fbo);
-	
 	glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, tex, 0);
+
+	glDrawBuffer(GL_NONE);
 	
 	bool retVal = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
 	
@@ -144,8 +144,10 @@ bool CheckAlphaAttachmentSupport()
 	if (fbo == 0) return false;
 
 	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fbo);
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex, 0);
+
+	uint buffers[] = { GL_COLOR_ATTACHMENT0_EXT };
+	glDrawBuffers(1, buffers);
 
 	bool retVal = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
 
@@ -185,9 +187,11 @@ bool CheckMixedAttachmentSupport()
 	if (fbo == 0) return false;
 
 	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fbo);
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex0, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D, tex1, 0);
+
+	uint buffers[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT };
+	glDrawBuffers(2, buffers);
 
 	bool retVal = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
 
