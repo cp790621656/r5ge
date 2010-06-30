@@ -731,6 +731,7 @@ void GLGraphics::DeleteVBO (const IVBO* ptr)
 		{
 			if (mVbos[i] == ptr)
 			{
+				mVbos[i]->Release();
 				delete mVbos[i];
 				mVbos[i] = 0;
 				break;
@@ -754,6 +755,7 @@ void GLGraphics::DeleteTexture (const ITexture* ptr)
 		{
 			if (mTempTex[i] == ptr)
 			{
+				mTempTex[i]->Release();
 				mTempTex.DeleteAt(i);
 				mTempTex.Unlock();
 				return;
@@ -768,6 +770,7 @@ void GLGraphics::DeleteTexture (const ITexture* ptr)
 		{
 			if (mTextures[i] == ptr)
 			{
+				mTempTex[i]->Release();
 				mTextures.DeleteAt(i);
 				mTextures.Unlock();
 				return;
@@ -791,6 +794,7 @@ void GLGraphics::DeleteRenderTarget (const IRenderTarget* ptr)
 		{
 			if ( mFbos[i] == ptr )
 			{
+				mFbos[i]->Release();
 				mFbos.DeleteAt(i);
 				break;
 			}

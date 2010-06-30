@@ -28,6 +28,7 @@ protected:
 	Vector2i			mSize;
 	ITexture*			mDepthTex;
 	ITexture*			mStencilTex;
+	ITexture*			mDummyTex;
 	Array<TextureEntry> mAttachments;
 	mutable Array<uint>	mBuffers;
 	Color4f				mBackground;

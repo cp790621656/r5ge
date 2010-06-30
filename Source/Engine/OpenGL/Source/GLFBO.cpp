@@ -73,6 +73,7 @@ GLFBO::GLFBO(IGraphics* graphics) :
 	mFbo		(0),
 	mDepthTex	(0),
 	mStencilTex	(0),
+	mDummyTex	(0),
 	mUsesSkybox	(true),
 	mIsDirty	(true)
 {
@@ -89,6 +90,12 @@ void GLFBO::_InternalRelease (bool delayExecution)
 {
 	mAttachments.Clear();
 
+	if (mDummyTex != 0)
+	{
+		mGraphics->DeleteTexture(mDummyTex);
+		mDummyTex = 0;
+	}
+	
 	if (mFbo != 0)
 	{
 		if (delayExecution)
@@ -327,7 +334,10 @@ void GLFBO::Activate() const
 		// for Mac OSX. The FBO simply fails to complete. Solution? Create a dummy color texture.
 		
 		if (!HasColor() && (mDepthTex != 0) && !mGraphics->GetDeviceInfo().mDepthAttachments)
-			((GLFBO*)this)->AttachColorTexture(0, mGraphics->CreateRenderTexture(), ITexture::Format::Alpha);
+		{
+			if (mDummyTex == 0) ((GLFBO*)this)->mDummyTex = mGraphics->CreateRenderTexture();
+			((GLFBO*)this)->AttachColorTexture(0, mDummyTex, ITexture::Format::Alpha);
+		}
 		
 		mLock.Lock();
 		{
