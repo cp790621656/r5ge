@@ -385,7 +385,7 @@ SysWindow::~SysWindow()
 void SysWindow::SetTitle (const String& title)
 {
 	mTitle = title;
-	if (mWin != nil) [mWin setTitle: [NSString stringWithCString:title.GetBuffer()]];
+	if (mWin != nil) [mWin setTitle: [NSString stringWithUTF8String:title.GetBuffer()]];
 }
 
 //============================================================================================================
@@ -577,7 +577,7 @@ bool SysWindow::Create (const String&	title,
 									defer:					NO];
 
 		[mWin setContentView:mView];
-		[mWin setTitle:[NSString stringWithCString:title.GetBuffer()]];
+		[mWin setTitle:[NSString stringWithUTF8String:title.GetBuffer()]];
 		[mWin makeKeyAndOrderFront:nil];
 		[mWin setAcceptsMouseMovedEvents:YES];
 		[mWin setReleasedWhenClosed:YES];
@@ -728,7 +728,7 @@ void SysWindow::SetClipboardText (const String& text)
 {
 	NSPasteboard*	pb		= [NSPasteboard generalPasteboard];
 	NSArray*		types	= [NSArray arrayWithObjects:NSStringPboardType, nil];
-	NSString*		nsText	= [NSString stringWithCString:text.GetBuffer()];
+	NSString*		nsText	= [NSString stringWithUTF8String:text.GetBuffer()];
 
 	[pb declareTypes:types owner:nil];
 	[pb setString:nsText forType:NSStringPboardType];

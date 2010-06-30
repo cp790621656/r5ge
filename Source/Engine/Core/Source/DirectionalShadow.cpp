@@ -111,8 +111,10 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 
 		// Light target's depth texture doesn't change
 		mLightDepthTarget->AttachDepthTexture(mLightDepthTex);
-		mLightDepthTarget->SetSize( Vector2i(mTextureSize, mTextureSize) );
 	}
+
+	// Update the shadowmap size
+	mLightDepthTarget->SetSize( Vector2i(mTextureSize, mTextureSize) );
 
 	// Set up a temporary scene
 	static Scene tempScene;
@@ -281,9 +283,8 @@ ITexture* DirectionalShadow::Draw (Object* root, const Vector3f& dir, const Matr
 // Serialization -- Save
 //============================================================================================================
 
-void DirectionalShadow::SerializeTo (TreeNode& root) const
+void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 {
-	TreeNode& node = root.AddChild("Shadows");
 	node.AddChild("Texture Size", mTextureSize);
 	node.AddChild("Blur Passes", mBlurPasses);
 }
@@ -292,12 +293,8 @@ void DirectionalShadow::SerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-void DirectionalShadow::SerializeFrom (const TreeNode& root)
+void DirectionalShadow::OnSerializeFrom (const TreeNode& node)
 {
-	FOREACH(i, root.mChildren)
-	{
-		const TreeNode& node = root.mChildren[i];
-		if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
-		else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
-	}
+	if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
+	else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
 }

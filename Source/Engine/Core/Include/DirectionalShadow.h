@@ -53,6 +53,6 @@ public:
 		const ITexture* depth);	// Camera's depth
 
 	// Serialization
-	void SerializeTo (TreeNode& node) const;
-	void SerializeFrom (const TreeNode& node);
+	void OnSerializeTo (TreeNode& node) const;
+	void OnSerializeFrom (const TreeNode& node);
 };

@@ -11,11 +11,12 @@ class OSDraw : public Script
 {
 protected:
 
-	Core*			mCore;
-	IGraphics*		mGraphics;
-	OSSceneRoot*	mRoot;
-	Scene			mScene;
-	bool			mGrid;
+	Core*				mCore;
+	IGraphics*			mGraphics;
+	OSSceneRoot*		mRoot;
+	Scene				mScene;
+	DirectionalShadow	mShadow;
+	bool				mGrid;
 
 	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mGrid(false) {}
 
@@ -27,7 +28,7 @@ public:
 
 	// Convenience functionality
 	void SetRenderTarget (IRenderTarget* target) { mScene.SetFinalTarget(target); }
-	IRenderTarget* GetRenderTarget() { mScene.GetFinalTarget(); }
+	IRenderTarget* GetRenderTarget() { return mScene.GetFinalTarget(); }
 
 	// For debugging purposes it should be possible to display a simple grid at the origin
 	void SetShowGrid (bool val) { mGrid = val; }

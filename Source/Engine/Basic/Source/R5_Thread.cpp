@@ -172,7 +172,7 @@ void Thread::MessageWindow(const char *format, ...)
 
 bool Thread::AssertWindow( const char* description, int line, const char* filename, bool& keepChecking )
 {
-	char* format = "File: '%s'\nLine: %u\n\n%s\n\nBreak into code?";
+	const char* format = "File: '%s'\nLine: %u\n\n%s\n\nBreak into code?";
 	char text[1024];
 	
 	sprintf(text, format, filename, line, description);
@@ -221,15 +221,15 @@ inline Thread::ValType InterlockedCompareExchange (volatile Thread::ValType* ptr
 	//				   : "=a" (prev)
 	//				   : "q" (set), "m" (*ptr), "0" (cmp)
 	//				   : "memory");
-	return prev;
+	//return prev;
 }
 
 //------------------------------------------------------------------------------------------------------------
 
-void Thread::Increment	(ValType& val)		{ __sync_add_and_fetch( &val, 1 ); }
-void Thread::Decrement	(ValType& val)		{ __sync_sub_and_fetch( &val, 1 ); }
-void Thread::WaitFor	(ValType& val)		{ while (::InterlockedCompareExchange(&val, 1, 0)) ::usleep(0); }
-void Thread::Sleep		(ulong ms)	{ ::usleep(ms * 1000UL); }
+void Thread::Increment	(ValType& val)	{ __sync_add_and_fetch( &val, 1 ); }
+void Thread::Decrement	(ValType& val)	{ __sync_sub_and_fetch( &val, 1 ); }
+void Thread::WaitFor	(ValType& val)	{ while (::InterlockedCompareExchange(&val, 1, 0)) ::usleep(0); }
+void Thread::Sleep		(ulong ms)		{ ::usleep(ms * 1000UL); }
 
 //------------------------------------------------------------------------------------------------------------
 

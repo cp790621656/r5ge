@@ -115,5 +115,4 @@ void DirectionalLight::OnSerializeTo (TreeNode& node) const
 	node.AddChild("Diffuse",	mDiffuse);
 	node.AddChild("Specular",	mSpecular);
 	node.AddChild("Brightness", mBrightness);
-	node.AddChild("Shadows",	mProperties.mShadows);
 }

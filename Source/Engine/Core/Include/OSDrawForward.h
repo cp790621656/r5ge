@@ -17,7 +17,6 @@ protected:
 	IRenderTarget*		mDepthTarget;
 	ITechnique*			mOpaque;
 	ITechnique*			mShadowed;
-	DirectionalShadow	mShadow;
 
 	Array<const ITechnique*> mComplete;
 	Array<const ITechnique*> mAdditive;

@@ -132,9 +132,6 @@ void PointLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 		mGraphics->SetActiveTexture(2, storage.GetAO());
 		mGraphics->SetScreenProjection(false);
 
-		float nearClip = mGraphics->GetCameraRange().x;
-		const Vector3f& camPos = mGraphics->GetCameraPosition();
-
 		if (!vbo->IsValid())
 		{
 			Array<Vector3f> vertices;

@@ -5,6 +5,8 @@
 //											www.nextrevision.com
 //============================================================================================================
 
+template <typename T> struct Array;
+
 namespace System
 {
 	struct OS

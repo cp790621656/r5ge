@@ -89,6 +89,40 @@ bool CheckExtension(const char* extension, bool essential = true)
 }
 
 //===============================================================================================================
+// Check for depth texture-only attachment support
+//===============================================================================================================
+
+bool CheckDepthOnlyAttachmentSupport()
+{
+	uint tex (0);
+	
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, 1, 1, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	CHECK_GL_ERROR;
+	
+	uint fbo = 0;
+	glGenFramebuffers(1, &fbo);
+	if (fbo == 0) return false;
+	
+	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fbo);
+	
+	glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, tex, 0);
+	
+	bool retVal = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
+	
+	glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+	glDeleteRenderbuffers(1, &fbo);
+	glDeleteTextures(1, &tex);
+	
+	return retVal;
+}
+
+//===============================================================================================================
 // Check for alpha format frame buffer attachment support
 //===============================================================================================================
 
@@ -98,6 +132,8 @@ bool CheckAlphaAttachmentSupport()
 
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -131,10 +167,14 @@ bool CheckMixedAttachmentSupport()
 
 	glGenTextures(1, &tex0);
 	glBindTexture(GL_TEXTURE_2D, tex0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 	glGenTextures(1, &tex1);
 	glBindTexture(GL_TEXTURE_2D, tex1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -233,6 +273,7 @@ bool InitOpenGL (float requiredVersion)
 
 						if (g_caps.mDrawBuffers)
 						{
+							g_caps.mDepthAttachments = CheckDepthOnlyAttachmentSupport();
 							g_caps.mAlphaAttachments = CheckAlphaAttachmentSupport();
 							g_caps.mMixedAttachments = CheckMixedAttachmentSupport();
 						}
@@ -276,7 +317,8 @@ bool InitOpenGL (float requiredVersion)
 			System::Log("          - Texture Coordinates:   %u", g_caps.mMaxTextureCoords);
 			System::Log("          - Hardware Lights:       %u", g_caps.mMaxLights);
 			System::Log("          - FBO Attachments:       %u", g_caps.mMaxFBOAttachments);
-			System::Log("          - FBO Alpha Formats:     %s", g_caps.mAlphaAttachments ? "Supported" : "Not supported");
+			System::Log("          - FBO Depth Attachments: %s", g_caps.mDepthAttachments ? "Supported" : "Not supported");
+			System::Log("          - FBO Alpha Attachments: %s", g_caps.mAlphaAttachments ? "Supported" : "Not supported");
 			System::Log("          - FBO Mixed Formats:     %s", g_caps.mMixedAttachments ? "Supported" : "Not supported");
 			System::Log("          - FBO Packed Stencil:    %s", g_caps.mDepthStencil ? "Supported" : "Not supported");
 		}

@@ -12,43 +12,41 @@ uint g_activeBuffer = 0;
 // Function that checks whether the FBO is marked as ready
 //============================================================================================================
 
-bool IsFBOComplete (bool displayError = true)
+const char* CheckFBO()
 {
 	// Check the frame buffer's status
 	uint result = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
 	if (result != GL_FRAMEBUFFER_COMPLETE_EXT)
 	{
-		if (displayError)
+		switch (result)
 		{
-			const char* message = "Unknown";
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+			return "Not all framebuffer attachments are in a complete state";
 
-			switch (result)
-			{
-			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-				message = "Not all framebuffer attachments are in a complete state";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-				message = "No attachments were associated with the frame buffer";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-				message = "Not all attachments have identical width and height";
-				break;
-			case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-				message = "The requested combination of attachments is not supported on your hardware";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-				message = "Missing a call to 'glDrawBuffers'";
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-				message = "Format mismatch";
-				break;
-			}
-			ASSERT(false, message);
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+			return "No attachments were associated with the frame buffer";
+
+		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+			return "Not all attachments have identical width and height";
+
+		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+			return "The requested combination of attachments is not supported on your hardware";
+
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+			return "Missing a call to 'glDrawBuffers'";
+
+		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+			return "Format mismatch";
+
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+			return "Incomplete read buffer. Did you attach a depth with no color? (Mac issue)";
+		
+		default:
+			return "Unknown CheckFBO() error";
 		}
-		return false;
 	}
-	return true;
+	return 0;
 }
 
 //============================================================================================================
@@ -325,11 +323,17 @@ void GLFBO::Activate() const
 	// NOTE: Supposedly some ATI drivers have issues if FBO textures are not rebound every frame...
 	if (mIsDirty)
 	{
+		// NOTE: Depth with no color texture causes an issue with some drivers, such as NVidia drivers
+		// for Mac OSX. The FBO simply fails to complete. Solution? Create a dummy color texture.
+		
+		if (!HasColor() && (mDepthTex != 0) && !mGraphics->GetDeviceInfo().mDepthAttachments)
+			((GLFBO*)this)->AttachColorTexture(0, mGraphics->CreateRenderTexture(), ITexture::Format::Alpha);
+		
 		mLock.Lock();
 		{
 			mIsDirty = false;
 			mBuffers.Clear();
-			
+
 			// Clear mask is passed to glClear()
 			uint clearMask = 0;
 
@@ -406,7 +410,7 @@ void GLFBO::Activate() const
 				ASSERT(	mDepthTex->GetFormat() == ITexture::Format::Invalid ||
 						mDepthTex->GetFormat() == depthFormat,
 						"Changing depth attachment's format type... is this intentional?");
-
+				
 				if (mDepthTex->GetSize() != mSize || mDepthTex->GetFormat() != depthFormat)
 				{
 					clearMask |= GL_DEPTH_BUFFER_BIT;
@@ -459,8 +463,10 @@ void GLFBO::Activate() const
 				glDrawBuffer(GL_NONE);
 				CHECK_GL_ERROR;
 			}
+			
+			const char* msg = CheckFBO();
 
-			if (IsFBOComplete())
+			if (msg == 0)
 			{
 				// Since textures were reset, everything should be cleared -- just in case.
 				// Not doing so causes some very odd artifacts -- took me a day to track this down.
@@ -480,6 +486,46 @@ void GLFBO::Activate() const
 				System::Log("          - Stencil: %u/1", (stencilFormat != ITexture::Format::Invalid) ? 1 : 0);
 #endif
 			}
+			else
+			{
+				String error;
+				error << "Error: ";
+				error << msg;
+				error << "\n\n";
+				error << "Attachments:\n";
+
+				if (mDepthTex != 0)
+				{
+					error << "Depth: ";
+					error << ITexture::FormatToString(mDepthTex->GetFormat());
+					error << " - ";
+					error << ITexture::FilterToString(mDepthTex->GetFiltering());
+					error << " - ";
+					error << ITexture::WrapModeToString(mDepthTex->GetWrapMode());
+					error << "\n";
+				}
+				
+				FOREACH(i, mAttachments)
+				{
+					ITexture* tex = mAttachments[i].mTex;
+					
+					if (tex != 0)
+					{
+						error << "Color ";
+						error << i;
+						error << ": ";
+						error << ITexture::FormatToString(tex->GetFormat());
+						error << " - ";
+						error << ITexture::FilterToString(tex->GetFiltering());
+						error << " - ";
+						error << ITexture::WrapModeToString(tex->GetWrapMode());
+						error << "\n";
+					}
+				}
+
+				ASSERT(false, error.GetBuffer());
+			}
+
 		}
 		mLock.Unlock();
 	}

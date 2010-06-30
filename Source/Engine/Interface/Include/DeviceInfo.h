@@ -28,8 +28,9 @@ struct DeviceInfo
 	bool	mDrawBuffers;				// Support for multiple color-out attachments for Frame Buffer Objects
 	bool	mDepthStencil;				// Support for Depth24-Stencil8 textures and buffers
 	bool	mDXTCompression;			// Support for DXT compression
-	bool	mMixedAttachments;			// Support for mixed format FBO color attachments
+	bool	mDepthAttachments;			// Support for depth-only attachments for FBOs
 	bool	mAlphaAttachments;			// Support for alpha textures assigned to FBO as color attachments
+	bool	mMixedAttachments;			// Support for mixed format FBO color attachments
 	bool	mOcclusion;					// Support for occlusion queries
 	bool	mShaders;					// Support for GLSL shaders
 	bool	mGeometryShaders;			// Support for geometry shaders (GeForce 8+)
@@ -55,6 +56,7 @@ struct DeviceInfo
 		mDrawBuffers			(false),
 		mDepthStencil			(false),
 		mDXTCompression			(false),
+		mDepthAttachments		(false),
 		mAlphaAttachments		(false),
 		mMixedAttachments		(false),
 		mOcclusion				(false),

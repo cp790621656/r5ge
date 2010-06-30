@@ -42,8 +42,9 @@ namespace R5
 {
 	#include "R5_Flags.h"			// A very simple embeddable flag class
 	#include "R5_Time.h"			// Time tracking
-	#include "R5_Thread.h"			// Multithreading related functions
 	#include "R5_String.h"			// High performance string class
+	#include "R5_System.h"			// System-specific functions
+	#include "R5_Thread.h"			// Multithreading related functions
 	#include "R5_Memory.h"			// Basic memory buffer
 	#include "R5_BaseArray.h"		// Unfinished array template used by Array and PointerArray
 	#include "R5_Array.h"			// Highly optimized dynamic array template, std::vector replacement
@@ -53,7 +54,6 @@ namespace R5
 	#include "R5_Hash.h"			// uint-based hash template
 	#include "R5_PointerHash.h"		// Hash meant to store pointers -- automatically deletes them
 	#include "R5_Keys.h"			// Key map
-	#include "R5_System.h"			// System-specific functions
 	#include "R5_Random.h"			// Cross-platform pseudo-random number generator
 	#include "R5_FileDialog.h"		// File dialog window (implemented natively on each system)
 };

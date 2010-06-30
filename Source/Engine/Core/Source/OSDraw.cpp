@@ -17,6 +17,9 @@ void OSDraw::OnInit()
 	// Set the root of the scene
 	mScene.SetRoot(mRoot->GetOwner());
 
+	// Initialize the shadow class
+	mShadow.Initialize(mGraphics);
+	
 	// Add the draw callback to a high priority so that it's drawn before the default (1000) callbacks
 	mCore->AddOnDraw( bind(&OSDraw::OnDraw, this), 10000 );
 }
@@ -28,15 +31,17 @@ void OSDraw::OnInit()
 void OSDraw::OnDestroy()
 {
 	mCore->RemoveOnDraw( bind(&OSDraw::OnDraw, this) );
+	mShadow.Release();
 }
 
 //============================================================================================================
 // Serialization -- Save
 //============================================================================================================
 
-void OSDraw::OnSerializeTo (TreeNode& root) const
+void OSDraw::OnSerializeTo (TreeNode& node) const
 {
-	if (mGrid) root.AddChild("Grid", mGrid);
+	if (mGrid) node.AddChild("Grid", mGrid);
+	mShadow.OnSerializeTo(node.AddChild("Shadowmap"));
 }
 
 //============================================================================================================
@@ -45,5 +50,15 @@ void OSDraw::OnSerializeTo (TreeNode& root) const
 
 void OSDraw::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == "Grid") node.mValue >> mGrid;
+	if (node.mTag == "Grid")
+	{
+		node.mValue >> mGrid;
+	}
+	else if (node.mTag == "Shadowmap")
+	{
+		FOREACH(i, node.mChildren)
+		{
+			mShadow.OnSerializeFrom(node.mChildren[i]);
+		}
+	}
 }

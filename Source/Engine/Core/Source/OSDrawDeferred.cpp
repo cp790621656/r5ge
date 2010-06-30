@@ -286,7 +286,6 @@ void OSDrawDeferred::PostProcessStage()
 
 	// Draw all objects with forward rendering techniques
 	mScene.DrawWithTechniques(mForward, false, true);
-	IRenderTarget* target = mScene.GetFinalTarget();
 
 	// Apply a post-processing effect
 	if (mBloom != 0.0f && mFocalRange)	mPostProcess.Both(mScene, mBloom, mFocalRange);

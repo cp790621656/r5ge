@@ -107,7 +107,7 @@ void System::Log(const char *format, ...)
 			ulong remMIN	= totalMIN % 60;
 			ulong totalHRS	= totalMIN / 60;
 			
-			fprintf(g_file, "[%3d.%02d.%02d.%03d]: ", totalHRS, remMIN, remSEC, remMS);
+			fprintf(g_file, "[%3u.%02u.%02u.%03u]: ", (uint)totalHRS, (uint)remMIN, (uint)remSEC, (uint)remMS);
 			fputs(text, g_file);
 			fputc('\n', g_file);
 

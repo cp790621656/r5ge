@@ -17,7 +17,6 @@ void OSDrawForward::OnInit()
 	else
 	{
 		OSDraw::OnInit();
-		mShadow.Initialize(mGraphics);
 
 		mShadowmap	= mGraphics->GetTexture("R5_Shadowmap");
 		mOpaque		= mGraphics->GetTechnique("Opaque");
@@ -31,7 +30,6 @@ void OSDrawForward::OnInit()
 
 void OSDrawForward::OnDestroy()
 {
-	mShadow.Release();
 	OSDraw::OnDestroy();
 
 	if (mDepthTarget != 0)
@@ -81,7 +79,7 @@ void OSDrawForward::OnDraw()
 			// Create the depth texture target
 			if (mDepthTarget == 0)
 			{
-				mDepthTarget = mGraphics->CreateRenderTarget();
+				mDepthTarget  = mGraphics->CreateRenderTarget();
 				mDepthTexture = mGraphics->CreateRenderTexture();
 				mDepthTarget->AttachDepthTexture(mDepthTexture);
 			}
