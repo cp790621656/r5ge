@@ -2,7 +2,11 @@
 using namespace R5;
 
 #ifdef _WINDOWS
-#include <windows.h>
+  #include <windows.h>
+#elif defined _MACOS
+  #import <Foundation/NSString.h>
+  #import <Foundation/NSAutoreleasePool.h>
+  #import <AppKit/NSApplication.h>
 #endif
 
 //============================================================================================================
@@ -97,6 +101,43 @@ bool FileDialog::Show (const char* title, bool existingFilesOnly)
 	}
 	mFilename = szFile;
 	return true;
+}
+
+#elif defined _MACOS
+
+//============================================================================================================
+// Mac OSX
+//============================================================================================================
+
+bool FileDialog::Show (const char* title, bool existingFilesOnly)
+{
+	// Managed Obj-C should be wrapped into an auto-release pool so it doesn't leak memory
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	[NSApplication sharedApplication];
+
+	// Create the File Open Dialog class.
+	NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+
+	// Enable the selection of files in the dialog.
+	[openDlg setCanChooseFiles:YES];
+
+	// Disable the selection of directories in the dialog.
+	[openDlg setCanChooseDirectories:NO];
+
+	// Reuse the same filename
+	NSString* nsFile = [NSString stringWithUTF8String:mFilename.GetBuffer()];
+
+	// Display the dialog
+	if ( [openDlg runModalForDirectory:nil file:nsFile] == NSOKButton )
+	{
+		nsFile = [op filename];
+
+		//mFilename = [nsFile getUTF8String];
+		[pool drain];
+		return true;
+	}
+	[pool drain];
+	return false;
 }
 
 #else

@@ -154,7 +154,7 @@ void Thread::MessageWindow(const char *format, ...)
 	vsprintf(text, format, args);
 	va_end(args);
 	
-	// Managed Obj-C should be wrapped into an autorelease pool so it doesn't leak memory
+	// Managed Obj-C should be wrapped into an auto-release pool so it doesn't leak memory
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	[NSApplication sharedApplication];
 	NSString* nsText = [NSString stringWithUTF8String:text];
