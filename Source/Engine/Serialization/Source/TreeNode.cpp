@@ -2,6 +2,26 @@
 using namespace R5;
 
 //============================================================================================================
+// Skip comments, returning 'true' if a comment was skipped, 'false' otherwise
+//============================================================================================================
+
+bool SkipComment (const String& s, uint& from, uint to)
+{
+	if ((from + 1 < to) && (s[from] == '/') && (s[from+1] == '/'))
+	{
+		char ch;
+
+		for (from += 2; from < to; ++from)
+		{
+			ch = s[from];
+			if (ch == '\n' || ch == '\r') break;
+		}
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
 // Retrieves a single phrase from the string
 //============================================================================================================
 
@@ -9,8 +29,8 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 {
 	if (from < to)
 	{
-		// Skip all spaces and tabs
-		while (from < to && s[from] < 33) ++from;
+		// Skip all spaces, tabs, and comments
+		while (from < to && (s[from] < 33 || SkipComment(s, from, to))) ++from;
 
 		char ch = s[from];
 
@@ -40,14 +60,7 @@ bool GetPhrase (const String& s, uint& from, uint to, String& out)
 					if (!inQuotes)
 					{
 						// If we found a comment, the rest of the line should be ignored
-						if (ch == '/' && (phraseEnd + 1 < to) && s[phraseEnd+1] == '/')
-						{
-							for (phraseEnd += 2; phraseEnd < to; ++phraseEnd)
-							{
-								if (s[phraseEnd] < ' ') break;
-							}
-							break;
-						}
+						if (SkipComment(s, phraseEnd, to)) break;
 
 						// If it's an end-of-phrase character, stop
 						if (ch < ' ' || ch == '=' || ch > '~' || ch == '{' || ch == '}') break;
