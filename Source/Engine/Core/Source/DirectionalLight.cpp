@@ -10,8 +10,8 @@ DirectionalLight::DirectionalLight() :
 	mDiffuse	(1.0f),
 	mSpecular	(1.0f),
 	mBrightness	(1.0f),
-	mShader0	(0),
-	mShader1	(0)
+	mShader00	(0),
+	mShader01	(0)
 {
 	mProperties.mType = ILight::Type::Directional;
 	_UpdateColors();
@@ -63,16 +63,30 @@ void DirectionalLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 	// Activate the proper states
 	if (setStates)
 	{
-		if (mShader0 == 0)
+		if (mShader00 == 0)
 		{
-			mShader0 = mGraphics->GetShader("[R5] Directional Light");
-			mShader1 = mGraphics->GetShader("[R5] Light/DirectionalAO");
+			mShader00 = mGraphics->GetShader("[R5] Directional Light");
+			mShader01 = mGraphics->GetShader("[R5] Directional Light (AO)");
+			mShader10 = mGraphics->GetShader("[R5] Directional Light (Shadow)");
+			mShader11 = mGraphics->GetShader("[R5] Directional Light (Shadow + AO)");
 		}
 
-		IShader* shader = (storage.GetAO() == 0) ? mShader0 : mShader1;
+		IShader* shader = mShader00;
+
+		if (storage.GetShadow() != 0)
+		{
+			shader = (storage.GetAO() != 0) ? mShader11 : mShader10;
+		}
+		else if (storage.GetAO() != 0)
+		{
+			shader = mShader01;
+		}
 
 		// No depth test as directional light has no volume
-		mGraphics->SetActiveTexture(2, storage.GetAO());
+		mGraphics->SetActiveTexture(0, storage.GetDepth());
+		mGraphics->SetActiveTexture(1, storage.GetNormal());
+		mGraphics->SetActiveTexture(2, storage.GetShadow());
+		mGraphics->SetActiveTexture(3, storage.GetAO());
 		mGraphics->SetDepthTest(false);
 		mGraphics->SetScreenProjection(true);
 		mGraphics->ResetModelViewMatrix();

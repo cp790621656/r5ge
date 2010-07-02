@@ -54,7 +54,12 @@ Root
 			Rotation = -0.256698 0.001887 -0.007112 0.966464
 			Range = 1.000000 50.000000 90.000000
 			Dolly = 0.000000 19.752630 50.000000
-			Script = "OSDrawForward"
+
+			Script = "OSDrawDeferred"
+			{
+				AO Quality = 1
+				AO Properties = 0.5 4.0 1.0
+			}
 		}
 
 		Directional Light = "First Light"
@@ -76,14 +81,6 @@ Root
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
 			Shadows = true
-		}
-		
-		Point Light = "Third Light"
-		{
-			Position = 0 0 1
-			Diffuse = 1.0 0.0 0.0
-			Range = 1.0
-			Brightness = 2
 		}
 
 		Model Instance = "Test Scene"

@@ -15,8 +15,11 @@ protected:
 	Color3f		mDiffuse;		// Diffuse color
 	Color3f		mSpecular;		// Specular color
 	float		mBrightness;	// Light's brightness
-	IShader*	mShader0;
-	IShader*	mShader1;
+
+	IShader*	mShader00;		// No shadows or AO
+	IShader*	mShader01;		// No shadows but with AO
+	IShader*	mShader10;		// With shadows and no AO
+	IShader*	mShader11;		// With both shadows and AO
 
 	DirectionalLight();
 

@@ -359,7 +359,12 @@ void GLSubShader::_Init()
 		{
 			// Light shaders are compiled from multiple sources in order to reduce code repetition
 			bool ao = mName.Contains("AO");
-			mCode = (ao ? g_lightPrefixAO : g_lightPrefix);
+			bool shadow = mName.Contains("Shadow");
+
+			if (ao)				mCode = g_lightPrefix4;
+			else if (shadow)	mCode = g_lightPrefix3;
+			else				mCode = g_lightPrefix2;
+
 			mCode << g_lightCommon;
 
 			// Light-specific code
@@ -367,12 +372,14 @@ void GLSubShader::_Init()
 			{
 				mCode << g_lightDirectional;
 				mCode << g_lightBody;
+				if (shadow) mCode << g_lightShadow;
 				mCode << (ao ? g_lightEndDirAO : g_lightEndDir);
 			}
 			else
 			{
 				mCode << g_lightPoint;
 				mCode << g_lightBody;
+				if (shadow) mCode << g_lightShadow;
 				mCode << (ao ? g_lightEndPointAO : g_lightEndPoint);
 			}
 		}

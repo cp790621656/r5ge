@@ -101,6 +101,7 @@ Root
 			Specular = 1.0 1.0 1.0 1.0
 			Brightness = 1.000000
 			Script = "Slight Rotation"
+			//Shadows = true
 		}
 
 		Model Instance = "Test Scene"

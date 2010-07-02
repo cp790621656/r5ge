@@ -63,9 +63,9 @@ uint TestApp::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		{
 			if (mDraw != 0)
 			{
-				byte ssao = mDraw->GetSSAO() + 1;
+				byte ssao = mDraw->GetAOQuality() + 1;
 				if (ssao > 2) ssao = 0;
-				mDraw->SetSSAO(ssao);
+				mDraw->SetAOQuality(ssao);
 			}
 			return 1;
 		}

@@ -26,6 +26,7 @@ protected:
 	ITexture*	mLightDiff;
 	ITexture*	mLightSpec;
 	ITexture*	mFinal;
+	Matrix44	mIMVP;
 
 	SSAO		mSSAO;
 	PostProcess	mPostProcess;

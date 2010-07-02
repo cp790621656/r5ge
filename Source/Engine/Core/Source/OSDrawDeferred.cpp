@@ -120,9 +120,16 @@ void OSDrawDeferred::MaterialStage()
 
 void OSDrawDeferred::LightStage()
 {
+	// If we have no lights to draw, just exit
+	const DrawQueue::Lights& lights = mScene.GetVisibleLights();
+	if (lights.IsEmpty()) return;
+
 	// Create AO
 	mScene.SetAO( (mAOQuality > 0) ? mSSAO.Create(mScene, (mAOQuality > 1), mAOPasses,
 		mAOParams.x, mAOParams.y, mAOParams.z) : 0 );
+
+	// Disable all active lights except the first
+	for (uint b = lights.GetSize(); b > 1; ) mGraphics->SetActiveLight(--b, 0);
 
 	// Create the light target
 	if (mLightTarget == 0)
@@ -141,50 +148,12 @@ void OSDrawDeferred::LightStage()
 
 	// Clear the render target
 	mLightTarget->SetSize(mMaterialTarget->GetSize());
-	mGraphics->SetActiveRenderTarget(mLightTarget);
-	mGraphics->Clear(true, false, false);
-
-	// If we have no lights to draw, just exit
-	const DrawQueue::Lights& lights = mScene.GetVisibleLights();
-	if (lights.IsEmpty()) return;
-
-	// Disable all active lights except the first
-	for (uint b = lights.GetSize(); b > 1; ) mGraphics->SetActiveLight(--b, 0);
-
-	// Set up appropriate states
-	mGraphics->SetFog(false);
-	mGraphics->SetStencilTest(true);
-	mGraphics->SetDepthWrite(false);
-	mGraphics->SetColorWrite(true);
-	mGraphics->SetAlphaTest(false);
-	mGraphics->SetWireframe(false);
-	mGraphics->SetLighting(IGraphics::Lighting::None);
-	mGraphics->SetBlending(IGraphics::Blending::Add);
-
-	// Disable active material and clear any active buffers
-	mGraphics->SetActiveMaterial(0);
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,		0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
-
-	// We are using 2 textures
-	mGraphics->SetActiveTexture(0, mDepth);
-	mGraphics->SetActiveTexture(1, mNormal);
-
-	// Set up the stencil buffer to allow rendering only where pixels are '1'
-	mGraphics->SetActiveStencilFunction (IGraphics::Condition::Equal, 0x1, 0x1);
-	mGraphics->SetActiveStencilOperation(IGraphics::Operation::Keep,
-										 IGraphics::Operation::Keep,
-										 IGraphics::Operation::Keep);
 
 	// We'll need to keep track of the lights we've already processed
 	mProcessedLight.ExpandTo(lights.GetSize());
 	mProcessedLight.MemsetZero();
 	uint offset (0);
+	bool cleared (false);
 
 	// Keep looping until done
 	for (;;)
@@ -199,12 +168,12 @@ void OSDrawDeferred::LightStage()
 			if (!mProcessedLight[i])
 			{
 				const DrawQueue::LightEntry& entry (lights[i]);
-				bool first = false;
+				bool resetStates = false;
 
 				// If we haven't chosen a new class ID, use this one
 				if (classID == 0)
 				{
-					first = true;
+					resetStates = true;
 					offset = i + 1;
 					classID = entry.mLight->GetClassID();
 				}
@@ -212,7 +181,70 @@ void OSDrawDeferred::LightStage()
 				// If the class ID matches, draw this light
 				if (classID == entry.mLight->GetClassID())
 				{
-					entry.mLight->OnDrawLight(mScene, first);
+					const ILight& light = lights[i].mLight->GetProperties();
+					ITexture* shadow = 0;
+
+					// If the light is supposed to be casting shadows, let's draw them
+					if (light.mShadows)
+					{
+						if (entry.mLight->IsOfClass(DirectionalLight::ClassID()))
+						{
+							// Draw the shadow
+							shadow = mShadow.Draw(mScene.GetRoot(), light.mDir, mIMVP, mDepth);
+
+							// Restore the matrices
+							mScene.ActivateMatrices();
+						}
+					}
+
+					// Update the shadow texture
+					mScene.SetShadow(shadow);
+
+					// If we just drew a shadow then we need to reset all graphics states back to what we need
+					if (shadow != 0) resetStates = true;
+
+					// Activate the light target
+					mGraphics->SetActiveRenderTarget(mLightTarget);
+
+					// Clear the target if it's the first time
+					if (!cleared)
+					{
+						cleared = true;
+						mGraphics->Clear(true, false, false);
+					}
+
+					// Reset all states if asked for
+					if (resetStates)
+					{
+						// Set up appropriate states
+						mGraphics->SetFog(false);
+						mGraphics->SetStencilTest(true);
+						mGraphics->SetDepthWrite(false);
+						mGraphics->SetColorWrite(true);
+						mGraphics->SetAlphaTest(false);
+						mGraphics->SetWireframe(false);
+						mGraphics->SetLighting(IGraphics::Lighting::None);
+						mGraphics->SetBlending(IGraphics::Blending::Add);
+
+						// Disable active material and clear any active buffers
+						mGraphics->SetActiveMaterial(0);
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,		0 );
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
+						mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
+
+						// Set up the stencil buffer to allow rendering only where pixels are '1'
+						mGraphics->SetActiveStencilFunction (IGraphics::Condition::Equal, 0x1, 0x1);
+						mGraphics->SetActiveStencilOperation(IGraphics::Operation::Keep,
+															 IGraphics::Operation::Keep,
+															 IGraphics::Operation::Keep);
+					}
+
+					// Draw the light
+					entry.mLight->OnDrawLight(mScene, resetStates);
 					mProcessedLight[i] = true;
 				}
 				else
@@ -302,6 +334,9 @@ void OSDrawDeferred::OnDraw()
 {
 	// Cull the scene with our camera
 	mScene.Cull(mCam);
+
+	// Save the inverse MVP for shadows
+	mIMVP = mGraphics->GetInverseMVPMatrix();
 
 	// Clear the "final" texture references
 	mScene.ClearFinalTextures();

@@ -55,12 +55,12 @@ Root
 				
 				Button = "Button Test"
 				{
-					Left = 0.5 -50
-					Right = 0.5 50
+					Left = 0.5 -70
+					Right = 0.5 70
 					Top = 0 40
 					Bottom = 0 60
 					Skin = "Default"
-					Text = "Click Me"
+					Text = "Simple Button"
 				}
 			}
 		}
@@ -88,13 +88,14 @@ Root
 		Directional Light = "First Light"
 		{
 			Position = -7.000000 -7.000000 2.000000
-			Rotation = -0.388141 0.160773 -0.347273 0.838391
+			Rotation = 0.5 -0.5 -1.0
 			Scale = 1.000000
 			Layer = 10
-			Ambient = 0.000000 0.000000 0.000000
-			Diffuse = 1.000000 1.000000 1.000000
+			Ambient = 0.150000 0.150000 0.150000
+			Diffuse = 0.850000 0.850000 0.850000
 			Specular = 1.000000 1.000000 1.000000
 			Brightness = 1.000000
+			Shadows = true
 
 			Directional Billboard = "Test 0"
 			{

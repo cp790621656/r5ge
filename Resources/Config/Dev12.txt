@@ -76,7 +76,7 @@ Root
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
 			Range = 0.300000 30.000000 90.000000
 			Dolly = 0.000000 1.897729 15.000000
-			Script = "OSDrawForward"
+			Script = "OSDrawDeferred"
 		}
 
 		Model Instance = "Plane"
@@ -95,7 +95,7 @@ Root
 				Rotation = 0.029436 0.138777 -0.967555 -0.209075
 				Range = 0.100000 5.000000 45.000000
 				Dolly = 0.000000 1.000000 5.000000
-				Script = "OSDrawForward"
+				Script = "OSDrawDeferred"
 			}
 
 			Directional Light = "First Light"

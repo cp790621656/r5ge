@@ -11,19 +11,30 @@
 // By default, light shaders only contain 2 textures
 //============================================================================================================
 
-static const char* g_lightPrefix = {
+static const char* g_lightPrefix2 = {
 "uniform sampler2D	R5_texture0;\n"		// Depth
 "uniform sampler2D	R5_texture1;\n"		// View space normal and material shininess
 };
 
 //============================================================================================================
-// If ambient occlusion is used, an additional texture is required
+// Light + shadows
 //============================================================================================================
 
-static const char* g_lightPrefixAO = {
+static const char* g_lightPrefix3 = {
 "uniform sampler2D	R5_texture0;\n"		// Depth
 "uniform sampler2D	R5_texture1;\n"		// View space normal and material shininess
-"uniform sampler2D	R5_texture2;\n"		// Ambient Lightmap
+"uniform sampler2D	R5_texture2;\n"		// Shadows
+};
+
+//============================================================================================================
+// Ambient occlusion + shadows
+//============================================================================================================
+
+static const char* g_lightPrefix4 = {
+"uniform sampler2D	R5_texture0;\n"		// Depth
+"uniform sampler2D	R5_texture1;\n"		// View space normal and material shininess
+"uniform sampler2D	R5_texture2;\n"		// Shadows
+"uniform sampler2D	R5_texture3;\n"		// Ambient Lightmap
 };
 
 //============================================================================================================
@@ -108,6 +119,17 @@ static const char* g_lightBody = {
 };
 
 //============================================================================================================
+// Apply the shadow
+//============================================================================================================
+
+static const char* g_lightShadow = {
+	// Apply the shadow
+"	float shadowFactor 	= texture2D(R5_texture2, gl_FragCoord.xy * R5_pixelSize).a;\n"
+"	diffuseFactor  		= min(diffuseFactor, shadowFactor);\n"
+"	specularFactor 		= min(diffuseFactor, specularFactor);\n"
+};
+
+//============================================================================================================
 // End of the shader for a directional light
 //============================================================================================================
 
@@ -123,8 +145,8 @@ static const char* g_lightEndDir = {
 //============================================================================================================
 
 static const char* g_lightEndDirAO = {
-"	float lightmap = texture2D(R5_texture2, texCoord).r;\n"
-"	gl_FragData[0] = (gl_LightSource[0].ambient + gl_LightSource[0].diffuse * diffuseFactor) * lightmap;\n"
+"	float lightmap = texture2D(R5_texture3, texCoord).r;\n"
+"	gl_FragData[0] = gl_LightSource[0].ambient * lightmap + gl_LightSource[0].diffuse * diffuseFactor;\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * specularFactor;\n"
 "}\n"
 };
@@ -145,9 +167,9 @@ static const char* g_lightEndPoint = {
 //============================================================================================================
 
 static const char* g_lightEndPointAO = {
-"	float lightmap = texture2D(R5_texture2, texCoord).r;\n"
+"	float lightmap = texture2D(R5_texture3, texCoord).r;\n"
 "	gl_FragData[0] = gl_LightSource[0].ambient * (atten * lightmap) + \n"
-"					 gl_LightSource[0].diffuse * (diffuseFactor * atten * lightmap);\n"
+"					 gl_LightSource[0].diffuse * (diffuseFactor * atten);\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * (specularFactor * atten);\n"
 "}\n"
 };
