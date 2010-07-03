@@ -848,7 +848,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 				{
 					tech->SetFog(false);
 					tech->SetColorWrite(false);
-					tech->SetAlphaTest(false);
+					tech->SetAlphaTest(true);
 					tech->SetLighting(ITechnique::Lighting::None);
 					tech->SetBlending(ITechnique::Blending::None);
 				}

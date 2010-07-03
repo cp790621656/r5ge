@@ -260,21 +260,29 @@ void PostProcess::Both (TemporaryStorage& storage, float threshold, const Vector
 			target->UseSkybox(false);
 		}
 
+		// Save the final render target
+		IRenderTarget* previous = storage.GetFinalTarget();
+
 		// The target's size should match the color texture's size
 		target->SetSize(storage.GetColor()->GetSize());
+
+		// Replace the render target
+		storage.SetFinalTarget(target);
 
 		// Apply depth of field first
 		DepthOfField(storage, focalRange);
 
 		// Replace the final color texture
-		ITexture* finalColor = storage.GetColor();
 		storage.SetColor(intrimColor);
+
+		// Restore the render target
+		storage.SetFinalTarget(previous);
 
 		// Bloom everything
 		Bloom(storage, threshold);
 
 		// Restore the color texture
-		storage.SetColor(finalColor);
+		storage.SetColor((previous == 0) ? 0 : (ITexture*)previous->GetColorTexture(0));
 	}
 	else
 	{
