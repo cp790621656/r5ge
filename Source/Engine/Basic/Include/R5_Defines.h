@@ -72,7 +72,7 @@ namespace R5
 };
 
 #ifndef FOREACH
-#define FOREACH(var, array) for (uint var = 0, var##max = array.GetSize(); var < var##max; ++var)
+#define FOREACH(var, array) for (uint var = 0; var < array.GetSize(); ++var)
 #endif
 
 #ifndef _R5_MATH_DEFINES

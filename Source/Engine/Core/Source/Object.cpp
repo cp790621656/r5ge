@@ -428,6 +428,8 @@ uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 
 void Object::DestroySelf (bool threadSafe)
 {
+	mFlags.Set(Flag::Enabled, false);
+
 	if (threadSafe) Lock();
 	{
 		DestroyAllScripts(false);
@@ -663,6 +665,13 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 				if (!script->mIgnore.Get(Script::Ignore::PreUpdate))
 				{
 					script->OnPreUpdate();
+
+					if (!mFlags.Get(Flag::Enabled))
+					{
+						if (threadSafe) Unlock();
+						return true;
+					}
+					else if (mScripts.IsEmpty()) break;
 				}
 			}
 
@@ -687,6 +696,13 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 				if (!script->mIgnore.Get(Script::Ignore::Update))
 				{
 					script->OnUpdate();
+
+					if (!mFlags.Get(Flag::Enabled))
+					{
+						if (threadSafe) Unlock();
+						return true;
+					}
+					else if (mScripts.IsEmpty()) break;
 				}
 			}
 
@@ -698,13 +714,20 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			{
 				parentMoved = mIsDirty;
 
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
+				for (uint i = mChildren.GetSize(); i > 0; )
 				{
-					Object* obj = mChildren[i];
+					Object* obj = mChildren[--i];
 
 					if (obj != 0 && obj->GetFlag(Flag::Enabled))
 					{
 						mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved, threadSafe);
+
+						if (!mFlags.Get(Flag::Enabled))
+						{
+							if (threadSafe) Unlock();
+							return true;
+						}
+						else if (mChildren.IsEmpty()) break;
 					}
 				}
 			}
@@ -755,6 +778,13 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 				if (!script->mIgnore.Get(Script::Ignore::PostUpdate))
 				{
 					script->OnPostUpdate();
+
+					if (!mFlags.Get(Flag::Enabled))
+					{
+						if (threadSafe) Unlock();
+						return true;
+					}
+					else if (mScripts.IsEmpty()) break;
 				}
 			}
 
