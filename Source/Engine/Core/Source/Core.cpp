@@ -586,7 +586,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 
 				if (temp != 0)
 				{
-					temp->SerializeTo(node);
+					temp->SerializeTo(node, false);
 				}
 			}
 		}
@@ -600,7 +600,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 
 				if (model != 0)
 				{
-					model->SerializeTo(node);
+					model->SerializeTo(node, false);
 				}
 			}
 		}

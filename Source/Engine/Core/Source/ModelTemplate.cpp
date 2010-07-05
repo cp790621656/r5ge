@@ -300,14 +300,16 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 // Serialization - Save
 //============================================================================================================
 
-void ModelTemplate::SerializeTo	 (TreeNode& root) const
+void ModelTemplate::SerializeTo	(TreeNode& root, bool forceSave) const
 {
-	if (!mSerializable) return;
+	if (!forceSave && !mSerializable) return;
 
-	if ( mFilename.IsValid() || (mTemplate != 0 && mTemplate->GetName() != GetName()) )
+	if ( forceSave || mFilename.IsValid() || (mTemplate != 0 && mTemplate->GetName() != GetName()) )
 	{
 		TreeNode& node = root.AddChild( GetClassID() );
 		GetName() >> node.mValue;
+
+		if (!mSerializable) node.AddChild("Serializable", false);
 
 		if (mTemplate != 0)
 		{
@@ -321,12 +323,9 @@ void ModelTemplate::SerializeTo	 (TreeNode& root) const
 		// Save the limbs
 		_SaveLimbs(node, false);
 
-		// Save all scripts
-		if (mOnSerialize.HasChildren())
-		{
-			node.mChildren.Expand() = mOnSerialize;
-			node.mChildren.Back().mTag = "OnSerialize";
-		}
+		// If we don't have anything to save, don't bother leaving an empty entry
+		if (node.mChildren.GetSize() == 1 &&
+			node.mChildren[0].mTag == "Serializable") root.mChildren.Shrink();
 	}
 }
 
@@ -339,9 +338,9 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 	IGraphics* graphics = mCore->GetGraphics();
 	if (graphics == 0) return false;
 
-	Mesh*			mesh	= 0;
-	Cloud*	bm		= 0;
-	IMaterial*		mat		= 0;
+	Mesh*		mesh	= 0;
+	Cloud*		bm		= 0;
+	IMaterial*	mat		= 0;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
@@ -530,6 +529,25 @@ bool ModelTemplate::Load (const byte* buffer, uint size, const String& extension
 }
 
 //============================================================================================================
+// Helper function -- runs through the specified TreeNode and finds all referenced models
+//============================================================================================================
+
+void GatherModels (const TreeNode& root, Array<String>& models)
+{
+	bool retVal = false;
+
+	if (root.mTag == "Model")
+	{
+		models.AddUnique( root.mValue.IsString() ? root.mValue.AsString() : root.mValue.GetString() );
+	}
+
+	FOREACH(i, root.mChildren)
+	{
+		GatherModels(root.mChildren[i], models);
+	}
+}
+
+//============================================================================================================
 // Complete serialization -- save to an R5 tree
 //============================================================================================================
 
@@ -541,13 +559,26 @@ bool ModelTemplate::Save (TreeNode& root) const
 
 	Lock();
 	{
-		TreeNode& graphics	= root.AddChild(IGraphics::ClassID());
-		TreeNode& core		= root.AddChild(Core::ClassID());
-		TreeNode& model		= root.AddChild("Template");
+		TreeNode& graphics	= root.AddUnique(IGraphics::ClassID());
+		TreeNode& core		= root.AddUnique(Core::ClassID());
+
+		bool isFirst = true;
+
+		FOREACH(i, root.mChildren)
+		{
+			if (root.mChildren[i].mTag == "Template")
+			{
+				isFirst = false;
+				break;
+			}
+		}
+
+		// First model template gets saved into an unnamed "Template" tag, others into their own
+		TreeNode& model = isFirst ? root.AddChild("Template") : core.AddChild(ModelTemplate::ClassID(), mName);
 
 		// Disable serialization for all sections
-		graphics.AddChild("Serializable", false);
-		model.AddChild   ("Serializable", false);
+		graphics.AddUnique("Serializable").mValue = false;
+		model.AddUnique   ("Serializable").mValue = false;
 
 		// Save the skeleton if it's present
 		if (mSkeleton != 0)
@@ -589,6 +620,20 @@ bool ModelTemplate::Save (TreeNode& root) const
 		for (uint i = 0; i < materials.GetSize(); ++i)
 		{
 			IMaterial* mat = materials[i];
+			if (mat == 0) continue;
+
+			FOREACH(b, graphics.mChildren)
+			{
+				TreeNode& child = graphics.mChildren[b];
+
+				if (child.mTag == IMaterial::ClassID() &&
+					child.mValue.IsString() &&
+					child.mValue.AsString() == mat->GetName())
+				{
+					mat = 0;
+					break;
+				}
+			}
 
 			if (mat != 0)
 			{
@@ -599,9 +644,63 @@ bool ModelTemplate::Save (TreeNode& root) const
 			}
 		}
 
-		// Save meshes
-		for (uint i = 0; i < meshes.GetSize(); ++i) meshes[i]->SerializeTo(core);
-		for (uint i = 0; i < mBMs.GetSize(); ++i) mBMs[i]->SerializeTo(core);
+		// Save all unique meshes
+		for (uint i = 0; i < meshes.GetSize(); ++i)
+		{
+			Mesh* mesh = meshes[i];
+
+			FOREACH(b, core.mChildren)
+			{
+				TreeNode& child = core.mChildren[b];
+
+				if (child.mTag == Mesh::ClassID() &&
+					child.mValue.IsString() &&
+					child.mValue.AsString() == mesh->GetName())
+				{
+					mesh = 0;
+					break;
+				}
+			}
+			if (mesh != 0) mesh->SerializeTo(core);
+		}
+
+		// Save all unique billboard clouds
+		for (uint i = 0; i < mBMs.GetSize(); ++i)
+		{
+			Cloud* mesh = mBMs[i];
+
+			FOREACH(b, core.mChildren)
+			{
+				TreeNode& child = core.mChildren[b];
+
+				if (child.mTag == Mesh::ClassID() &&
+					child.mValue.IsString() &&
+					child.mValue.AsString() == mesh->GetName())
+				{
+					mesh = 0;
+					break;
+				}
+			}
+			if (mesh != 0) mBMs[i]->SerializeTo(core);
+		}
+
+		// Save all templates this model depends on
+		if (mOnSerialize.HasChildren())
+		{
+			Array<String> models;
+			GatherModels(mOnSerialize, models);
+
+			FOREACH(i, models)
+			{
+				const String& m = models[i];
+				ModelTemplate* temp = mCore->GetModelTemplate(m, false);
+				if (temp != 0 && temp != this) temp->Save(root);
+			}
+
+			// Save the OnSerialize section itself
+			model.mChildren.Expand() = mOnSerialize;
+			model.mChildren.Back().mTag = "OnSerialize";
+		}
 	}
 	Unlock();
 	return true;

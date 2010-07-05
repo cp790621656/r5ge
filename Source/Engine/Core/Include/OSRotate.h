@@ -24,7 +24,7 @@ public:
 	const Vector3f& GetAxis() const { return mAxis; }
 	float GetRate() const { return mRate; }
 
-	void SetAxis (const Vector3f& axis) { mAxis = axis; }
+	void SetAxis (const Vector3f& axis) { mAxis = axis; mAxis.Normalize(); }
 	void SetRate (float rate) { mRate = rate; }
 
 	// Rotate the owner

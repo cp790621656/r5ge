@@ -44,11 +44,24 @@ struct TreeNode
 	bool HasChildren() const { return mChildren.IsValid(); }
 
 	// Not thread-safe. Lock the tree before using.
-	TreeNode& AddChild(const char* tag)
+	TreeNode& AddChild (const char* tag)
 	{
 		TreeNode& node = mChildren.Expand();
 		node.mTag = tag;
 		return node;
+	}
+
+	// Not thread-safe. Lock the tree before using.
+	TreeNode& AddUnique (const char* tag)
+	{
+		FOREACH(i, mChildren)
+		{
+			if (mChildren[i].mTag == tag)
+			{
+				return mChildren[i];
+			}
+		}
+		return AddChild(tag);
 	}
 
 	// Implementations of various data types

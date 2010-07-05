@@ -146,7 +146,7 @@ Root
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
 						Color = 1.000000 1.000000 1.000000
-						Text = "R5 Model Viewer v.1.5.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Text = "R5 Model Viewer v.1.6.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
 						Shadow = true
 						Alignment = "Center"
 						Event Handling = "None"
@@ -356,7 +356,7 @@ Root
 				Diffuse = 1.000000 1.000000 1.000000
 				Specular = 1.000000 1.000000 1.000000
 				Brightness = 1.250000
-				Shadows = false
+				Shadows = true
 
 				Directional Billboard
 				{

@@ -27,6 +27,6 @@ void OSRotate::OnSerializeTo (TreeNode& node) const
 
 void OSRotate::OnSerializeFrom (const TreeNode& node)
 {
-	if		(node.mTag == "Axis") node.mValue >> mAxis;
+	if		(node.mTag == "Axis") { node.mValue >> mAxis; mAxis.Normalize(); }
 	else if (node.mTag == "Rate") node.mValue >> mRate;
 }

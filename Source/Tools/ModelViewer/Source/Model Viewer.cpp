@@ -31,6 +31,33 @@ void ModelViewer::Run()
 {
 	TreeNode root;
 
+	// Create the environment cube map
+	{
+		Noise noise;
+		noise.SetSeed(7654321);
+		noise.SetSize(32, 32);
+		noise.SetSeamless(false);
+		noise.ApplyFilter("Simple");
+		void* ptr = noise.GetBuffer();
+
+		ITexture* tex = mGraphics->GetTexture("Environment Map");
+		tex->Set(ptr, ptr, ptr, ptr, ptr, ptr, 32, 32, ITexture::Format::Float, ITexture::Format::Alpha);
+		tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
+	}
+
+	// Create the noise map
+	{
+		Noise noise;
+		noise.SetSeed(74625646);
+		noise.SetSize(32, 32);
+		noise.SetSeamless(true);
+		noise.ApplyFilter("Perlin").Set(3.0f);
+
+		ITexture* tex = mGraphics->GetTexture("Noise map");
+		tex->Set(noise.GetBuffer(), 32, 32, 1, ITexture::Format::Float, ITexture::Format::Alpha);
+		tex->SetWrapMode(ITexture::WrapMode::Repeat);
+	}
+
 	if (root.Load("Config/Model Viewer.txt") && mCore->SerializeFrom(root))
 	{
 		FOREACH(i, root.mChildren) SerializeFrom(root.mChildren[i]);
@@ -59,7 +86,6 @@ void ModelViewer::Run()
 		// Deferred drawing
 		mDraw  = mCam->AddScript<OSDrawDeferred>();
 		mScene = &mDraw->GetScene();
-		mDraw->SetShowGrid(true);
 
 		// Display the current version
 		ShowAboutInfo();

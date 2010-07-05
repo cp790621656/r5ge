@@ -97,8 +97,8 @@ public:
 	void Release (bool meshes = false, bool materials = false, bool skeleton = false);
 
 	// Serialization
-	virtual bool SerializeFrom	( const TreeNode& root, bool forceUpdate );
-	virtual void SerializeTo	 (TreeNode& root) const;
+	bool SerializeFrom	(const TreeNode& root, bool forceUpdate);
+	void SerializeTo	(TreeNode& root, bool forceSave) const;
 
 protected:
 
