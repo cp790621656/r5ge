@@ -167,14 +167,26 @@ public:
 		else v.Set(1.0f, 0.0f);
 		return v;
 	}
+
+	// Gets the flattened yaw rotational component (convenience function)
+	float GetFlatYaw() const
+	{
+		Vector2f v (		2.0f * (x * y - z * w),
+					 1.0f - 2.0f * (x * x + z * z) );
+		v.Normalize();
+		float angle = Float::Acos(v.y);
+		if (v.x < 0.0f) angle = TWOPI - angle;
+		while (angle > PI) angle -= TWOPI;
+		return angle;
+	}
 };
 
 //============================================================================================================
 // Convenience functions
 //============================================================================================================
 
-inline			Vector3f::Vector3f	 (const Quaternion& q)		{ *this = q.GetForward(); }
-inline void		Vector3f::operator  =(const Quaternion& q)		{ *this = q.GetForward(); }
+inline		Vector3f::Vector3f	 (const Quaternion& q)	{ *this = q.GetForward(); }
+inline void	Vector3f::operator  =(const Quaternion& q)	{ *this = q.GetForward(); }
 
 //============================================================================================================
 // Convenience type, likely good canditate for future refactoring
