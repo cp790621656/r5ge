@@ -23,7 +23,9 @@ int main (int argc, char* argv[])
 	Array<String> folders;
 	Array<String> files;
 
-	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.1\n");
+	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.1.1\n");
+
+	String cwd (System::GetCurrentPath());
 
 	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
 	{
@@ -33,7 +35,16 @@ int main (int argc, char* argv[])
 		{
 			const TreeNode& node = root.mChildren[i];
 			url = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
-			if (url.IsEmpty()) continue;
+
+			if (url.IsEmpty())
+			{
+				if (System::FileExists(node.mTag))
+				{
+					printf("\nExecuting '%s'\n", node.mTag.GetBuffer());
+					System::Execute(cwd + node.mTag);
+				}
+				continue;
+			}
 
 			path = node.mTag;
 			if (!path.EndsWith("/")) path << "/";

@@ -27,6 +27,7 @@ namespace System
 	void	FlushLog();											// Flush the log file, saving out the contents
 	bool	FileExists				(const char* filename);		// Checks if the file exists
 	uint	GetFileHeader			(const char* filename);		// Gets the file's header (first 4 bytes)
+	String	GetCurrentPath();									// Gets the current folder path (ends with '/')
 	String	GetFilenameFromPath		(const String& path);		// "c:\temp\test.abc" becomes "test.abc"
 	String	GetPathFromFilename		(const String& file);		// "c:\temp\test.abc" becomes "c:\temp\"
 	String	GetExtensionFromFilename(const String& file);		// "c:\temp\test.abc" becomes "abc"
