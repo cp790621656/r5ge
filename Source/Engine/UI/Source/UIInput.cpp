@@ -212,8 +212,8 @@ void UIInput::_SetRootPtr (UIManager* ptr)
 
 bool UIInput::OnUpdate (bool dimensionsChanged)
 {
-	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged);
-	dimensionsChanged |= mLabel.Update(mImage.GetSubRegion(), dimensionsChanged);
+	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged, true);
+	dimensionsChanged |= mLabel.Update(mImage.GetSubRegion(), dimensionsChanged, true);
 	return dimensionsChanged;
 }
 

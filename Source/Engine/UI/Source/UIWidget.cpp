@@ -170,7 +170,7 @@ UIWidget* UIWidget::_AddWidget (const String& type, const String& name, bool uni
 		ptr->OnInit();
 
 		// Update the region
-		if (mRegion.IsVisible()) ptr->Update(mRegion);
+		if (mRegion.IsVisible()) ptr->Update(mRegion, false, false);
 	}
 	return ptr;
 }
@@ -327,6 +327,48 @@ void UIWidget::SetKeyboardFocus()
 }
 
 //============================================================================================================
+// Adjust the widget's region, keeping it bound within the parent's confines
+//============================================================================================================
+
+void UIWidget::Adjust (float left, float top, float right, float bottom)
+{
+	mRegion.Adjust(left, top, right, bottom);
+
+	if (mParent != 0)
+	{
+		mRegion.Update(mParent->GetSubRegion());
+
+		const UIRegion& parentRgn = mParent->GetSubRegion();
+
+		if (mRegion.GetCalculatedLeft() < parentRgn.GetCalculatedLeft())
+		{
+			float diff = parentRgn.GetCalculatedLeft() - mRegion.GetCalculatedLeft();
+			mRegion.Adjust(diff, 0.0f, diff, 0.0f);
+			mRegion.Update(parentRgn);
+		}
+		else if (mRegion.GetCalculatedRight() > parentRgn.GetCalculatedRight())
+		{
+			float diff = parentRgn.GetCalculatedRight() - mRegion.GetCalculatedRight();
+			mRegion.Adjust(diff, 0.0f, diff, 0.0f);
+			mRegion.Update(parentRgn);
+		}
+
+		if (mRegion.GetCalculatedTop() < parentRgn.GetCalculatedTop())
+		{
+			float diff = parentRgn.GetCalculatedTop() - mRegion.GetCalculatedTop();
+			mRegion.Adjust(0.0f, diff, 0.0f, diff);
+			mRegion.Update(parentRgn);
+		}
+		else if (mRegion.GetCalculatedBottom() > parentRgn.GetCalculatedBottom())
+		{
+			float diff = parentRgn.GetCalculatedBottom() - mRegion.GetCalculatedBottom();
+			mRegion.Adjust(0.0f, diff, 0.0f, diff);
+			mRegion.Update(parentRgn);
+		}
+	}
+}
+
+//============================================================================================================
 // ADVANCED: Immediately deletes all child widgets
 //============================================================================================================
 
@@ -414,7 +456,7 @@ bool UIWidget::_Update (bool areaChanged)
 	{
 		if (mChildren[i])
 		{
-			childrenChanged |= mChildren[i]->Update(region, areaChanged);
+			childrenChanged |= mChildren[i]->Update(region, areaChanged, true);
 		}
 	}
 	return areaChanged || childrenChanged;

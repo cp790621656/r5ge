@@ -69,7 +69,7 @@ void UIWindow::ResizeToFit (const Vector2i& size)
 
 Vector2i UIWindow::GetSizeForContent (const Vector2i& size)
 {
-	if (mParent != 0) Update(mParent->GetRegion());
+	if (mParent != 0) Update(mParent->GetRegion(), false, false);
 	short paddingX = (short)(mRegion.GetCalculatedWidth()  - mContent.GetCalculatedWidth());
 	short paddingY = (short)(mRegion.GetCalculatedHeight() - mContent.GetCalculatedHeight());
 	return Vector2i(size.x + paddingX, size.y + paddingY);
@@ -116,13 +116,13 @@ void UIWindow::OnTextureChanged (const ITexture* ptr)
 bool UIWindow::OnUpdate (bool dimensionsChanged)
 {
 	// Update the background. If background changes, it affects everything else
-	dimensionsChanged |= mBackground.Update(mRegion, dimensionsChanged);
+	dimensionsChanged |= mBackground.Update(mRegion, dimensionsChanged, true);
 
 	// Update the title bar's background
-	bool titleChanged = mTitlebar.Update(mRegion, dimensionsChanged);
+	bool titleChanged = mTitlebar.Update(mRegion, dimensionsChanged, true);
 
 	// Update the title bar's label
-	mTitle.Update(mTitlebar.GetSubRegion(), titleChanged);
+	mTitle.Update(mTitlebar.GetSubRegion(), titleChanged, true);
 
 	// Update the content pane
 	if (dimensionsChanged)
@@ -142,7 +142,7 @@ bool UIWindow::OnUpdate (bool dimensionsChanged)
 	}
 
 	// Update the content region
-	mContent.Update(mRegion, dimensionsChanged);
+	mContent.Update(mRegion, dimensionsChanged, true);
 	return dimensionsChanged;
 }
 
@@ -215,7 +215,7 @@ void UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if (mMovement == Movement::Move)
 	{
-		mRegion.Adjust(delta.x, delta.y, delta.x, delta.y);
+		Adjust(delta.x, delta.y, delta.x, delta.y);
 	}
 	else if (mMovement != Movement::None)
 	{
@@ -229,7 +229,7 @@ void UIWindow::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 		if (mMovement & Movement::ResizeBottom)
 			move.y = (mRegion.GetCalculatedHeight() + delta.y < min.y) ? min.y - mRegion.GetCalculatedHeight() : delta.y;
 
-		if (move.Dot() > 0.0f) mRegion.Adjust(0, 0, move.x, move.y);
+		if (move.Dot() > 0.0f) Adjust(0, 0, move.x, move.y);
 	}
 	if (mMovement == Movement::None) UIWidget::OnMouseMove(pos, delta);
 }

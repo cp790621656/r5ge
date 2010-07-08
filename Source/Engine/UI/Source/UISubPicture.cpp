@@ -140,7 +140,7 @@ bool UISubPicture::OnUpdate (bool dimensionsChanged)
 		dimensionsChanged = true;
 	}
 
-	if (dimensionsChanged) mSubRegion.Update(mRegion, true);
+	if (dimensionsChanged) mSubRegion.Update(mRegion, true, true);
 	return dimensionsChanged;
 }
 

@@ -42,6 +42,7 @@ private:
 	float		mRelativeAlpha;		// Alpha is cumulative, parent*this
 	float		mParentAlpha;		// Saved parent alpha, used in animation
 	bool		mDimsChanged;		// Whether the region's dimensions has been modified and will need to be updated
+	bool		mUnscheduled;		// Whether our last update was unscheduled
 
 private:
 
@@ -59,7 +60,8 @@ public:
 				mParentAlpha	(1.0f),
 				mDimsChanged	(true),
 				mAlpha			(1.0f),
-				mIsVisible		(false) {}
+				mIsVisible		(false),
+				mUnscheduled	(false) {}
 
 public:
 
@@ -117,10 +119,13 @@ private:
 
 public:
 
+	// Perform an unscheduled update
+	void Update (const UIRegion& parent) { Update(parent, true, false); }
+
 	// Convenience function for the top-level areas
 	bool Update (const Vector2i& size, bool forceUpdate);
 
 	// Updates the region's position and size based on the provided parent's values
 	// Returns 'true' if the region has changed
-	bool Update (const UIRegion& parent, bool forceUpdate = false);
+	bool Update (const UIRegion& parent, bool forceUpdate, bool scheduledUpdate);
 };

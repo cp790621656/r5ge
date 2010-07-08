@@ -75,7 +75,7 @@ void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 			// Fill the normal face
 			mImage.SetFace(mPrefix + suffix[1], false);
 			rgn.SetAlpha(1.0f);
-			rgn.Update(mRegion);
+			rgn.Update(mRegion, false, true);
 			mImage.OnFill(queue);
 
 			// Get the current time for animation
@@ -95,20 +95,20 @@ void UIAnimatedCheckbox::OnFill (UIQueue* queue)
 				{
 					mImage.SetFace(mPrefix + suffix[i+2], false);
 					rgn.SetAlpha(mCurrentAlpha[i]);
-					rgn.Update(mRegion);
+					rgn.Update(mRegion, false, true);
 					mImage.OnFill(queue);
 				}
 			}
 
 			// Always finish with region alpha set to 1
 			rgn.SetAlpha(1.0f);
-			rgn.Update(mRegion);
+			rgn.Update(mRegion, false, true);
 		}
 		else
 		{
 			mImage.SetFace(mPrefix + suffix[0], false);
 			rgn.SetAlpha(1.0f);
-			rgn.Update(mRegion);
+			rgn.Update(mRegion, false, true);
 			mImage.OnFill(queue);
 		}
 	}

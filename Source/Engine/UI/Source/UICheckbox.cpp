@@ -22,8 +22,8 @@ bool UICheckbox::OnUpdate (bool dimensionsChanged)
 			mLabel.GetRegion().SetLeft (0.0f, height);
 		}
 	}
-	mImage.Update(mRegion, dimensionsChanged);
-	mLabel.Update(mRegion, dimensionsChanged);
+	mImage.Update(mRegion, dimensionsChanged, true);
+	mLabel.Update(mRegion, dimensionsChanged, true);
 	return false;
 }
 

@@ -112,16 +112,16 @@ bool UIRegion::Update (const Vector2i& size, bool forceUpdate)
 {
 	static UIRegion screen;
 	screen.mRect.Set(0.0f, size.x, 0.0f, size.y);
-	return Update(screen, forceUpdate);
+	return Update(screen, forceUpdate, true);
 }
 
 //====================================================================================================
 // Updates the region's position and size based on the provided parent's values
 //====================================================================================================
 
-bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
+bool UIRegion::Update (const UIRegion& parent, bool forceUpdate, bool scheduledUpdate)
 {
-	bool changed (forceUpdate);
+	bool changed (forceUpdate || mUnscheduled);
 	bool wasVisible ( mIsVisible && mAlpha > 0.001f );
 
 	// Calculate the current alpha
@@ -181,5 +181,6 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate)
 
 	// Set the new visibility flag and reset the change flags
 	mDimsChanged = false;
+	mUnscheduled = !scheduledUpdate;
 	return changed;
 }

@@ -71,7 +71,7 @@ bool UIList::OnUpdate (bool dimensionsChanged)
 			mSymbol.GetRegion().SetLeft(1.0f, -ratio * height);
 		}
 	}
-	dimensionsChanged |= mSymbol.Update(mImage.GetSubRegion(), dimensionsChanged);
+	dimensionsChanged |= mSymbol.Update(mImage.GetSubRegion(), dimensionsChanged, true);
 	return dimensionsChanged;
 }
 
