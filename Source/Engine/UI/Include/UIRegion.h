@@ -69,10 +69,10 @@ public:
 	void SetRect (float x, float y, float w, float h);
 
 	// Write access to relative values
-	void SetLeft	(float relative, float absolute)	{   mRelativeLeft.Set(relative, absolute);  mDimsChanged  = true; }
-	void SetTop		(float relative, float absolute)	{    mRelativeTop.Set(relative, absolute);  mDimsChanged  = true; }
-	void SetRight	(float relative, float absolute)	{  mRelativeRight.Set(relative, absolute);  mDimsChanged  = true; }
-	void SetBottom	(float relative, float absolute)	{ mRelativeBottom.Set(relative, absolute);  mDimsChanged  = true; }
+	void SetLeft	(float relative, float absolute)	{ mDimsChanged |= mRelativeLeft.Set(relative, absolute); }
+	void SetTop		(float relative, float absolute)	{ mDimsChanged |= mRelativeTop.Set(relative, absolute); }
+	void SetRight	(float relative, float absolute)	{ mDimsChanged |= mRelativeRight.Set(relative, absolute); }
+	void SetBottom	(float relative, float absolute)	{ mDimsChanged |= mRelativeBottom.Set(relative, absolute); }
 	void SetAlpha	(float relative)					{ mRelativeAlpha = relative; }
 
 	// Read access to relative values

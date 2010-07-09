@@ -24,11 +24,10 @@ inline bool ToAnchor (const Variable& value, UIAnchor& a)
 
 void UIRegion::SetRect (float x, float y, float w, float h)
 {
-	mRelativeLeft.Set	(0.0f, x);
-	mRelativeTop.Set	(0.0f, y);
-	mRelativeRight.Set	(0.0f, x + w);
-	mRelativeBottom.Set	(0.0f, y + h);
-	mDimsChanged = true;
+	mDimsChanged |= mRelativeLeft.Set	(0.0f, x);
+	mDimsChanged |= mRelativeTop.Set	(0.0f, y);
+	mDimsChanged |= mRelativeRight.Set	(0.0f, x + w);
+	mDimsChanged |= mRelativeBottom.Set	(0.0f, y + h);
 }
 
 //====================================================================================================
