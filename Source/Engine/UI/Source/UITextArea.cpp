@@ -300,7 +300,7 @@ void UITextArea::OnFill (UIQueue* queue)
 							rgn.SetBottom(1.0f, -(float)offset);
 
 							// Update the region
-							rgn.Update(mRegion, false, true);
+							rgn.Update(mRegion, true, true);
 
 							// Override the alpha to make it consistent
 							rgn.OverrideAlpha(mRegion.GetCalculatedAlpha() * entry.mAlpha);
