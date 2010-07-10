@@ -31,7 +31,7 @@ protected:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("List", UIList, UIMenu, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIList", UIList, UIMenu, UIWidget);
 
 	// Internal functions. These values are normally set by Root::CreateArea
 	virtual void _SetParentPtr (UIWidget* ptr);

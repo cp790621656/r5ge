@@ -18,10 +18,11 @@ protected:
 	UIFace*		mKnob;
 	float		mVal;
 	Color3f		mColor;
+	String		mPrefix;
 
 public:
 
-	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(1.0f) {}
+	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(1.0f), mPrefix(ClassID()) {}
 
 	const ITexture* GetTexture() const;
 	virtual float	GetValue()	 const	{ return mVal;   }
@@ -35,11 +36,12 @@ public:
 	void SetValue (const Vector2i& pos);
 	void SetSkin  (const UISkin* skin, bool setDirty = true);
 	void SetColor (const Color3f& color);
+	void SetPrefix(const String& prefix);
 
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Slider", UISlider, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UISlider", UISlider, UIWidget, UIWidget);
 
 	// Marks this specific widget as needing to be rebuilt
 	virtual void SetDirty() { const ITexture* tex = GetTexture(); if (tex) OnDirty(tex); }

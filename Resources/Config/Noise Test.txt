@@ -49,7 +49,7 @@ Root
 
 		Layout
 		{
-			Frame = "Top Frame"
+			UIFrame = "Top UIFrame"
 			{
 				Left = 0.000000 0.000000
 				Right = 1.000000 0.000000
@@ -59,7 +59,7 @@ Root
 				Receives Events = false
 				Layer = 0
 
-				Label = "Time"
+				UILabel = "Time"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -75,7 +75,7 @@ Root
 				}
 			}
 
-			Window = "Options"
+			UIWindow = "Options"
 			{
 				Left = 0.000000 -1.000000
 				Right = 0.000000 260.000000
@@ -91,7 +91,7 @@ Root
 				Receives Events = true
 				Layer = 0
 
-				List = "Filter 4"
+				UIList = "Filter 4"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -106,7 +106,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -127,11 +127,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 4"
+				UIInput = "UIInput 4"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -146,11 +146,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 5"
+				UIList = "Filter 5"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -165,7 +165,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -186,11 +186,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 5"
+				UIInput = "UIInput 5"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -205,11 +205,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 6"
+				UIList = "Filter 6"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -224,7 +224,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -245,11 +245,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 6"
+				UIInput = "UIInput 6"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -264,11 +264,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 7"
+				UIList = "Filter 7"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -283,7 +283,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -304,11 +304,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 7"
+				UIInput = "UIInput 7"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -323,11 +323,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 8"
+				UIList = "Filter 8"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -342,7 +342,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -363,11 +363,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 8"
+				UIInput = "UIInput 8"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -382,11 +382,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 9"
+				UIList = "Filter 9"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -401,7 +401,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -422,11 +422,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 3"
+				UIList = "Filter 3"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -441,7 +441,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -462,11 +462,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 2"
+				UIList = "Filter 2"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -481,7 +481,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -502,11 +502,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 3"
+				UIInput = "UIInput 3"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -521,11 +521,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 2"
+				UIInput = "UIInput 2"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -540,11 +540,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Input = "Input 1"
+				UIInput = "UIInput 1"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -559,11 +559,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				Button = "512"
+				UIButton = "512"
 				{
 					Left = 0.500000 2.000000
 					Right = 0.750000 0.000000
@@ -581,7 +581,7 @@ Root
 					Layer = 0
 				}
 
-				Input = "Input 0"
+				UIInput = "UIInput 0"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -600,7 +600,7 @@ Root
 					Layer = 0
 				}
 
-				Button = "1024"
+				UIButton = "1024"
 				{
 					Left = 0.750000 2.000000
 					Right = 1.000000 -2.000000
@@ -618,7 +618,7 @@ Root
 					Layer = 0
 				}
 
-				Button = "128"
+				UIButton = "128"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.250000 0.000000
@@ -636,7 +636,7 @@ Root
 					Layer = 0
 				}
 
-				Button = "256"
+				UIButton = "256"
 				{
 					Left = 0.250000 2.000000
 					Right = 0.500000 0.000000
@@ -654,7 +654,7 @@ Root
 					Layer = 0
 				}
 
-				Input = "Input 9"
+				UIInput = "UIInput 9"
 				{
 					Left = 0.500000 2.000000
 					Right = 1.000000 -2.000000
@@ -669,11 +669,11 @@ Root
 					Selection Color = 1.000000 0.667000 0.161000 0.500000
 					History Size = 0
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 1"
+				UIList = "Filter 1"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -688,7 +688,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -709,11 +709,11 @@ Root
 					}
 
 					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down list"
+					Tooltip = "Select a new filter from the drop-down UIList"
 					Layer = 0
 				}
 
-				List = "Filter 0"
+				UIList = "Filter 0"
 				{
 					Left = 0.000000 2.000000
 					Right = 0.500000 -2.000000
@@ -728,7 +728,7 @@ Root
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.150000
-					Menu
+					UIMenu
 
 					Entries = String[]
 					{
@@ -754,7 +754,7 @@ Root
 				}
 			}
 
-			Window = "Texture Window"
+			UIWindow = "Texture UIWindow"
 			{
 				Left = 1.000000 -256.000000
 				Right = 1.000000 0.000000
@@ -770,7 +770,7 @@ Root
 				Receives Events = true
 				Layer = 0
 
-				Picture = "Normal Map"
+				UIPicture = "Normal Map"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -783,7 +783,7 @@ Root
 					Layer = 1
 				}
 
-				Picture = "Noise"
+				UIPicture = "Noise"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000

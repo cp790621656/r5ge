@@ -25,7 +25,7 @@ Root
 
 		Layout
 		{
-			Window = "Layer Frame"
+			UIWindow = "Layer UIFrame"
 			{
 				Left = 0.000000 280.000000
 				Right = 0.000000 520.000000
@@ -41,7 +41,7 @@ Root
 				Event Handling = "Normal"
 				Layer = 0
 
-				Label = "Layer text"
+				UILabel = "Layer text"
 				{
 					Left = 0.000000 5.000000
 					Right = 0.500000 -5.000000
@@ -56,7 +56,7 @@ Root
 					Layer = 1
 				}
 
-				Input = "Layer Value"
+				UIInput = "Layer Value"
 				{
 					Left = 0.500000 5.000000
 					Right = 1.000000 -5.000000
@@ -74,7 +74,7 @@ Root
 					UIScript = "USEventListener"
 				}
 
-				Label = "Layer Volume text"
+				UILabel = "Layer Volume text"
 				{
 					Left = 0.000000 5.000000
 					Right = 0.500000 -5.000000
@@ -89,7 +89,7 @@ Root
 					Layer = 1
 				}
 
-				Slider = "Layer Volume"
+				UISlider = "Layer Volume"
 				{
 					Left = 0.500000 5.000000
 					Right = 1.000000 -5.000000
@@ -103,7 +103,7 @@ Root
 					Layer = 0
 					UIScript = "USEventListener"
 
-					Label = "Layer Volume value"
+					UILabel = "Layer Volume value"
 					{
 						Left = 0.000000 1.000000
 						Right = 1.000000 -1.000000
@@ -120,7 +120,7 @@ Root
 				}
 			}
 
-			Window = "Sound Frame"
+			UIWindow = "Sound UIFrame"
 			{
 				Left = 0.000000 10.000000
 				Right = 0.000000 263.000000
@@ -136,7 +136,7 @@ Root
 				Event Handling = "Normal"
 				Layer = 0
 
-				Input = "Sound Name"
+				UIInput = "Sound Name"
 				{
 					Left = 0.000000 5.000000
 					Right = 1.000000 -5.000000
@@ -161,7 +161,7 @@ Root
 					Layer = 0
 				}
 
-				Label = "Volume text"
+				UILabel = "Volume text"
 				{
 					Left = 0.000000 5.000000
 					Right = 0.500000 -5.000000
@@ -176,7 +176,7 @@ Root
 					Layer = 1
 				}
 
-				Label = "Repeat text"
+				UILabel = "Repeat text"
 				{
 					Left = 0.000000 5.000000
 					Right = 0.500000 -5.000000
@@ -191,7 +191,7 @@ Root
 					Layer = 1
 				}
 
-				Checkbox = "Repeat Checkbox"
+				UICheckbox = "Repeat UICheckbox"
 				{
 					Left = 0.500000 5.000000
 					Right = 1.000000 -5.000000
@@ -208,7 +208,7 @@ Root
 					Layer = 0
 				}
 
-				Label = "Layer text"
+				UILabel = "Layer text"
 				{
 					Left = 0.000000 5.000000
 					Right = 0.500000 -5.000000
@@ -223,7 +223,7 @@ Root
 					Layer = 1
 				}
 
-				Button = "Pause"
+				UIButton = "Pause"
 				{
 					Left = 0.000000 5.000000
 					Right = 1.000000 -5.000000
@@ -242,7 +242,7 @@ Root
 					UIScript = "USEventListener"
 				}
 
-				Button = "Resume"
+				UIButton = "Resume"
 				{
 					Left = 0.000000 5.000000
 					Right = 1.000000 -5.000000
@@ -261,7 +261,7 @@ Root
 					UIScript = "USEventListener"
 				}
 
-				Input = "Layer"
+				UIInput = "Layer"
 				{
 					Left = 0.500000 5.000000
 					Right = 1.000000 -5.000000
@@ -278,7 +278,7 @@ Root
 					Layer = 0
 				}
 
-				Button = "Stop"
+				UIButton = "Stop"
 				{
 					Left = 0.000000 5.000000
 					Right = 1.000000 -5.000000
@@ -297,7 +297,7 @@ Root
 					UIScript = "USEventListener"
 				}
 
-				Button = "Play"
+				UIButton = "Play"
 				{
 					Left = 0.000000 5.000000
 					Right = 1.000000 -5.000000
@@ -316,7 +316,7 @@ Root
 					UIScript = "USEventListener"
 				}
 
-				Slider = "Volume"
+				UISlider = "Volume"
 				{
 					Left = 0.500000 5.000000
 					Right = 1.000000 -5.000000
@@ -330,7 +330,7 @@ Root
 					Layer = 0
 					UIScript = "USEventListener"
 
-					Label = "Volume value"
+					UILabel = "Volume value"
 					{
 						Left = 0.000000 1.000000
 						Right = 1.000000 -1.000000
@@ -393,7 +393,7 @@ Root
 				Technique = "Glare"
 			}
 		}
-		
+
 		Model Instance = Teapot 28
 		{
 			Position = 0.000000 0.000000 0.000000
@@ -424,7 +424,7 @@ Root
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 27.999767 30.000000
-			Script = "OSAudioListener"
+			Script = "OSAudioUIListener"
 			Script = "OSDrawDeferred"
 		}
 	}

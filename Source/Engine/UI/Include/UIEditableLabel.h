@@ -48,7 +48,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Editable Label", UIEditableLabel, UIBasicLabel, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIEditableLabel", UIEditableLabel, UIBasicLabel, UIWidget);
 
 	// Area functions
 	virtual void SetDirty();

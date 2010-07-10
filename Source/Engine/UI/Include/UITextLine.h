@@ -40,7 +40,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Text Line", UITextLine, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UITextLine", UITextLine, UIWidget, UIWidget);
 
 	// Area functions
 	virtual void SetDirty();

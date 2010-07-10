@@ -44,7 +44,7 @@ Root
 
 		Layout
 		{
-			Stats = "Game"
+			UIStats = "Game"
 			{
 				Left = 0.000000 5.000000
 				Right = 0.000000 200.000000

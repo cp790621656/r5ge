@@ -31,9 +31,9 @@ Root
 			}
 		}
 	}
-	
+
 	Execute = "Config/Default UI Skin.txt"
-	
+
 	Core
 	{
 		Model = "Teapot"
@@ -57,7 +57,7 @@ Root
 
 		Layout
 		{
-			Stats = "Game Stats"
+			UIStats = "Game UIStats"
 			{
 				Bottom = 0 142
 				Left = 1 -150
@@ -65,7 +65,7 @@ Root
 				Receives Events = false
 				Layer = 1
 
-				Highlight = "Backdrop"
+				UIHighlight = "Backdrop"
 				{
 					Top Color = 0 0 0 0.7
 					Bottom Color = 0 0 0 0.3

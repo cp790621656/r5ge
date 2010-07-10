@@ -8,87 +8,87 @@ Root
 		Default Font = "Arial 15"
 		Tooltip Delay = 1.000
 
-		Skin = Neon
+		Skin = "Neon"
 		{
 		    Serializable = false
 		    Texture = "Textures/UI/neon.png"
 	
-			Face = "Window: Background"
+			Face = "UIWindow: Background"
 			{
 				Position = 5 5
 				Size = 7 7
 				Border = -6
 			}
 
-			Face = "Window: Titlebar"
+			Face = "UIWindow: Titlebar"
 			{
 				Position = 3 20
 				Size = 14 14
 				Border = -1
 			}
 	
-			Face = "Slider: Full"
+			Face = "UISlider: Full"
 			{
 				Position = 39 18
 				Size = 0 16
 			}
 	
-			Face = "Slider: Empty"
+			Face = "UISlider: Empty"
 			{
 				Position = 42 18
 				Size = 0 16
 			}
 	
-			Face = "Button: Enabled"
+			Face = "UIButton: Enabled"
 			{
 				Position = 19 3
 				Size = 11 11
 				Border = 3
 			}
 	
-			Face = "Button: Highlighted"
+			Face = "UIButton: Highlighted"
 			{
 				Position = 32 3
 				Size = 11 11
 				Border = 3
 			}
-	
-			Face = "Button: Pressed"
+
+			Face = "UIButton: Pressed"
 			{
 				Position = 45 3
 				Size = 11 11
 				Border = 3
 			}
 	
-			Face = "Button: Disabled"
+			Face = "UIButton: Disabled"
 			{
 				Position = 45 16
 				Size = 11 11
 				Border = 3
 			}
 	
-			Face = "Checkbox: Unchecked"
+			Face = "UICheckbox: Unchecked"
 			{
 				Position = 22 6
 				Size = 5 5
 				Border = -3
 			}
 	
-			Face = "Checkbox: Highlighted"
+			Face = "UICheckbox: Highlighted"
 			{
 				Position = 35 6
 				Size = 5 5
 				Border = -3
 			}
 	
-			Face = "Checkbox: Disabled"
+			Face = "UICheckbox: Disabled"
 			{
 				Position = 48 6
 				Size = 5 5
 				Border = -3
 			}
 	
-			Face = "Checkbox: Checked"
+			Face = "UICheckbox: Checked"
 			{
 				Position = 2 39
 				Size = 16 16

@@ -14,7 +14,7 @@ protected:
 
 	typedef PointerArray<UIFace> Faces;
 
-	UIManager*			mUI;
+	UIManager*		mUI;
 	String			mName;
 	bool			mSerializable;
 	const ITexture*	mTex;

@@ -22,7 +22,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Frame", UIFrame, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIFrame", UIFrame, UIWidget, UIWidget);
 
 	// Marks a rendering queue associated with this texture as being dirty
 	virtual void OnDirty (const ITexture* tex, int layer, const UIWidget* widget);

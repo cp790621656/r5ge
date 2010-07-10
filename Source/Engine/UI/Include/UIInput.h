@@ -61,7 +61,7 @@ private:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Input", UIInput, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIInput", UIInput, UIWidget, UIWidget);
 
 	// Internal functions. These values are normally set by Root::CreateArea
 	virtual void _SetParentPtr (UIWidget* ptr);

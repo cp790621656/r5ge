@@ -31,12 +31,12 @@ Root
 			Bottom = 1.000000 0.000000
 			Alpha = 1.000000
 
-			Stats = "Game Stats"
+			UIStats = "Game UIStats"
 			{
 				Font = "Arial 15"
 				Receives Events = false
 
-				Label = "Status"
+				UILabel = "Status"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000

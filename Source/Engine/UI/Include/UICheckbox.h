@@ -27,7 +27,7 @@ public:
 	UICheckbox() { mPrefix = ClassID(); SetSticky(true); SetAlignment(UILabel::Alignment::Left); }
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Checkbox", UICheckbox, UIButton, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UICheckbox", UICheckbox, UIButton, UIWidget);
 
 	// Area functions
 	virtual bool OnUpdate (bool dimensionsChanged);

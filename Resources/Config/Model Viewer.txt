@@ -101,7 +101,7 @@ Root
 
 		Layout
 		{
-			Frame = "Debug Frame"
+			UIFrame = "Debug Frame"
 			{
 				Left = 0.000000 0.000000
 				Right = 1.000000 0.000000
@@ -111,7 +111,7 @@ Root
 				Event Handling = "None"
 				Layer = 0
 
-				Label = "FPS"
+				UILabel = "FPS"
 				{
 					Left = 0.000000 3.000000
 					Right = 1.000000 -3.000000
@@ -126,7 +126,7 @@ Root
 					Layer = 1
 				}
 
-				Highlight = "Status Highlight"
+				UIHighlight = "Status Highlight"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -138,7 +138,7 @@ Root
 					Event Handling = "Normal"
 					Layer = 0
 
-					Label = "Status Label"
+					UILabel = "Status Label"
 					{
 						Left = 0.000000 0.000000
 						Right = 1.000000 0.000000
@@ -155,7 +155,7 @@ Root
 				}
 			}
 
-			Frame = "Options Frame"
+			UIFrame = "Options Frame"
 			{
 				Left = 0.000000 0.000000
 				Right = 0.000000 344.000000
@@ -165,18 +165,18 @@ Root
 				Event Handling = "Normal"
 				Layer = 0
 
-				SubPicture = "Options Background"
+				UISubPicture = "Options Background"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
 					Top = 0.000000 0.000000
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
-					Face = "Window: Background"
+					Face = "UIWindow: Background"
 					Event Handling = "Normal"
 					Layer = 0
 
-					Label = "Rendering Method Label"
+					UILabel = "Rendering Method Label"
 					{
 						Left = 0.000000 0.000000
 						Right = 0.400000 -3.000000
@@ -191,7 +191,7 @@ Root
 						Layer = 1
 					}
 
-					Label = "Background Label"
+					UILabel = "Background Label"
 					{
 						Left = 0.000000 0.000000
 						Right = 0.400000 -3.000000
@@ -206,7 +206,7 @@ Root
 						Layer = 1
 					}
 
-					Label = "Bloom Label"
+					UILabel = "Bloom Label"
 					{
 						Left = 0.000000 0.000000
 						Right = 0.400000 -3.000000
@@ -221,7 +221,7 @@ Root
 						Layer = 1
 					}
 
-					List = "Background"
+					UIList = "Background"
 					{
 						Left = 0.400000 3.000000
 						Right = 1.000000 -3.000000
@@ -235,7 +235,6 @@ Root
 						State = "Enabled"
 						Sticky = false
 						Animation Time = 0.150000
-						Menu
 
 						Entries = String[]
 						{
@@ -252,7 +251,7 @@ Root
 						UIScript = "USEventListener"
 					}
 
-					Slider = "Bloom Slider"
+					UISlider = "Bloom Slider"
 					{
 						Left = 0.400000 24.000000
 						Right = 1.000000 -5.000000
@@ -267,7 +266,7 @@ Root
 						UIScript = "USEventListener"
 					}
 
-					Checkbox = "Bloom Checkbox"
+					UICheckbox = "Bloom Checkbox"
 					{
 						Left = 0.400000 5.000000
 						Right = 0.400000 19.000000
@@ -286,7 +285,7 @@ Root
 						UIScript = "USEventListener"
 					}
 
-					List = "Rendering Method"
+					UIList = "Rendering Method"
 					{
 						Left = 0.400000 3.000000
 						Right = 1.000000 -3.000000
@@ -300,7 +299,6 @@ Root
 						State = "Enabled"
 						Sticky = false
 						Animation Time = 0.150000
-						Menu
 
 						Entries = String[]
 						{
@@ -390,9 +388,6 @@ Root
 		"Models/torch.r5a"
 		"Models/fern.r5a"
 		"Models/peasant.r5c"
-		"../../DotC/Resources/Models/NPCs/peasant.r5a"
-		"C:\Users\michaell\Documents\3dsmax\export\test.r5a"
-		"../../DotC/Resources/Models/Held/axe.r5a"
 		"Models/shadow test.r5a"
 		"Models/dummy.r5a"
 		"Models/peasant.r5a"

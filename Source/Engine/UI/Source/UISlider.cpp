@@ -58,9 +58,9 @@ void UISlider::SetSkin (const UISkin* skin, bool setDirty)
 	{
 		if (setDirty) SetDirty();
 		mSkin	= const_cast<UISkin*>(skin);
-		mFull	= mSkin->GetFace( "Slider: Full"  );
-		mEmpty	= mSkin->GetFace( "Slider: Empty" );
-		mKnob	= mSkin->GetFace( "Slider: Knob"  );
+		mFull	= mSkin->GetFace(mPrefix + ": Full" );
+		mEmpty	= mSkin->GetFace(mPrefix + ": Empty");
+		mKnob	= mSkin->GetFace(mPrefix + ": Knob" );
 		if (setDirty) SetDirty();
 	}
 }
@@ -75,6 +75,26 @@ void UISlider::SetColor(const Color3f& color)
 	{
 		mColor = color;
 		SetDirty();
+	}
+}
+
+//============================================================================================================
+// Sets the prefix used by the slider
+//============================================================================================================
+
+void UISlider::SetPrefix (const String& prefix)
+{
+	if (mPrefix != prefix)
+	{
+		mPrefix = prefix;
+
+		if (mSkin != 0)
+		{
+			mFull	= mSkin->GetFace(mPrefix + ": Full" );
+			mEmpty	= mSkin->GetFace(mPrefix + ": Empty");
+			mKnob	= mSkin->GetFace(mPrefix + ": Knob" );
+			SetDirty();
+		}
 	}
 }
 
@@ -207,6 +227,11 @@ bool UISlider::OnSerializeFrom (const TreeNode& node)
 		if (value >> color) SetColor(color);
 		return true;
 	}
+	else if (node.mTag == "Prefix")
+	{
+		SetPrefix( value.IsString() ? value.AsString() : value.GetString() );
+		return true;
+	}
 	return false;
 }
 
@@ -221,6 +246,9 @@ void UISlider::OnSerializeTo (TreeNode& node) const
 
 	node.AddChild("Value", mVal);
 	node.AddChild("Color", mColor);
+
+	// Add the optional prefix if it's different from its default value
+	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
 }
 
 //============================================================================================================

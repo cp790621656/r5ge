@@ -34,7 +34,7 @@ Root
 				Texture 5 = "Textures/Other/snow_ns.png"
 			}
 		}
-		
+
 		Material = "Test"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000

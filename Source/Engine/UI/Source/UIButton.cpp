@@ -74,7 +74,7 @@ void UIButton::SetDirty()
 bool UIButton::OnUpdate (bool dimensionsChanged)
 {
 	// Use the default face for the sake of calculating proper dimensions
-	if (mImage.GetFace() == 0) mImage.SetFace("Button: Enabled", false);
+	if (mImage.GetFace() == 0) mImage.SetFace(mPrefix + ": Enabled", false);
 
 	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged, true);
 	mLabel.Update(mImage.GetSubRegion(), dimensionsChanged, true);

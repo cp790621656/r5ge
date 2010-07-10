@@ -37,7 +37,7 @@ public:
 	UIWindow();
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Window", UIWindow, UIAnimatedFrame, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIWindow", UIWindow, UIAnimatedFrame, UIWidget);
 
 	const UISkin*	GetSkin()			const		{ return mBackground.GetSkin();	}
 	const String&	GetPrefix()			const		{ return mPrefix;				}

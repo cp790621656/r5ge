@@ -15,7 +15,7 @@ Root
 		Default AF = 8
 		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 100.000000 200.000000
-		
+
 		Material = "Peasant"
 		{
 			Diffuse = 1.000000 1.000000 1.000000 1.000000
@@ -88,7 +88,7 @@ Root
 				}
 			}
 		}
-		
+
 		Model Template = "Peasant"
 		{
 			Source = "Models/NPCs/Peasant.r5a"

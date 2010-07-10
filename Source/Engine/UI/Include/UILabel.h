@@ -35,7 +35,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Label", UILabel, UIBasicLabel, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UILabel", UILabel, UIBasicLabel, UIWidget);
 
 	// Called when a queue is being rebuilt
 	virtual void OnFill (UIQueue* queue);

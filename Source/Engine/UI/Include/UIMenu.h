@@ -55,7 +55,7 @@ protected:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Menu", UIMenu, UIAnimatedButton, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIMenu", UIMenu, UIAnimatedButton, UIWidget);
 
 	// Serialization
 	virtual bool OnSerializeFrom (const TreeNode& node);

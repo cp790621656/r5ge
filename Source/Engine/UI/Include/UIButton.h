@@ -62,7 +62,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Button", UIButton, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIButton", UIButton, UIWidget, UIWidget);
 
 	// Internal functions. These values are normally set by Root::CreateArea
 	virtual void _SetParentPtr (UIWidget* ptr);

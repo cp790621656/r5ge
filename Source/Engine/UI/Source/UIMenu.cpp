@@ -178,7 +178,7 @@ bool UIMenu::OnSerializeFrom (const TreeNode& node)
 	{
 		return true;
 	}
-	else if (node.mTag == "Menu")
+	else if (node.mTag == "Menu Face")
 	{
 		mMenuFace = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
 		return true;
@@ -207,6 +207,6 @@ bool UIMenu::OnSerializeFrom (const TreeNode& node)
 void UIMenu::OnSerializeTo (TreeNode& node) const
 {
 	BaseClass::OnSerializeTo (node);
-	node.AddChild("Menu", mMenuFace);
+	node.AddChild("Menu Face", mMenuFace);
 	node.AddChild("Entries", mEntries);
 }

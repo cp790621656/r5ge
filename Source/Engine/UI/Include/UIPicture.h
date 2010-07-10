@@ -26,7 +26,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Picture", UIPicture, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIPicture", UIPicture, UIWidget, UIWidget);
 
 protected:
 

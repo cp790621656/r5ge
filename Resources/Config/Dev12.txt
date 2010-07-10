@@ -24,7 +24,7 @@ Root
 
 		Layout
 		{
-			Window = "First Window"
+			UIWindow = "First UIWindow"
 			{
 				Left = 0.000000 51.000000
 				Right = 0.000000 351.000000
@@ -40,7 +40,7 @@ Root
 				Event Handling = "Normal"
 				Layer = 0
 
-				Picture = "Scene 2: Color"
+				UIPicture = "Scene 2: Color"
 				{
 					Left = 0.000000 0.000000
 					Right = 1.000000 0.000000
@@ -54,8 +54,8 @@ Root
 					UIScript = "USMoveCamera"
 				}
 			}
-			
-			Stats = "Game Stats"
+
+			UIStats = "Game UIStats"
 			{
 				Left = 1 -150
 				Bottom = 0 250
@@ -88,7 +88,7 @@ Root
 		Object = "Scene 1"
 		{
 			Script = "OSSceneRoot"
-		
+
 			Debug Camera = "Camera 1"
 			{
 				Position = 0.000000 0.000000 1.000000

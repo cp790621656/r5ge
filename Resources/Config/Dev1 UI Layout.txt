@@ -8,10 +8,10 @@ Root
 		Default Skin = Default
 		Default Font = Arial 15
 		Tooltip Delay = 1.000
-	
+
 		Layout
 		{
-			Window = Debug
+			UIWindow = Debug
 			{
 				Left = 0.000 0 // 0
 				Right = 1.000 0 // 900
@@ -27,8 +27,8 @@ Root
 				Alignment = Center
 				Receives Events = true
 				Layer = 0
-	
-				Slider = Power
+
+				UISlider = Power
 				{
 					Left = 0.000 50 // 54
 					Right = 1.000 -8 // 891
@@ -41,8 +41,8 @@ Root
 					Animation Time = 0.000
 					Receives Events = true
 					Layer = 0
-	
-					Label = Power Text
+
+					UILabel = Power Text
 					{
 						Left = 0.000 -45 // 9
 						Right = 1.000 0 // 891
@@ -55,8 +55,8 @@ Root
 						Receives Events = false
 						Layer = 1
 					}
-	
-					Label = Power Value
+
+					UILabel = Power Value
 					{
 						Left = 0.000 1 // 55
 						Right = 1.000 -1 // 890
@@ -72,8 +72,8 @@ Root
 						Layer = 1
 					}
 				}
-	
-				Slider = Range
+
+				UISlider = Range
 				{
 					Left = 0.000 50 // 54
 					Right = 1.000 -8 // 891
@@ -86,8 +86,8 @@ Root
 					Animation Time = 0.000
 					Receives Events = true
 					Layer = 0
-	
-					Label = Range Text
+
+					UILabel = Range Text
 					{
 						Left = 0.000 -45 // 9
 						Right = 1.000 0 // 891
@@ -100,8 +100,8 @@ Root
 						Receives Events = false
 						Layer = 1
 					}
-	
-					Label = Range Value
+
+					UILabel = Range Value
 					{
 						Left = 0.000 1 // 55
 						Right = 1.000 -1 // 890
@@ -117,8 +117,8 @@ Root
 						Layer = 1
 					}
 				}
-	
-				Slider = Brightness
+
+				UISlider = Brightness
 				{
 					Left = 0.000 50 // 54
 					Right = 1.000 -8 // 891
@@ -131,8 +131,8 @@ Root
 					Animation Time = 0.000
 					Receives Events = true
 					Layer = 0
-	
-					Label = Brightness Text
+
+					UILabel = Brightness Text
 					{
 						Left = 0.000 -45 // 9
 						Right = 1.000 0 // 891
@@ -145,8 +145,8 @@ Root
 						Receives Events = false
 						Layer = 1
 					}
-	
-					Label = Brightness Value
+
+					UILabel = Brightness Value
 					{
 						Left = 0.000 1 // 55
 						Right = 1.000 -1 // 890
@@ -164,7 +164,7 @@ Root
 				}
 			}
 
-	 		Window = First Window
+			UIWindow = First UIWindow
 			{
 				Left = 0.000 5 // 5
 				Right = 0.000 328 // 328
@@ -175,13 +175,13 @@ Root
 				Titlebar Height = 18
 				Color = 1.000 1.000 1.000
 				Font = Arial 15
-				Text = First Window
+				Text = First UIWindow
 				Shadow = true
 				Alignment = Center
 				Receives Events = true
 				Layer = 0
-	
-				Slider = First Slider
+
+				UISlider = First UISlider
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -196,8 +196,8 @@ Root
 					Tooltip = Feel free to drag it around!
 					Layer = 0
 				}
-	
-				Button = Third Button
+
+				UIButton = Third UIButton
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -216,8 +216,8 @@ Root
 					Receives Events = true
 					Layer = 0
 				}
-	
-				Input = First Input
+
+				UIInput = First UIInput
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -244,8 +244,8 @@ Root
 					Receives Events = true
 					Layer = 0
 				}
-	
-				Checkbox = First Checkbox
+
+				UICheckbox = First UICheckbox
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -254,15 +254,15 @@ Root
 					Alpha = 1.000 // 1.000
 					Skin = Default
 					Font = Arial 15
-					Text = Checkbox Test
+					Text = UICheckbox Test
 					Alignment = Left
 					State = Checked
 					Animation Time = 0.150
 					Receives Events = true
 					Layer = 0
 				}
-	
-				Button = Second Button
+
+				UIButton = Second UIButton
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -281,8 +281,8 @@ Root
 					Receives Events = true
 					Layer = 0
 				}
-	
-				Button = First Button
+
+				UIButton = First UIButton
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -302,8 +302,8 @@ Root
 					Tooltip = You can click it, you know...
 					Layer = 0
 				}
-	
-				List = First List
+
+				UIList = First UIList
 				{
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
@@ -317,7 +317,7 @@ Root
 					Text = Four is the charm
 					Shadow = true
 					Alignment = Right
-	
+
 					Entries
 					{
 						Testing 123
@@ -326,7 +326,7 @@ Root
 						Four is the charm
 						Five is alright
 					}
-	
+
 					Receives Events = true
 					Layer = 0
 				}

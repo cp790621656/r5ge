@@ -19,7 +19,7 @@ public:
 	UIBasicLabel() : mStart(0), mEnd(0) {}
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("Basic Label", UIBasicLabel, UITextLine, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UIBasicLabel", UIBasicLabel, UITextLine, UIWidget);
 
 	// Called when a queue is being rebuilt
 	virtual void OnFill (UIQueue* queue);

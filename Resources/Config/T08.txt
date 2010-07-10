@@ -25,16 +25,16 @@ Root
 
 		Layout
 		{
-			Frame
+			UIFrame
 			{
 				Receives Events = false
 
-				Highlight = "Backdrop"
+				UIHighlight = "Backdrop"
 				{
 					Top = 1.0 -20
 					Color = 0 0 0 0.5
 
-					Label = "Status"
+					UILabel = "Status"
 					{
 						Color = 1.000000 0.50000 0.250000
 						Font = "Arial 15"

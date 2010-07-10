@@ -31,7 +31,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("SubPicture", UISubPicture, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS("UISubPicture", UISubPicture, UIWidget, UIWidget);
 
 	// Area functions
 	virtual const UIRegion& GetSubRegion() const { return mSubRegion; }

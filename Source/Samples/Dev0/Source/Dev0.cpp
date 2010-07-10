@@ -6,6 +6,7 @@
 //============================================================================================================
 
 #include "../../../Engine/Serialization/Include/_All.h"
+#include "../../../Engine/UI/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -19,59 +20,47 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath(path.GetBuffer());
 	System::SetCurrentPath("../../../");
 #endif
-	TreeNode root;
-	Array<String> folders;
+	System::SetCurrentPath("../../../Resources/Config");
+	
 	Array<String> files;
+	Array<String> folders;
+	String temp;
 
-	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.1.1\n");
+	System::ReadFolder(System::GetCurrentPath(), folders, files);
 
-	String cwd (System::GetCurrentPath());
-
-	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
+	FOREACH(i, files)
 	{
-		String command, url, path;
+		const String& file = files[i];
 
-		FOREACH(i, root.mChildren)
+		if (file.EndsWith(".txt") && temp.Load(file))
 		{
-			const TreeNode& node = root.mChildren[i];
-			url = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
-
-			if (url.IsEmpty())
-			{
-				if (System::FileExists(node.mTag))
-				{
-					printf("\nExecuting '%s'\n", node.mTag.GetBuffer());
-					System::Execute(cwd + node.mTag);
-				}
-				continue;
-			}
-
-			path = node.mTag;
-			if (!path.EndsWith("/")) path << "/";
-
-			if (!System::ReadFolder(path + ".svn", folders, files))
-			{
-				printf("\nChecking out %s\n\n", path.GetBuffer());
-				command = "svn checkout """;
-				command << url;
-				command << """ """;
-				command << path;
-				command << """";
-			}
-			else
-			{
-				printf("\nUpdating %s\n", path.GetBuffer());
-				command = "svn up """;
-				command << path;
-				command << """";
-			}
-			System::Execute(command.GetBuffer());
+			printf("Processing '%s'... ", file.GetBuffer());
+			uint count (0);
+			/*count += temp.Replace(UIWidget::ClassID(), "UIWidget");
+			count += temp.Replace(UIHighlight::ClassID(), "UIHighlight");
+			count += temp.Replace(UIPicture::ClassID(), "UIPicture");
+			count += temp.Replace(UISubPicture::ClassID(), "UISubPicture");
+			count += temp.Replace(UILabel::ClassID(), "UILabel");
+			count += temp.Replace(UITextArea::ClassID(), "UITextArea");
+			count += temp.Replace(UIInput::ClassID(), "UIInput");
+			count += temp.Replace(UIContext::ClassID(), "UIContext");
+			count += temp.Replace(UIMenu::ClassID(), "UIMenu");
+			count += temp.Replace(UIList::ClassID(), "UIList");
+			count += temp.Replace(UIWindow::ClassID(), "UIWindow");
+			count += temp.Replace(UIAnimatedFrame::ClassID(), "UIFrame");
+			count += temp.Replace(UIAnimatedSlider::ClassID(), "UISlider");
+			count += temp.Replace(UIAnimatedButton::ClassID(), "UIButton");
+			count += temp.Replace(UIAnimatedCheckbox::ClassID(), "UICheckbox");
+			count += temp.Replace(UIShadedArea::ClassID(), "UIShadedArea");
+			count += temp.Replace(UIStats::ClassID(), "UIStats");
+			count += temp.Replace("USEventUIListener", "USEventListener");*/
+			//count += temp.Replace("UIWindow\n", "Window\n");
+			count += temp.Replace("\t\n", "\n");
+			printf("%u\n", count);
+			temp.Save(file);
 		}
 	}
-	else
-	{
-		System::Execute("svn up");
-	}
+
 	printf("\nDone!\n");
 	getchar();
 	return 0;
