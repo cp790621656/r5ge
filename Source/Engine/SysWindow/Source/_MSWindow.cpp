@@ -33,7 +33,7 @@ inline ulong GetWindowsStyle(uint style)
 	if (style == IWindow::Style::Normal)		return common | titlebar | resizeable;
 	if (style == IWindow::Style::Fixed)			return common | titlebar;
 	if (style == IWindow::Style::Child)			return common | WS_VISIBLE | WS_CHILD;
-	if (style == IWindow::Style::FullScreen)	return common | WS_VISIBLE | WS_POPUP | WS_EX_TOPMOST;
+	if (style == IWindow::Style::FullScreen)	return common | WS_VISIBLE | WS_POPUP | WS_EX_TOPMOST | WS_EX_DLGMODALFRAME;
 
 	return WS_POPUP;
 }
@@ -116,11 +116,18 @@ long R5::GlobalEventHandler(HWND hWnd, UINT eventId, UINT first, UINT second)
 			{
 				win->mIsMinimized = (first == SIZE_MINIMIZED);
 
-				if ( !win->mIsMinimized && win->mStyle != IWindow::Style::FullScreen )
+				if (!win->mIsMinimized)
 				{
-					Vector2i size(second);
-					win->mSize = size;
-					if (handler != 0) handler->OnResize(size);
+					if (win->mStyle != IWindow::Style::FullScreen)
+					{
+						Vector2i size(second);
+						win->mSize = size;
+						if (handler != 0) handler->OnResize(size);
+					}
+					else
+					{
+						::SetActiveWindow(win->mHWnd);
+					}
 				}
 			}
 			break;
@@ -133,6 +140,10 @@ long R5::GlobalEventHandler(HWND hWnd, UINT eventId, UINT first, UINT second)
 					if ( LOWORD(first) == WA_INACTIVE )
 					{
 						::ShowWindow(win->mHWnd, SW_MINIMIZE);
+					}
+					else
+					{
+						::SetActiveWindow(win->mHWnd);
 					}
 				}
 			}
