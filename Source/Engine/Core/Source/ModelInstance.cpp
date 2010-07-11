@@ -83,8 +83,11 @@ bool ModelInstance::OnFill (FillParams& params)
 					{
 						bool isVisible (true);
 
-						// Models with 3 or more limbs should cull their limbs individually
-						if (limbs.GetSize() > 2)
+						// Models with 3 or more limbs should cull their limbs individually,
+						// but only if the model is referenced just once. This is a quick-and-dirty
+						// optimization for complex scenes created as one large model.
+
+						if ((limbs.GetSize() > 2) && (mModel->GetNumberOfReferences() == 1))
 						{
 							Bounds bounds (limb->GetMesh()->GetBounds());
 							bounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
