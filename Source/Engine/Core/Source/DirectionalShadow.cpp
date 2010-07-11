@@ -141,7 +141,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 		max = bounds.GetMax();
 	}
 
-	// Narrow the selection down to only what's going to affect what's currently visible
+	// Narrow the selection down to only what's going to affect what the camera sees
 	{
 		// Start with 8 camera frustum points in world space
 		Vector3f corners[8];
@@ -156,7 +156,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 		Vector3f projMin (bounds.GetMin());
 		Vector3f projMax (bounds.GetMax());
 
-		// Choose the minimum values for everything but 'minY' (toward the light)
+		// Choose the minimum values for everything but 'minY' (directional lights have no 'near' plane)
 		min.x = Float::Max(projMin.x, min.x);
 		min.z = Float::Max(projMin.z, min.z);
 		max.x = Float::Min(projMax.x, max.x);
@@ -169,7 +169,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 	Vector3f size (max - min);
 	proj.SetToBox(size.x, size.z, size.y);
 
-	// Cull the light's scene
+	// Cull the light's scene (box's center gets transformed back to world space)
 	tempScene.Cull( ((max + min) * 0.5f) * rot, rot, proj );
 
 	// Create a matrix that will transform the coordinates from camera to light space

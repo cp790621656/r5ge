@@ -81,17 +81,35 @@ bool ModelInstance::OnFill (FillParams& params)
 
 					if (limb->IsValid())
 					{
-						IMaterial* mat = limb->GetMaterial();
-						params.mDrawQueue.Add(mLayer, this, mat->GetTechniqueMask(), mat->GetUID(), dist);
+						bool isVisible (true);
+
+						// Models with 3 or more limbs should cull their limbs individually
+						if (limbs.GetSize() > 2)
+						{
+							Bounds bounds (limb->GetMesh()->GetBounds());
+							bounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
+							isVisible = params.mFrustum.IsVisible(bounds);
+						}
+
+						// Update the limb's visibility flag
+						limb->SetVisible(isVisible);
+
+						// If the limb is visible, add this model to the draw queue
+						if (isVisible)
+						{
+							IMaterial* mat = limb->GetMaterial();
+							params.mDrawQueue.Add(mLayer, this, mat->GetTechniqueMask(), mat->GetUID(), dist);	
+						}
 					}
 				}
 			}
 			mModel->Unlock();
 		}
-		else
+		else if (limbs.IsValid())
 		{
 			// If we only have 1 limb, it makes sense to group by model instead
 			params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel->GetUID(), dist);
+			limbs[0]->SetVisible(true);
 		}
 	}
 	return true;
