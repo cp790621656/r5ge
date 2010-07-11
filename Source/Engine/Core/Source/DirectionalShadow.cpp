@@ -21,6 +21,9 @@ DirectionalShadow::DirectionalShadow() :
 	mGraphics			(0),
 	mTextureSize		(2048),
 	mBlurPasses			(1),
+	mSoftness			(1.0f),
+	mKernelSize			(2.0f),
+	mDepthBias			(3.0f),
 	mLightDepthTarget	(0),
 	mShadowTarget		(0),
 	mBlurTarget0		(0),
@@ -123,28 +126,51 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 
 	// Light's rotation
 	Quaternion rot (dir);
+	Quaternion invRot (-rot);
+	Vector3f min, max;
 
-	// Get the scene's calculated bounds and extents
-	// TODO: Figure out a proper way of calculating the light frustum
-	Bounds bounds (root->GetCompleteBounds());
-	Vector3f extents ((bounds.GetMax() - bounds.GetMin()) * 0.5f);
-	Vector3f center (bounds.GetCenter());
+	// Consider the entire scene at first
+	{
+		// Get the scene's calculated bounds and center
+		Bounds bounds (root->GetCompleteBounds());
+		Vector3f sceneCenter (bounds.GetCenter());
 
-	// Transform the scene's bounds into light space
-	bounds.Reset();
-	bounds.Include(center + extents);
-	bounds.Include(center - extents);
-	bounds.Transform(Vector3f(), -rot, 1.0f);
+		// Transform the scene's bounds into light view
+		bounds.Transform(Vector3f(), invRot, 1.0f);
+		min = bounds.GetMin();
+		max = bounds.GetMax();
+	}
 
-	// Transformed size of the scene
-	Vector3f size (bounds.GetMax() - bounds.GetMin());
+	// Narrow the selection down to only what's going to affect what's currently visible
+	{
+		// Start with 8 camera frustum points in world space
+		Vector3f corners[8];
+		camIMVP.GetCorners(corners);
+
+		// Rotate all points into light view
+		for (uint i = 0; i < 8; ++i) corners[i] *= invRot;
+
+		// Figure out the minimum and maximum values for the bounding box.
+		Bounds bounds;
+		for (uint i = 0; i < 8; ++i) bounds.Include(corners[i]);
+		Vector3f projMin (bounds.GetMin());
+		Vector3f projMax (bounds.GetMax());
+
+		// Choose the minimum values for everything but 'minY' (toward the light)
+		min.x = Float::Max(projMin.x, min.x);
+		min.z = Float::Max(projMin.z, min.z);
+		max.x = Float::Min(projMax.x, max.x);
+		max.y = Float::Min(projMax.y, max.y);
+		max.z = Float::Min(projMax.z, max.z);
+	}
 
 	// Projection matrix should be an ortho box large enough to hold the entire transformed scene
 	Matrix44 proj;
+	Vector3f size (max - min);
 	proj.SetToBox(size.x, size.z, size.y);
 
 	// Cull the light's scene
-	tempScene.Cull(center, rot, proj);
+	tempScene.Cull( ((max + min) * 0.5f) * rot, rot, proj );
 
 	// Create a matrix that will transform the coordinates from camera to light space
 	// Bias matrix transforming -1 to 1 range into 0 to 1
@@ -152,7 +178,8 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 	static Matrix43 screenToMVP (Vector3f(-1.0f, -1.0f, -1.0f), 2.0f);
 
 	// Tweak the projection matrix in order to remove z-fighting
-	proj.Translate(Vector3f(0.0f, 0.0f, -(200.0f / mTextureSize) / size.y));
+	float bias = -(mDepthBias * Float::Max(1.0f, mKernelSize)) / mTextureSize;
+	proj.Translate(Vector3f(0.0f, 0.0f, bias));
 
 	// The shader variables are global so they can be used even if the script gets destroyed
 	{
@@ -163,10 +190,10 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 		g_shadowMat *= proj;
 		g_shadowMat *= mvpToScreen;
 
-		// 1-pixel 30 degree rotated kernel (0.866, 0.5) multiplied by 2
+		// 30 degree rotated kernel
 		g_shadowOffset = mLightDepthTex->GetSize();
-		g_shadowOffset.x = 1.732f / g_shadowOffset.x;
-		g_shadowOffset.y = 1.0f / g_shadowOffset.y;
+		g_shadowOffset.x = mKernelSize * 0.866f / g_shadowOffset.x;
+		g_shadowOffset.y = mKernelSize * 0.5f / g_shadowOffset.y;
 	}
 
 	// Draw the scene from the light's point of view, creating the "Light Depth" texture
@@ -248,13 +275,13 @@ void DirectionalShadow::BlurShadows (const ITexture* camDepth)
 	{
 		mGraphics->SetActiveRenderTarget(mBlurTarget0);
 		mGraphics->SetActiveShader(mBlurH);
-		if (i == 0) mBlurH->SetUniform("threshold", Vector2f(1.0f / 1920.0f, 40.0f / 1920.0f));
+		if (i == 0) mBlurH->SetUniform("threshold", Vector2f(1.0f / 1920.0f, mSoftness * 80.0f / 1920.0f));
 		mGraphics->SetActiveTexture(1, mShadowTex);
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 
 		mGraphics->SetActiveRenderTarget(mBlurTarget1);
 		mGraphics->SetActiveShader(mBlurV);
-		if (i == 0) mBlurV->SetUniform("threshold", Vector2f(1.0f / 1200.0f, 40.0f / 1200.0f));
+		if (i == 0) mBlurV->SetUniform("threshold", Vector2f(1.0f / 1200.0f, mSoftness * 80.0f / 1200.0f));
 		mGraphics->SetActiveTexture(1, mBlurTex0);
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 	}
@@ -287,6 +314,9 @@ void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 {
 	node.AddChild("Texture Size", mTextureSize);
 	node.AddChild("Blur Passes", mBlurPasses);
+	node.AddChild("Softness", mSoftness);
+	node.AddChild("Kernel Size", mKernelSize);
+	node.AddChild("Depth Bias", mDepthBias);
 }
 
 //============================================================================================================
@@ -297,4 +327,7 @@ void DirectionalShadow::OnSerializeFrom (const TreeNode& node)
 {
 	if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
 	else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
+	else if (node.mTag == "Softness")		node.mValue >> mSoftness;
+	else if (node.mTag == "Kernel Size")	node.mValue >> mKernelSize;
+	else if (node.mTag == "Depth Bias")		node.mValue >> mDepthBias;
 }

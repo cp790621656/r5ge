@@ -40,10 +40,16 @@ public:
 	void Invert();
 
 	// Converts a 3D position into 0-1 range screen space
+	// NOTE: To be used with a Model-View-Projection Matrix
 	Vector2f Project (const Vector3f& pos) const;
 
 	// Converts screen space 0-1 range coordinates into 3D space
+	// NOTE: To be used with an Inverse Model-View-Projection Matrix
 	Vector3f Unproject (const Vector2f& pos, float depth) const;
+
+	// Retrieves the 8 corners of the projection matrix
+	// NOTE: To be used with an Inverse Model-View-Projection Matrix
+	void GetCorners (Vector3f corners[8]) const;
 };
 
 //============================================================================================================

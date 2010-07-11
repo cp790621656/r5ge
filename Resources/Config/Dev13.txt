@@ -35,57 +35,49 @@ Root
 				Event Handling = "None"
 				Layer = 0
 			}
-
-			UIPicture = "Shadowmap"
-			{
-				Right = 0 300
-				Bottom = 0 200
-				Texture = "Shadowmap"
-				Ignore Alpha = true
-			}
 		}
 	}
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
-		{
-			Position = -0.901637 -0.396084 0.809464
-			Rotation = -0.256698 0.001887 -0.007112 0.966464
-			Range = 1.000000 50.000000 90.000000
-			Dolly = 0.000000 19.752630 50.000000
-
-			Script = "OSDrawDeferred"
-			{
-				AO Quality = 1
-				AO Properties = 0.5 4.0 1.0
-			}
-		}
-
-		Directional Light = "First Light"
-		{
-			Rotation = -0.477128 -0.101366 0.181409 0.853912
-			Ambient = 0.150000 0.150000 0.150000
-			Diffuse = 0.450000 0.450000 0.450000
-			Specular = 1.000000 1.000000 1.000000
-			Brightness = 1.000000
-			Shadows = true
-			Script = "OSRotateLight"
-		}
-
-		Directional Light = "Second Light"
-		{
-			Rotation = -30 25 0
-			Ambient = 0.150000 0.150000 0.150000
-			Diffuse = 0.450000 0.450000 0.450000
-			Specular = 1.000000 1.000000 1.000000
-			Brightness = 1.000000
-			Shadows = true
-		}
-
 		Model Instance = "Test Scene"
 		{
+			Scale = 1.0
 			Model = "Models/shadow test.r5a"
+			
+			Directional Light = "First Light"
+			{
+				Rotation = -0.477128 -0.101366 0.181409 0.853912
+				Ambient = 0.2 0.2 0.2
+				Diffuse = 0.8 0.8 0.8
+				Specular = 1.000000 1.000000 1.000000
+				Brightness = 1.000000
+				Shadows = true
+				Script = "OSRotateLight"
+			}
+			
+			Debug Camera = "Default Camera"
+			{
+				Position = -0.901637 -0.396084 0.809464
+				Rotation = -0.256698 0.001887 -0.007112 0.966464
+				Range = 1.000000 200.000000 90.000000
+				Dolly = 0.000000 19.752630 50.000000
+
+				Script = "OSDrawDeferred"
+				{
+					AO Quality = 1
+					AO Properties = 0.5 4.0 1.0
+					
+					Shadowmap
+					{
+						Texture Size = 2048
+						Blur Passes = 2
+						Softness = 3
+						Kernel Size = 1
+						Depth Bias = 6
+					}
+				}
+			}
 		}
 	}
 }

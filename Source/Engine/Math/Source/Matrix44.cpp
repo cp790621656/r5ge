@@ -249,7 +249,7 @@ void Matrix44::Invert()
 // Converts a 3D position into 0-1 range screen space
 //============================================================================================================
 
-Vector2f Matrix44::Project(const Vector3f& pos) const
+Vector2f Matrix44::Project (const Vector3f& pos) const
 {
 	Vector2f out ( pos.x * mF[0] + pos.y * mF[4] + pos.z * mF[ 8] + mF[12],
 				   pos.x * mF[1] + pos.y * mF[5] + pos.z * mF[ 9] + mF[13] );
@@ -273,7 +273,7 @@ Vector2f Matrix44::Project(const Vector3f& pos) const
 // Converts screen space 0-1 range coordinates into 3D space
 //============================================================================================================
 
-Vector3f Matrix44::Unproject(const Vector2f& pos, float depth) const
+Vector3f Matrix44::Unproject (const Vector2f& pos, float depth) const
 {
 	float px = pos.x * 2.0f - 1.0f;
 	float py = pos.y * 2.0f - 1.0f;
@@ -286,4 +286,93 @@ Vector3f Matrix44::Unproject(const Vector2f& pos, float depth) const
 
 	if (Float::IsNotZero(factor)) out /= factor;
 	return out;
+}
+
+//============================================================================================================
+// Retrieves the 8 corners of the projection matrix
+//============================================================================================================
+
+void Matrix44::GetCorners (Vector3f corners[8]) const
+{
+	float factor[8];
+
+	// 0 0 0
+	{
+		Vector3f& v = corners[0];
+		v.x			= mF[12] - mF[0] - mF[4] - mF[ 8];
+		v.y			= mF[13] - mF[1] - mF[5] - mF[ 9];
+		v.z			= mF[14] - mF[2] - mF[6] - mF[10];
+		factor[0]	= mF[15] - mF[3] - mF[7] - mF[11];
+	}
+
+	// 1 0 0
+	{
+		Vector3f& v = corners[1];
+		v.x			= mF[12] + mF[0] - mF[4] - mF[ 8];
+		v.y			= mF[13] + mF[1] - mF[5] - mF[ 9];
+		v.z			= mF[14] + mF[2] - mF[6] - mF[10];
+		factor[1]	= mF[15] + mF[3] - mF[7] - mF[11];
+	}
+
+	// 0 1 0
+	{
+		Vector3f& v = corners[2];
+		v.x			= mF[12] - mF[0] + mF[4] - mF[ 8];
+		v.y			= mF[13] - mF[1] + mF[5] - mF[ 9];
+		v.z			= mF[14] - mF[2] + mF[6] - mF[10];
+		factor[2]	= mF[15] - mF[3] + mF[7] - mF[11];
+	}
+
+	// 1 1 0
+	{
+		Vector3f& v = corners[3];
+		v.x			= mF[12] + mF[0] + mF[4] - mF[ 8];
+		v.y			= mF[13] + mF[1] + mF[5] - mF[ 9];
+		v.z			= mF[14] + mF[2] + mF[6] - mF[10];
+		factor[3]	= mF[15] + mF[3] + mF[7] - mF[11];
+	}
+
+	// 0 0 1
+	{
+		Vector3f& v = corners[4];
+		v.x			= mF[12] - mF[0] - mF[4] + mF[ 8];
+		v.y			= mF[13] - mF[1] - mF[5] + mF[ 9];
+		v.z			= mF[14] - mF[2] - mF[6] + mF[10];
+		factor[4]	= mF[15] - mF[3] - mF[7] + mF[11];
+	}
+
+	// 1 0 1
+	{
+		Vector3f& v = corners[5];
+		v.x			= mF[12] + mF[0] - mF[4] + mF[ 8];
+		v.y			= mF[13] + mF[1] - mF[5] + mF[ 9];
+		v.z			= mF[14] + mF[2] - mF[6] + mF[10];
+		factor[5]	= mF[15] + mF[3] - mF[7] + mF[11];
+	}
+
+	// 0 1 1
+	{
+		Vector3f& v = corners[6];
+		v.x			= mF[12] - mF[0] + mF[4] + mF[ 8];
+		v.y			= mF[13] - mF[1] + mF[5] + mF[ 9];
+		v.z			= mF[14] - mF[2] + mF[6] + mF[10];
+		factor[6]	= mF[15] - mF[3] + mF[7] + mF[11];
+	}
+
+	// 1 1 1
+	{
+		Vector3f& v = corners[7];
+		v.x			= mF[12] + mF[0] + mF[4] + mF[ 8];
+		v.y			= mF[13] + mF[1] + mF[5] + mF[ 9];
+		v.z			= mF[14] + mF[2] + mF[6] + mF[10];
+		factor[7]	= mF[15] + mF[3] + mF[7] + mF[11];
+	}
+
+	for (uint i = 0; i < 8; ++i)
+	{
+		if (Float::IsNotZero(factor[i]))
+		{
+			corners[i] /= factor[i];
+		}
+	}
 }
