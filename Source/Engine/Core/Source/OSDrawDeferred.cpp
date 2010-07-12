@@ -190,7 +190,7 @@ void OSDrawDeferred::LightStage()
 						if (entry.mLight->IsOfClass(DirectionalLight::ClassID()))
 						{
 							// Draw the shadow
-							shadow = mShadow.Draw(mScene.GetRoot(), light.mDir, mIMVP, mDepth);
+							shadow = mShadow.Draw(mScene.GetRoot(), mObject, light.mDir, mIMVP, mDepth);
 
 							// Restore the matrices
 							mScene.ActivateMatrices();

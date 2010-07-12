@@ -102,7 +102,7 @@ void OSDrawForward::OnDraw()
 
 		// Draw the shadows and associate the shadow texture with the shadowmap
 		{
-			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), light.mDir, imvp, mDepthTexture) );
+			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), mObject, light.mDir, imvp, mDepthTexture) );
 		}
 
 		// Draw the scene normally but with a shadow texture created above

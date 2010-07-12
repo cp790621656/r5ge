@@ -13,9 +13,9 @@ struct FillParams
 	const Frustum&	mFrustum;		// Frustum used to cull the scene
 	Vector3f		mCamPos;		// Current camera position, used to sort objects
 	Vector3f		mCamDir;		// Current camera direction
-	bool			mCamChanged;	// Whether the camera has changed since last Fill() call
+	const Object*	mEye;			// Camera associated with the current fill process
 
-	FillParams (DrawQueue& q, const Frustum& f) : mDrawQueue(q), mFrustum(f) {}
+	FillParams (DrawQueue& q, const Frustum& f) : mDrawQueue(q), mFrustum(f), mEye(0) {}
 
 	inline float GetDist(const Vector3f& pos) const { return (mCamPos - pos).Dot(); }
 };

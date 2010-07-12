@@ -68,7 +68,7 @@ void Scene::Cull (const Camera* cam)
 	{
 		Cull( cam->GetAbsolutePosition(),
 			  cam->GetAbsoluteRotation(),
-			  cam->GetAbsoluteRange() );
+			  cam->GetAbsoluteRange(), cam );
 	}
 }
 
@@ -78,25 +78,21 @@ void Scene::Cull (const Camera* cam)
 
 void Scene::Cull (const CameraController& cam)
 {
-	Cull(cam.GetPosition(), cam.GetRotation(), cam.GetRange());
+	Cull(cam.GetPosition(), cam.GetRotation(), cam.GetRange(), cam.GetActiveCamera());
 }
 
 //============================================================================================================
 // Culls the scene's objects, given the specified camera's perspective
 //============================================================================================================
 
-void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range)
+void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range, const Object* eye)
 {
 	if (mRoot != 0)
 	{
-		bool camChanged = (mLastCamPos != pos || mLastCamRot != rot || mLastCamRange != range);
-
-		if (camChanged)
-		{
-			mLastCamPos		= pos;
-			mLastCamRot		= rot;
-			mLastCamRange	= range;
-		}
+		// Remember these values for ActivateMatrices() call
+		mLastCamPos		= pos;
+		mLastCamRot		= rot;
+		mLastCamRange	= range;
 
 		// Activate the matrices
 		ActivateMatrices();
@@ -111,7 +107,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 		mHits.Clear();
 
 		// Cull the scene
-		_Cull(mFrustum, pos, mLastCamRot.GetForward(), camChanged);
+		_Cull(mFrustum, pos, mLastCamRot.GetForward(), eye);
 	}
 }
 
@@ -119,7 +115,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& ra
 // Culls the scene's objects given the specified camera position, rotation, and projection
 //============================================================================================================
 
-void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj)
+void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj, const Object* eye)
 {
 	if (mRoot != 0)
 	{
@@ -139,7 +135,7 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& pr
 		mHits.Clear();
 
 		// Cull the scene
-		_Cull(mFrustum, mLastCamPos, mLastCamRot.GetForward(), true);
+		_Cull(mFrustum, mLastCamPos, mLastCamRot.GetForward(), eye);
 	}
 }
 
@@ -254,12 +250,12 @@ uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearScreen, 
 // Culls the scene using the specified frustum
 //============================================================================================================
 
-void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir, bool camMoved)
+void Scene::_Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir, const Object* eye)
 {
 	FillParams params (mQueue, frustum);
-	params.mCamPos		= pos;
-	params.mCamDir		= dir;
-	params.mCamChanged	= camMoved;
+	params.mCamPos	= pos;
+	params.mCamDir	= dir;
+	params.mEye		= eye;
 
 	mQueue.Clear();
 	mRoot->Fill(params);

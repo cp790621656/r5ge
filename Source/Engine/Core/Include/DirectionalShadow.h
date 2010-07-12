@@ -31,7 +31,7 @@ protected:
 	ITechnique*		mPost;
 
 	// Internal functionality
-	void DrawLightDepth (Object* root, const Vector3f& dir, const Matrix44& camIMVP);
+	void DrawLightDepth (Object* root, const Object* eye, const Vector3f& dir, const Matrix44& camIMVP);
 	void DrawShadows (const ITexture* camDepth);
 	void BlurShadows (const ITexture* camDepth);
 
@@ -55,6 +55,7 @@ public:
 	// Draw the shadow
 	ITexture* Draw (
 		Object*			root,		// Root of the scene
+		const Object*	eye,		// Object representing the eye of the shadow (used as an identifier)
 		const Vector3f& dir,		// Direction of the light
 		const Matrix44& imvp,		// Camera's inverse modelview-projection matrix
 		const ITexture* depth);		// Camera's depth

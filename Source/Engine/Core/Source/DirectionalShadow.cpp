@@ -141,7 +141,7 @@ void GetMinMax (const Vector3f corners[8], const Quaternion& invRot, float from,
 // Draw the scene from the light's perspective
 //============================================================================================================
 
-void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const Matrix44& camIMVP)
+void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const Vector3f& dir, const Matrix44& camIMVP)
 {
 	Vector2f targetSize ((float)mTextureSize, (float)mTextureSize);
 
@@ -218,7 +218,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Vector3f& dir, const
 		tempScene.SetFinalTarget(mLightDepthTarget[i]);
 
 		// Cull the light's scene (box's center gets transformed back to world space)
-		tempScene.Cull( ((splitMax + splitMin) * 0.5f) * rot, rot, proj );
+		tempScene.Cull( ((splitMax + splitMin) * 0.5f) * rot, rot, proj, eye );
 
 		// Tweak the projection matrix in order to remove z-fighting
 		proj.Translate(Vector3f(0.0f, 0.0f, bias));
@@ -335,10 +335,11 @@ void DirectionalShadow::BlurShadows (const ITexture* camDepth)
 // Draw the shadow
 //============================================================================================================
 
-ITexture* DirectionalShadow::Draw (Object* root, const Vector3f& dir, const Matrix44& imvp, const ITexture* depth)
+ITexture* DirectionalShadow::Draw (Object* root, const Object* eye, const Vector3f& dir,
+								   const Matrix44& imvp, const ITexture* depth)
 {
 	// Draw the depth from the light's perspective
-	DrawLightDepth(root, dir, imvp);
+	DrawLightDepth(root, eye, dir, imvp);
 
 	// Create shadows by combining camera's depth with light's depth
 	DrawShadows(depth);

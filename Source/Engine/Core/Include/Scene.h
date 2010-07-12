@@ -65,8 +65,8 @@ public:
 	// Changes the camera's perspective to the specified values. All objects get culled.
 	void Cull (const Camera* cam);
 	void Cull (const CameraController& cam);
-	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range);
-	void Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj);
+	void Cull (const Vector3f& pos, const Quaternion& rot, const Vector3f& range, const Object* eye = 0);
+	void Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& proj, const Object* eye = 0);
 
 	// Re-activates the scene's matrices on the graphics controller
 	// NOTE: You don't need to call this if you're calling Cull()
@@ -87,5 +87,5 @@ public:
 private:
 
 	// Culls the scene
-	void _Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir, bool camMoved);
+	void _Cull (const Frustum& frustum, const Vector3f& pos, const Vector3f& dir, const Object* eye);
 };
