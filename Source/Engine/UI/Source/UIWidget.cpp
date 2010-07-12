@@ -327,42 +327,94 @@ void UIWidget::SetKeyboardFocus()
 }
 
 //============================================================================================================
+// Constrains the specified value within the bounds
+//============================================================================================================
+
+inline float ConstrainAdjustment (float adjustment, float current, float min, float max)
+{
+	float proposed = current + adjustment;
+	if (proposed < min) return min - current;
+	if (proposed > max) return max - current;
+	return adjustment;
+}
+
+//============================================================================================================
 // Adjust the widget's region, keeping it bound within the parent's confines
 //============================================================================================================
 
 void UIWidget::Adjust (float left, float top, float right, float bottom)
 {
-	mRegion.Adjust(left, top, right, bottom);
-
-	if (mParent != 0)
+	if (mParent == 0)
 	{
-		mRegion.Update(mParent->GetSubRegion());
-
+		mRegion.Adjust(left, top, right, bottom);
+	}
+	else
+	{
 		const UIRegion& parentRgn = mParent->GetSubRegion();
 
-		if (mRegion.GetCalculatedLeft() < parentRgn.GetCalculatedLeft())
+		// Limit the movement to be within the parent's bounds
+		float adjustedLeft = ConstrainAdjustment(left,
+			mRegion.GetCalculatedLeft(),
+			parentRgn.GetCalculatedLeft(),
+			parentRgn.GetCalculatedRight());
+
+		float adjustedTop = ConstrainAdjustment(top,
+			mRegion.GetCalculatedTop(),
+			parentRgn.GetCalculatedTop(),
+			parentRgn.GetCalculatedBottom());
+
+		float adjustedRight = ConstrainAdjustment(right,
+			mRegion.GetCalculatedRight(),
+			parentRgn.GetCalculatedLeft(),
+			parentRgn.GetCalculatedRight());
+
+		float adjustedBottom = ConstrainAdjustment(bottom,
+			mRegion.GetCalculatedBottom(),
+			parentRgn.GetCalculatedTop(),
+			parentRgn.GetCalculatedBottom());
+
+		// If the movement is identical, match both sides
+		if (left == right)
 		{
-			float diff = parentRgn.GetCalculatedLeft() - mRegion.GetCalculatedLeft();
-			mRegion.Adjust(diff, 0.0f, diff, 0.0f);
-			mRegion.Update(parentRgn);
+			left = (left < 0.0f) ?	Float::Max(adjustedLeft, adjustedRight) :
+									Float::Min(adjustedLeft, adjustedRight);
+			right = left;
 		}
-		else if (mRegion.GetCalculatedRight() > parentRgn.GetCalculatedRight())
+		else
 		{
-			float diff = parentRgn.GetCalculatedRight() - mRegion.GetCalculatedRight();
-			mRegion.Adjust(diff, 0.0f, diff, 0.0f);
+			left = adjustedLeft;
+			right = adjustedRight;
+		}
+
+		if (top == bottom)
+		{
+			top = (top < 0.0f) ? Float::Max(adjustedTop, adjustedBottom) :
+								 Float::Min(adjustedTop, adjustedBottom);
+			bottom = top;
+		}
+		else
+		{
+			top = adjustedTop;
+			bottom = adjustedBottom;
+		}
+
+		// Adjust the region and update it
+		mRegion.Adjust(left, top, right, bottom);
+		mRegion.Update(parentRgn);
+
+		// Limit the width
+		if (mRegion.GetCalculatedWidth() > parentRgn.GetCalculatedWidth())
+		{
+			mRegion.SetLeft(0.0f, 0.0f);
+			mRegion.SetRight(1.0f, 0.0f);
 			mRegion.Update(parentRgn);
 		}
 
-		if (mRegion.GetCalculatedTop() < parentRgn.GetCalculatedTop())
+		// Limit the height
+		if (mRegion.GetCalculatedHeight() > parentRgn.GetCalculatedHeight())
 		{
-			float diff = parentRgn.GetCalculatedTop() - mRegion.GetCalculatedTop();
-			mRegion.Adjust(0.0f, diff, 0.0f, diff);
-			mRegion.Update(parentRgn);
-		}
-		else if (mRegion.GetCalculatedBottom() > parentRgn.GetCalculatedBottom())
-		{
-			float diff = parentRgn.GetCalculatedBottom() - mRegion.GetCalculatedBottom();
-			mRegion.Adjust(0.0f, diff, 0.0f, diff);
+			mRegion.SetTop(0.0f, 0.0f);
+			mRegion.SetBottom(1.0f, 0.0f);
 			mRegion.Update(parentRgn);
 		}
 	}
