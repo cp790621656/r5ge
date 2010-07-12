@@ -76,7 +76,24 @@ Root
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
 			Range = 0.300000 30.000000 90.000000
 			Dolly = 0.000000 1.897729 15.000000
+
 			Script = "OSDrawDeferred"
+			{
+				Shadowmap
+				{
+					Texture Size = 1024
+					Blur Passes = 2
+					Softness = 3.000000
+					Kernel Size = 1.000000
+					Depth Bias = 6.000000
+				}
+
+				Bloom = 1.000000
+				Focal Range = 0.000000 0.000000 0.000000
+				AO Quality = 0
+				AO Blur Passes = 2
+				AO Parameters = 0.100000 4.000000 1.000000
+			}
 		}
 
 		Model Instance = "Plane"
@@ -95,7 +112,24 @@ Root
 				Rotation = 0.029436 0.138777 -0.967555 -0.209075
 				Range = 0.100000 5.000000 45.000000
 				Dolly = 0.000000 1.000000 5.000000
+
 				Script = "OSDrawDeferred"
+				{
+					Shadowmap
+					{
+						Texture Size = 256
+						Blur Passes = 0
+						Softness = 1.000000
+						Kernel Size = 1.000000
+						Depth Bias = 6.000000
+					}
+
+					Bloom = 1.000000
+					Focal Range = 0.000000 0.000000 0.000000
+					AO Quality = 0
+					AO Blur Passes = 2
+					AO Parameters = 0.100000 4.000000 1.000000
+				}
 			}
 
 			Directional Light = "First Light"

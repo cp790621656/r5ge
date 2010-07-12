@@ -96,9 +96,10 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-    if (*mCore << "Config/Dev13.txt")
+	if (*mCore << "Config/Dev13.txt")
 	{
 		while (mCore->Update());
+		//*mCore >> "Config/Dev13.txt";
 	}
 }
 

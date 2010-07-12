@@ -21,11 +21,11 @@ void SetShadowOffset (const String& name, Uniform& uniform) { uniform = g_shadow
 
 DirectionalShadow::DirectionalShadow() :
 	mGraphics			(0),
-	mTextureSize		(2048),
-	mBlurPasses			(0),
-	mSoftness			(1.0f),
-	mKernelSize			(2.0f),
-	mDepthBias			(3.0f),
+	mTextureSize		(1024),
+	mBlurPasses			(2),
+	mSoftness			(2.0f),
+	mKernelSize			(1.0f),
+	mDepthBias			(6.0f),
 	mShadowTarget		(0),
 	mBlurTarget0		(0),
 	mBlurTarget1		(0),
@@ -126,40 +126,15 @@ void GetMinMax (const Vector3f corners[8], const Quaternion& invRot, float from,
 		bounds.Include((corners[i] + dir * to)   * invRot);
 	}
 
-	// Ensures that the bounds are always a cube.
-	// This step is not necessary, but it does produce more consistent shadows.
-	{
-		Vector3f center (bounds.GetCenter());
-		Vector3f size (bounds.GetMax() - bounds.GetMin());
-		float width = 0.5f * Float::Max(size.x, Float::Max(size.y, size.z));
-		size.Set(width, width, width);
-		bounds.Clear();
-		bounds.Include (center - size);
-		bounds.Include (center + size);
-	}
-
 	// Figure out the minimum and maximum values for the bounding box.
 	const Vector3f& projMin (bounds.GetMin());
 	const Vector3f& projMax (bounds.GetMax());
 
-	if (from == 0.0f && to == 1.0f)
-	{
-		// For a single split shadowmap, doing a 'min' on everything instead produces better results
-		min.x = Float::Max(projMin.x, min.x);
-		min.z = Float::Max(projMin.z, min.z);
-		max.x = Float::Min(projMax.x, max.x);
-		max.y = Float::Min(projMax.y, max.y);
-		max.z = Float::Min(projMax.z, max.z);
-	}
-	else
-	{
-		// Override everything but 'minY' (directional lights shouldn't have a 'near' plane)
-		min.x = projMin.x;
-		min.z = projMin.z;
-		max.x = projMax.x;
-		max.y = projMax.y;
-		max.z = projMax.z;
-	}
+	min.x = Float::Max(projMin.x, min.x);
+	min.z = Float::Max(projMin.z, min.z);
+	max.x = Float::Min(projMax.x, max.x);
+	max.y = Float::Min(projMax.y, max.y);
+	max.z = Float::Min(projMax.z, max.z);
 }
 
 //============================================================================================================
@@ -289,11 +264,8 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 			mShadowTarget	= mGraphics->CreateRenderTarget();
 			mShadowTex		= mGraphics->CreateRenderTexture();
 
-			mShadowTarget->AttachColorTexture(0, mShadowTex, ITexture::Format::RGBA);
+			mShadowTarget->AttachColorTexture(0, mShadowTex, ITexture::Format::Alpha);
 			mShadowTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
-
-			// TODO: This is temporary, and will be removed
-			mGraphics->GetTexture("Test")->SetReplacement(mShadowTex);
 		}
 
 		// The shadow texture should have the same dimensions as the depth texture
@@ -398,7 +370,7 @@ void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 void DirectionalShadow::OnSerializeFrom (const TreeNode& node)
 {
 	if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
-	//else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
+	else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
 	else if (node.mTag == "Softness")		node.mValue >> mSoftness;
 	else if (node.mTag == "Kernel Size")	node.mValue >> mKernelSize;
 	else if (node.mTag == "Depth Bias")		node.mValue >> mDepthBias;

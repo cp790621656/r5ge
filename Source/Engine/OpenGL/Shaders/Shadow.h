@@ -38,52 +38,31 @@ static const char* g_shadow = {
 "void main()\n"
 "{\n"
 "	vec2 texCoord = gl_TexCoord[0].xy;\n"
-"	float shadowFactor = 1.0;\n"
 "	float depth = texture2D(R5_texture0, texCoord).r;\n"
 "	vec4 worldPos = vec4(texCoord.x, texCoord.y, depth, 1.0);\n"
 
-	// First split -- transform the coordinate to light space and sample the shadow texture
-"	vec4 pos4 = shadowMatrix2 * worldPos;\n"
-"	vec3 pos = pos4.xyz / pos4.w;\n"
-"	float factor = GetMax(pos);\n"
-"	vec3 result = vec3(0.0);\n"
+"	vec4 pos4;\n"
+"	vec3 shadow;\n"
 
-"	if (factor < 1.0)\n"
-"	{\n"
-"		result.b = 1.0;\n"
-"		shadowFactor = Sample(R5_texture3, pos);\n"
-"	}\n"
-
-	// Second split
-"	pos4 = shadowMatrix1 * worldPos;\n"
-"	pos = pos4.xyz / pos4.w;\n"
-"	factor = GetMax(pos);\n"
-
-"	if (factor < 1.0)\n"
-"	{\n"
-"		factor *= factor;\n"
-"		factor *= factor;\n"
-"		factor *= factor;\n"
-"		result.g = 1.0;\n"
-"		float contribution = Sample(R5_texture2, pos);\n"
-"		shadowFactor = (result.b == 1.0) ? mix(contribution, shadowFactor, factor) : contribution;\n"
-"	}\n"
-
-	// Third split
 "	pos4 = shadowMatrix0 * worldPos;\n"
-"	pos = pos4.xyz / pos4.w;\n"
-"	factor = GetMax(pos);\n"
+"	shadow.x = Sample(R5_texture1, pos4.xyz / pos4.w);\n"
 
-"	if (factor < 1.0)\n"
-"	{\n"
-"		factor *= factor;\n"
-"		factor *= factor;\n"
-"		factor *= factor;\n"
-"		result.r = 1.0;\n"
-"		float contribution = Sample(R5_texture1, pos);\n"
-"		shadowFactor = (result.g == 1.0) ? mix(contribution, shadowFactor, factor) : contribution;\n"
-"	}\n"
+"	pos4 = shadowMatrix1 * worldPos;\n"
+"	shadow.y = Sample(R5_texture2, pos4.xyz / pos4.w);\n"
 
-"	gl_FragColor = vec4(result, shadowFactor);\n"
+"	pos4 = shadowMatrix2 * worldPos;\n"
+"	shadow.z = Sample(R5_texture3, pos4.xyz / pos4.w);\n"
+
+"	gl_FragColor = vec4(min(shadow.x, min(shadow.y, shadow.z)));\n"
+
+//"	const vec4 cr = vec4(1.0, 200.0, 200.0, 199.0);\n"
+//"	float eyeZ = (cr.x - cr.z / (depth * cr.w - cr.y)) / cr.w;\n"
+//"	float a = max(0.0, min(1.0, eyeZ / 0.222222) - 0.9) * 10.0;\n"
+//"	a *= a;\n"
+//"	a *= a;\n"
+//"	float b = max(0.0, min(1.0, eyeZ / 0.555555) - 0.9) * 10.0;\n"
+//"	b *= b;\n"
+//"	b *= b;\n"
+//"	gl_FragColor = vec4(mix(mix(shadow.x, shadow.y, a), shadow.z, b));\n"
 "}"
 };

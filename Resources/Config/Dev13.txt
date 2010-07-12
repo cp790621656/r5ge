@@ -13,7 +13,7 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.25 0.25 0.25 1.000000
+		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 100.000000 100.000000
 	}
 
@@ -35,56 +35,51 @@ Root
 				Event Handling = "None"
 				Layer = 0
 			}
-
-			UIPicture = "Shadowmap"
-			{
-				Right = 0 256
-				Bottom = 0 256
-				Ignore Alpha = true
-
-				Texture = "Test"
-			}
 		}
 	}
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Model Instance = "Test Scene"
 		{
-			Scale = 1.0
 			Model = "Models/shadow test 2.r5a"
-			
+
 			Directional Light = "First Light"
 			{
-				Rotation = -0.477128 -0.101366 0.181409 0.853912
-				Ambient = 0.2 0.2 0.2
-				Diffuse = 0.8 0.8 0.8
+				Rotation = -0.460703 0.013116 -0.025261 0.887098
+				Ambient = 0.200000 0.200000 0.200000
+				Diffuse = 0.800000 0.800000 0.800000
 				Specular = 1.000000 1.000000 1.000000
 				Brightness = 1.000000
 				Shadows = true
 				Script = "OSRotateLight"
 			}
-			
+
 			Debug Camera = "Default Camera"
 			{
-				Position = -0.901637 -0.396084 0.809464
-				Rotation = -0.256698 0.001887 -0.007112 0.966464
-				Range = 1.000000 200.000000 90.000000
-				Dolly = 0.000000 19.752630 50.000000
+				Position = -41.595245 -40.311329 6.251074
+				Rotation = -0.202522 0.103897 -0.444483 0.866386
+				Range = 1.000000 200.000000 60.000000
+				Dolly = 0.000000 49.000004 150.000000
 
 				Script = "OSDrawDeferred"
 				{
-					//AO Quality = 1
-					//AO Properties = 0.5 4.0 1.0
-					
 					Shadowmap
 					{
-						Texture Size = 512
-						Blur Passes = 0
-						Softness = 3
-						Kernel Size = 1
-						Depth Bias = 6
+						Texture Size = 1024
+						Blur Passes = 2
+						Softness = 3.000000
+						Kernel Size = 1.000000
+						Depth Bias = 6.000000
 					}
+
+					Bloom = 1.000000
+					Focal Range = 0.000000 0.000000 0.000000
+					AO Quality = 0
+					AO Blur Passes = 2
+					AO Parameters = 1.000000 4.000000 1.000000
 				}
 			}
 		}
