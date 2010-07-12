@@ -13,6 +13,7 @@ public:
 
 	typedef Array<const ITechnique*> Techniques;
 	typedef Array<RaycastHit> RayHits;
+	typedef DrawQueue::Lights Lights;
 
 private:
 
@@ -55,8 +56,8 @@ public:
 	bool HasSomethingToDraw() const { return mQueue.IsValid(); }
 
 	// These functions are valid after Cull() has been called
-	const Frustum&				GetFrustum()		const	{ return mFrustum; }
-	const DrawQueue::Lights&	GetVisibleLights()	const	{ return mQueue.mLights;  }
+	const Frustum&	GetFrustum()		const	{ return mFrustum; }
+	const Lights&	GetVisibleLights()	const	{ return mQueue.mLights;  }
 
 	// Retrieves active lights, sorting them front-to-back based on distance to the specified position
 	const DrawQueue::Lights&	GetVisibleLights (const Vector3f& pos);

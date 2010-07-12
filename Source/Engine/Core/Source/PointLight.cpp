@@ -86,7 +86,7 @@ void PointLight::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mRelativeBounds.Reset();
+		mRelativeBounds.Clear();
 		mRelativeBounds.Include(Vector3f(), mRange);
 
 		mProperties.mPos = mAbsolutePos;

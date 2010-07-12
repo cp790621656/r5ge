@@ -84,7 +84,7 @@ void Decal::OnUpdate()
 		// Recalculate absolute bounds directly as it's faster than having to transform relative bounds.
 		// 1.732f multiplication is here because we draw a cube, but its corners are sqrt(3) farther away
 		// than the sides. In order to cull it properly we treat it as a maximum range sphere instead.
-		mAbsoluteBounds.Reset();
+		mAbsoluteBounds.Clear();
 		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.732f);
 
 		// Transform matrix uses calculates absolute values

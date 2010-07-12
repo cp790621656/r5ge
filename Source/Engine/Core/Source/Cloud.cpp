@@ -39,7 +39,7 @@ void Cloud::_Clear()
 {
 	mInstances.Clear();
 	mV.Clear();
-	mBounds.Reset();
+	mBounds.Clear();
 }
 
 //============================================================================================================
@@ -48,7 +48,7 @@ void Cloud::_Clear()
 
 void Cloud::_RecalculateBounds()
 {
-	mBounds.Reset();
+	mBounds.Clear();
 
 	for (uint i = 0; i < mInstances.GetSize(); ++i)
 	{

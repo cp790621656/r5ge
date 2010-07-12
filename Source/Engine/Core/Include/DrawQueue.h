@@ -27,8 +27,8 @@ public:
 
 	struct LightEntry
 	{
-		LightSource*	mLight;
-		float	mDistance;
+		LightSource* mLight;
+		float mDistance;
 
 		LightEntry() : mLight(0), mDistance(0.0f) {}
 		void operator = (LightSource* ptr) { mLight = ptr; }

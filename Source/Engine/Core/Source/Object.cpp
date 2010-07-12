@@ -495,8 +495,8 @@ void Object::Release (bool threadSafe)
 		mCalcRelBounds = true;
 		mCalcAbsBounds = true;
 
-		mRelativeBounds.Reset();
-		mCompleteBounds.Reset();
+		mRelativeBounds.Clear();
+		mCompleteBounds.Clear();
 
 		if (mParent != 0)
 		{
@@ -747,7 +747,7 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 					}
 					else
 					{
-						mAbsoluteBounds.Reset();
+						mAbsoluteBounds.Clear();
 					}
 				}
 				

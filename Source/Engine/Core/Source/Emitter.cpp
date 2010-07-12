@@ -42,7 +42,7 @@ void Emitter::OnUpdate()
 	mUpdated = true;
 
 	// Reset the bounds as we'll recalculate them
-	mAbsoluteBounds.Reset();
+	mAbsoluteBounds.Clear();
 
 	// Update our accumulated spawn time
 	mAccumulated += delta;

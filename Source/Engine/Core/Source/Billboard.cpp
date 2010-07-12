@@ -9,7 +9,7 @@ void Billboard::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		mAbsoluteBounds.Reset();
+		mAbsoluteBounds.Clear();
 		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale);
 	}
 }

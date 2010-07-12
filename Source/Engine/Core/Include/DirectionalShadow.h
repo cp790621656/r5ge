@@ -18,11 +18,11 @@ protected:
 	float			mSoftness;
 	float			mKernelSize;
 	float			mDepthBias;
-	IRenderTarget*	mLightDepthTarget;
+	IRenderTarget*	mLightDepthTarget[3];
 	IRenderTarget*	mShadowTarget;
 	IRenderTarget*	mBlurTarget0;
 	IRenderTarget*	mBlurTarget1;
-	ITexture*		mLightDepthTex;
+	ITexture*		mLightDepthTex[3];
 	ITexture*		mShadowTex;
 	ITexture*		mBlurTex0;
 	IShader*		mShadow;

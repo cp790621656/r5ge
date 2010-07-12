@@ -183,7 +183,7 @@ void QuadNode::_Partition (const OnCreateCallback& onCreate, float horizontal, f
 
 void QuadNode::_FillGeometry (void* ptr, float padding)
 {
-	mBounds.Reset();
+	mBounds.Clear();
 
 	mLeaf = true;
 

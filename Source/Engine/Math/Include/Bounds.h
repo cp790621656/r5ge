@@ -46,7 +46,7 @@ public:
 		mIsDirty = true;
 	}
 
-	void			Reset()				{ mIsValid = false; }
+	void			Clear()				{ mIsValid = false; }
 	bool			IsValid()	const	{ return mIsValid; }
 	const Vector3f&	GetMin()	const	{ return mMin; }
 	const Vector3f&	GetMax()	const	{ return mMax; }
@@ -55,6 +55,7 @@ public:
 
 	bool Contains (const Vector3f& pos) const	{ return (mIsValid && (pos > mMin) && (pos < mMax)); }
 	bool Contains (const Bounds& b) const;
+	bool Intersects (const Bounds& b) const;
 
 	bool Matches (const Bounds& b) const
 	{
@@ -89,4 +90,7 @@ public:
 
 	// Transform the bounding volume by the specified transformation
 	void Transform (const Vector3f& pos, const Quaternion& rot, float scale);
+
+	// Transform the bounding volume by the specified rotation
+	void Transform (const Quaternion& rot);
 };

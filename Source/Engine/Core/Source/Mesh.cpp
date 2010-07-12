@@ -185,7 +185,7 @@ void Mesh::_Clear()
 	mTn.Clear();
 	mTt.Clear();
 	mIndices.Clear();
-	mBounds.Reset();
+	mBounds.Clear();
 }
 
 //============================================================================================================
@@ -194,7 +194,7 @@ void Mesh::_Clear()
 
 void Mesh::_RecalculateBounds()
 {
-	mBounds.Reset();
+	mBounds.Clear();
 
 	if (mTv.IsValid())
 	{

@@ -36,7 +36,7 @@ void Glare::OnUpdate()
 	// If coordinates have changed, adjust the absolute bounds
 	if (mIsDirty)
 	{
-		mAbsoluteBounds.Reset();
+		mAbsoluteBounds.Clear();
 		mAbsoluteBounds.Include(mAbsolutePos);
 	}
 }

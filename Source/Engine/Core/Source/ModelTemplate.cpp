@@ -258,7 +258,7 @@ void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 		mSkeleton	= 0;
 		mTemplate	= 0;
 		mIsDirty	= false;
-		mBounds.Reset();
+		mBounds.Clear();
 	}
 	Unlock();
 }
@@ -449,7 +449,7 @@ void ModelTemplate::_OnUpdate()
 {
 	mIsDirty = false;
 	mMask = 0;
-	mBounds.Reset();
+	mBounds.Clear();
 
 	if (mLimbs.IsValid())
 	{

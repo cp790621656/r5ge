@@ -35,6 +35,15 @@ Root
 				Event Handling = "None"
 				Layer = 0
 			}
+
+			UIPicture = "Shadowmap"
+			{
+				Right = 0 256
+				Bottom = 0 256
+				Ignore Alpha = true
+
+				Texture = "Test"
+			}
 		}
 	}
 
@@ -43,7 +52,7 @@ Root
 		Model Instance = "Test Scene"
 		{
 			Scale = 1.0
-			Model = "Models/shadow test.r5a"
+			Model = "Models/shadow test 2.r5a"
 			
 			Directional Light = "First Light"
 			{
@@ -65,13 +74,13 @@ Root
 
 				Script = "OSDrawDeferred"
 				{
-					AO Quality = 1
-					AO Properties = 0.5 4.0 1.0
+					//AO Quality = 1
+					//AO Properties = 0.5 4.0 1.0
 					
 					Shadowmap
 					{
-						Texture Size = 2048
-						Blur Passes = 2
+						Texture Size = 512
+						Blur Passes = 0
 						Softness = 3
 						Kernel Size = 1
 						Depth Bias = 6
