@@ -27,7 +27,7 @@ bool Billboard::OnFill (FillParams& params)
 		// them together, which wouldn't be possible if they ended up in different groups.
 
 		uint group = mTech->GetDepthWrite() ? mTex->GetUID() : 0;
-		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), group, params.GetDist(mAbsolutePos));
+		params.mDrawQueue.Add(mLayer, this, 0, mTech->GetMask(), group, params.GetDist(mAbsolutePos));
 	}
 	return true;
 }
@@ -36,7 +36,7 @@ bool Billboard::OnFill (FillParams& params)
 // Draw the billboard
 //============================================================================================================
 
-uint Billboard::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Billboard::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 	Matrix43 mat (graphics->GetViewMatrix());

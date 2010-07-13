@@ -89,23 +89,8 @@ void Octree::Node::Fill (FillParams& params)
 		// Fill all sub-divisions
 		for (uint i = mPart.GetSize(); i > 0; ) mPart[--i].Fill(params);
 
-		// Run through all children and cull them in turn
-		for (uint i = 0; i < mChildren.GetSize(); ++i)
-		{
-			Object* obj = mChildren[i];
-
-			if (obj != 0)
-			{
-				if (mOctree->mCustomFill)
-				{
-					mOctree->OnFillObject(obj, params);
-				}
-				else
-				{
-					obj->Fill(params);
-				}
-			}
-		}
+		// Fill all children
+		if (mChildren.IsValid()) mOctree->OnFillNode(*this, params);
 	}
 }
 
@@ -129,7 +114,7 @@ void Octree::Node::Raycast (const Vector3f& pos, const Vector3f& dir, Array<Rayc
 // Octree's constructor: don't include child bounds as children already get added to proper nodes.
 //============================================================================================================
 
-Octree::Octree() : mDepth(0), mPartitioned(true), mCustomFill(true)
+Octree::Octree() : mDepth(0), mPartitioned(true)
 {
 	mCalcAbsBounds		= false;
 	mIncChildBounds		= false;
@@ -245,6 +230,20 @@ bool Octree::OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastH
 
 	// Don't consider children as we've already considered them
 	return false;
+}
+
+//============================================================================================================
+// Overwrite this function with your own custom behavior if additional checks are required
+// that may affect the decision of whether the objects should be visible or not.
+//============================================================================================================
+
+void Octree::OnFillNode (Node& node, FillParams& params)
+{
+	for (uint i = 0; i < node.mChildren.GetSize(); ++i)
+	{
+		Object* obj = node.mChildren[i];
+		if (obj != 0) obj->Fill(params);
+	}
 }
 
 //============================================================================================================

@@ -5,7 +5,7 @@ using namespace R5;
 // Set up all render states and activate the material before moving down to QuadTree's OnDraw
 //============================================================================================================
 
-uint Terrain::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Terrain::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	if ( mMat != 0 && group  == mMat->GetUID() && mMat->IsVisibleWith(tech) )
 	{
@@ -20,7 +20,7 @@ uint Terrain::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* t
 		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
 		graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
 
-		return QuadTree::OnDraw(storage, group, tech, insideOut);
+		return QuadTree::OnDraw(storage, group, tech, param, insideOut);
 	}
 	return 0;
 }

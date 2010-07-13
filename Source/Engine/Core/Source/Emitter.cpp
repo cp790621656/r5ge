@@ -130,7 +130,7 @@ bool Emitter::OnFill (FillParams& params)
 		// them together, which wouldn't be possible if they ended up in different groups.
 
 		uint group = (mTex != 0 && mTech->GetDepthWrite()) ? mTex->GetUID() : 0;
-		params.mDrawQueue.Add(mLayer, this, mTech->GetMask(), group, dist);
+		params.mDrawQueue.Add(mLayer, this, 0, mTech->GetMask(), group, dist);
 	}
 	return true;
 }
@@ -139,7 +139,7 @@ bool Emitter::OnFill (FillParams& params)
 // Draws all particles
 //============================================================================================================
 
-uint Emitter::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Emitter::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

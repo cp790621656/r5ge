@@ -14,6 +14,7 @@ public:
 	struct Entry
 	{
 		Object*		mObject;	// Pointer to the object that will be rendered
+		void*		mParam;		// Optional parameter passed along with the draw call
 		float		mDistance;	// Squared distance to the camera, used to sort objects
 
 		// Comparison operator for sorting
@@ -33,14 +34,16 @@ public:
 	void Set (uint group) { mGroup = group; }
 
 	// Only add this object if it's not already a part of the list
-	void Add (Object* object, float distance)
+	void Add (Object* object, void* param, float distance)
 	{
-		if (mEntries.IsEmpty() || object != mEntries.Back().mObject)
-		{
-			Entry& ent		= mEntries.Expand();
-			ent.mObject		= object;
-			ent.mDistance	= distance;
-		}
+		if (mEntries.IsValid() &&
+			object == mEntries.Back().mObject &&
+			param  == mEntries.Back().mParam) return;
+
+		Entry& ent		= mEntries.Expand();
+		ent.mObject		= object;
+		ent.mParam		= param;
+		ent.mDistance	= distance;
 	}
 
 	void Sort()  { mEntries.Sort();  }

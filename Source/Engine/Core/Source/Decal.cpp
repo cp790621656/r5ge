@@ -110,7 +110,7 @@ bool Decal::OnFill (FillParams& params)
 		{
 			group = mShader->GetUID();
 		}
-		params.mDrawQueue.Add(mLayer, this, mMask, group, 0.0f);
+		params.mDrawQueue.Add(mLayer, this, 0, mMask, group, 0.0f);
 	}
 	return true;
 }
@@ -119,7 +119,7 @@ bool Decal::OnFill (FillParams& params)
 // Draws the decal
 //============================================================================================================
 
-uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	static uint indexCount = 0;
 

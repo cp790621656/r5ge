@@ -101,7 +101,7 @@ bool ModelInstance::OnFill (FillParams& params)
 						if (isVisible)
 						{
 							IMaterial* mat = limb->GetMaterial();
-							params.mDrawQueue.Add(mLayer, this, mat->GetTechniqueMask(), mat->GetUID(), dist);	
+							params.mDrawQueue.Add(mLayer, this, 0, mat->GetTechniqueMask(), mat->GetUID(), dist);	
 						}
 					}
 				}
@@ -111,7 +111,7 @@ bool ModelInstance::OnFill (FillParams& params)
 		else if (limbs.IsValid())
 		{
 			// If we only have 1 limb, it makes sense to group by model instead
-			params.mDrawQueue.Add(mLayer, this, mModel->GetMask(), mModel->GetUID(), dist);
+			params.mDrawQueue.Add(mLayer, this, 0, mModel->GetMask(), mModel->GetUID(), dist);
 			limbs[0]->SetVisible(true);
 		}
 	}
@@ -122,7 +122,7 @@ bool ModelInstance::OnFill (FillParams& params)
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint ModelInstance::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint ModelInstance::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

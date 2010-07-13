@@ -254,7 +254,7 @@ public:
 	void Fill (FillParams& params);
 
 	// Draws the object with the specified technique
-	uint Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut);
+	uint Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut);
 
 	// Cast a ray into space and fill the list with objects that it intersected with
 	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe = true);
@@ -316,7 +316,7 @@ protected:
 	// Draw the object using the specified technique. This function will only be
 	// called if this object has been added to the list of drawable objects in
 	// OnFill. It should return the number of triangles rendered.
-	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut) { mIgnore.Set(Ignore::Draw, true); return 0; }
+	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut) { mIgnore.Set(Ignore::Draw, true); return 0; }
 
 	// Called when the object is being raycast into -- should return 'false' if children were already considered
 	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);

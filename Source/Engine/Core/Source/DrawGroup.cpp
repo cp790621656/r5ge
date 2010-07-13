@@ -13,14 +13,16 @@ uint DrawGroup::Draw (TemporaryStorage& storage, const ITechnique* tech, bool in
 	{
 		for (uint i = mEntries.GetSize(); i > 0; )
 		{
-			retVal += mEntries[--i].mObject->Draw(storage, mGroup, tech, insideOut);
+			Entry& ent = mEntries[--i];
+			retVal += ent.mObject->Draw(storage, mGroup, tech, ent.mParam, insideOut);
 		}
 	}
 	else
 	{
 		for (uint i = 0, bmax = mEntries.GetSize(); i < bmax; ++i)
 		{
-			retVal += mEntries[i].mObject->Draw(storage, mGroup, tech, insideOut);
+			Entry& ent = mEntries[i];
+			retVal += ent.mObject->Draw(storage, mGroup, tech, ent.mParam, insideOut);
 		}
 	}
 	return retVal;

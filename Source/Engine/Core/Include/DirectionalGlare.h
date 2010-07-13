@@ -21,5 +21,5 @@ public:
 protected:
 
 	virtual void OnUpdate();
-	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut);
 };

@@ -5,7 +5,7 @@ using namespace R5;
 // Add a new entry
 //============================================================================================================
 
-void DrawList::Add (uint group, Object* object, float distance)
+void DrawList::Add (uint group, Object* object, void* param, float distance)
 {
 	typedef DrawGroup* DrawGroupPtr;
 	DrawGroupPtr& ptr = mGroups[group];
@@ -15,7 +15,7 @@ void DrawList::Add (uint group, Object* object, float distance)
 		ptr = new DrawGroup();
 		ptr->Set(group);
 	}
-	ptr->Add(object, distance);
+	ptr->Add(object, param, distance);
 }
 
 //============================================================================================================

@@ -24,7 +24,7 @@ void DirectionalGlare::OnUpdate()
 // Draw the glare
 //============================================================================================================
 
-uint DirectionalGlare::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint DirectionalGlare::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	IGraphics* graphics = mCore->GetGraphics();
 

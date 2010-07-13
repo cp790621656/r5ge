@@ -53,7 +53,7 @@ protected:
 	virtual uint GetMask() const { return mMat != 0 ? mMat->GetTechniqueMask() : 0; }
 
 	// Set up all render states and activate the material before moving down to QuadTree's OnDraw
-	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut);
+	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut);
 
 	// Called when the object is being saved
 	virtual void OnSerializeTo (TreeNode& root) const;

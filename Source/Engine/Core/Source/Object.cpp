@@ -855,7 +855,7 @@ void Object::Fill (FillParams& params)
 				if (mShowOutline)
 				{
 					ITechnique* wireframe = GetGraphics()->GetTechnique("Wireframe");
-					params.mDrawQueue.Add(mLayer, this, wireframe->GetMask(), 0, 0.0f);
+					params.mDrawQueue.Add(mLayer, this, 0, wireframe->GetMask(), 0, 0.0f);
 				}
 			}
 			Unlock();
@@ -867,23 +867,21 @@ void Object::Fill (FillParams& params)
 // Draws the object with the specified technique
 //============================================================================================================
 
-uint Object::Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, bool insideOut)
+uint Object::Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
 	uint result (0);
 
 	if (!mIgnore.Get(Ignore::Draw))
 	{
-		result += OnDraw(storage, group, tech, insideOut);
+		result += OnDraw(storage, group, tech, param, insideOut);
 	}
 
 	// Debugging functionality
 	if (mShowOutline && group == 0)
 	{
-		IGraphics* graphics = mCore->GetGraphics();
-
 		if (tech->GetName() == "Wireframe")
 		{
-			result += _DrawOutline(graphics, tech);
+			result += _DrawOutline(mGraphics, tech);
 		}
 	}
 	return result;

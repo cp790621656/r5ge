@@ -11,6 +11,12 @@ class Octree : public Object
 {
 protected:
 
+	// Abstract data member belonging to the Node class. Can be created and used by Octree-derived classes.
+	struct Data
+	{
+		virtual ~Data() {}
+	};
+
 	// The QuadTree is made up of series of subdivided nodes
 	struct Node : public Object
 	{
@@ -19,8 +25,10 @@ protected:
 		Bounds			mBounds;		// This node's bounds
 		Array<Node>		mPart;			// Subdivided child nodes
 		Array<Object*>	mChildren;		// Personal list of objects residing in this node
+		Data*			mData;			// Abstract data member, can be set and used by derived classes
 
-		Node() : mOctree(0), mDepth(0) {}
+		Node() : mOctree(0), mDepth(0), mData(0) {}
+		~Node() { if (mData != 0) delete mData; }
 
 		// Partitions the node, subdividing it into smaller nodes as necessary
 		void Partition (Octree* tree, float x, float y, float z, const Vector3f& size, uint currentDepth, uint targetDepth);
@@ -46,7 +54,6 @@ protected:
 	Vector3f	mSize;			// Size of the tree (extends from the center)
 	uint		mDepth;			// Depth of node subdivision
 	bool		mPartitioned;	// Whether the tree has been partitioned
-	bool		mCustomFill;	// Whether the virtual OnFill function will be called
 
 	// Objects should never be created manually. Use the AddObject<> template instead.
 	Octree();
@@ -76,9 +83,8 @@ protected:
 	virtual bool OnRaycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
 
 	// Overwrite this function with your own custom behavior if additional checks are required
-	// that may affect the decision of whether the object should be visible or not.
-	// NOTE: Don't set 'mCustomFill' to 'false' if you overwrite this function!
-	virtual void OnFillObject (Object* obj, FillParams& params) { obj->Fill(params); mCustomFill = false; }
+	// that may affect the decision of whether the objects should be visible or not.
+	virtual void OnFillNode (Node& node, FillParams& params);
 
 	// Called when the object is being saved
 	virtual void OnSerializeTo (TreeNode& node) const;

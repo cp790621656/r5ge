@@ -31,7 +31,7 @@ void DrawLayer::Sort()
 // Add the specified object to this layer
 //============================================================================================================
 
-void DrawLayer::Add (Object* obj, uint mask, uint group, float distSquared)
+void DrawLayer::Add (Object* obj, void* param, uint mask, uint group, float distSquared)
 {
 	mMask |= mask;
 
@@ -47,7 +47,7 @@ void DrawLayer::Add (Object* obj, uint mask, uint group, float distSquared)
 		if ((flag & 0x1) != 0)
 		{
 			mList.ExpandTo(i + 1);
-			mList[i].Add(group, obj, distSquared);
+			mList[i].Add(group, obj, param, distSquared);
 		}
 	}
 }
