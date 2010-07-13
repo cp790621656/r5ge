@@ -261,15 +261,6 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
 
-					if (g_caps.mVendor == IGraphics::DeviceInfo::Vendor::ATI)
-					{
-						// ATI Driver bug: Catalyst does not support Depth24+Stencil8 texture format.
-						// Frame buffer objects using such textures exhibit hideous artifacts.
-						// Tried this on Catalyst version 9.1, 9.2 and 10.3. Also note:
-						// http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=254426
-						g_caps.mDepthStencil = false;
-					}
-
 					if (supported = g_caps.mBufferObjects)
 					{
 						g_caps.mVersion = 1.5f;
@@ -300,6 +291,19 @@ bool InitOpenGL (float requiredVersion)
 								}
 							}
 						}
+					}
+
+					if (g_caps.mVendor == IGraphics::DeviceInfo::Vendor::ATI)
+					{
+						// ATI Driver bug: Catalyst does not support Depth24+Stencil8 texture format.
+						// Frame buffer objects using such textures exhibit hideous artifacts.
+						// Tried this on Catalyst version 9.1, 9.2 and 10.3. Also note:
+						// http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=254426
+						g_caps.mDepthStencil = false;
+
+						// ATI Driver bug: Alpha testing is performed only in RGBA mode.
+						//http://www.opengl.org/sdk/docs/man/xhtml/glAlphaFunc.xmlNotes
+						g_caps.mDepthAttachments = false;
 					}
 				}
 			}
