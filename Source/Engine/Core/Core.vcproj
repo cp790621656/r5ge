@@ -651,6 +651,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\ModelInstanceGroup.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\Object.h"
 					>
 				</File>
@@ -692,6 +696,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\ModelInstance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ModelInstanceGroup.cpp"
 					>
 				</File>
 				<File

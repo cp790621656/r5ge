@@ -12,6 +12,7 @@ void RegisterDefaultObjects()
 	Object::Register<DebugCamera>();
 	Object::Register<AnimatedCamera>();
 	Object::Register<ModelInstance>();
+	Object::Register<ModelInstanceGroup>();
 	Object::Register<DirectionalLight>();
 	Object::Register<PointLight>();
 	Object::Register<Terrain>();

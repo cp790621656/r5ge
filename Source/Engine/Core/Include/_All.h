@@ -69,6 +69,7 @@ namespace R5
 	#include "TerrainNode.h"			// Sub-divisioned child of the Terrain class
 	#include "Terrain.h"				// Simple terrain implementation using QuadTree
 	#include "Octree.h"					// Octree-partitioned space
+	#include "ModelInstanceGroup.h"		// Similar static model instance children of this object will be drawn in fewer draw calls
 
 	#include "Scene.h"					// Scene root
 	#include "PostProcess.h"			// Deferred post-processing effects
