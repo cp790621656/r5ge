@@ -848,7 +848,8 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 				{
 					tech->SetFog(false);
 					tech->SetColorWrite(false);
-					tech->SetAlphaTest(true);
+					// This needs to be false. ATI silently fails otherwise.
+					tech->SetAlphaTest(false);
 					tech->SetLighting(ITechnique::Lighting::None);
 					tech->SetBlending(ITechnique::Blending::None);
 				}
