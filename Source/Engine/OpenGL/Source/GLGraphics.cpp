@@ -684,11 +684,23 @@ IVBO* GLGraphics::CreateVBO()
 // Creates a new temporary texture resource
 //============================================================================================================
 
-ITexture* GLGraphics::CreateRenderTexture()
+ITexture* GLGraphics::CreateRenderTexture (const char* name)
 {
 	static uint counter = 0;
 	mTempTex.Lock();
-	GLTexture* tex = new GLTexture(String("[Generated] Render Texture %u", counter++), this);
+	String s;
+	s << "[Generated] ";
+
+	if (name != 0)
+	{
+		s << name;
+	}
+	else
+	{
+		s << "Render Texture ";
+		s << counter++;
+	}
+	GLTexture* tex = new GLTexture(s, this);
 	mTempTex.Expand() = tex;
 	mTempTex.Unlock();
 	return tex;

@@ -87,7 +87,7 @@ public:
 
 	// Managed unnamed resources
 	virtual IVBO*			CreateVBO();
-	virtual ITexture*		CreateRenderTexture();
+	virtual ITexture*		CreateRenderTexture(const char* name = 0);
 	virtual IRenderTarget*	CreateRenderTarget();
 
 	// Resource removal

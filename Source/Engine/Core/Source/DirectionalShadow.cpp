@@ -26,6 +26,7 @@ DirectionalShadow::DirectionalShadow() :
 	mSoftness			(2.0f),
 	mKernelSize			(1.0f),
 	mDepthBias			(6.0f),
+	mDummyRGBATex		(0),
 	mShadowTarget		(0),
 	mBlurTarget0		(0),
 	mBlurTarget1		(0),
@@ -74,6 +75,12 @@ void DirectionalShadow::Release()
 	{
 		mGraphics->DeleteRenderTarget(mBlurTarget0);
 		mBlurTarget0 = 0;
+	}
+
+	if (mDummyRGBATex != 0)
+	{
+		mGraphics->DeleteTexture(mDummyRGBATex);
+		mDummyRGBATex = 0;
 	}
 
 	for (uint i = 0; i < 3; ++i)
@@ -144,6 +151,7 @@ void GetMinMax (const Vector3f corners[8], const Quaternion& invRot, float from,
 void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const Vector3f& dir, const Matrix44& camIMVP)
 {
 	Vector2f targetSize ((float)mTextureSize, (float)mTextureSize);
+	static uint counter (0);
 
 	// Create the PSSM render targets and textures
 	for (uint i = 0; i < 3; ++i)
@@ -151,13 +159,31 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 		if (mLightDepthTarget[i] == 0)
 		{
 			mLightDepthTarget[i] = mGraphics->CreateRenderTarget();
-			mLightDepthTex[i]	 = mGraphics->CreateRenderTexture();
+			mLightDepthTex[i]	 = mGraphics->CreateRenderTexture(String("Shadow Light Depth %u (%u)", i, counter++));
 
 			// Texture comparison mode meant for shadows
 			mLightDepthTex[i]->SetCompareMode(ITexture::CompareMode::Shadow);
 
 			// Light target's depth texture doesn't change
 			mLightDepthTarget[i]->AttachDepthTexture(mLightDepthTex[i]);
+
+			// If the graphics card doesn't support depth-only attachments, add a shared dummy color texture.
+			// Note that R5 is smart enough to automatically create a dummy RGBA texure if depth-only is not
+			// supported, but using the same texture for all depth splits saves memory.
+
+			if (!mGraphics->GetDeviceInfo().mDepthAttachments)
+			{
+				// Create a dummy texture if one hasn't been created
+				if (mDummyRGBATex == 0)
+				{
+					mDummyRGBATex = mGraphics->CreateRenderTexture("Dummy Shadow Color");
+				}
+
+				// Attach it to the render target
+				mLightDepthTarget[i]->AttachColorTexture(0, mDummyRGBATex,
+					mGraphics->GetDeviceInfo().mAlphaAttachments ?
+					ITexture::Format::Alpha : ITexture::Format::RGBA);
+			}
 		}
 
 		// Update the shadowmap size

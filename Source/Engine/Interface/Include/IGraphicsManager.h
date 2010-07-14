@@ -82,7 +82,7 @@ struct IGraphicsManager
 
 	// Managed unnamed resources
 	virtual IVBO*			CreateVBO()=0;
-	virtual ITexture*		CreateRenderTexture()=0;
+	virtual ITexture*		CreateRenderTexture(const char* name = 0)=0;
 	virtual IRenderTarget*	CreateRenderTarget()=0;
 
 	// Resource removal

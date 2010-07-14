@@ -327,16 +327,20 @@ void GLFBO::Activate() const
 	}
 #endif
 
-	// NOTE: Supposedly some ATI drivers have issues if FBO textures are not rebound every frame...
 	if (mIsDirty)
 	{
 		// NOTE: Depth with no color texture causes an issue with some drivers, such as NVidia drivers
-		// for Mac OSX. The FBO simply fails to complete. Solution? Create a dummy color texture.
+		// for Mac OSX. The FBO simply fails to complete. ATI cards seem to support depth-only attachments,
+		// but alpha testing doesn't work, which coincidently follows OpenGL's specs:
+		// http://www.opengl.org/sdk/docs/man/xhtml/glAlphaFunc.xml
+		// Solution? Create a dummy color texture.
 		
 		if (!HasColor() && (mDepthTex != 0) && !mGraphics->GetDeviceInfo().mDepthAttachments)
 		{
 			if (mDummyTex == 0) ((GLFBO*)this)->mDummyTex = mGraphics->CreateRenderTexture();
-			((GLFBO*)this)->AttachColorTexture(0, mDummyTex, ITexture::Format::Alpha);
+			((GLFBO*)this)->AttachColorTexture(0, mDummyTex,
+				mGraphics->GetDeviceInfo().mAlphaAttachments ?
+				ITexture::Format::Alpha : ITexture::Format::RGBA);
 		}
 		
 		mLock.Lock();
