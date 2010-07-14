@@ -5,7 +5,7 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Noise Test"
-		Position = 71 108
+		Position = 62 107
 		Size = 1321 532
 		Full Screen = false
 	}
@@ -26,7 +26,11 @@ Root
 			Technique = "Opaque"
 			{
 				Shader = "Forward/N"
-				Texture 0 = "Normal Map"
+
+				Textures = String[]
+				{
+					"Normal Map"
+				}
 			}
 		}
 
@@ -45,7 +49,6 @@ Root
 	{
 		Default Skin = "Default"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
 
 		Layout
 		{
@@ -56,7 +59,7 @@ Root
 				Top = 0.000000 0.000000
 				Bottom = 1.000000 0.000000
 				Alpha = 1.000000
-				Receives Events = false
+				Event Handling = "None"
 				Layer = 0
 
 				UILabel = "Time"
@@ -67,689 +70,10 @@ Root
 					Bottom = 0.000000 16.000000
 					Alpha = 1.000000
 					Color = 1.000000 1.000000 1.000000
-					Text = "Time: 19"
+					Text = "Time: 78"
 					Shadow = true
 					Alignment = "Center"
-					Receives Events = false
-					Layer = 0
-				}
-			}
-
-			UIWindow = "Options"
-			{
-				Left = 0.000000 -1.000000
-				Right = 0.000000 260.000000
-				Top = 0.000000 0.000000
-				Bottom = 0.000000 248.000000
-				Alpha = 1.000000
-				Titlebar Height = 22
-				Resizable = true
-				Color = 1.000000 1.000000 1.000000
-				Text = "Options"
-				Shadow = true
-				Alignment = "Center"
-				Receives Events = true
-				Layer = 0
-
-				UIList = "Filter 4"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 82.000000
-					Bottom = 0.000000 100.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 4"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 82.000000
-					Bottom = 0.000000 100.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 5"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 102.000000
-					Bottom = 0.000000 120.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 5"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 102.000000
-					Bottom = 0.000000 120.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 6"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 122.000000
-					Bottom = 0.000000 140.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 6"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 122.000000
-					Bottom = 0.000000 140.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 7"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 142.000000
-					Bottom = 0.000000 160.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 7"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 142.000000
-					Bottom = 0.000000 160.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 8"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 162.000000
-					Bottom = 0.000000 180.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 8"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 162.000000
-					Bottom = 0.000000 180.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 9"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 182.000000
-					Bottom = 0.000000 200.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 3"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 62.000000
-					Bottom = 0.000000 80.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 2"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 42.000000
-					Bottom = 0.000000 60.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 3"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 62.000000
-					Bottom = 0.000000 80.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 2"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 42.000000
-					Bottom = 0.000000 60.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIInput = "UIInput 1"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 22.000000
-					Bottom = 0.000000 40.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIButton = "512"
-				{
-					Left = 0.500000 2.000000
-					Right = 0.750000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "512"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
-
-				UIInput = "UIInput 0"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 2.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "1"
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
-					Layer = 0
-				}
-
-				UIButton = "1024"
-				{
-					Left = 0.750000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "1024"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
-
-				UIButton = "128"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.250000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "128"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
-
-				UIButton = "256"
-				{
-					Left = 0.250000 2.000000
-					Right = 0.500000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "256"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
-					Layer = 0
-				}
-
-				UIInput = "UIInput 9"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 182.000000
-					Bottom = 0.000000 200.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 1"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 22.000000
-					Bottom = 0.000000 40.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Select a new filter from the drop-down UIList"
-					Layer = 0
-				}
-
-				UIList = "Filter 0"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 2.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "Fractal"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					UIMenu
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Receives Events = true
-					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
+					Event Handling = "None"
 					Layer = 0
 				}
 			}
@@ -767,7 +91,7 @@ Root
 				Text = "Noise Texture"
 				Shadow = true
 				Alignment = "Center"
-				Receives Events = true
+				Event Handling = "Normal"
 				Layer = 0
 
 				UIPicture = "Normal Map"
@@ -779,7 +103,7 @@ Root
 					Alpha = 1.000000
 					Texture = "Normal Map"
 					Ignore Alpha = true
-					Receives Events = false
+					Event Handling = "None"
 					Layer = 1
 				}
 
@@ -792,8 +116,701 @@ Root
 					Alpha = 1.000000
 					Texture = "Noise"
 					Ignore Alpha = true
-					Receives Events = false
+					Event Handling = "None"
 					Layer = 1
+				}
+			}
+
+			UIWindow = "Options"
+			{
+				Left = 0.000000 10.000000
+				Right = 0.000000 271.000000
+				Top = 0.000000 12.000000
+				Bottom = 0.000000 260.000000
+				Alpha = 1.000000
+				Titlebar Height = 22
+				Resizable = true
+				Color = 1.000000 1.000000 1.000000
+				Text = "Options"
+				Shadow = true
+				Alignment = "Center"
+				Event Handling = "Normal"
+				Layer = 0
+
+				UIButton = "512"
+				{
+					Left = 0.500000 2.000000
+					Right = 0.750000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "512"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIButton = "1024"
+				{
+					Left = 0.750000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "1024"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 2"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 42.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Normalizes the noise to be within 0-1 range (no parameters)"
+					Layer = 0
+				}
+
+				UIList = "Filter 3"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 62.000000
+					Bottom = 0.000000 80.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 3"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 62.000000
+					Bottom = 0.000000 80.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 4"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 82.000000
+					Bottom = 0.000000 100.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 4"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 82.000000
+					Bottom = 0.000000 100.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 5"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 102.000000
+					Bottom = 0.000000 120.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 5"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 102.000000
+					Bottom = 0.000000 120.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 6"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 122.000000
+					Bottom = 0.000000 140.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 6"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 122.000000
+					Bottom = 0.000000 140.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 7"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 142.000000
+					Bottom = 0.000000 160.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 7"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 142.000000
+					Bottom = 0.000000 160.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 8"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 162.000000
+					Bottom = 0.000000 180.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 8"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 162.000000
+					Bottom = 0.000000 180.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 9"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 182.000000
+					Bottom = 0.000000 200.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 9"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 182.000000
+					Bottom = 0.000000 200.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIList = "Filter 0"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 2.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text = "Perlin"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Perlin noise (up to 3 parameters): Octaves, ridge threshold, smoothness"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIList = "Filter 1"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 22.000000
+					Bottom = 0.000000 40.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text = "Clamp"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Clamp filter, 2 parameters: Low boundary, high boundary"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIList = "Filter 2"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.500000 -2.000000
+					Top = 0.000000 42.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text = "Normalize"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Normalizes the noise to be within 0-1 range (no parameters)"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 1"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 22.000000
+					Bottom = 0.000000 40.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text = "0.35 0.45"
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Clamp filter, 2 parameters: Low boundary, high boundary"
+					Layer = 0
+				}
+
+				UIButton = "256"
+				{
+					Left = 0.250000 2.000000
+					Right = 0.500000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "256"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 0"
+				{
+					Left = 0.500000 2.000000
+					Right = 1.000000 -2.000000
+					Top = 0.000000 2.000000
+					Bottom = 0.000000 20.000000
+					Alpha = 1.000000
+					Face = "Grey Area"
+					Font = "Arial"
+					Color = 1.000000 1.000000 1.000000
+					Text = "5"
+					Shadow = false
+					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Perlin noise (up to 3 parameters): Octaves, ridge threshold, smoothness"
+					Layer = 0
+				}
+
+				UIButton = "128"
+				{
+					Left = 0.000000 2.000000
+					Right = 0.250000 0.000000
+					Top = 1.000000 -22.000000
+					Bottom = 1.000000 -2.000000
+					Alpha = 1.000000
+					Color = 1.000000 1.000000 1.000000
+					Text = "128"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
 				}
 			}
 		}
@@ -830,41 +847,32 @@ Root
 	{
 		Directional Light = "Directional Light"
 		{
-			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.453398 0.187803 -0.333431 0.804975
 			Scale = 1.004070
-			Layer = 10
 			Ambient = 0.100000 0.100000 0.100000
 			Diffuse = 1.000000 1.000000 1.000000
 			Specular = 0.000000 0.000000 0.000000
 			Brightness = 1.000000
+			Shadows = false
 		}
 
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 3.000000
-			Rotation = 0.111496 -0.194246 0.845304 -0.485075
-			Scale = 1.000000
-			Layer = 10
+			Rotation = 0.131543 -0.181271 0.788855 -0.572316
 			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 21.000904 50.000000
+			Dolly = 0.000000 15.891080 50.000000
 		}
 
 		Model Instance = "Teapot"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.500000
-			Layer = 10
 			Model = "Teapot"
 		}
 
 		Model Instance = "Plane"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 50.000000
-			Layer = 10
 			Model = "Plane"
 		}
 	}

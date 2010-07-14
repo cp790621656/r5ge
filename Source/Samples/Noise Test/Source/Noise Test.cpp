@@ -99,7 +99,7 @@ void TestApp::InitUI()
 
 void TestApp::Run()
 {
-    if (*mCore << "Config/Noise Test.txt")
+	if (*mCore << "Config/Noise Test.txt")
 	{
 		// Initialize the generated UI components
 		InitUI();
@@ -114,7 +114,7 @@ void TestApp::Run()
 		{
 			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 			while (mCore->Update());
-			//*mCore >> "Config/Noise Test.txt";
+			*mCore >> "Config/Noise Test.txt";
 		}
 	}
 }
@@ -152,8 +152,8 @@ void TestApp::Regenerate()
 		ulong startTime = Time::GetMilliseconds();
 
 		// Use the timestamp as the seed
-		//mNoise.SetSeed(startTime);
-		//mNoise.SetSeamless(false);
+		mNoise.SetSeed(123456789);
+		mNoise.SetSeamless(true);
 
 		// Generate the noise
 		const float* buffer = mNoise.GetBuffer();
