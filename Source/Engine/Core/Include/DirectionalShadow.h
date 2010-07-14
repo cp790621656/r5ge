@@ -23,7 +23,7 @@ protected:
 	IRenderTarget*	mBlurTarget0;
 	IRenderTarget*	mBlurTarget1;
 	ITexture*		mLightDepthTex[3];
-	ITexture*		mDummyRGBATex;		// Dummy RGBA texture -- alpha testing doesn't work without it on ATI
+	ITexture*		mDummyColorTex;		// Dummy color texture -- alpha testing doesn't work without it on ATI
 	ITexture*		mShadowTex;
 	ITexture*		mBlurTex0;
 	IShader*		mShadow;

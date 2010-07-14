@@ -191,9 +191,20 @@ void PostProcess::BlurDownsample (
 	// Clear the target
 	//if (target != 0) mGraphics->Clear(true, false, false);
 
-	// Activate all textures
-	mGraphics->SetActiveTexture(0, color);
-	mGraphics->SetActiveTexture(1, (depth != 0) ? depth : mTexture01);
+	if (depth == 0)
+	{
+		// Blur shader expects textures to be in order
+		mGraphics->SetActiveTexture(0, color);
+		mGraphics->SetActiveTexture(1, mTexture01);
+	}
+	else
+	{
+		// DOF shader expects the first texture to be depth
+		mGraphics->SetActiveTexture(0, depth);
+		mGraphics->SetActiveTexture(1, color);
+	}
+
+	// The last two textures are the same for both effects
 	mGraphics->SetActiveTexture(2, mTexture11);
 	mGraphics->SetActiveTexture(3, mTexture21);
 

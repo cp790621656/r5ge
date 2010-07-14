@@ -140,6 +140,27 @@ void GLShader::SetUniform_ClipRange (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
+// Shader callback function for R5_fogRange
+//============================================================================================================
+
+void GLShader::SetUniform_FogRange (const String& name, Uniform& uniform)
+{
+	Vector2f range (mGraphics->GetFogRange());
+
+	if (range.x > 1.0001f || range.y > 1.0001f)
+	{
+		// Absolute values were used -- convert them to 0 to 1 range
+		const Vector3f& camRange = mGraphics->GetCameraRange();
+		float dist = camRange.y - camRange.x;
+		range.Set((range.x - camRange.x) / dist, (range.y - camRange.x) / dist);
+	}
+
+	// R5_fogRange expects a relative-to-start distance in the 2nd parameter
+	range.y -= range.x;
+	uniform = range;
+}
+
+//============================================================================================================
 // Shader callback for R5_projectionMatrix
 //============================================================================================================
 
@@ -241,6 +262,7 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	_InsertUniform( "R5_worldEyePosition",			bind(&GLShader::SetUniform_EyePos,		this) );
 	_InsertUniform( "R5_pixelSize",					bind(&GLShader::SetUniform_PixelSize,	this) );
 	_InsertUniform( "R5_clipRange",					bind(&GLShader::SetUniform_ClipRange,	this) );
+	_InsertUniform( "R5_fogRange",					bind(&GLShader::SetUniform_FogRange,	this) );
 	_InsertUniform( "R5_projectionMatrix",			bind(&GLShader::SetUniform_PM,			this) );
 	_InsertUniform( "R5_inverseViewMatrix",			bind(&GLShader::SetUniform_IVM,			this) );
 	_InsertUniform( "R5_inverseProjMatrix",			bind(&GLShader::SetUniform_IPM,			this) );

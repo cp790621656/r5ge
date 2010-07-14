@@ -15,6 +15,8 @@ protected:
 	IGraphics*			mGraphics;
 	OSSceneRoot*		mRoot;
 	Scene				mScene;
+	Color4f				mBackground;
+	Vector2f			mFogRange;
 	DirectionalShadow	mShadow;
 	bool				mGrid;
 
@@ -33,6 +35,14 @@ public:
 	// For debugging purposes it should be possible to display a simple grid at the origin
 	void SetShowGrid (bool val) { mGrid = val; }
 	bool IsShowinGrid() const { return mGrid; }
+
+	// Fog range is 0-1 based, with 0 being the near clipping plane and 1 being the far clipping plane
+	const Vector2f& GetFogRange() const { return mFogRange; }
+	void SetFogRange (const Vector3f& range) { mFogRange = range; }
+
+	// Background color, acts as a fog color as well
+	const Color4f& GetBackgroundColor() const { return mBackground; }
+	void SetBackgroundColor (const Color4f& c) { mBackground = c; }
 
 	// Virtual functionality
 	virtual void OnInit();

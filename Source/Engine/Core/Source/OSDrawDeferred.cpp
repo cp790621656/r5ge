@@ -66,12 +66,11 @@ void OSDrawDeferred::MaterialStage()
 	// Render target's background color
 	IRenderTarget* target = mScene.GetFinalTarget();
 	Vector2i size (mScene.GetFinalTargetSize());
-	Color4f color (target == 0 ? mGraphics->GetBackgroundColor() : target->GetBackgroundColor());
 
 	// Set up the material render target
 	if (mMaterialTarget == 0)
 	{
-		const uint HDRFormat = (color.a == 1.0f) ? ITexture::Format::RGB16F : ITexture::Format::RGBA16F;
+		const uint HDRFormat = (mBackground.a == 1.0f) ? ITexture::Format::RGB16F : ITexture::Format::RGBA16F;
 
 		mMaterialTarget = mScene.GetRenderTarget(0);
 		mDepth			= mScene.GetRenderTexture(0);
@@ -89,7 +88,7 @@ void OSDrawDeferred::MaterialStage()
 
 	// Update changing target properties
 	mMaterialTarget->SetSize(size);
-	mMaterialTarget->SetBackgroundColor(color);
+	mMaterialTarget->SetBackgroundColor(mBackground);
 	mMaterialTarget->UseSkybox(target == 0 || target->IsUsingSkybox());
 
 	// Set up the graphics states and clear the render target
@@ -97,6 +96,7 @@ void OSDrawDeferred::MaterialStage()
 	mGraphics->SetActiveDepthFunction(IGraphics::Condition::Less);
 	mGraphics->SetStencilTest(false);
 	mGraphics->SetActiveRenderTarget(mMaterialTarget);
+	mGraphics->SetFogRange(mFogRange);
 	mGraphics->Clear(true, true, true);
 
 	// Set up the stencil test
@@ -293,10 +293,11 @@ void OSDrawDeferred::CombineStage()
 	mGraphics->SetScreenProjection( true );
 	mGraphics->SetActiveMaterial(0);
 	mGraphics->SetActiveShader(mCombine);
-	mGraphics->SetActiveTexture( 0, mMatDiff );
-	mGraphics->SetActiveTexture( 1, mMatSpec );
-	mGraphics->SetActiveTexture( 2, mLightDiff );
-	mGraphics->SetActiveTexture( 3, mLightSpec );
+	mGraphics->SetActiveTexture(0, mDepth);
+	mGraphics->SetActiveTexture(1, mMatDiff);
+	mGraphics->SetActiveTexture(2, mMatSpec);
+	mGraphics->SetActiveTexture(3, mLightDiff);
+	mGraphics->SetActiveTexture(4, mLightSpec);
 	mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 
 	// Our final texture is the new color texture
@@ -318,6 +319,9 @@ void OSDrawDeferred::PostProcessStage()
 
 	// Draw all objects with forward rendering techniques
 	mScene.DrawWithTechniques(mForward, false, true);
+
+	// Update the fog color
+	mGraphics->SetBackgroundColor(mBackground);
 
 	// Apply a post-processing effect
 	if (mBloom != 0.0f && mFocalRange)	mPostProcess.Both(mScene, mBloom, mFocalRange);

@@ -122,6 +122,10 @@ void OSDrawForward::OnDraw()
 			mGraphics->SetDepthOffset(pass == 0 ? 0 : 1);
 			mGraphics->SetActiveLight(0, &light);
 
+			// Update the fog parameters
+			mGraphics->SetBackgroundColor(mBackground);
+			mGraphics->SetFogRange(mFogRange);
+
 			// Draw the scene with the shadowed technique
 			mScene.DrawWithTechnique(mShadowed, pass == 0, false);
 

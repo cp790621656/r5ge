@@ -26,7 +26,7 @@ DirectionalShadow::DirectionalShadow() :
 	mSoftness			(2.0f),
 	mKernelSize			(1.0f),
 	mDepthBias			(6.0f),
-	mDummyRGBATex		(0),
+	mDummyColorTex		(0),
 	mShadowTarget		(0),
 	mBlurTarget0		(0),
 	mBlurTarget1		(0),
@@ -77,10 +77,10 @@ void DirectionalShadow::Release()
 		mBlurTarget0 = 0;
 	}
 
-	if (mDummyRGBATex != 0)
+	if (mDummyColorTex != 0)
 	{
-		mGraphics->DeleteTexture(mDummyRGBATex);
-		mDummyRGBATex = 0;
+		mGraphics->DeleteTexture(mDummyColorTex);
+		mDummyColorTex = 0;
 	}
 
 	for (uint i = 0; i < 3; ++i)
@@ -168,19 +168,19 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 			mLightDepthTarget[i]->AttachDepthTexture(mLightDepthTex[i]);
 
 			// If the graphics card doesn't support depth-only attachments, add a shared dummy color texture.
-			// Note that R5 is smart enough to automatically create a dummy RGBA texure if depth-only is not
+			// Note that R5 is smart enough to automatically create a dummy RGBA texture if depth-only is not
 			// supported, but using the same texture for all depth splits saves memory.
 
 			if (!mGraphics->GetDeviceInfo().mDepthAttachments)
 			{
 				// Create a dummy texture if one hasn't been created
-				if (mDummyRGBATex == 0)
+				if (mDummyColorTex == 0)
 				{
-					mDummyRGBATex = mGraphics->CreateRenderTexture("Dummy Shadow Color");
+					mDummyColorTex = mGraphics->CreateRenderTexture("Dummy Shadow Color");
 				}
 
 				// Attach it to the render target
-				mLightDepthTarget[i]->AttachColorTexture(0, mDummyRGBATex,
+				mLightDepthTarget[i]->AttachColorTexture(0, mDummyColorTex,
 					mGraphics->GetDeviceInfo().mAlphaAttachments ?
 					ITexture::Format::Alpha : ITexture::Format::RGBA);
 			}

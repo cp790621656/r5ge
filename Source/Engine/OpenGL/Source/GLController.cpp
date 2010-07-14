@@ -147,17 +147,17 @@ void GLController::Flush()
 
 void GLController::SetFog (bool val)
 {
-	if ( mFogRange.x == mFogRange.y ) val = false;
+	if (mFogRange.x == mFogRange.y) val = false;
 
-	if ( mFog != val )
+	if (mFog != val)
 	{
+		mFog = val;
 		mTechnique = 0;
 
-		if (mFog = val)
+		if (mFog)
 		{
 			glEnable(GL_FOG);
-			glFogf(GL_FOG_START, mFogRange.x);
-			glFogf(GL_FOG_END, mFogRange.y);
+			SetFogRange(mFogRange);
 		}
 		else
 		{
@@ -446,16 +446,26 @@ void GLController::SetViewport (const Vector2i& size)
 void GLController::SetFogRange (const Vector2f& range)
 {
 	mFogRange = range;
-	glFogf(GL_FOG_START, range.x);
-	glFogf(GL_FOG_END, range.y);
-	//glFogi(GL_FOG_MODE, GL_LINEAR);
+
+	if (mFogRange.x > 1.0001f || mFogRange.y > 1.0001f)
+	{
+		glFogf(GL_FOG_START, mFogRange.x);
+		glFogf(GL_FOG_END, mFogRange.y);
+	}
+	else
+	{
+		const Vector3f& r = GetCameraRange();
+		float dist = r.y - r.x;
+		glFogf(GL_FOG_START, r.x + mFogRange.x * dist);
+		glFogf(GL_FOG_END, r.x + mFogRange.y * dist);
+	}
 }
 
 //============================================================================================================
 // Changes the clear and the fog color in one call
 //============================================================================================================
 
-void GLController::SetBackgroundColor(const Color4f& color)
+void GLController::SetBackgroundColor (const Color4f& color)
 {
 	mBackground = color;
 	glFogfv(GL_FOG_COLOR, mBackground);

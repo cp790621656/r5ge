@@ -43,6 +43,7 @@ private:
 	void SetUniform_EyePos		(const String& name, Uniform& uniform);
 	void SetUniform_PixelSize	(const String& name, Uniform& uniform);
 	void SetUniform_ClipRange	(const String& name, Uniform& uniform);
+	void SetUniform_FogRange	(const String& name, Uniform& uniform);
 	void SetUniform_PM			(const String& name, Uniform& uniform);
 	void SetUniform_IVM			(const String& name, Uniform& uniform);
 	void SetUniform_IPM			(const String& name, Uniform& uniform);

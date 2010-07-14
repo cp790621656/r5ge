@@ -19,6 +19,10 @@ void OSDraw::OnInit()
 
 	// Initialize the shadow class
 	mShadow.Initialize(mGraphics);
+
+	// Default fog and background color
+	mFogRange.Set(0.5f, 1.0f);
+	mBackground.Set(0.0f, 0.0f, 0.0f, 1.0f);
 	
 	// Add the draw callback to a high priority so that it's drawn before the default (1000) callbacks
 	mCore->AddOnDraw( bind(&OSDraw::OnDraw, this), 10000 );
@@ -38,10 +42,12 @@ void OSDraw::OnDestroy()
 // Serialization -- Save
 //============================================================================================================
 
-void OSDraw::OnSerializeTo (TreeNode& node) const
+void OSDraw::OnSerializeTo (TreeNode& root) const
 {
-	if (mGrid) node.AddChild("Grid", mGrid);
-	mShadow.OnSerializeTo(node.AddChild("Shadowmap"));
+	root.AddChild("Background",	mBackground);
+	root.AddChild("Fog Range",	mFogRange);
+	if (mGrid) root.AddChild("Grid", mGrid);
+	mShadow.OnSerializeTo(root.AddChild("Shadowmap"));
 }
 
 //============================================================================================================
@@ -50,7 +56,15 @@ void OSDraw::OnSerializeTo (TreeNode& node) const
 
 void OSDraw::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == "Grid")
+	if (node.mTag == "Background")
+	{
+		node.mValue >> mBackground;
+	}
+	else if (node.mTag == "Fog Range")
+	{
+		node.mValue >> mFogRange;
+	}
+	else if (node.mTag == "Grid")
 	{
 		node.mValue >> mGrid;
 	}
