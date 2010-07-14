@@ -45,6 +45,7 @@ void TestApp::Run()
     if (*mCore << "Config/Basic Application.txt")
 	{
 		while (mCore->Update());
+		//*mCore >> "Config/Basic Application.txt";
 	}
 }
 

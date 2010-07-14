@@ -74,7 +74,7 @@ Root
 		{
 			Position = 0.000000 0.000000 0.600000
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
-			Range = 0.300000 30.000000 90.000000
+			Range = 0.300000 20.000000 90.000000
 			Dolly = 0.000000 1.897729 15.000000
 
 			Script = "OSDrawDeferred"
@@ -82,6 +82,7 @@ Root
 				Shadowmap
 				{
 					Texture Size = 1024
+					Cascades = 1
 					Blur Passes = 2
 					Softness = 3.000000
 					Kernel Size = 1.000000
@@ -118,6 +119,7 @@ Root
 					Shadowmap
 					{
 						Texture Size = 256
+						Cascades = 1
 						Blur Passes = 0
 						Softness = 1.000000
 						Kernel Size = 1.000000

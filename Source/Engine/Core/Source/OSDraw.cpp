@@ -44,8 +44,8 @@ void OSDraw::OnDestroy()
 
 void OSDraw::OnSerializeTo (TreeNode& root) const
 {
-	root.AddChild("Background",	mBackground);
-	root.AddChild("Fog Range",	mFogRange);
+	root.AddChild("Background Color", mBackground);
+	root.AddChild("Fog Range", mFogRange);
 	if (mGrid) root.AddChild("Grid", mGrid);
 	mShadow.OnSerializeTo(root.AddChild("Shadowmap"));
 }
@@ -56,7 +56,7 @@ void OSDraw::OnSerializeTo (TreeNode& root) const
 
 void OSDraw::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == "Background")
+	if (node.mTag == "Background Color")
 	{
 		node.mValue >> mBackground;
 	}

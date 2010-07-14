@@ -333,7 +333,6 @@ void GLSubShader::_Init()
 		else if (mName == "[R5] Bloom Blur")			mCode = g_blurBloom;
 		else if (mName == "[R5] Combine Bloom")			mCode = g_combineBloom;
 		else if (mName == "[R5] Depth of Field")		mCode = g_dof;
-		else if (mName == "[R5] Shadow")				mCode = g_shadow;
 		else if (mName == "[R5] Sample SSAO")			mCode = g_ssaoSample;
 		else if (mName == "[R5] Horizontal Depth-Respecting Blur")
 		{
@@ -381,6 +380,64 @@ void GLSubShader::_Init()
 				mCode << g_lightBody;
 				if (shadow) mCode << g_lightShadow;
 				mCode << (ao ? g_lightEndPointAO : g_lightEndPoint);
+			}
+		}
+		else if (mName.BeginsWith("[R5] Shadow"))
+		{
+			// Expected syntax: "[R5] Shadow %u"
+			String out;
+			mName.GetString(out, 12);
+			uint cascades (0);
+
+			// The number of supported shadow cascades must be valid
+			if (out >> cascades && cascades < 5 && cascades > 0)
+			{
+				// Regardless of cascades, the first texture is always camera's depth
+				mCode << "uniform sampler2D R5_texture0;\n";
+
+				// Light's depth textures follow
+				for (uint i = 0; i < cascades; ++i)
+				{
+					mCode << "uniform sampler2DShadow R5_texture";
+					mCode << (i + 1);
+					mCode << ";\n";
+				}
+
+				// Next come the shadow matrices
+				for (uint i = 0; i < cascades; ++i)
+				{
+					mCode << "uniform mat4 shadowMatrix";
+					mCode << i;
+					mCode << ";\n";
+				}
+
+				// Next comes the common component
+				mCode << g_shadow;
+
+				for (uint i = 0; i < cascades; ++i)
+				{
+					if (i == 0)
+					{
+						// First cascade defines the variables
+						mCode << "vec4 pos4 = shadowMatrix0 * worldPos;\n";
+						mCode << "float shadow = Sample(R5_texture1, pos4.xyz / pos4.w);\n";
+					}
+					else
+					{
+						// Set the new shadow matrix
+						mCode << "pos4 = shadowMatrix";
+						mCode << i;
+						mCode << " * worldPos;\n";
+
+						// Sample the texture and choose the smallest value
+						mCode << "shadow = min(shadow, Sample(R5_texture";
+						mCode << (i + 1);
+						mCode << ", pos4.xyz / pos4.w));\n";
+					}
+				}
+
+				// Set the color and end the function
+				mCode << "gl_FragColor = vec4(shadow);\n}";
 			}
 		}
 #ifdef _DEBUG

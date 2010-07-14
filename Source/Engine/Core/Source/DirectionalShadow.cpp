@@ -5,11 +5,12 @@ using namespace R5;
 // A matrix is needed in order to transform vertices into light's texture space
 //============================================================================================================
 
-Matrix44 g_shadowMat[3];
+Matrix44 g_shadowMat[4];
 
 void SetShadowMatrix0 (const String& name, Uniform& uniform) { uniform = g_shadowMat[0]; }
 void SetShadowMatrix1 (const String& name, Uniform& uniform) { uniform = g_shadowMat[1]; }
 void SetShadowMatrix2 (const String& name, Uniform& uniform) { uniform = g_shadowMat[2]; }
+void SetShadowMatrix3 (const String& name, Uniform& uniform) { uniform = g_shadowMat[3]; }
 
 //============================================================================================================
 
@@ -22,6 +23,7 @@ void SetShadowOffset (const String& name, Uniform& uniform) { uniform = g_shadow
 DirectionalShadow::DirectionalShadow() :
 	mGraphics			(0),
 	mTextureSize		(1024),
+	mCascades			(3),
 	mBlurPasses			(2),
 	mSoftness			(2.0f),
 	mKernelSize			(1.0f),
@@ -32,18 +34,16 @@ DirectionalShadow::DirectionalShadow() :
 	mBlurTarget1		(0),
 	mShadowTex			(0),
 	mBlurTex0			(0),
-	mShadow				(0),
 	mBlurH				(0),
 	mBlurV				(0),
 	mPost				(0)
 {
-	mLightDepthTarget[0] = 0;
-	mLightDepthTarget[1] = 0;
-	mLightDepthTarget[2] = 0;
-
-	mLightDepthTex[0] = 0;
-	mLightDepthTex[1] = 0;
-	mLightDepthTex[2] = 0;
+	for (uint i = 0; i < 4; ++i)
+	{
+		mLightDepthTarget[i] = 0;
+		mLightDepthTex[i] = 0;
+		mShader[i] = 0;
+	}
 }
 
 //============================================================================================================
@@ -83,7 +83,7 @@ void DirectionalShadow::Release()
 		mDummyColorTex = 0;
 	}
 
-	for (uint i = 0; i < 3; ++i)
+	for (uint i = 0; i < 4; ++i)
 	{
 		if (mLightDepthTarget[i] != 0)
 		{
@@ -154,7 +154,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 	static uint counter (0);
 
 	// Create the PSSM render targets and textures
-	for (uint i = 0; i < 3; ++i)
+	for (uint i = 0; i < mCascades; ++i)
 	{
 		if (mLightDepthTarget[i] == 0)
 		{
@@ -219,13 +219,13 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 	g_shadowOffset.y = mKernelSize * 0.5f / mTextureSize;
 
 	// Run through all shadow splits
-	for (uint i = 0; i < 3; ++i)
+	for (uint i = 0; i < mCascades; ++i)
 	{
 		Vector3f splitMin (min);
 		Vector3f splitMax (max);
 
-		float near = (float)i / 3;
-		float far  = (float)(i+1) / 3;
+		float near = (float)i / mCascades;
+		float far  = (float)(i+1) / mCascades;
 
 		near = Interpolation::Linear(near, near * near, 0.5f);
 		far  = Interpolation::Linear(far, far * far, 0.5f);
@@ -274,16 +274,6 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 {
 	if (camDepth != 0)
 	{
-		// Shader that will be used to create the screen-space shadow
-		if (mShadow == 0)
-		{
-			mShadow = mGraphics->GetShader("[R5] Shadow");
-			mShadow->RegisterUniform("shadowMatrix0", SetShadowMatrix0);
-			mShadow->RegisterUniform("shadowMatrix1", SetShadowMatrix1);
-			mShadow->RegisterUniform("shadowMatrix2", SetShadowMatrix2);
-			mShadow->RegisterUniform("shadowOffset", SetShadowOffset);
-		}
-
 		// Render target that will be used to create the shadow
 		if (mShadowTarget == 0)
 		{
@@ -302,11 +292,72 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 		mGraphics->SetScreenProjection(true);
 		mGraphics->SetActiveTechnique(mPost);
 		mGraphics->SetActiveMaterial(0);
-		mGraphics->SetActiveShader(mShadow);
 		mGraphics->SetActiveTexture(0, camDepth);
-		mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
-		mGraphics->SetActiveTexture(2, mLightDepthTex[1]);
-		mGraphics->SetActiveTexture(3, mLightDepthTex[2]);
+
+		// Activate the proper shader and associated textures
+		if (mCascades < 2)
+		{
+			// Shader that will be used to create the screen-space shadow
+			if (mShader[0] == 0)
+			{
+				mShader[0] = mGraphics->GetShader("[R5] Shadow 1");
+				mShader[0]->RegisterUniform("shadowMatrix0", SetShadowMatrix0);
+				mShader[0]->RegisterUniform("shadowOffset", SetShadowOffset);
+			}
+
+			mGraphics->SetActiveShader(mShader[0]);
+			mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
+		}
+		else if (mCascades == 2)
+		{
+			if (mShader[1] == 0)
+			{
+				mShader[1] = mGraphics->GetShader("[R5] Shadow 2");
+				mShader[1]->RegisterUniform("shadowMatrix0", SetShadowMatrix0);
+				mShader[1]->RegisterUniform("shadowMatrix1", SetShadowMatrix1);
+				mShader[1]->RegisterUniform("shadowOffset", SetShadowOffset);
+			}
+
+			mGraphics->SetActiveShader(mShader[1]);
+			mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
+			mGraphics->SetActiveTexture(2, mLightDepthTex[1]);
+		}
+		else if (mCascades == 3)
+		{
+			if (mShader[2] == 0)
+			{
+				mShader[2] = mGraphics->GetShader("[R5] Shadow 3");
+				mShader[2]->RegisterUniform("shadowMatrix0", SetShadowMatrix0);
+				mShader[2]->RegisterUniform("shadowMatrix1", SetShadowMatrix1);
+				mShader[2]->RegisterUniform("shadowMatrix2", SetShadowMatrix2);
+				mShader[2]->RegisterUniform("shadowOffset", SetShadowOffset);
+			}
+
+			mGraphics->SetActiveShader(mShader[2]);
+			mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
+			mGraphics->SetActiveTexture(2, mLightDepthTex[1]);
+			mGraphics->SetActiveTexture(3, mLightDepthTex[2]);
+		}
+		else
+		{
+			if (mShader[3] == 0)
+			{
+				mShader[3] = mGraphics->GetShader("[R5] Shadow 4");
+				mShader[3]->RegisterUniform("shadowMatrix0", SetShadowMatrix0);
+				mShader[3]->RegisterUniform("shadowMatrix1", SetShadowMatrix1);
+				mShader[3]->RegisterUniform("shadowMatrix2", SetShadowMatrix2);
+				mShader[3]->RegisterUniform("shadowMatrix3", SetShadowMatrix3);
+				mShader[3]->RegisterUniform("shadowOffset", SetShadowOffset);
+			}
+
+			mGraphics->SetActiveShader(mShader[3]);
+			mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
+			mGraphics->SetActiveTexture(2, mLightDepthTex[1]);
+			mGraphics->SetActiveTexture(3, mLightDepthTex[2]);
+			mGraphics->SetActiveTexture(4, mLightDepthTex[3]);
+		}
+
+		// Clear the render target and draw a full-screen quad with the shader active
 		mGraphics->Clear();
 		mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 	}
@@ -364,6 +415,10 @@ void DirectionalShadow::BlurShadows (const ITexture* camDepth)
 ITexture* DirectionalShadow::Draw (Object* root, const Object* eye, const Vector3f& dir,
 								   const Matrix44& imvp, const ITexture* depth)
 {
+	// Sanity check
+	if (mCascades < 1) mCascades = 1;
+	if (mCascades > 4) mCascades = 4;
+
 	// Draw the depth from the light's perspective
 	DrawLightDepth(root, eye, dir, imvp);
 
@@ -383,11 +438,12 @@ ITexture* DirectionalShadow::Draw (Object* root, const Object* eye, const Vector
 
 void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 {
-	node.AddChild("Texture Size", mTextureSize);
-	node.AddChild("Blur Passes", mBlurPasses);
-	node.AddChild("Softness", mSoftness);
-	node.AddChild("Kernel Size", mKernelSize);
-	node.AddChild("Depth Bias", mDepthBias);
+	node.AddChild("Texture Size",	mTextureSize);
+	node.AddChild("Cascades",		mCascades);
+	node.AddChild("Blur Passes",	mBlurPasses);
+	node.AddChild("Softness",		mSoftness);
+	node.AddChild("Kernel Size",	mKernelSize);
+	node.AddChild("Depth Bias",		mDepthBias);
 }
 
 //============================================================================================================
@@ -397,6 +453,7 @@ void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 void DirectionalShadow::OnSerializeFrom (const TreeNode& node)
 {
 	if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
+	else if (node.mTag == "Cascades")		node.mValue >> mCascades;
 	else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
 	else if (node.mTag == "Softness")		node.mValue >> mSoftness;
 	else if (node.mTag == "Kernel Size")	node.mValue >> mKernelSize;

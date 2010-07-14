@@ -21,7 +21,6 @@ Root
 	{
 		Default Skin = "Neon"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
 
 		Layout
 		{
@@ -38,29 +37,47 @@ Root
 				Text = "Hello World!"
 				Shadow = true
 				Alignment = "Center"
-				Receives Events = true
+				Event Handling = "Normal"
 				Tooltip = "This is a basic window created in the UI Layout section of [FF8800]Basic Application.txt"
 				Layer = 0
 
 				UIButton = "Close"
 				{
-					Left = 1 -22
-					Right = 1 0
-					Top = 0 -22
-					Bottom = 0 0
+					Left = 1.000000 -22.000000
+					Right = 1.000000 0.000000
+					Top = 0.000000 -22.000000
+					Bottom = 0.000000 0.000000
+					Alpha = 1.000000
 					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
 					Text = "X"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
 					UIScript = "USDestroyWindow"
 				}
 
 				UIButton = "Button Test"
 				{
-					Left = 0.5 -70
-					Right = 0.5 70
-					Top = 0 40
-					Bottom = 0 60
+					Left = 0.500000 -70.000000
+					Right = 0.500000 70.000000
+					Top = 0.000000 40.000000
+					Bottom = 0.000000 60.000000
+					Alpha = 1.000000
 					Skin = "Default"
+					Color = 1.000000 1.000000 1.000000
 					Text = "Simple Button"
+					Shadow = false
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.150000
+					Event Handling = "Normal"
+					Layer = 0
 				}
 			}
 		}
@@ -74,23 +91,42 @@ Root
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 2.000000
 			Rotation = -0.233075 0.140222 -0.497754 0.823562
-			Scale = 1.000000
-			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 14.001606 50.000000
+
 			Script = "OSDrawDeferred"
+			{
+				Background Color = 0.250000 0.250000 0.250000 1.000000
+				Fog Range = 30.000000 75.000000
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascades = 1
+					Blur Passes = 2
+					Softness = 2.000000
+					Kernel Size = 1.000000
+					Depth Bias = 6.000000
+				}
+
+				Bloom = 1.000000
+				Focal Range = 0.000000 0.000000 0.000000
+				AO Quality = 0
+				AO Blur Passes = 2
+				AO Parameters = 1.000000 4.000000 1.000000
+			}
 		}
 
 		Directional Light = "First Light"
 		{
 			Position = -7.000000 -7.000000 2.000000
-			Rotation = 0.5 -0.5 -1.0
-			Scale = 1.000000
-			Layer = 10
+			Rotation = -0.175920 0.424708 -0.820473 0.339851
 			Ambient = 0.150000 0.150000 0.150000
 			Diffuse = 0.850000 0.850000 0.850000
 			Specular = 1.000000 1.000000 1.000000
@@ -99,10 +135,6 @@ Root
 
 			Directional Billboard = "Test 0"
 			{
-				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
 				Color = 0xffffffff
 				Texture = "Textures/Billboards/light.jpg"
 				Technique = "Glow"
@@ -111,10 +143,6 @@ Root
 
 		Model Instance = "Teapot"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
-			Layer = 10
 			Model = "Models/teapot.r5b"
 		}
 	}

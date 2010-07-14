@@ -14,19 +14,20 @@ protected:
 	Core*			mCore;
 	IGraphics*		mGraphics;
 	uint			mTextureSize;
+	uint			mCascades;
 	uint			mBlurPasses;
 	float			mSoftness;
 	float			mKernelSize;
 	float			mDepthBias;
-	IRenderTarget*	mLightDepthTarget[3];
+	IRenderTarget*	mLightDepthTarget[4];
 	IRenderTarget*	mShadowTarget;
 	IRenderTarget*	mBlurTarget0;
 	IRenderTarget*	mBlurTarget1;
-	ITexture*		mLightDepthTex[3];
+	ITexture*		mLightDepthTex[4];
 	ITexture*		mDummyColorTex;		// Dummy color texture -- alpha testing doesn't work without it on ATI
 	ITexture*		mShadowTex;
 	ITexture*		mBlurTex0;
-	IShader*		mShadow;
+	IShader*		mShader[4];
 	IShader*		mBlurH;
 	IShader*		mBlurV;
 	ITechnique*		mPost;
