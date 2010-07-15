@@ -177,8 +177,11 @@ void UIButton::OnSerializeTo (TreeNode& node) const
 	// Add the optional prefix if it's different from its default value
 	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
 
+	// Save the background color
+	node.AddChild("Back Color", mImage.GetBackColor());
+
 	// Label settings are saved fully
-	mLabel.OnSerializeTo (node);
+	mLabel.OnSerializeTo(node);
 
 	// Save the state
 	if		(mState & State::Pressed && mSticky)	node.AddChild("State", "Pressed");

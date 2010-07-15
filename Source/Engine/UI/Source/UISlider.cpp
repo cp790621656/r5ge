@@ -69,7 +69,7 @@ void UISlider::SetSkin (const UISkin* skin, bool setDirty)
 // Changes the color
 //============================================================================================================
 
-void UISlider::SetColor(const Color3f& color)
+void UISlider::SetBackColor (const Color4ub& color)
 {
 	if (mColor != color)
 	{
@@ -221,10 +221,10 @@ bool UISlider::OnSerializeFrom (const TreeNode& node)
 		if (value >> val) SetValue(val);
 		return true;
 	}
-	else if (node.mTag == "Color")
+	else if (node.mTag == "Back Color" || node.mTag == "Color")
 	{
-		Color3f color;
-		if (value >> color) SetColor(color);
+		Color4ub color;
+		if (value >> color) SetBackColor(color);
 		return true;
 	}
 	else if (node.mTag == "Prefix")
@@ -245,7 +245,7 @@ void UISlider::OnSerializeTo (TreeNode& node) const
 		node.AddChild("Skin", mSkin->GetName());
 
 	node.AddChild("Value", mVal);
-	node.AddChild("Color", mColor);
+	node.AddChild("Back Color", mColor);
 
 	// Add the optional prefix if it's different from its default value
 	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);

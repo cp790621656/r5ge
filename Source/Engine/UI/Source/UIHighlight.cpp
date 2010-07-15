@@ -34,17 +34,17 @@ void UIHighlight::OnFill (UIQueue* queue)
 
 bool UIHighlight::OnSerializeFrom (const TreeNode& node)
 {
-	Color4f color4 (1.0f);
+	Color4ub color (0xFFFFFFFF);
 
 	// Legacy support
 	if (node.mTag == "Color" || node.mTag == "Top Color")
 	{
-		if (node.mValue >> color4) SetTopColor(color4);
+		if (node.mValue >> color) SetTopColor(color);
 		return true;
 	}
 	else if (node.mTag == "Bottom Color")
 	{
-		if (node.mValue >> color4) SetBottomColor(color4);
+		if (node.mValue >> color) SetBottomColor(color);
 		return true;
 	}
 	return false;

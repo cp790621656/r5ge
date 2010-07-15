@@ -17,26 +17,26 @@ protected:
 	UIFace*		mEmpty;
 	UIFace*		mKnob;
 	float		mVal;
-	Color3f		mColor;
+	Color4ub	mColor;
 	String		mPrefix;
 
 public:
 
-	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(1.0f), mPrefix(ClassID()) {}
+	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(0xFFFFFFFF), mPrefix(ClassID()) {}
 
-	const ITexture* GetTexture() const;
-	virtual float	GetValue()	 const	{ return mVal;   }
-	const UISkin*	GetSkin()	 const	{ return mSkin;  }
-	const Color3f&	GetColor()	 const	{ return mColor; }
+	const ITexture* GetTexture()	const;
+	virtual float	GetValue()		const	{ return mVal;   }
+	const UISkin*	GetSkin()		const	{ return mSkin;  }
+	const Color4ub&	GetBackColor()	const	{ return mColor; }
 
 	// Sets the slider's value directly
 	virtual void SetValue (float val);
 
 	// Sets the slider's value by the 2D position
-	void SetValue (const Vector2i& pos);
-	void SetSkin  (const UISkin* skin, bool setDirty = true);
-	void SetColor (const Color3f& color);
-	void SetPrefix(const String& prefix);
+	void SetValue		(const Vector2i& pos);
+	void SetSkin		(const UISkin* skin, bool setDirty = true);
+	void SetBackColor	(const Color4ub& color);
+	void SetPrefix		(const String& prefix);
 
 public:
 

@@ -9,6 +9,17 @@ UI::UI (IGraphics* graphics, IWindow* window) : mGraphics(graphics), mWindow(win
 }
 
 //============================================================================================================
+// Retrieves the specified font
+//============================================================================================================
+
+IFont* UI::GetFont (const String& name)
+{
+	IFont* font = mGraphics->GetFont(name);
+	if (font != 0 && mDefaultFont == 0) mDefaultFont = font;
+	return font;
+}
+
+//============================================================================================================
 // Updates the buffer associated with the rendering queue
 //============================================================================================================
 

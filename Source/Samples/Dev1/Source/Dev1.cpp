@@ -10,13 +10,13 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);
 
-	mUI->SetOnValueChange ("First Slider",	bind(&TestApp::OnChangeDelegate,	this));
-	mUI->SetOnValueChange ("Range",			bind(&TestApp::OnRangeChange,		this));
-	mUI->SetOnValueChange ("Power",			bind(&TestApp::OnPowerChange,		this));
-	mUI->SetOnValueChange ("Brightness",	bind(&TestApp::OnBrightnessChange,	this));
-	mUI->SetOnStateChange ("First Button",	bind(&TestApp::OnButtonStateChange,	this));
-	mUI->SetOnStateChange ("Second Button",	bind(&TestApp::OnButtonStateChange,	this));
-	mUI->SetOnStateChange ("Third Button",	bind(&TestApp::OnButtonStateChange,	this));
+	mUI->SetOnValueChange ("First UISlider",	bind(&TestApp::OnChangeDelegate,	this));
+	mUI->SetOnValueChange ("Range",				bind(&TestApp::OnRangeChange,		this));
+	mUI->SetOnValueChange ("Power",				bind(&TestApp::OnPowerChange,		this));
+	mUI->SetOnValueChange ("Brightness",		bind(&TestApp::OnBrightnessChange,	this));
+	mUI->SetOnStateChange ("First UIButton",	bind(&TestApp::OnButtonStateChange,	this));
+	mUI->SetOnStateChange ("Second UIButton",	bind(&TestApp::OnButtonStateChange,	this));
+	mUI->SetOnStateChange ("Third UIButton",	bind(&TestApp::OnButtonStateChange,	this));
 }
 
 //============================================================================================================
@@ -52,7 +52,7 @@ void TestApp::OnChangeDelegate (UIWidget* widget)
 		float redFactor   = Float::Clamp(2.0f - val * 2.0f, 0.0f, 1.0f);
 		float greenFactor = Float::Clamp(       val * 2.0f, 0.0f, 1.0f);
 
-		slider->SetColor( Color3f(redFactor, greenFactor, greenFactor * 0.15f) );
+		slider->SetBackColor( Color3f(redFactor, greenFactor, greenFactor * 0.15f) );
 	}
 }
 

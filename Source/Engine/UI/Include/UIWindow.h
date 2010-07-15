@@ -41,7 +41,8 @@ public:
 
 	const UISkin*	GetSkin()			const		{ return mBackground.GetSkin();	}
 	const String&	GetPrefix()			const		{ return mPrefix;				}
-	const Color3f&	GetColor()			const		{ return mTitle.GetColor();		}
+	const Color4ub&	GetTextColor()		const		{ return mTitle.GetTextColor();	}
+	const Color4ub&	GetBackColor()		const		{ return mTitle.GetTextColor();	}
 	const String&	GetText()			const		{ return mTitle.GetText();		}
 	const IFont*	GetFont()			const		{ return mTitle.GetFont();		}
 	char			GetAlignment()		const		{ return mTitle.GetAlignment();	}
@@ -50,12 +51,13 @@ public:
 
 	void SetSkin			(const UISkin* skin, bool setDirty = true);
 	void SetPrefix			(const String& prefix, bool setDirty = true);
-	void SetColor			(const Color3f& color)	{ mTitle.SetColor(color);		}
+	void SetTextColor		(const Color4ub& c)		{ mTitle.SetTextColor(c);	}
+	void SetBackColor		(const Color4ub& c)		{ mBackground.SetBackColor(c); mTitlebar.SetBackColor(c); }
 	void SetText			(const String& text)	{ mTitle.SetText(text);			}
 	void SetFont			(const IFont* font)		{ mTitle.SetFont(font);			}
 	void SetAlignment		(char val)				{ mTitle.SetAlignment(val);		}
 	void SetTitlebarHeight	(byte val);
-	void SetResizable		(bool val)				{ mResizable = val;				}
+	void SetResizable		(bool val)				{ mResizable = val;	}
 
 	// Resizes the window to fit the specified size
 	void ResizeToFit (const Vector2i& size);

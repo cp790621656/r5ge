@@ -11,10 +11,10 @@ class UIEditableLabel : public UIBasicLabel
 {
 protected:
 
-	Color4f	mSelColor;			// Selection color
-	bool	mHasFocus;			// Whether the widget has focus (and thus whether the selection is drawn)
-	uint	mSelectionEnd;		// Cursor position inside the text string (an index)
-	uint	mSelectionStart;	// Index of the beginning of the selection block (mSelectionEnd being the end)
+	Color4ub	mSelColor;			// Selection color
+	bool		mHasFocus;			// Whether the widget has focus (and thus whether the selection is drawn)
+	uint		mSelectionEnd;		// Cursor position inside the text string (an index)
+	uint		mSelectionStart;	// Index of the beginning of the selection block (mSelectionEnd being the end)
 
 public:
 
@@ -41,9 +41,9 @@ public:
 	void SelectAll();
 
 	// Retrieves the selected part of the text
-	String	  GetSelectedText() const;
-	void	  SetSelectionColor (const Color4f& color);
-	Color4ub  GetSelectionColor() const { return mSelColor; }
+	String			GetSelectedText() const;
+	void			SetSelectionColor (const Color4ub& color);
+	const Color4ub& GetSelectionColor() const { return mSelColor; }
 
 public:
 

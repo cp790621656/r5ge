@@ -39,6 +39,12 @@ struct Color4ub
 																  g = Float::ToRangeByte(c.g);
 																  b = Float::ToRangeByte(c.b);
 																  a = Float::ToRangeByte(c.a*alpha); }
+	Color4ub(const Color4ub& c, float alpha)
+	{
+		mVal = c.mVal;
+		a = Float::RoundToByte(alpha * a);
+	}
+
 	Color4ub(const Vector3f& v)									{ *this = v; }
 
 			byte& operator [] (uint i)							{ return (&r)[i]; }

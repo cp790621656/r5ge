@@ -4,15 +4,11 @@ Root
 {
 	UI
 	{
-	    Default Skin = "Neon"
-		Default Font = "Arial 15"
-		Tooltip Delay = 1.000
-
-		Skin = "Neon"
+	    Skin = "Neon"
 		{
 		    Serializable = false
 		    Texture = "Textures/UI/neon.png"
-	
+
 			Face = "UIWindow: Background"
 			{
 				Position = 5 5

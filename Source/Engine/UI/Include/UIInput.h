@@ -26,22 +26,30 @@ public:
 
 	UIInput();
 
-	const UISkin*		GetSkin()			const	{ return mImage.GetSkin();	}
-	const UIFace*		GetFace()			const	{ return mImage.GetFace(); }
-	const Color3f&		GetColor()			const	{ return mLabel.GetColor();}
-	const String&		GetText()			const	{ return mLabel.GetText();	}
-	const IFont*		GetFont()			const	{ return mLabel.GetFont();	}
-	uint				GetMaxHistorySize()	const	{ return mMaxHistorySize;	}
-	const HistoryList&	GetHistory()		const	{ return mHistory;			}
+	const UISkin*	GetSkin()			const	{ return mImage.GetSkin();		}
+	const UIFace*	GetFace()			const	{ return mImage.GetFace();		}
+	const String&	GetText()			const	{ return mLabel.GetText();		}
+	const IFont*	GetFont()			const	{ return mLabel.GetFont();		}
+	const Color4ub&	GetTextColor()		const	{ return mLabel.GetTextColor(); }
+	const Color4ub&	GetBackColor()		const	{ return mImage.GetBackColor(); }
+	uint			GetMaxHistorySize()	const	{ return mMaxHistorySize;		}
 
-	void SetSkin			(const UISkin*	skin)	{ mImage.SetSkin(skin);	}
-	void SetFace			(const String&	face)	{ mImage.SetFace(face);	}
-	void SetColor			(const Color3f& color)	{ mLabel.SetColor(color);	}
-	void SetText			(const String&	text)	{ mLabel.SetText(text);	}
-	void SetFont			(const IFont*	font)	{ mLabel.SetFont(font);	}
-	void SetMaxHistorySize	(uint	lines);
+	// Entire history list
+	const HistoryList&	GetHistory() const	{ return mHistory; }
 
-	void ClearHistory()								{ mHistory.Lock(); mHistory.Clear(); mHistory.Unlock(); }
+	// Common properties
+	void SetSkin (const UISkin* skin)	{ mImage.SetSkin(skin);	}
+	void SetFace (const String& face)	{ mImage.SetFace(face);	}
+	void SetText (const String& text)	{ mLabel.SetText(text);	}
+	void SetFont (const IFont* font)	{ mLabel.SetFont(font);	}
+
+	// Text and background colors
+	void SetTextColor (const Color4ub& c) { mLabel.SetTextColor(c);	}
+	void SetBackColor (const Color4ub& c) { mImage.SetBackColor(c);	}
+
+	// Maximum number of lines kept in the input's history
+	void SetMaxHistorySize (uint lines);
+	void ClearHistory() { mHistory.Lock(); mHistory.Clear(); mHistory.Unlock(); }
 	void AddToHistory (const String& text);
 
 	// Selects the entire text

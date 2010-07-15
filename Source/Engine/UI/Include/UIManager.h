@@ -28,6 +28,8 @@ protected:
 	UIFrame				mRoot;			// Root widget of the user interface
 	bool				mDimsChanged;	// Whether the regions need to be recalculated next frame
 	bool				mIsDirty;		// Whether the UI needs to be redrawn next frame
+	bool				mDefFontSet;	// Whether the default font has been set manually
+	bool				mDefSkinSet;	// Whether the default skin has been set manually
 
 	UIWidget*			mHover;			// Widget the mouse is currently hovering over that will receive mouse events
 	UIWidget*			mFocus;			// Widget that has been selected and will receive incoming key events (ex: input field)
@@ -70,8 +72,8 @@ public:
 	// Default values can be retrieved and changed
 	UISkin*	GetDefaultSkin()				{ return mDefaultSkin; }
 	IFont*	GetDefaultFont()				{ return mDefaultFont; }
-	void	SetDefaultSkin(UISkin* skin)	{ mDefaultSkin = skin; }
-	void	SetDefaultFont(IFont* font)		{ mDefaultFont = font; }
+	void	SetDefaultSkin(UISkin* skin)	{ mDefaultSkin = skin; mDefSkinSet = true; }
+	void	SetDefaultFont(IFont* font)		{ mDefaultFont = font; mDefFontSet = true; }
 
 	// It's useful to know which areas are currently on the watch list
 	const UIWidget* GetHoverArea()	const { return mHover; }

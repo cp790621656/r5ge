@@ -3,14 +3,14 @@ using namespace R5;
 
 //============================================================================================================
 
-UIWindow::UIWindow() : mPrefix(ClassID()), mTitleHeight(0), mMovement(Movement::None), mResizable(true)
+UIWindow::UIWindow() : mPrefix(ClassID()), mTitleHeight(20), mMovement(Movement::None), mResizable(true)
 {
 	mBackground._SetParentPtr(this);
 	mTitlebar._SetParentPtr(this);
 	mTitle._SetParentPtr(this);
 	mTitle.SetShadow(true);
 	mTitle.SetAlignment(UILabel::Alignment::Center);
-	mTitlebar.GetRegion().SetBottom(0, 0);
+	mTitlebar.GetRegion().SetBottom(0, mTitleHeight);
 	mTitle.SetLayer(1, false);
 }
 
@@ -94,9 +94,6 @@ void UIWindow::_SetRootPtr (UIManager* ptr)
 	mBackground._SetRootPtr(ptr);
 	mTitlebar._SetRootPtr(ptr);
 	mTitle._SetRootPtr(ptr);
-
-	// Assume the default skin is used
-	SetSkin(ptr->GetDefaultSkin(), false);
 }
 
 //============================================================================================================
@@ -115,6 +112,10 @@ void UIWindow::OnTextureChanged (const ITexture* ptr)
 
 bool UIWindow::OnUpdate (bool dimensionsChanged)
 {
+	// Use the default skin and font if none were specified
+	if (GetSkin() == 0) SetSkin(mUI->GetDefaultSkin());
+	if (GetFont() == 0) SetFont(mUI->GetDefaultFont());
+
 	// Update the background. If background changes, it affects everything else
 	dimensionsChanged |= mBackground.Update(mRegion, dimensionsChanged, true);
 
@@ -187,6 +188,12 @@ bool UIWindow::OnSerializeFrom (const TreeNode& node)
 		if (value >> val) SetResizable(val);
 		return true;
 	}
+	else if (node.mTag == "Back Color")
+	{
+		Color4ub c;
+		if (value >> c) SetBackColor(c);
+		return true;
+	}
 	return mTitle.OnSerializeFrom (node);
 }
 
@@ -203,6 +210,7 @@ void UIWindow::OnSerializeTo (TreeNode& node) const
 	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
 	node.AddChild("Titlebar Height", mTitleHeight);
 	node.AddChild("Resizable", mResizable);
+	node.AddChild("Back Color", mBackground.GetBackColor());
 
 	mTitle.OnSerializeTo(node);
 }

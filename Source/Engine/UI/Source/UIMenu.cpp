@@ -59,7 +59,8 @@ UIContext* UIMenu::_ShowMenu()
 			menu->SetSkin( GetSkin() );
 			menu->SetFace( (mMenuFace.IsValid() ? mMenuFace : String(UIButton::ClassID()) + ": Pressed") );
 			menu->SetFont( GetFont() );
-			menu->SetColor( GetColor() );
+			menu->SetTextColor( GetTextColor() );
+			menu->SetBackColor( GetBackColor() );
 			menu->SetAnchor( Vector3f(
 				mRegion.GetCalculatedLeft(),
 				mRegion.GetCalculatedBottom(),

@@ -44,6 +44,9 @@ protected:
 	uint			mWidth;		// Width of the texture (it's always square)
 	uint			mFormat;	// Texture format
 
+	// Stack of colors, used in the Print() function
+	mutable Array<Color4ub> mColors;
+
 public:
 
 	Font() : mSize(0), mPadding(0), mGlyphSize(0), mWidth(0), mFormat(ITexture::Format::Invalid) {}

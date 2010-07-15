@@ -501,6 +501,7 @@ bool Font::Print ( Vertices&		out,
 	// Only continue as long as there is something to print
 	if (start < end)
 	{
+		mColors.Clear();
 		Color4ub myColor (color);
 
 		byte ch;
@@ -513,12 +514,50 @@ bool Font::Print ( Vertices&		out,
 		{
 			ch = text[start++];
 
-			if ( (tags != Tags::Ignore) && (ch == '[') && (start + 6 < end) && (text[start + 6] == ']') )
+			if ((tags != Tags::Ignore) && (ch == '['))
 			{
-				if (tags == Tags::Process) myColor.SetByHexString( text.GetBuffer() + start, 6 );
-				start += 7;
+				// Expected color format: [RRGGBB]
+				if ((start + 6 < end) && (text[start + 6] == ']'))
+				{
+					if (tags == Tags::Process)
+					{
+						// If we are processing tags, set the color
+						mColors.Expand() = myColor;
+						myColor.SetByHexString( text.GetBuffer() + start, 6 );
+					}
+					start += 7;
+					continue;
+				}
+				// Expected color format: [RRGGBBAA]
+				else if ((start + 8 < end) && (text[start + 8] == ']'))
+				{
+					if (tags == Tags::Process)
+					{
+						mColors.Expand() = myColor;
+						myColor.SetByHexString( text.GetBuffer() + start, 8 );
+					}
+					start += 9;
+					continue;
+				}
+				// Expected symbol format: [X]
+				else if ((start + 1 < end) && (text[start + 1] == ']'))
+				{
+					// [-] symbol restores the current color back to previous
+					if (text[start] == '-')
+					{
+						if (tags == Tags::Process && mColors.IsValid())
+						{
+							myColor = mColors.Back();
+							mColors.Shrink();
+						}
+						start += 2;
+						continue;
+					}
+				}
 			}
-			else if (ch > 31)
+
+			// Process a regular character
+			if (ch > 31)
 			{
 				ch -= 32;
 

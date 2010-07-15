@@ -6,11 +6,11 @@ using namespace R5;
 //============================================================================================================
 
 UIEditableLabel::UIEditableLabel() :
-	mSelColor		(1.0f, 0.667f, 0.161f, 0.5f),
 	mHasFocus		(false),
 	mSelectionEnd	(0),
 	mSelectionStart	(0)
 {
+	mSelColor = Color4f(1.0f, 0.667f, 0.161f, 0.5f);
 	mTags = IFont::Tags::Ignore;
 	mEventHandling = EventHandling::Full;
 }
@@ -164,9 +164,9 @@ void  UIEditableLabel::SetFont (const IFont* font)
 // Changes the selection color
 //============================================================================================================
 
-void  UIEditableLabel::SetSelectionColor (const Color4f& color)
+void  UIEditableLabel::SetSelectionColor (const Color4ub& color)
 {
-	if ( mSelColor != color )
+	if (mSelColor != color)
 	{
 		mSelColor = color;
 		if (mHasFocus) OnDirty(0, mLayer+1);
@@ -275,7 +275,7 @@ bool UIEditableLabel::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "Selection Color")
 	{
-		Color4f color;
+		Color4ub color;
 		if (node.mValue >> color) SetSelectionColor(color);
 	}
 	return false;

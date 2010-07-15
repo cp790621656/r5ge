@@ -153,7 +153,8 @@ UIContext* UIInput::_ShowHistory()
 			menu->SetFace( face->GetName() );
 		}
 		menu->SetFont( GetFont() );
-		menu->SetColor( GetColor() );
+		menu->SetTextColor( GetTextColor() );
+		menu->SetBackColor( GetBackColor() );
 		menu->SetAnchor( Vector3f(mRegion.GetCalculatedLeft(), mRegion.GetCalculatedBottom(), mRegion.GetCalculatedHeight()) );
 		menu->SetMinWidth( mRegion.GetCalculatedWidth() );
 		menu->SetAlignment( UILabel::Alignment::Left );

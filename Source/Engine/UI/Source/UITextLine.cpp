@@ -35,7 +35,7 @@ byte UITextLine::GetFontSize() const
 // Changes the label's color
 //============================================================================================================
 
-void UITextLine::SetColor(const Color3f& color)
+void UITextLine::SetTextColor (const Color4ub& color)
 {
 	if (mColor != color)
 	{
@@ -133,10 +133,10 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 {
 	const Variable& value = node.mValue;
 
-	if (node.mTag == "Color")
+	if (node.mTag == "Text Color")
 	{
-		Color3f color;
-		if (value >> color) SetColor(color);
+		Color4ub color;
+		if (value >> color) SetTextColor(color);
 		return true;
 	}
 	else if (node.mTag == "Font")
@@ -172,7 +172,7 @@ void UITextLine::OnSerializeTo (TreeNode& node) const
 	if (mFont != 0 && mFont != mUI->GetDefaultFont())
 		node.AddChild("Font", mFont->GetName());
 
-	node.AddChild("Color", mColor);
+	node.AddChild("Text Color", mColor);
 	node.AddChild("Text", mText);
 	node.AddChild("Shadow", mShadow);
 }

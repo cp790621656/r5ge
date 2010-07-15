@@ -287,10 +287,11 @@ TestApp::TestApp()
 			listener->SetOnKey( bind(&TestApp::OnHighlightKey, this) );
 			listener->SetOnMouseMove( bind(&TestApp::OnHighlightMove, this) );
 
+			Color4ub black (0, 0, 0, 255);
 			lbl0->SetFont(font0);
 			lbl0->SetEventHandling( UIWidget::EventHandling::None );
 			lbl0->SetAlignment( UILabel::Alignment::Center );
-			lbl0->SetColor(0);
+			lbl0->SetTextColor(black);
 			lbl0->SetShadow(false);
 			lbl0->SetLayer(1, false);
 			lbl0->GetRegion().SetBottom(0.333f, 0.0f);
@@ -298,14 +299,14 @@ TestApp::TestApp()
 			lbl1->SetFont(font1);
 			lbl1->SetEventHandling( UIWidget::EventHandling::None );
 			lbl1->SetAlignment( UILabel::Alignment::Center );
-			lbl1->SetColor(0);
+			lbl1->SetTextColor(black);
 			lbl1->SetShadow(false);
 			lbl1->SetLayer(1, false);
 
 			lbl2->SetFont(font0);
 			lbl2->SetEventHandling( UIWidget::EventHandling::None );
 			lbl2->SetAlignment( UILabel::Alignment::Center );
-			lbl2->SetColor(0);
+			lbl2->SetTextColor(black);
 			lbl2->SetShadow(false);
 			lbl2->SetLayer(1, false);
 			lbl2->GetRegion().SetTop(0.667f, 0.0f);

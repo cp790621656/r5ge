@@ -4,15 +4,11 @@ Root
 {
 	UI
 	{
-	    Default Skin = "Default"
-		Default Font = "Arial 15"
-		Tooltip Delay = 1.000
-	
-		Skin = Default
+	    Skin = "Default"
 		{
 			Serializable = false
 		    Texture = "Textures/UI/slick.png"
-	
+
 			Face = "Window: Background"
 			{
 				Position = 65 78

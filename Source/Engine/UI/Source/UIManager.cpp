@@ -9,6 +9,8 @@ UIManager::UIManager() :
 	mSerializable	(true),
 	mDimsChanged	(false),
 	mIsDirty		(false),
+	mDefFontSet		(false),
+	mDefSkinSet		(false),
 	mHover			(0),
 	mFocus			(0),
 	mSelected		(0),
@@ -86,6 +88,7 @@ UISkin* UIManager::GetSkin (const String& name)
 		SkinPtr& skin = mSkins[name];
 		if (skin == 0) skin = new UISkin(this, name);
 		ptr = skin;
+		if (mDefaultSkin == 0) mDefaultSkin = skin;
 	}
 	return ptr;
 }
@@ -189,7 +192,7 @@ bool UIManager::CreateDefaultTooltip (UIWidget* widget)
 	{
 		// No skin available -- use a simple highlight
 		UIHighlight* hl = mTooltip.AddWidget<UIHighlight>("Tooltip Backdrop");
-		hl->SetColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+		hl->SetColor( Color4ub(0, 0, 0, 255) );
 
 		UIRegion& hlrgn (hl->GetRegion());
 		hlrgn.SetLeft	(0.0f, -3.0f);
@@ -556,11 +559,13 @@ bool UIManager::SerializeFrom (const TreeNode& root)
 			}
 			else if (tag == "Default Skin")
 			{
-				mDefaultSkin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
+				UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
+				SetDefaultSkin(skin);
 			}
 			else if (tag == "Default Font")
 			{
-				mDefaultFont = GetFont( value.IsString() ? value.AsString() : value.GetString() );
+				IFont* font = GetFont( value.IsString() ? value.AsString() : value.GetString() );
+				SetDefaultFont(font);
 			}
 			else if (tag == "Tooltip Delay")
 			{
@@ -593,9 +598,9 @@ bool UIManager::SerializeTo (TreeNode& root) const
 		{
 			TreeNode& node = root.AddChild("UI");
 
-			if (mDefaultSkin != 0) node.AddChild("Default Skin", mDefaultSkin->GetName());
-			if (mDefaultFont != 0) node.AddChild("Default Font", mDefaultFont->GetName());
-			if (mTtDelay != 1.0f)  node.AddChild("Tooltip Delay", mTtDelay);
+			if (mDefaultSkin != 0 && mDefSkinSet) node.AddChild("Default Skin", mDefaultSkin->GetName());
+			if (mDefaultFont != 0 && mDefFontSet) node.AddChild("Default Font", mDefaultFont->GetName());
+			if (mTtDelay != 1.0f)				  node.AddChild("Tooltip Delay", mTtDelay);
 
 			// Serialize all skins
 			const PointerArray<UISkin>& allSkins = mSkins.GetAllValues();

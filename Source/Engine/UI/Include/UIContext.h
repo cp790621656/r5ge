@@ -21,7 +21,8 @@ protected:
 	const UISkin*	mSkin;
 	const IFont*	mFont;
 	String			mFace;
-	Color3f			mColor;
+	Color4ub		mTextColor;
+	Color4ub		mBackColor;
 	bool			mShadow;
 	uint			mAlignment;
 	Entries			mEntries;
@@ -37,7 +38,8 @@ public:
 
 	const UISkin*	GetSkin()		const	{ return mSkin; }
 	const IFont*	GetFont()		const	{ return mFont; }
-	const Color3f&	GetColor()		const	{ return mColor; }
+	const Color4ub&	GetTextColor()	const	{ return mTextColor; }
+	const Color4ub&	GetBackColor()	const	{ return mBackColor; }
 	bool			DropsShadow()	const	{ return mShadow;  }
 	uint			GetAlignment()	const	{ return mAlignment; }
 	const Entries&	GetAllEntries()	const	{ return mEntries; }
@@ -48,7 +50,8 @@ public:
 	void SetSkin		(const UISkin* skin)	{ mSkin		 = skin; mIsDirty = true; }
 	void SetFace		(const String& face)	{ mFace		 = face; mIsDirty = true; }
 	void SetFont		(const IFont* font)		{ mFont		 = font; mIsDirty = true; }
-	void SetColor		(const Color3f& c)		{ mColor	 = c;	 mIsDirty = true; }
+	void SetTextColor	(const Color4ub& c)		{ mTextColor = c;	 mIsDirty = true; }
+	void SetBackColor	(const Color4ub& c)		{ mBackColor = c;	 mIsDirty = true; }
 	void SetShadow		(bool val)				{ mShadow	 = val;	 mIsDirty = true; }
 	void SetAlignment	(uint val)				{ mAlignment = val;	 mIsDirty = true; }
 	void SetMinWidth	(float val)				{ mMinWidth	 = val;	 mIsDirty = true; }

@@ -12,15 +12,6 @@ const ITexture* UISubPicture::GetTexture() const
 }
 
 //============================================================================================================
-// Sets the skin to the UI's default if one hasn't been set
-//============================================================================================================
-
-const UISkin* UISubPicture::GetSkin() const
-{
-	return (mSkin != 0) ? mSkin : (mSkin = mUI->GetDefaultSkin());
-}
-
-//============================================================================================================
 // Changes the skin and face for the image
 //============================================================================================================
 
@@ -72,9 +63,9 @@ void UISubPicture::SetSkin (const UISkin* skin, bool setDirty)
 
 void UISubPicture::SetFace (const String& face, bool setDirty)
 {
-	const UISkin* skin = GetSkin();
+	if (mSkin == 0) mSkin = mUI->GetDefaultSkin();
 
-	if (skin != 0)
+	if (mSkin != 0)
 	{
 		if (face.IsEmpty())
 		{
@@ -93,7 +84,7 @@ void UISubPicture::SetFace (const String& face, bool setDirty)
 // Color tint
 //============================================================================================================
 
-void UISubPicture::SetColor (const Color4f& c, bool setDirty)
+void UISubPicture::SetBackColor (const Color4ub& c, bool setDirty)
 {
 	if (mColor != c)
 	{
@@ -176,9 +167,7 @@ void UISubPicture::OnFill (UIQueue* queue)
 		float right	 ( mRegion.GetCalculatedRight() );
 		float bottom ( mRegion.GetCalculatedBottom() );
 
-		Color4f cf (mColor);
-		cf.a *= mRegion.GetCalculatedAlpha();
-		Color4ub color (cf);
+		Color4ub color (mColor, mRegion.GetCalculatedAlpha());
 		const Vector2i& texSize (queue->mTex->GetSize());
 		UIFace::Rectangle face (mFace->GetRectangle(texSize));
 
@@ -286,10 +275,10 @@ bool UISubPicture::OnSerializeFrom (const TreeNode& node)
 		SetFace( value.IsString() ? value.AsString() : value.GetString() );
 		return true;
 	}
-	else if (node.mTag == "Color")
+	else if (node.mTag == "Color" || node.mTag == "Back Color")
 	{
-		Color4f c;
-		if (node.mValue >> c) SetColor(c);
+		Color4ub c;
+		if (node.mValue >> c) SetBackColor(c);
 		return true;
 	}
 	return false;
@@ -307,5 +296,5 @@ void UISubPicture::OnSerializeTo (TreeNode& node) const
 	TreeNode& faceNode = node.AddChild("Face");
 	if (mFace != 0) faceNode.mValue = mFace->GetName();
 
-	node.AddChild("Color", mColor);
+	node.AddChild("Back Color", mColor);
 }

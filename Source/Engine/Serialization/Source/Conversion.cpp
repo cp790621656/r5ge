@@ -37,7 +37,7 @@ inline void CleanupHexString(String& s)
 
 String&	operator << (String& str, const Color4ub& v)
 {
-	String color ("0x%2x%2x%2x%2x", v.r, v.g, v.b, v.a);
+	String color ("0x%2X%2X%2X%2X", v.r, v.g, v.b, v.a);
 	CleanupHexString(color);
 	return str << color;
 }
@@ -46,7 +46,7 @@ String&	operator << (String& str, const Color4ub& v)
 
 String&	operator >> (const Color4ub& v, String& str)
 {
-	str.Set("0x%2x%2x%2x%2x", v.r, v.g, v.b, v.a);
+	str.Set("0x%2X%2X%2X%2X", v.r, v.g, v.b, v.a);
 	CleanupHexString(str);
 	return str;
 }
@@ -170,19 +170,24 @@ bool operator >> (const String& s, Color4f& c)
 
 bool operator >> (const String& s, Color4ub& c)
 {
-	uint R, G, B, A;
-
 	if (s.IsValid())
 	{
-		if ( sscanf(s, "%u %u %u %u", &R, &G, &B, &A) == 4 )
+		Color4f cf (1.0f);
+
+		if (sscanf(s, "%f %f %f %f", &cf.r, &cf.g, &cf.b, &cf.a) > 2)
 		{
-			c.r = R;  c.g = G;  c.b = B;  c.a = A;
+			c = cf;
 			return true;
 		}
-		else if (sscanf(s, "0x%x", &R) == 1)
+		else
 		{
-			c.mVal = InvertColor(R);
-			return true;
+			uint val;
+
+			if (sscanf(s, "0x%x", &val) == 1)
+			{
+				c.mVal = InvertColor(val);
+				return true;
+			}
 		}
 	}
 	return false;

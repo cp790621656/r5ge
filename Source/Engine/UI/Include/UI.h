@@ -41,7 +41,7 @@ public:
 
 	virtual float		GetCurrentTime() const				{ return Time::GetTime();	}
 	virtual ITexture*	GetTexture  (const String& name)	{ return mGraphics->GetTexture(name);	}
-	virtual IFont*		GetFont		(const String& name)	{ return mGraphics->GetFont(name);		}
+	virtual IFont*		GetFont		(const String& name);
 	virtual IShader*	GetShader   (const String& name)	{ return mGraphics->GetShader(name);	}
 
 protected:

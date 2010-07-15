@@ -211,11 +211,19 @@ bool TreeNode::Load (const char* filename)
 bool TreeNode::Load (const byte* buffer, uint size)
 {
 	// R5 format files always begin with '//R5', followed by 'A' for ASCII or 'B' for Binary
-	if (size > 5 &&
-		buffer[0] == '/' &&
-		buffer[1] == '/' &&
-		buffer[2] == 'R' &&
-		buffer[3] == '5')
+	if (size < 6) return false;
+
+	// 'Root' header -- missing proper header type
+	if (buffer[0] == 'R' && buffer[1] == 'o' && buffer[2] == 'o' && buffer[3] == 't')
+	{
+		String s;
+		memcpy(s.Resize(size), buffer, size);
+		s[size] = 0;
+		return SerializeFrom(s);
+	}
+
+	// Proper '//R5' header
+	if (buffer[0] == '/' && buffer[1] == '/' && buffer[2] == 'R' && buffer[3] == '5')
 	{
 		char type = buffer[4];
 

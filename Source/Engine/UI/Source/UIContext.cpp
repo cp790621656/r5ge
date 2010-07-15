@@ -5,7 +5,8 @@ using namespace R5;
 
 UIContext::UIContext() :	mSkin		(0),
 							mFont		(0),
-							mColor		(1.0f),
+							mTextColor	(0xFFFFFFFF),
+							mBackColor	(0xFFFFFFFF),
 							mShadow		(true),
 							mAlignment	(UILabel::Alignment::Left),
 							mIsDirty	(false),
@@ -97,6 +98,7 @@ void UIContext::_Rebuild()
 		if (img != 0)
 		{
 			img->Set(mSkin, mFace);
+			img->SetBackColor(mBackColor);
 
 			// Run through all entries and add them to the frame
 			for (uint i = 0; i < mEntries.GetSize(); ++i)
@@ -109,7 +111,7 @@ void UIContext::_Rebuild()
 					lbl->SetLayer		( 1, false		);
 					lbl->SetShadow		( mShadow		);
 					lbl->SetAlignment	( mAlignment	);
-					lbl->SetColor		( mColor		);
+					lbl->SetTextColor	( mTextColor	);
 					lbl->SetFont		( mFont			);
 					lbl->SetText		( mEntries[i]	);
 
