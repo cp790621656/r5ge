@@ -90,6 +90,19 @@ void UISubPicture::SetFace (const String& face, bool setDirty)
 }
 
 //============================================================================================================
+// Color tint
+//============================================================================================================
+
+void UISubPicture::SetColor (const Color4f& c, bool setDirty)
+{
+	if (mColor != c)
+	{
+		mColor = c;
+		if (setDirty) SetDirty();
+	}
+}
+
+//============================================================================================================
 // Marks the widget as needing to be rebuilt
 //============================================================================================================
 
@@ -163,7 +176,9 @@ void UISubPicture::OnFill (UIQueue* queue)
 		float right	 ( mRegion.GetCalculatedRight() );
 		float bottom ( mRegion.GetCalculatedBottom() );
 
-		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetCalculatedAlpha() ));
+		Color4f cf (mColor);
+		cf.a *= mRegion.GetCalculatedAlpha();
+		Color4ub color (cf);
 		const Vector2i& texSize (queue->mTex->GetSize());
 		UIFace::Rectangle face (mFace->GetRectangle(texSize));
 
@@ -271,6 +286,12 @@ bool UISubPicture::OnSerializeFrom (const TreeNode& node)
 		SetFace( value.IsString() ? value.AsString() : value.GetString() );
 		return true;
 	}
+	else if (node.mTag == "Color")
+	{
+		Color4f c;
+		if (node.mValue >> c) SetColor(c);
+		return true;
+	}
 	return false;
 }
 
@@ -285,4 +306,6 @@ void UISubPicture::OnSerializeTo (TreeNode& node) const
 
 	TreeNode& faceNode = node.AddChild("Face");
 	if (mFace != 0) faceNode.mValue = mFace->GetName();
+
+	node.AddChild("Color", mColor);
 }

@@ -15,18 +15,21 @@ protected:
 	UIFace*			mFace;		// Pointer to the face within the skin used to draw this widget
 	short			mBorder;	// Saved border value, used to track face border changes
 	UIRegion		mSubRegion;	// Child region, calculated based on the border
+	Color4f			mColor;		// Color tint for the background
 
 public:
 
-	UISubPicture() : mSkin(0), mFace(0), mBorder(0) {}
+	UISubPicture() : mSkin(0), mFace(0), mBorder(0), mColor(1.0f) {}
 
 	const ITexture* GetTexture() const;
 	const UISkin*	GetSkin()	 const;
 	const UIFace*	GetFace()	 const	{ return mFace; }
+	const Color4f&	GetColor()	 const	{ return mColor; }
 
 	void Set	 (const UISkin* skin, const String& face, bool setDirty = true);
 	void SetSkin (const UISkin* skin, bool setDirty = true);
 	void SetFace (const String& face, bool setDirty = true);
+	void SetColor(const Color4f& c, bool setDirty = true);
 
 public:
 

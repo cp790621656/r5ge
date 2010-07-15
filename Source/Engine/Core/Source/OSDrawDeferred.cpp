@@ -339,15 +339,15 @@ void OSDrawDeferred::OnDraw()
 	// Cull the scene with our camera
 	mScene.Cull(mCam);
 
-	// Save the inverse MVP for shadows
-	mIMVP = mGraphics->GetInverseMVPMatrix();
-
-	// Clear the "final" texture references
-	mScene.ClearFinalTextures();
-
 	// If we have something to draw, let's draw it
 	if (mScene.HasSomethingToDraw())
 	{
+		// Clear the "final" texture references
+		mScene.ClearFinalTextures();
+
+		// Save the inverse MVP for shadows
+		mIMVP = mGraphics->GetInverseMVPMatrix();
+
 		// First stage -- encode the entire scene's materials into the material render target
 		MaterialStage();
 
@@ -362,6 +362,7 @@ void OSDrawDeferred::OnDraw()
 	}
 	else
 	{
+		mGraphics->SetBackgroundColor(mBackground);
 		mGraphics->Clear();
 	}
 }
