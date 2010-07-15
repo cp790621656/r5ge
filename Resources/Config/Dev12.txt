@@ -13,7 +13,6 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
 		Fog Range = 30.000000 75.000000
 	}
 
@@ -74,7 +73,7 @@ Root
 		{
 			Position = 0.000000 0.000000 0.600000
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
-			Range = 0.300000 20.000000 90.000000
+			Range = 0.300000 10.000000 90.000000
 			Dolly = 0.000000 1.897729 15.000000
 
 			Script = "OSDrawDeferred"
@@ -90,10 +89,8 @@ Root
 				}
 
 				Bloom = 1.000000
-				Focal Range = 0.000000 0.000000 0.000000
-				AO Quality = 0
-				AO Blur Passes = 2
-				AO Parameters = 0.100000 4.000000 1.000000
+				Background Color = 0.250000 0.250000 0.250000 1.000000
+				Fog Range = 0.5 1.0
 			}
 		}
 
@@ -127,6 +124,7 @@ Root
 					}
 
 					Bloom = 1.000000
+					Background Color = 1 0 1 0
 					Focal Range = 0.000000 0.000000 0.000000
 					AO Quality = 0
 					AO Blur Passes = 2

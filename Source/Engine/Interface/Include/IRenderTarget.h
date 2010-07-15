@@ -19,9 +19,6 @@ struct IRenderTarget
 	virtual const Vector2i& GetSize() const=0;
 	virtual bool SetSize (const Vector2i& size)=0;
 
-	virtual const Color4f& GetBackgroundColor() const=0;
-	virtual void SetBackgroundColor (const Color4f& color)=0;
-	
 	virtual bool IsUsingSkybox() const=0;
 	virtual void UseSkybox (bool val)=0;
 

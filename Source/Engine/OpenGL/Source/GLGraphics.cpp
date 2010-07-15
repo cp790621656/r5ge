@@ -343,16 +343,7 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 			flag |= GL_COLOR_BUFFER_BIT;
 
 			SetColorWrite(true);
-
-			if ( mTarget )
-			{
-				const Color4f& color ( mTarget->GetBackgroundColor() );
-				glClearColor(color.r, color.g, color.b, color.a);
-			}
-			else
-			{
-				glClearColor(mBackground.r, mBackground.g, mBackground.b, mBackground.a);
-			}
+			glClearColor(mBackground.r, mBackground.g, mBackground.b, mBackground.a);
 		}
 
 		if (depth)
@@ -1159,8 +1150,6 @@ bool GLGraphics::SerializeTo (TreeNode& root) const
 {
 	TreeNode& node = root.AddChild( ClassID() );
 	node.AddChild("Default AF", mAf);
-	node.AddChild("Background Color", mBackground);
-	node.AddChild("Fog Range", mFogRange);
 
 	if ( mSkybox && mSkybox->GetType() == ITexture::Type::EnvironmentCubeMap )
 		node.AddChild("Skybox", mSkybox->GetName());

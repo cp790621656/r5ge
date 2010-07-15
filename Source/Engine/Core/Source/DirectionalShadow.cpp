@@ -290,9 +290,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 		{
 			mShadowTarget	= mGraphics->CreateRenderTarget();
 			mShadowTex		= mGraphics->CreateRenderTexture();
-
 			mShadowTarget->AttachColorTexture(0, mShadowTex, ITexture::Format::Alpha);
-			mShadowTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 		}
 
 		// The shadow texture should have the same dimensions as the depth texture
@@ -304,6 +302,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 		mGraphics->SetActiveTechnique(mPost);
 		mGraphics->SetActiveMaterial(0);
 		mGraphics->SetActiveTexture(0, camDepth);
+		mGraphics->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 
 		// Activate the proper shader and associated textures
 		if (mCascadeCount < 2)

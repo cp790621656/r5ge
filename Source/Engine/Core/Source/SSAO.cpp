@@ -80,17 +80,12 @@ void SSAO::CreateResources (TemporaryStorage& storage)
 	mLightmap->SetFiltering(ITexture::Filter::Linear);
 	mBlurTex0->SetFiltering(ITexture::Filter::Linear);
 	mBlurTex1->SetFiltering(ITexture::Filter::Linear);
-
-	mSSAOTarget->AttachColorTexture( 0, mLightmap, ITexture::Format::Alpha );
-	mSSAOTarget->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-
+	
 	mSSAO->RegisterUniform("properties", &SetSSAOProperties);
 
+	mSSAOTarget->AttachColorTexture( 0, mLightmap, ITexture::Format::Alpha );
 	mBlurTarget0->AttachColorTexture( 0, mBlurTex0, ITexture::Format::Alpha );
-	mBlurTarget0->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-
 	mBlurTarget1->AttachColorTexture( 0, mBlurTex1, ITexture::Format::Alpha );
-	mBlurTarget1->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 }
 
 //============================================================================================================

@@ -2,7 +2,7 @@
 
 Root
 {
-	UIWindow
+	Window
 	{
 		Title = "R5 Engine: Dev9 (Trees)"
 		Position = 100 100
@@ -13,8 +13,6 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 1.000000 1.000000 1.000000 1.000000
-		Fog Range = 25.000000 75.000000
 
 		Technique = "Diffuse Map"
 		{
@@ -489,6 +487,8 @@ Root
 				Script = "OSDrawForward"
 				{
 					Grid = true
+					Background Color = 1 1 1 1
+					Fog Range = 25.000000 75.000000
 				}
 			}
 

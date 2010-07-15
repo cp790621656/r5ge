@@ -88,7 +88,6 @@ void OSDrawDeferred::MaterialStage()
 
 	// Update changing target properties
 	mMaterialTarget->SetSize(size);
-	mMaterialTarget->SetBackgroundColor(mBackground);
 	mMaterialTarget->UseSkybox(target == 0 || target->IsUsingSkybox());
 
 	// Set up the graphics states and clear the render target
@@ -96,6 +95,7 @@ void OSDrawDeferred::MaterialStage()
 	mGraphics->SetActiveDepthFunction(IGraphics::Condition::Less);
 	mGraphics->SetStencilTest(false);
 	mGraphics->SetActiveRenderTarget(mMaterialTarget);
+	mGraphics->SetBackgroundColor(mBackground);
 	mGraphics->SetFogRange(mFogRange);
 	mGraphics->Clear(true, true, true);
 
@@ -105,7 +105,6 @@ void OSDrawDeferred::MaterialStage()
 	mGraphics->SetActiveStencilOperation(IGraphics::Operation::Keep,
 										 IGraphics::Operation::Keep,
 										 IGraphics::Operation::Replace);
-
 	// Draw the scene
 	mScene.DrawWithTechniques(mDeferred, false, false);
 
@@ -142,7 +141,6 @@ void OSDrawDeferred::LightStage()
 		mLightTarget->AttachStencilTexture(mDepth);
 		mLightTarget->AttachColorTexture(0, mLightDiff, mMatDiff->GetFormat());
 		mLightTarget->AttachColorTexture(1, mLightSpec, mMatDiff->GetFormat());
-		mLightTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 		mLightTarget->UseSkybox(false);
 	}
 
@@ -205,6 +203,7 @@ void OSDrawDeferred::LightStage()
 
 					// Activate the light target
 					mGraphics->SetActiveRenderTarget(mLightTarget);
+					mGraphics->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 
 					// Clear the target if it's the first time
 					if (!cleared)
@@ -278,12 +277,13 @@ void OSDrawDeferred::CombineStage()
 		mFinalTarget->AttachDepthTexture(mDepth);
 		mFinalTarget->AttachStencilTexture(mDepth);
 		mFinalTarget->AttachColorTexture(0, mFinal, mMatDiff->GetFormat());
-		mFinalTarget->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 1.0f));
 		mFinalTarget->UseSkybox(false);
 	}
 
 	mFinalTarget->SetSize(mMaterialTarget->GetSize());
 
+	mGraphics->SetBackgroundColor(mBackground);
+	mGraphics->SetFogRange(mFogRange);
 	mGraphics->SetDepthWrite(false);
 	mGraphics->SetDepthTest(false);
 	mGraphics->SetStencilTest(false);

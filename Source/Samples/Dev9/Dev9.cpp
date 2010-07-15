@@ -163,7 +163,6 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 		{
 			diffuseTarget = mGraphics->CreateRenderTarget();
 			diffuseTarget->AttachColorTexture(0, temp0, ITexture::Format::RGBA);
-			diffuseTarget->SetBackgroundColor( Color4ub(65, 90, 20, 0) );
 			diffuseTarget->SetSize( tex->GetSize() * 2 );
 			temp0->SetFiltering(ITexture::Filter::Nearest);
 		}
@@ -172,7 +171,6 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 		{
 			normalTarget = mGraphics->CreateRenderTarget();
 			normalTarget->AttachColorTexture(0, temp1, ITexture::Format::RGBA);
-			normalTarget->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
 			normalTarget->SetSize( tex->GetSize() * 2 );
 			temp1->SetFiltering(ITexture::Filter::Nearest);
 		}
@@ -182,6 +180,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 			// Off-screen target
 			mOffscreen.SetFinalTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
+			mGraphics->SetBackgroundColor( Color4ub(65, 90, 20, 0) );
 			mOffscreen.DrawWithTechnique("Diffuse Map");
 			mGraphics->Flush();
 
@@ -202,6 +201,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 		{
 			mOffscreen.SetFinalTarget(normalTarget);
 			mOffscreen.ActivateMatrices();
+			mGraphics->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
 			mOffscreen.DrawWithTechnique("Normal Map");
 			mGraphics->Flush();
 		}

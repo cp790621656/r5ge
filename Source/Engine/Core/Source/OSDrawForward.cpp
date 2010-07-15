@@ -183,8 +183,12 @@ void OSDrawForward::OnDraw()
 			mComplete.Expand() = mGraphics->GetTechnique("Glare");
 		}
 
-		// Clear the screen and draw the grid if necessary
+		// Clear the screen
+		mGraphics->SetBackgroundColor(mBackground);
+		mGraphics->SetFogRange(mFogRange);
 		mGraphics->Clear();
+
+		// Draw the grid if asked for
 		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Nothing has been drawn -- draw everything
