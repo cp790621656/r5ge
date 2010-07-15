@@ -28,7 +28,7 @@ public:
 
 	virtual bool OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 	{
-		if (mObject->GetCore()->IsKeyDown(Key::MouseRight))
+		if (mObject->GetCore()->IsKeyDown(Key::L))
 		{
 			Quaternion relativeRot (mObject->GetRelativeRotation());
 

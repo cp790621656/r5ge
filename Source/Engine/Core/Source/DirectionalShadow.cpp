@@ -20,10 +20,17 @@ void SetShadowOffset (const String& name, Uniform& uniform) { uniform = g_shadow
 
 //============================================================================================================
 
+Vector3f g_shadowStart;
+
+void SetShadowStart (const String& name, Uniform& uniform) { uniform = g_shadowStart; }
+
+//============================================================================================================
+
 DirectionalShadow::DirectionalShadow() :
 	mGraphics			(0),
 	mTextureSize		(1024),
-	mCascades			(3),
+	mCascadeCount		(3),
+	mCascadeBias		(0.5f),
 	mBlurPasses			(2),
 	mSoftness			(2.0f),
 	mKernelSize			(1.0f),
@@ -154,7 +161,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 	static uint counter (0);
 
 	// Create the PSSM render targets and textures
-	for (uint i = 0; i < mCascades; ++i)
+	for (uint i = 0; i < mCascadeCount; ++i)
 	{
 		if (mLightDepthTarget[i] == 0)
 		{
@@ -219,16 +226,20 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 	g_shadowOffset.y = mKernelSize * 0.5f / mTextureSize;
 
 	// Run through all shadow splits
-	for (uint i = 0; i < mCascades; ++i)
+	for (uint i = 0; i < mCascadeCount; ++i)
 	{
 		Vector3f splitMin (min);
 		Vector3f splitMax (max);
 
-		float near = (float)i / mCascades;
-		float far  = (float)(i+1) / mCascades;
+		float near = (float)i / mCascadeCount;
+		float far  = (float)(i+1) / mCascadeCount;
 
-		near = Interpolation::Linear(near, near * near, 0.5f);
-		far  = Interpolation::Linear(far, far * far, 0.5f);
+		near = Interpolation::Linear(near, near * near, mCascadeBias);
+		far  = Interpolation::Linear(far, far * far, mCascadeBias);
+
+		if		(i == 0) g_shadowStart.x = far;
+		else if (i == 1) g_shadowStart.y = far;
+		else if (i == 2) g_shadowStart.z = far;
 
 		// Narrow the selection down to only what's going to affect what the camera sees
 		GetMinMax(corners, invRot, near, far, splitMin, splitMax);
@@ -295,7 +306,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 		mGraphics->SetActiveTexture(0, camDepth);
 
 		// Activate the proper shader and associated textures
-		if (mCascades < 2)
+		if (mCascadeCount < 2)
 		{
 			// Shader that will be used to create the screen-space shadow
 			if (mShader[0] == 0)
@@ -308,7 +319,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 			mGraphics->SetActiveShader(mShader[0]);
 			mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
 		}
-		else if (mCascades == 2)
+		else if (mCascadeCount == 2)
 		{
 			if (mShader[1] == 0)
 			{
@@ -316,13 +327,14 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 				mShader[1]->RegisterUniform("shadowMatrix0", SetShadowMatrix0);
 				mShader[1]->RegisterUniform("shadowMatrix1", SetShadowMatrix1);
 				mShader[1]->RegisterUniform("shadowOffset", SetShadowOffset);
+				mShader[1]->RegisterUniform("shadowStart", SetShadowStart);
 			}
 
 			mGraphics->SetActiveShader(mShader[1]);
 			mGraphics->SetActiveTexture(1, mLightDepthTex[0]);
 			mGraphics->SetActiveTexture(2, mLightDepthTex[1]);
 		}
-		else if (mCascades == 3)
+		else if (mCascadeCount == 3)
 		{
 			if (mShader[2] == 0)
 			{
@@ -331,6 +343,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 				mShader[2]->RegisterUniform("shadowMatrix1", SetShadowMatrix1);
 				mShader[2]->RegisterUniform("shadowMatrix2", SetShadowMatrix2);
 				mShader[2]->RegisterUniform("shadowOffset", SetShadowOffset);
+				mShader[2]->RegisterUniform("shadowStart", SetShadowStart);
 			}
 
 			mGraphics->SetActiveShader(mShader[2]);
@@ -348,6 +361,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 				mShader[3]->RegisterUniform("shadowMatrix2", SetShadowMatrix2);
 				mShader[3]->RegisterUniform("shadowMatrix3", SetShadowMatrix3);
 				mShader[3]->RegisterUniform("shadowOffset", SetShadowOffset);
+				mShader[3]->RegisterUniform("shadowStart", SetShadowStart);
 			}
 
 			mGraphics->SetActiveShader(mShader[3]);
@@ -416,8 +430,8 @@ ITexture* DirectionalShadow::Draw (Object* root, const Object* eye, const Vector
 								   const Matrix44& imvp, const ITexture* depth)
 {
 	// Sanity check
-	if (mCascades < 1) mCascades = 1;
-	if (mCascades > 4) mCascades = 4;
+	if (mCascadeCount < 1) mCascadeCount = 1;
+	if (mCascadeCount > 4) mCascadeCount = 4;
 
 	// Draw the depth from the light's perspective
 	DrawLightDepth(root, eye, dir, imvp);
@@ -439,7 +453,8 @@ ITexture* DirectionalShadow::Draw (Object* root, const Object* eye, const Vector
 void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 {
 	node.AddChild("Texture Size",	mTextureSize);
-	node.AddChild("Cascades",		mCascades);
+	node.AddChild("Cascade Count",	mCascadeCount);
+	node.AddChild("Cascade Bias",	mCascadeBias);
 	node.AddChild("Blur Passes",	mBlurPasses);
 	node.AddChild("Softness",		mSoftness);
 	node.AddChild("Kernel Size",	mKernelSize);
@@ -453,7 +468,9 @@ void DirectionalShadow::OnSerializeTo (TreeNode& node) const
 void DirectionalShadow::OnSerializeFrom (const TreeNode& node)
 {
 	if		(node.mTag == "Texture Size")	node.mValue >> mTextureSize;
-	else if (node.mTag == "Cascades")		node.mValue >> mCascades;
+	else if (node.mTag == "Cascades")		node.mValue >> mCascadeCount;
+	else if (node.mTag == "Cascade Count")	node.mValue >> mCascadeCount;
+	else if (node.mTag == "Cascade Bias")	node.mValue >> mCascadeBias;
 	else if (node.mTag == "Blur Passes")	node.mValue >> mBlurPasses;
 	else if (node.mTag == "Softness")		node.mValue >> mSoftness;
 	else if (node.mTag == "Kernel Size")	node.mValue >> mKernelSize;

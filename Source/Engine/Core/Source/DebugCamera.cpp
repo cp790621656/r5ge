@@ -181,14 +181,14 @@ uint DebugCamera::MouseMove (const Vector2i& pos, const Vector2i& delta)
 		else if (mCore->IsKeyDown(Key::MouseRight))
 		{
 			mHasMovement = true;
-			Vector3f delta3 (delta.x * 0.0002f, -delta.y * 0.0002f, 0.0f);
+			Vector3f delta3 (delta.x * 0.002f, -delta.y * 0.002f, 0.0f);
 			mPosMovement += delta3 * mRelativeRot;
 			return EventDispatcher::EventResponse::Handled;
 		}
 		else if (mCore->IsKeyDown(Key::MouseMiddle))
 		{
 			mHasMovement = true;
-			Vector3f delta3 (delta.x * 0.0002f, 0.0f, -delta.y * 0.0002f);
+			Vector3f delta3 (delta.x * 0.002f, 0.0f, -delta.y * 0.002f);
 			mPosMovement += delta3 * mRelativeRot;
 			return EventDispatcher::EventResponse::Handled;
 		}

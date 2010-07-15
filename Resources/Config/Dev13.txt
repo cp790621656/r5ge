@@ -68,11 +68,11 @@ Root
 				{
 					Shadowmap
 					{
-						Texture Size = 1024
-						Cascades = 3
+						Texture Size = 512
+						Cascades = 4
 						Blur Passes = 2
 						Softness = 3.000000
-						Kernel Size = 1.000000
+						Kernel Size = 0.000000
 						Depth Bias = 6.000000
 					}
 

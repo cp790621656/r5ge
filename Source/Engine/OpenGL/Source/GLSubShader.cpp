@@ -411,33 +411,41 @@ void GLSubShader::_Init()
 					mCode << ";\n";
 				}
 
+				// Shadow cascades need an additional parameter specifying where the shadows start
+				if (cascades > 1) mCode << "uniform vec3 shadowStart;\n";
+
 				// Next comes the common component
 				mCode << g_shadow;
+				mCode << "vec4 pos4 = shadowMatrix0 * worldPos;\n";
+				mCode << "float final = Sample(R5_texture1, pos4.xyz / pos4.w);\n";
 
-				for (uint i = 0; i < cascades; ++i)
+				// Run through all remaining cascades and add them up
+				for (uint i = 1; i < cascades; ++i)
 				{
-					if (i == 0)
-					{
-						// First cascade defines the variables
-						mCode << "vec4 pos4 = shadowMatrix0 * worldPos;\n";
-						mCode << "float shadow = Sample(R5_texture1, pos4.xyz / pos4.w);\n";
-					}
-					else
-					{
-						// Set the new shadow matrix
-						mCode << "pos4 = shadowMatrix";
-						mCode << i;
-						mCode << " * worldPos;\n";
+					// Set the new shadow matrix
+					mCode << "pos4 = shadowMatrix";
+					mCode << i;
+					mCode << " * worldPos;\n";
 
-						// Sample the texture and choose the smallest value
-						mCode << "shadow = min(shadow, Sample(R5_texture";
-						mCode << (i + 1);
-						mCode << ", pos4.xyz / pos4.w));\n";
-					}
+					if (i == 1) mCode << "float ";
+
+					// Sample the shadow texture
+					mCode << "shadow = Sample(R5_texture";
+					mCode << (i + 1);
+					mCode << ", pos4.xyz / pos4.w);\n";
+
+					// Sample the texture and choose the smallest value
+					mCode << "final = mix(final, shadow, clamp((depth - shadowStart.";
+
+					// Doing a ceil() on the value here would produce sharp discontinuities between
+					// shadows. Doing a division by half a percent here creates a smooth transition.
+					if		(i == 1) mCode << "x) * 200.0, 0.0, 1.0));\n";
+					else if (i == 2) mCode << "y) * 200.0, 0.0, 1.0));\n";
+					else if (i == 3) mCode << "z) * 200.0, 0.0, 1.0));\n";
 				}
 
 				// Set the color and end the function
-				mCode << "gl_FragColor = vec4(shadow);\n}";
+				mCode << "gl_FragColor = vec4(final);\n}";
 			}
 		}
 #ifdef _DEBUG

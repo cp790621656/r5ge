@@ -13,12 +13,14 @@ protected:
 
 	Core*			mCore;
 	IGraphics*		mGraphics;
-	uint			mTextureSize;
-	uint			mCascades;
-	uint			mBlurPasses;
-	float			mSoftness;
-	float			mKernelSize;
-	float			mDepthBias;
+	uint			mTextureSize;		// Size of each of the shadowmap textures
+	uint			mCascadeCount;		// Number of cascades for PSSM
+	float			mCascadeBias;		// 0.0 = fully linear cascade distribution, 1.0 = fully quadratic
+	uint			mBlurPasses;		// Number of blur passes performed on the final shadow
+	float			mSoftness;			// Desired shadow softness
+	float			mKernelSize;		// Kernel size when sampling depth around each pixel
+	float			mDepthBias;			// Depth sampling bias (allowed depth variance factor)
+
 	IRenderTarget*	mLightDepthTarget[4];
 	IRenderTarget*	mShadowTarget;
 	IRenderTarget*	mBlurTarget0;
@@ -46,13 +48,18 @@ public:
 
 	// Access to protected variables
 	uint  GetTextureSize()	 const		{ return mTextureSize;	}
+	uint  GetCascadeCount()	 const		{ return mCascadeCount;	}
+	float GetCascadeBias()	 const		{ return mCascadeBias;	}
 	uint  GetBlurPassCount() const		{ return mBlurPasses;	}
 	float GetDepthBias()	 const		{ return mDepthBias;	}
 	float GetKernelSize()	 const		{ return mKernelSize;   }
-	void  SetBlurPassCount(uint val)	{ mBlurPasses	= val;	}
-	void  SetTextureSize  (uint size)	{ mTextureSize	= size;	}
-	void  SetDepthBias	  (float val)	{ mDepthBias	= val;	}
-	void  SetKernelSize	  (float val)	{ mKernelSize	= val;	}
+
+	void SetTextureSize		(uint size)	{ mTextureSize	= size;	}
+	void SetCascadeCount	(uint size)	{ mCascadeCount		= size;	}
+	void SetCascadeBias		(float val) { mCascadeBias	= val;	}
+	void SetBlurPassCount	(uint val)	{ mBlurPasses	= val;	}
+	void SetDepthBias		(float val)	{ mDepthBias	= val;	}
+	void SetKernelSize		(float val)	{ mKernelSize	= val;	}
 
 	// Draw the shadow
 	ITexture* Draw (

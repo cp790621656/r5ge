@@ -9,6 +9,7 @@
 
 static const char* g_shadow = {
 "uniform vec2 shadowOffset;\n"
+"uniform vec4 R5_clipRange;\n"
 
 "float GetMax (vec3 v)\n"
 "{\n"
@@ -32,4 +33,5 @@ static const char* g_shadow = {
 "	vec2 texCoord = gl_TexCoord[0].xy;\n"
 "	float depth = texture2D(R5_texture0, texCoord).r;\n"
 "	vec4 worldPos = vec4(texCoord.x, texCoord.y, depth, 1.0);\n"
+"	depth = (R5_clipRange.z / (R5_clipRange.y - depth * R5_clipRange.w) - R5_clipRange.x) / R5_clipRange.w;\n"
 };
