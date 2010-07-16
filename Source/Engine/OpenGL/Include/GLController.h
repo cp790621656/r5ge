@@ -64,6 +64,7 @@ protected:
 	const ITexture*			mSkybox;		// Active skybox cubemap texture
 
 	Array<TextureUnit>		mTu;			// Texture units
+	Array<GLTexture*>		mNextTex;		// Textures that will be activated prior to next draw call
 	Array<bool>				mLu;			// Light units
 	uint					mActiveTU;		// Active texture unit
 	BufferEntry				mBuffers[16];	// Active buffers
@@ -210,4 +211,7 @@ protected:
 
 	// Binds the specified texture
 	bool _BindTexture (uint glType, uint glID);
+
+	// Binds all activated textures
+	void _BindAllTextures();
 };

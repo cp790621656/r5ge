@@ -127,7 +127,9 @@ inline uint GLController::_CountImageUnits()
 	{
 		uint maxIU = glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS);
 		ASSERT( maxIU > 0, "Could not retrieve the maximum number of texture units" );
-		mTu.ExpandTo( maxIU );
+		mTu.ExpandTo(maxIU);
+		mNextTex.ExpandTo(maxIU);
+		mNextTex.MemsetZero();
 	}
 	return mTu.GetSize();
 }
@@ -789,43 +791,14 @@ void GLController::SetActiveVBO (const IVBO* ptr, uint type)
 // Sets the active texture on the specified texture unit
 //============================================================================================================
 
-const uint convertTextureTypeToGL [5] = { 0, GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP };
-
 void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 {
 	static uint maxIU = _CountImageUnits();
 
 	if (textureUnit < maxIU)
 	{
-		if (_SetActiveTextureUnit(textureUnit))
-		{
-			mMaterial = (const IMaterial*)(-1);
-
-			uint glType (0);
-
-			if (tex != 0 && tex->IsValid())
-			{
-				uint type = tex->GetType();
-				ASSERT(type < 5, "Invalid texture type passed");
-				glType = convertTextureTypeToGL[type];
-			}
-
-			// Retrieve the texture ID, creating it if necessary
-			uint glID = (tex != 0) ? ((GLTexture*)tex)->Activate() : 0;
-
-			// If the specified texture has been bound and it happens to be null
-			if (_BindTexture(glType, glID) && (glID == 0) && (textureUnit < 8))
-			{
-				// We must also disable the appropriate texture coordinate buffer
-				BufferEntry& buffer = mBuffers[ Attribute::TexCoord0 + textureUnit ];
-
-				if (buffer.mEnabled)
-				{
-					// If the texture buffer is enabled, disable it
-					SetActiveVertexAttribute(Attribute::TexCoord0 + textureUnit, 0, 0, 0, 0, 0);
-				}
-			}
-		}
+		mNextTex[textureUnit] = (GLTexture*)tex;
+		mMaterial = (const IMaterial*)(-1);
 	}
 }
 
@@ -1080,6 +1053,7 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 	if (triangleCount > 0)
 	{
 		// Activate the matrices
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		// Draw the arrays
@@ -1105,6 +1079,7 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 		SetActiveVBO( vbo, IVBO::Type::Index );
 
 		// Activate the matrices
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		// Draw the indices
@@ -1175,4 +1150,45 @@ bool GLController::_BindTexture (uint glType, uint glID)
 		return true;
 	}
 	return false;
+}
+
+//============================================================================================================
+// Binds all activated textures
+//============================================================================================================
+
+const uint convertTextureTypeToGL [5] = { 0, GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP };
+
+void GLController::_BindAllTextures()
+{
+	// We always want to finish at texture 0, activating it last
+	for (uint i = mNextTex.GetSize(); i > 0; )
+	{
+		if (_SetActiveTextureUnit(--i))
+		{
+			GLTexture* tex = mNextTex[i];
+			uint glID (0), glType (0);
+
+			if (tex != 0 && tex->IsValid())
+			{
+				// Retrieve the texture ID, creating it if necessary
+				glID = (tex != 0) ? tex->Activate() : 0;
+				uint type = tex->GetType();
+				ASSERT(type < 5, "Invalid texture type passed");
+				glType = convertTextureTypeToGL[type];
+			}
+
+			// If the specified texture has been bound and it happens to be null
+			if (_BindTexture(glType, glID) && (glID == 0) && (i < 8))
+			{
+				// We must also disable the appropriate texture coordinate buffer
+				BufferEntry& buffer = mBuffers[ Attribute::TexCoord0 + i ];
+
+				if (buffer.mEnabled)
+				{
+					// If the texture buffer is enabled, disable it
+					SetActiveVertexAttribute(Attribute::TexCoord0 + i, 0, 0, 0, 0, 0);
+				}
+			}
+		}
+	}
 }

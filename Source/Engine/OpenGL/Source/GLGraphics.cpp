@@ -486,6 +486,7 @@ uint GLGraphics::Draw (uint drawable)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
 
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
@@ -510,6 +511,7 @@ uint GLGraphics::Draw (uint drawable)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
 
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
@@ -534,6 +536,8 @@ uint GLGraphics::Draw (uint drawable)
 	{
 		ResetModelMatrix();
 		ResetViewMatrix();
+
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
@@ -572,6 +576,8 @@ uint GLGraphics::Draw (uint drawable)
 
 		ResetModelMatrix();
 		ResetViewMatrix();
+
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		glBegin(GL_LINES);
@@ -621,6 +627,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetBlending(Blending::Normal);
 		SetActiveMaterial((const IMaterial*)0);
 
+		_BindAllTextures();
 		_ActivateMatrices();
 
 		glBegin(GL_LINES);
