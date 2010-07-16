@@ -430,121 +430,6 @@ void Core::OnResize(const Vector2i& size)
 }
 
 //============================================================================================================
-// Serialization -- Load
-//============================================================================================================
-
-bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
-{
-	Thread::Increment(g_threadCount);
-	bool serializable = true;
-
-	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
-	{
-		const TreeNode& node	= root.mChildren[i];
-		const String&	tag		= node.mTag;
-		const Variable&	value	= node.mValue;
-
-		if ( tag == Core::ClassID() )
-		{
-			// SerializeFrom only returns 'false' if something important failed
-			if ( !SerializeFrom(node, forceUpdate) )
-				return false;
-		}
-		else if ( tag == IWindow::ClassID() )
-		{
-			// If window creation fails, let the calling function know
-			if (mWin != 0 && !mWin->SerializeFrom(node))
-				return false;
-		}
-		else if ( tag == IGraphics::ClassID() )
-		{
-			// If graphics init fails, let the calling function know
-			if (mGraphics != 0 && !mGraphics->SerializeFrom(node, forceUpdate))
-				return false;
-		}
-		else if ( tag == IUI::ClassID() )
-		{
-			if (mUI != 0 && mGraphics != 0)
-				mUI->SerializeFrom(node);
-		}
-		else if ( tag == Scene::ClassID() )
-		{
-			mRoot.SerializeFrom(node, forceUpdate);
-		}
-		else if ( tag == Mesh::ClassID() )
-		{
-			Mesh* mesh = GetMesh(value.IsString() ? value.AsString() : value.GetString(), true);
-			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
-		}
-		else if ( tag == Cloud::ClassID() )
-		{
-			Cloud* bm = GetCloud(value.IsString() ? value.AsString() : value.GetString(), true);
-			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
-		}
-		else if ( tag == Skeleton::ClassID() )
-		{
-			Skeleton* skel = GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true);
-			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
-		}
-		else if ( tag == ModelTemplate::ClassID() )
-		{
-			ModelTemplate* temp = GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
-
-			if (temp != 0)
-			{
-				temp->SerializeFrom(node, forceUpdate);
-				if (!serializable) temp->SetSerializable(false);
-			}
-		}
-		else if ( tag == Model::ClassID() )
-		{
-			Model* model = GetModel(value.IsString() ? value.AsString() : value.GetString(), true);
-
-			if (model != 0)
-			{
-				model->SerializeFrom(node, forceUpdate);
-				if (!serializable) model->SetSerializable(false);
-			}
-		}
-		else if ( tag == "Serializable" )
-		{
-			value >> serializable;
-		}
-		else if ( tag == "Sleep" )
-		{
-			uint ms;
-			if (value >> ms) Thread::Sleep( ms );
-		}
-		else if ( tag == "Execute" )
-		{
-			// Find the resource
-			String name (value.IsString() ? value.AsString() : value.GetString());
-			Resource* res = GetResource(name);
-
-			// If the resource is valid, create a worker thread for it
-			if (res->IsValid())
-			{
-#ifndef R5_MEMORY_TEST
-				Thread::Create( WorkerThread, res );
-#else
-				SerializeFrom( res->GetRoot() );
-#endif
-				if (serializable)
-				{
-					mExecuted.Lock();
-					mExecuted.Expand() = name;
-					mExecuted.Unlock();
-				}
-			}
-		}
-	}
-	// Something may have changed, update the scene
-	mIsDirty = true;
-	Thread::Decrement(g_threadCount);
-	return true;
-}
-
-//============================================================================================================
 // Serialization -- Save
 //============================================================================================================
 
@@ -633,6 +518,135 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	}
 	mRoot.Unlock();
 	return true;
+}
+
+//============================================================================================================
+// Serialization -- Load
+//============================================================================================================
+
+bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
+{
+	Thread::Increment(g_threadCount);
+	bool serializable = true;
+
+	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
+	{
+		const TreeNode& node	= root.mChildren[i];
+		const String&	tag		= node.mTag;
+		const Variable&	value	= node.mValue;
+
+		if ( tag == Core::ClassID() )
+		{
+			// SerializeFrom only returns 'false' if something important failed
+			if ( !SerializeFrom(node, forceUpdate) )
+				return false;
+		}
+		else if ( tag == IWindow::ClassID() )
+		{
+			// If window creation fails, let the calling function know
+			if (mWin != 0 && !mWin->SerializeFrom(node))
+				return false;
+		}
+		else if ( tag == IGraphics::ClassID() )
+		{
+			// If graphics init fails, let the calling function know
+			if (mGraphics != 0 && !mGraphics->SerializeFrom(node, forceUpdate))
+				return false;
+		}
+		else if ( tag == IUI::ClassID() )
+		{
+			if (mUI != 0 && mGraphics != 0)
+				mUI->SerializeFrom(node);
+		}
+		else if ( tag == Scene::ClassID() )
+		{
+			mRoot.SerializeFrom(node, forceUpdate);
+		}
+		else if ( tag == Mesh::ClassID() )
+		{
+			Mesh* mesh = GetMesh(value.IsString() ? value.AsString() : value.GetString(), true);
+			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
+		}
+		else if ( tag == Cloud::ClassID() )
+		{
+			Cloud* bm = GetCloud(value.IsString() ? value.AsString() : value.GetString(), true);
+			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
+		}
+		else if ( tag == Skeleton::ClassID() )
+		{
+			Skeleton* skel = GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true);
+			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
+		}
+		else if ( tag == ModelTemplate::ClassID() )
+		{
+			ModelTemplate* temp = GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
+
+			if (temp != 0)
+			{
+				temp->SerializeFrom(node, forceUpdate);
+				if (!serializable) temp->SetSerializable(false);
+			}
+		}
+		else if ( tag == Model::ClassID() )
+		{
+			Model* model = GetModel(value.IsString() ? value.AsString() : value.GetString(), true);
+
+			if (model != 0)
+			{
+				model->SerializeFrom(node, forceUpdate);
+				if (!serializable) model->SetSerializable(false);
+			}
+		}
+		else if ( tag == "Serializable" )
+		{
+			value >> serializable;
+		}
+		else if ( tag == "Sleep" )
+		{
+			uint ms;
+			if (value >> ms) Thread::Sleep( ms );
+		}
+		else if ( tag == "Execute" )
+		{
+			String filename (value.IsString() ? value.AsString() : value.GetString());
+
+			if (SerializeFrom(filename, true))
+			{
+				if (serializable)
+				{
+					mExecuted.Lock();
+					mExecuted.Expand() = filename;
+					mExecuted.Unlock();
+				}
+			}
+		}
+	}
+	// Something may have changed, update the scene
+	mIsDirty = true;
+	Thread::Decrement(g_threadCount);
+	return true;
+}
+
+//============================================================================================================
+// Serializes from the specified file (the file will be kept in memory as a Resource)
+//============================================================================================================
+
+bool Core::SerializeFrom (const String& file, bool separateThread)
+{
+	// Find the resource
+	Resource* res = GetResource(file);
+
+	// If the resource is valid, create a worker thread for it
+	if (res->IsValid())
+	{
+#ifndef R5_MEMORY_TEST
+		if (separateThread) Thread::Create(WorkerThread, res);
+		else
+#endif
+		SerializeFrom(res->GetRoot());
+		return true;
+	}
+	return false;
 }
 
 //============================================================================================================

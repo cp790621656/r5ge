@@ -4,8 +4,7 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// NOTE: Resource is just a TreeNode structure with a name. This class precedes the "Script" class, and its
-// future is questionable. For now it's just used to execute TreeNodes on different threads.
+// Resource is just a TreeNode structure with a name, usually processed on a separate thread
 //============================================================================================================
 
 class Resource

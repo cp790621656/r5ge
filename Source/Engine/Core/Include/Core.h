@@ -116,9 +116,14 @@ public:
 
 public:
 
+	// Save everything to the specified TreeNode
+	bool SerializeTo (TreeNode& root, bool window = true, bool graphics = true, bool ui = true) const;
+
 	// Serialization functions -- 'false' is returned only if the application should exit immediately
 	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
-	bool SerializeTo (TreeNode& root, bool window = true, bool graphics = true, bool ui = true) const;
+
+	// Serializes from the specified file (the file will be kept in memory as a Resource)
+	bool SerializeFrom (const String& file, bool separateThread = true);
 
 	// Executes an existing (loaded) resource in a different thread
 	void SerializeFrom (Resource* ptr);
