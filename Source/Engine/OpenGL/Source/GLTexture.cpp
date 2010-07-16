@@ -92,16 +92,6 @@ uint GLTexture::GetMaxSize() const
 }
 
 //============================================================================================================
-// Retrieves the associated OpenGL texture ID
-//============================================================================================================
-
-uint GLTexture::GetTextureID() const
-{
-	if (mReplacement != 0) return mReplacement->GetTextureID();
-	return (const_cast<GLTexture*>(this))->_GetOrCreate();
-}
-
-//============================================================================================================
 // Adjusts the anisotropic filtering level for all textures
 //============================================================================================================
 
@@ -268,7 +258,7 @@ inline uint Create2DImage (uint glType, const void* buffer, uint width, uint hei
 
 GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mName				(name),
-	mGraphics			(graphics),
+	mGraphics			((GLGraphics*)graphics),
 	mReplacement		(0),
 	mCheckForSource		(true),
 	mType				(Type::Invalid),
@@ -357,7 +347,7 @@ void GLTexture::_InternalRelease(bool delayExecution)
 		if (delayExecution)
 		{
 			// OpenGL textures should only be destroyed on the graphics thread
-			if (Thread::GetID() == ((GLGraphics*)mGraphics)->GetThreadID())
+			if (Thread::GetID() == mGraphics->GetThreadID())
 			{
 				DeleteTexture(mGraphics, (void*)mGlID);
 			}
@@ -434,7 +424,7 @@ void GLTexture::_Create()
 #endif
 
 	// Bind the texture
-	_BindTexture(mGlType, mGlID);
+	mGraphics->_BindTexture(mGlType, mGlID);
 
 	bool isDepth = ((mFormat & ITexture::Format::Depth) != 0);
 	bool is3D = (mGlType == GL_TEXTURE_3D);
@@ -627,218 +617,6 @@ void GLTexture::_Create()
 }
 
 //============================================================================================================
-// Retrieves the associated OpenGL texture ID
-//============================================================================================================
-
-uint GLTexture::_GetOrCreate()
-{
-	bool active (false);
-
-	// If OpenGL texture hasn't been created yet, and there's data present, let's create it
-	if ( mGlID == 0 && IsValid() )
-	{
-		_Create();
-		active = true;
-	}
-
-	if ( mGlID != 0 )
-	{
-		// Adjust the filtering if necessary
-		if (mActiveFilter != mFilter)
-		{
-			mActiveFilter = mFilter;
-
-			if (!active)
-			{
-				active = true;
-				_BindTexture( mGlType, mGlID );
-			}
-
-			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, _GetGLMinFilter());
-			glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, _GetGLMagFilter());
-			CHECK_GL_ERROR;
-		}
-
-		// Anisotropy is only enabled for mip-mapped textures
-		{
-			uint af = (mFilter & ITexture::Filter::Mipmap) ? mDefaultAF : 0;
-
-			// Adjust the active texture anisotropy level
-			if (mActiveAF != af)
-			{
-				if (af > 1)
-				{
-					if (!active)
-					{
-						active = true;
-						_BindTexture( mGlType, mGlID );
-					}
-
-					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = af);
-					CHECK_GL_ERROR;
-				}
-				else
-				{
-					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = 0);
-					CHECK_GL_ERROR;
-				}
-			}
-		}
-
-		// If texture wrapping has not been specified, choose whatever seems appropriate
-		if (mWrapMode == WrapMode::Default)
-		{
-			bool isPowerOfTwo = IsPowerOfTwo(mSize.x) && IsPowerOfTwo(mSize.y);
-
-			if (mFormat & Format::Depth)
-			{
-				mWrapMode = WrapMode::ClampToOne;
-			}
-			else if (!isPowerOfTwo || mType == Type::EnvironmentCubeMap)
-			{
-				mWrapMode = WrapMode::ClampToEdge;
-			}
-			else
-			{
-				mWrapMode = WrapMode::Repeat;
-			}
-		}
-
-		// Adjust the texture wrapping setting if necessary
-		if (mActiveWrapMode != mWrapMode)
-		{
-			mActiveWrapMode = mWrapMode;
-
-			if (!active)
-			{
-				active = true;
-				_BindTexture( mGlType, mGlID );
-			}
-
-			if (mWrapMode == WrapMode::Mirror)
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
-			}
-			else if (mWrapMode == WrapMode::ClampToEdge)
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			}
-			else if (mWrapMode == WrapMode::ClampToZero)
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-
-				const float color[] = {0.0f, 0.0f, 0.0f, 0.0f};
-				glTexParameterfv(mGlType, GL_TEXTURE_BORDER_COLOR, color);
-			}
-			else if (mWrapMode == WrapMode::ClampToOne)
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-
-				const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
-				glTexParameterfv(mGlType, GL_TEXTURE_BORDER_COLOR, color);
-			}
-			else
-			{
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_REPEAT);
-			}
-			CHECK_GL_ERROR;
-		}
-
-		// Texture color compare mode
-		if (mActiveCompareMode != mCompareMode)
-		{
-			mActiveCompareMode = mCompareMode;
-
-			if (!active)
-			{
-				active = true;
-				_BindTexture( mGlType, mGlID );
-			}
-
-			if (mCompareMode == CompareMode::Shadow)
-			{
-				// Compare depth
-				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
-				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
-			}
-			else
-			{
-				// No comparison
-				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
-			}
-		}
-
-		if (mRegenMipmap && mGlType == GL_TEXTURE_2D)
-		{
-			mRegenMipmap = false;
-
-			if (!active)
-			{
-				active = true;
-				_BindTexture( mGlType, mGlID );
-			}
-
-			// Just in case, for ATI
-			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-
-			g_caps.DecreaseTextureMemory(mSizeInMemory);
-			{
-				if ((mFormat & ITexture::Format::Compressed) == 0)
-				{
-					// Non-compressed texture: use the videocard's accelerated functionality
-					glGenerateMipmap(mGlType);
-					mSizeInMemory = CountMipmapSize(mSize.x, mSize.y);
-				}
-				else
-				{
-					// Compressed texture mipmap generation is not always supported on all videocards
-					uint type = GL_UNSIGNED_BYTE, memSize = 4 * mSize.x * mSize.y;
-
-					if (mFormat >= ITexture::Format::Float)
-					{
-						type = GL_FLOAT;
-						memSize *= 4;
-					}
-
-					// Read back the texture information
-					Memory mem;
-					glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, type, mem.Resize(memSize));
-
-					// Create the mipmaps using the texture information
-					mSizeInMemory = Create2DMipmaps(mGlType, mem.GetBuffer(), mSize.x, mSize.y, GL_RGBA,
-						_GetGLFormat(mFormat), mDataType);
-				}
-
-				// Take the number of bytes per pixel into account
-				mSizeInMemory *= ITexture::GetBitsPerPixel(mFormat) / 8;
-			}
-			g_caps.IncreaseTextureMemory(mSizeInMemory);
-		}
-	}
-	mTimestamp = Time::GetMilliseconds();
-	return mGlID;
-}
-
-//============================================================================================================
-// Binds the specified texture
-//============================================================================================================
-
-inline bool GLTexture::_BindTexture (uint glType, uint glID)
-{
-	return ((GLGraphics*)mGraphics)->_BindTexture(glType, glID);
-}
-
-//============================================================================================================
 // OpenGL minification filter
 //============================================================================================================
 
@@ -888,7 +666,7 @@ bool GLTexture::GetBuffer (Memory& mem)
 
 	if (IsValid())
 	{
-		uint tex = GetTextureID();
+		uint tex = Activate();
 
 		if (tex != 0 && mGlType == GL_TEXTURE_2D)
 		{
@@ -900,7 +678,7 @@ bool GLTexture::GetBuffer (Memory& mem)
 				uint type = (mFormat >= ITexture::Format::Float) ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
 				// Bind the current texture
-				_BindTexture(mGlType, mGlID);
+				mGraphics->_BindTexture(mGlType, mGlID);
 
 				// Read back the texture information
 				glGetTexImage(GL_TEXTURE_2D, 0, _GetGLFormat(mFormat), type, mem.Resize(memSize));
@@ -954,6 +732,211 @@ void GLTexture::SetCompareMode (uint compareMode)
 		mCompareMode = compareMode;
 		if (mTex[0].GetSource().IsValid()) mSerializable = true;
 	}
+}
+
+//============================================================================================================
+// Activates the texture and returns its identifier
+//============================================================================================================
+
+uint GLTexture::Activate()
+{
+	if (mReplacement != 0) return mReplacement->Activate();
+
+	bool active (false);
+
+	// If OpenGL texture hasn't been created yet, and there's data present, let's create it
+	if ( mGlID == 0 && IsValid() )
+	{
+		_Create();
+		active = true;
+	}
+
+	if ( mGlID != 0 )
+	{
+		// Adjust the filtering if necessary
+		if (mActiveFilter != mFilter)
+		{
+			mActiveFilter = mFilter;
+
+			if (!active)
+			{
+				active = true;
+				mGraphics->_BindTexture( mGlType, mGlID );
+			}
+
+			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, _GetGLMinFilter());
+			glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, _GetGLMagFilter());
+			CHECK_GL_ERROR;
+		}
+
+		// Anisotropy is only enabled for mip-mapped textures
+		{
+			uint af = (mFilter & ITexture::Filter::Mipmap) ? mDefaultAF : 0;
+
+			// Adjust the active texture anisotropy level
+			if (mActiveAF != af)
+			{
+				if (af > 1)
+				{
+					if (!active)
+					{
+						active = true;
+						mGraphics->_BindTexture( mGlType, mGlID );
+					}
+
+					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = af);
+					CHECK_GL_ERROR;
+				}
+				else
+				{
+					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = 0);
+					CHECK_GL_ERROR;
+				}
+			}
+		}
+
+		// If texture wrapping has not been specified, choose whatever seems appropriate
+		if (mWrapMode == WrapMode::Default)
+		{
+			bool isPowerOfTwo = IsPowerOfTwo(mSize.x) && IsPowerOfTwo(mSize.y);
+
+			if (mFormat & Format::Depth)
+			{
+				mWrapMode = WrapMode::ClampToOne;
+			}
+			else if (!isPowerOfTwo || mType == Type::EnvironmentCubeMap)
+			{
+				mWrapMode = WrapMode::ClampToEdge;
+			}
+			else
+			{
+				mWrapMode = WrapMode::Repeat;
+			}
+		}
+
+		// Adjust the texture wrapping setting if necessary
+		if (mActiveWrapMode != mWrapMode)
+		{
+			mActiveWrapMode = mWrapMode;
+
+			if (!active)
+			{
+				active = true;
+				mGraphics->_BindTexture( mGlType, mGlID );
+			}
+
+			if (mWrapMode == WrapMode::Mirror)
+			{
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
+			}
+			else if (mWrapMode == WrapMode::ClampToEdge)
+			{
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			}
+			else if (mWrapMode == WrapMode::ClampToZero)
+			{
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+				const float color[] = {0.0f, 0.0f, 0.0f, 0.0f};
+				glTexParameterfv(mGlType, GL_TEXTURE_BORDER_COLOR, color);
+			}
+			else if (mWrapMode == WrapMode::ClampToOne)
+			{
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+				const float color[] = {1.0f, 1.0f, 1.0f, 1.0f};
+				glTexParameterfv(mGlType, GL_TEXTURE_BORDER_COLOR, color);
+			}
+			else
+			{
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(mGlType, GL_TEXTURE_WRAP_R, GL_REPEAT);
+			}
+			CHECK_GL_ERROR;
+		}
+
+		// Texture color compare mode
+		if (mActiveCompareMode != mCompareMode)
+		{
+			mActiveCompareMode = mCompareMode;
+
+			if (!active)
+			{
+				active = true;
+				mGraphics->_BindTexture( mGlType, mGlID );
+			}
+
+			if (mCompareMode == CompareMode::Shadow)
+			{
+				// Compare depth
+				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
+			}
+			else
+			{
+				// No comparison
+				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+			}
+		}
+
+		if (mRegenMipmap && mGlType == GL_TEXTURE_2D)
+		{
+			mRegenMipmap = false;
+
+			if (!active)
+			{
+				active = true;
+				mGraphics->_BindTexture( mGlType, mGlID );
+			}
+
+			// Just in case, for ATI
+			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+			g_caps.DecreaseTextureMemory(mSizeInMemory);
+			{
+				if ((mFormat & ITexture::Format::Compressed) == 0)
+				{
+					// Non-compressed texture: use the videocard's accelerated functionality
+					glGenerateMipmap(mGlType);
+					mSizeInMemory = CountMipmapSize(mSize.x, mSize.y);
+				}
+				else
+				{
+					// Compressed texture mipmap generation is not always supported on all videocards
+					uint type = GL_UNSIGNED_BYTE, memSize = 4 * mSize.x * mSize.y;
+
+					if (mFormat >= ITexture::Format::Float)
+					{
+						type = GL_FLOAT;
+						memSize *= 4;
+					}
+
+					// Read back the texture information
+					Memory mem;
+					glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, type, mem.Resize(memSize));
+
+					// Create the mipmaps using the texture information
+					mSizeInMemory = Create2DMipmaps(mGlType, mem.GetBuffer(), mSize.x, mSize.y, GL_RGBA,
+						_GetGLFormat(mFormat), mDataType);
+				}
+
+				// Take the number of bytes per pixel into account
+				mSizeInMemory *= ITexture::GetBitsPerPixel(mFormat) / 8;
+			}
+			g_caps.IncreaseTextureMemory(mSizeInMemory);
+		}
+	}
+	mTimestamp = Time::GetMilliseconds();
+	return mGlID;
 }
 
 //============================================================================================================

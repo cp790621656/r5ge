@@ -810,8 +810,8 @@ void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 				glType = convertTextureTypeToGL[type];
 			}
 
-			// Retrieving the texture ID creates it on the GPU if it's new
-			uint glID = (tex != 0) ? tex->GetTextureID() : 0;
+			// Retrieve the texture ID, creating it if necessary
+			uint glID = (tex != 0) ? ((GLTexture*)tex)->Activate() : 0;
 
 			// If the specified texture has been bound and it happens to be null
 			if (_BindTexture(glType, glID) && (glID == 0) && (textureUnit < 8))

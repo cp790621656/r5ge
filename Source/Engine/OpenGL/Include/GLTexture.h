@@ -13,8 +13,8 @@ protected:
 
 	String		mName;				// Every texture needs a name
 	String		mFilename;			// When the texture gets the Save request, this value is updated
-	IGraphics*	mGraphics;			// GLGraphics manager that has created this texture
-	ITexture*	mReplacement;		// Replacement texture that overrides this one
+	GLGraphics*	mGraphics;			// GLGraphics manager that has created this texture
+	GLTexture*	mReplacement;		// Replacement texture that overrides this one
 	Image		mTex[6];			// Up to 6 raw textures
 	bool		mCheckForSource;	// Whether the texture should be checked to see if it has a valid source
 	uint		mType;				// Texture type (ITexture::TwoDimensional, etc)
@@ -25,7 +25,7 @@ protected:
 	Vector2i	mSize;				// Size of the texture
 	uint		mDepth;				// Depth of the texture
 	ulong		mSizeInMemory;		// Size in video memory that the texture is currently taking up
-	ulong		mTimestamp;			// Timestamp of the last time GetTextureID() was called
+	ulong		mTimestamp;			// Timestamp of the last time Activate() was called
 
 	uint		mWrapMode;			// Texture wrapping setting
 	uint		mCompareMode;		// Texture compare mode
@@ -68,9 +68,6 @@ private:
 	// Uploads the texture to the videocard, or simply returns a texture ID
 	uint _GetOrCreate();
 
-	// Binds the specified texture
-	bool _BindTexture (uint glType, uint glID);
-
 	// OpenGL min/max filters
 	uint _GetGLMinFilter() const;
 	uint _GetGLMagFilter() const;
@@ -89,7 +86,6 @@ public:
 	virtual uint	GetCompareMode()	const	{ return (mReplacement == 0) ? mCompareMode : mReplacement->GetCompareMode(); }
 	virtual ulong	GetSizeInMemory()	const	{ return (mReplacement == 0) ? mSizeInMemory : mReplacement->GetSizeInMemory(); }
 	virtual uint	GetMaxSize()		const;
-	virtual uint	GetTextureID()		const;
 	virtual uint	GetType()			const	{ return (mReplacement == 0) ? mType : mReplacement->GetType(); }
 	virtual ulong	GetLastUsedTime()	const	{ return (mReplacement == 0) ? mTimestamp : mReplacement->GetLastUsedTime(); }
 
@@ -105,6 +101,9 @@ public:
 	virtual void SetFiltering (uint filtering);
 	virtual void SetCompareMode (uint compareMode);
 	virtual void InvalidateMipmap() { if (mReplacement == 0) mReplacement->InvalidateMipmap(); else mRegenMipmap = true; }
+
+	// Activates the texture and returns its identifier
+	virtual uint Activate();
 
 	// Load a single texture from the specified file
 	virtual bool Load( const String& file, uint textureFormat = Format::Optimal );
@@ -143,7 +142,7 @@ public:
 	// Replacement textures can be used to temporarily (or permanently) replace one texture with another.
 	// This feature is most useful for frequently-changing textures, such as shadowmaps, as they tend to differ
 	// with each render target, but still need to be referenced by material techniques.
-	virtual void SetReplacement (ITexture* tex) { if (tex == this) tex = 0; mReplacement = tex; }
+	virtual void SetReplacement (ITexture* tex) { if (tex == this) tex = 0; mReplacement = (GLTexture*)tex; }
 
 	// Adjusts the anisotropic filtering level for all textures
 	static void SetDefaultAF (uint level);

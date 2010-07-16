@@ -117,9 +117,8 @@ public: //======================================================================
 	virtual uint	GetCompareMode()	const=0;	// Returns the texture compare mode used by this texture
 	virtual ulong	GetSizeInMemory()	const=0;	// Buffer size in bytes
 	virtual uint	GetMaxSize()		const=0;	// Returns the maximum possible texture width/height
-	virtual uint	GetTextureID()		const=0;	// Returns the bound texture ID, updates the timestamp
 	virtual uint	GetType()			const=0;	// Returns the current ITexture::Type
-	virtual ulong	GetLastUsedTime()	const=0;	// Returns the last timestamp when GetTextureID() was called
+	virtual ulong	GetLastUsedTime()	const=0;	// Returns the last timestamp when Activate() was called
 
 	// Returns the valid path to the texture's source
 	virtual const String& GetSource (uint index) const=0;
@@ -133,6 +132,9 @@ public: //======================================================================
 	virtual void SetFiltering (uint filtering)=0;
 	virtual void SetCompareMode (uint compareMode)=0;
 	virtual void InvalidateMipmap()=0;
+
+	// Activates the texture and returns its identifier
+	virtual uint Activate()=0;
 
 	// Load a single texture from the specified file
 	virtual bool Load( const String& file, uint textureFormat = Format::Optimal )=0;

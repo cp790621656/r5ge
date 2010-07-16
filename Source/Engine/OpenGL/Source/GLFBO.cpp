@@ -388,7 +388,7 @@ void GLFBO::Activate() const
 					// Bind the texture as a render target's color attachment
 					mBuffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
 					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i,
-						GL_TEXTURE_2D, tex->GetTextureID(), 0);
+						GL_TEXTURE_2D, tex->Activate(), 0);
 					CHECK_GL_ERROR;
 				}
 				else
@@ -434,7 +434,7 @@ void GLFBO::Activate() const
 				}
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
-					mDepthTex->GetTextureID(), 0);
+					mDepthTex->Activate(), 0);
 
 				CHECK_GL_ERROR;
 			}
@@ -459,7 +459,7 @@ void GLFBO::Activate() const
 				}
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D,
-					mStencilTex->GetTextureID(), 0);
+					mStencilTex->Activate(), 0);
 
 				CHECK_GL_ERROR;
 			}
