@@ -115,7 +115,8 @@ GLController::GLController() :
 	mMaterial			(0),
 	mShader				(0),
 	mSkybox				(0),
-	mActiveTU			(0) {}
+	mActiveTU			(0),
+	mNextTU				(0) {}
 
 //============================================================================================================
 // Changes the currently active texture unit
@@ -1091,37 +1092,32 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 }
 
 //============================================================================================================
-// Changes the currently active texture unit
+// Updates the currently active texture unit
 //============================================================================================================
 
-bool GLController::_SetActiveTextureUnit (uint textureUnit)
+void GLController::_ActivateTextureUnit()
 {
 	static uint maxTU = glGetInteger(GL_MAX_TEXTURE_UNITS);
-	static uint maxIU = _CountImageUnits();
 
-	if (textureUnit < maxIU)
+	if (mActiveTU != mNextTU)
 	{
-		if (mActiveTU != textureUnit)
-		{
-			mActiveTU = textureUnit;
-			glActiveTexture(GL_TEXTURE0 + mActiveTU);
-			if (mActiveTU < maxTU) glActiveClientTexture(GL_TEXTURE0 + mActiveTU);
-		}
-		return true;
+		mActiveTU = mNextTU;
+		glActiveTexture(GL_TEXTURE0 + mActiveTU);
+		if (mActiveTU < maxTU) glActiveClientTexture(GL_TEXTURE0 + mActiveTU);
 	}
-	return false;
 }
 
 //============================================================================================================
-// Binds the specified texture
+// Binds the specified texture -- mainly called from GLTexture::Activate()
 //============================================================================================================
 
 bool GLController::_BindTexture (uint glType, uint glID)
 {
+	// Ensure that the array is valid
 	if (mTu.IsEmpty()) _CountImageUnits();
 
 	// Currently active texture unit
-	TextureUnit& tu = mTu[mActiveTU];
+	TextureUnit& tu = mTu[mNextTU];
 
 	// If the texture ID is changing...
 	if (tu.mId != glID)
@@ -1129,6 +1125,8 @@ bool GLController::_BindTexture (uint glType, uint glID)
 		// If the type is changing, the old type needs to be disabled first (going from CUBE to 2D for example)
 		if (tu.mType != glID && tu.mType != 0)
 		{
+			// Unbind the texture
+			_ActivateTextureUnit();
 			glBindTexture(tu.mType, 0);
 			glDisable(tu.mType);
 			CHECK_GL_ERROR;
@@ -1138,14 +1136,28 @@ bool GLController::_BindTexture (uint glType, uint glID)
 
 		if (glID != 0)
 		{
+			// Activate the texture unit
+			_ActivateTextureUnit();
+
 			// Enable the new type if it has changed
 			if (tu.mType != glType) glEnable(tu.mType = glType);
 
-			// Activate the texture
+			// Bind the new texture
 			glBindTexture(glType, tu.mId = glID);
 
 			CHECK_GL_ERROR;
 			++mStats.mTexSwitches;
+		}
+		else if (mNextTU < 8)
+		{
+			// We must also disable the appropriate texture coordinate buffer
+			BufferEntry& buffer = mBuffers[Attribute::TexCoord0 + mNextTU];
+
+			if (buffer.mEnabled)
+			{
+				// If the texture buffer is enabled, disable it
+				SetActiveVertexAttribute(Attribute::TexCoord0 + mNextTU, 0, 0, 0, 0, 0);
+			}
 		}
 		return true;
 	}
@@ -1156,39 +1168,22 @@ bool GLController::_BindTexture (uint glType, uint glID)
 // Binds all activated textures
 //============================================================================================================
 
-const uint convertTextureTypeToGL [5] = { 0, GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP };
-
 void GLController::_BindAllTextures()
 {
 	// We always want to finish at texture 0, activating it last
 	for (uint i = mNextTex.GetSize(); i > 0; )
 	{
-		if (_SetActiveTextureUnit(--i))
-		{
-			GLTexture* tex = mNextTex[i];
-			uint glID (0), glType (0);
+		mNextTU = --i;
+		GLTexture* tex = mNextTex[mNextTU];
+		if (tex != 0) tex->Activate();
+		else _BindTexture(0, 0);
+	}
 
-			if (tex != 0 && tex->IsValid())
-			{
-				// Retrieve the texture ID, creating it if necessary
-				glID = (tex != 0) ? tex->Activate() : 0;
-				uint type = tex->GetType();
-				ASSERT(type < 5, "Invalid texture type passed");
-				glType = convertTextureTypeToGL[type];
-			}
-
-			// If the specified texture has been bound and it happens to be null
-			if (_BindTexture(glType, glID) && (glID == 0) && (i < 8))
-			{
-				// We must also disable the appropriate texture coordinate buffer
-				BufferEntry& buffer = mBuffers[ Attribute::TexCoord0 + i ];
-
-				if (buffer.mEnabled)
-				{
-					// If the texture buffer is enabled, disable it
-					SetActiveVertexAttribute(Attribute::TexCoord0 + i, 0, 0, 0, 0, 0);
-				}
-			}
-		}
+	// Ensure that texture 0 is active
+	if (mActiveTU != 0)
+	{
+		mActiveTU = 0;
+		glActiveTexture(GL_TEXTURE0);
+		glActiveClientTexture(GL_TEXTURE0);
 	}
 }

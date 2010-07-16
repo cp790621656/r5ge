@@ -67,6 +67,7 @@ protected:
 	Array<GLTexture*>		mNextTex;		// Textures that will be activated prior to next draw call
 	Array<bool>				mLu;			// Light units
 	uint					mActiveTU;		// Active texture unit
+	uint					mNextTU;		// Next texture unit that will be activated on texture bind
 	BufferEntry				mBuffers[16];	// Active buffers
 
 public:
@@ -206,10 +207,10 @@ protected:
 	// Activate all appropriate matrices
 	void _ActivateMatrices() { mStats.mMatSwitches += mTrans.Activate(mShader); }
 
-	// Changes the currently active texture unit
-	bool _SetActiveTextureUnit (uint textureUnit);
+	// Updates the currently active texture unit
+	void _ActivateTextureUnit();
 
-	// Binds the specified texture
+	// Binds the specified texture -- mainly called from GLTexture::Activate()
 	bool _BindTexture (uint glType, uint glID);
 
 	// Binds all activated textures

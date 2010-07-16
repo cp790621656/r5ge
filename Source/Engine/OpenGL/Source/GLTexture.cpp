@@ -742,28 +742,16 @@ uint GLTexture::Activate()
 {
 	if (mReplacement != 0) return mReplacement->Activate();
 
-	bool active (false);
-
 	// If OpenGL texture hasn't been created yet, and there's data present, let's create it
-	if ( mGlID == 0 && IsValid() )
-	{
-		_Create();
-		active = true;
-	}
+	if (mGlID == 0 && IsValid()) _Create();
+	else mGraphics->_BindTexture(mGlType, mGlID);
 
-	if ( mGlID != 0 )
+	if (mGlID != 0)
 	{
 		// Adjust the filtering if necessary
 		if (mActiveFilter != mFilter)
 		{
 			mActiveFilter = mFilter;
-
-			if (!active)
-			{
-				active = true;
-				mGraphics->_BindTexture( mGlType, mGlID );
-			}
-
 			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, _GetGLMinFilter());
 			glTexParameteri(mGlType, GL_TEXTURE_MAG_FILTER, _GetGLMagFilter());
 			CHECK_GL_ERROR;
@@ -778,12 +766,6 @@ uint GLTexture::Activate()
 			{
 				if (af > 1)
 				{
-					if (!active)
-					{
-						active = true;
-						mGraphics->_BindTexture( mGlType, mGlID );
-					}
-
 					glTexParameteri(mGlType, GL_TEXTURE_MAX_ANISOTROPY_EXT, mActiveAF = af);
 					CHECK_GL_ERROR;
 				}
@@ -818,12 +800,6 @@ uint GLTexture::Activate()
 		if (mActiveWrapMode != mWrapMode)
 		{
 			mActiveWrapMode = mWrapMode;
-
-			if (!active)
-			{
-				active = true;
-				mGraphics->_BindTexture( mGlType, mGlID );
-			}
 
 			if (mWrapMode == WrapMode::Mirror)
 			{
@@ -869,12 +845,6 @@ uint GLTexture::Activate()
 		{
 			mActiveCompareMode = mCompareMode;
 
-			if (!active)
-			{
-				active = true;
-				mGraphics->_BindTexture( mGlType, mGlID );
-			}
-
 			if (mCompareMode == CompareMode::Shadow)
 			{
 				// Compare depth
@@ -891,12 +861,6 @@ uint GLTexture::Activate()
 		if (mRegenMipmap && mGlType == GL_TEXTURE_2D)
 		{
 			mRegenMipmap = false;
-
-			if (!active)
-			{
-				active = true;
-				mGraphics->_BindTexture( mGlType, mGlID );
-			}
 
 			// Just in case, for ATI
 			glTexParameteri(mGlType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
