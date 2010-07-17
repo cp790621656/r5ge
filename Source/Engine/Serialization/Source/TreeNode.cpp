@@ -157,6 +157,29 @@ bool GetSegment (const String& s, uint& from, uint to, String& out)
 }
 
 //============================================================================================================
+// Finds a child with the specified tag
+//============================================================================================================
+
+TreeNode* TreeNode::FindChild (const String& tag, bool recursive)
+{
+	FOREACH(i, mChildren)
+	{
+		TreeNode& child = mChildren[i];
+		if (child.mTag == tag) return &child;
+	}
+
+	if (recursive)
+	{
+		FOREACH(i, mChildren)
+		{
+			TreeNode* retVal = mChildren[i].FindChild(tag, true);
+			if (retVal != 0) return retVal;
+		}
+	}
+	return 0;
+}
+
+//============================================================================================================
 // Saves to the specified file, using the file's extension to determine whether it should be binary
 //============================================================================================================
 

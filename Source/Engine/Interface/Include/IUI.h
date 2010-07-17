@@ -40,6 +40,6 @@ struct IUI : public IEventReceiver, public Thread::Lockable
 	// Serialization
 	virtual bool IsSerializable() const=0;
 	virtual void SetSerializable(bool val)=0;
-	virtual bool SerializeFrom (const TreeNode& root)=0;
-	virtual bool SerializeTo (TreeNode& root) const=0;
+	virtual bool SerializeFrom (const TreeNode& root, bool threadSafe = true)=0;
+	virtual bool SerializeTo (TreeNode& root, bool threadSafe = true) const=0;
 };

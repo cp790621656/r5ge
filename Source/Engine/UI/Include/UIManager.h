@@ -84,7 +84,7 @@ public:
 	void RemoveAllReferencesTo (const UIWidget* widget);
 
 	// Retrieves the specified skin (creates if necessary)
-	UISkin* GetSkin (const String& name);
+	UISkin* GetSkin (const String& name, bool loadIfPossible = true);
 
 	// Retrieves a pointer to the context menu
 	UIContext* GetContextMenu (bool createIfMissing = false);
@@ -180,8 +180,8 @@ protected:
 	// Serialization
 	virtual bool IsSerializable() const { return mSerializable; }
 	virtual void SetSerializable(bool val) { mSerializable = val; }
-	virtual bool SerializeFrom (const TreeNode& root);
-	virtual bool SerializeTo (TreeNode& root) const;
+	virtual bool SerializeFrom (const TreeNode& root, bool threadSafe = true);
+	virtual bool SerializeTo (TreeNode& root, bool threadSafe = true) const;
 
 	// IUI Functions
 	virtual bool Update();

@@ -185,9 +185,10 @@ String System::GetFilenameFromPath (const String& in)
 {
 	uint i = 0;
 
-	for ( i = in.GetLength(); i > 0; )
+	for (i = in.GetLength(); i > 0;)
 	{
 		char character = in[--i];
+
 		if (character == '/' || character == '\\')
 		{
 			String out;
@@ -209,10 +210,12 @@ String System::GetPathFromFilename (const String& in)
 	for ( i = in.GetLength(); i > 0; )
 	{
 		char character = in[--i];
+
 		if (character == '/' || character == '\\')
 		{
 			String out;
 			in.GetString(out, 0, i + 1);
+			out.Replace("\\", "/", true);
 			return out;
 		}
 	}
@@ -290,5 +293,44 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 	}
     closedir(dp);
 #endif
+	folders.Sort();
+	files.Sort();
     return true;
+}
+
+//============================================================================================================
+// Fills out a list of all files with the partial path matching 'path'. Returns 'true' if one was found.
+//============================================================================================================
+
+bool System::GetFiles (const String& path, Array<String>& files)
+{
+	files.Clear();
+
+	if (FileExists(path))
+	{
+		files.Expand() = path;
+	}
+	else
+	{
+		String dir  (GetPathFromFilename(path));
+		String name (GetFilenameFromPath(path));
+
+		Array<String> fd, fl;
+
+		if (ReadFolder(dir, fd, fl))
+		{
+			FOREACH(i, fl)
+			{
+				const String& s = fl[i];
+
+				if (s.BeginsWith(name))
+				{
+					String& fout = files.Expand();
+					fout << dir;
+					fout << s;
+				}
+			}
+		}
+	}
+	return files.IsValid();
 }

@@ -66,13 +66,16 @@ struct TreeNode
 
 	// Implementations of various data types
 	template <typename Type>
-	TreeNode& AddChild(const char* tag, const Type& val)
+	TreeNode& AddChild (const char* tag, const Type& val)
 	{
 		TreeNode& node	= mChildren.Expand();
 		node.mTag		= tag;
 		node.mValue		= val;
 		return node;
 	}
+
+	// Finds a child with the specified tag
+	TreeNode* FindChild (const String& tag, bool recursive = true);
 
 	// Saves to the specified file, using the file's extension to determine whether it should be binary
 	bool Save (const char* filename) const;

@@ -78,19 +78,46 @@ void UIManager::RemoveAllReferencesTo (const UIWidget* widget)
 // Retrieves the specified skin (creates if necessary)
 //============================================================================================================
 
-UISkin* UIManager::GetSkin (const String& name)
+UISkin* UIManager::GetSkin (const String& name, bool loadIfPossible)
 {
 	typedef UISkin* SkinPtr;
-	SkinPtr ptr (0);
+	SkinPtr skin (0);
 
 	if (name.IsValid())
 	{
-		SkinPtr& skin = mSkins[name];
-		if (skin == 0) skin = new UISkin(this, name);
-		ptr = skin;
+		skin = mSkins[name];
+
+		if (skin == 0)
+		{
+			// Create a new skin
+			skin = new UISkin(this, name);
+
+			// Automatically try to load new UI skins
+			if (loadIfPossible)
+			{
+				Array<String> files;
+
+				// Find all files that match the specified name
+				if (System::GetFiles(name, files))
+				{
+					ASSERT(files.GetSize() == 1, "More than one match found");
+					TreeNode root;
+
+					// Load the located UI file
+					if (root.Load(files[0]))
+					{
+						// Find the "Skin" tag and serialize from it
+						TreeNode* node = root.FindChild("Skin", true);
+						if (node != 0) skin->SerializeFrom(*node);
+					}
+				}
+			}
+		}
+
+		// If this is the first skin to be loaded, use it as default
 		if (mDefaultSkin == 0) mDefaultSkin = skin;
 	}
-	return ptr;
+	return skin;
 }
 
 //============================================================================================================
@@ -543,9 +570,9 @@ bool UIManager::OnChar (byte character)
 // Serialization -- Load
 //============================================================================================================
 
-bool UIManager::SerializeFrom (const TreeNode& root)
+bool UIManager::SerializeFrom (const TreeNode& root, bool threadSafe)
 {
-	Lock();
+	if (threadSafe) Lock();
 	{
 		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 		{
@@ -555,7 +582,7 @@ bool UIManager::SerializeFrom (const TreeNode& root)
 
 			if (tag == "UI")
 			{
-				return SerializeFrom(node);
+				return SerializeFrom(node, false);
 			}
 			else if (tag == "Default Skin")
 			{
@@ -573,7 +600,7 @@ bool UIManager::SerializeFrom (const TreeNode& root)
 			}
 			else if (tag == "Skin")
 			{
-				UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
+				UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString(), false );
 				skin->SerializeFrom(node);
 			}
 			else if (tag == "Layout")
@@ -582,7 +609,7 @@ bool UIManager::SerializeFrom (const TreeNode& root)
 			}
 		}
 	}
-	Unlock();
+	if (threadSafe) Unlock();
 	return true;
 }
 
@@ -590,11 +617,11 @@ bool UIManager::SerializeFrom (const TreeNode& root)
 // Serialization -- Save
 //============================================================================================================
 
-bool UIManager::SerializeTo (TreeNode& root) const
+bool UIManager::SerializeTo (TreeNode& root, bool threadSafe) const
 {
 	if (mSerializable)
 	{
-		Lock();
+		if (threadSafe) Lock();
 		{
 			TreeNode& node = root.AddChild("UI");
 
@@ -643,7 +670,7 @@ bool UIManager::SerializeTo (TreeNode& root) const
 			// Remove this node if it's empty
 			if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
 		}
-		Unlock();
+		if (threadSafe) Unlock();
 		return true;
 	}
 	return false;
