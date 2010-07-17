@@ -141,7 +141,7 @@ void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 		if (tag == IShader::ClassID())
 		{
 			m.SetShader( (value.IsValid()) ? graphics->GetShader(
-				value.IsString() ? value.AsString() : value.GetString()) : 0 );
+				value.AsString()) : 0 );
 		}
 		else if (tag == "Textures")
 		{
@@ -160,7 +160,7 @@ void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 			if ( tag.Split(left, ' ', right) && left == ITexture::ClassID() && right >> textureUnit )
 			{
 				m.SetTexture( textureUnit, graphics->GetTexture(
-					value.IsString() ? value.AsString() : value.GetString()) );
+					value.AsString()) );
 			}
 		}
 	}
@@ -238,7 +238,7 @@ bool GLMaterial::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == ITechnique::ClassID() )
 		{
-			const ITechnique* tech = mGraphics->GetTechnique(value.IsString() ? value.AsString() : value.GetString());
+			const ITechnique* tech = mGraphics->GetTechnique(value.AsString());
 			DrawMethod* ren = GetDrawMethod(tech, true);
 			SerializeMethodFrom(*ren, node, mGraphics);
 		}

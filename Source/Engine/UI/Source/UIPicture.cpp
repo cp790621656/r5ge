@@ -52,7 +52,7 @@ bool UIPicture::OnSerializeFrom (const TreeNode& node)
 
 	if (node.mTag == "Texture")
 	{
-		SetTexture ( mUI->GetTexture( value.IsString() ? value.AsString() : value.GetString() ) );
+		SetTexture ( mUI->GetTexture( value.AsString() ) );
 		return true;
 	}
 	else if (node.mTag == "Ignore Alpha")

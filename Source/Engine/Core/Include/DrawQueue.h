@@ -23,6 +23,8 @@ class DrawQueue
 {
 public:
 
+	typedef FastDelegate<void (const ITechnique* tech)> OnDrawCallback;
+
 	typedef Array<const ITechnique*> Techniques;
 
 	struct LightEntry
@@ -42,8 +44,9 @@ private:
 	// Only the Scene class should be touching 'mLayers' directly
 	friend class Scene;
 
-	Lights		mLights;
-	DrawLayer	mLayers[32];
+	Lights			mLights;
+	DrawLayer		mLayers[32];
+	OnDrawCallback	mOnDraw;
 
 public:
 
@@ -69,4 +72,9 @@ public:
 	// Draw the scene
 	uint Draw (TemporaryStorage& storage, IGraphics* graphics, const Techniques& techniques,
 		bool useLighting, bool insideOut);
+
+private:
+
+	// Activates all lights
+	void ActivateLights (IGraphics* graphics);
 };

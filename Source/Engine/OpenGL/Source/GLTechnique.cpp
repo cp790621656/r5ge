@@ -15,7 +15,7 @@ GLTechnique::GLTechnique (const String& name) :
 		mAlphaTest		(true),
 		mWireframe		(false),
 		mLighting		(Lighting::OneSided),
-		mBlending		(Blending::Normal),
+		mBlending		(Blending::Replace),
 		mCulling		(Culling::Back),
 		mSorting		(Sorting::None),
 		mSerializable	(false)
@@ -63,7 +63,7 @@ bool GLTechnique::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			}
 			else if (tag == "Blending")
 			{
-				if		(s == "Normal")		mBlending = Blending::Normal;
+				if		(s == "Replace")	mBlending = Blending::Replace;
 				else if (s == "Modulate")	mBlending = Blending::Modulate;
 				else if (s == "Add")		mBlending = Blending::Add;
 				else if (s == "Subtract")	mBlending = Blending::Subtract;
@@ -102,7 +102,7 @@ bool GLTechnique::SerializeTo (TreeNode& root) const
 		else if	(mLighting == Lighting::TwoSided)	lighting = "Two-sided";
 
 		const char* blending = "None";
-		if		(mBlending == Blending::Normal)		blending = "Normal";
+		if		(mBlending == Blending::Replace)	blending = "Replace";
 		else if (mBlending == Blending::Modulate)	blending = "Modulate";
 		else if (mBlending == Blending::Add)		blending = "Add";
 		else if (mBlending == Blending::Subtract)	blending = "Subtract";

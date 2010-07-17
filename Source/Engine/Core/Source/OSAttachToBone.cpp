@@ -54,7 +54,7 @@ void OSAttachToBone::OnSerializeFrom (const TreeNode& node)
 {
 	if (node.mTag == "Bone")
 	{
-		mName = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
+		mName = node.mValue.AsString();
 		mBoneIndex = -1;
 	}
 }

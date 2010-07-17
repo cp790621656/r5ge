@@ -586,12 +586,12 @@ bool UIManager::SerializeFrom (const TreeNode& root, bool threadSafe)
 			}
 			else if (tag == "Default Skin")
 			{
-				UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString() );
+				UISkin* skin = GetSkin( value.AsString() );
 				SetDefaultSkin(skin);
 			}
 			else if (tag == "Default Font")
 			{
-				IFont* font = GetFont( value.IsString() ? value.AsString() : value.GetString() );
+				IFont* font = GetFont( value.AsString() );
 				SetDefaultFont(font);
 			}
 			else if (tag == "Tooltip Delay")
@@ -600,7 +600,7 @@ bool UIManager::SerializeFrom (const TreeNode& root, bool threadSafe)
 			}
 			else if (tag == "Skin")
 			{
-				UISkin* skin = GetSkin( value.IsString() ? value.AsString() : value.GetString(), false );
+				UISkin* skin = GetSkin( value.AsString(), false );
 				skin->SerializeFrom(node);
 			}
 			else if (tag == "Layout")

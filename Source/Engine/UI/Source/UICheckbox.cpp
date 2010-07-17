@@ -76,7 +76,7 @@ bool UICheckbox::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "Prefix")
 	{
-		mPrefix = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
+		mPrefix = node.mValue.AsString();
 		return true;
 	}
 	else if (node.mTag == "State")

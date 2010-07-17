@@ -26,7 +26,7 @@ struct ITechnique
 		enum
 		{
 			None		= 0,
-			Normal		= 1,
+			Replace		= 1,
 			Add			= 2,
 			Subtract	= 3,
 			Modulate	= 4,

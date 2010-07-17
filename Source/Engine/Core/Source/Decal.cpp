@@ -87,7 +87,7 @@ void Decal::OnUpdate()
 		mAbsoluteBounds.Clear();
 		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.732f);
 
-		// Transform matrix uses calculates absolute values
+		// Transform matrix uses calculated absolute values
 		mMatrix.SetToTransform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
 	}
 }
@@ -121,8 +121,6 @@ bool Decal::OnFill (FillParams& params)
 
 uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
-	static uint indexCount = 0;
-
 	IVBO* vbo = storage.GetVBO(2);
 	IVBO* ibo = storage.GetVBO(3);
 
@@ -134,21 +132,18 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 	// These textures are only available during the deferred process -- and so are decals
 	if (depth == 0 || normal == 0 || diffuse == 0 || specular == 0) return 0;
 
-	IGraphics* graphics = mCore->GetGraphics();
-
 	if (!vbo->IsValid())
 	{
 		Array<Vector3f> vertices;
 		Array<ushort> indices;
 		Shape::Box(vertices, indices);
-		indexCount = indices.GetSize();
 
 		vbo->Set(vertices, IVBO::Type::Vertex);
 		ibo->Set(indices,  IVBO::Type::Index);
 	}
 
 	// Update the values used by the shader
-	const Matrix43& mat = graphics->GetViewMatrix();
+	const Matrix43& mat = mGraphics->GetViewMatrix();
 	g_pos.xyz()	= mAbsolutePos * mat;
 	g_pos.w		= mAbsoluteScale;
 	g_forward	= mAbsoluteRot.GetForward() % mat;
@@ -156,67 +151,67 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 	g_up		= mAbsoluteRot.GetUp() % mat;
 
 	// Finish all draw operations
-	graphics->Flush();
+	mGraphics->Flush();
 
 	// Set the color and world matrix
-	graphics->SetActiveColor(mColor);
-	graphics->SetNormalize(false);
-	graphics->SetModelMatrix(mMatrix);
+	mGraphics->SetActiveColor(mColor);
+	mGraphics->SetNormalize(false);
+	mGraphics->SetModelMatrix(mMatrix);
 
 	// Activate the shader, force-updating the uniforms
-	graphics->SetActiveShader(mShader, true);
+	mGraphics->SetActiveShader(mShader, true);
 
 	// ATI cards seem to clamp gl_FrontMaterial.diffuse in 0-1 range
 	if (mShader != 0) mShader->SetUniform("g_color", mColor);
 
 	// Activate the 4 mandatory textures
-	graphics->SetActiveTexture(0, depth);
-	graphics->SetActiveTexture(1, normal);
-	graphics->SetActiveTexture(2, diffuse);
-	graphics->SetActiveTexture(3, specular);
+	mGraphics->SetActiveTexture(0, depth);
+	mGraphics->SetActiveTexture(1, normal);
+	mGraphics->SetActiveTexture(2, diffuse);
+	mGraphics->SetActiveTexture(3, specular);
 
 	// Activate optional textures
 	for (uint i = 0; i < mTextures.GetSize(); ++i)
-		graphics->SetActiveTexture(i+4, mTextures[i]);
+		mGraphics->SetActiveTexture(i+4, mTextures[i]);
 
 	// Distance from the center to the farthest corner of the box before it starts getting clipped
-	float range = mAbsoluteScale * 1.732f + graphics->GetCameraRange().x;
+	float range = mAbsoluteScale * 1.732f + mGraphics->GetCameraRange().x;
 
 	// Invert the depth testing and culling if the camera is inside the box
-	bool invert = mAbsolutePos.GetDistanceTo(graphics->GetCameraPosition()) < range;
+	bool invert = mAbsolutePos.GetDistanceTo(mGraphics->GetCameraPosition()) < range;
 
 	if (invert)
 	{
 		// If the camera is inside the sphere, switch to reverse culling and depth testing
-		graphics->SetCulling( insideOut ? IGraphics::Culling::Back : IGraphics::Culling::Front );
-		graphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
+		mGraphics->SetCulling( insideOut ? IGraphics::Culling::Back : IGraphics::Culling::Front );
+		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
 	}
 	else
 	{
 		// If the camera is outside of the sphere, use normal culling and depth testing
-		graphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
-		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+		mGraphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
+		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 	}
 
 	// Disable all unused buffers, bind the position
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,		0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Tangent,		0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,	0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
 		vbo, 0, IGraphics::DataType::Float, 3, 12 );
 
 	// Draw the decal
-	graphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
+	mGraphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, ibo->GetSize() / sizeof(ushort));
 
 	// Restore the depth function
 	if (invert)
 	{
-		graphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
-		graphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+		mGraphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
+		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 	}
 	return 1;
 }
@@ -258,7 +253,7 @@ bool Decal::OnSerializeFrom (const TreeNode& node)
 
 	if (tag == "Shader")
 	{
-		SetShader( graphics->GetShader(value.IsString() ? value.AsString() : value.GetString()) );
+		SetShader( graphics->GetShader(value.AsString()) );
 	}
 	else if (tag == "Color")
 	{

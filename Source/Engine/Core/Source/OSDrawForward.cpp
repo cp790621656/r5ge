@@ -108,7 +108,7 @@ void OSDrawForward::OnDraw()
 		// Draw the scene normally but with a shadow texture created above
 		{
 			// Adjust the technique's blending -- first pass should use normal blending, after that -- add
-			mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Normal : IGraphics::Blending::Add);
+			mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Replace : IGraphics::Blending::Add);
 			mShadowed->SetDepthWrite(pass == 0);
 			mShadowed->SetSerializable(false);
 
@@ -164,7 +164,7 @@ void OSDrawForward::OnDraw()
 			mScene.DrawWithTechnique(mOpaque, false, false);
 
 			// Restore the default opaque technique values, just in case
-			mOpaque->SetBlending(IGraphics::Blending::Normal);
+			mOpaque->SetBlending(IGraphics::Blending::Replace);
 			mOpaque->SetDepthWrite(true);
 			mOpaque->SetSerializable(false);
 		}

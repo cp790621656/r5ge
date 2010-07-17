@@ -83,7 +83,7 @@ bool UISkin::SerializeFrom (const TreeNode& root)
 
 		if (tag == "Texture")
 		{
-			ITexture* tex = mUI->GetTexture( value.IsString() ? value.AsString() : value.GetString() );
+			ITexture* tex = mUI->GetTexture( value.AsString() );
 
 			if (mTex != tex)
 			{
@@ -96,7 +96,7 @@ bool UISkin::SerializeFrom (const TreeNode& root)
 		}
 		else if (tag == "Face")
 		{
-			GetFace( value.IsString() ? value.AsString() : value.GetString() )->SerializeFrom(node);
+			GetFace( value.AsString() )->SerializeFrom(node);
 			skinChanged = true;
 		}
 		else if (tag == "Serializable")

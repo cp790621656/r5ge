@@ -53,44 +53,54 @@ uint DrawQueue::Draw (TemporaryStorage& storage, IGraphics* graphics, const Tech
 		// Ensure this layer is visible with our mask
 		if ((layer.mMask & mask) != 0)
 		{
-			// Run through all specified techniques
-			for (uint b = 0; b < techniques.GetSize(); ++b)
+			// Draw all deferred techniques first
+			FOREACH(b, techniques)
 			{
 				const ITechnique* tech = techniques[b];
 
 				// If the layer has something visible on the specified technique
-				if ( tech != 0 && (layer.mMask & tech->GetMask()) != 0 )
+				if (tech != 0 && (layer.mMask & tech->GetMask()) != 0)
 				{
+					// Call the optional callback
+					if (mOnDraw) mOnDraw(tech);
+
 					// Activate the technique
 					graphics->SetActiveTechnique(tech, insideOut);
 
-					// Activate all lights
+					// Activate lights
 					if (useLighting && tech->GetLighting() != IGraphics::Lighting::None)
-					{
-						uint last = mLights.GetSize();
+						ActivateLights(graphics);
 
-						if (last > 0)
-						{
-							graphics->ResetModelViewMatrix();
-
-							for (uint i = 0; i < last; ++i)
-							{
-								LightSource* light = mLights[i].mLight;
-								graphics->SetActiveLight(i, (light == 0) ? 0 : &light->GetProperties());
-							}
-
-							for (uint i = last; i < 8; ++i)
-							{
-								graphics->SetActiveLight(i, 0);
-							}
-						}
-					}
-
-					// Draw everything on this layer using this technique
+					// Draw everything on this layer
 					result += layer.Draw(storage, tech, insideOut);
 				}
 			}
 		}
 	}
 	return result;
+}
+
+//============================================================================================================
+// Activate all lights
+//============================================================================================================
+
+void DrawQueue::ActivateLights (IGraphics* graphics)
+{
+	uint last = mLights.GetSize();
+
+	if (last > 0)
+	{
+		graphics->ResetModelViewMatrix();
+
+		for (uint i = 0; i < last; ++i)
+		{
+			LightSource* light = mLights[i].mLight;
+			graphics->SetActiveLight(i, (light == 0) ? 0 : &light->GetProperties());
+		}
+
+		for (uint i = last; i < 8; ++i)
+		{
+			graphics->SetActiveLight(i, 0);
+		}
+	}
 }

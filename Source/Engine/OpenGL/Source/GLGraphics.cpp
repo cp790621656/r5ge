@@ -203,7 +203,7 @@ bool GLGraphics::Init()
 		SetAlphaTest	(true);
 		SetADT			(0.003921568627451f);
 		SetBlending		(true);
-		SetBlending		(Blending::Normal);
+		SetBlending		(Blending::Replace);
 		SetCulling		(Culling::Back);
 		SetFogRange		(Vector2f(50.0f, 100.0f));
 		SetCameraRange	(Vector3f(0.3f, 100.0f, 90.0f));
@@ -406,7 +406,7 @@ void GLGraphics::EndFrame()
 	// NOTE: Intel driver seems to have a bug in it where it resets the blending mode to its default
 	// value when the frame finishes the draw process (src_alpha, one_minus_src_alpha).
 	// This call here effectively fixes the issue, but it's obviously a work-around rather than a true fix.
-	SetBlending(IGraphics::Blending::Normal);
+	SetBlending(IGraphics::Blending::Replace);
 	mTechnique = 0;
 }
 
@@ -454,7 +454,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetAlphaTest(false);
 		SetColorWrite(true);
 		SetLighting(Lighting::None);
-		SetBlending(Blending::Normal);
+		SetBlending(Blending::Replace);
 
 		SetActiveMaterial(mSkybox);
 		SetSimpleMaterial(true);
@@ -624,7 +624,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetAlphaTest(false);
 		SetColorWrite(true);
 		SetLighting(Lighting::None);
-		SetBlending(Blending::Normal);
+		SetBlending(Blending::Replace);
 		SetActiveMaterial((const IMaterial*)0);
 
 		_BindAllTextures();
@@ -918,6 +918,13 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetLighting(IGraphics::Lighting::None);
 					tech->SetBlending(IGraphics::Blending::None);
 				}
+				else if (name == "Projected Texture")
+				{
+					tech->SetFog(false);
+					tech->SetDepthWrite(false);
+					tech->SetLighting(IGraphics::Lighting::None);
+					tech->SetBlending(IGraphics::Blending::Replace);
+				}
 
 				// Newly created techniques should not be serializable until something changes
 				tech->SetSerializable(false);
@@ -1080,7 +1087,7 @@ IFont* GLGraphics::GetFont (const String& name, bool createIfMissing)
 
 #define EXECUTE(type, fnc)														\
 	{																			\
-		type* p = fnc(value.IsString() ? value.AsString() : value.GetString());	\
+		type* p = fnc(value.AsString());	\
 		bool isSerializable = p->IsSerializable();								\
 		p->SerializeFrom(node, forceUpdate);									\
 		if (!isSerializable && !serializable) p->SetSerializable(false);		\
@@ -1124,7 +1131,7 @@ bool GLGraphics::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			Vector2f range;
 			if (value >> range) SetFogRange(range);
 		}
-		else if (tag == "Skybox") skybox = (value.IsString() ? value.AsString() : value.GetString());
+		else if (tag == "Skybox") skybox = (value.AsString());
 		else if	(tag == ITechnique::ClassID())	EXECUTE(ITechnique,	GetTechnique)
 		else if (tag == ITexture::ClassID())	EXECUTE(ITexture,	GetTexture)
 		else if (tag == IMaterial::ClassID())	EXECUTE(IMaterial,	GetMaterial)

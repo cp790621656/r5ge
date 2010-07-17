@@ -181,7 +181,7 @@ bool UIMenu::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "Menu Face")
 	{
-		mMenuFace = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
+		mMenuFace = node.mValue.AsString();
 		return true;
 	}
 	else if (node.mTag == "Entries")

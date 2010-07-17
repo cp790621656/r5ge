@@ -320,6 +320,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\ProjectedTexture.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\Shadow.h"
 				>
 			</File>

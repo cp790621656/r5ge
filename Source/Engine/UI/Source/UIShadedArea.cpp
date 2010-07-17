@@ -75,7 +75,7 @@ bool UIShadedArea::OnSerializeFrom (const TreeNode& node)
 
 	if (node.mTag == "Shader")
 	{
-		SetShader( mUI->GetShader( value.IsString() ? value.AsString() : value.GetString() ) );
+		SetShader( mUI->GetShader( value.AsString() ) );
 		return true;
 	}
 	else if (node.mTag == "Textures")

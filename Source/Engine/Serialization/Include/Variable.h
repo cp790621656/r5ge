@@ -86,7 +86,10 @@ public:
 
 	// NOTE: Allocated implementations created with this macro must also
 	// modify the destructor in order to ensure that they are deleted properly.
-	VAR_LARGE_IMPL(String, String);
+	VAR_STRING_IMPL(String, String);
+
+	// Returns the variable as a string if it's a string, or an empty string otherwise
+	const String& AsString() const;
 
 	// Convenience function: returns the string-encoded representation of the data
 	String GetString() const;
@@ -126,7 +129,7 @@ public:
 	bool operator >> (Color3f& value) const;
 	bool operator >> (Color4f& value) const;
 	bool operator >> (Color4ub& value) const;
-	bool operator >> (String& value) const { value = (IsString() ? AsString() : GetString()); return true; }
+	bool operator >> (String& value) const { value = (IsString() ? *((const String*)mPtr) : GetString()); return true; }
 };
 
 //============================================================================================================

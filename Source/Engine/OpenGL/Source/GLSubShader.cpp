@@ -2,6 +2,7 @@
 #include "../Include/_OpenGL.h"
 
 // Built-in shaders
+#include "../Shaders/ProjectedTexture.h"
 #include "../Shaders/Deferred.h"
 #include "../Shaders/Lights.h"
 #include "../Shaders/SSAO.h"
@@ -327,7 +328,25 @@ void GLSubShader::_Init()
 	// Shaders that begin with [R5] are built-in
 	if (mName.BeginsWith("[R5]"))
 	{
-		if		(mName == "[R5] Combine Deferred")		mCode = g_combineDeferred;
+		if (mName.BeginsWith("[R5] Projected Texture"))
+		{
+			if (mName.Contains("Replace"))
+			{
+				mCode = g_projectedTexture;
+				mCode << g_projectedTextureReplace;
+			}
+			else if (mName.Contains("Modulate"))
+			{
+				mCode = g_projectedTexture;
+				mCode << g_projectedTextureModulate;
+			}
+			else
+			{
+				mCode = g_projectedTexture;
+				mCode << g_projectedTextureAddSubtract;
+			}
+		}
+		else if	(mName == "[R5] Combine Deferred")		mCode = g_combineDeferred;
 		else if (mName == "[R5] Horizontal Blur")		mCode = g_blurH;
 		else if (mName == "[R5] Vertical Blur")			mCode = g_blurV;
 		else if (mName == "[R5] Bloom Blur")			mCode = g_blurBloom;

@@ -92,18 +92,13 @@
 	VAR_COMMON_IMPL(varType, funcType, typeName)
 
 //============================================================================================================
-// Full implementation is used for types that exceed 16 bytes
+// String implementation
 //============================================================================================================
 
-#define VAR_LARGE_IMPL(varType, typeName)									\
+#define VAR_STRING_IMPL(varType, typeName)									\
 	explicit Variable(const varType& val) : mType(Type::typeName)			\
 	{																		\
 		mPtr = new varType(val);											\
-	}																		\
-																			\
-	const varType& As##typeName() const										\
-	{																		\
-		return *((const varType*)mPtr);										\
 	}																		\
 																			\
 	varType& To##typeName()													\
@@ -118,3 +113,12 @@
 	}																		\
 																			\
 	VAR_COMMON_IMPL(varType, typeName, typeName)
+
+
+//============================================================================================================
+// Full implementation is used for types that exceed 16 bytes
+//============================================================================================================
+
+//#define VAR_LARGE_IMPL(varType, typeName)	\
+//	VAR_STRING_IMPL(varType, typeName)		\
+//	const varType& As##typeName() const	{ return *((const varType*)mPtr); }

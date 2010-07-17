@@ -45,7 +45,7 @@ bool Resource::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		{
 			if (!IsValid() || forceUpdate)
 			{
-				Load(value.IsString() ? value.AsString() : value.GetString());
+				Load(value.AsString());
 			}
 		}
 		else if (tag == "Serializable") value >> mSerializable;

@@ -4,53 +4,43 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Multiple projected texture object
+// Projected texture object
 //============================================================================================================
 
-class Decal : public Object
+class ProjectedTexture : public Object
 {
 protected:
 
 	Matrix43	mMatrix;
-	IShader*	mShader;
+	IShader*	mAddSubtract;
+	IShader*	mReplace;
+	IShader*	mModulate;
 	Color4f		mColor;
+	ITexture*	mTex;
+	byte		mBlending;
 	uint		mMask;
 
-	// Textures passed to the decal
-	Array<const ITexture*> mTextures;
-
-	// Objects should never be created manually. Use the AddObject<> template instead.
-	Decal();
+	ProjectedTexture() : mAddSubtract(0), mReplace(0), mModulate(0), mColor(1.0f), mTex(0),
+		mBlending(ITechnique::Blending::Replace), mMask(0) { mLayer = 5; mCalcAbsBounds = false; }
 
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Decal", Decal, Object, Object);
+	R5_DECLARE_INHERITED_CLASS("Projected Texture", ProjectedTexture, Object, Object);
 
-	// Changes the default drawing layer that will be used by decals
-	static void SetDefaultLayer(byte layer);
+	const Color4f&	GetColor()		const	{ return mColor;	}
+	const ITexture*	GetTexture()	const	{ return mTex;		}
+	byte			GetBlending()	const	{ return mBlending; }
 
-	const IShader*		GetShader()		const	{ return mShader;		}
-	const Color4f&		GetColor()		const	{ return mColor;		}
-
-	void SetShader	(const String& shader);
-	void SetShader	(IShader* shader);
-	void SetColor	(const Color4f& val)		{ mColor	 = val;		}
-	
-	Array<const ITexture*>& GetTextureArray()	{ return mTextures;		}
+	void SetColor	(const Color4f& val)	{ mColor	 = val;	}
+	void SetTexture	(ITexture* tex)			{ mTex		 = tex; }
+	void SetBlending(byte val)				{ mBlending	 = val; }
 
 protected:
 
-	// Set the mask
 	virtual void OnInit();
-
-	// Updates the transformation matrix
 	virtual void OnUpdate();
-
-	// Fill the renderable object and visible light lists
 	virtual bool OnFill (FillParams& params);
-
-	// Draws the light on-screen if it's visible
 	virtual uint OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut);
 
 	// Serialization

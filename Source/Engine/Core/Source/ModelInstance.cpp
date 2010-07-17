@@ -159,7 +159,7 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& node)
 
 	if ( tag == Model::ClassID() )
 	{
-		String name (value.IsString() ? value.AsString() : value.GetString());
+		String name (value.AsString());
 		Model* model = mCore->GetModel(name, true);
 		ModelTemplate* temp = model->GetSource();
 

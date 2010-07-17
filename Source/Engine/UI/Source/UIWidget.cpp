@@ -609,13 +609,13 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 			}
 			else if (tag == UIScript::ClassID())
 			{
-				UIScript* script = _AddScript(value.IsString() ? value.AsString() : value.GetString());
+				UIScript* script = _AddScript(value.AsString());
 				if (script != 0) script->OnSerializeFrom(node);
 			}
 			else if (!OnSerializeFrom(node))
 			{
 				// Try to find or add a child node
-				UIWidget* child = _AddWidget( tag, value.IsString() ? value.AsString() : value.GetString() );
+				UIWidget* child = _AddWidget( tag, value.AsString() );
 
 				if (child != 0)
 				{

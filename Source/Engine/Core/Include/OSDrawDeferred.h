@@ -32,8 +32,12 @@ protected:
 	PostProcess	mPostProcess;
 
 	IRenderTarget* mMaterialTarget;
+	IRenderTarget* mProjTarget;
 	IRenderTarget* mLightTarget;
 	IRenderTarget* mFinalTarget;
+
+	ITechnique* mProjTechnique;
+	bool mProjTargetActive;
 
 	Array<const ITechnique*>	mDeferred;
 	Array<const ITechnique*>	mForward;
@@ -69,7 +73,7 @@ public:
 
 	// Initialize the scene
 	virtual void OnInit();
-	virtual void OnDestroy() { mScene.Release(); }
+	virtual void OnDestroy() { mScene.Release(); mScene.SetOnDraw(0); }
 
 protected:
 
@@ -89,6 +93,9 @@ public:
 
 	// Draw callback
 	virtual void OnDraw();
+
+	// Callback triggered before the technique is activated and objects get drawn
+	void OnDrawWithTechnique (const ITechnique* tech);
 
 	// Serialization
 	virtual void OnSerializeTo	 (TreeNode& root) const;

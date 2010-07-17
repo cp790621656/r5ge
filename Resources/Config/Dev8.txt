@@ -83,12 +83,7 @@ Root
 			Scale = 1.000000
 			Range = 1.000000 100.000000 90.000000
 			Dolly = 0.000000 16.752741 50.000000
-
 			Script = "OSDrawDeferred"
-			{
-				AO Quality = 1
-				AO Blur Passes = 2
-			}
 		}
 
 		Directional Light = "First Light"
@@ -101,7 +96,6 @@ Root
 			Specular = 1.0 1.0 1.0 1.0
 			Brightness = 1.000000
 			Script = "Slight Rotation"
-			//Shadows = true
 		}
 
 		Model Instance = "Test Scene"
@@ -132,31 +126,19 @@ Root
 
 			Textures = String[]
 			{
-				"[Generated] Depth"
-				"[Generated] Normal"
-				"[Generated] Diffuse Material"
-				"[Generated] Specular Material"
 				"Textures/Stone/brick.jpg"
 				"Textures/Stone/brick_ns.png"
 			}
 		}
 
-		Decal = "Second Decal"
+		Projected Texture = "First Projected Texture"
 		{
 			Position = -2 0 3
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
 			Scale = 4.0
+			Texture = "Textures/Billboards/leaf3.png"
+			Blending = "Modulate"
 			Script = "Slow Twirl"
-			Shader = "Decal/Project_D"
-
-			Textures = String[]
-			{
-				"[Generated] Depth"
-				"[Generated] Normal"
-				"[Generated] Diffuse Material"
-				"[Generated] Specular Material"
-				"Textures/Billboards/leaf3.png"
-			}
 		}
 	}
 }

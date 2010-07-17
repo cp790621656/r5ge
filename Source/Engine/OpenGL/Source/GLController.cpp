@@ -325,7 +325,7 @@ void GLController::SetBlending (uint val)
 		}
 		else
 		{
-			if		(mBlending == Blending::Normal)		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if		(mBlending == Blending::Replace)		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			else if (mBlending == Blending::Add)		glBlendFunc(GL_ONE, GL_ONE);
 			else if (mBlending == Blending::Subtract)	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 			else if (mBlending == Blending::Modulate)	glBlendFunc(GL_DST_COLOR, GL_ZERO);

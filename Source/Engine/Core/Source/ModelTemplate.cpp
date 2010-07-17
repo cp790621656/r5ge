@@ -281,11 +281,11 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 		}
 		else if (tag == Skeleton::ClassID())
 		{
-			SetSkeleton( mCore->GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true) );
+			SetSkeleton( mCore->GetSkeleton(value.AsString(), true) );
 		}
 		else if (tag == "Source")
 		{
-			ModelTemplate* temp = mCore->GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
+			ModelTemplate* temp = mCore->GetModelTemplate(value.AsString(), true);
 			SetSource(temp);
 		}
 		else if (tag == "OnSerialize")
@@ -350,15 +350,15 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 
 		if ( tag == Mesh::ClassID() )
 		{
-			mesh = mCore->GetMesh(value.IsString() ? value.AsString() : value.GetString());
+			mesh = mCore->GetMesh(value.AsString());
 		}
 		else if (tag == Cloud::ClassID())
 		{
-			bm = mCore->GetCloud(value.IsString() ? value.AsString() : value.GetString());
+			bm = mCore->GetCloud(value.AsString());
 		}
 		else if ( tag == IMaterial::ClassID() )
 		{
-			mat = graphics->GetMaterial(value.IsString() ? value.AsString() : value.GetString());
+			mat = graphics->GetMaterial(value.AsString());
 		}
 	}
 

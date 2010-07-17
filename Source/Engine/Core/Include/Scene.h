@@ -52,6 +52,9 @@ public:
 	Object* GetRoot() { return mRoot; }
 	void SetRoot (Object* root);
 
+	// Callback that will be triggered prior to the scene drawing objects with each technique
+	void SetOnDraw (const DrawQueue::OnDrawCallback& callback) { mQueue.mOnDraw = callback; }
+
 	// Whether the scene has something to draw (scene must be culled first)
 	bool HasSomethingToDraw() const { return mQueue.IsValid(); }
 

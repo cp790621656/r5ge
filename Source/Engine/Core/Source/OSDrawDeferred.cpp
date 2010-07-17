@@ -17,8 +17,11 @@ OSDrawDeferred::OSDrawDeferred() :
 	mLightSpec(0),
 	mFinal(0),
 	mMaterialTarget(0),
+	mProjTarget(0),
 	mLightTarget(0),
-	mFinalTarget(0) {}
+	mFinalTarget(0),
+	mProjTechnique(0),
+	mProjTargetActive(false) {}
 
 //============================================================================================================
 // Initialize the scene
@@ -37,13 +40,18 @@ void OSDrawDeferred::OnInit()
 	{
 		OSDraw::OnInit();
 		mScene.Initialize(mGraphics);
+		mScene.SetOnDraw(bind(&OSDrawDeferred::OnDrawWithTechnique, this));
 
 		// Initial AO settings
 		mAOParams.Set(1.0f, 4.0f, 1.0f);
 
+		// Projected textures will need to be handled separately 
+		mProjTechnique = mGraphics->GetTechnique("Projected Texture");
+
 		// Default deferred draw techniques
 		mDeferred.Expand() = mGraphics->GetTechnique("Deferred");
 		mDeferred.Expand() = mGraphics->GetTechnique("Decal");
+		mDeferred.Expand() = mProjTechnique;
 
 		// Forward rendering techniques are missing 'opaque' when used with deferred rendering
 		mForward.Expand() = mGraphics->GetTechnique("Wireframe");
@@ -106,11 +114,9 @@ void OSDrawDeferred::MaterialStage()
 										 IGraphics::Operation::Keep,
 										 IGraphics::Operation::Replace);
 	// Draw the scene
-	mScene.DrawWithTechniques(mDeferred, false, false);
-
-	// Our depth and final buffers can now be used by future draw processes
 	mScene.SetDepth(mDepth);
 	mScene.SetNormal(mNormal);
+	mScene.DrawWithTechniques(mDeferred, false, false);
 }
 
 //============================================================================================================
@@ -364,6 +370,41 @@ void OSDrawDeferred::OnDraw()
 	{
 		mGraphics->SetBackgroundColor(mBackground);
 		mGraphics->Clear();
+	}
+}
+
+//============================================================================================================
+// Callback triggered before the technique is activated and objects get drawn
+//============================================================================================================
+
+void OSDrawDeferred::OnDrawWithTechnique (const ITechnique* tech)
+{
+	if (tech == mProjTechnique)
+	{
+		// Activate the projected target if it's not yet active
+		if (!mProjTargetActive && mMatDiff != 0)
+		{
+			mProjTargetActive = true;
+
+			// Create the simplified forward rendering target
+			if (mProjTarget == 0)
+			{
+				mProjTarget = mScene.GetRenderTarget(14);
+				mProjTarget->AttachDepthTexture(mDepth);
+				mProjTarget->AttachStencilTexture(mDepth);
+				mProjTarget->AttachColorTexture(0, mMatDiff, mMatDiff->GetFormat());
+			}
+
+			// Activate the simplified forward rendering target
+			mProjTarget->SetSize(mMaterialTarget->GetSize());
+			mGraphics->SetActiveRenderTarget(mProjTarget);
+		}
+	}
+	else if (mProjTargetActive)
+	{
+		// Turn off the projected target
+		mProjTargetActive = false;
+		mGraphics->SetActiveRenderTarget(mMaterialTarget);
 	}
 }
 

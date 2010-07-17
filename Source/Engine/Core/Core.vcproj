@@ -663,6 +663,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Include\ProjectedTexture.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Include\RaycastHit.h"
 					>
 				</File>
@@ -708,6 +712,10 @@
 				</File>
 				<File
 					RelativePath=".\Source\Octree.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Source\ProjectedTexture.cpp"
 					>
 				</File>
 			</Filter>

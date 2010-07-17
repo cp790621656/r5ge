@@ -17,6 +17,7 @@ void RegisterDefaultObjects()
 	Object::Register<PointLight>();
 	Object::Register<Terrain>();
 	Object::Register<Octree>();
+	Object::Register<ProjectedTexture>();
 	Object::Register<Decal>();
 	Object::Register<Billboard>();
 	Object::Register<Glare>();
@@ -1136,7 +1137,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadS
 			else if (tag == Script::ClassID())
 			{
 				// The 'contains' check is here because scripts can self-destruct inside OnInit()
-				Script* ptr = _AddScript(value.IsString() ? value.AsString() : value.GetString());
+				Script* ptr = _AddScript(value.AsString());
 
 				if (ptr != 0 && mScripts.Contains(ptr))
 				{
@@ -1149,7 +1150,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadS
 			}
 			else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
 			{
-				Object* ptr = _AddObject(tag, value.IsString() ? value.AsString() : value.GetString());
+				Object* ptr = _AddObject(tag, value.AsString());
 
 				if (ptr != 0)
 				{

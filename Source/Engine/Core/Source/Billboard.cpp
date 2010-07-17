@@ -122,12 +122,12 @@ bool Billboard::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (tag == ITexture::ClassID())
 	{
-		mTex = mCore->GetGraphics()->GetTexture( value.IsString() ? value.AsString() : value.GetString() );
+		mTex = mCore->GetGraphics()->GetTexture( value.AsString() );
 		return true;
 	}
 	else if (tag == ITechnique::ClassID())
 	{
-		mTech = mCore->GetGraphics()->GetTechnique( value.IsString() ? value.AsString() : value.GetString() );
+		mTech = mCore->GetGraphics()->GetTechnique( value.AsString() );
 		return true;
 	}
 	return false;

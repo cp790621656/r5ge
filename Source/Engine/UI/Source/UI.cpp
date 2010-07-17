@@ -60,7 +60,7 @@ uint UI::DrawQueue (UIQueue* queue)
 	{
 		ASSERT(q->mGraphics == mGraphics, "Uhh... graphics don't match?");
 
-		mGraphics->SetBlending				( q->mIgnoreAlpha ? IGraphics::Blending::None : IGraphics::Blending::Normal );
+		mGraphics->SetBlending				( q->mIgnoreAlpha ? IGraphics::Blending::None : IGraphics::Blending::Replace );
 		mGraphics->SetActiveTexture			( 0, q->mTex );
 		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord0,	q->mVbo, 8,  IGraphics::DataType::Float, 2, sizeof(Vertex) );
 		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Color,		q->mVbo, 16, IGraphics::DataType::Byte,  4, sizeof(Vertex) );

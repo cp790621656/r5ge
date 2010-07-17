@@ -33,7 +33,8 @@ namespace R5
 	#include "FillParams.h"				// Struct containing parameters passed during the 'fill visible geometry' stage
 	#include "Script.h"					// Scripts can be attached to game objects
 	#include "Object.h"					// Most basic game object
-	#include "Decal.h"					// Projected texture object
+	#include "ProjectedTexture.h"		// Projected texture object
+	#include "Decal.h"					// Multiple projected texture object
 
 	#include "Billboard.h"				// Screen-aligned billboard
 	#include "Glare.h"					// Screen-aligned billboard that fades out if it's obscured

@@ -54,7 +54,7 @@ void SmokeEmitter::UpdateParticle (Particle& particle)
 
 void SmokeEmitter::SetRenderStates(IGraphics* graphics)
 {
-	graphics->SetBlending	( IGraphics::Blending::Normal );
+	graphics->SetBlending	( IGraphics::Blending::Replace );
 	graphics->SetAlphaTest	( true );
 	graphics->SetFog		( true );
 }

@@ -103,7 +103,7 @@ bool UIStats::OnSerializeFrom (const TreeNode& node)
 {
 	if (node.mTag == "Font")
 	{
-		IFont* font = mUI->GetFont(node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString());
+		IFont* font = mUI->GetFont(node.mValue.AsString());
 
 		for (int i = mLabels.GetSize(); i > 0; )
 		{

@@ -212,7 +212,7 @@ bool UISlider::OnSerializeFrom (const TreeNode& node)
 
 	if (node.mTag == "Skin")
 	{
-		SetSkin( mUI->GetSkin( value.IsString() ? value.AsString() : value.GetString() ) );
+		SetSkin( mUI->GetSkin( value.AsString() ) );
 		return true;
 	}
 	else if (node.mTag == "Value")
@@ -229,7 +229,7 @@ bool UISlider::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "Prefix")
 	{
-		SetPrefix( value.IsString() ? value.AsString() : value.GetString() );
+		SetPrefix( value.AsString() );
 		return true;
 	}
 	return false;

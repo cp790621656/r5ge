@@ -564,22 +564,22 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == Mesh::ClassID() )
 		{
-			Mesh* mesh = GetMesh(value.IsString() ? value.AsString() : value.GetString(), true);
+			Mesh* mesh = GetMesh(value.AsString(), true);
 			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
 		}
 		else if ( tag == Cloud::ClassID() )
 		{
-			Cloud* bm = GetCloud(value.IsString() ? value.AsString() : value.GetString(), true);
+			Cloud* bm = GetCloud(value.AsString(), true);
 			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
 		}
 		else if ( tag == Skeleton::ClassID() )
 		{
-			Skeleton* skel = GetSkeleton(value.IsString() ? value.AsString() : value.GetString(), true);
+			Skeleton* skel = GetSkeleton(value.AsString(), true);
 			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
 		}
 		else if ( tag == ModelTemplate::ClassID() )
 		{
-			ModelTemplate* temp = GetModelTemplate(value.IsString() ? value.AsString() : value.GetString(), true);
+			ModelTemplate* temp = GetModelTemplate(value.AsString(), true);
 
 			if (temp != 0)
 			{
@@ -589,7 +589,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == Model::ClassID() )
 		{
-			Model* model = GetModel(value.IsString() ? value.AsString() : value.GetString(), true);
+			Model* model = GetModel(value.AsString(), true);
 
 			if (model != 0)
 			{
@@ -608,7 +608,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == "Execute" )
 		{
-			String filename (value.IsString() ? value.AsString() : value.GetString());
+			String filename (value.AsString());
 
 			if (SerializeFrom(filename, true))
 			{

@@ -141,13 +141,13 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "Font")
 	{
-		const IFont* font = mUI->GetFont( value.IsString() ? value.AsString() : value.GetString() );
+		const IFont* font = mUI->GetFont( value.AsString() );
 		SetFont(font);
 		return true;
 	}
 	else if (node.mTag == "Text")
 	{
-		SetText( value.IsString() ? value.AsString() : value.GetString() );
+		SetText( value.AsString() );
 		return true;
 	}
 	else if (node.mTag == "Shadow")
