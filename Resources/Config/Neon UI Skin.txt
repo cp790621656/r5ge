@@ -39,28 +39,28 @@ Root
 			{
 				Position = 19 3
 				Size = 11 11
-				Border = 3
+				Border = 4
 			}
 	
 			Face = "UIButton: Highlighted"
 			{
 				Position = 32 3
 				Size = 11 11
-				Border = 3
+				Border = 4
 			}
 
 			Face = "UIButton: Pressed"
 			{
 				Position = 45 3
 				Size = 11 11
-				Border = 3
+				Border = 4
 			}
 	
 			Face = "UIButton: Disabled"
 			{
 				Position = 45 16
 				Size = 11 11
-				Border = 3
+				Border = 4
 			}
 	
 			Face = "UICheckbox: Unchecked"
@@ -108,7 +108,7 @@ Root
 			{
 				Position = 45 3
 				Size = 11 11
-				Border = 3
+				Border = 4
 			}
 	
 			Face = "Generic Highlight"

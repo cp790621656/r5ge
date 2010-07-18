@@ -31,7 +31,7 @@ Root
 				Alpha = 1.000000
 				Titlebar Height = 22
 				Resizable = true
-				Back Color = 0xFFAAFFDD
+				Back Color = 0xFFFFFFDD
 				Text Color = 0xFFFFFFFF
 				Text = "Hello World!"
 				Shadow = true
@@ -64,13 +64,13 @@ Root
 				{
 					Left = 0.500000 -70.000000
 					Right = 0.500000 70.000000
-					Top = 0.000000 40.000000
+					Top = 0.000000 30.000000
 					Bottom = 0.000000 60.000000
 					Alpha = 1.000000
-					Back Color = 0x00FF00FF
+					//Back Color = 0x00FF00FF
 					Text Color = 0xFFFFFFFF
 					Text = "Simple Button"
-					Shadow = false
+					Shadow = true
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
