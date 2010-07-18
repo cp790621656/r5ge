@@ -12,12 +12,13 @@ static const char* g_projectedTexture = {
 "uniform sampler2D R5_texture1;\n"		// Projected diffuse texture
 
 "uniform mat4 R5_inverseProjMatrix;\n"	// Inverse projection matrix
-"uniform vec2 R5_pixelSize;\n"          // 0-1 factor size of the pixel
+"uniform vec2 R5_pixelSize;\n"			 // 0-1 factor size of the pixel
 
 "uniform vec4 g_pos;\n"					// Object's position in view space (XYZ) and scale (W)
 "uniform vec3 g_forward;\n"				// Object's forward vector in view space
 "uniform vec3 g_right;\n"				// Object's right vector in view space
 "uniform vec3 g_up;\n"					// Object's up vector in view space
+"uniform vec4 g_color;\n"				// Object's color (ATI clamps material color within 0-1 range)
 
 //============================================================================================================
 // Gets the view space position at the specified texture coordinates
@@ -56,7 +57,7 @@ static const char* g_projectedTexture = {
 "	alpha = 1.0 - pow(alpha, 4.0);\n"
 
     // Sample the decal texture
-"	vec4 projDiffuse = texture2D(R5_texture1, tc * 0.5) * gl_FrontMaterial.diffuse;\n"
+"	vec4 projDiffuse = texture2D(R5_texture1, tc * 0.5) * g_color;\n"
 };
 
 //============================================================================================================
