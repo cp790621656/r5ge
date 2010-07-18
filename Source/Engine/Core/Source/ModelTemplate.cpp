@@ -16,30 +16,6 @@ struct RegisteredCodec
 Array<RegisteredCodec> g_codecs;
 
 //============================================================================================================
-// Helper function that locates a prop
-//============================================================================================================
-
-String FindModel (const String& file, const char* extension)
-{
-	String path (file);
-
-	if (System::FileExists(path)) return path;
-
-	String filename (System::GetFilenameFromPath(file));
-	{
-		path = "Models/" + filename;
-		if (System::FileExists(path)) return path;
-
-		path << extension;
-		if (System::FileExists(path)) return path;
-
-		path = "Resources/" + path;
-		if (System::FileExists(path)) return path;
-	}
-	return "";
-}
-
-//============================================================================================================
 // Only one codec is supported out-of-the-box: R5 TreeNode file format
 //============================================================================================================
 
@@ -480,23 +456,22 @@ bool ModelTemplate::Load (const String& file, bool forceUpdate)
 	// Don't attempt to load anything unless forced to do so
 	if (!forceUpdate && IsValid()) return true;
 
-	// For convenience sake
-	String source = FindModel(file, ".r5a");
+	// Find the model
+	Array<String> files;
 
 	// If the file was found, load it
-	if (source.IsValid())
+	if (System::GetFiles(file, files))
 	{
 		Memory mem;
 
 		// Load the entire file into memory
-		if (mem.Load(source))
+		if (mem.Load(files[0]))
 		{
-			String extension ( System::GetExtensionFromFilename(source) );
-			mFilename = source;
+			String extension ( System::GetExtensionFromFilename(files[0]) );
 
 			if ( Load(mem.GetBuffer(), mem.GetSize(), extension, forceUpdate) )
 			{
-				mFilename = source;
+				mFilename = files[0];
 				mSerializable = true;
 				return true;
 			}
@@ -509,7 +484,7 @@ bool ModelTemplate::Load (const String& file, bool forceUpdate)
 // Tries to load model information from a memory buffer
 //============================================================================================================
 // NOTE: This function is not thread-safe on purpose, since all codecs should be registered at the very
-// beginning of the program's lifecycle, implying that the list should be never resized mid-run.
+// beginning of the program's life cycle, implying that the list should be never resized mid-run.
 //============================================================================================================
 
 bool ModelTemplate::Load (const byte* buffer, uint size, const String& extension, bool forceUpdate)
