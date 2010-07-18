@@ -18,7 +18,7 @@ protected:
 	};
 
 	// The QuadTree is made up of series of subdivided nodes
-	struct Node : public Object
+	struct Node
 	{
 		Octree*			mOctree;		// Octree this node belongs to
 		uint			mDepth;			// Node's depth in the hierarchy

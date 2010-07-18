@@ -131,11 +131,11 @@ Object* Object::_AddObject (const String& type, const String& name)
 			ptr->mGraphics = mCore->GetGraphics();
 			mChildren.Expand() = ptr;
 
-			// Inform the listeners that a new child has been added
-			OnAddChild(ptr);
-
 			// Initialize the object
 			ptr->OnInit();
+
+			// Inform the listeners that a new child has been added
+			OnAddChild(ptr);
 		}
 	}
 	return ptr;

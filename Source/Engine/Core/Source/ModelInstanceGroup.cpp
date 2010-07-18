@@ -109,6 +109,11 @@ bool ModelInstanceGroup::OnFill (FillParams& params)
 {
 	if (mNewInstances.IsValid())
 	{
+		// TODO: Remove the need for this. Rather than adding children to the root node inside OnAddChild,
+		// add them to an array of objects that have been newly added (in the Octree). Then inside OnUpdate
+		// and/or OnFill, go through that list and add those objects properly.
+		Repartition();
+
 		ModelInfo info;
 
 		// Go through all new instances and collect them into batches
@@ -149,10 +154,9 @@ bool ModelInstanceGroup::OnFill (FillParams& params)
 			// Disable the model in-game so it doesn't show up or react to anything
 			inst->SetFlag(Flag::Enabled, false);
 		}
+		// Clear all references to newly added instances
+		mNewInstances.Clear();
 	}
-
-	// Clear all references to newly added instances
-	mNewInstances.Clear();
 	return Octree::OnFill(params);
 }
 

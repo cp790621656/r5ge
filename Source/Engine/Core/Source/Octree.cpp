@@ -119,7 +119,6 @@ Octree::Octree() : mDepth(0), mPartitioned(true)
 	mCalcAbsBounds		= false;
 	mIncChildBounds		= false;
 	mRootNode.mOctree	= this;
-	mRootNode.SetName("Octree Root");
 }
 
 //============================================================================================================
@@ -130,7 +129,7 @@ void Octree::Repartition()
 {
 	mPartitioned = true;
 	mRootNode.Partition(this, mAbsolutePos.x, mAbsolutePos.y, mAbsolutePos.z, mSize * mAbsoluteScale, 0, mDepth);
-	for (uint i = mChildren.GetSize(); i > 0;) mRootNode.Add(mChildren[--i]);
+	FOREACH(i, mChildren) mRootNode.Add(mChildren[i]);
 }
 
 //============================================================================================================
