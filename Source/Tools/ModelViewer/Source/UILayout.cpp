@@ -14,7 +14,7 @@ using namespace R5;
 // Used by options creation functions
 //============================================================================================================
 
-#define SHADOW		true
+#define SHADOW		false
 #define OFFSET		23.0f
 #define WIDTH		350.0f
 #define SEPARATOR	0.35f
@@ -45,8 +45,6 @@ using namespace R5;
 // Not the best code, I agree, but keeping it local here makes everything much more compartmentalized.
 //============================================================================================================
 
-IFont*			_font			= 0;
-UISkin*			_skin			= 0;
 ITechnique*		_deferred0		= 0;
 ITechnique*		_wireframe		= 0;
 
@@ -240,17 +238,8 @@ void ModelViewer::SerializeTo (TreeNode& root) const
 
 bool ModelViewer::CreateUI()
 {
-	_font		= mUI->GetDefaultFont();
-	_skin		= mUI->GetDefaultSkin();
 	_deferred0	= mGraphics->GetTechnique("Deferred");
 	_wireframe	= mGraphics->GetTechnique("Wireframe");
-
-	if (_font == 0)
-	{
-		_font = mGraphics->GetFont("Arial 15");
-	}
-
-	if (_font == 0 || _skin == 0 || !_font->IsValid()) return false;
 
 	// Create the menu frame at the top of the screen
 	{
@@ -609,9 +598,9 @@ bool ModelViewer::CreateUI()
 		_colorBlue	= AddSlider (_colorFrame, 2, "Color Blue");
 		_colorAlpha	= AddSlider (_colorFrame, 3, "Color Alpha");
 
-		_colorRed->SetColor		( Color3f(1.0f, 0.0f, 0.0f) );
-		_colorGreen->SetColor	( Color3f(0.0f, 1.0f, 0.0f) );
-		_colorBlue->SetColor	( Color3f(0.0f, 0.0f, 1.0f) );
+		_colorRed->SetBackColor		( Color3f(1.0f, 0.0f, 0.0f) );
+		_colorGreen->SetBackColor	( Color3f(0.0f, 1.0f, 0.0f) );
+		_colorBlue->SetBackColor	( Color3f(0.0f, 0.0f, 1.0f) );
 
 		_colorRed->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
 		_colorGreen->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnColor, this) );
@@ -632,8 +621,6 @@ bool ModelViewer::CreateUI()
 			_fileDialog->SetSerializable(false);
 			_fileDialog->SetResizable(false);
 			_fileDialog->SetAlpha(0.0f);
-			_fileDialog->SetSkin(_skin);
-			_fileDialog->SetFont(_font);
 			_fileDialog->SetTitlebarHeight(20);
 		}
 
@@ -642,7 +629,6 @@ bool ModelViewer::CreateUI()
 			_fileLabel = _fileDialog->AddWidget<UILabel>("File Dialog Label");
 			_fileLabel->SetLayer(1, false);
 			_fileLabel->SetAlignment( UILabel::Alignment::Center );
-			_fileLabel->SetFont(_font);
 			_fileLabel->SetEventHandling( UIWindow::EventHandling::None );
 
 			UIRegion& rgn = _fileLabel->GetRegion();
@@ -655,8 +641,6 @@ bool ModelViewer::CreateUI()
 		// Input field
 		{
 			_fileInput = _fileDialog->AddWidget<UIInput>("File Dialog Input");
-			_fileInput->SetSkin(_skin);
-			_fileInput->SetFont(_font);
 			_fileInput->SetFace("Dark Area");
 			_fileInput->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnFileInputValue, this) );
 			_fileInput->SetMaxHistorySize(10);
@@ -686,8 +670,6 @@ bool ModelViewer::CreateUI()
 		{
 			UIButton* cancel = _fileDialog->AddWidget<UIButton>("File Dialog Cancel");
 			cancel->AddScript<USEventListener>()->SetOnFocus( &HideParent );
-			cancel->SetSkin(_skin);
-			cancel->SetFont(_font);
 			cancel->SetText("Cancel");
 			cancel->SetShadow(SHADOW);
 
@@ -702,8 +684,6 @@ bool ModelViewer::CreateUI()
 		{
 			_fileOK = _fileDialog->AddWidget<UIButton>("File Dialog OK");
 			_fileOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
-			_fileOK->SetSkin(_skin);
-			_fileOK->SetFont(_font);
 			_fileOK->SetShadow(SHADOW);
 
 			UIRegion& rgn = _fileOK->GetRegion();
@@ -721,8 +701,6 @@ bool ModelViewer::CreateUI()
 			_confirmDialog = mUI->AddWidget<UIWindow>("Confirm Dialog");
 			_confirmDialog->SetSerializable(false);
 			_confirmDialog->SetAlpha(0.0f);
-			_confirmDialog->SetSkin(_skin);
-			_confirmDialog->SetFont(_font);
 			_confirmDialog->SetTitlebarHeight(20);
 		}
 
@@ -731,7 +709,6 @@ bool ModelViewer::CreateUI()
 			_confirmLabel = _confirmDialog->AddWidget<UILabel>("Confirm Dialog Label");
 			_confirmLabel->SetLayer(1, false);
 			_confirmLabel->SetAlignment( UILabel::Alignment::Center );
-			_confirmLabel->SetFont(_font);
 			_confirmLabel->SetEventHandling( UIWindow::EventHandling::None );
 
 			UIRegion& rgn = _confirmLabel->GetRegion();
@@ -746,8 +723,6 @@ bool ModelViewer::CreateUI()
 			UIButton* cancel = _confirmDialog->AddWidget<UIButton>("Confirm Dialog Cancel");
 			cancel->AddScript<USEventListener>()->SetOnFocus( &HideParent );
 			cancel->SetText("Cancel");
-			cancel->SetSkin(_skin);
-			cancel->SetFont(_font);
 
 			UIRegion& rgn = cancel->GetRegion();
 			rgn.SetLeft		(0.5f,  10.0f);
@@ -760,8 +735,6 @@ bool ModelViewer::CreateUI()
 		{
 			_confirmOK = _confirmDialog->AddWidget<UIButton>("Confirm Dialog OK");
 			_confirmOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnConfirmDialogOK, this) );
-			_confirmOK->SetSkin(_skin);
-			_confirmOK->SetFont(_font);
 
 			UIRegion& rgn = _confirmOK->GetRegion();
 			rgn.SetLeft		(0.5f, -150.0f);
@@ -945,7 +918,7 @@ void ModelViewer::UpdateTexPanel (const ITexture* tex)
 {
 	if (tex != 0)
 	{
-		tex->GetTextureID();
+		((ITexture*)tex)->Activate();
 
 		const Vector2i& s = tex->GetSize();
 
@@ -1020,7 +993,8 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 
 	if (menu != 0)
 	{
-		float width = 12.0f + (float)_font->GetLength(name);
+		IFont* font = mUI->GetDefaultFont();
+		float width = 12.0f + ((font == 0) ? 0.0f : (float)font->GetLength(name));
 		float left  = _menuOffset;
 		float right = left + width;
 
@@ -1035,11 +1009,9 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 
 		menu->SetSerializable(false);
 		menu->SetSticky(true);
-		menu->SetSkin(_skin);
 		menu->SetText(name);
 		menu->SetShadow(SHADOW);
 		menu->SetAlignment( UILabel::Alignment::Center );
-		menu->SetFont(_font);
 		menu->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
 	}
 	return menu;
@@ -1055,7 +1027,8 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 
 	if (btn != 0)
 	{
-		float width = 12.0f + (float)_font->GetLength(name);
+		IFont* font = mUI->GetDefaultFont();
+		float width = 12.0f + ((font == 0) ? 0.0f : (float)font->GetLength(name));
 		float left  = _menuOffset;
 		float right = left + width;
 
@@ -1069,12 +1042,10 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 		rgn.SetRight(0.0f, right);
 
 		btn->SetSerializable(false);
-		btn->SetSkin(_skin);
 		btn->SetSticky(true);
 		btn->SetText(name);
 		btn->SetShadow(SHADOW);
 		btn->SetAlignment( UILabel::Alignment::Center );
-		btn->SetFont(_font);
 		btn->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
 	}
 	return btn;
@@ -1091,6 +1062,7 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 	frame->SetSerializable(false);
 	frame->SetAlpha(0.0f);
 	frame->SetEventHandling( UIWindow::EventHandling::Normal );
+	frame->SetTitlebarHeight(0);
 
 	UIRegion& rgn = frame->GetRegion();
 	rgn.SetRight (0.0f, WIDTH);
@@ -1098,7 +1070,6 @@ UIFrame* ModelViewer::AddArea (const String& name, uint lines)
 	rgn.SetBottom(0.0f, OFFSET + (PADDING + LINE) * lines + PADDING * 4.0f);
 
 	UISubPicture* pic = frame->AddWidget<UISubPicture>(name + " Background");
-	pic->SetSkin(_skin, false);
 	pic->SetFace("Window: Background");
 	pic->SetEventHandling( UIWindow::EventHandling::None );
 	pic->SetSerializable(false);
@@ -1116,7 +1087,7 @@ UILabel* ModelViewer::AddCaption (UIWidget* parent, uint line, const String& tex
 	lbl->SetEventHandling( UIWindow::EventHandling::None );
 	lbl->SetSerializable(false);
 	lbl->SetText(text);
-	lbl->SetColor( 0x6ECEFF );
+	lbl->SetTextColor( 0xffd543ff );
 	return lbl;
 }
 
@@ -1134,8 +1105,6 @@ UILabel* ModelViewer::AddLabel (UIWidget* parent, uint line, const String& name,
 	lbl->SetEventHandling( UIWindow::EventHandling::None );
 	lbl->SetLayer(1, false);
 	lbl->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
-	lbl->SetFont(_font);
-
 	return lbl;
 }
 
@@ -1151,8 +1120,6 @@ UIButton*	ModelViewer::AddButton (UIWidget* parent, uint line, const String& nam
 
 	btn->SetSerializable(false);
 	btn->SetAlignment( UILabel::Alignment::Center );
-	btn->SetSkin(_skin);
-	btn->SetFont(_font);
 	btn->SetShadow(SHADOW);
 
 	return btn;
@@ -1175,8 +1142,6 @@ UICheckbox* ModelViewer::AddCheckbox (UIWidget* parent, uint line, const String&
 	rgn.SetBottom (0.0f, top + LINE - PADDING);
 
 	chk->SetSerializable(false);
-	chk->SetSkin(_skin);
-
 	return chk;
 }
 
@@ -1191,8 +1156,6 @@ UIInput* ModelViewer::AddInput (UIWidget* parent, uint line, const String& name,
 	SetRegion(inp->GetRegion(), line, offset, -PADDING * 0.3f, -PADDING * 0.6f);
 
 	inp->SetSerializable(false);
-	inp->SetFont(_font);
-	inp->SetSkin(_skin);
 	inp->SetFace("Dark Area");
 
 	return inp;
@@ -1209,8 +1172,6 @@ UIList* ModelViewer::AddList (UIWidget* parent, uint line, const String& name, i
 	SetRegion(list->GetRegion(), line, offset, 0, -PADDING * 0.6f);
 
 	list->SetSerializable(false);
-	list->SetFont(_font);
-	list->SetSkin(_skin);
 	list->SetSymbol("Down Arrow");
 	list->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
 	list->SetShadow(SHADOW);
@@ -1227,7 +1188,6 @@ UISlider* ModelViewer::AddSlider (UIWidget* parent, uint line, const String& nam
 	UISlider* slider = parent->AddWidget<UISlider>(name);
 	SetRegion(slider->GetRegion(), line, offset, 1, 0);
 	slider->SetSerializable(false);
-	slider->SetSkin(_skin);
 	return slider;
 }
 
@@ -1310,9 +1270,10 @@ void ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte
 					if ( entry.IsValid() && entry != CLEAR && entry != NEW )
 					{
 						ITexture* tex = mGraphics->GetTexture(entry, false);
+						UISkin* skin = mUI->GetDefaultSkin();
 
 						// Only release this texture if it's not currently used
-						if ( tex != 0 && tex != _skin->GetTexture() && !mModel->IsUsingTexture(tex) )
+						if (skin != 0 && tex != 0 && tex != skin->GetTexture() && !mModel->IsUsingTexture(tex))
 						{
 							tex->Release();
 						}

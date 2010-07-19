@@ -40,8 +40,13 @@ public:
 	// Area creation
 	R5_DECLARE_INHERITED_CLASS("UITextLine", UITextLine, UIWidget, UIWidget);
 
-	// Area functions
+	// Mark the associated queue as dirty
 	virtual void SetDirty();
+
+	// Set the default font if one hasn't been chosen already
+	virtual bool OnUpdate (bool dimensionsChanged);
+
+	// Fill the text draw queue
 	virtual void OnFill (UIQueue* queue);
 
 	// Serialization

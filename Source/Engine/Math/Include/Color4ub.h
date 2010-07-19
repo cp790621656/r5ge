@@ -22,8 +22,8 @@ struct Color4ub
 			 byte G,
 			 byte B,
 			 byte A = 255)										: r(R), g(G), b(B), a(A) {}
-	Color4ub(int rgba)											: mVal((uint)rgba) {}
-	Color4ub(uint rgba)											: mVal(rgba) {}
+	Color4ub(int rgba)											{ SetByHexNumber((uint)rgba); }
+	Color4ub(uint rgba)											{ SetByHexNumber(rgba); }
 	Color4ub(const Color4ub& c)									{ mVal = c.mVal;	}
 	Color4ub(const Color4f& c)									{ r = Float::ToRangeByte(c.r);
 																  g = Float::ToRangeByte(c.g);
@@ -58,8 +58,8 @@ struct Color4ub
 
 	void operator = (float val)									{ PackFloat(val); }
 	void operator = (const Vector3f& v);						// Inlined in Vector3f.h
-	void operator = (int val)									{ mVal = (uint)val; }
-	void operator = (uint val)									{ mVal = val;	}
+	void operator = (int val)									{ SetByHexNumber((uint)val); }
+	void operator = (uint val)									{ SetByHexNumber(val);	}
 	void operator = (const Color3f& c)							{ r = Float::ToRangeByte(c.r);
 																  g = Float::ToRangeByte(c.g);
 																  b = Float::ToRangeByte(c.b);
@@ -86,6 +86,15 @@ struct Color4ub
 																  a = ((ushort)c1.a + c2.a) / 2; }
 
 	void Set (byte R, byte G, byte B, byte A = 255)	{ r = R;  g = G;  b = B;  a = A; }
+
+	// Hex number: 0xRRGGBBAA
+	void SetByHexNumber (uint val)
+	{
+		mVal =	((val >> 24) & 0x000000FF) |
+				((val >>  8) & 0x0000FF00) |
+				((val <<  8) & 0x00FF0000) |
+				((val << 24) & 0xFF000000);
+	}
 
 	// Sets the color based on the specified text value in FFFFFFFF format
 	void SetByHexString (const char* text, uint length = 8);

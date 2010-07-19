@@ -1226,6 +1226,7 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 			node.AddChild("Diffuse", mat->mDiffuse);
 			node.AddChild("Specular", mat->mSpecular);
 			node.AddChild("Glow", mat->mGlow);
+			node.AddChild("Technique", "Depth");
 
 			// Add the deferred technique first
 			TreeNode& tech = node.AddChild("Technique");

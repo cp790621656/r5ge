@@ -7,6 +7,8 @@ using namespace R5;
 
 bool UICheckbox::OnUpdate (bool dimensionsChanged)
 {
+	if (GetSkin() == 0) SetSkin(mUI->GetDefaultSkin());
+
 	if (dimensionsChanged)
 	{
 		float height = mRegion.GetCalculatedHeight();

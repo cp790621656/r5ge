@@ -13,8 +13,6 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
-		Fog Range = 50.000000 150.000000
 
 		Texture = "LDR Skybox 0"
 		{
@@ -96,7 +94,7 @@ Root
 
 	UI
 	{
-		Default Skin = "Neon"
+		Default Skin = "Config/Neon"
 		Default Font = "Arial 15"
 
 		Layout
@@ -118,8 +116,8 @@ Root
 					Top = 0.000000 3.000000
 					Bottom = 0.000000 18.000000
 					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "492"
+					Text Color = 0xFFFFFFFF
+					Text = "460"
 					Shadow = true
 					Alignment = "Right"
 					Event Handling = "None"
@@ -133,8 +131,8 @@ Root
 					Top = 1.000000 -20.000000
 					Bottom = 1.000000 0.000000
 					Alpha = 0.000000
-					Top Color = 0.000000 0.000000 0.000000 0.000000
-					Bottom Color = 0.000000 0.000000 0.000000 1.000000
+					Top Color = 0x00000000
+					Bottom Color = 0x000000FF
 					Event Handling = "Normal"
 					Layer = 0
 
@@ -145,8 +143,8 @@ Root
 						Top = 0.000000 0.000000
 						Bottom = 1.000000 0.000000
 						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text = "R5 Model Viewer v.1.6.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Text Color = 0xFFFFFFFF
+						Text = "R5 Model Viewer v.1.7.1. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
 						Shadow = true
 						Alignment = "Center"
 						Event Handling = "None"
@@ -173,6 +171,7 @@ Root
 					Bottom = 1.000000 0.000000
 					Alpha = 1.000000
 					Face = "UIWindow: Background"
+					Back Color = 0xFFFFFFFF
 					Event Handling = "Normal"
 					Layer = 0
 
@@ -183,7 +182,7 @@ Root
 						Top = 0.000000 6.000000
 						Bottom = 0.000000 23.000000
 						Alpha = 1.000000
-						Color = 1.000000 0.818000 0.430000
+						Text Color = 0xFFFFFFFF
 						Text = "Rendering Method:"
 						Shadow = false
 						Alignment = "Right"
@@ -198,7 +197,7 @@ Root
 						Top = 0.000000 28.000000
 						Bottom = 0.000000 45.000000
 						Alpha = 1.000000
-						Color = 1.000000 0.818000 0.430000
+						Text Color = 0xFFFFFFFF
 						Text = "Background:"
 						Shadow = false
 						Alignment = "Right"
@@ -213,7 +212,7 @@ Root
 						Top = 0.000000 49.000000
 						Bottom = 0.000000 66.000000
 						Alpha = 1.000000
-						Color = 1.000000 0.818000 0.430000
+						Text Color = 0xFFFFFFFF
 						Text = "Bloom:"
 						Shadow = false
 						Alignment = "Right"
@@ -228,13 +227,15 @@ Root
 						Top = 0.000000 26.000000
 						Bottom = 0.000000 46.000000
 						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
+						Back Color = 0xFFFFFFFF
+						Text Color = 0xFFFFFFFF
 						Text = "Grey Color"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
 						Sticky = false
 						Animation Time = 0.150000
+						Menu Face
 
 						Entries = String[]
 						{
@@ -251,40 +252,6 @@ Root
 						UIScript = "USEventListener"
 					}
 
-					UISlider = "Bloom Slider"
-					{
-						Left = 0.400000 24.000000
-						Right = 1.000000 -5.000000
-						Top = 0.000000 50.000000
-						Bottom = 0.000000 66.000000
-						Alpha = 1.000000
-						Value = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Animation Time = 0.000000
-						Event Handling = "Normal"
-						Layer = 0
-						UIScript = "USEventListener"
-					}
-
-					UICheckbox = "Bloom Checkbox"
-					{
-						Left = 0.400000 5.000000
-						Right = 0.400000 19.000000
-						Top = 0.000000 51.000000
-						Bottom = 0.000000 65.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
-						Text
-						Shadow = false
-						Alignment = "Left"
-						State = "Checked"
-						Animation Time = 0.150000
-						Event Handling = "Normal"
-						Tooltip = "Turning this on will make bright areas glow"
-						Layer = 0
-						UIScript = "USEventListener"
-					}
-
 					UIList = "Rendering Method"
 					{
 						Left = 0.400000 3.000000
@@ -292,13 +259,15 @@ Root
 						Top = 0.000000 4.000000
 						Bottom = 0.000000 24.000000
 						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
+						Back Color = 0xFFFFFFFF
+						Text Color = 0xFFFFFFFF
 						Text = "Deferred"
 						Shadow = true
 						Alignment = "Left"
 						State = "Enabled"
 						Sticky = false
 						Animation Time = 0.150000
+						Menu Face
 
 						Entries = String[]
 						{
@@ -311,6 +280,40 @@ Root
 						Layer = 0
 						UIScript = "USEventListener"
 					}
+
+					UICheckbox = "Bloom Checkbox"
+					{
+						Left = 0.400000 5.000000
+						Right = 0.400000 19.000000
+						Top = 0.000000 51.000000
+						Bottom = 0.000000 65.000000
+						Alpha = 1.000000
+						Text Color = 0xFFFFFFFF
+						Text
+						Shadow = false
+						Alignment = "Left"
+						State = "Checked"
+						Animation Time = 0.150000
+						Event Handling = "Normal"
+						Tooltip = "Turning this on will make bright areas glow"
+						Layer = 0
+						UIScript = "USEventListener"
+					}
+
+					UISlider = "Bloom Slider"
+					{
+						Left = 0.400000 24.000000
+						Right = 1.000000 -5.000000
+						Top = 0.000000 50.000000
+						Bottom = 0.000000 66.000000
+						Alpha = 1.000000
+						Value = 1.000000
+						Back Color = 0xFFFFFFFF
+						Animation Time = 0.000000
+						Event Handling = "Normal"
+						Layer = 0
+						UIScript = "USEventListener"
+					}
 				}
 			}
 		}
@@ -318,8 +321,6 @@ Root
 
 	Core
 	{
-		Execute = "Config/Neon UI Skin.txt"
-
 		Model = "Default Model"
 		{
 			Source = "Models/peasant.r5a"
@@ -333,13 +334,27 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.001267 0.018200 0.617190
-			Rotation = 0.025524 -0.124842 0.971746 -0.198677
+			Rotation = 0.031823 -0.187256 0.967918 -0.164493
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 1.628507 50.000000
 
 			Script = "OSDrawDeferred"
 			{
+				Background Color = 0.250000 0.250000 0.250000 1.000000
+				Fog Range = 0.500000 1.000000
 				Grid = true
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascade Count = 1
+					Cascade Bias = 0.500000
+					Blur Passes = 2
+					Softness = 2.000000
+					Kernel Size = 1.000000
+					Depth Bias = 6.000000
+				}
+
 				Bloom = 1.000000
 				Focal Range = 0.000000 0.000000 0.000000
 				AO Quality = 0
@@ -349,7 +364,7 @@ Root
 
 			Directional Light = "Default Light"
 			{
-				Rotation = 0.177846 -0.021280 0.116949 -0.977344
+				Rotation = 0.350759 0.053338 -0.140635 -0.924856
 				Ambient = 0.150000 0.150000 0.150000
 				Diffuse = 1.000000 1.000000 1.000000
 				Specular = 1.000000 1.000000 1.000000
@@ -359,7 +374,7 @@ Root
 				Directional Billboard
 				{
 					Scale = 0.250000
-					Color = 0xffffffff
+					Color = 0xFFFFFFFF
 					Texture = "Textures/Billboards/light.jpg"
 					Technique = "Glow"
 				}
@@ -367,7 +382,7 @@ Root
 				Directional Glare
 				{
 					Scale = 2.000000
-					Color = 0xffffffff
+					Color = 0xFFFFFFFF
 					Texture = "Textures/Billboards/glare_rgb.jpg"
 					Technique = "Glare"
 				}

@@ -186,7 +186,7 @@ void ModelViewer::SetStatusText (const String& text, const Color3f& color)
 	if (mSbLabel != 0)
 	{
 		mSbLabel->SetText(text);
-		mSbLabel->SetColor(color);
+		mSbLabel->SetTextColor(color);
 		mSbLabel->BringToFront();
 	}
 
