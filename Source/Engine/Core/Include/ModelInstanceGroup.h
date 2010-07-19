@@ -42,11 +42,6 @@ protected:
 		virtual ~TerrainData() {}
 	};
 
-protected:
-
-	// List of all newly added instances that have not yet been added to batches
-	Array<ModelInstance*> mNewInstances;
-
 public:
 
 	R5_DECLARE_INHERITED_CLASS("ModelInstanceGroup", ModelInstanceGroup, Octree, Object);
@@ -56,14 +51,11 @@ protected:
 	// Helper function that retrieves the data associated with the model instance
 	TerrainData* GetData (ModelInstance* inst, bool create);
 
-	// Function called when a new child object has been added
-	virtual void OnAddChild (Object* obj);
+	// Called when a newly added object gets positioned somewhere in the octree
+	virtual void OnNewlyAdded (Object* obj);
 
 	// Function called just before the child gets removed
 	virtual void OnRemoveChild (Object* obj);
-
-	// Called when the object is being culled
-	virtual bool OnFill (FillParams& params);
 
 	// We don't want to fill models that have been marked as batched
 	virtual void OnFillNode (Node& node, FillParams& params);

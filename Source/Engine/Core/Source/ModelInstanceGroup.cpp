@@ -55,17 +55,6 @@ ModelInstanceGroup::TerrainData* ModelInstanceGroup::GetData (ModelInstance* ins
 }
 
 //============================================================================================================
-// Function called when a new child object has been added
-//============================================================================================================
-
-void ModelInstanceGroup::OnAddChild (Object* obj)
-{
-	Octree::OnAddChild(obj);
-	ModelInstance* inst = R5_CAST(ModelInstance, obj);
-	if (inst != 0) mNewInstances.Expand() = inst;
-}
-
-//============================================================================================================
 // Function called just before the child gets removed
 //============================================================================================================
 
@@ -75,7 +64,6 @@ void ModelInstanceGroup::OnRemoveChild (Object* obj)
 
 	if (inst != 0)
 	{
-		mNewInstances.Remove(inst);
 		TerrainData* data = GetData(inst, false);
 
 		if (data != 0)
@@ -102,62 +90,47 @@ void ModelInstanceGroup::OnRemoveChild (Object* obj)
 }
 
 //============================================================================================================
-// Called when the object is being culled
+// Called when a newly added object gets positioned somewhere in the octree
 //============================================================================================================
 
-bool ModelInstanceGroup::OnFill (FillParams& params)
+void ModelInstanceGroup::OnNewlyAdded (Object* obj)
 {
-	if (mNewInstances.IsValid())
+	ModelInfo info;
+
+	// Get detailed information about the model, validating it for batching in the process
+	ModelInstance* inst = R5_CAST(ModelInstance, obj);
+	if (inst == 0 || !GetModelInfo(inst, info)) return;
+
+	// Get the data struct associated with the instance
+	TerrainData* data = GetData(inst, true);
+	bool found = false;
+
+	// Check to see if a batch for this material already exists
+	FOREACH(b, data->mBatches)
 	{
-		// TODO: Remove the need for this. Rather than adding children to the root node inside OnAddChild,
-		// add them to an array of objects that have been newly added (in the Octree). Then inside OnUpdate
-		// and/or OnFill, go through that list and add those objects properly.
-		Repartition();
+		Batch* batch = data->mBatches[b];
 
-		ModelInfo info;
-
-		// Go through all new instances and collect them into batches
-		FOREACH(i, mNewInstances)
+		if (batch->mMat == info.mat)
 		{
-			// Get detailed information about the model, validating it for batching in the process
-			ModelInstance* inst = mNewInstances[i];
-			if (!GetModelInfo(inst, info)) continue;
-
-			// Get the data struct associated with the instance
-			TerrainData* data = GetData(inst, true);
-			bool found = false;
-
-			// Check to see if a batch for this material already exists
-			FOREACH(b, data->mBatches)
-			{
-				Batch* batch = data->mBatches[b];
-
-				if (batch->mMat == info.mat)
-				{
-					// Batch found -- add a new instance
-					batch->mInstances.Expand() = inst;
-					batch->mIndexCount = 0;
-					found = true;
-				}
-			}
-
-			if (!found)
-			{
-				// Batch was not found -- add a new one
-				typedef Batch* BatchPtr;
-				BatchPtr& batch = data->mBatches.Expand();
-				batch = new Batch();
-				batch->mMat = info.mat;
-				batch->mInstances.Expand() = inst;
-			}
-
-			// Disable the model in-game so it doesn't show up or react to anything
-			inst->SetFlag(Flag::Enabled, false);
+			// Batch found -- add a new instance
+			batch->mInstances.Expand() = inst;
+			batch->mIndexCount = 0;
+			found = true;
 		}
-		// Clear all references to newly added instances
-		mNewInstances.Clear();
 	}
-	return Octree::OnFill(params);
+
+	if (!found)
+	{
+		// Batch was not found -- add a new one
+		typedef Batch* BatchPtr;
+		BatchPtr& batch = data->mBatches.Expand();
+		batch = new Batch();
+		batch->mMat = info.mat;
+		batch->mInstances.Expand() = inst;
+	}
+
+	// Disable the model in-game so it doesn't show up or react to anything
+	inst->SetFlag(Flag::Enabled, false);
 }
 
 //============================================================================================================

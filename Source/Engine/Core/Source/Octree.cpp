@@ -138,8 +138,7 @@ void Octree::Repartition()
 
 void Octree::OnAddChild (Object* obj)
 {
-	if (!mPartitioned) Repartition();
-	else mRootNode.Add(obj);
+	mNewlyAdded.Expand() = obj;
 }
 
 //============================================================================================================
@@ -148,6 +147,8 @@ void Octree::OnAddChild (Object* obj)
 
 void Octree::OnRemoveChild (Object* obj)
 {
+	mNewlyAdded.Remove(obj);
+
 	Node* sub = (Node*)obj->GetSubParent();
 
 	// Remove the child from the node it currently belongs to
@@ -164,8 +165,23 @@ void Octree::OnRemoveChild (Object* obj)
 
 void Octree::OnPostUpdate()
 {
-	// Update partitioning if needed
-	if (!mPartitioned) Repartition();
+	if (!mPartitioned)
+	{
+		// If the octree is not yet partitioned, now is the time to do it
+		Repartition();
+	}
+	else if (mNewlyAdded.IsValid())
+	{
+		// If we have newly added objects, they need to be placed somewhere in the tree
+		FOREACH(i, mNewlyAdded) mRootNode.Add(mNewlyAdded[i]);
+	}
+
+	// Inform the derived class
+	if (mNewlyAdded.IsValid())
+	{
+		FOREACH(i, mNewlyAdded) OnNewlyAdded(mNewlyAdded[i]);
+		mNewlyAdded.Clear();
+	}
 
 	// Run through all children and find ones that have moved
 	for (uint i = mChildren.GetSize(); i > 0; )

@@ -55,6 +55,8 @@ protected:
 	uint		mDepth;			// Depth of node subdivision
 	bool		mPartitioned;	// Whether the tree has been partitioned
 
+	Array<Object*> mNewlyAdded;	// List of newly added objects that need to be placed into the tree
+
 	// Objects should never be created manually. Use the AddObject<> template instead.
 	Octree();
 
@@ -66,6 +68,9 @@ protected:
 
 	// Repartitions the Octree then re-adds all children to sub-nodes
 	void Repartition();
+
+	// Called when a newly added object gets positioned somewhere in the octree
+	virtual void OnNewlyAdded (Object* obj) {}
 
 	// Function called when a new child object has been added
 	virtual void OnAddChild (Object* obj);
