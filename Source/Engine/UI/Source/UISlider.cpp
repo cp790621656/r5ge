@@ -178,26 +178,26 @@ void UISlider::OnFill (UIQueue* queue)
 			float centerEmpty	= top + (height - offset);
 			float knobTop		= centerFull - Float::Round(width * 0.5f);
 			float knobBottom	= knobTop + width;
-			float tcCenterFull  = full.mBottom - (full.mBottom  - full.mTop ) * factor;
-			float tcCenterEmpty = empty.mTop   + (empty.mBottom - empty.mTop) * invFactor;
+			float tcCenterFull  =  full.mLeft  + ( full.mRight -  full.mLeft) * factor;
+			float tcCenterEmpty = empty.mRight - (empty.mRight - empty.mLeft) * invFactor;
 
 			// Full bar
-			v.Expand().Set( left,	centerFull,		full.mLeft,		tcCenterFull,	color);
-			v.Expand().Set( left,	bottom,			full.mLeft,		full.mBottom,	color);
-			v.Expand().Set( right,	bottom,			full.mRight,	full.mBottom,	color);
-			v.Expand().Set( right,	centerFull,		full.mRight,	tcCenterFull,	color);
+			v.Expand().Set( left,	centerFull,		tcCenterFull,	full.mTop,		color);
+			v.Expand().Set( left,	bottom,			full.mLeft,		full.mTop,		color);
+			v.Expand().Set( right,	bottom,			full.mLeft,		full.mBottom,	color);
+			v.Expand().Set( right,	centerFull,		tcCenterFull,	full.mBottom,	color);
 
 			// Empty bar
-			v.Expand().Set( left,	top,			empty.mLeft,	empty.mTop,		white);
-			v.Expand().Set( left,	centerEmpty,	empty.mLeft,	tcCenterEmpty,	white);
-			v.Expand().Set( right,	centerEmpty,	empty.mRight,	tcCenterEmpty,	white);
-			v.Expand().Set( right,	top,			empty.mRight,	empty.mTop,		white);
+			v.Expand().Set( left,	top,			empty.mRight,	empty.mTop,		white);
+			v.Expand().Set( left,	centerEmpty,	tcCenterEmpty,	empty.mTop,		white);
+			v.Expand().Set( right,	centerEmpty,	tcCenterEmpty,	empty.mBottom,	white);
+			v.Expand().Set( right,	top,			empty.mRight,	empty.mBottom,	white);
 
 			// Knob
-			v.Expand().Set( left,	knobTop,		knob.mLeft,		knob.mTop,		white);
-			v.Expand().Set( left,	knobBottom,		knob.mLeft,		knob.mBottom,	white);
-			v.Expand().Set( right,	knobBottom,		knob.mRight,	knob.mBottom,	white);
-			v.Expand().Set( right,	knobTop,		knob.mRight,	knob.mTop,		white);
+			v.Expand().Set( left,	knobTop,		knob.mRight,	knob.mTop,		white);
+			v.Expand().Set( left,	knobBottom,		knob.mLeft,		knob.mTop,		white);
+			v.Expand().Set( right,	knobBottom,		knob.mLeft,		knob.mBottom,	white);
+			v.Expand().Set( right,	knobTop,		knob.mRight,	knob.mBottom,	white);
 		}
 	}
 }
