@@ -128,7 +128,7 @@ void UISlider::OnFill (UIQueue* queue)
 		float width	 ( mRegion.GetCalculatedWidth()  );
 		float height ( mRegion.GetCalculatedHeight() );
 
-		Color4ub white	 ( 255, 255, 255, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) );
+		Color4ub white	 ( 255, 255, 255, Float::ToRangeByte(mColor.GetAlpha() * mRegion.GetCalculatedAlpha()) );
 		Color4ub color   ( mColor, mRegion.GetCalculatedAlpha() );
 		Vector2i texSize ( queue->mTex->GetSize() );
 
