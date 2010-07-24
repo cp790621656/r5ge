@@ -3,14 +3,6 @@
 #undef CopyMemory
 
 //============================================================================================================
-// Required R5 Libraries
-//============================================================================================================
-
-#pragma comment(lib, "R5_Basic.lib")
-#pragma comment(lib, "R5_Math.lib")
-#pragma comment(lib, "R5_Serialization.lib")
-
-//============================================================================================================
 // External configuration
 //============================================================================================================
 
@@ -1231,10 +1223,8 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 			// Add the deferred technique first
 			TreeNode& tech = node.AddChild("Technique");
 
-			// Wireframe if the material is wireframe, deferred if it's solid, and post-deferred otherwise
-			if		(mat->mWireframe)			tech.mValue = "Wireframe";
-			else if (mat->mDiffuse.a == 1.0f)	tech.mValue = "Deferred";
-			else								tech.mValue = "Post-Deferred";
+			// Wireframe if the material is wireframe, deferred if it's solid
+			tech.mValue = (mat->mWireframe) ? "Wireframe" : "Deferred";
 
 			// Use the default material shader
 			tech.AddChild("Shader", "Deferred/Material");
