@@ -12,17 +12,28 @@ struct Config
 	float		mPrecision;
 	bool		mCleanKeys;
 	bool		mBruteForce;
-	bool		mSmoothPos;
-	bool		mSmoothRot;
+	uint		mPosMethod;
+	uint		mRotMethod;
 	TreeNode	mSkeleton;
 	TreeNode	mGraphics;
 
-	Config() : mScale(1.0f), mPrecision(0.00001f), mCleanKeys(true), mBruteForce(false), mSmoothPos(true), mSmoothRot(true) {}
+	Config() : mScale(1.0f), mPrecision(0.00001f), mCleanKeys(true), mBruteForce(false), mPosMethod(2), mRotMethod(2) {}
 
 	bool Load (const char* filename);
 };
 
 Config g_config;
+
+//============================================================================================================
+// Helper function
+//============================================================================================================
+
+inline byte GetInterpolationMethod (const String& s)
+{
+	if (s == "Spline") return 2;
+	if (s == "Linear") return 1;
+	return 0;
+}
 
 //============================================================================================================
 // Load an external configuration file, if present
@@ -46,14 +57,14 @@ bool Config::Load (const char* filename)
 		{
 			const TreeNode& node = root.mChildren[i];
 
-			if		(node.mTag == "Scale")				node.mValue >> mScale;
-			else if (node.mTag == "Precision")			node.mValue >> mPrecision;
-			else if (node.mTag == "Clean Keys")			node.mValue >> mCleanKeys;
-			else if (node.mTag == "Brute Force")		node.mValue >> mBruteForce;
-			else if (node.mTag == "Smooth Positions")	node.mValue >> mSmoothPos;
-			else if (node.mTag == "Smooth Rotations")	node.mValue >> mSmoothRot;
-			else if (node.mTag == "Skeleton")			mSkeleton = node;
-			else if (node.mTag == "Graphics")			mGraphics = node;
+			if		(node.mTag == "Scale")					node.mValue >> mScale;
+			else if (node.mTag == "Precision")				node.mValue >> mPrecision;
+			else if (node.mTag == "Clean Keys")				node.mValue >> mCleanKeys;
+			else if (node.mTag == "Brute Force")			node.mValue >> mBruteForce;
+			else if (node.mTag == "Position Interpolation") mPosMethod = GetInterpolationMethod(node.mValue.AsString());
+			else if (node.mTag == "Rotation Interpolation") mRotMethod = GetInterpolationMethod(node.mValue.AsString());
+			else if (node.mTag == "Skeleton")				mSkeleton = node;
+			else if (node.mTag == "Graphics")				mGraphics = node;
 		}
 		return true;
 	}
@@ -68,7 +79,9 @@ bool Config::Load (const char* filename)
 
 Matrix43 GetMatrix43 (::Matrix3& mat)
 {
+	mat.Orthogonalize();
 	mat.NoScale();
+
 	float* f = (float*)&mat;
 	Matrix43 m43;
 
@@ -476,7 +489,7 @@ void R5MaxExporter::Release()
 // Retrieves a bone by its name
 //============================================================================================================
 
-R5MaxExporter::Bone* R5MaxExporter::GetBone (const String& name)
+R5MaxExporter::Bone* R5MaxExporter::GetBone (const String& name, bool createIfMissing)
 {
 	ASSERT(name.IsValid(), "Missing bone name?");
 
@@ -484,12 +497,16 @@ R5MaxExporter::Bone* R5MaxExporter::GetBone (const String& name)
 		if (mBones[i].mName == name)
 			return &mBones[i];
 
-	Bone& bone		= mBones.Expand();
-	bone.mName		= name;
-	bone.mParent	= -1;
-	bone.mSpline	= !name.Contains("Linear");
-	bone.mIsUsed	= false;
-	return &bone;
+	if (createIfMissing)
+	{
+		Bone& bone			= mBones.Expand();
+		bone.mName			= name;
+		bone.mParent		= -1;
+		bone.mInterpolation	= (name.Contains("Linear") ? 1 : (name.Contains("None") ? 0 : 2));
+		bone.mIsUsed		= false;
+		return &bone;
+	}
+	return 0;
 }
 
 //============================================================================================================
@@ -547,16 +564,15 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 
 	// Create an array of cross-indices: an index of R5 bone for every Max bone present in the skin
 	int boneCount = (onlyVertices || skin == 0 ? 0 : skin->GetNumBones());
-	Array<uint> boneIndices ( boneCount );
+	Array<uint> maxToMyBoneIndex (boneCount);
 
 	for (int i = 0; i < boneCount; ++i)
 	{
 		// GetBoneName() sometimes returns completely different names! wtf?
 		//TCHAR* name = skin->GetBoneName(i);
 		INode* boneNode = skin->GetBone(i);
-		TCHAR* nodeName = boneNode->GetName();
-		uint index = GetBoneIndex(nodeName);
-		if (index != -1) boneIndices.Expand() = index;
+		String nodeName (boneNode->GetName());
+		maxToMyBoneIndex.Expand() = nodeName.Contains("Ignore Me") ? -1 : GetBoneIndex(nodeName);
 	}
 
 	// Apparently parity determines whether the indices are clockwise or counter-clockwise
@@ -673,11 +689,11 @@ void R5MaxExporter::_FillMultiMesh ( MultiMesh&			myMultiMesh,
 
 					for (int i = 0; i < influences; ++i)
 					{
-						int assigned = skinData->GetAssignedBone (maxIndex, i);
-						float weight = skinData->GetBoneWeight   (maxIndex, i);
+						int maxBoneIndex = skinData->GetAssignedBone(maxIndex, i);
+						float weight = skinData->GetBoneWeight(maxIndex, i);
 
-						uint boneIndex = boneIndices[assigned];
-						vertex.AddBoneWeight(boneIndex, weight);
+						uint myBoneIndex = maxToMyBoneIndex[maxBoneIndex];
+						if (myBoneIndex != -1) vertex.AddBoneWeight(myBoneIndex, weight);
 					}
 
 					// Normalize all bone weights, just in case they don't equal a combined value of 1
@@ -849,7 +865,7 @@ void AppendKeys (Array<int>& keyTimes, ::Animatable* ctrl)
 // Exports keys relying on Max to tell us when those keys should be
 //============================================================================================================
 
-void R5MaxExporter::_ExportKeys( Bone* bone, ::INode* node, ::INode* parent, ::Interval interval )
+void R5MaxExporter::_ExportKeys (Bone* bone, ::INode* node, ::INode* parent, ::Interval interval)
 {
 	Array<int> posTimes;
 	Array<int> rotTimes;
@@ -953,8 +969,22 @@ void R5MaxExporter::ExportBone ( ::INode* node, ::Interval interval, bool isBipe
 	::Control* control = node->GetTMController();
 	if (control == 0) return;
 
+	String name (node->GetName());
+
+	if (name.EndsWith("Thigh"))
+	{
+		// Thighs should be parented to the biped's root instead of the spine
+		if (parent->GetParentNode() != 0) parent = parent->GetParentNode();
+		if (parent->GetParentNode() != 0) parent = parent->GetParentNode();
+	}
+	else if (name.EndsWith("Spine") || name.EndsWith("Clavicle"))
+	{
+		// Spine should be attached to the root node, and shoulders should be attached to spine, not neck
+		if (parent->GetParentNode() != 0) parent = parent->GetParentNode();
+	}
+
 	// Get the bone we're working with
-	Bone* bone = GetBone( node->GetName() );
+	Bone* bone = GetBone(name);
 
 	// Save the bone's parent
 	bone->mParent = (!isBipedRoot && IsBone(parent) ? GetBoneIndex( parent->GetName() ) : -1);
@@ -1157,7 +1187,9 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				// Save all position keyframes if they are present
 				if (bone.mPosKeys.IsValid())
 				{
-					posNode.AddChild("Smooth", bone.mSpline && g_config.mSmoothPos);
+					uint method = bone.mInterpolation;
+					if (g_config.mPosMethod < method) method = g_config.mPosMethod;
+					posNode.AddChild("Interpolation", (method == 2 ? "Spline" : (method == 1 ? "Linear" : "None")));
 
 					Array<ushort>& frames = posNode.AddChild("Frames").mValue.ToUShortArray();
 					Array<Vector3f>& values = posNode.AddChild("Values").mValue.ToVector3fArray();
@@ -1173,7 +1205,9 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 				// Same with the rotation keyframes
 				if (bone.mRotKeys.IsValid())
 				{
-					rotNode.AddChild("Smooth", bone.mSpline && g_config.mSmoothRot);
+					uint method = bone.mInterpolation;
+					if (g_config.mRotMethod < method) method = g_config.mRotMethod;
+					rotNode.AddChild("Interpolation", (method == 2 ? "Spline" : (method == 1 ? "Linear" : "None")));
 
 					Array<ushort>& frames = rotNode.AddChild("Frames").mValue.ToUShortArray();
 					Array<Quaternion>& values = rotNode.AddChild("Values").mValue.ToQuaternionArray();

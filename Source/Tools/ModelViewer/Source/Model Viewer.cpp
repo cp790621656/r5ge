@@ -324,6 +324,9 @@ R5_MAIN_FUNCTION
 	System::SetCurrentPath("../../../");
 #endif
 	System::SetCurrentPath("../../../Resources/");
+#ifdef _DEBUG
+	System::SetCurrentPath("../../DotC/Resources/");
+#endif
 	ModelViewer app;
 	app.Run();
 	return 0;

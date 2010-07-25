@@ -69,7 +69,7 @@ public:
 		Quaternion		mRot;
 		PosKeys			mPosKeys;
 		RotKeys			mRotKeys;
-		bool			mSpline;
+		byte			mInterpolation;
 		bool			mIsUsed;
 	};
 
@@ -137,7 +137,7 @@ protected:
 	void Release();
 
 	Bone*			GetBone		(unsigned int index);
-	Bone*			GetBone		(const String& name);
+	Bone*			GetBone		(const String& name, bool createIfMissing = true);
 	unsigned int	GetBoneIndex(const String& name);
 	Limb*			GetLimb		(const String& name)	{ return mLimbs.AddUnique(name); }
 	Mesh*			GetMesh		(const String& name)	{ return mMeshes.AddUnique(name); }
@@ -168,7 +168,7 @@ public:
 	virtual const char*		CopyrightMessage()		{ return "Copyright (c) 2007-2010 Michael Lyashenko"; }
 	virtual const char*		OtherMessage1()			{ return "";  }
 	virtual const char*		OtherMessage2()			{ return "";  }
-	virtual unsigned int	Version()				{ return 250; }
+	virtual unsigned int	Version()				{ return 270; }
 	virtual void			ShowAbout(HWND hWnd)	{ Thread::MessageWindow("R5 Engine 3ds Max Exporter: Please visit [www.nextrevision.com] for more information."); }
 
 	virtual int SupportsOptions (int ext, unsigned long options) { return 0; }

@@ -64,6 +64,8 @@ struct Quaternion
 																  y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
 																  z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
 																  w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z; }
+	// Inverted version of the quaternion
+	Quaternion Inverse() const									{ Quaternion q (*this); q.Invert(); return q; }
 
 	// Sets the quaternion from Pitch (X), Roll (Y), and Yaw (Z) rotations specified in radians
 	void SetFromEuler (const Vector3f& rad);

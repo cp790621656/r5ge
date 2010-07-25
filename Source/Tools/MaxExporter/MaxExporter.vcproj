@@ -90,7 +90,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /y &quot;$(TargetDir)\R5_$(ProjectName).gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 9\plugins&quot;&#x0D;&#x0A;copy /y &quot;$(IntDir)\R5_$(ProjectName).pdb&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 2010\plugins&quot;&#x0D;&#x0A;"
+				CommandLine="copy /y &quot;$(TargetDir)\R5_$(ProjectName).gup&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 2010\plugins&quot;&#x0D;&#x0A;copy /y &quot;$(IntDir)\R5_$(ProjectName).pdb&quot; &quot;C:\Program Files (x86)\Autodesk\3ds Max 2010\plugins&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
