@@ -81,6 +81,8 @@ void Quaternion::SetFromEuler (const Vector3f& rad)
 	y = zz * sinx + yy * cosx;
 	z = zz * cosx - yy * sinx;
 	w = ww * cosx - xx * sinx;
+
+	Normalize();
 }
 
 //============================================================================================================

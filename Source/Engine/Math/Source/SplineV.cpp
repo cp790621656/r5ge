@@ -76,7 +76,7 @@ void SplineV::Smoothen()
 // Sample the spline at the given time
 //============================================================================================================
 
-Vector3f SplineV::Sample (float time, bool smooth) const
+Vector3f SplineV::Sample (float time, byte smoothness) const
 {
 	// No point in proceeding if there is nothing available
 	if (mCp.IsValid())
@@ -88,7 +88,7 @@ Vector3f SplineV::Sample (float time, bool smooth) const
 			if (time < mCp.Back().mTime)
 			{
 				// Smoothen the spline if it hasn't been done yet
-				if (!mIsSmooth) ((SplineV*)this)->Smoothen();
+				if (smoothness == 2 && !mIsSmooth) ((SplineV*)this)->Smoothen();
 
 				// Start at the last sampled keyframe if we're sampling forward
 				uint current = (mLastSample > time) ? 0 : mLastIndex;
@@ -108,15 +108,20 @@ Vector3f SplineV::Sample (float time, bool smooth) const
 						// Remember the current location
 						mLastIndex = current - 1;
 
+						// No interpolation
+						if (smoothness == 0) return key.mVal;
+
 						float duration (next.mTime - key.mTime);
 						float factor   ((time - key.mTime) / duration);
 
-						if (smooth)
+						if (smoothness == 2)
 						{
+							// Spline interpolation
 							return Interpolation::Hermite(	key.mVal,	next.mVal,
 															key.mTan,	next.mTan,
 															factor,		duration );
 						}
+						// Linear interpolation
 						return Interpolation::Linear(key.mVal, next.mVal, factor);
 					}
 				}

@@ -16,10 +16,19 @@ bool ParsePositionFrames (Bone& bone, const TreeNode& root)
 		const String&	tag		= node.mTag;
 		const Variable& value	= node.mValue;
 
-		if (tag == "Smooth")
+		if (tag == "Interpolation")
 		{
+			const String& s = value.AsString();
+
+			if		(s == "Spline")	bone.SetPositionInterpolation(2);
+			else if	(s == "Linear") bone.SetPositionInterpolation(1);
+			else if (s == "None")	bone.SetPositionInterpolation(0);
+		}
+		else if (tag == "Smooth")
+		{
+			// Deprecated functionality -- use the "Interpolation" property instead
 			bool val;
-			if (value >> val) bone.SetUseSplinesForPositions(val);
+			if (value >> val) bone.SetPositionInterpolation(val ? 2 : 1);
 		}
 		else if (tag == "Frames")
 		{
@@ -68,10 +77,19 @@ bool ParseRotationFrames (Bone& bone, const TreeNode& root)
 		const String&	tag		= node.mTag;
 		const Variable& value	= node.mValue;
 
-		if (tag == "Smooth")
+		if (tag == "Interpolation")
 		{
+			const String& s = value.AsString();
+
+			if		(s == "Spline")	bone.SetRotationInterpolation(2);
+			else if	(s == "Linear") bone.SetRotationInterpolation(1);
+			else if (s == "None")	bone.SetRotationInterpolation(0);
+		}
+		else if (tag == "Smooth")
+		{
+			// Deprecated functionality -- use the "Interpolation" property instead
 			bool val;
-			if (value >> val) bone.SetUseSplinesForRotations(val);
+			if (value >> val) bone.SetRotationInterpolation(val ? 2 : 1);
 		}
 		else if (tag == "Frames")
 		{
@@ -97,6 +115,7 @@ bool ParseRotationFrames (Bone& bone, const TreeNode& root)
 			{
 				Bone::RotKey* key = bone.GetRotKey((*keys)[i], true);
 				key->mRot = (*values)[i];
+				key->mRot.Normalize();
 			}
 			return true;
 		}
@@ -252,6 +271,7 @@ bool Bone::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		else if (tag == "Rotation")
 		{
 			value >> mRot;
+			mRot.Normalize();
 			if (node.HasChildren()) ParseRotationFrames(*this, node);
 		}
 	}
@@ -274,7 +294,7 @@ bool Bone::SerializeTo (TreeNode& node) const
 
 	if (mPosKeys.IsValid())
 	{
-		pos.AddChild("Smooth", mSmoothPos);
+		pos.AddChild("Interpolation", (mSmoothPos == 2 ? "Spline" : (mSmoothPos == 1 ? "Linear" : "None")));
 
 		Array<ushort>& frames = pos.AddChild("Frames").mValue.ToUShortArray();
 		Array<Vector3f>& values = pos.AddChild("Values").mValue.ToVector3fArray();
@@ -289,7 +309,7 @@ bool Bone::SerializeTo (TreeNode& node) const
 
 	if (mRotKeys.IsValid())
 	{
-		rot.AddChild("Smooth", mSmoothRot);
+		rot.AddChild("Interpolation", (mSmoothRot == 2 ? "Spline" : (mSmoothRot == 1 ? "Linear" : "None")));
 
 		Array<ushort>& frames = rot.AddChild("Frames").mValue.ToUShortArray();
 		Array<Quaternion>& values = rot.AddChild("Values").mValue.ToQuaternionArray();

@@ -16,10 +16,10 @@ public:
 	{
 		SplineV	mSplineV;		// Position spline with time keys in 0 to 1 range
 		SplineQ	mSplineQ;		// Rotation spline
-		bool	mSmoothV;		// Whether to use spline interpolation for positions or not
-		bool	mSmoothQ;		// Same as above, but for rotation
+		byte	mSmoothV;		// Method of interpolation for positions
+		byte	mSmoothQ;		// Method of interpolation for rotations
 
-		AnimatedBone() : mSmoothV(false), mSmoothQ(false) {}
+		AnimatedBone() : mSmoothV(2), mSmoothQ(2) {}
 	};
 
 	typedef Array<AnimatedBone>	AnimatedBones;

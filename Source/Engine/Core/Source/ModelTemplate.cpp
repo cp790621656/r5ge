@@ -297,7 +297,10 @@ void ModelTemplate::SerializeTo	(TreeNode& root, bool forceSave) const
 		}
 
 		// Save the limbs
-		_SaveLimbs(node, false);
+		_SaveLimbs(node, forceSave);
+
+		// Save the OnSerialize section
+		if (forceSave && mOnSerialize.HasChildren()) node.mChildren.Expand() = mOnSerialize;
 
 		// If we don't have anything to save, don't bother leaving an empty entry
 		if (node.mChildren.GetSize() == 1 &&

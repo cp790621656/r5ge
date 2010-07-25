@@ -61,6 +61,6 @@ public:
 	// Calculates all tangents and rotational control points
 	void Smoothen();
 
-	// Sample the spline at the given time
-	Quaternion Sample (float time, bool smooth = true) const;
+	// Sample the spline at the given time. Smoothness 0 = no interpolation, 1 = linear, 2 = spline
+	Quaternion Sample (float time, byte smoothness = 2) const;
 };

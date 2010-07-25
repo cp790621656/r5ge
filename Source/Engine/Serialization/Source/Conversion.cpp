@@ -197,7 +197,7 @@ bool operator >> (const String& s, Color4ub& c)
 
 bool operator >> (const String& s, Quaternion& q)
 {
-	if ( s.IsValid() )
+	if (s.IsValid())
 	{
 		if (sscanf(s, "%f %f %f %f", &q.x, &q.y, &q.z, &q.w) == 4)
 		{

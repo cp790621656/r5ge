@@ -102,8 +102,8 @@ void Animation::Fill (const Bones& bones)
 
 					// Whether we're going to be using spline-based interpolation
 					AnimatedBone& animBone = mBones[i];
-					animBone.mSmoothV = bone->IsUsingSplinesForPositions();
-					animBone.mSmoothQ = bone->IsUsingSplinesForRotations();
+					animBone.mSmoothV = bone->GetPositionInterpolation();
+					animBone.mSmoothQ = bone->GetRotationInterpolation();
 
 					// If we have a root bone for this animation and this bone is not attached to it, skip it
 					if (mRootIndex != -1 && !IsLinkedTo(i, mRootIndex, bones)) continue;
@@ -112,12 +112,40 @@ void Animation::Fill (const Bones& bones)
 					for (uint b = 0; b < posKeys.GetSize(); ++b)
 					{
 						const Bone::PosKey& key = posKeys[b];
+
+						// If we have not yet reached the end of this animation, keep going
 						if (key.mFrame < start) continue;
-						if (key.mFrame > end  ) break;
+
+						// If we've passed the end of this animation
+						if (key.mFrame > end)
+						{
+							if (animBone.mSplineV.IsEmpty())
+							{
+								// Ensure that the spline has something in it so that the bone is not ignored
+								animBone.mSplineV.AddKey(0.0f, (b > 0) ? key.mPos : bone->GetPosition());
+							}
+							else if (!mLoop)
+							{
+								// If there is no key at the final timestamp, add this key instead
+								float t = invLength * ((float)key.mFrame - start);
+								animBone.mSplineV.AddKey(t, key.mPos);
+							}
+							break;
+						}
+
+						// If this is the first valid frame, and we've passed the start, add the previous frame
+						if (animBone.mSplineV.IsEmpty() && (key.mFrame > start) && (b > 0))
+						{
+							const Bone::PosKey& prev = posKeys[b-1];
+							animBone.mSplineV.AddKey(invLength * ((float)prev.mFrame - start), prev.mPos);
+						}
 
 						// Relative time position of this keyframe in 0 to 1 range
-						float time = Float::Clamp( invLength * (key.mFrame - start), 0.0f, 1.0f );
+						float time = invLength * ((float)key.mFrame - start);
 						animBone.mSplineV.AddKey(time, key.mPos);
+
+						// If we've reached the end, we're done
+						if (key.mFrame == end) break;
 					}
 
 					// Repeat the process with all rotation keys
@@ -125,11 +153,36 @@ void Animation::Fill (const Bones& bones)
 					{
 						const Bone::RotKey& key = rotKeys[b];
 						if (key.mFrame < start) continue;
-						if (key.mFrame > end  ) break;
+
+						// If we've passed the end of this animation
+						if (key.mFrame > end)
+						{
+							if (animBone.mSplineQ.IsEmpty())
+							{
+								// Ensure that the spline has something in it so that the bone is not ignored
+								animBone.mSplineQ.AddKey(0.0f, (b > 0) ? key.mRot : bone->GetRotation());
+							}
+							else if (!mLoop)
+							{
+								// If there is no key at the final timestamp, add this key instead
+								animBone.mSplineQ.AddKey(invLength * ((float)key.mFrame - start), key.mRot);
+							}
+							break;
+						}
+
+						// If this is the first valid frame, and we've passed the start, add the previous frame
+						if (animBone.mSplineQ.IsEmpty() && (key.mFrame > start) && (b > 0))
+						{
+							const Bone::RotKey& prev = rotKeys[b-1];
+							animBone.mSplineQ.AddKey(invLength * ((float)prev.mFrame - start), prev.mRot);
+						}
 
 						// Relative time position of this keyframe in 0 to 1 range
 						float time = Float::Clamp( invLength * (key.mFrame - start), 0.0f, 1.0f );
 						animBone.mSplineQ.AddKey(time, key.mRot);
+
+						// If we've reached the end, we're done
+						if (key.mFrame == end) break;
 					}
 				}
 
@@ -179,6 +232,7 @@ uint Animation::Sample (uint boneIndex, float time, Vector3f& pos, Quaternion& r
 		retVal |= 0x1;
 		pos = ab.mSplineV.Sample(time, ab.mSmoothV);
 	}
+
 	if (ab.mSplineQ.IsValid())
 	{
 		retVal |= 0x2;

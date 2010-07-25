@@ -7,7 +7,7 @@ using namespace R5;
 
 void Animatable::SetTime (float val)
 {
-	if (!mSplineV.IsEmpty()) SetRelativePosition( mSplineV.Sample(val, false) );
-	if (!mSplineQ.IsEmpty()) SetRelativeRotation( mSplineQ.Sample(val, false) );
-	if (!mSplineF.IsEmpty()) SetRelativeScale	( mSplineF.Sample(val, false) );
+	if (!mSplineV.IsEmpty()) SetRelativePosition( mSplineV.Sample(val) );
+	if (!mSplineQ.IsEmpty()) SetRelativeRotation( mSplineQ.Sample(val) );
+	if (!mSplineF.IsEmpty()) SetRelativeScale	( mSplineF.Sample(val) );
 }

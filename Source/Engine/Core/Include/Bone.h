@@ -38,8 +38,8 @@ private:
 	Quaternion	mRot;		// Original rotation
 	PosKeys		mPosKeys;	// Position keys
 	RotKeys		mRotKeys;	// Rotation keys
-	bool		mSmoothPos;	// Whether to use spline interpolation for positions
-	bool		mSmoothRot;	// Whether to use spline interpolation for rotations
+	byte		mSmoothPos;	// Method of interpolation between position keyframes
+	byte		mSmoothRot;	// Method of interpolation between rotation keyframes
 
 public:
 
@@ -54,11 +54,11 @@ public:
 	void SetPosition	(const Vector3f& v)			{ mPos		= v;	}
 	void SetRotation	(const Quaternion& q)		{ mRot		= q;	}
 	
-	void SetUseSplinesForPositions	(bool val)		{ mSmoothPos = val;	}
-	void SetUseSplinesForRotations	(bool val)		{ mSmoothRot = val;	}
+	void SetPositionInterpolation	(byte val)		{ mSmoothPos = val;	}
+	void SetRotationInterpolation	(byte val)		{ mSmoothRot = val;	}
 
-	bool IsUsingSplinesForPositions() const			{ return mSmoothPos;}
-	bool IsUsingSplinesForRotations() const			{ return mSmoothRot;}
+	byte GetPositionInterpolation() const			{ return mSmoothPos;}
+	byte GetRotationInterpolation() const			{ return mSmoothRot;}
 
 	uint				GetParent()		const		{ return mParent;	}
 	const String&		GetName()		const		{ return mName;		}

@@ -112,7 +112,7 @@ void SplineQ::Smoothen()
 // Sample the spline at the given time
 //============================================================================================================
 
-Quaternion SplineQ::Sample (float time, bool smooth) const
+Quaternion SplineQ::Sample (float time, byte smoothness) const
 {
 	// No point in proceeding if there is nothing available
 	if (mCp.IsValid())
@@ -124,7 +124,7 @@ Quaternion SplineQ::Sample (float time, bool smooth) const
 			if (time < mCp.Back().mTime)
 			{
 				// Smoothen the spline if it hasn't been done yet
-				if (!mIsSmooth) ((SplineQ*)this)->Smoothen();
+				if (smoothness == 2 && !mIsSmooth) ((SplineQ*)this)->Smoothen();
 
 				// Start at the last sampled keyframe if we're sampling forward
 				uint current = (mLastSample > time) ? 0 : mLastIndex;
@@ -144,17 +144,21 @@ Quaternion SplineQ::Sample (float time, bool smooth) const
 						// Remember the current location
 						mLastIndex = current - 1;
 
+						// No interpolation
+						if (smoothness == 0) return key.mVal;
+
 						float duration (next.mTime - key.mTime);
 						float factor   ((time - key.mTime) / duration);
 
-						if (smooth)
+						if (smoothness == 2)
 						{
+							// Spline interpolation
 							factor = Interpolation::Hermite(key.mTan, next.mTan, factor, duration);
-
 							return Interpolation::Squad(key.mVal,	next.mVal,
 														key.mCp,	next.mCp,
 														factor );
 						}
+						// Linear interpolation
 						return Interpolation::Slerp(key.mVal, next.mVal, factor);
 					}
 				}
