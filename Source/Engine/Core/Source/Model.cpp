@@ -67,10 +67,11 @@ void Model::Update()
 				for (uint i = mAnimLayers.GetSize(); i > 0; )
 				{
 					// Get the list of animations playing on the current layer
-					AnimationLayer& animLayer = mAnimLayers[--i];
-					PlayingAnims& playingAnims = animLayer.mPlayingAnims;
+					AnimationLayer* animLayer = mAnimLayers[--i];
+					if (animLayer == 0) continue;
 
 					// Skip this layer if it has no animations
+					PlayingAnims& playingAnims = animLayer->mPlayingAnims;
 					if (playingAnims.IsEmpty()) continue;
 
 					float remain = 1.0f, total = 0.0f;
@@ -346,21 +347,30 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 
 Model::PlayingAnims* Model::_GetPlayingAnims (uint layer)
 {
+	PlayingAnims* retVal (0);
+
 	// Try to see if the layer already exists
 	for (uint i = mAnimLayers.GetSize(); i > 0; )
 	{
-		AnimationLayer& animLayer = mAnimLayers[--i];
+		AnimationLayer* animLayer = mAnimLayers[--i];
 
-		if (animLayer.mLayer == layer)
+		if (animLayer != 0 && animLayer->mLayer == layer)
 		{
-			return &animLayer.mPlayingAnims;
+			retVal = &animLayer->mPlayingAnims;
+			break;
 		}
 	}
 
 	// The layer doesn't exist just yet -- add a new entry
-	AnimationLayer al;
-	al.mLayer = layer;
-	return &mAnimLayers[mAnimLayers.AddSorted(al)].mPlayingAnims;
+	if (retVal == 0)
+	{
+		AnimationLayer* al = new AnimationLayer();
+		al->mLayer = layer;
+		mAnimLayers.Expand() = al;
+		mAnimLayers.Sort();
+		retVal = &al->mPlayingAnims;
+	}
+	return retVal;
 }
 
 //============================================================================================================
@@ -421,11 +431,11 @@ bool Model::_StopCoveringAnimations (uint layer, const Animation* anim, float du
 
 	for (uint i = mAnimLayers.GetSize(); i > 0; )
 	{
-		AnimationLayer& animLayer = mAnimLayers[--i];
+		AnimationLayer* animLayer = mAnimLayers[--i];
 
-		if (animLayer.mLayer == layer)
+		if (animLayer != 0 && animLayer->mLayer == layer)
 		{
-			PlayingAnims& list = animLayer.mPlayingAnims;
+			PlayingAnims& list = animLayer->mPlayingAnims;
 
 			if (list.IsValid())
 			{
@@ -541,15 +551,25 @@ void Model::_OnRelease()
 
 bool Model::IsAnimated() const
 {
+	bool retVal (false);
+
 	if (mSkeleton != 0)
 	{
+		Lock();
+
 		for (uint i = mAnimLayers.GetSize(); i > 0; )
 		{
-			const AnimationLayer& layer = mAnimLayers[--i];
-			if (layer.mPlayingAnims.IsValid()) return true;
+			const AnimationLayer* layer = mAnimLayers[--i];
+
+			if (layer->mPlayingAnims.IsValid())
+			{
+				retVal = true;
+				break;
+			}
 		}
+		Unlock();
 	}
-	return false;
+	return retVal;
 }
 
 //============================================================================================================
@@ -558,14 +578,15 @@ bool Model::IsAnimated() const
 
 const BoneTransform* Model::GetBoneTransform (uint index) const
 {
+	const BoneTransform* retVal (0);
+
 	if (mSkeleton != 0)
 	{
-		if (index < mTransforms.GetSize())
-		{
-			return &mTransforms[index];
-		}
+		Lock();
+		if (index < mTransforms.GetSize()) retVal = &mTransforms[index];
+		Unlock();
 	}
-	return 0;
+	return retVal;
 }
 
 //============================================================================================================
@@ -574,16 +595,18 @@ const BoneTransform* Model::GetBoneTransform (uint index) const
 
 const BoneTransform* Model::GetBoneTransform (const String& name) const
 {
+	const BoneTransform* retVal (0);
+
 	if (mSkeleton != 0)
 	{
-		uint index = mSkeleton->GetBoneIndex(name);
-
-		if (index < mTransforms.GetSize())
+		Lock();
 		{
-			return &mTransforms[index];
+			uint index = mSkeleton->GetBoneIndex(name);
+			if (index < mTransforms.GetSize()) retVal = &mTransforms[index];
 		}
+		Unlock();
 	}
-	return 0;
+	return retVal;
 }
 
 //============================================================================================================
@@ -731,11 +754,11 @@ bool Model::StopAnimation (const Animation* anim, float duration, const Animatio
 	{
 		Lock();
 		{
-			for (uint i = mAnimLayers.GetSize(); i > 0; )
+			FOREACH(i, mAnimLayers)
 			{
-				PlayingAnims& playingAnims = mAnimLayers[--i].mPlayingAnims;
+				AnimationLayer* layer = mAnimLayers[i];
 
-				if (_StopAnimation(playingAnims, anim, duration, onAnimEnd))
+				if (layer != 0 && _StopAnimation(layer->mPlayingAnims, anim, duration, onAnimEnd))
 				{
 					retVal = true;
 					break;
@@ -759,14 +782,13 @@ bool Model::StopAnimationsOnLayer (uint animationLayer, float duration, const An
 	{
 		Lock();
 		{
-			for (uint i = mAnimLayers.GetSize(); i > 0; )
+			FOREACH(i, mAnimLayers)
 			{
-				AnimationLayer& layer = mAnimLayers[--i];
+				AnimationLayer* layer = mAnimLayers[i];
 
-				if (layer.mLayer == animationLayer)
+				if (layer != 0 && layer->mLayer == animationLayer)
 				{
-					PlayingAnims& playingAnims = layer.mPlayingAnims;
-					retVal = _StopAnimation(playingAnims, 0, duration, onAnimEnd);
+					retVal = _StopAnimation(layer->mPlayingAnims, 0, duration, onAnimEnd);
 					break;
 				}
 			}
@@ -788,11 +810,11 @@ bool Model::StopAllAnimations (float duration, const AnimationEnd& onAnimEnd)
 	{
 		Lock();
 		{
-			for (uint i = mAnimLayers.GetSize(); i > 0; )
+			FOREACH(i, mAnimLayers)
 			{
-				PlayingAnims& playingAnims = mAnimLayers[--i].mPlayingAnims;
+				AnimationLayer* layer = mAnimLayers[i];
 
-				if (_StopAnimation(playingAnims, 0, duration, onAnimEnd))
+				if (layer != 0 && _StopAnimation(layer->mPlayingAnims, 0, duration, onAnimEnd))
 				{
 					retVal = true;
 				}

@@ -38,6 +38,8 @@ protected:
 	{
 		ActiveAnimation*	mActiveAnim;
 		AnimationEnd		mOnEnd;
+
+		PlayingAnimation() : mActiveAnim(0) {}
 	};
 
 	typedef Array<PlayingAnimation> PlayingAnims;
@@ -54,7 +56,7 @@ protected:
 		bool operator < (const AnimationLayer& a) const { return mLayer < a.mLayer; }
 	};
 
-	typedef Array<AnimationLayer> AnimLayers;
+	typedef PointerArray<AnimationLayer> AnimLayers;
 
 protected:
 

@@ -88,7 +88,9 @@ Animation* Skeleton::GetAnimation (uint animID)
 
 	if (index < mAnims.GetSize())
 	{
+		mAnims.Lock();
 		Animation* anim = mAnims[index];
+		mAnims.Unlock();
 		if (anim != 0 && anim->GetID() == animID) return anim;
 	}
 	return 0;
