@@ -31,6 +31,7 @@ public:
 
 	inline void				Lock()					const	{ mLock.Lock();	}
 	inline void				Unlock()				const	{ mLock.Unlock();	}
+	inline bool				IsValid()				const	{ return mKeys.IsValid(); }
 	inline uint				GetNumberOfIndices()	const	{ return mIndices.GetSize(); }
 	inline const Keys&		GetAllKeys()			const	{ return mKeys;	}
 	inline const Values&	GetAllValues()			const	{ return mValues;	}
