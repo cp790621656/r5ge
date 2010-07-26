@@ -309,8 +309,8 @@ void GLTexture::_CheckForSource()
 			if		(source.Contains("_Alpha") ||
 					 source.Contains("_Glow"))		mRequestedFormat = Format::Alpha;
 			else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
-			else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
 			else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;
+			else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
 			else if (source.Contains("_DXT3"))		mRequestedFormat = Format::DXT3;
 			else if (source.Contains("_DXT5"))		mRequestedFormat = Format::DXT5;
 			else if (mSize.x > 128 || mSize.y > 128)
