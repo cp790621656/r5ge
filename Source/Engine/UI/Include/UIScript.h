@@ -77,6 +77,6 @@ public:
 	virtual void OnStateChange	(uint state, bool isSet)						{}
 	virtual void OnValueChange	()												{}
 	virtual void OnUpdate		(bool areaChanged)								{}
-	virtual void OnSerializeTo	(TreeNode& node) const							{}
-	virtual void OnSerializeFrom(const TreeNode& root)							{}
+	virtual void OnSerializeTo	(TreeNode& root) const							{}
+	virtual void OnSerializeFrom(const TreeNode& node)							{}
 };

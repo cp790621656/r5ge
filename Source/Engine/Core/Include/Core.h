@@ -37,6 +37,7 @@ protected:
 	Models			mModels;			// Managed array of instantiable models
 	Array<String>	mExecuted;			// Executed resources, for serialization purposes
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
+	uint			mFullDraw;			// How many times in a row the scene has been drawn fully (up to 10)
 
 public:
 
@@ -92,8 +93,14 @@ public:
 	Skeleton*		GetSkeleton		(const String& name, bool createIfMissing = true);
 	ModelTemplate*	GetModelTemplate(const String& name, bool createIfMissing = true);
 
-	// Whether Core is currently executing one or more scripts
-	bool IsExecuting() const;
+	// Number of threads currently being executed in the background
+	uint CountExecutingThreads() const;
+
+	// Whether we're in a UI-only mode where the scene is not being processed
+	bool IsInUIOnlyMode() const { return mFullDraw < 3 || !mRoot.GetFlag(Object::Flag::Enabled); }
+
+	// UI-only mode can be used to draw the UI while the scene is loading in the background
+	void SetUIOnlyMode (bool val) { mRoot.SetFlag(Object::Flag::Enabled, !val); }
 
 	// It's useful to know the current key states
 	bool IsKeyDown (byte key) { return mIsKeyDown[key]; }

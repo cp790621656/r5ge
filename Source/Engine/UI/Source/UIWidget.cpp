@@ -610,7 +610,14 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 			else if (tag == UIScript::ClassID())
 			{
 				UIScript* script = _AddScript(value.AsString());
-				if (script != 0) script->OnSerializeFrom(node);
+
+				if (script != 0)
+				{
+					FOREACH(b, node.mChildren)
+					{
+						script->OnSerializeFrom(node.mChildren[b]);
+					}
+				}
 			}
 			else if (!OnSerializeFrom(node))
 			{

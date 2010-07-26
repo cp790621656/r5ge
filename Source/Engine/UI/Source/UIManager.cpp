@@ -582,7 +582,9 @@ bool UIManager::SerializeFrom (const TreeNode& root, bool threadSafe)
 
 			if (tag == "UI")
 			{
-				return SerializeFrom(node, false);
+				SerializeFrom(node, false);
+				if (threadSafe) Unlock();
+				return true;
 			}
 			else if (tag == "Default Skin")
 			{
@@ -608,6 +610,10 @@ bool UIManager::SerializeFrom (const TreeNode& root, bool threadSafe)
 				mRoot.SerializeFrom(node);
 			}
 		}
+
+		// Update the UI right away
+		mRoot.Update(mSize, mDimsChanged);
+		mDimsChanged = false;
 	}
 	if (threadSafe) Unlock();
 	return true;

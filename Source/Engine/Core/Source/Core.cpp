@@ -16,7 +16,6 @@ R5_THREAD_FUNCTION(WorkerThread, ptr)
 {
 	if (g_core)
 	{
-		Thread::Increment( g_threadCount );
 		Resource* resource = (Resource*)ptr;
 
 #ifdef _DEBUG
@@ -44,7 +43,7 @@ R5_THREAD_FUNCTION(WorkerThread, ptr)
 //============================================================================================================
 
 Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio) :
-	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
+	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio), mFullDraw(0)
 {
 	Init();
 }
@@ -52,7 +51,7 @@ Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio) :
 //============================================================================================================
 
 Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio, Scene& scene) :
-	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio)
+	mWin(window), mGraphics(graphics), mUI(gui), mAudio(audio), mFullDraw(0)
 {
 	Init();
 	scene.SetRoot(&mRoot);
@@ -162,18 +161,27 @@ bool Core::Update()
 		// Do not update anything unless some time has passed
 		if (mIsDirty)
 		{
+			if (mFullDraw < 10) ++mFullDraw;
 			mIsDirty = false;
 
-			// Update all props and models
-			mModels.Lock();
+			// If the root object is enabled, update all models
+			if (mRoot.GetFlag(Object::Flag::Enabled))
 			{
-				for (uint i = mModels.GetSize(); i > 0; )
+				// Update all props and models
+				mModels.Lock();
 				{
-					Model* model = mModels[--i];
-					if (model != 0) model->Update();
+					for (uint i = mModels.GetSize(); i > 0; )
+					{
+						Model* model = mModels[--i];
+						if (model != 0) model->Update();
+					}
 				}
+				mModels.Unlock();
 			}
-			mModels.Unlock();
+			else
+			{
+				mFullDraw = 0;
+			}
 
 			// Pre-update callbacks
 			mPreList.Execute();
@@ -182,6 +190,10 @@ bool Core::Update()
 			if (mRoot.GetFlag(Object::Flag::Enabled))
 			{
 				mRoot.Update(Vector3f(), Quaternion(), 1.0f, false);
+			}
+			else
+			{
+				mFullDraw = 0;
 			}
 
 			// Post-update callbacks
@@ -202,7 +214,12 @@ bool Core::Update()
 			if (mGraphics != 0)	mGraphics->BeginFrame();
 
 			// Trigger all registered draw callbacks
-			if (!HandleOnDraw()) mGraphics->Clear();
+			if (!mRoot.GetFlag(Object::Flag::Enabled) || !HandleOnDraw())
+			{
+				mFullDraw = 0;
+				mGraphics->SetActiveRenderTarget(0);
+				mGraphics->Clear();
+			}
 
 			// Draw the UI after everything else
 			if (mUI != 0) mUI->Draw();
@@ -324,10 +341,7 @@ ModelTemplate* Core::GetModelTemplate (const String& name, bool createIfMissing)
 // Whether Core is currently executing one or more scripts
 //============================================================================================================
 
-bool Core::IsExecuting() const
-{
-	return (g_threadCount != 0);
-}
+uint Core::CountExecutingThreads() const { return g_threadCount; }
 
 //============================================================================================================
 // Load the specified file
@@ -640,6 +654,7 @@ bool Core::SerializeFrom (const String& file, bool separateThread)
 	if (res->IsValid())
 	{
 #ifndef R5_MEMORY_TEST
+		Thread::Increment( g_threadCount );
 		if (separateThread) Thread::Create(WorkerThread, res);
 		else
 #endif
