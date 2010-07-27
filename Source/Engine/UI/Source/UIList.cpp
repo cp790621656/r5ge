@@ -59,16 +59,19 @@ bool UIList::OnUpdate (bool dimensionsChanged)
 	if (dimensionsChanged && face != 0)
 	{
 		const Vector2i& size = face->GetSize();
-		float ratio  = (float)size.x / size.y;
-		float height = mImage.GetSubRegion().GetCalculatedHeight();
+		float ratio   = (float)size.x / size.y;
+		float height  = mImage.GetSubRegion().GetCalculatedHeight();
+		UIRegion& rgn = mSymbol.GetRegion();
 
 		if (mLabel.GetAlignment() == UILabel::Alignment::Right)
 		{
-			mSymbol.GetRegion().SetRight(0.0f, ratio * height);
+			rgn.SetLeft (0.0f, 0.0f);
+			rgn.SetRight(0.0f, ratio * height);
 		}
 		else
 		{
-			mSymbol.GetRegion().SetLeft(1.0f, -ratio * height);
+			rgn.SetLeft (1.0f, -ratio * height);
+			rgn.SetRight(1.0f, 0.0f);
 		}
 	}
 
