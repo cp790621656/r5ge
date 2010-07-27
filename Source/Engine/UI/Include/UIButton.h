@@ -55,7 +55,7 @@ public:
 	void SetFont		(const IFont* font)		{ mLabel.SetFont(font);				}
 	void SetAlignment	(char alignment)		{ mLabel.SetAlignment(alignment);	}
 	void SetShadow		(bool shadow)			{ mLabel.SetShadow(shadow);			}
-	void SetSticky		(bool val)				{ mSticky = val;					}
+	void SetSticky		(bool val)				{ mSticky = val; if(!val) SetState(State::Pressed, false); }
 	void SetTextPadding	(int padding);
 
 	// Convenience function

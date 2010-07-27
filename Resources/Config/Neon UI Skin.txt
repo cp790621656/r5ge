@@ -86,9 +86,9 @@ Root
 
 			Face = "UICheckbox: Checked"
 			{
-				Position = -1 36
-				Size = 22 22
-				Border = 3
+				Position = 0 37
+				Size = 20 20
+				Border = 2
 			}
 
 			Face = "Bright Area"

@@ -72,7 +72,7 @@ void UICheckbox::OnFill (UIQueue* queue)
 
 bool UICheckbox::OnSerializeFrom (const TreeNode& node)
 {
-	if ( mImage.OnSerializeFrom(node) )
+	if (mImage.OnSerializeFrom(node))
 	{
 		return true;
 	}
@@ -81,15 +81,33 @@ bool UICheckbox::OnSerializeFrom (const TreeNode& node)
 		mPrefix = node.mValue.AsString();
 		return true;
 	}
+	else if (node.mTag == "Text Padding")
+	{
+		int padding (0);
+		if (node.mValue >> padding) SetTextPadding(padding);
+		return true;
+	}
 	else if (node.mTag == "State")
 	{
 		if (node.mValue.IsString())
 		{
 			const String& state = node.mValue.AsString();
 
-			if		(state == "Disabled")	SetState(State::Enabled, false);
-			else if (state == "Checked")	SetState(State::Enabled | State::Checked, true);
-			else if (state == "Enabled")	SetState(State::Enabled, true);
+			if (state == "Disabled")
+			{
+				SetState(State::Enabled, false);
+				SetState(State::Checked, false);
+			}
+			else if (state == "Checked")
+			{
+				SetState(State::Enabled, true);
+				SetState(State::Checked, true);
+			}
+			else if (state == "Enabled")
+			{
+				SetState(State::Enabled, true);
+				SetState(State::Checked, false);
+			}
 		}
 		return true;
 	}
@@ -111,6 +129,12 @@ void UICheckbox::OnSerializeTo (TreeNode& node) const
 
 	// Add the optional prefix if it's different from its default value
 	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
+
+	// Save the background color
+	node.AddChild("Back Color", mImage.GetBackColor());
+
+	// Padding around the text label
+	if (mPadding != 0) node.AddChild("Text Padding", mPadding);
 
 	mLabel.OnSerializeTo(node);
 

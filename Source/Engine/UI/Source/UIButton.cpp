@@ -41,14 +41,13 @@ bool UIButton::SetState (uint state, bool val)
 {
 	uint newState = val ? (mState | state) : (mState & ~state);
 
-	if ( mState != newState )
+	if (mState != newState)
 	{
-		if ( state == State::Pressed && val == false )
-		{
-			mIgnoreMouseKey = false;
-		}
+		if ((state & State::Pressed) != 0 && !val) mIgnoreMouseKey = false;
 
 		mState = newState;
+
+		if (GetSkin() == 0) SetSkin(mUI->GetDefaultSkin());
 
 		const ITexture* tex = mImage.GetTexture();
 		if (tex != 0) OnDirty(tex);
@@ -167,15 +166,18 @@ bool UIButton::OnSerializeFrom (const TreeNode& node)
 			if (state == "Disabled")
 			{
 				SetState(State::Enabled, false);
+				SetState(State::Pressed, false);
 			}
 			else if (state == "Pressed")
 			{
 				SetState(State::Enabled, true);
 				SetState(State::Pressed, true);
+				SetSticky(true);
 			}
 			else if (state == "Enabled")
 			{
 				SetState(State::Enabled, true);
+				SetState(State::Pressed, false);
 			}
 		}
 		return true;
