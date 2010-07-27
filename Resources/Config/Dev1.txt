@@ -47,17 +47,8 @@ Root
 		}
 	}
 
-	UI
-	{
-		Default Skin = "Default"
-		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
-		Layout
-	}
-
 	Core
 	{
-		Execute = "Config/Leo UI Skin.txt"
 		Execute = "Config/Dev1 UI Layout.txt"
 		Execute = "Config/Dev1 Scene.txt"
 	}

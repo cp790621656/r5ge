@@ -3,11 +3,34 @@ using namespace R5;
 
 //============================================================================================================
 
-UIButton::UIButton() : mPrefix(ClassID()), mState(State::Enabled), mSticky(false), mIgnoreMouseKey(false)
+UIButton::UIButton() :
+	mPrefix			(ClassID()),
+	mState			(State::Enabled),
+	mSticky			(false),
+	mIgnoreMouseKey	(false),
+	mPadding		(0)
 {
 	mLabel.SetAlignment(UILabel::Alignment::Center);
 	mImage.SetLayer(0, false);
 	mLabel.SetLayer(1, false);
+}
+
+//============================================================================================================
+// Changes the padding on the sides of the internal text label
+//============================================================================================================
+
+void UIButton::SetTextPadding (int padding)
+{
+	if (mPadding != padding)
+	{
+		mPadding = padding;
+
+		UIRegion& rgn = mLabel.GetRegion();
+		rgn.SetLeft	 (0.0f,  (float)padding);
+		rgn.SetRight (1.0f, -(float)padding);
+		rgn.SetTop	 (0.0f,  (float)padding);
+		rgn.SetBottom(1.0f, -(float)padding);
+	}
 }
 
 //============================================================================================================
@@ -16,7 +39,7 @@ UIButton::UIButton() : mPrefix(ClassID()), mState(State::Enabled), mSticky(false
 
 bool UIButton::SetState (uint state, bool val)
 {
-	uint newState ( val ? (mState | state) : (mState & ~state) );
+	uint newState = val ? (mState | state) : (mState & ~state);
 
 	if ( mState != newState )
 	{
@@ -121,13 +144,19 @@ void UIButton::OnFill (UIQueue* queue)
 
 bool UIButton::OnSerializeFrom (const TreeNode& node)
 {
-	if ( mImage.OnSerializeFrom(node) )
+	if (mImage.OnSerializeFrom(node))
 	{
 		return true;
 	}
 	else if (node.mTag == "Prefix")
 	{
 		mPrefix = node.mValue.AsString();
+		return true;
+	}
+	else if (node.mTag == "Text Padding")
+	{
+		int padding (0);
+		if (node.mValue >> padding) SetTextPadding(padding);
 		return true;
 	}
 	else if (node.mTag == "State")
@@ -179,6 +208,9 @@ void UIButton::OnSerializeTo (TreeNode& node) const
 
 	// Save the background color
 	node.AddChild("Back Color", mImage.GetBackColor());
+
+	// Padding around the text label
+	if (mPadding != 0) node.AddChild("Text Padding", mPadding);
 
 	// Label settings are saved fully
 	mLabel.OnSerializeTo(node);

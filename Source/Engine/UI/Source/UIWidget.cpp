@@ -502,7 +502,7 @@ bool UIWidget::_Update (bool areaChanged)
 			mScripts[--i]->OnUpdate(areaChanged);
 	}
 
-	const UIRegion& region ( GetSubRegion() );
+	const UIRegion& region = GetSubRegion();
 
 	for (uint i = 0; i < mChildren.GetSize(); ++i)
 	{

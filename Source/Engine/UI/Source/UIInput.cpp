@@ -16,6 +16,25 @@ UIInput::UIInput() : mMaxHistorySize(0), mShowHistory(true)
 	listener->SetOnValueChange	( bind(&UIInput::_OnLabelValue,	this) );
 }
 
+
+//============================================================================================================
+// Changes the padding on the sides of the internal text label
+//============================================================================================================
+
+void UIInput::SetTextPadding (int padding)
+{
+	if (mPadding != padding)
+	{
+		mPadding = padding;
+
+		UIRegion& rgn = mLabel.GetRegion();
+		rgn.SetLeft	 (0.0f,  (float)padding);
+		rgn.SetRight (1.0f, -(float)padding);
+		rgn.SetTop	 (0.0f,  (float)padding);
+		rgn.SetBottom(1.0f, -(float)padding);
+	}
+}
+
 //============================================================================================================
 // Sets the maximum number of lines in the history list
 //============================================================================================================
@@ -227,7 +246,13 @@ bool UIInput::OnSerializeFrom (const TreeNode& node)
 	if ( mImage.OnSerializeFrom (node) ) return true;
 	if ( mLabel.OnSerializeFrom (node) ) return true;
 
-	if (node.mTag == "History Size")
+	if (node.mTag == "Text Padding")
+	{
+		int padding (0);
+		if (node.mValue >> padding) SetTextPadding(padding);
+		return true;
+	}
+	else if (node.mTag == "History Size")
 	{
 		node.mValue >> mMaxHistorySize;
 		return true;
@@ -258,6 +283,9 @@ bool UIInput::OnSerializeFrom (const TreeNode& node)
 void UIInput::OnSerializeTo (TreeNode& node) const
 {
 	mImage.OnSerializeTo (node);
+
+	if (mPadding != 0) node.AddChild("Text Padding", mPadding);
+
 	mLabel.OnSerializeTo (node);
 
 	node.AddChild("History Size", mMaxHistorySize);

@@ -5,8 +5,8 @@ Root
 	UI
 	{
 		Serializable = false
-		Default Skin = Default
-		Default Font = Arial 15
+		Default Skin = "Config/Neon"
+		Default Font = "Arial 15"
 		Tooltip Delay = 1.000
 
 		Layout
@@ -18,7 +18,6 @@ Root
 				Top = 0.000 0 // 0
 				Bottom = 0.000 85 // 94
 				Alpha = 1.000 // 1.000
-				Skin = Default
 				Titlebar Height = 18
 				Color = 1.000 1.000 1.000
 				Font = Arial 15
@@ -35,7 +34,6 @@ Root
 					Top = 0.000 24 // 46
 					Bottom = 0.000 41 // 63
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Value = 0.000000
 					Color = 1.000 1.000 1.000
 					Animation Time = 0.000
@@ -80,7 +78,6 @@ Root
 					Top = 0.000 5 // 27
 					Bottom = 0.000 22 // 44
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Value = 0.746714
 					Color = 1.000 1.000 1.000
 					Animation Time = 0.000
@@ -125,7 +122,6 @@ Root
 					Top = 0.000 43 // 65
 					Bottom = 0.000 60 // 82
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Value = 0.455197
 					Color = 1.000 1.000 1.000
 					Animation Time = 0.000
@@ -171,7 +167,6 @@ Root
 				Top = 0.000 365 // 365
 				Bottom = 0.000 580 // 591
 				Alpha = 1.000 // 1.000
-				Skin = Default
 				Titlebar Height = 18
 				Color = 1.000 1.000 1.000
 				Font = Arial 15
@@ -188,7 +183,7 @@ Root
 					Top = 0.000 5 // 392
 					Bottom = 0.000 21 // 408
 					Alpha = 1.000 // 1.000
-					Skin = Default
+					
 					Value = 0.780328
 					Color = 0.439 1.000 0.150
 					Animation Time = 0.000
@@ -204,7 +199,6 @@ Root
 					Top = 0.000 170 // 557
 					Bottom = 0.000 192 // 579
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Color = 1.000 1.000 1.000
 					Font = Arial 15
 					Text = Enabled - 13.642000
@@ -224,7 +218,6 @@ Root
 					Top = 0.000 53 // 442
 					Bottom = 0.000 75 // 460
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Face = Dark Area
 					Color = 1.000 1.000 1.000
 					Font = Arial 15
@@ -252,7 +245,6 @@ Root
 					Top = 0.000 25 // 412
 					Bottom = 0.000 43 // 430
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Font = Arial 15
 					Text = UICheckbox Test
 					Alignment = Left
@@ -269,7 +261,6 @@ Root
 					Top = 0.000 145 // 532
 					Bottom = 0.000 167 // 554
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Color = 1.000 1.000 1.000
 					Font = Arial 15
 					Text = Enabled - 13.642000
@@ -289,7 +280,6 @@ Root
 					Top = 0.000 120 // 507
 					Bottom = 0.000 142 // 529
 					Alpha = 1.000 // 1.000
-					Skin = Default
 					Color = 1.000 1.000 1.000
 					Font = Arial 15
 					Text = Enabled - 0.258000
@@ -310,9 +300,8 @@ Root
 					Top = 0.000 95 // 484
 					Bottom = 0.000 117 // 502
 					Alpha = 1.000 // 1.000
-					Skin = Default
-					Face = Grey Area
-					Color = 1.000 1.000 1.000
+					Text Color = 1.000 1.000 1.000
+					Text Padding = 2
 					Font = Arial 15
 					Text = Four is the charm
 					Shadow = true

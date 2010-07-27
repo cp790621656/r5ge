@@ -78,6 +78,13 @@ Root
 					Event Handling = "Normal"
 					Layer = 0
 				}
+				
+				UISlider = "Test Slider"
+				{
+					Left = 1.0 -20
+					Value = 0.75
+					Color = 1 0 0 1.0
+				}
 			}
 		}
 	}

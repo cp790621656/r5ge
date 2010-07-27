@@ -34,7 +34,11 @@ void UIFace::SerializeFrom (const TreeNode& root)
 		else if (tag == "Border")
 		{
 			int val;
-			if (value >> val) mBorder = (short)val;
+
+			if (value >> val)
+			{
+				mBorder = (short)val;
+			}
 		}
 	}
 }

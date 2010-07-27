@@ -141,7 +141,6 @@ public:
 
 	// Having access to the widget's dimensions can come in handy
 	UIRegion& GetRegion() { return mRegion; }
-	void SetRegion (float left, float top, float width, float height) { mRegion.SetRect(left, top, width, height); }
 
 	// Adjust the widget's region, keeping it bound within the parent's confines
 	void Adjust (float left, float top, float right, float bottom);
@@ -150,10 +149,18 @@ public:
 	void Update (const UIRegion& parent) { _Update( mRegion.Update(parent, false, false) ); }
 
 	// Update the region of the widget using the specified screen size
-	bool Update (const Vector2i& size, bool parentChanged) { return _Update( mRegion.Update(size, parentChanged) ); }
+	bool Update (const Vector2i& size, bool parentChanged)
+	{
+		bool dimsChanged = mRegion.Update(size, parentChanged);
+		return _Update(dimsChanged);
+	}
 
 	// Perform a scheduled update of the widget
-	bool Update (const UIRegion& parent, bool parentChanged, bool scheduledUpdate) { return _Update( mRegion.Update(parent, parentChanged, scheduledUpdate) ); }
+	bool Update (const UIRegion& parent, bool parentChanged, bool scheduledUpdate)
+	{
+		bool dimsChanged = mRegion.Update(parent, parentChanged, scheduledUpdate);
+		return _Update(dimsChanged);
+	}
 
 	// ADVANCED: Immediately deletes all child widgets
 	void DestroyAllWidgets();

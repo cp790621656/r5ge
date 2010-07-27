@@ -65,29 +65,30 @@ Root
 
 			Face = "UICheckbox: Unchecked"
 			{
-				Position = 22 6
-				Size = 5 5
-				Border = -3
+				Position = 19 3
+				Size = 11 11
+				Border = 3
 			}
 
 			Face = "UICheckbox: Highlighted"
 			{
-				Position = 35 6
-				Size = 5 5
-				Border = -3
+				Position = 32 3
+				Size = 11 11
+				Border = 3
 			}
 
 			Face = "UICheckbox: Disabled"
 			{
-				Position = 48 6
-				Size = 5 5
-				Border = -3
+				Position = 45 3
+				Size = 11 11
+				Border = 3
 			}
 
 			Face = "UICheckbox: Checked"
 			{
-				Position = 2 39
-				Size = 16 16
+				Position = -1 36
+				Size = 22 22
+				Border = 3
 			}
 
 			Face = "Bright Area"

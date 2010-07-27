@@ -29,21 +29,23 @@ protected:
 	uint			mState;
 	bool			mSticky;
 	bool			mIgnoreMouseKey;
+	int				mPadding;
 
 public:
 
 	UIButton();
 
-	const UISkin*	GetSkin()		const	{ return mImage.GetSkin();		}
-	const String&	GetPrefix()		const	{ return mPrefix;				}
-	const Color4ub&	GetTextColor()	const	{ return mLabel.GetTextColor();	}
-	const Color4ub&	GetBackColor()	const	{ return mImage.GetBackColor();	}
-	const String&	GetText()		const	{ return mLabel.GetText();		}
-	const IFont*	GetFont()		const	{ return mLabel.GetFont();		}
-	char			GetAlignment()	const	{ return mLabel.GetAlignment();	}
-	bool			GetShadow()		const	{ return mLabel.GetShadow();	}
-	bool			IsSticky()		const	{ return mSticky;				}
-	uint			GetState()		const	{ return mState;				}
+	const UISkin*	GetSkin()		 const	{ return mImage.GetSkin();		}
+	const String&	GetPrefix()		 const	{ return mPrefix;				}
+	const Color4ub&	GetTextColor()	 const	{ return mLabel.GetTextColor();	}
+	const Color4ub&	GetBackColor()	 const	{ return mImage.GetBackColor();	}
+	const String&	GetText()		 const	{ return mLabel.GetText();		}
+	const IFont*	GetFont()		 const	{ return mLabel.GetFont();		}
+	char			GetAlignment()	 const	{ return mLabel.GetAlignment();	}
+	bool			GetShadow()		 const	{ return mLabel.GetShadow();	}
+	bool			IsSticky()		 const	{ return mSticky;				}
+	uint			GetState()		 const	{ return mState;				}
+	int				GetTextPadding() const	{ return mPadding;				}
 
 	void SetSkin		(const UISkin* skin)	{ mImage.SetSkin(skin);				}
 	void SetPrefix		(const String& pref)	{ mPrefix = pref; mImage.SetDirty();}
@@ -54,6 +56,7 @@ public:
 	void SetAlignment	(char alignment)		{ mLabel.SetAlignment(alignment);	}
 	void SetShadow		(bool shadow)			{ mLabel.SetShadow(shadow);			}
 	void SetSticky		(bool val)				{ mSticky = val;					}
+	void SetTextPadding	(int padding);
 
 	// Convenience function
 	bool GetState (uint state) const { return (mState & state) != 0; }

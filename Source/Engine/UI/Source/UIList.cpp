@@ -59,7 +59,7 @@ bool UIList::OnUpdate (bool dimensionsChanged)
 	if (dimensionsChanged && face != 0)
 	{
 		const Vector2i& size = face->GetSize();
-		float ratio = (float)size.x / size.y;
+		float ratio  = (float)size.x / size.y;
 		float height = mImage.GetSubRegion().GetCalculatedHeight();
 
 		if (mLabel.GetAlignment() == UILabel::Alignment::Right)
@@ -71,6 +71,8 @@ bool UIList::OnUpdate (bool dimensionsChanged)
 			mSymbol.GetRegion().SetLeft(1.0f, -ratio * height);
 		}
 	}
+
+	// Update the symbol
 	dimensionsChanged |= mSymbol.Update(mImage.GetSubRegion(), dimensionsChanged, true);
 	return dimensionsChanged;
 }

@@ -21,6 +21,7 @@ protected:
 	uint			mMaxHistorySize;
 	HistoryList		mHistory;
 	bool			mShowHistory;
+	int				mPadding;
 
 public:
 
@@ -33,6 +34,7 @@ public:
 	const Color4ub&	GetTextColor()		const	{ return mLabel.GetTextColor(); }
 	const Color4ub&	GetBackColor()		const	{ return mImage.GetBackColor(); }
 	uint			GetMaxHistorySize()	const	{ return mMaxHistorySize;		}
+	int				GetPadding()		const	{ return mPadding;				}
 
 	// Entire history list
 	const HistoryList&	GetHistory() const	{ return mHistory; }
@@ -44,8 +46,9 @@ public:
 	void SetFont (const IFont* font)	{ mLabel.SetFont(font);	}
 
 	// Text and background colors
-	void SetTextColor (const Color4ub& c) { mLabel.SetTextColor(c);	}
-	void SetBackColor (const Color4ub& c) { mImage.SetBackColor(c);	}
+	void SetTextColor	(const Color4ub& c) { mLabel.SetTextColor(c);	}
+	void SetBackColor	(const Color4ub& c) { mImage.SetBackColor(c);	}
+	void SetTextPadding	(int padding);
 
 	// Maximum number of lines kept in the input's history
 	void SetMaxHistorySize (uint lines);

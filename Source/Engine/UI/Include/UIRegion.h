@@ -74,6 +74,7 @@ public:
 	void SetRight	(float relative, float absolute)	{ mDimsChanged |= mRelativeRight.Set(relative, absolute); }
 	void SetBottom	(float relative, float absolute)	{ mDimsChanged |= mRelativeBottom.Set(relative, absolute); }
 	void SetAlpha	(float relative)					{ mRelativeAlpha = relative; }
+	void SetDirty() { mDimsChanged = true; }
 
 	// Read access to relative values
 	const UIAnchor& GetLeft()	const	{ return mRelativeLeft;		}

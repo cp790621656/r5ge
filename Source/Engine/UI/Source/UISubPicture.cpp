@@ -115,7 +115,12 @@ void UISubPicture::OnTextureChanged (const ITexture* ptr)
 	if (mFace != 0)
 	{
 		const ITexture* tex = GetTexture();
-		if (tex == ptr) OnDirty(tex);
+
+		if (tex == ptr)
+		{
+			OnDirty(tex);
+			mRegion.SetDirty();
+		}
 	}
 }
 
@@ -144,7 +149,7 @@ bool UISubPicture::OnUpdate (bool dimensionsChanged)
 		dimensionsChanged = true;
 	}
 
-	if (dimensionsChanged) mSubRegion.Update(mRegion, true, true);
+	dimensionsChanged |= mSubRegion.Update(mRegion, dimensionsChanged, true);
 	return dimensionsChanged;
 }
 

@@ -149,12 +149,6 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 		if (value >> color) SetTextColor(color);
 		return true;
 	}
-	else if (node.mTag == "Font")
-	{
-		const IFont* font = mUI->GetFont( value.AsString() );
-		SetFont(font);
-		return true;
-	}
 	else if (node.mTag == "Text")
 	{
 		SetText( value.AsString() );
@@ -170,6 +164,12 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 		}
 		return true;
 	}
+	else if (node.mTag == "Font")
+	{
+		const IFont* font = mUI->GetFont( value.AsString() );
+		SetFont(font);
+		return true;
+	}
 	return false;
 }
 
@@ -179,10 +179,10 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 
 void UITextLine::OnSerializeTo (TreeNode& node) const
 {
-	if (mFont != 0 && mFont != mUI->GetDefaultFont())
-		node.AddChild("Font", mFont->GetName());
-
 	node.AddChild("Text Color", mColor);
 	node.AddChild("Text", mText);
 	node.AddChild("Shadow", mShadow);
+
+	if (mFont != 0 && mFont != mUI->GetDefaultFont())
+		node.AddChild("Font", mFont->GetName());
 }
