@@ -243,7 +243,7 @@ Root
 					Left = 0.000 8 // 14
 					Right = 1.000 -8 // 319
 					Top = 0.000 25 // 412
-					Bottom = 0.000 43 // 430
+					Bottom = 0.000 45 // 430
 					Alpha = 1.000 // 1.000
 					Font = Arial 15
 					Text = UICheckbox Test
