@@ -176,10 +176,8 @@ public:
 		Vector2f v (		2.0f * (x * y - z * w),
 					 1.0f - 2.0f * (x * x + z * z) );
 		v.Normalize();
-		float angle = Float::Acos(v.y);
-		if (v.x < 0.0f) angle = TWOPI - angle;
-		while (angle > PI) angle -= TWOPI;
-		return angle;
+		float angle = WrapAngle(Float::Acos(v.y));
+		return (v.x < 0.0f && angle < PI) ? -angle : angle;
 	}
 };
 

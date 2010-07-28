@@ -70,10 +70,11 @@ template <typename Type> Type Clamp (Type val, Type min, Type max)
 // Helper function for wrapping of angles
 //============================================================================================================
 
-inline void WrapAngle(float &fAngle)
+inline float WrapAngle (float radAngle)
 {
-	while (fAngle >  PI) fAngle -= TWOPI;
-	while (fAngle < -PI) fAngle += TWOPI;
+	while (radAngle >  PI) radAngle -= TWOPI;
+	while (radAngle < -PI) radAngle += TWOPI;
+	return radAngle;
 }
 
 //============================================================================================================
@@ -108,8 +109,8 @@ namespace Float
 	inline bool		IsPositive	(OrInt val)							{ return (val.i & 0x80000000) == 0; }
 	inline float	Min			(float f0, float f1)				{ return (f0 < f1 ? f0 : f1); }
 	inline float	Max			(float f0, float f1)				{ return (f0 > f1 ? f0 : f1); }
-	inline float	Asin		(float val)							{ return (val < -1.0f ? -HALFPI : (val > 1.0f ? HALFPI : ASIN(val))); }
-	inline float	Acos		(float val)							{ return (val < -1.0f ? PI : (val > 1.0f ? 0.0f : ACOS(val))); }
+	inline float	Asin		(float val)							{ return (val > -1.0f ? (val < 1.0f ? ASIN(val) : HALFPI) : -HALFPI); }
+	inline float	Acos		(float val)							{ return (val > -1.0f ? (val < 1.0f ? ACOS(val) : 0.0f) : PI); }
 	inline float	Atan2		(float y, float x)					{ return ATAN2(y, x); }
 
 	inline bool	IsProductPositive (OrInt v0, OrInt v1)
