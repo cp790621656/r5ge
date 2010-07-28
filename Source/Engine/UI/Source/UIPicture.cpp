@@ -33,7 +33,7 @@ void UIPicture::OnFill (UIQueue* queue)
 		float right	 ( mRegion.GetCalculatedRight() );
 		float bottom ( mRegion.GetCalculatedBottom() );
 
-		Color4ub color (255, 255, 255, Float::ToRangeByte( mRegion.GetCalculatedAlpha() ));
+		Color4ub color (mColor, mRegion.GetCalculatedAlpha());
 
 		queue->mVertices.Expand().Set( left,  top,		0.0f, 1.0f, color );
 		queue->mVertices.Expand().Set( left,  bottom,	0.0f, 0.0f, color );
@@ -50,7 +50,13 @@ bool UIPicture::OnSerializeFrom (const TreeNode& node)
 {
 	const Variable& value = node.mValue;
 
-	if (node.mTag == "Texture")
+	if (node.mTag == "Back Color")
+	{
+		Color4ub c;
+		if (value >> c) SetBackColor(c);
+		return true;
+	}
+	else if (node.mTag == "Texture")
 	{
 		SetTexture ( mUI->GetTexture( value.AsString() ) );
 		return true;
@@ -68,9 +74,7 @@ bool UIPicture::OnSerializeFrom (const TreeNode& node)
 
 void UIPicture::OnSerializeTo (TreeNode& node) const
 {
-	if (mTex != 0)
-	{
-		node.AddChild("Texture", mTex->GetName());
-		node.AddChild("Ignore Alpha", mIgnoreAlpha);
-	}
+	node.AddChild("Back Color", mColor);
+	if (mTex != 0) node.AddChild("Texture", mTex->GetName());
+	node.AddChild("Ignore Alpha", mIgnoreAlpha);
 }

@@ -17,7 +17,7 @@ struct Color4f
 	Color4f(const Color4ub& c);							// Inlined in Color4ub.h
 	Color4f(float R, float G, float B, float A = 1.0f)	: r(R),		g(G),		b(B),		a(A)		{}
 	Color4f(const Color3f& c, float alpha = 1.0f)		{ r = c.r;  g = c.g;	b = c.b;	a = alpha;	}
-	Color4f(const Color4f& c)							{ r = c.r;	g = c.g;	b = c.b;	a = c.a;	}
+	Color4f(const Color4f& c, float alpha = 1.0f)		{ r = c.r;	g = c.g;	b = c.b;	a = c.a * alpha;	}
 	Color4f(const float* f)								{ r = f[0];	g = f[1];	b = f[2];	a = f[3];	}
 	
 	operator const float*() const						{ return &r; }
@@ -75,10 +75,9 @@ struct Color4f
 		}
 		else
 		{
-			val = 1.0f / val;
-			r *= val;
-			g *= val;
-			b *= val;
+			r /= val;
+			g /= val;
+			b /= val;
 			a  = Float::Clamp(a, 0.0f, 1.0f);
 		}
 		return val;

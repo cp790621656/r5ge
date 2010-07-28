@@ -20,6 +20,17 @@ void UIColorPicker::UpdateRegions()
 }
 
 //============================================================================================================
+// Updates the background color using the current luminance
+//============================================================================================================
+
+void UIColorPicker::UpdateBackColor()
+{
+	float f = mLuminance.GetValue();
+	byte a = Float::ToRangeByte(f);
+	mPicture.SetBackColor(Color4ub(a, a, a, 255));
+}
+
+//============================================================================================================
 // Gets the color at the specified mouse position
 //============================================================================================================
 
@@ -39,7 +50,7 @@ Color4ub UIColorPicker::GetColor (Vector2i pos)
 // Gets the color at the specified relative position
 //============================================================================================================
 
-Color4ub UIColorPicker::GetColor (float x, float y)
+Color4f UIColorPicker::GetColor (float x, float y)
 {
 	float r = Float::Clamp(Float::Max(1.0f - x * 3.0f, 1.0f - (1.0f - x) * 3.0f), 0.0f, 1.0f);
 	float g = Float::Clamp(1.0f - Float::Abs(1.0f / 3.0f - x) * 3.0f, 0.0f, 1.0f);
@@ -60,7 +71,8 @@ void UIColorPicker::SetColor (Vector2i pos)
 {
 	Color4ub c (GetColor(pos));
 	c.a = mRawColor.a;
-	if (mRawColor != c) mRawColor = c;
+	mRawColor = c;
+	OnValueChange();
 }
 
 //============================================================================================================
@@ -88,6 +100,8 @@ void UIColorPicker::SetColor (const Color4ub& color)
 	mAlpha.SetValue(c.a);
 	mLuminance.SetValue(c.Normalize());
 	mRawColor = c;
+	UpdateBackColor();
+	OnValueChange();
 }
 
 //============================================================================================================
@@ -215,12 +229,12 @@ void UIColorPicker::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		{
 			mFocus = 1;
 			SetColor(pos);
-			OnValueChange();
 		}
 		else if (mLuminance.GetRegion().Contains(pos))
 		{
 			mFocus = 2;
 			mLuminance.OnKeyPress(pos, key, isDown);
+			UpdateBackColor();
 			OnValueChange();
 		}
 		else if (mAlpha.GetRegion().Contains(pos))
@@ -238,11 +252,21 @@ void UIColorPicker::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 
 void UIColorPicker::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
-	if (mFocus == 1) SetColor(pos);
-	else if (mFocus == 2) mLuminance.OnMouseMove(pos, delta);
-	else if (mFocus == 3) mAlpha.OnMouseMove(pos, delta);
-	else return;
-	OnValueChange();
+	if (mFocus == 1)
+	{
+		SetColor(pos);
+	}
+	else if (mFocus == 2)
+	{
+		mLuminance.OnMouseMove(pos, delta);
+		UpdateBackColor();
+		OnValueChange();
+	}
+	else if (mFocus == 3)
+	{
+		mAlpha.OnMouseMove(pos, delta);
+		OnValueChange();
+	}
 }
 
 //============================================================================================================

@@ -23,11 +23,14 @@ protected:
 	// Updates the internal widgets' regions
 	void UpdateRegions();
 
+	// Updates the background color using the current luminance
+	void UpdateBackColor();
+
 	// Gets the color at the specified mouse position
 	Color4ub GetColor (Vector2i pos);
 
 	// Gets the color at the specified relative position
-	Color4ub GetColor (float x, float y);
+	Color4f GetColor (float x, float y);
 
 	// Sets the raw color by replacing its RGB with GetColor-returned values
 	void SetColor (Vector2i pos);

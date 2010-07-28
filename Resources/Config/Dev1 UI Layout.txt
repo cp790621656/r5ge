@@ -13,8 +13,8 @@ Root
 		{
 			UIWindow = "Color Palette"
 			{
-				Left = 0.0 206.0
-				Right = 0.0 506.0
+				Left = 0.0 406.0
+				Right = 0.0 706.0
 				Top = 0.0 155.0
 				Bottom = 0.0 455.0
 				Alpha = 1.0
@@ -27,20 +27,7 @@ Root
 				Alignment = "Center"
 				Event Handling = "Normal"
 				Layer = 0
-
-				UIColorPicker = "Color Picker"
-				{
-					Left = 0.0 0.0
-					Right = 1.0 0.0
-					Top = 0.0 0.0
-					Bottom = 1.0 -25.0
-					Alpha = 1.0
-					Color = 0xFFFFFFFF
-					Slider Width = 10
-					Event Handling = "Normal"
-					Layer = 1
-				}
-
+				
 				UIInput = "Color Value"
 				{
 					Left = 0.0 0.0
@@ -57,6 +44,19 @@ Root
 					History Size = 0
 					Event Handling = "Normal"
 					Layer = 0
+				}
+
+				UIColorPicker = "Color Picker"
+				{
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 -25.0
+					Alpha = 1.0
+					Color = 1.0 0.75 0.45 0.85
+					Slider Width = 10
+					Event Handling = "Normal"
+					Layer = 1
 				}
 
 				UIButton = "Close Button"
