@@ -11,26 +11,32 @@
 #define SET_STREAM(type)	inline String&	operator >> (const type& v, String& str)
 
 APPEND_STREAM(Vector2i)		{ return str.Append("%d %d", v.x, v.y);	}
-APPEND_STREAM(Vector2f)		{ return str.Append("%f %f", v.x, v.y);	}
-APPEND_STREAM(Vector3f)		{ return str.Append("%f %f %f", v.x, v.y, v.z);	}
-APPEND_STREAM(Color3f)		{ return str.Append("%.3f %.3f %.3f", v.r, v.g, v.b); }
-APPEND_STREAM(Color4f)		{ return str.Append("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a); }
-APPEND_STREAM(Quaternion)	{ return str.Append("%f %f %f %f", v.x, v.y, v.z, v.w); }
+APPEND_STREAM(Vector2f)		{ str << v.x; str << " ";
+							  str << v.y; return str; }
+APPEND_STREAM(Vector3f)		{ str << v.x; str << " ";
+							  str << v.y; str << " ";
+							  str << v.z; return str; }
+APPEND_STREAM(Color3f)		{ str << v.r; str << " ";
+							  str << v.g; str << " ";
+							  str << v.b; return str; }
+APPEND_STREAM(Color4f)		{ str << v.r; str << " ";
+							  str << v.g; str << " ";
+							  str << v.b; str << " ";
+							  str << v.a; return str; }
+APPEND_STREAM(Quaternion)	{ str << v.x; str << " ";
+							  str << v.y; str << " ";
+							  str << v.z; str << " ";
+							  str << v.w; return str; }
 
 SET_STREAM(Vector2i)		{ return str.Set("%d %d", v.x, v.y); }
-SET_STREAM(Vector2f)		{ return str.Set("%f %f", v.x, v.y); }
-SET_STREAM(Vector3f)		{ return str.Set("%f %f %f", v.x, v.y, v.z); }
-SET_STREAM(Color3f)			{ return str.Set("%.3f %.3f %.3f", v.r, v.g, v.b); }
-SET_STREAM(Color4f)			{ return str.Set("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a); }
-SET_STREAM(Quaternion)		{ return str.Set("%f %f %f %f", v.x, v.y, v.z, v.w); }
+SET_STREAM(Vector2f)		{ str.Clear(); str << v; return str; }
+SET_STREAM(Vector3f)		{ str.Clear(); str << v; return str; }
+SET_STREAM(Color3f)			{ str.Clear(); str << v; return str; }
+SET_STREAM(Color4f)			{ str.Clear(); str << v; return str; }
+SET_STREAM(Quaternion)		{ str.Clear(); str << v; return str; }
 
 String&	operator << (String& str, const Color4ub& v);
-String&	operator << (String& str, const Color3f& v);
-String&	operator << (String& str, const Color4f& v);
-
 String&	operator >> (const Color4ub& v, String& str);
-String&	operator >> (const Color3f& v, String& str);
-String&	operator >> (const Color4f& v, String& str);
 
 String&	operator << (String& str, const Matrix43& m);
 String&	operator << (String& str, const Matrix44& m);

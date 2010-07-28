@@ -840,6 +840,27 @@ bool String::Save (const char* filename) const
 }
 
 //======================================================================================================
+// Removes trailing zeros in a floating-point value so 1.230000 becomes 1.23
+//======================================================================================================
+
+void String::TrimFloat()
+{
+	if (mLength > 1)
+	{
+		char* buffer = (mLarge == 0) ? mSmall : mLarge;
+		char ch = buffer[mLength-1];
+
+		while (mLength > 1)
+		{
+			if (ch != '0') break;
+			ch = buffer[mLength-2];
+			if (ch < '0' || ch > '9') break;
+			buffer[--mLength] = 0;
+		}
+	}
+}
+
+//======================================================================================================
 // Returns a formatted number in ###,###,### format
 //======================================================================================================
 

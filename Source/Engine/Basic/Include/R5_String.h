@@ -61,8 +61,8 @@ public:
 	String&		operator << (byte val)					{ return Append("%u", val); }
 	String&		operator << (ushort val)				{ return Append("%u", val); }
 	String&		operator << (uint val)					{ return Append("%u", val); }
-	String&		operator << (float val)					{ return Append("%f", val); }
-	String&		operator << (double val)				{ return Append("%f", val); }
+	String&		operator << (float val)					{ Append("%f", val); TrimFloat(); return *this; }
+	String&		operator << (double val)				{ Append("%f", val); TrimFloat(); return *this; }
 
 	bool		operator >> (bool&		value) const;
 	bool		operator >> (char&		value) const;
@@ -146,6 +146,9 @@ public:
 		mSmall[0] = 0;
 		mLength = 0;
 	}
+
+	// Removes trailing zeros in a floating-point value so 1.230000 becomes 1.23
+	void TrimFloat();
 
 	// Returns a formatted number in ###,###,### format
 	static String GetFormattedSize(ulong size);
