@@ -76,16 +76,7 @@ Vector2i UIWindow::GetSizeForContent (const Vector2i& size)
 }
 
 //============================================================================================================
-// Changes the parent pointer -- must be passed down to internal members
-//============================================================================================================
-
-void UIWindow::_SetParentPtr (UIWidget* ptr)
-{
-	UIWidget::_SetParentPtr(ptr);
-}
-
-//============================================================================================================
-// Changes the root pointer -- must be passed down to internal members
+// Sets the UI root -- must be forwarded to the hidden children
 //============================================================================================================
 
 void UIWindow::_SetRootPtr (UIManager* ptr)

@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-UIInput::UIInput() : mMaxHistorySize(0), mShowHistory(true)
+UIInput::UIInput() : mMaxHistorySize(0), mShowHistory(true), mPadding(0)
 {
 	mLabel.SetLayer(1, false);
 	mEventHandling = EventHandling::Full;
@@ -232,6 +232,12 @@ void UIInput::_SetRootPtr (UIManager* ptr)
 
 bool UIInput::OnUpdate (bool dimensionsChanged)
 {
+	if (GetSkin() == 0 && mUI->GetDefaultSkin() != 0)
+	{
+		SetSkin(mUI->GetDefaultSkin());
+		SetFace(String("%s: Background", GetClassID()));
+	}
+
 	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged, true);
 	dimensionsChanged |= mLabel.Update(mImage.GetSubRegion(), dimensionsChanged, true);
 	return dimensionsChanged;

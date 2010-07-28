@@ -57,9 +57,14 @@ struct Color4f
 		a = Float::Clamp(a, 0.0f, 1.0f);
 	}
 
-	void Normalize()
+	// Returns the luminance factor of the brightest color
+	float GetLuminance() const { return (r > g ? (r > b ? r : b) : (g > b ? g : b)); }
+
+	// Adjusts the color's values so that the brightest color is equal to 1.
+	// Returns the color's luminance prior to normalization.
+	float Normalize()
 	{
-		float val = (r > g ? (r > b ? r : b) : (g > b ? g : b));
+		float val = GetLuminance();
 
 		if (Float::IsZero(val))
 		{
@@ -76,5 +81,6 @@ struct Color4f
 			b *= val;
 			a  = Float::Clamp(a, 0.0f, 1.0f);
 		}
+		return val;
 	}
 };

@@ -18,17 +18,15 @@ public:
 
 	UIPicture() : mTex(0), mIgnoreAlpha(false) {}
 
+	// Area creation
+	R5_DECLARE_INHERITED_CLASS("UIPicture", UIPicture, UIWidget, UIWidget);
+
 	const ITexture* GetTexture() const { return mTex; }
 	void SetTexture (const ITexture* tex);
 	bool IsIgnoringAlpha() const { return mIgnoreAlpha; }
 	void IgnoreAlpha (bool val) { if (mIgnoreAlpha != val) { mIgnoreAlpha = val; SetDirty(); } }
 
 public:
-
-	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UIPicture", UIPicture, UIWidget, UIWidget);
-
-protected:
 
 	// Marks this specific widget as needing to be rebuilt
 	virtual void SetDirty() { if (mTex) OnDirty(mTex); }

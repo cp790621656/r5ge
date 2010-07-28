@@ -19,6 +19,7 @@ public:
 	~TestApp();
 
 	void Run();
+	void OnColorChange		 (UIWidget* widget);
 	void OnChangeDelegate	 (UIWidget* widget);
 	void OnBrightnessChange	 (UIWidget* widget);
 	void OnRangeChange		 (UIWidget* widget);

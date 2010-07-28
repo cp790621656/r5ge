@@ -202,6 +202,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\UIColorPicker.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UIContext.cpp"
 				>
 			</File>
@@ -333,6 +337,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\UICheckbox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\UIColorPicker.h"
 				>
 			</File>
 			<File

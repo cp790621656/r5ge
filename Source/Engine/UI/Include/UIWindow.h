@@ -67,9 +67,8 @@ public:
 
 public:
 
-	// Internal functions. These values are normally set by Root::CreateArea
-	virtual void _SetParentPtr (UIWidget* ptr);
-	virtual void _SetRootPtr   (UIManager* ptr);
+	// Sets the UI root -- must be forwarded to the hidden children
+	virtual void _SetRootPtr (UIManager* ptr);
 
 public:
 

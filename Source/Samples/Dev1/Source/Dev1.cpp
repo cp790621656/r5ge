@@ -10,6 +10,7 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);
 
+	mUI->SetOnValueChange ("Color Picker",		bind(&TestApp::OnColorChange,		this));
 	mUI->SetOnValueChange ("First UISlider",	bind(&TestApp::OnChangeDelegate,	this));
 	mUI->SetOnValueChange ("Range",				bind(&TestApp::OnRangeChange,		this));
 	mUI->SetOnValueChange ("Power",				bind(&TestApp::OnPowerChange,		this));
@@ -37,6 +38,29 @@ void TestApp::Run()
 	{
 		while (mCore->Update());
 		//*mCore >> "Config/Dev1.txt";
+	}
+}
+
+//============================================================================================================
+
+void TestApp::OnColorChange (UIWidget* widget)
+{
+	UIColorPicker* picker = R5_CAST(UIColorPicker, widget);
+
+	if (picker != 0)
+	{
+		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
+		const Color4ub& color = picker->GetColor();
+		if (light) light->SetDiffuse(color.mVal);
+
+		UIInput* input = picker->GetParent()->FindWidget<UIInput>("Color Value", false);
+
+		if (input != 0)
+		{
+			String s;
+			Color4f(color) >> s;
+			input->SetText(s);
+		}
 	}
 }
 

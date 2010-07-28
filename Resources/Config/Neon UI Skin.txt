@@ -89,6 +89,13 @@ Root
 				Position = -1 38
 				Size = 22 22
 			}
+			
+			Face = "UIInput: Background"
+			{
+				Position = 45 3
+				Size = 11 11
+				Border = 4
+			}
 
 			Face = "Bright Area"
 			{

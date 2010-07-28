@@ -37,6 +37,7 @@ namespace R5
 	#include "UIEditableLabel.h"	// Modifiable left-aligned text label
 	#include "UIInput.h"			// Input field (SubPicture + Editable Label)
 	#include "UIShadedArea.h"		// Area affected by a shader
+	#include "UIColorPicker.h"		// UIPicture containing a color gradient and 2 sliders (luminance, alpha)
 
 	#include "UIAnimatedFrame.h"	// Frame that smoothly fades in and out when alpha changes
 	#include "UIAnimatedSlider.h"	// Slider that smoothly animated to its set value

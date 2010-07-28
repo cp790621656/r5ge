@@ -243,12 +243,6 @@ public:
 	virtual void OnPreDraw (IGraphics* graphics) const {}
 	virtual void OnPostDraw(IGraphics* graphics) const {}
 
-	// Serialization
-	virtual void OnSerializeTo (TreeNode& root) const {}
-	virtual bool OnSerializeFrom (const TreeNode& node) { return false; }
-
-protected:
-
 	// Events
 	virtual void OnMouseMove(const Vector2i& pos, const Vector2i& delta);
 	virtual void OnKeyPress	(const Vector2i& pos, byte key, bool isDown);
@@ -256,6 +250,10 @@ protected:
 	virtual void OnMouseOver(bool inside);
 	virtual void OnFocus	(bool selected);
 	virtual void OnChar		(byte character) {}
+
+	// Serialization
+	virtual void OnSerializeTo (TreeNode& root) const {}
+	virtual bool OnSerializeFrom (const TreeNode& node) { return false; }
 
 public:
 

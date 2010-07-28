@@ -11,6 +11,74 @@ Root
 
 		Layout
 		{
+			UIWindow = "Color Palette"
+			{
+				Left = 0.0 206.0
+				Right = 0.0 506.0
+				Top = 0.0 155.0
+				Bottom = 0.0 455.0
+				Alpha = 1.0
+				Titlebar Height = 20
+				Resizable = false
+				Back Color = 0xF2E0D8FF
+				Text Color = 0xFFFFFFFF
+				Text = "Color Palette"
+				Shadow = true
+				Alignment = "Center"
+				Event Handling = "Normal"
+				Layer = 0
+
+				UIColorPicker = "Color Picker"
+				{
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 -25.0
+					Alpha = 1.0
+					Color = 0xFFFFFFFF
+					Slider Width = 10
+					Event Handling = "Normal"
+					Layer = 1
+				}
+
+				UIInput = "Color Value"
+				{
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 1.0 -24.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xE6AD8CCC
+					Text Color = 0xFFFFFFFF
+					Text
+					Shadow = false
+					Selection Color = 0xFFAA2980
+					History Size = 0
+					Event Handling = "Normal"
+					Layer = 0
+				}
+
+				UIButton = "Close Button"
+				{
+					Left = 1.0 -22.0
+					Right = 1.0 0.0
+					Top = 0.0 -20.0
+					Bottom = 0.0 0.0
+					Alpha = 1.0
+					Back Color = 0xFF0000FF
+					Text Color = 0xFFFFFFFF
+					Text = "X"
+					Shadow = true
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Event Handling = "Normal"
+					Layer = 0
+				}
+			}
+		
 			UIWindow = Debug
 			{
 				Left = 0.000 0 // 0
