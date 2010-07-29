@@ -55,6 +55,7 @@ Script* Script::_Create(const String& type)
 	{
 		const CreateDelegate* callback = g_scriptTypes.GetIfExists(type);
 		if (callback != 0) ptr = (*callback)();
+		else WARNING(String("Unknown Script type '%s'", type.GetBuffer()).GetBuffer());
 	}
 	g_scriptTypes.Unlock();
 	return ptr;

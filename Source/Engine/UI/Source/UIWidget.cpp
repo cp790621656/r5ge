@@ -28,7 +28,15 @@ UIWidget* _Create (const String& type)
 	gWidgetTypes.Lock();
 	{
 		const UIWidget::CreateDelegate* callback = gWidgetTypes.GetIfExists(type);
-		if (callback != 0) ptr = (*callback)();
+
+		if (callback != 0)
+		{
+			ptr = (*callback)();
+		}
+		else if (type.BeginsWith("UI")) 
+		{
+			WARNING(String("Unknown UIWidget type '%s'", type.GetBuffer()).GetBuffer());
+		}
 	}
 	gWidgetTypes.Unlock();
 	return ptr;

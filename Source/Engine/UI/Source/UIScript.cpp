@@ -29,6 +29,7 @@ UIScript* UIScript::_Create(const String& type)
 	{
 		const CreateDelegate* callback = gUIScriptTypes.GetIfExists(type);
 		if (callback != 0) ptr = (*callback)();
+		else WARNING(String("Unknown UIScript type '%s'", type.GetBuffer()).GetBuffer());
 	}
 	gUIScriptTypes.Unlock();
 	return ptr;
