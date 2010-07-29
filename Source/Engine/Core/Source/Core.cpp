@@ -471,10 +471,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 		mResources.Unlock();
 
 		mExecuted.Lock();
-		{
-			for (uint i = 0; i < mExecuted.GetSize(); ++i)
-				node.AddChild("Execute").mValue = mExecuted[i];
-		}
+		node.AddChild("Execute", mExecuted);
 		mExecuted.Unlock();
 
 		mModelTemplates.Lock();
@@ -622,15 +619,39 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == "Execute" )
 		{
-			String filename (value.AsString());
-
-			if (SerializeFrom(filename, true))
+			if (value.IsStringArray())
 			{
-				if (serializable)
+				const Array<String>& arr = value.AsStringArray();
+
+				FOREACH(b, arr)
 				{
-					mExecuted.Lock();
-					mExecuted.Expand() = filename;
-					mExecuted.Unlock();
+					const String& filename = arr[b];
+
+					// Execute on a different thread if we're serializing the result
+					if (SerializeFrom(filename, serializable))
+					{
+						if (serializable)
+						{
+							mExecuted.Lock();
+							mExecuted.Expand() = filename;
+							mExecuted.Unlock();
+						}
+					}
+				}
+			}
+			else if (value.IsString())
+			{
+				const String& filename = value.AsString();
+
+				// Execute on a different thread if we're serializing the result
+				if (SerializeFrom(filename, serializable))
+				{
+					if (serializable)
+					{
+						mExecuted.Lock();
+						mExecuted.Expand() = filename;
+						mExecuted.Unlock();
+					}
 				}
 			}
 		}
