@@ -97,14 +97,15 @@ void UIContext::_Rebuild()
 		// Add the background SubPicture
 		UISubPicture* img = AddWidget<UISubPicture>("_Background_");
 
-		USEventListener* listener = img->AddScript<USEventListener>();
-		listener->SetOnKey		( bind(&UIContext::_OnKeyPress,	 this) );
-		listener->SetOnMouseMove( bind(&UIContext::_OnMouseMove, this) );
-
 		if (img != 0)
 		{
 			img->Set(mSkin, mFace);
 			img->SetBackColor(mBackColor);
+
+			USEventListener* listener = img->AddScript<USEventListener>();
+			listener->SetOnKey		( bind(&UIContext::_OnKeyPress,	 this) );
+			listener->SetOnMouseMove( bind(&UIContext::_OnMouseMove, this) );
+			listener->SetOnFocus	( bind(&UIContext::_OnFocusChange, this) );
 
 			// Run through all entries and add them to the frame
 			for (uint i = 0; i < mEntries.GetSize(); ++i)
@@ -128,6 +129,7 @@ void UIContext::_Rebuild()
 				offset += highlightBorder + textSize;
 			}
 			img->SetFocus(true);
+			img->AddScript<USEventListener>()->SetOnFocus( bind(&UIContext::_OnFocusChange, this) );
 		}
 	}
 }
@@ -167,18 +169,6 @@ void UIContext::_OnMouseMove (UIWidget* widget, const Vector2i& pos, const Vecto
 				return;
 			}
 		}
-	}
-}
-
-//============================================================================================================
-// Triggered when an item loses focus
-//============================================================================================================
-
-void UIContext::_OnItemFocus (UIWidget* widget, bool hasFocus)
-{
-	if (hasFocus)
-	{
-		OnFocus(false);
 	}
 }
 
