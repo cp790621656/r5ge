@@ -215,17 +215,23 @@ bool Core::Update()
 			mWin->BeginFrame();
 			if (mGraphics != 0)	mGraphics->BeginFrame();
 
-			Lock();
+			bool drawn = false;
+
+			// Trigger all registered draw callbacks
+			if (mRoot.GetFlag(Object::Flag::Enabled))
 			{
-				// Trigger all registered draw callbacks
-				if (!mRoot.GetFlag(Object::Flag::Enabled) || !HandleOnDraw())
-				{
-					mFullDraw = 0;
-					mGraphics->SetActiveRenderTarget(0);
-					mGraphics->Clear();
-				}
+				Lock();
+				drawn = HandleOnDraw();
+				Unlock();
 			}
-			Unlock();
+
+			// If we didn't draw anything, clear the screen
+			if (!drawn)
+			{
+				mFullDraw = 0;
+				mGraphics->SetActiveRenderTarget(0);
+				mGraphics->Clear();
+			}
 
 			// Draw the UI after everything else
 			if (mUI != 0) mUI->Draw();
