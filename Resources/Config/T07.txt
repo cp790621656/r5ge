@@ -70,9 +70,10 @@ Root
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 16.000000 30.000000
 
-			Script = "OSDrawForward"
+			Script = "OSDrawDeferred"
 			{
 				Grid = true
+				Background Color = 0 0 0 0
 			}
 
 			Directional Light = "First Light"

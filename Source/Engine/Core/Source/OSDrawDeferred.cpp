@@ -96,7 +96,7 @@ void OSDrawDeferred::MaterialStage()
 
 	// Update changing target properties
 	mMaterialTarget->SetSize(size);
-	mMaterialTarget->UseSkybox(target == 0 || target->IsUsingSkybox());
+	mMaterialTarget->UseSkybox(false);
 
 	// Set up the graphics states and clear the render target
 	mGraphics->SetCulling(IGraphics::Culling::Back);
@@ -274,6 +274,8 @@ void OSDrawDeferred::LightStage()
 
 void OSDrawDeferred::CombineStage()
 {
+	IRenderTarget* target = mScene.GetFinalTarget();
+
 	if (mFinalTarget == 0)
 	{
 		mCombine	 = mGraphics->GetShader("[R5] Combine Deferred");
@@ -283,20 +285,29 @@ void OSDrawDeferred::CombineStage()
 		mFinalTarget->AttachDepthTexture(mDepth);
 		mFinalTarget->AttachStencilTexture(mDepth);
 		mFinalTarget->AttachColorTexture(0, mFinal, mMatDiff->GetFormat());
-		mFinalTarget->UseSkybox(false);
+		mFinalTarget->UseSkybox(target == 0 || target->IsUsingSkybox());
 	}
 
 	mFinalTarget->SetSize(mMaterialTarget->GetSize());
 
-	mGraphics->SetBackgroundColor(mBackground);
-	mGraphics->SetFogRange(mFogRange);
 	mGraphics->SetDepthWrite(false);
 	mGraphics->SetDepthTest(false);
 	mGraphics->SetStencilTest(false);
-	mGraphics->SetBlending(IGraphics::Blending::None);
-	mGraphics->SetCulling(IGraphics::Culling::Back);
+	mGraphics->SetFog(false);
 	mGraphics->SetActiveRenderTarget(mFinalTarget);
-	mGraphics->SetScreenProjection( true );
+	mGraphics->SetScreenProjection(false);
+
+	// If the background color is not solid we should clear the screen first
+	if (mBackground.a < 1.0f)
+	{
+		mGraphics->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 0.0f));
+		mGraphics->Clear(true, false, false);
+	}
+
+	mGraphics->SetFogRange(mFogRange);
+	mGraphics->SetCulling(IGraphics::Culling::Back);
+	mGraphics->SetBlending(IGraphics::Blending::Replace);
+	mGraphics->SetScreenProjection(true);
 	mGraphics->SetActiveMaterial(0);
 	mGraphics->SetActiveShader(mCombine);
 	mGraphics->SetActiveTexture(0, mDepth);

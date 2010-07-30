@@ -101,7 +101,7 @@ public:
 			Vector2i pos2 (mCore->GetGraphics()->ConvertTo2D(pos3));
 
 			// Update the label's region to be centered at that position
-			mLabel->SetRegion(pos2.x - 50.0f, pos2.y - 10.0f, 100.0f, 20.0f);
+			mLabel->GetRegion().SetRect(pos2.x - 50.0f, pos2.y - 10.0f, 100.0f, 20.0f);
 			mLabel->SetAlpha(1.0f);
 		}
 		else

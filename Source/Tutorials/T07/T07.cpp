@@ -91,6 +91,7 @@ void TestApp::Run()
 		// effects, particles, glow/glare billboards, etc). You can pass additional parameters to the
 		// OSDrawDeferred function such as "Bloom" to adjust the amount of bloom, "Focal Range" to change
 		// where and how depth-of-field effect happens, and "SSAO" to add screen-space ambient occlusion.
+		// Note that in order to see the skybox, the background color needs to have an alpha of 0.
 
 		// Enter the message processing loop
 		while (mCore->Update());

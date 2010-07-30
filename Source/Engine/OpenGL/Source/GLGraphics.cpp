@@ -462,9 +462,10 @@ uint GLGraphics::Draw (uint drawable)
 		glColor3ub(255, 255, 255);
 
 		// Overwrite the ModelView matrix, changing it to use the current camera's position as origin
-		ResetModelMatrix();
+		ResetModelViewMatrix();
+		const Vector3f& eye = GetCameraPosition();
 		Matrix43 view (GetViewMatrix());
-		view.PreTranslate(GetCameraPosition());
+		view.PreTranslate(eye);
 		SetViewMatrix(view);
 
 		// Set all active vertex attributes
@@ -476,7 +477,7 @@ uint GLGraphics::Draw (uint drawable)
 
 		// Reset the ModelView matrix back to its default values
 		ResetViewMatrix();
-		return 12;
+		return result;
 	}
 
 	// All draw operations that follow don't use texture coordinate arrays
@@ -534,8 +535,7 @@ uint GLGraphics::Draw (uint drawable)
 	}
 	else if (drawable == Drawable::Plane)
 	{
-		ResetModelMatrix();
-		ResetViewMatrix();
+		ResetModelViewMatrix();
 
 		_BindAllTextures();
 		_ActivateMatrices();
@@ -573,9 +573,9 @@ uint GLGraphics::Draw (uint drawable)
 		SetBlending(Blending::None);
 		SetActiveMaterial((const IMaterial*)0);
 		SetActiveVertexAttribute( Attribute::Color, 0, 0, 0, 0, 0 );
+		Flush();
 
-		ResetModelMatrix();
-		ResetViewMatrix();
+		ResetModelViewMatrix();
 
 		_BindAllTextures();
 		_ActivateMatrices();
