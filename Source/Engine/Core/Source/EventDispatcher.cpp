@@ -8,13 +8,17 @@ using namespace R5;
 #define ADD_FUNCTION(val) \
 	void EventDispatcher::AddOn##val (const On##val##Delegate& callback, uint priority) \
 	{ \
+		mOn##val.Lock(); \
 		mOn##val.Expand().Set(priority, callback); \
 		mOn##val.Sort(); \
+		mOn##val.Unlock(); \
 	} \
 \
 	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback, uint priority) \
 	{ \
+		mOn##val.Lock(); \
 		mOn##val.Remove(Pair<On##val##Delegate>(priority, callback)); \
+		mOn##val.Unlock(); \
 	}
 
 //============================================================================================================

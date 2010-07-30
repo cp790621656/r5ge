@@ -37,7 +37,7 @@ bool GetModelInfo (ModelInstance* inst, ModelInfo& info)
 
 	// Save the mesh and material
 	info.mesh = limb->GetMesh();
-	info.mat = limb->GetMaterial();
+	info.mat  = limb->GetMaterial();
 
 	// Both mesh and material must be present
 	return (info.mesh != 0 && info.mat != 0);
@@ -50,6 +50,7 @@ bool GetModelInfo (ModelInstance* inst, ModelInfo& info)
 ModelInstanceGroup::TerrainData* ModelInstanceGroup::GetData (ModelInstance* inst, bool create)
 {
 	Octree::Node* node = (Octree::Node*)inst->GetSubParent();
+	ASSERT(node != 0, "SubParent is set to null");
 	if (create && node->mData == 0) node->mData = new TerrainData();
 	return (TerrainData*)node->mData;
 }

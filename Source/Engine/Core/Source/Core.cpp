@@ -676,18 +676,11 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 
 bool Core::SerializeFrom (const String& file, bool separateThread)
 {
-	// Find the resource
 	Resource* res = GetResource(file);
 
-	// If the resource is valid, create a worker thread for it
 	if (res->IsValid())
 	{
-#ifndef R5_MEMORY_TEST
-		Thread::Increment( g_threadCount );
-		if (separateThread) Thread::Create(WorkerThread, res);
-		else
-#endif
-		SerializeFrom(res->GetRoot());
+		SerializeFrom(res);
 		return true;
 	}
 	return false;
@@ -702,6 +695,7 @@ void Core::SerializeFrom (Resource* resource)
 	if (resource != 0 && resource->IsValid())
 	{
 #ifndef R5_MEMORY_TEST
+		Thread::Increment( g_threadCount );
 		Thread::Create( WorkerThread, resource );
 #else
 		SerializeFrom( resource->GetRoot() );

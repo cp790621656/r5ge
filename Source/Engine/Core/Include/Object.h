@@ -374,6 +374,6 @@ public:
 	template <typename Type> void RemoveScript()
 	{
 		Script* script = (Script*)_GetScript(Type::ClassID());
-		if (script != 0) script->DestroySelf(false);
+		if (script != 0) script->DestroySelf();
 	}
 };
