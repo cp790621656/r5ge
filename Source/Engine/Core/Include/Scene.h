@@ -76,7 +76,7 @@ public:
 	void ActivateMatrices();
 
 	// Casts a ray into the screen at the specified mouse position
-	RayHits& Raycast (const Vector2i& screenPos);
+	RayHits& Raycast (const Vector2i& screenPos, bool threadSafe = true);
 
 	// Advanced: Draws the scene using the specified technique
 	uint DrawWithTechnique (const String& technique, bool clearScreen = true, bool useLighting = true);
