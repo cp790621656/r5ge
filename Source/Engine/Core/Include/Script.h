@@ -49,9 +49,6 @@ protected:
 	// Use the AddScript<> template to add new scripts
 	Script() : mEnabled(true), mSerializable(true) {}
 
-	// Convenience function meant to be used from inside the protected functions
-	void DestroySelf() { DestroySelf(false); }
-
 public:
 
 	// This is a top-level base class
@@ -71,7 +68,7 @@ public:
 	bool IsKeyDown (uint key);
 
 	// Destroys this script - this action is queued until next update
-	void DestroySelf (bool threadSafe);
+	void DestroySelf();
 
 	// It's possible to choose not to serialize certain scripts
 	bool IsSerializable() const { return mSerializable; }

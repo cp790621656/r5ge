@@ -164,7 +164,7 @@ void Scene::ActivateMatrices()
 // Casts a ray into the screen at the specified mouse position
 //============================================================================================================
 
-Scene::RayHits& Scene::Raycast (const Vector2i& screenPos, bool threadSafe)
+Scene::RayHits& Scene::Raycast (const Vector2i& screenPos)
 {
 	if (mRoot != 0 && (mHits.IsEmpty() || mLastRay != screenPos))
 	{
@@ -186,7 +186,7 @@ Scene::RayHits& Scene::Raycast (const Vector2i& screenPos, bool threadSafe)
 
 		// Populate the list
 		mHits.Clear();
-		mRoot->Raycast(near, Normalize(near - mGraphics->GetCameraPosition()), mHits, threadSafe);
+		mRoot->Raycast(near, Normalize(near - mGraphics->GetCameraPosition()), mHits);
 		mHits.Sort();
 	}
 	return mHits;

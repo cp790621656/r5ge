@@ -145,31 +145,27 @@ Object* Object::_AddObject (const String& type, const String& name)
 // INTERNAL: Finds an object in the scene
 //============================================================================================================
 
-const Object* Object::_FindObject (const String& name, bool recursive, bool threadSafe) const
+const Object* Object::_FindObject (const String& name, bool recursive) const
 {
 	const Object* node (0);
 
 	if (mChildren.IsValid())
 	{
-		if (threadSafe) mChildren.Lock();
+		for (uint i = mChildren.GetSize(); i > 0; )
 		{
-			for (uint i = mChildren.GetSize(); i > 0; )
+			if ( name == mChildren[--i]->GetName() )
 			{
-				if ( name == mChildren[--i]->GetName() )
-				{
-					node = mChildren[i];
-					break;
-				}
-			}
-
-			if ( node == 0 && recursive )
-			{
-				for (uint i = 0; i < mChildren.GetSize(); ++i)
-					if ( node = mChildren[i]->_FindObject(name, recursive) )
-						break;
+				node = mChildren[i];
+				break;
 			}
 		}
-		if (threadSafe) mChildren.Unlock();
+
+		if ( node == 0 && recursive )
+		{
+			for (uint i = 0; i < mChildren.GetSize(); ++i)
+				if ( node = mChildren[i]->_FindObject(name, recursive) )
+					break;
+		}
 	}
 	return node;
 }
@@ -428,117 +424,101 @@ uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 // Destroys the object
 //============================================================================================================
 
-void Object::DestroySelf (bool threadSafe)
+void Object::DestroySelf()
 {
 	mFlags.Set(Flag::Enabled, false);
 
-	if (threadSafe) Lock();
+	DestroyAllScripts();
+	DestroyAllChildren();
+
+	if (mParent != 0)
 	{
-		DestroyAllScripts(false);
-		DestroyAllChildren(false);
+		OnDestroy();
 
-		if (mParent != 0)
-		{
-			OnDestroy();
-
-			mParent->_Remove(this);
-			mParent->mDeletedObjects.Expand() = this;
-			mParent = 0;
-		}
+		mParent->_Remove(this);
+		mParent->mDeletedObjects.Expand() = this;
+		mParent = 0;
 	}
-	if (threadSafe) Unlock();
 }
 
 //============================================================================================================
 // Destroys all of the object's children
 //============================================================================================================
 
-void Object::DestroyAllChildren (bool threadSafe)
+void Object::DestroyAllChildren()
 {
-	if (threadSafe) Lock();
+	for (uint i = mChildren.GetSize(); i > 0; )
 	{
-		for (uint i = mChildren.GetSize(); i > 0; )
-		{
-			mChildren[--i]->DestroySelf(false);
-		}
-		mChildren.Clear();
+		mChildren[--i]->DestroySelf();
 	}
-	if (threadSafe) Unlock();
+	mChildren.Clear();
 }
 
 //============================================================================================================
 // Destroys all of the object's scripts
 //============================================================================================================
 
-void Object::DestroyAllScripts (bool threadSafe)
+void Object::DestroyAllScripts()
 {
-	if (threadSafe) Lock();
+	FOREACH(i, mScripts)
 	{
-		FOREACH(i, mScripts)
-		{
-			Script* script = mScripts[i];
-			script->OnDestroy();
-			mDeletedScripts.Expand() = script;
-			mScripts[i] = 0;
-		}
-		mScripts.Clear();
+		Script* script = mScripts[i];
+		script->OnDestroy();
+		mDeletedScripts.Expand() = script;
+		mScripts[i] = 0;
 	}
-	if (threadSafe) Unlock();
+	mScripts.Clear();
 }
 
 //============================================================================================================
 // Releases the object and all its children
 //============================================================================================================
 
-void Object::Release (bool threadSafe)
+void Object::Release()
 {
-	if (threadSafe) Lock();
+	mCalcRelBounds = true;
+	mCalcAbsBounds = true;
+
+	mRelativeBounds.Clear();
+	mCompleteBounds.Clear();
+
+	if (mParent != 0)
 	{
-		mCalcRelBounds = true;
-		mCalcAbsBounds = true;
-
-		mRelativeBounds.Clear();
-		mCompleteBounds.Clear();
-
-		if (mParent != 0)
-		{
-			mParent->_Remove(this);
-			mParent = 0;
-		}
-
-		if (mScripts.IsValid())
-		{
-			// Run through all scripts
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				// Remove the reference to this object
-				if (mScripts[--i] != 0)
-				{
-					mScripts[i]->mObject = 0;
-				}
-			}
-			
-			// Release all scripts
-			mScripts.Release();
-		}
-
-		if (mChildren.IsValid())
-		{
-			// Run through all children
-			for (uint i = mChildren.GetSize(); i > 0; )
-			{
-				// Remove all references to this object
-				if (mChildren[--i] != 0)
-				{
-					mChildren[i]->mParent = 0;
-				}
-			}
-
-			// Release all children
-			mChildren.Release();
-		}
+		mParent->_Remove(this);
+		mParent = 0;
 	}
-	if (threadSafe) Unlock();
+
+	if (mScripts.IsValid())
+	{
+		// Run through all scripts
+		for (uint i = mScripts.GetSize(); i > 0; )
+		{
+			// Remove the reference to this object
+			if (mScripts[--i] != 0)
+			{
+				mScripts[i]->mObject = 0;
+			}
+		}
+		
+		// Release all scripts
+		mScripts.Release();
+	}
+
+	if (mChildren.IsValid())
+	{
+		// Run through all children
+		for (uint i = mChildren.GetSize(); i > 0; )
+		{
+			// Remove all references to this object
+			if (mChildren[--i] != 0)
+			{
+				mChildren[i]->mParent = 0;
+			}
+		}
+
+		// Release all children
+		mChildren.Release();
+	}
 }
 
 //============================================================================================================
@@ -549,17 +529,13 @@ void Object::SetParent (Object* ptr)
 {
 	if (mParent != ptr)
     {
-        Lock();
-		{
-			if (mParent != 0) mParent->_Remove(this);
+		if (mParent != 0) mParent->_Remove(this);
 
-			mParent		= ptr;
-			mSubParent	= 0;
-			mIsDirty	= true;
+		mParent		= ptr;
+		mSubParent	= 0;
+		mIsDirty	= true;
 
-			if (mParent != 0) mParent->_Add(this);
-		}
-        Unlock();
+		if (mParent != 0) mParent->_Add(this);
     }
 }
 
@@ -616,20 +592,16 @@ void Object::SetAbsoluteScale (float scale)
 // Convenience function -- force-updates the object based on the parent's absolute values
 //============================================================================================================
 
-void Object::Update (bool threadSafe)
+void Object::Update()
 {
 	mVisibility = 0;
 
 	if (mParent != 0 && mFlags.Get(Flag::Enabled))
 	{
-		if (threadSafe) Lock();
-		{
-			Update(
-				mParent->GetAbsolutePosition(),
-				mParent->GetAbsoluteRotation(),
-				mParent->GetAbsoluteScale(), false, false);
-		}
-		if (threadSafe) Unlock();
+		Update(
+			mParent->GetAbsolutePosition(),
+			mParent->GetAbsoluteRotation(),
+			mParent->GetAbsoluteScale(), false);
 	}
 }
 
@@ -637,7 +609,7 @@ void Object::Update (bool threadSafe)
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
-bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved, bool threadSafe)
+bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
 {
 	mHasMoved = false;
 	bool retVal (false);
@@ -647,156 +619,148 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		if (threadSafe) Lock();
+		// Calculate the velocity since last update
+		mRelativeVel = (mRelativePos - mLastPos) / Time::GetDelta();
+		mAbsoluteVel = mRelativeVel;
+		if (mParent != 0) mAbsoluteVel += mParent->GetAbsoluteVelocity();
+		mLastPos = mRelativePos;
+
+		// If the parent has moved then we need to recalculate the absolute values
+		if (parentMoved) mIsDirty = true;
+
+		// Run through all scripts and notify them
+		for (uint i = mScripts.GetSize(); i > 0; )
 		{
-			// Calculate the velocity since last update
-			mRelativeVel = (mRelativePos - mLastPos) / Time::GetDelta();
-			mAbsoluteVel = mRelativeVel;
-			if (mParent != 0) mAbsoluteVel += mParent->GetAbsoluteVelocity();
-			mLastPos = mRelativePos;
+			Script* script = mScripts[--i];
 
-			// If the parent has moved then we need to recalculate the absolute values
-			if (parentMoved) mIsDirty = true;
-
-			// Run through all scripts and notify them
-			for (uint i = mScripts.GetSize(); i > 0; )
+			// If the script is listening to pre-update events
+			if (!script->mIgnore.Get(Script::Ignore::PreUpdate))
 			{
-				Script* script = mScripts[--i];
+				script->OnPreUpdate();
 
-				// If the script is listening to pre-update events
-				if (!script->mIgnore.Get(Script::Ignore::PreUpdate))
+				if (!mFlags.Get(Flag::Enabled))
 				{
-					script->OnPreUpdate();
+					return true;
+				}
+				else if (mScripts.IsEmpty()) break;
+			}
+		}
+
+		// Call the pre-update function
+		if (!mIgnore.Get(Ignore::PreUpdate)) OnPreUpdate();
+
+		// If something has changed, update the absolute values
+		if (mIsDirty)
+		{
+			mHasMoved = true;
+			mAbsolutePos = (mRelativePos * scale) * rot + pos;
+			mAbsoluteScale = mRelativeScale * scale;
+			mAbsoluteRot.Combine(rot, mRelativeRot);
+		}
+
+		// Run through all scripts and notify them
+		for (uint i = mScripts.GetSize(); i > 0; )
+		{
+			Script* script = mScripts[--i];
+
+			// If the script is listening to pre-update events
+			if (!script->mIgnore.Get(Script::Ignore::Update))
+			{
+				script->OnUpdate();
+
+				if (!mFlags.Get(Flag::Enabled))
+				{
+					return true;
+				}
+				else if (mScripts.IsEmpty()) break;
+			}
+		}
+
+		// Call the update function
+		if (!mIgnore.Get(Ignore::Update)) OnUpdate();
+
+		// Update all children
+		if (mChildren.IsValid())
+		{
+			parentMoved = mIsDirty;
+
+			for (uint i = mChildren.GetSize(); i > 0; )
+			{
+				Object* obj = mChildren[--i];
+
+				if (obj != 0 && obj->GetFlag(Flag::Enabled))
+				{
+					mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved);
 
 					if (!mFlags.Get(Flag::Enabled))
 					{
-						if (threadSafe) Unlock();
 						return true;
 					}
-					else if (mScripts.IsEmpty()) break;
+					else if (mChildren.IsEmpty()) break;
 				}
 			}
+		}
 
-			// Call the pre-update function
-			if (!mIgnore.Get(Ignore::PreUpdate)) OnPreUpdate();
+		if (mIsDirty)
+		{
+			// Remember that there was a change
+			retVal = true;
 
-			// If something has changed, update the absolute values
-			if (mIsDirty)
+			// Recalculate absolute bounds
+			if (mCalcAbsBounds)
 			{
-				mHasMoved = true;
-				mAbsolutePos = (mRelativePos * scale) * rot + pos;
-				mAbsoluteScale = mRelativeScale * scale;
-				mAbsoluteRot.Combine(rot, mRelativeRot);
-			}
-
-			// Run through all scripts and notify them
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				Script* script = mScripts[--i];
-
-				// If the script is listening to pre-update events
-				if (!script->mIgnore.Get(Script::Ignore::Update))
+				if (mRelativeBounds.IsValid())
 				{
-					script->OnUpdate();
-
-					if (!mFlags.Get(Flag::Enabled))
-					{
-						if (threadSafe) Unlock();
-						return true;
-					}
-					else if (mScripts.IsEmpty()) break;
+					mAbsoluteBounds = mRelativeBounds;
+					mAbsoluteBounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
+				}
+				else
+				{
+					mAbsoluteBounds.Clear();
 				}
 			}
+			
+			// Start with absolute bounds
+			mCompleteBounds = mAbsoluteBounds;
 
-			// Call the update function
-			if (!mIgnore.Get(Ignore::Update)) OnUpdate();
-
-			// Update all children
-			if (mChildren.IsValid())
+			// Run through all children and include their bounds as well
+			if (mIncChildBounds)
 			{
-				parentMoved = mIsDirty;
-
-				for (uint i = mChildren.GetSize(); i > 0; )
+				for (uint i = 0; i < mChildren.GetSize(); ++i)
 				{
-					Object* obj = mChildren[--i];
+					Object* obj = mChildren[i];
 
 					if (obj != 0 && obj->GetFlag(Flag::Enabled))
 					{
-						mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved, threadSafe);
-
-						if (!mFlags.Get(Flag::Enabled))
-						{
-							if (threadSafe) Unlock();
-							return true;
-						}
-						else if (mChildren.IsEmpty()) break;
+						mCompleteBounds.Include(obj->GetCompleteBounds());
 					}
 				}
 			}
-
-			if (mIsDirty)
-			{
-				// Remember that there was a change
-				retVal = true;
-
-				// Recalculate absolute bounds
-				if (mCalcAbsBounds)
-				{
-					if (mRelativeBounds.IsValid())
-					{
-						mAbsoluteBounds = mRelativeBounds;
-						mAbsoluteBounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
-					}
-					else
-					{
-						mAbsoluteBounds.Clear();
-					}
-				}
-				
-				// Start with absolute bounds
-				mCompleteBounds = mAbsoluteBounds;
-
-				// Run through all children and include their bounds as well
-				if (mIncChildBounds)
-				{
-					for (uint i = 0; i < mChildren.GetSize(); ++i)
-					{
-						Object* obj = mChildren[i];
-
-						if (obj != 0 && obj->GetFlag(Flag::Enabled))
-						{
-							mCompleteBounds.Include(obj->GetCompleteBounds());
-						}
-					}
-				}
-			}
-
-			// Run through all scripts and notify them
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				Script* script = mScripts[--i];
-
-				// If the script is listening to pre-update events
-				if (!script->mIgnore.Get(Script::Ignore::PostUpdate))
-				{
-					script->OnPostUpdate();
-
-					if (!mFlags.Get(Flag::Enabled))
-					{
-						if (threadSafe) Unlock();
-						return true;
-					}
-					else if (mScripts.IsEmpty()) break;
-				}
-			}
-
-			// Call the post-update function
-			if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
-
-			// All absolute values have now been calculated
-			mIsDirty = false;
 		}
-		if (threadSafe) Unlock();
+
+		// Run through all scripts and notify them
+		for (uint i = mScripts.GetSize(); i > 0; )
+		{
+			Script* script = mScripts[--i];
+
+			// If the script is listening to pre-update events
+			if (!script->mIgnore.Get(Script::Ignore::PostUpdate))
+			{
+				script->OnPostUpdate();
+
+				if (!mFlags.Get(Flag::Enabled))
+				{
+					return true;
+				}
+				else if (mScripts.IsEmpty()) break;
+			}
+		}
+
+		// Call the post-update function
+		if (!mIgnore.Get(Ignore::PostUpdate)) OnPostUpdate();
+
+		// All absolute values have now been calculated
+		mIsDirty = false;
 	}
 	else
 	{
@@ -828,38 +792,34 @@ void Object::Fill (FillParams& params)
 		// If the object is visible, fill the render queue
 		if (isVisible)
 		{
-			Lock();
+			// Inform script listeners of this event
+			for (uint i = mScripts.GetSize(); i > 0; )
 			{
-				// Inform script listeners of this event
-				for (uint i = mScripts.GetSize(); i > 0; )
+				Script* script = mScripts[--i];
+
+				if (!script->mIgnore.Get(Script::Ignore::Fill))
 				{
-					Script* script = mScripts[--i];
-
-					if (!script->mIgnore.Get(Script::Ignore::Fill))
-					{
-						script->OnFill(params);
-					}
-				}
-
-				// Trigger the virtual function if it's available
-				bool considerChildren = mIgnore.Get(Ignore::Fill) ? true : OnFill(params);
-
-				if (considerChildren)
-				{
-					// Recurse through all children
-					for (uint i = 0; i < mChildren.GetSize(); ++i)
-					{
-						mChildren[i]->Fill(params);
-					}
-				}
-
-				if (mShowOutline)
-				{
-					ITechnique* wireframe = GetGraphics()->GetTechnique("Wireframe");
-					params.mDrawQueue.Add(mLayer, this, 0, wireframe->GetMask(), 0, 0.0f);
+					script->OnFill(params);
 				}
 			}
-			Unlock();
+
+			// Trigger the virtual function if it's available
+			bool considerChildren = mIgnore.Get(Ignore::Fill) ? true : OnFill(params);
+
+			if (considerChildren)
+			{
+				// Recurse through all children
+				for (uint i = 0; i < mChildren.GetSize(); ++i)
+				{
+					mChildren[i]->Fill(params);
+				}
+			}
+
+			if (mShowOutline)
+			{
+				ITechnique* wireframe = GetGraphics()->GetTechnique("Wireframe");
+				params.mDrawQueue.Add(mLayer, this, 0, wireframe->GetMask(), 0, 0.0f);
+			}
 		}
 	}
 }
@@ -892,7 +852,7 @@ uint Object::Draw (TemporaryStorage& storage, uint group, const ITechnique* tech
 // Cast a ray into space and fill the list with objects that it intersected with
 //============================================================================================================
 
-void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe)
+void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
 {
 	if (mFlags.Get(Flag::BoxCollider) && Intersect::RayBounds(pos, dir, mCompleteBounds))
 	{
@@ -919,12 +879,8 @@ void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit
 		// Continue on to children
 		if (considerChildren)
 		{
-			if (threadSafe) Lock();
-			{
-				for (uint i = mChildren.GetSize(); i > 0; )
-					mChildren[--i]->Raycast(pos, dir, hits, threadSafe);
-			}
-			if (threadSafe) Unlock();
+			for (uint i = mChildren.GetSize(); i > 0; )
+				mChildren[--i]->Raycast(pos, dir, hits);
 		}
 	}
 }
@@ -933,46 +889,46 @@ void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit
 // Subscribe to events with specified priority
 //============================================================================================================
 
-void Object::SubscribeToKeyPress (uint priority, bool threadSafe)
+void Object::SubscribeToKeyPress (uint priority)
 {
-	mCore->AddOnKey( bind(&Object::KeyPress, this), priority, threadSafe );
+	mCore->AddOnKey( bind(&Object::KeyPress, this), priority );
 }
 
 //============================================================================================================
 
-void Object::SubscribeToMouseMove (uint priority, bool threadSafe)
+void Object::SubscribeToMouseMove (uint priority)
 {
-	mCore->AddOnMouseMove( bind(&Object::MouseMove, this), priority, threadSafe );
+	mCore->AddOnMouseMove( bind(&Object::MouseMove, this), priority );
 }
 
 //============================================================================================================
 
-void Object::SubscribeToScroll (uint priority, bool threadSafe)
+void Object::SubscribeToScroll (uint priority)
 {
-	mCore->AddOnScroll( bind(&Object::Scroll, this), priority, threadSafe );
+	mCore->AddOnScroll( bind(&Object::Scroll, this), priority );
 }
 
 //============================================================================================================
 // Unsubscribe from events with specified priority
 //============================================================================================================
 
-void Object::UnsubscribeFromKeyPress (uint priority, bool threadSafe)
+void Object::UnsubscribeFromKeyPress (uint priority)
 {
-	mCore->RemoveOnKey( bind(&Object::KeyPress, this), priority, threadSafe );
+	mCore->RemoveOnKey( bind(&Object::KeyPress, this), priority );
 }
 
 //============================================================================================================
 
-void Object::UnsubscribeFromMouseMove (uint priority, bool threadSafe)
+void Object::UnsubscribeFromMouseMove (uint priority)
 {
-	mCore->RemoveOnMouseMove( bind(&Object::MouseMove, this), priority, threadSafe );
+	mCore->RemoveOnMouseMove( bind(&Object::MouseMove, this), priority );
 }
 
 //============================================================================================================
 
-void Object::UnsubscribeFromScroll (uint priority, bool threadSafe)
+void Object::UnsubscribeFromScroll (uint priority)
 {
-	mCore->RemoveOnScroll( bind(&Object::Scroll, this), priority, threadSafe );
+	mCore->RemoveOnScroll( bind(&Object::Scroll, this), priority );
 }
 
 //============================================================================================================
@@ -985,15 +941,11 @@ uint Object::KeyPress (const Vector2i& pos, byte key, bool isDown)
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		Lock();
+		for (uint i = mScripts.GetSize(); i > 0; )
 		{
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				Script* script = mScripts[--i];
-				retVal |= script->OnKeyPress(pos, key, isDown);
-			}
+			Script* script = mScripts[--i];
+			retVal |= script->OnKeyPress(pos, key, isDown);
 		}
-		Unlock();
 	}
 	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
@@ -1008,15 +960,11 @@ uint Object::MouseMove (const Vector2i& pos, const Vector2i& delta)
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		Lock();
+		for (uint i = mScripts.GetSize(); i > 0; )
 		{
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				Script* script = mScripts[--i];
-				retVal |= script->OnMouseMove(pos, delta);
-			}
+			Script* script = mScripts[--i];
+			retVal |= script->OnMouseMove(pos, delta);
 		}
-		Unlock();
 	}
 	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
@@ -1031,15 +979,11 @@ uint Object::Scroll (const Vector2i& pos, float delta)
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		Lock();
+		for (uint i = mScripts.GetSize(); i > 0; )
 		{
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				Script* script = mScripts[--i];
-				retVal |= script->OnScroll(pos, delta);
-			}
+			Script* script = mScripts[--i];
+			retVal |= script->OnScroll(pos, delta);
 		}
-		Unlock();
 	}
 	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
@@ -1052,34 +996,30 @@ bool Object::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
-		Lock();
+		TreeNode& node = root.AddChild( GetClassID(), mName );
+
+		if (!mRelativePos.IsZero())		node.AddChild("Position", mRelativePos);
+		if (!mRelativeRot.IsIdentity()) node.AddChild("Rotation", mRelativeRot);
+		if (mRelativeScale != 1.0f)		node.AddChild("Scale", mRelativeScale);
+
+		if (!mCalcRelBounds && mRelativeBounds.IsValid())
 		{
-			TreeNode& node = root.AddChild( GetClassID(), mName );
-
-			if (!mRelativePos.IsZero())		node.AddChild("Position", mRelativePos);
-			if (!mRelativeRot.IsIdentity()) node.AddChild("Rotation", mRelativeRot);
-			if (mRelativeScale != 1.0f)		node.AddChild("Scale", mRelativeScale);
-
-			if (!mCalcRelBounds && mRelativeBounds.IsValid())
-			{
-				node.AddChild("Min", mRelativeBounds.GetMin());
-				node.AddChild("Max", mRelativeBounds.GetMax());
-			}
-
-			if (mLayer != 10) node.AddChild("Layer", mLayer);
-
-			if (mShowOutline) node.AddChild("Show Outline", mShowOutline);
-
-			if (!mIgnore.Get(Ignore::SerializeTo))
-				OnSerializeTo(node);
-
-			for (uint i = 0; i < mScripts.GetSize(); ++i)
-				mScripts[i]->SerializeTo(node);
-
-			for (uint i = 0; i < mChildren.GetSize(); ++i)
-				mChildren[i]->SerializeTo(node);
+			node.AddChild("Min", mRelativeBounds.GetMin());
+			node.AddChild("Max", mRelativeBounds.GetMax());
 		}
-		Unlock();
+
+		if (mLayer != 10) node.AddChild("Layer", mLayer);
+
+		if (mShowOutline) node.AddChild("Show Outline", mShowOutline);
+
+		if (!mIgnore.Get(Ignore::SerializeTo))
+			OnSerializeTo(node);
+
+		for (uint i = 0; i < mScripts.GetSize(); ++i)
+			mScripts[i]->SerializeTo(node);
+
+		for (uint i = 0; i < mChildren.GetSize(); ++i)
+			mChildren[i]->SerializeTo(node);
 		return true;
 	}
 	return false;
@@ -1089,82 +1029,74 @@ bool Object::SerializeTo (TreeNode& root) const
 // Serialization -- Load
 //============================================================================================================
 
-bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate, bool threadSafe)
+bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
-	if (threadSafe) Lock();
+	bool serializable = true;
+
+	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
 	{
-		bool serializable = true;
+		const TreeNode& node  = root.mChildren[i];
+		const String&	tag   = node.mTag;
+		const Variable&	value = node.mValue;
 
-		for (uint i = 0; i < root.mChildren.GetSize(); ++i)
+		if (tag == "Serializable")
 		{
-			const TreeNode& node  = root.mChildren[i];
-			const String&	tag   = node.mTag;
-			const Variable&	value = node.mValue;
+			value >> serializable;
+			mSerializable = serializable;
+		}
+		else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
+		else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
+		else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
+		else if (tag == "Min" || tag == "Max")
+		{
+			Vector3f v;
 
-			if (tag == "Serializable")
+			if (value >> v)
 			{
-				value >> serializable;
-				mSerializable = serializable;
+				mCalcRelBounds = false;
+				mRelativeBounds.Include(v);
+				mIsDirty = true;
 			}
-			else if	(tag == "Position")		{ if (value >> mRelativePos)	mIsDirty = true; }
-			else if (tag == "Rotation")		{ if (value >> mRelativeRot)	mIsDirty = true; }
-			else if (tag == "Scale")		{ if (value >> mRelativeScale)	mIsDirty = true; }
-			else if (tag == "Min" || tag == "Max")
-			{
-				Vector3f v;
+		}
+		else if (tag == "Layer")
+		{
+			uint temp;
 
-				if (value >> v)
-				{
-					mCalcRelBounds = false;
-					mRelativeBounds.Include(v);
-					mIsDirty = true;
-				}
-			}
-			else if (tag == "Layer")
+			if (value >> temp)
 			{
-				uint temp;
+				mLayer = (byte)(temp & 31);
+				mIsDirty = true;
+			}
+		}
+		else if (tag == "Show Outline")
+		{
+			mShowOutline = value.IsBool() ? value.AsBool() : true;
+		}
+		else if (tag == Script::ClassID())
+		{
+			// The 'contains' check is here because scripts can self-destruct inside OnInit()
+			Script* ptr = _AddScript(value.AsString());
 
-				if (value >> temp)
-				{
-					mLayer = (byte)(temp & 31);
-					mIsDirty = true;
-				}
-			}
-			else if (tag == "Show Outline")
+			if (ptr != 0 && mScripts.Contains(ptr))
 			{
-				mShowOutline = value.IsBool() ? value.AsBool() : true;
+				// The object should not remain locked during script serialization
+				ptr->SerializeFrom(node);
+				if (!serializable && mParent == 0) ptr->SetSerializable(false);
 			}
-			else if (tag == Script::ClassID())
-			{
-				// The 'contains' check is here because scripts can self-destruct inside OnInit()
-				Script* ptr = _AddScript(value.AsString());
+		}
+		else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
+		{
+			Object* ptr = _AddObject(tag, value.AsString());
 
-				if (ptr != 0 && mScripts.Contains(ptr))
-				{
-					// The object should not remain locked during script serialization
-					if (threadSafe) Unlock();
-					ptr->SerializeFrom(node);
-					if (!serializable && mParent == 0) ptr->SetSerializable(false);
-					if (threadSafe) Lock();
-				}
-			}
-			else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
+			if (ptr != 0)
 			{
-				Object* ptr = _AddObject(tag, value.AsString());
-
-				if (ptr != 0)
-				{
-					// The object should not remain locked during child serialization
-					if (threadSafe) Unlock();
-					ptr->SerializeFrom(node, forceUpdate);
-					if (!serializable && mParent == 0) ptr->SetSerializable(false);
-					ptr->SetDirty();
-					if (threadSafe) Lock();
-				}
+				// The object should not remain locked during child serialization
+				ptr->SerializeFrom(node, forceUpdate);
+				if (!serializable && mParent == 0) ptr->SetSerializable(false);
+				ptr->SetDirty();
 			}
 		}
 	}
-	if (threadSafe) Unlock();
 	return true;
 }
 

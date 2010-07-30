@@ -115,9 +115,9 @@ void Core::Init()
 
 void Core::Release()
 {
-	mRoot.Lock();
+	Lock();
 	mRoot.Release();
-	mRoot.Unlock();
+	Unlock();
 
 	mMeshes.Lock();
 	mMeshes.Release();
@@ -189,7 +189,9 @@ bool Core::Update()
 			// Update the entire scene
 			if (mRoot.GetFlag(Object::Flag::Enabled))
 			{
+				Lock();
 				mRoot.Update(Vector3f(), Quaternion(), 1.0f, false);
+				Unlock();
 			}
 			else
 			{
@@ -213,13 +215,17 @@ bool Core::Update()
 			mWin->BeginFrame();
 			if (mGraphics != 0)	mGraphics->BeginFrame();
 
-			// Trigger all registered draw callbacks
-			if (!mRoot.GetFlag(Object::Flag::Enabled) || !HandleOnDraw())
+			Lock();
 			{
-				mFullDraw = 0;
-				mGraphics->SetActiveRenderTarget(0);
-				mGraphics->Clear();
+				// Trigger all registered draw callbacks
+				if (!mRoot.GetFlag(Object::Flag::Enabled) || !HandleOnDraw())
+				{
+					mFullDraw = 0;
+					mGraphics->SetActiveRenderTarget(0);
+					mGraphics->Clear();
+				}
 			}
+			Unlock();
 
 			// Draw the UI after everything else
 			if (mUI != 0) mUI->Draw();
@@ -507,7 +513,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	}
 
 	// Save out the scenegraph only if there is something to save
-	mRoot.Lock();
+	Lock();
 	{
 		const Object::Children& children = mRoot.GetChildren();
 		const Object::Scripts&  scripts  = mRoot.GetScripts();
@@ -527,7 +533,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 				root.mChildren.Shrink();
 		}
 	}
-	mRoot.Unlock();
+	Unlock();
 	return true;
 }
 
@@ -571,7 +577,9 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		}
 		else if ( tag == Scene::ClassID() )
 		{
+			Lock();
 			mRoot.SerializeFrom(node, forceUpdate);
+			Unlock();
 		}
 		else if ( tag == Mesh::ClassID() )
 		{

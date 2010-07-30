@@ -39,6 +39,9 @@ protected:
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
 	uint			mFullDraw;			// How many times in a row the scene has been drawn fully (up to 10)
 
+	// Thread safety
+	Thread::Lockable mLock;
+
 public:
 
 	// Default constructor
@@ -72,6 +75,10 @@ public:
 	void Release();		// Releases the meshes and the scene graph
 	bool Update();		// Updates all components
 	void Shutdown();	// Shuts down the app
+
+	// Thread safety -- the core is locked during updates and serialization
+	void Lock()		const { mLock.Lock();	}
+	void Unlock()	const { mLock.Unlock(); }
 
 	// If we know we've changed something in the scene, we want to trigger an update next frame
 	void SetDirty() { mIsDirty = true; }

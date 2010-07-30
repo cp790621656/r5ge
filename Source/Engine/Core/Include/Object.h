@@ -106,7 +106,7 @@ protected:
 
 public:
 
-	virtual ~Object() { Release(false); }
+	virtual ~Object() { Release(); }
 
 	// This is a top-level base class
 	R5_DECLARE_BASE_CLASS("Object", Object);
@@ -121,7 +121,7 @@ private:
 
 	// INTERNAL: Use templates instead of these functions
 	Object*			_AddObject	(const String& type, const String& name);
-	const Object*	_FindObject	(const String& name, bool recursive = true, bool threadSafe = true) const;
+	const Object*	_FindObject	(const String& name, bool recursive = true) const;
 	Script*			_AddScript	(const char* type);
 	Script*			_AddScript	(const String& type);
 	const Script*	_GetScript	(const char* type) const;
@@ -137,27 +137,23 @@ private:
 public:
 
 	// Clears the object, removing all children and scripts
-	void Clear (bool threadSafe = true)
+	void Clear()
 	{
-		DestroyAllChildren(threadSafe);
-		DestroyAllScripts(threadSafe);
+		DestroyAllChildren();
+		DestroyAllScripts();
 	}
 
 	// Destroys the object -- this action is queued until next update
-	void DestroySelf (bool threadSafe = true);
+	void DestroySelf();
 
 	// Destroys all of the object's children
-	void DestroyAllChildren (bool threadSafe = true);
+	void DestroyAllChildren();
 
 	// Destroys all of the object's scripts
-	void DestroyAllScripts (bool threadSafe = true);
+	void DestroyAllScripts();
 
 	// Release all resources associated with this object
-	void Release (bool threadSafe = true);
-
-	// Thread-safe locking functionality
-	void Lock()		const	{ mLock.Lock(); }
-	void Unlock()	const	{ mLock.Unlock(); }
+	void Release();
 
 	// Retrieves the Core that was ultimately owns this object
 	Core* GetCore() { return mCore; }
@@ -245,10 +241,10 @@ public:
 	void OverrideAbsoluteScale	  (float scale)				{ mAbsoluteScale = scale;	}
 
 	// Convenience function -- force-updates the object based on the parent's absolute values
-	void Update (bool threadSafe = true);
+	void Update();
 
 	// Updates the object, calling appropriate virtual functions
-	bool Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved, bool threadSafe = true);
+	bool Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved);
 
 	// Fills the render queues and updates the visibility mask
 	void Fill (FillParams& params);
@@ -257,17 +253,17 @@ public:
 	uint Draw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut);
 
 	// Cast a ray into space and fill the list with objects that it intersected with
-	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits, bool threadSafe = true);
+	void Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits);
 
 	// Subscribe to events with specified priority
-	void SubscribeToKeyPress	(uint priority, bool threadSafe = true);
-	void SubscribeToMouseMove	(uint priority, bool threadSafe = true);
-	void SubscribeToScroll		(uint priority, bool threadSafe = true);
+	void SubscribeToKeyPress	(uint priority);
+	void SubscribeToMouseMove	(uint priority);
+	void SubscribeToScroll		(uint priority);
 
 	// Unsubscribe from events with specified priority
-	void UnsubscribeFromKeyPress	(uint priority, bool threadSafe = true);
-	void UnsubscribeFromMouseMove	(uint priority, bool threadSafe = true);
-	void UnsubscribeFromScroll		(uint priority, bool threadSafe = true);
+	void UnsubscribeFromKeyPress	(uint priority);
+	void UnsubscribeFromMouseMove	(uint priority);
+	void UnsubscribeFromScroll		(uint priority);
 
 	// Manually forward the OnKeyPress notification to the scripts
 	uint KeyPress (const Vector2i& pos, byte key, bool isDown);
@@ -280,7 +276,7 @@ public:
 
 	// Serialization
 	bool SerializeTo (TreeNode& root) const;
-	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false, bool threadSafe = true);
+	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
 
 protected:
 
@@ -333,65 +329,51 @@ public:
 	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
 
 	// Finds a child object of the specified name and type
-	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
 	{
-		if (threadSafe) Lock();
-		const Object* obj = _FindObject(name, recursive, threadSafe);
-		if (threadSafe) Unlock();
+		const Object* obj = _FindObject(name, recursive);
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 	}
 
 	// Finds a child object of the specified name and type
-	template <typename Type> const Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true) const
+	template <typename Type> const Type* FindObject (const String& name, bool recursive = true) const
 	{
-		if (threadSafe) Lock();
-		const Object* obj = _FindObject(name, recursive, threadSafe);
-		if (threadSafe) Unlock();
+		const Object* obj = _FindObject(name, recursive);
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (const Type*)obj : 0;
 	}
 
 	// Creates a new child of specified type and name
-	template <typename Type> Type* AddObject (const String& name, bool threadSafe = true)
+	template <typename Type> Type* AddObject (const String& name)
 	{
-		if (threadSafe) Lock();
 		Object* obj = _AddObject(Type::ClassID(), name);
-		if (threadSafe) Unlock();
 		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
 	}
 
 	// Retrieves an existing script on the object
-	template <typename Type> Type* GetScript(bool threadSafe = true)
+	template <typename Type> Type* GetScript()
 	{
-		if (threadSafe) Lock();
 		const Script* script = _GetScript(Type::ClassID());
-		if (threadSafe) Unlock();
 		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
 	}
 
 	// Retrieves an existing script on the object
-	template <typename Type> const Type* GetScript(bool threadSafe = true) const
+	template <typename Type> const Type* GetScript() const
 	{
-		if (threadSafe) Lock();
 		const Script* script = _GetScript(Type::ClassID());
-		if (threadSafe) Unlock();
 		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (const Type*)script : 0;
 	}
 
 	// Adds a new script to the object (only one script of each type can be active on the object)
-	template <typename Type> Type* AddScript(bool threadSafe = true)
+	template <typename Type> Type* AddScript()
 	{
-		if (threadSafe) Lock();
 		Script* script = _AddScript(Type::ClassID());
-		if (threadSafe) Unlock();
 		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
 	}
 
 	// Removes the specified script from the game object
-	template <typename Type> void RemoveScript(bool threadSafe = true)
+	template <typename Type> void RemoveScript()
 	{
-		if (threadSafe) Lock();
 		Script* script = (Script*)_GetScript(Type::ClassID());
 		if (script != 0) script->DestroySelf(false);
-		if (threadSafe) Unlock();
 	}
 };

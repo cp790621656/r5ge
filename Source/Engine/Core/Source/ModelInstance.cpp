@@ -19,7 +19,7 @@ const Matrix43& ModelInstance::GetMatrix() const
 // Updates the pointer to the instanced model, keeping track of the number of instances
 //============================================================================================================
 
-void ModelInstance::SetModel (Model* model, bool runOnSerialize, bool threadSafe)
+void ModelInstance::SetModel (Model* model, bool runOnSerialize)
 {
 	if (mModel != model)
 	{
@@ -37,7 +37,7 @@ void ModelInstance::SetModel (Model* model, bool runOnSerialize, bool threadSafe
 
 				if (onSerialize.HasChildren())
 				{
-					SerializeFrom(onSerialize, false, threadSafe);
+					SerializeFrom(onSerialize, false);
 				}
 			}
 		}
@@ -170,7 +170,7 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& node)
 			model->SetSerializable(false);
 		}
 
-		SetModel(model, true, false);
+		SetModel(model, true);
 		return true;
 	}
 	return false;

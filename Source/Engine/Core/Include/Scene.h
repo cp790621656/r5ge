@@ -35,15 +35,15 @@ public:
 	Scene (Object* root = 0) : mRoot(root) {}
 
 	// Finds a child object of the specified name and type
-	template <typename Type> Type* FindObject (const String& name, bool recursive = true, bool threadSafe = true)
+	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
 	{
-		return mRoot->FindObject<Type>(name, recursive, threadSafe);
+		return mRoot->FindObject<Type>(name, recursive);
 	}
 
 	// Creates a new child of specified type and name
-	template <typename Type> Type* AddObject (const String& name, bool threadSafe = true)
+	template <typename Type> Type* AddObject (const String& name)
 	{
-		return mRoot->AddObject<Type>(name, threadSafe);
+		return mRoot->AddObject<Type>(name);
 	}
 
 public:
@@ -76,7 +76,7 @@ public:
 	void ActivateMatrices();
 
 	// Casts a ray into the screen at the specified mouse position
-	RayHits& Raycast (const Vector2i& screenPos, bool threadSafe = true);
+	RayHits& Raycast (const Vector2i& screenPos);
 
 	// Advanced: Draws the scene using the specified technique
 	uint DrawWithTechnique (const String& technique, bool clearScreen = true, bool useLighting = true);

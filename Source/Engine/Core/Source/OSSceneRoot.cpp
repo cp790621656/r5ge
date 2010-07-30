@@ -13,12 +13,12 @@ OSSceneRoot* OSSceneRoot::FindRootOf (Object* parent)
 	{
 		if (parent->GetParent() == 0) break;
 
-		OSSceneRoot* root = parent->GetScript<OSSceneRoot>(false);
+		OSSceneRoot* root = parent->GetScript<OSSceneRoot>();
 		if (root != 0) return root;
 
 		parent = parent->GetParent();
 	}
 	while (parent != 0);
 
-	return parent->AddScript<OSSceneRoot>(true);
+	return parent->AddScript<OSSceneRoot>();
 }
