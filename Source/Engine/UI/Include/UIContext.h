@@ -79,6 +79,9 @@ public:
 	// Area creation
 	R5_DECLARE_INHERITED_CLASS("UIContext", UIContext, UIAnimatedFrame, UIWidget);
 
+	// Mouse movement event should be forwarded to the UISubPicture
+	virtual void OnMouseMove(const Vector2i& pos, const Vector2i& delta);
+
 	// If alpha is set to '1', rebuild the entry list
 	virtual void SetAlpha (float val, float animTime = 0.0f);
 	virtual void OnFocus  (bool hasFocus);

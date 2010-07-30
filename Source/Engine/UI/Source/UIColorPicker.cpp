@@ -267,6 +267,7 @@ void UIColorPicker::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 		mAlpha.OnMouseMove(pos, delta);
 		OnValueChange();
 	}
+	UIWidget::OnMouseMove(pos, delta);
 }
 
 //============================================================================================================

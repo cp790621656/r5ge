@@ -135,11 +135,11 @@ void UIContext::_Rebuild()
 
 void UIContext::_OnMouseMove (UIWidget* widget, const Vector2i& pos, const Vector2i& delta)
 {
-	UISubPicture* backgound = R5_CAST(UISubPicture, widget);
+	UISubPicture* bg = R5_CAST(UISubPicture, widget);
 
-	if (backgound != 0 && backgound->GetSkin() != 0)
+	if (bg != 0 && bg->GetSkin() != 0)
 	{
-		const Children& children = backgound->GetAllChildren();			
+		const Children& children = bg->GetAllChildren();			
 
 		FOREACH (i, children)
 		{
@@ -148,15 +148,15 @@ void UIContext::_OnMouseMove (UIWidget* widget, const Vector2i& pos, const Vecto
 			if (child != mHighlight && child->GetRegion().Contains(pos))
 			{
 				const UIRegion& areaRegion (child->GetRegion());
-				const UIRegion& parentRegion (backgound->GetSubRegion());
+				const UIRegion& parentRegion (bg->GetSubRegion());
 				float top = areaRegion.GetCalculatedTop() - parentRegion.GetCalculatedTop();
 
-				mHighlight = backgound->AddWidget<UISubPicture>("_Highlight_");
+				mHighlight = bg->AddWidget<UISubPicture>("_Highlight_");
 
 				if (mHighlight != 0)
 				{
 					mHighlight->SetEventHandling(EventHandling::None);
-					mHighlight->SetSkin(backgound->GetSkin());
+					mHighlight->SetSkin(bg->GetSkin());
 					mHighlight->SetFace("Generic Highlight");
 					mHighlight->GetRegion().SetTop(0, top);
 					mHighlight->GetRegion().SetBottom(0, top + areaRegion.GetCalculatedHeight());
@@ -208,6 +208,17 @@ void UIContext::_OnKeyPress (UIWidget* widget, const Vector2i& pos, byte key, bo
 			}			
 		}
 	}
+}
+
+//============================================================================================================
+// Mouse movement event should be forwarded to the UISubPicture
+//============================================================================================================
+
+void UIContext::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
+{
+	UISubPicture* sub = FindWidget<UISubPicture>("_Background_");
+	if (sub != 0) sub->OnMouseMove(pos, delta);
+	UIWidget::OnMouseMove(pos, delta);
 }
 
 //============================================================================================================
