@@ -10,7 +10,8 @@ UIContext::UIContext() :	mSkin		(0),
 							mShadow		(true),
 							mAlignment	(UILabel::Alignment::Left),
 							mIsDirty	(false),
-							mMinWidth	(0.0f)
+							mMinWidth	(0.0f),
+							mHighlight	(0)
 {
 	mSerializable = false;
 	mRegion.SetAlpha(0.0f);
@@ -95,6 +96,10 @@ void UIContext::_Rebuild()
 		// Add the background SubPicture
 		UISubPicture* img = AddWidget<UISubPicture>("_Background_");
 
+		USEventListener* listener = img->AddScript<USEventListener>();
+		listener->SetOnKey		( bind(&UIContext::_OnKeyPress,	 this) );
+		listener->SetOnMouseMove( bind(&UIContext::_OnMouseMove, this) );
+
 		if (img != 0)
 		{
 			img->Set(mSkin, mFace);
@@ -108,16 +113,13 @@ void UIContext::_Rebuild()
 				if (lbl != 0)
 				{
 					lbl->GetRegion().SetRect(highlightBorder, offset, subWidth, textSize);
-					lbl->SetLayer		( 1, false		);
-					lbl->SetShadow		( mShadow		);
-					lbl->SetAlignment	( mAlignment	);
-					lbl->SetTextColor	( mTextColor	);
-					lbl->SetFont		( mFont			);
-					lbl->SetText		( mEntries[i]	);
-
-					USEventListener* listener = lbl->AddScript<USEventListener>();
-					listener->SetOnMouseOver( bind(&UIContext::_OnMouseOverItem, this) );
-					listener->SetOnFocus	( bind(&UIContext::_OnItemFocus,	 this) );
+					lbl->SetLayer			( 1, false			  );
+					lbl->SetShadow			( mShadow			  );
+					lbl->SetAlignment		( mAlignment		  );
+					lbl->SetTextColor		( mTextColor		  );
+					lbl->SetFont			( mFont				  );
+					lbl->SetText			( mEntries[i]		  );
+					lbl->SetEventHandling	( EventHandling::None );
 				}
 
 				// Advance the offset by the selection border + the text's height
@@ -131,51 +133,80 @@ void UIContext::_Rebuild()
 // Event callback for a visual highlight
 //============================================================================================================
 
-void UIContext::_OnMouseOverItem (UIWidget* widget, bool inside)
+void UIContext::_OnMouseMove (UIWidget* widget, const Vector2i& pos, const Vector2i& delta)
 {
-	if (inside)
+	UISubPicture* backgound = R5_CAST(UISubPicture, widget);
+
+	if (backgound != 0 && backgound->GetSkin() != 0)
 	{
-		UISubPicture* parent = R5_CAST(UISubPicture, widget->GetParent());
+		const Children& children = backgound->GetAllChildren();			
 
-		if (parent != 0 && parent->GetSkin() != 0)
+		FOREACH (i, children)
 		{
-			UISubPicture* img = parent->AddWidget<UISubPicture>("_Highlight_");
+			UIWidget* child = children[i];
 
-			if (img != 0)
+			if (child != mHighlight && child->GetRegion().Contains(pos))
 			{
-				const UIRegion& areaRegion (widget->GetSubRegion());
-				const UIRegion& parentRegion (parent->GetSubRegion());
+				const UIRegion& areaRegion (child->GetRegion());
+				const UIRegion& parentRegion (backgound->GetSubRegion());
 				float top = areaRegion.GetCalculatedTop() - parentRegion.GetCalculatedTop();
 
-				img->SetSkin(parent->GetSkin());
-				img->SetFace("Generic Highlight");
-				img->GetRegion().SetTop(0, top);
-				img->GetRegion().SetBottom(0, top + areaRegion.GetCalculatedHeight());
-				img->SetEventHandling(EventHandling::None);
+				mHighlight = backgound->AddWidget<UISubPicture>("_Highlight_");
+
+				if (mHighlight != 0)
+				{
+					mHighlight->SetEventHandling(EventHandling::None);
+					mHighlight->SetSkin(backgound->GetSkin());
+					mHighlight->SetFace("Generic Highlight");
+					mHighlight->GetRegion().SetTop(0, top);
+					mHighlight->GetRegion().SetBottom(0, top + areaRegion.GetCalculatedHeight());
+				}
+				return;
 			}
 		}
 	}
 }
 
 //============================================================================================================
-// Triggered when an item is selected from the list
+// Triggered when an item loses focus
 //============================================================================================================
 
 void UIContext::_OnItemFocus (UIWidget* widget, bool hasFocus)
 {
 	if (hasFocus)
 	{
-		UILabel* lbl = R5_CAST(UILabel, widget);
-
-		if (lbl != 0)
-		{
-			mText = lbl->GetText();
-			OnValueChange();
-		}
-	}
-	else
-	{
 		OnFocus(false);
+	}
+}
+
+//============================================================================================================
+// When the left mouse button is released find the label to select
+//============================================================================================================
+
+void UIContext::_OnKeyPress (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
+{	
+	// Left mouse key should select objects	
+	if (key == Key::MouseLeft)
+	{
+		if (!isDown)
+		{
+			const Children& children = widget->GetAllChildren();
+
+			FOREACH (i, children)
+			{
+				if (children[i] != mHighlight && children[i]->GetRegion().Contains(pos))
+				{
+					const UILabel* lbl = R5_CAST(UILabel, children[i]);
+
+					if (lbl != 0)
+					{
+						mText = lbl->GetText();
+						OnValueChange();
+					}
+					return;
+				}
+			}			
+		}
 	}
 }
 

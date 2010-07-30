@@ -31,6 +31,7 @@ protected:
 	Vector3f		mAnchor;
 	Vector2f		mSize;
 	String			mText;
+	UISubPicture*	mHighlight;
 
 public:
 
@@ -69,8 +70,9 @@ protected:
 	void _Rebuild();
 
 	// Event callback for a visual highlight
-	void _OnMouseOverItem (UIWidget* widget, bool inside);
+	void _OnMouseMove (UIWidget* widget, const Vector2i& pos, const Vector2i& delta);
 	void _OnItemFocus (UIWidget* widget, bool hasFocus);
+	void _OnKeyPress (UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 public:
 
