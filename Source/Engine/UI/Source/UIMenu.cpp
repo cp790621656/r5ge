@@ -69,9 +69,6 @@ UIContext* UIMenu::_ShowMenu()
 			menu->SetAlignment( _GetMenuItemAlignment() );
 			menu->Show();
 		}
-
-		// Regardless of whether the menu was shown or not, give it focus so it closes properly
-		menu->SetFocus(true);
 	}
 	return menu;
 }

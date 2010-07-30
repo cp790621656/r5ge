@@ -90,6 +90,7 @@ void UIContext::_Rebuild()
 	// Start at the top, offset by the size of the background border + selection border
 	float offset = (float)backgroundBorder;
 	float subWidth = (float)(width - backgroundBorder * 2 - highlightBorder * 2);
+	float halfBorder = Float::Round(highlightBorder * 0.5f, 1.0f);
 
 	if (subWidth > 0.0f)
 	{
@@ -112,7 +113,8 @@ void UIContext::_Rebuild()
 
 				if (lbl != 0)
 				{
-					lbl->GetRegion().SetRect(highlightBorder, offset, subWidth, textSize);
+					lbl->GetRegion().SetRect(highlightBorder, offset - halfBorder, subWidth,
+						(float)textSize + highlightBorder);
 					lbl->SetLayer			( 1, false			  );
 					lbl->SetShadow			( mShadow			  );
 					lbl->SetAlignment		( mAlignment		  );
@@ -125,6 +127,7 @@ void UIContext::_Rebuild()
 				// Advance the offset by the selection border + the text's height
 				offset += highlightBorder + textSize;
 			}
+			img->SetFocus(true);
 		}
 	}
 }
@@ -208,17 +211,6 @@ void UIContext::_OnKeyPress (UIWidget* widget, const Vector2i& pos, byte key, bo
 			}			
 		}
 	}
-}
-
-//============================================================================================================
-// Mouse movement event should be forwarded to the UISubPicture
-//============================================================================================================
-
-void UIContext::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
-{
-	UISubPicture* sub = FindWidget<UISubPicture>("_Background_");
-	if (sub != 0) sub->OnMouseMove(pos, delta);
-	UIWidget::OnMouseMove(pos, delta);
 }
 
 //============================================================================================================
