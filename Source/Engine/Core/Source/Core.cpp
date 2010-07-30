@@ -245,7 +245,7 @@ bool Core::Update()
 		}
 
 		// Sleep the thread, letting others run in the background
-		Thread::Sleep(mSleepDelay);
+		Thread::Sleep(mFullDraw > 0 ? mSleepDelay : 10);
 		return true;
 	}
 	return true;
