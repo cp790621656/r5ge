@@ -153,11 +153,15 @@ void ModelInstanceGroup::OnFillNode (Node& node, FillParams& params)
 		{
 			Batch* batch = data->mBatches[i];
 
-			// If the batch has instances to work with
-			if (batch->mInstances.IsValid())
+			// If the batch has instances to work with and is actually visible
+			if (batch->mInstances.IsValid() &&
+				(batch->mIndexCount == 0 ||
+				 params.mFrustum.IsVisible(batch->mBounds)))
 			{
 				// Add this batch to the draw queue
-				params.mDrawQueue.Add(mLayer, this, batch, batch->mMat->GetTechniqueMask(), batch->mMat->GetUID(), 0.0f);
+				params.mDrawQueue.Add(mLayer, this, batch,
+					batch->mMat->GetTechniqueMask(),
+					batch->mMat->GetUID(), 0.0f);
 			}
 		}
 	}
@@ -174,6 +178,7 @@ uint ModelInstanceGroup::OnDraw (TemporaryStorage& storage, uint group, const IT
 	// If the index count was reset, we need to rebuild the VBOs
 	if (batch->mIndexCount == 0)
 	{
+		batch->mBounds.Clear();
 		ushort vertexCount = 0;
 
 		Memory& mem = batch->mVertices;
@@ -234,12 +239,15 @@ uint ModelInstanceGroup::OnDraw (TemporaryStorage& storage, uint group, const IT
 					// Append all of this meshes' vertices to the memory buffer
 					for (uint b = 0, bmax = verts.GetSize(); b < bmax; ++b)
 					{
-						mem.Append(verts[b] * mat);
+						Vector3f vertex (verts[b] * mat);
+						mem.Append(vertex);
 
 						if (batch->mNormalOffset != 0) mem.Append(norms[b] % mat);
 						if (batch->mTanOffset	 != 0) mem.Append(tangs[b] % mat);
 						if (batch->mTexOffset	 != 0) mem.Append(texs[b]);
 						if (batch->mColorOffset  != 0) mem.Append(colors[b]);
+
+						batch->mBounds.Include(vertex);
 					}
 
 					// Append all of the indices

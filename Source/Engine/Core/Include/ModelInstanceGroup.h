@@ -20,6 +20,7 @@ protected:
 		Instances		mInstances;	// List of all instances that will be rendered
 		Memory			mVertices;	// Temporary memory used by the VBO
 		Array<ushort>	mIndices;	// Temporary memory used by the IBO
+		Bounds			mBounds;	// Bounds used to cull the batch
 
 		IVBO*	mVBO;
 		IVBO*	mIBO;
