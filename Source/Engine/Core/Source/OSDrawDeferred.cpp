@@ -296,13 +296,8 @@ void OSDrawDeferred::CombineStage()
 	mGraphics->SetFog(false);
 	mGraphics->SetActiveRenderTarget(mFinalTarget);
 	mGraphics->SetScreenProjection(false);
-
-	// If the background color is not solid we should clear the screen first
-	if (mBackground.a < 1.0f)
-	{
-		mGraphics->SetBackgroundColor(Color4f(0.0f, 0.0f, 0.0f, 0.0f));
-		mGraphics->Clear(true, false, false);
-	}
+	mGraphics->SetBackgroundColor(mBackground);
+	mGraphics->Clear(true, false, false);
 
 	mGraphics->SetFogRange(mFogRange);
 	mGraphics->SetCulling(IGraphics::Culling::Back);

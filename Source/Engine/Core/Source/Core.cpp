@@ -70,6 +70,7 @@ Core::~Core()
 	Thread::ImproveTimerFrequency(false);
 
 	// Root has to be released explicitly as it has to be cleared before meshes
+	Lock();
 	mRoot.Release();
 }
 

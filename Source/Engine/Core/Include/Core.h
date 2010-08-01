@@ -77,8 +77,9 @@ public:
 	void Shutdown();	// Shuts down the app
 
 	// Thread safety -- the core is locked during updates and serialization
-	void Lock()		const { mLock.Lock();	}
+	void Lock()		const { mLock.Lock(); }
 	void Unlock()	const { mLock.Unlock(); }
+	bool IsLocked() const { return mLock.IsLocked(); }
 
 	// If we know we've changed something in the scene, we want to trigger an update next frame
 	void SetDirty() { mIsDirty = true; }

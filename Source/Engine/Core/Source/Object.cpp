@@ -1,6 +1,12 @@
 #include "../Include/_All.h"
 using namespace R5;
 
+#ifdef _DEBUG
+#define ASSERT_IF_CORE_IS_UNLOCKED ASSERT(mCore->IsLocked(), "You must lock the core before you work with objects!");
+#else
+#define ASSERT_IF_CORE_IS_UNLOCKED
+#endif
+
 //============================================================================================================
 // Register default object types
 //============================================================================================================
@@ -97,6 +103,8 @@ Object* Object::_Create (const String& type)
 
 Object* Object::_AddObject (const String& type, const String& name)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	static bool doOnce = true;
 
 	if (doOnce)
@@ -147,6 +155,8 @@ Object* Object::_AddObject (const String& type, const String& name)
 
 const Object* Object::_FindObject (const String& name, bool recursive) const
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	const Object* node (0);
 
 	if (mChildren.IsValid())
@@ -176,6 +186,8 @@ const Object* Object::_FindObject (const String& name, bool recursive) const
 
 Script* Object::_AddScript (const char* type)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	static bool doOnce = true;
 
 	if (doOnce)
@@ -215,6 +227,8 @@ Script* Object::_AddScript (const char* type)
 
 Script* Object::_AddScript (const String& type)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	static bool doOnce = true;
 
 	if (doOnce)
@@ -256,6 +270,8 @@ Script* Object::_AddScript (const String& type)
 
 const Script* Object::_GetScript (const char* type) const
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	const Script* ptr (0);
 
 	FOREACH(i, mScripts)
@@ -275,6 +291,8 @@ const Script* Object::_GetScript (const char* type) const
 
 const Script* Object::_GetScript (const String& type) const
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	const Script* ptr (0);
 
 	FOREACH(i, mScripts)
@@ -296,6 +314,8 @@ const Script* Object::_GetScript (const String& type) const
 
 void Object::_Add (Object* obj)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	if (obj != 0)
 	{
 		obj->mAbsolutePos	= obj->mRelativePos;
@@ -321,6 +341,8 @@ void Object::_Add (Object* obj)
 
 void Object::_Remove (Object* obj)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	if (obj != 0 && mChildren.Remove(obj))
 	{
 		OnRemoveChild(obj);
@@ -426,6 +448,8 @@ uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 
 void Object::DestroySelf()
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	mFlags.Set(Flag::Enabled, false);
 
 	DestroyAllScripts();
@@ -447,6 +471,8 @@ void Object::DestroySelf()
 
 void Object::DestroyAllChildren()
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	for (uint i = mChildren.GetSize(); i > 0; )
 	{
 		mChildren[--i]->DestroySelf();
@@ -460,6 +486,8 @@ void Object::DestroyAllChildren()
 
 void Object::DestroyAllScripts()
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	FOREACH(i, mScripts)
 	{
 		Script* script = mScripts[i];
@@ -476,6 +504,8 @@ void Object::DestroyAllScripts()
 
 void Object::Release()
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	mCalcRelBounds = true;
 	mCalcAbsBounds = true;
 
@@ -527,6 +557,8 @@ void Object::Release()
 
 void Object::SetParent (Object* ptr)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	if (mParent != ptr)
     {
 		if (mParent != 0) mParent->_Remove(this);
@@ -941,11 +973,15 @@ uint Object::KeyPress (const Vector2i& pos, byte key, bool isDown)
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		for (uint i = mScripts.GetSize(); i > 0; )
+		mCore->Lock();
 		{
-			Script* script = mScripts[--i];
-			retVal |= script->OnKeyPress(pos, key, isDown);
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnKeyPress(pos, key, isDown);
+			}
 		}
+		mCore->Unlock();
 	}
 	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
@@ -960,11 +996,15 @@ uint Object::MouseMove (const Vector2i& pos, const Vector2i& delta)
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		for (uint i = mScripts.GetSize(); i > 0; )
+		mCore->Lock();
 		{
-			Script* script = mScripts[--i];
-			retVal |= script->OnMouseMove(pos, delta);
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnMouseMove(pos, delta);
+			}
 		}
+		mCore->Unlock();
 	}
 	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
@@ -979,11 +1019,15 @@ uint Object::Scroll (const Vector2i& pos, float delta)
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		for (uint i = mScripts.GetSize(); i > 0; )
+		mCore->Lock();
 		{
-			Script* script = mScripts[--i];
-			retVal |= script->OnScroll(pos, delta);
+			for (uint i = mScripts.GetSize(); i > 0; )
+			{
+				Script* script = mScripts[--i];
+				retVal |= script->OnScroll(pos, delta);
+			}
 		}
+		mCore->Unlock();
 	}
 	return retVal ? EventDispatcher::EventResponse::Handled : EventDispatcher::EventResponse::NotHandled;
 }
@@ -1031,6 +1075,8 @@ bool Object::SerializeTo (TreeNode& root) const
 
 bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	bool serializable = true;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
