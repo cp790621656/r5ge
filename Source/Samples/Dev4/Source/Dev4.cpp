@@ -27,10 +27,12 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev4.txt")
 	{
+		mCore->Lock();
 		Object* obj = mCore->GetRoot()->FindObject<Object>("Default Camera");
 		if (obj != 0) mDraw = obj->GetScript<OSDrawDeferred>();
-
 		mCore->AddOnKey( bind(&TestApp::OnKeyPress, this) );
+		mCore->Unlock();
+
 		while (mCore->Update());
 		//*mCore >> "Config/Dev4.txt";
 	}

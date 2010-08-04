@@ -13,8 +13,6 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
-		Fog Range = 100.000000 200.000000
 
 		Material = "Peasant"
 		{
@@ -49,7 +47,7 @@ Root
 	{
 		Model Template = "Torch"
 		{
-			Source = "Models/Held/torch.r5a"
+			Source = "Models/torch.r5a"
 	
 			OnSerialize
 			{
@@ -91,7 +89,7 @@ Root
 
 		Model Template = "Peasant"
 		{
-			Source = "Models/NPCs/Peasant.r5a"
+			Source = "Models/Peasant.r5a"
 
 			OnSerialize
 			{
@@ -121,7 +119,7 @@ Root
 					{
 						Scale = 1.000000
 						Layer = 10
-						Model = "Models/Held/sword.r5a"
+						Model = "Models/sword.r5a"
 					}
 				}
 	
@@ -164,7 +162,11 @@ Root
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 2.0 10.000000
+
 			Script = "OSDrawDeferred"
+			{
+				Background Color = 0.25 0.25 0.25 1.0
+			}
 		}
 	}
 }

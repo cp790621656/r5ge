@@ -16,13 +16,13 @@ R5::Random randomGen;
 // Script that adds torchlight-like flickering to the point light it's attached to
 //============================================================================================================
 
-class Torchlight : public Script
+class OSTorchlight : public Script
 {
 	PointLight* mLight;
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Torchlight", Torchlight, Script, Script);
+	R5_DECLARE_INHERITED_CLASS("OSTorchlight", OSTorchlight, Script, Script);
 
 	virtual void OnInit()
 	{
@@ -69,7 +69,7 @@ TestApp::TestApp() : mModel(0)
 	// Register the new fire and smoke emitters
 	Object::Register<FireEmitter>();
 	Object::Register<SmokeEmitter>();
-	Script::Register<Torchlight>();
+	Script::Register<OSTorchlight>();
 }
 
 //============================================================================================================

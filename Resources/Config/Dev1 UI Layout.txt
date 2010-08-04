@@ -27,7 +27,7 @@ Root
 				Alignment = "Center"
 				Event Handling = "Normal"
 				Layer = 0
-				
+			
 				UIInput = "Color Value"
 				{
 					Left = 0.0 0.0

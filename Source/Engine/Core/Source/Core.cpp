@@ -92,6 +92,9 @@ void Core::Init()
 	// First update should update the scene regardless of time delta
 	mIsDirty = true;
 
+	// Remember the thread ID
+	mThreadID = Thread::GetID();
+
 	// Root of the scene needs to know who owns it
 	mRoot.mCore = this;
 	mRoot.mGraphics = mGraphics;

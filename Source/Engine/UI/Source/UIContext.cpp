@@ -102,11 +102,6 @@ void UIContext::_Rebuild()
 			img->Set(mSkin, mFace);
 			img->SetBackColor(mBackColor);
 
-			USEventListener* listener = img->AddScript<USEventListener>();
-			listener->SetOnKey		( bind(&UIContext::_OnKeyPress,	 this) );
-			listener->SetOnMouseMove( bind(&UIContext::_OnMouseMove, this) );
-			listener->SetOnFocus	( bind(&UIContext::_OnFocusChange, this) );
-
 			// Run through all entries and add them to the frame
 			for (uint i = 0; i < mEntries.GetSize(); ++i)
 			{
@@ -129,7 +124,11 @@ void UIContext::_Rebuild()
 				offset += highlightBorder + textSize;
 			}
 			img->SetFocus(true);
-			img->AddScript<USEventListener>()->SetOnFocus( bind(&UIContext::_OnFocusChange, this) );
+
+			USEventListener* listener = img->AddScript<USEventListener>();
+			listener->SetOnKey		( bind(&UIContext::_OnKeyPress,	 this) );
+			listener->SetOnMouseMove( bind(&UIContext::_OnMouseMove, this) );
+			listener->SetOnFocus	( bind(&UIContext::_OnFocusChange, this) );
 		}
 	}
 }

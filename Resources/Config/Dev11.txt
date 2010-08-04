@@ -424,7 +424,7 @@ Root
 			Layer = 10
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 27.999767 30.000000
-			Script = "OSAudioUIListener"
+			Script = "OSAudioListener"
 			Script = "OSDrawDeferred"
 		}
 	}

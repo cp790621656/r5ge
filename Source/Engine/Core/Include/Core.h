@@ -38,6 +38,7 @@ protected:
 	Array<String>	mExecuted;			// Executed resources, for serialization purposes
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
 	uint			mFullDraw;			// How many times in a row the scene has been drawn fully (up to 10)
+	Thread::IDType	mThreadID;			// ID of the thread the Core was created in
 
 	// Thread safety
 	Thread::Lockable mLock;
@@ -80,6 +81,9 @@ public:
 	void Lock()		const { mLock.Lock(); }
 	void Unlock()	const { mLock.Unlock(); }
 	bool IsLocked() const { return mLock.IsLocked(); }
+
+	// ID of the thread the Core was created in
+	const Thread::IDType& GetThreadID() const { return mThreadID; }
 
 	// If we know we've changed something in the scene, we want to trigger an update next frame
 	void SetDirty() { mIsDirty = true; }

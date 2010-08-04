@@ -81,6 +81,8 @@ void TestApp::Init()
 {
 	Object* obj[4];
 
+	mCore->Lock();
+
 	obj[0] = mCore->GetRoot()->AddObject<Object>("Lights 0");
 	obj[0]->SetSerializable(false);
 	obj[0]->AddScript<SpinScript>()->Set(0.0f, 0.01f, 1.0f, 0.93f);
@@ -135,6 +137,7 @@ void TestApp::Init()
 			//gl->SetRelativeScale(4.0f);
 		}
 	}
+	mCore->Unlock();
 }
 
 //============================================================================================================

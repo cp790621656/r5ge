@@ -49,9 +49,11 @@ void TestApp::OnColorChange (UIWidget* widget)
 
 	if (picker != 0)
 	{
+		mCore->Lock();
 		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		const Color4ub& color = picker->GetColor();
 		if (light) light->SetDiffuse(color.mVal);
+		mCore->Unlock();
 
 		UIInput* input = picker->GetParent()->FindWidget<UIInput>("Color Value", false);
 
@@ -93,8 +95,10 @@ void TestApp::OnBrightnessChange (UIWidget* widget)
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
+		mCore->Lock();
 		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		if (light) light->SetBrightness(val);
+		mCore->Unlock();
 	}
 }
 
@@ -111,8 +115,10 @@ void TestApp::OnRangeChange (UIWidget* widget)
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.2f", val) );
 
+		mCore->Lock();
 		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		if (light) light->SetRange(val);
+		mCore->Unlock();
 	}
 }
 
@@ -129,8 +135,10 @@ void TestApp::OnPowerChange (UIWidget* widget)
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.3f", val) );
 
+		mCore->Lock();
 		PointLight* light = mCore->GetRoot()->FindObject<PointLight>("First Light");
 		if (light) light->SetPower(val);
+		mCore->Unlock();
 	}
 }
 
