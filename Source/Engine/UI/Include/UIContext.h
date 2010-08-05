@@ -70,9 +70,9 @@ protected:
 	void _Rebuild();
 
 	// Event callback for a visual highlight
-	void _OnMouseMove (UIWidget* widget, const Vector2i& pos, const Vector2i& delta);
-	void _OnFocusChange (UIWidget* widget, bool hasFocus) { OnFocus(false); }
-	void _OnKeyPress  (UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
+	void _OnMouseMove	(UIWidget* widget, const Vector2i& pos, const Vector2i& delta);
+	void _OnFocusChange (UIWidget* widget, bool hasFocus) { if (!hasFocus) SetAlpha(0.0f, 0.25f); }
+	void _OnKeyPress	(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 public:
 
