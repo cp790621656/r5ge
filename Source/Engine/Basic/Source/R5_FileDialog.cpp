@@ -6,6 +6,7 @@ using namespace R5;
 #elif defined _MACOS
   #import <Foundation/NSString.h>
   #import <Foundation/NSAutoreleasePool.h>
+  #import <AppKit/NSOpenPanel.h>
   #import <AppKit/NSApplication.h>
 #endif
 
@@ -130,9 +131,8 @@ bool FileDialog::Show (const char* title, bool existingFilesOnly)
 	// Display the dialog
 	if ( [openDlg runModalForDirectory:nil file:nsFile] == NSOKButton )
 	{
-		nsFile = [op filename];
-
-		//mFilename = [nsFile getUTF8String];
+		nsFile = [openDlg filename];
+		mFilename = [nsFile UTF8String];
 		[pool drain];
 		return true;
 	}

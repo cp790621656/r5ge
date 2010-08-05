@@ -8,6 +8,7 @@
   #include <dirent.h>
   #include <stdlib.h>
   #define _chdir chdir
+  #define _getcwd getcwd
 #endif
 
 #include <stdarg.h>

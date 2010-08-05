@@ -71,8 +71,6 @@ void OSDrawDeferred::OnInit()
 
 void OSDrawDeferred::MaterialStage()
 {
-	// Render target's background color
-	IRenderTarget* target = mScene.GetFinalTarget();
 	Vector2i size (mScene.GetFinalTargetSize());
 
 	// Set up the material render target

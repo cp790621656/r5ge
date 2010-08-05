@@ -24,7 +24,7 @@ static const char* g_combineDeferred = {
 
 	// Fog's contribution
 "	float fogFactor = clamp((depth - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
-"	fogFactor = 0.5f * (fogFactor + fogFactor * fogFactor);\n"
+"	fogFactor = 0.5 * (fogFactor + fogFactor * fogFactor);\n"
 
 "	vec4 matDiff    = texture2D(R5_texture1, gl_TexCoord[0].xy);\n"
 "	vec4 matSpec    = texture2D(R5_texture2, gl_TexCoord[0].xy);\n"

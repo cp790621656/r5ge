@@ -512,8 +512,6 @@ bool ModelTemplate::Load (const byte* buffer, uint size, const String& extension
 
 void GatherModels (const TreeNode& root, Array<String>& models)
 {
-	bool retVal = false;
-
 	if (root.mTag == "Model")
 	{
 		models.AddUnique( root.mValue.IsString() ? root.mValue.AsString() : root.mValue.GetString() );
