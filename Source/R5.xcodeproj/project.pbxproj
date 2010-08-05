@@ -147,6 +147,7 @@
 		14C63711120B021D005B0735 /* ModelInstanceGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C6370F120B021D005B0735 /* ModelInstanceGroup.cpp */; };
 		14C63712120B021D005B0735 /* ProjectedTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C63710120B021D005B0735 /* ProjectedTexture.cpp */; };
 		14C63715120B02A8005B0735 /* UIColorPicker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C63714120B02A8005B0735 /* UIColorPicker.cpp */; };
+		14C63744120B0673005B0735 /* Dev0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C63743120B0673005B0735 /* Dev0.cpp */; };
 		14C9278310B2183500D71A09 /* T02.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C9278210B2183500D71A09 /* T02.cpp */; };
 		14C927A010B2186400D71A09 /* T03.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C9279F10B2186400D71A09 /* T03.cpp */; };
 		14C927A310B2188600D71A09 /* T04.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C927A210B2188600D71A09 /* T04.cpp */; };
@@ -1691,6 +1692,27 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = "System Window";
 		};
+		14C63733120B049D005B0735 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
+			remoteInfo = Math;
+		};
+		14C63735120B049D005B0735 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
+			remoteInfo = Serialization;
+		};
+		14C63739120B049D005B0735 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
+			remoteInfo = Basic;
+		};
 		14C9277010B2181200D71A09 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2514,6 +2536,8 @@
 		14C63710120B021D005B0735 /* ProjectedTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProjectedTexture.cpp; path = Engine/Core/Source/ProjectedTexture.cpp; sourceTree = "<group>"; };
 		14C63713120B0277005B0735 /* UIColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIColorPicker.h; path = Engine/UI/Include/UIColorPicker.h; sourceTree = "<group>"; };
 		14C63714120B02A8005B0735 /* UIColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIColorPicker.cpp; path = Engine/UI/Source/UIColorPicker.cpp; sourceTree = "<group>"; };
+		14C63740120B049D005B0735 /* Dev0 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Dev0; sourceTree = BUILT_PRODUCTS_DIR; };
+		14C63743120B0673005B0735 /* Dev0.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dev0.cpp; path = Samples/Dev0/Source/Dev0.cpp; sourceTree = "<group>"; };
 		14C9278010B2181200D71A09 /* T02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T02.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14C9278210B2183500D71A09 /* T02.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = T02.cpp; path = Tutorials/T02/T02.cpp; sourceTree = SOURCE_ROOT; };
 		14C9279D10B2184D00D71A09 /* T04.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T04.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2845,6 +2869,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		14C1546C0DA6727B00588C73 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14C6373C120B049D005B0735 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3608,6 +3639,14 @@
 			name = Include;
 			sourceTree = "<group>";
 		};
+		14C63742120B0656005B0735 /* Dev0 */ = {
+			isa = PBXGroup;
+			children = (
+				14C63743120B0673005B0735 /* Dev0.cpp */,
+			);
+			name = Dev0;
+			sourceTree = "<group>";
+		};
 		14CE0EFB0D9046B70027155A /* 1. Stand-Alone Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -3685,6 +3724,7 @@
 			children = (
 				14DDF1B70E0CBB110015264B /* Noise Test */,
 				147554010E0C3AFA00D5641D /* Network Test */,
+				14C63742120B0656005B0735 /* Dev0 */,
 				14C1547F0DA6729F00588C73 /* Dev1 */,
 				14ACB3BD110678E300258C54 /* Dev2 */,
 				148487310E42832000B02838 /* Dev3 */,
@@ -4279,6 +4319,7 @@
 				BB3F32F711798C6900D1F593 /* T12.app */,
 				BB3F331D11798CD000D1F593 /* Dev12.app */,
 				144F732611DAB7CF008EF73F /* Dev13.app */,
+				14C63740120B049D005B0735 /* Dev0 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -5127,6 +5168,25 @@
 			productReference = 14C1547D0DA6727B00588C73 /* Dev1.app */;
 			productType = "com.apple.product-type.application";
 		};
+		14C63731120B049D005B0735 /* Dev0 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 14C6373D120B049D005B0735 /* Build configuration list for PBXNativeTarget "Dev0" */;
+			buildPhases = (
+				14C6373A120B049D005B0735 /* Sources */,
+				14C6373C120B049D005B0735 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				14C63732120B049D005B0735 /* PBXTargetDependency */,
+				14C63734120B049D005B0735 /* PBXTargetDependency */,
+				14C63738120B049D005B0735 /* PBXTargetDependency */,
+			);
+			name = Dev0;
+			productName = "Network Test";
+			productReference = 14C63740120B049D005B0735 /* Dev0 */;
+			productType = "com.apple.product-type.tool";
+		};
 		14C9276E10B2181200D71A09 /* T02 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14C9277D10B2181200D71A09 /* Build configuration list for PBXNativeTarget "T02" */;
@@ -5524,6 +5584,7 @@
 				14E5FB0A115FCC94002EED30 /* Sound */,
 				1483A8850E0C577100C96079 /* Network Test */,
 				14C01EE40D92B50600CB59E3 /* Window Creation */,
+				14C63731120B049D005B0735 /* Dev0 */,
 				14C154570DA6727B00588C73 /* Dev1 */,
 				14ACB3BE1106790300258C54 /* Dev2 */,
 				148487340E42836500B02838 /* Dev3 */,
@@ -6008,6 +6069,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				14C154840DA672DA00588C73 /* Dev1.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14C6373A120B049D005B0735 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				14C63744120B0673005B0735 /* Dev0.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7310,6 +7379,21 @@
 			isa = PBXTargetDependency;
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 14C158800DAABCFF00588C73 /* PBXContainerItemProxy */;
+		};
+		14C63732120B049D005B0735 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1468B89E0D903E6300E0AE61 /* Math */;
+			targetProxy = 14C63733120B049D005B0735 /* PBXContainerItemProxy */;
+		};
+		14C63734120B049D005B0735 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			targetProxy = 14C63735120B049D005B0735 /* PBXContainerItemProxy */;
+		};
+		14C63738120B049D005B0735 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14753BC70D9C12E3000D05A5 /* Basic */;
+			targetProxy = 14C63739120B049D005B0735 /* PBXContainerItemProxy */;
 		};
 		14C9276F10B2181200D71A09 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -9191,6 +9275,45 @@
 			};
 			name = Release;
 		};
+		14C6373E120B049D005B0735 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					AppKit,
+					"-lR5_Basic",
+					"-lR5_Math",
+					"-lR5_Serialization",
+					"-lz",
+				);
+			};
+			name = Debug;
+		};
+		14C6373F120B049D005B0735 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					AppKit,
+					"-lR5_Basic",
+					"-lR5_Math",
+					"-lR5_Serialization",
+					"-lz",
+				);
+			};
+			name = Release;
+		};
 		14C9277E10B2181200D71A09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -10214,6 +10337,15 @@
 			buildConfigurations = (
 				14C1547B0DA6727B00588C73 /* Debug */,
 				14C1547C0DA6727B00588C73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		14C6373D120B049D005B0735 /* Build configuration list for PBXNativeTarget "Dev0" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14C6373E120B049D005B0735 /* Debug */,
+				14C6373F120B049D005B0735 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -14,16 +14,13 @@ using namespace R5;
 
 int main (int argc, char* argv[])
 {
-#ifdef _MACOS
-	String path ( System::GetPathFromFilename(argv[0]) );
-	System::SetCurrentPath(path.GetBuffer());
-	System::SetCurrentPath("../../../");
-#endif
 	TreeNode root;
 	Array<String> folders;
 	Array<String> files;
 
-	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.0\n");
+	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.5\n");
+	
+	System::SetCurrentPath(System::GetPathFromFilename(argv[0]));
 
 	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
 	{
@@ -59,9 +56,13 @@ int main (int argc, char* argv[])
 	}
 	else
 	{
+		puts("No configuration file found. Doing an 'svn up'...\n");
 		System::Execute("svn up");
 	}
 	printf("\nDone!\n");
+
+#ifdef _WINDOWS
 	getchar();
+#endif
 	return 0;
 }
