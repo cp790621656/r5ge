@@ -6,7 +6,6 @@
 //============================================================================================================
 
 #include "../../../Engine/Serialization/Include/_All.h"
-#include "../../../Engine/UI/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -20,47 +19,48 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath(path.GetBuffer());
 	System::SetCurrentPath("../../../");
 #endif
-	System::SetCurrentPath("../../../Resources/Config");
-	
-	Array<String> files;
+	TreeNode root;
 	Array<String> folders;
-	String temp;
+	Array<String> files;
 
-	System::ReadFolder(System::GetCurrentPath(), folders, files);
+	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.0\n");
 
-	FOREACH(i, files)
+	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
 	{
-		const String& file = files[i];
+		String command, url, path;
 
-		if (file.EndsWith(".txt") && temp.Load(file))
+		FOREACH(i, root.mChildren)
 		{
-			printf("Processing '%s'... ", file.GetBuffer());
-			uint count (0);
-			/*count += temp.Replace(UIWidget::ClassID(), "UIWidget");
-			count += temp.Replace(UIHighlight::ClassID(), "UIHighlight");
-			count += temp.Replace(UIPicture::ClassID(), "UIPicture");
-			count += temp.Replace(UISubPicture::ClassID(), "UISubPicture");
-			count += temp.Replace(UILabel::ClassID(), "UILabel");
-			count += temp.Replace(UITextArea::ClassID(), "UITextArea");
-			count += temp.Replace(UIInput::ClassID(), "UIInput");
-			count += temp.Replace(UIContext::ClassID(), "UIContext");
-			count += temp.Replace(UIMenu::ClassID(), "UIMenu");
-			count += temp.Replace(UIList::ClassID(), "UIList");
-			count += temp.Replace(UIWindow::ClassID(), "UIWindow");
-			count += temp.Replace(UIAnimatedFrame::ClassID(), "UIFrame");
-			count += temp.Replace(UIAnimatedSlider::ClassID(), "UISlider");
-			count += temp.Replace(UIAnimatedButton::ClassID(), "UIButton");
-			count += temp.Replace(UIAnimatedCheckbox::ClassID(), "UICheckbox");
-			count += temp.Replace(UIShadedArea::ClassID(), "UIShadedArea");
-			count += temp.Replace(UIStats::ClassID(), "UIStats");
-			count += temp.Replace("USEventUIListener", "USEventListener");*/
-			//count += temp.Replace("UIWindow\n", "Window\n");
-			count += temp.Replace("\t\n", "\n");
-			printf("%u\n", count);
-			temp.Save(file);
+			const TreeNode& node = root.mChildren[i];
+			url = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
+			if (url.IsEmpty()) continue;
+
+			path = node.mTag;
+			if (!path.EndsWith("/")) path << "/";
+
+			if (!System::ReadFolder(path + ".svn", folders, files))
+			{
+				printf("\nChecking out %s\n\n", path.GetBuffer());
+				command = "svn checkout """;
+				command << url;
+				command << """ """;
+				command << path;
+				command << """";
+			}
+			else
+			{
+				printf("\nUpdating %s\n", path.GetBuffer());
+				command = "svn up """;
+				command << path;
+				command << """";
+			}
+			System::Execute(command.GetBuffer());
 		}
 	}
-
+	else
+	{
+		System::Execute("svn up");
+	}
 	printf("\nDone!\n");
 	getchar();
 	return 0;
