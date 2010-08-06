@@ -37,9 +37,9 @@ byte UITextLine::GetFontSize() const
 
 void UITextLine::SetTextColor (const Color4ub& color)
 {
-	if (mColor != color)
+	if (mTextColor != color)
 	{
-		mColor = color;
+		mTextColor = color;
 		SetDirty();
 	}
 }
@@ -114,7 +114,7 @@ void UITextLine::OnFill (UIQueue* queue)
 	{
 		byte height = mFont->GetSize();
 
-		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
+		Color4ub color ( mTextColor, mRegion.GetCalculatedAlpha() );
 		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		// Adjust the height in order to center the text as necessary
@@ -179,7 +179,7 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 
 void UITextLine::OnSerializeTo (TreeNode& node) const
 {
-	node.AddChild("Text Color", mColor);
+	node.AddChild("Text Color", mTextColor);
 	node.AddChild("Text", mText);
 	node.AddChild("Shadow", mShadow);
 

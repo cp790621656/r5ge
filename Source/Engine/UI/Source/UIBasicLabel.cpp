@@ -16,7 +16,7 @@ void UIBasicLabel::OnFill (UIQueue* queue)
 
 		byte height ( GetFontSize() );
 
-		Color4ub color ( mColor, mRegion.GetCalculatedAlpha() );
+		Color4ub color ( mTextColor, mRegion.GetCalculatedAlpha() );
 		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		mEnd = mStart + font->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),

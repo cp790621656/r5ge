@@ -14,10 +14,11 @@ protected:
 	const ITexture*	mTex;
 	bool			mIgnoreAlpha;
 	Color4ub		mColor;
+	bool			mTiled;
 
 public:
 
-	UIPicture() : mTex(0), mIgnoreAlpha(false), mColor(0xFFFFFFFF) {}
+	UIPicture() : mTex(0), mIgnoreAlpha(false), mColor(0xFFFFFFFF), mTiled(false) {}
 
 	// Area creation
 	R5_DECLARE_INHERITED_CLASS("UIPicture", UIPicture, UIWidget, UIWidget);
@@ -30,6 +31,10 @@ public:
 
 	const Color4ub& GetBackColor() const { return mColor; }
 	void SetBackColor (const Color4ub& c) { if (mColor != c) { mColor = c; SetDirty(); } }
+
+	// The texture can be tiled or stretched
+	bool IsTiled() const { return mTiled; }
+	void SetTiled(bool val)	 { if (mTiled != val) { mTiled = val; SetDirty(); } }
 
 public:
 

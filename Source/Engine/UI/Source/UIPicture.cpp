@@ -35,10 +35,18 @@ void UIPicture::OnFill (UIQueue* queue)
 
 		Color4ub color (mColor, mRegion.GetCalculatedAlpha());
 
-		queue->mVertices.Expand().Set( left,  top,		0.0f, 1.0f, color );
+		float u = 1.0f, v = 1.0f;
+
+		if (mTiled)
+		{
+			u = mRegion.GetCalculatedWidth()  / mTex->GetSize().x;
+			v = mRegion.GetCalculatedHeight() / mTex->GetSize().y;
+		}
+
+		queue->mVertices.Expand().Set( left,  top,		0.0f, v, color );
 		queue->mVertices.Expand().Set( left,  bottom,	0.0f, 0.0f, color );
-		queue->mVertices.Expand().Set( right, bottom,	1.0f, 0.0f, color );
-		queue->mVertices.Expand().Set( right, top,		1.0f, 1.0f, color );
+		queue->mVertices.Expand().Set( right, bottom,	u, 0.0f, color );
+		queue->mVertices.Expand().Set( right, top,		u, v, color );
 	}
 }
 
@@ -50,7 +58,13 @@ bool UIPicture::OnSerializeFrom (const TreeNode& node)
 {
 	const Variable& value = node.mValue;
 
-	if (node.mTag == "Back Color")
+	if (node.mTag == "Tiled")
+	{
+		bool val;
+		if (value >> val) SetTiled(val);
+		return true;
+	}
+	else if (node.mTag == "Back Color")
 	{
 		Color4ub c;
 		if (value >> c) SetBackColor(c);
@@ -74,6 +88,7 @@ bool UIPicture::OnSerializeFrom (const TreeNode& node)
 
 void UIPicture::OnSerializeTo (TreeNode& node) const
 {
+	node.AddChild("Tiled", mTiled);
 	node.AddChild("Back Color", mColor);
 	if (mTex != 0) node.AddChild("Texture", mTex->GetName());
 	node.AddChild("Ignore Alpha", mIgnoreAlpha);

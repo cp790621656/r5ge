@@ -30,7 +30,7 @@ void UILabel::OnFill (UIQueue* queue)
 		float wf = mRegion.GetCalculatedWidth();
 		uint width = Float::RoundToUInt(wf);
 
-		Color4ub color	( mColor, mRegion.GetCalculatedAlpha() );
+		Color4ub color	( mTextColor, mRegion.GetCalculatedAlpha() );
 		Vector2f pos	( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		const IFont* font = GetFont();
