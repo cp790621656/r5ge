@@ -91,7 +91,8 @@ void UIInput::_OnLabelKey (UIWidget* widget, const Vector2i& pos, byte key, bool
 		{
 			const UIContext* context = mUI->GetContextMenu();
 
-			if (context == 0 || context->GetAlpha() == 0.0f)
+			if (mLabel.GetSelectedText().IsEmpty() &&
+				(context == 0 || context->GetRegion().GetCalculatedAlpha() == 0.0f))
 			{
 				_ShowHistory();
 			}

@@ -141,6 +141,7 @@ public:
 
 	// Having access to the widget's dimensions can come in handy
 	UIRegion& GetRegion() { return mRegion; }
+	const UIRegion& GetRegion() const { return mRegion; }
 
 	// Adjust the widget's region, keeping it bound within the parent's confines
 	void Adjust (float left, float top, float right, float bottom);
