@@ -9,9 +9,10 @@
 
 struct RaycastHit
 {
-	Object*		mObject;		// Pointer to the object that will be rendered
-	float		mSqrCamDist;	// Squared distance to the camera, used to sort objects
+	Object*	mObject;
+	float	mDistanceToCameraSquared;
+	//float	mDistanceToCenter;
 
 	// Comparison operator for sorting
-	bool operator < (const RaycastHit& obj) const { return (mSqrCamDist < obj.mSqrCamDist); }
+	bool operator < (const RaycastHit& obj) const { return (mDistanceToCameraSquared < obj.mDistanceToCameraSquared); }
 };

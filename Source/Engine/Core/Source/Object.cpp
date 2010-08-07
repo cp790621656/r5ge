@@ -63,7 +63,7 @@ Object::Object() :
 	mLastFilltime	(0),
 	mVisibility		(0)
 {
-	mFlags.Set(Flag::Enabled | Flag::BoxCollider);
+	mFlags.Set(Flag::Enabled, true);
 }
 
 //============================================================================================================
@@ -888,26 +888,28 @@ uint Object::Draw (TemporaryStorage& storage, uint group, const ITechnique* tech
 
 void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit>& hits)
 {
-	if (mFlags.Get(Flag::BoxCollider) && Intersect::RayBounds(pos, dir, mCompleteBounds))
+	if (Intersect::RayBounds(pos, dir, mCompleteBounds))
 	{
 		bool considerChildren = true;
 
 		// Try the custom virtual functionality first
-		if (!mIgnore.Get(Ignore::Raycast))
-		{
-			considerChildren = OnRaycast(pos, dir, hits);
-		}
+		if (!mIgnore.Get(Ignore::Raycast)) considerChildren = OnRaycast(pos, dir, hits);
 
-		// If we're ignoring virtual functionality and we have a collider flag set
-		if (mIgnore.Get(Ignore::Raycast) && mFlags.Get(Flag::BoxCollider))
+		// If the ray intersects with our bounds, join the hit list
+		if (mIgnore.Get(Ignore::Raycast) &&
+			mFlags.Get(Flag::BoxCollider) &&
+			Intersect::RayBounds(pos, dir, mAbsoluteBounds))
 		{
-			// If the ray intersects with our bounds, join the hit list
-			if (Intersect::RayBounds(pos, dir, mAbsoluteBounds))
-			{
-				RaycastHit& hit = hits.Expand();
-				hit.mObject = this;
-				hit.mSqrCamDist = (pos - mAbsoluteBounds.GetCenter()).Dot();
-			}
+			RaycastHit& hit = hits.Expand();
+			hit.mObject = this;
+
+			Vector3f diff (pos - mAbsoluteBounds.GetCenter());
+			hit.mDistanceToCameraSquared = diff.Dot();
+			
+			// Opposite = sin(theta) * hypotenuse
+			// Distance = sin(theta) * diff.Magnitude
+			//float angle = GetAngle(dir, diff);
+			//hit.mDistanceToCenter = Float::Sin(angle) * diff.Magnitude();
 		}
 
 		// Continue on to children

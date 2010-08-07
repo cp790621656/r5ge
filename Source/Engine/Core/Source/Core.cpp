@@ -172,15 +172,19 @@ bool Core::Update()
 			if (mRoot.GetFlag(Object::Flag::Enabled))
 			{
 				// Update all props and models
-				mModels.Lock();
+				Lock();
 				{
-					for (uint i = mModels.GetSize(); i > 0; )
+					mModels.Lock();
 					{
-						Model* model = mModels[--i];
-						if (model != 0) model->Update();
+						for (uint i = mModels.GetSize(); i > 0; )
+						{
+							Model* model = mModels[--i];
+							if (model != 0) model->Update();
+						}
 					}
+					mModels.Unlock();
 				}
-				mModels.Unlock();
+				Unlock();
 			}
 			else
 			{
