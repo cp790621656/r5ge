@@ -26,13 +26,13 @@ protected:
 	// Single paragraph entry
 	struct Paragraph
 	{
-		Color4ub		mColor;		// Text can be colored
-		const IFont*	mFont;		// Pointer to the font being used
-		String			mText;		// It would be quite odd if the text line was missing actual text
-		bool			mShadow;	// Whether the text has a shadow outline
-		ulong			mTime;		// Time when this paragraph was added
+		Color4ub		mTextColor;		// Text can be colored
+		Color4ub		mShadowColor;	// Text's shadow can also be colored
+		const IFont*	mFont;			// Pointer to the font being used
+		String			mText;			// It would be quite odd if the text line was missing actual text
+		ulong			mTime;			// Time when this paragraph was added
 
-		Paragraph() : mColor(0xFFFFFFFF), mFont(0), mShadow(true), mTime(0) {}
+		Paragraph() : mTextColor(0xFFFFFFFF), mFont(0), mTime(0) {}
 		void Release() { mText.Release(); }
 	};
 
@@ -91,7 +91,10 @@ public:
 	void SetMaxParagraphs (uint val) { mMaxParagraphs = val; }
 
 	// Adds a new paragraph of specified font and color
-	void AddParagraph (const String& text, const Color4ub& color = 0xFFFFFFFF, bool shadow = false, const IFont* font = 0);
+	void AddParagraph ( const String&	text,
+						const Color4ub& textColor	= 0xFFFFFFFF,
+						const Color4ub& shadowColor = 0,
+						const IFont*	font		= 0 );
 
 	// Paragraph drawing style (normal being top-down, chatbox being bottom up, etc)
 	void SetStyle (uint style) { mStyle = style; _MarkAllTexturesAsDirty(); }

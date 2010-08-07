@@ -7,7 +7,6 @@ UIContext::UIContext() :	mSkin		(0),
 							mFont		(0),
 							mTextColor	(0xFFFFFFFF),
 							mBackColor	(0xFFFFFFFF),
-							mShadow		(true),
 							mAlignment	(UILabel::Alignment::Left),
 							mIsDirty	(false),
 							mMinWidth	(0.0f),
@@ -112,9 +111,9 @@ void UIContext::_Rebuild()
 					lbl->GetRegion().SetRect(highlightBorder, offset - halfBorder, subWidth,
 						(float)textSize + highlightBorder);
 					lbl->SetLayer			( 1, false			  );
-					lbl->SetShadow			( mShadow			  );
 					lbl->SetAlignment		( mAlignment		  );
 					lbl->SetTextColor		( mTextColor		  );
+					lbl->SetShadowColor		( mShadowColor		  );
 					lbl->SetFont			( mFont				  );
 					lbl->SetText			( mEntries[i]		  );
 					lbl->SetEventHandling	( EventHandling::None );

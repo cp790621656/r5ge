@@ -22,8 +22,8 @@ protected:
 	const IFont*	mFont;
 	String			mFace;
 	Color4ub		mTextColor;
+	Color4ub		mShadowColor;
 	Color4ub		mBackColor;
-	bool			mShadow;
 	uint			mAlignment;
 	Entries			mEntries;
 	bool			mIsDirty;
@@ -37,23 +37,23 @@ public:
 
 	UIContext();
 
-	const UISkin*	GetSkin()		const	{ return mSkin; }
-	const IFont*	GetFont()		const	{ return mFont; }
-	const Color4ub&	GetTextColor()	const	{ return mTextColor; }
-	const Color4ub&	GetBackColor()	const	{ return mBackColor; }
-	bool			DropsShadow()	const	{ return mShadow;  }
-	uint			GetAlignment()	const	{ return mAlignment; }
-	const Entries&	GetAllEntries()	const	{ return mEntries; }
-	float			GetMinWidth()	const	{ return mMinWidth; }
-	const Vector3f&	GetAnchor()		const	{ return mAnchor; }
-	const String&	GetText()		const	{ return mText; }
+	const UISkin*	GetSkin()		 const	{ return mSkin;			}
+	const IFont*	GetFont()		 const	{ return mFont;			}
+	const Color4ub&	GetTextColor()	 const	{ return mTextColor;	}
+	const Color4ub&	GetShadowColor() const	{ return mShadowColor;	}
+	const Color4ub&	GetBackColor()	 const	{ return mBackColor;	}
+	uint			GetAlignment()	 const	{ return mAlignment;	}
+	const Entries&	GetAllEntries()	 const	{ return mEntries;		}
+	float			GetMinWidth()	 const	{ return mMinWidth;		}
+	const Vector3f&	GetAnchor()		 const	{ return mAnchor;		}
+	const String&	GetText()		 const	{ return mText;			}
 
 	void SetSkin		(const UISkin* skin)	{ mSkin		 = skin; mIsDirty = true; }
 	void SetFace		(const String& face)	{ mFace		 = face; mIsDirty = true; }
 	void SetFont		(const IFont* font)		{ mFont		 = font; mIsDirty = true; }
 	void SetTextColor	(const Color4ub& c)		{ mTextColor = c;	 mIsDirty = true; }
+	void SetShadowColor	(const Color4ub& c)		{ mShadowColor = c;	 mIsDirty = true; }
 	void SetBackColor	(const Color4ub& c)		{ mBackColor = c;	 mIsDirty = true; }
-	void SetShadow		(bool val)				{ mShadow	 = val;	 mIsDirty = true; }
 	void SetAlignment	(uint val)				{ mAlignment = val;	 mIsDirty = true; }
 	void SetMinWidth	(float val)				{ mMinWidth	 = val;	 mIsDirty = true; }
 	void SetAnchor		(const Vector3f& v)		{ mAnchor	 = v;	 mIsDirty = true; }

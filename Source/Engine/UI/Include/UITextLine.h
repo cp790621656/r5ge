@@ -11,27 +11,26 @@ class UITextLine : public UIWidget
 {
 protected:
 
-	mutable IFont*	mFont;		// Pointer to the font being used
-	String			mText;		// It would be quite odd if the text line was missing actual text
+	mutable IFont*	mFont;			// Pointer to the font being used
+	String			mText;			// It would be quite odd if the text line was missing actual text
 	Color4ub		mTextColor;		// Text can be colored
-	bool			mShadow;	// Whether the text has a shadow outline
-	uint			mTags;		// Whether the text processes color tags
+	Color4ub		mShadowColor;	// Color of the shadow dropped by the text (making it bright == bevel)
+	uint			mTags;			// Whether the text processes color tags
 
 public:
 
-	UITextLine() : mTextColor(1.0f), mFont(0), mShadow(false), mTags( IFont::Tags::Process ) {}
+	UITextLine() : mTextColor(1.0f), mFont(0), mTags( IFont::Tags::Process ) {}
 
 	const ITexture* GetTexture()	const;
-	const Color4ub&	GetTextColor()	const	{ return mTextColor;  }
-	const String&	GetText()		const	{ return mText;	  }
+	const String&	GetText()		const	{ return mText;	}
+	const Color4ub&	GetTextColor()	const	{ return mTextColor; }
+	const Color4ub&	GetShadowColor()const	{ return mShadowColor; }
 	const IFont*	GetFont()		const;
 	byte			GetFontSize()	const;
-	bool			GetShadow()		const	{ return mShadow; }
-	Color4ub		GetShadowColor()const	{ return Color4ub(0, 0, 0, Float::ToRangeByte(mRegion.GetCalculatedAlpha()) ); }
 
 	void SetTextColor	(const Color4ub& color);
-	void SetShadow		(bool val);
-	
+	void SetShadowColor	(const Color4ub& color);
+
 	virtual void SetText (const String& text);
 	virtual void SetFont (const IFont* font);
 

@@ -505,7 +505,7 @@ bool Font::Print ( Vertices&		out,
 		Color4ub myColor (color);
 
 		byte ch;
-		float x1 = pos.x - mPadding;
+		float x1 = pos.x - mPadding * 2;
 		float x2;
 		float y1 = pos.y - mPadding;
 		float y2 = y1 + mGlyphSize;

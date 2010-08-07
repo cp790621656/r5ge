@@ -258,7 +258,7 @@ TestApp::TestApp()
 	mStatus->SetFont(font1);
 	mStatus->GetRegion().SetTop(1.0f, -20.0f);
 	mStatus->SetText("Keys: [S]tart, [E]nd, [A]dvance, [C]omplete, [O]verestimate, [B]acktrace");
-	mStatus->SetShadow(true);
+	mStatus->SetShadowColor(Color4ub(0, 0, 0, 255));
 	mStatus->SetLayer(2);
 	mStatus->SetAlignment( UILabel::Alignment::Center );
 	mStatus->SetEventHandling( UIWidget::EventHandling::None );
@@ -292,7 +292,6 @@ TestApp::TestApp()
 			lbl0->SetEventHandling( UIWidget::EventHandling::None );
 			lbl0->SetAlignment( UILabel::Alignment::Center );
 			lbl0->SetTextColor(black);
-			lbl0->SetShadow(false);
 			lbl0->SetLayer(1, false);
 			lbl0->GetRegion().SetBottom(0.333f, 0.0f);
 
@@ -300,14 +299,12 @@ TestApp::TestApp()
 			lbl1->SetEventHandling( UIWidget::EventHandling::None );
 			lbl1->SetAlignment( UILabel::Alignment::Center );
 			lbl1->SetTextColor(black);
-			lbl1->SetShadow(false);
 			lbl1->SetLayer(1, false);
 
 			lbl2->SetFont(font0);
 			lbl2->SetEventHandling( UIWidget::EventHandling::None );
 			lbl2->SetAlignment( UILabel::Alignment::Center );
 			lbl2->SetTextColor(black);
-			lbl2->SetShadow(false);
 			lbl2->SetLayer(1, false);
 			lbl2->GetRegion().SetTop(0.667f, 0.0f);
 

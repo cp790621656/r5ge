@@ -30,8 +30,9 @@ void UILabel::OnFill (UIQueue* queue)
 		float wf = mRegion.GetCalculatedWidth();
 		uint width = Float::RoundToUInt(wf);
 
-		Color4ub color	( mTextColor, mRegion.GetCalculatedAlpha() );
-		Vector2f pos	( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
+		Color4ub textColor ( mTextColor, mRegion.GetCalculatedAlpha() );
+		Color4ub shadowColor ( mShadowColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		const IFont* font = GetFont();
 		ASSERT(font != 0, "Font is null? What?");
@@ -67,14 +68,14 @@ void UILabel::OnFill (UIQueue* queue)
 		pos.y = Float::Floor(pos.y);
 
 		// Drop a shadow if requested
-		if (mShadow)
+		if (shadowColor.a != 0)
 		{
-			font->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, mStart, mEnd,
+			font->Print( queue->mVertices, pos + 1.0f, shadowColor, mText, mStart, mEnd,
 				(mTags == IFont::Tags::Ignore) ? IFont::Tags::Ignore : IFont::Tags::Skip );
 		}
 
 		// Print the text directly into the buffer
-		font->Print( queue->mVertices, pos, color, mText, mStart, mEnd, mTags );
+		if (textColor.a != 0) font->Print( queue->mVertices, pos, textColor, mText, mStart, mEnd, mTags );
 	}
 }
 

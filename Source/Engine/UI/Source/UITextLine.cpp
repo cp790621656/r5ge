@@ -43,16 +43,15 @@ void UITextLine::SetTextColor (const Color4ub& color)
 		SetDirty();
 	}
 }
-
 //============================================================================================================
-// Changes the shadow setting (text is drawn twice, once in black, once in normal color if it's on)
+// Changes the shadow's text color
 //============================================================================================================
 
-void UITextLine::SetShadow (bool val)
+void UITextLine::SetShadowColor (const Color4ub& color)
 {
-	if (mShadow != val)
+	if (mShadowColor != color)
 	{
-		mShadow = val;
+		mShadowColor = color;
 		SetDirty();
 	}
 }
@@ -114,8 +113,9 @@ void UITextLine::OnFill (UIQueue* queue)
 	{
 		byte height = mFont->GetSize();
 
-		Color4ub color ( mTextColor, mRegion.GetCalculatedAlpha() );
-		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
+		Color4ub textColor ( mTextColor, mRegion.GetCalculatedAlpha() );
+		Color4ub shadowColor ( mShadowColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		// Adjust the height in order to center the text as necessary
 		float difference = mRegion.GetCalculatedHeight() - height;
@@ -125,13 +125,14 @@ void UITextLine::OnFill (UIQueue* queue)
 		pos.y = Float::Round(pos.y);
 
 		// Drop a shadow if requested
-		if (mShadow)
+		if (shadowColor.a != 0)
 		{
-			mFont->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, 0, 0xFFFFFFFF,
+			mFont->Print( queue->mVertices, pos + 1.0f, shadowColor, mText, 0, 0xFFFFFFFF,
 				(mTags == IFont::Tags::Ignore) ? IFont::Tags::Ignore : IFont::Tags::Skip );
 		}
 
-		mFont->Print( queue->mVertices, pos, color, mText, 0, 0xFFFFFFFF, mTags );
+		// Print directly into the buffer
+		if (textColor.a != 0) mFont->Print( queue->mVertices, pos, textColor, mText, 0, 0xFFFFFFFF, mTags );
 	}
 }
 
@@ -143,24 +144,31 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 {
 	const Variable& value = node.mValue;
 
-	if (node.mTag == "Text Color")
+	if (node.mTag == "Text")
+	{
+		SetText( value.AsString() );
+		return true;
+	}
+	else if (node.mTag == "Text Color")
 	{
 		Color4ub color;
 		if (value >> color) SetTextColor(color);
 		return true;
 	}
-	else if (node.mTag == "Text")
+	else if (node.mTag == "Shadow Color")
 	{
-		SetText( value.AsString() );
+		Color4ub shadow;
+		if (value >> shadow) SetShadowColor(shadow);
 		return true;
 	}
 	else if (node.mTag == "Shadow")
 	{
+		// Legacy functionality support
 		bool shadow;
 
 		if (value >> shadow)
 		{
-			SetShadow(shadow);
+			SetShadowColor(Color4ub(mShadowColor.r, mShadowColor.g, mShadowColor.b, shadow ? 255 : 0));
 		}
 		return true;
 	}
@@ -179,9 +187,9 @@ bool UITextLine::OnSerializeFrom (const TreeNode& node)
 
 void UITextLine::OnSerializeTo (TreeNode& node) const
 {
-	node.AddChild("Text Color", mTextColor);
 	node.AddChild("Text", mText);
-	node.AddChild("Shadow", mShadow);
+	node.AddChild("Text Color", mTextColor);
+	node.AddChild("Shadow Color", mShadowColor);
 
 	if (mFont != 0 && mFont != mUI->GetDefaultFont())
 		node.AddChild("Font", mFont->GetName());

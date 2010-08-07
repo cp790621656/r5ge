@@ -19,7 +19,7 @@ void UITextArea::Clear()
 // Add a single paragraph
 //============================================================================================================
 
-void UITextArea::AddParagraph (const String& text, const Color4ub& color, bool shadow, const IFont* font)
+void UITextArea::AddParagraph (const String& text, const Color4ub& textColor, const Color4ub& shadowColor, const IFont* font)
 {
 	if (font == 0) font = mUI->GetDefaultFont();
 
@@ -58,12 +58,12 @@ void UITextArea::AddParagraph (const String& text, const Color4ub& color, bool s
 				mParagraphs.RemoveAt(0);
 			}
 
-			Paragraph& par = mParagraphs.Expand();
-			par.mText   = text;
-			par.mFont   = font;
-			par.mColor  = color;
-			par.mShadow = shadow;
-			par.mTime	= Time::GetMilliseconds();
+			Paragraph& par	 = mParagraphs.Expand();
+			par.mText		 = text;
+			par.mFont		 = font;
+			par.mTextColor   = textColor;
+			par.mShadowColor = shadowColor;
+			par.mTime		 = Time::GetMilliseconds();
 
 			// Only rebuild the very last paragraph if a full rebuild is not already needed
 			if (!mNeedsRebuild)
@@ -156,7 +156,7 @@ void UITextArea::_Rebuild (uint offset)
 		if (par.mFont != 0 && par.mFont->IsValid())
 		{
 			uint offset = 0, count = 0;
-			Color4ub color (par.mColor);
+			Color4ub textColor (par.mTextColor);
 
 			// Count the number of characters that would fit if we rendered this line
 			while (count = par.mFont->CountChars(par.mText, width, offset))
@@ -182,12 +182,12 @@ void UITextArea::_Rebuild (uint offset)
 				// Update the line's properties
 				entry.mLine->SetText(currentText);
 				entry.mLine->SetFont(par.mFont);
-				entry.mLine->SetTextColor(color);
-				entry.mLine->SetShadow(par.mShadow);
+				entry.mLine->SetTextColor(textColor);
+				entry.mLine->SetShadowColor(par.mShadowColor);
 				entry.mLine->SetLayer(mLayer);
 
 				// Update the font's final color
-				par.mFont->UpdateColor(par.mText, color, offset, blockEnd);
+				par.mFont->UpdateColor(par.mText, textColor, offset, blockEnd);
 
 				// Update the offset
 				offset = blockEnd;

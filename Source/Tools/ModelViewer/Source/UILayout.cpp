@@ -14,7 +14,7 @@ using namespace R5;
 // Used by options creation functions
 //============================================================================================================
 
-#define SHADOW		false
+#define SHADOW		0
 #define OFFSET		23.0f
 #define WIDTH		350.0f
 #define SEPARATOR	0.35f
@@ -671,7 +671,7 @@ bool ModelViewer::CreateUI()
 			UIButton* cancel = _fileDialog->AddWidget<UIButton>("File Dialog Cancel");
 			cancel->AddScript<USEventListener>()->SetOnFocus( &HideParent );
 			cancel->SetText("Cancel");
-			cancel->SetShadow(SHADOW);
+			cancel->SetShadowColor(SHADOW);
 
 			UIRegion& rgn = cancel->GetRegion();
 			rgn.SetLeft		(0.5f,  10.0f);
@@ -684,7 +684,7 @@ bool ModelViewer::CreateUI()
 		{
 			_fileOK = _fileDialog->AddWidget<UIButton>("File Dialog OK");
 			_fileOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
-			_fileOK->SetShadow(SHADOW);
+			_fileOK->SetShadowColor(SHADOW);
 
 			UIRegion& rgn = _fileOK->GetRegion();
 			rgn.SetLeft		(0.5f, -150.0f);
@@ -1010,7 +1010,7 @@ UIMenu* ModelViewer::AddMenuItem (const String& name)
 		menu->SetSerializable(false);
 		menu->SetSticky(true);
 		menu->SetText(name);
-		menu->SetShadow(SHADOW);
+		menu->SetShadowColor(SHADOW);
 		menu->SetAlignment( UILabel::Alignment::Center );
 		menu->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleOff, this) );
 	}
@@ -1044,7 +1044,7 @@ UIButton* ModelViewer::AddMenuButton (const String& name)
 		btn->SetSerializable(false);
 		btn->SetSticky(true);
 		btn->SetText(name);
-		btn->SetShadow(SHADOW);
+		btn->SetShadowColor(SHADOW);
 		btn->SetAlignment( UILabel::Alignment::Center );
 		btn->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::ToggleBoth, this) );
 	}
@@ -1120,7 +1120,7 @@ UIButton*	ModelViewer::AddButton (UIWidget* parent, uint line, const String& nam
 
 	btn->SetSerializable(false);
 	btn->SetAlignment( UILabel::Alignment::Center );
-	btn->SetShadow(SHADOW);
+	btn->SetShadowColor(SHADOW);
 
 	return btn;
 }
@@ -1174,7 +1174,7 @@ UIList* ModelViewer::AddList (UIWidget* parent, uint line, const String& name, i
 	list->SetSerializable(false);
 	list->SetSymbol("Down Arrow");
 	list->SetAlignment( (offset == 0 ? UILabel::Alignment::Right : UILabel::Alignment::Left) );
-	list->SetShadow(SHADOW);
+	list->SetShadowColor(SHADOW);
 
 	return list;
 }

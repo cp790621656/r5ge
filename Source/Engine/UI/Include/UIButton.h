@@ -35,26 +35,26 @@ public:
 
 	UIButton();
 
-	const UISkin*	GetSkin()		 const	{ return mImage.GetSkin();		}
-	const String&	GetPrefix()		 const	{ return mPrefix;				}
-	const Color4ub&	GetTextColor()	 const	{ return mLabel.GetTextColor();	}
-	const Color4ub&	GetBackColor()	 const	{ return mImage.GetBackColor();	}
-	const String&	GetText()		 const	{ return mLabel.GetText();		}
-	const IFont*	GetFont()		 const	{ return mLabel.GetFont();		}
-	char			GetAlignment()	 const	{ return mLabel.GetAlignment();	}
-	bool			GetShadow()		 const	{ return mLabel.GetShadow();	}
-	bool			IsSticky()		 const	{ return mSticky;				}
-	uint			GetState()		 const	{ return mState;				}
-	int				GetTextPadding() const	{ return mPadding;				}
+	const UISkin*	GetSkin()		 const	{ return mImage.GetSkin();			}
+	const String&	GetPrefix()		 const	{ return mPrefix;					}
+	const Color4ub&	GetTextColor()	 const	{ return mLabel.GetTextColor();		}
+	const Color4ub&	GetShadowColor() const	{ return mLabel.GetShadowColor();	}
+	const Color4ub&	GetBackColor()	 const	{ return mImage.GetBackColor();		}
+	const String&	GetText()		 const	{ return mLabel.GetText();			}
+	const IFont*	GetFont()		 const	{ return mLabel.GetFont();			}
+	char			GetAlignment()	 const	{ return mLabel.GetAlignment();		}
+	bool			IsSticky()		 const	{ return mSticky;					}
+	uint			GetState()		 const	{ return mState;					}
+	int				GetTextPadding() const	{ return mPadding;					}
 
 	void SetSkin		(const UISkin* skin)	{ mImage.SetSkin(skin);				}
 	void SetPrefix		(const String& pref)	{ mPrefix = pref; mImage.SetDirty();}
 	void SetTextColor	(const Color4ub& c)		{ mLabel.SetTextColor(c);			}
+	void SetShadowColor	(const Color4ub& c)		{ mLabel.SetShadowColor(c);			}
 	void SetBackColor	(const Color4ub& c)		{ mImage.SetBackColor(c);			}
 	void SetText		(const String& text)	{ mLabel.SetText(text);				}
 	void SetFont		(const IFont* font)		{ mLabel.SetFont(font);				}
 	void SetAlignment	(char alignment)		{ mLabel.SetAlignment(alignment);	}
-	void SetShadow		(bool shadow)			{ mLabel.SetShadow(shadow);			}
 	void SetSticky		(bool val)				{ mSticky = val; if(!val) SetState(State::Pressed, false); }
 	void SetTextPadding	(int padding);
 

@@ -8,7 +8,7 @@ UIWindow::UIWindow() : mPrefix(ClassID()), mTitleHeight(20), mMovement(Movement:
 	mBackground._SetParentPtr(this);
 	mTitlebar._SetParentPtr(this);
 	mTitle._SetParentPtr(this);
-	mTitle.SetShadow(true);
+	mTitle.SetShadowColor(Color4ub(0, 0, 0, 255));
 	mTitle.SetAlignment(UILabel::Alignment::Center);
 	mTitlebar.GetRegion().SetBottom(0, mTitleHeight);
 	mTitle.SetLayer(1, false);
@@ -185,7 +185,7 @@ bool UIWindow::OnSerializeFrom (const TreeNode& node)
 		if (value >> c) SetBackColor(c);
 		return true;
 	}
-	return mTitle.OnSerializeFrom (node);
+	return mTitle.OnSerializeFrom(node);
 }
 
 //============================================================================================================

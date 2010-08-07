@@ -16,8 +16,9 @@ void UIBasicLabel::OnFill (UIQueue* queue)
 
 		byte height ( GetFontSize() );
 
-		Color4ub color ( mTextColor, mRegion.GetCalculatedAlpha() );
-		Vector2f pos   ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
+		Color4ub textColor ( mTextColor, mRegion.GetCalculatedAlpha() );
+		Color4ub shadowColor ( mShadowColor, mRegion.GetCalculatedAlpha() );
+		Vector2f pos ( mRegion.GetCalculatedLeft(), mRegion.GetCalculatedTop() );
 
 		mEnd = mStart + font->CountChars( mText, Float::RoundToUInt(mRegion.GetCalculatedWidth()),
 			mStart, 0xFFFFFFFF, false, false, mTags );
@@ -27,11 +28,13 @@ void UIBasicLabel::OnFill (UIQueue* queue)
 		pos.y += difference * 0.5f;
 
 		// Drop a shadow if requested
-		if (mShadow)
+		if (shadowColor.a != 0)
 		{
-			font->Print( queue->mVertices, pos + 1.0f, GetShadowColor(), mText, mStart, mEnd,
+			font->Print( queue->mVertices, pos + 1.0f, shadowColor, mText, mStart, mEnd,
 				(mTags == IFont::Tags::Ignore) ? IFont::Tags::Ignore : IFont::Tags::Skip );
 		}
-		font->Print( queue->mVertices, pos, color, mText, mStart, mEnd, mTags );
+
+		// Print the text directly into the buffer
+		if (textColor.a != 0) font->Print( queue->mVertices, pos, textColor, mText, mStart, mEnd, mTags );
 	}
 }
