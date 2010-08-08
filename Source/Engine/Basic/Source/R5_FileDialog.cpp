@@ -7,6 +7,7 @@ using namespace R5;
   #import <Foundation/NSString.h>
   #import <Foundation/NSAutoreleasePool.h>
   #import <AppKit/NSOpenPanel.h>
+  #import <AppKit/NSSavePanel.h>
   #import <AppKit/NSApplication.h>
 #endif
 
@@ -123,30 +124,62 @@ bool FileDialog::Show (const char* title, bool existingFilesOnly)
 
 bool FileDialog::Show (const char* title, bool existingFilesOnly)
 {
+	String dir  (System::GetPathFromFilename(mFilename));
+	String file (System::GetFilenameFromPath(mFilename));
+	if (dir.IsEmpty()) dir = System::GetCurrentPath();
+	
 	// Managed Obj-C should be wrapped into an auto-release pool so it doesn't leak memory
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	[NSApplication sharedApplication];
 
-	// Create the File Open Dialog class.
-	NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+	// We want to reuse the previous filename and start in the same directory
+	NSString* nsFile = [NSString stringWithUTF8String:file.GetBuffer()];
+	NSString* nsDir  = [NSString stringWithUTF8String:dir.GetBuffer()];
+	
+	NSMutableArray* nsTypes = [NSMutableArray array];
 
-	// Enable the selection of files in the dialog.
-	[openDlg setCanChooseFiles:YES];
-
-	// Disable the selection of directories in the dialog.
-	[openDlg setCanChooseDirectories:NO];
-
-	// Reuse the same filename
-	NSString* nsFile = [NSString stringWithUTF8String:mFilename.GetBuffer()];
-
-	// Display the dialog
-	if ( [openDlg runModalForDirectory:nil file:nsFile] == NSOKButton )
+	// Append all file types to the array
+	FOREACH(i, mExtensions)
 	{
-		nsFile = [openDlg filename];
-		mFilename = [nsFile UTF8String];
-		[pool drain];
-		return true;
+		[nsTypes addObject:[NSString stringWithUTF8String:mExtensions[i].GetBuffer()]];
 	}
+
+	if (existingFilesOnly)
+	{
+		// Create the File Open Dialog class.
+		NSOpenPanel* dlg = [NSOpenPanel openPanel];
+
+		// Enable the selection of files in the dialog.
+		[dlg setCanChooseFiles:YES];
+
+		// Disable the selection of directories in the dialog.
+		[dlg setCanChooseDirectories:NO];
+
+		// It should not be possible to select more than one file
+		[dlg setAllowsMultipleSelection:NO];
+
+		// Display the dialog
+		if ( [dlg runModalForDirectory:nsDir file:nsFile types:nsTypes] == NSOKButton )
+		{
+			nsFile = [dlg filename];
+			mFilename = [nsFile UTF8String];
+			[pool drain];
+			return true;
+		}
+	}
+	else
+	{
+		NSSavePanel* dlg = [NSSavePanel savePanel];
+
+		if ( [dlg runModalForDirectory:nsDir file:nsFile] == NSOKButton )
+		{
+			nsFile = [dlg filename];
+			mFilename = [nsFile UTF8String];
+			[pool drain];
+			return true;
+		}
+	}
+
 	[pool drain];
 	return false;
 }

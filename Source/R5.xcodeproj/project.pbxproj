@@ -139,6 +139,25 @@
 		14B467150F1B9A670085BEFD /* _CocoaWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 14B467130F1B9A670085BEFD /* _CocoaWindow.mm */; };
 		14B467330F1B9C580085BEFD /* Color4ub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B467320F1B9C580085BEFD /* Color4ub.cpp */; };
 		14B48F5810FAFED100C22373 /* Dev8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B48F5710FAFED100C22373 /* Dev8.cpp */; };
+		14B544D4120E5FED001228A2 /* libR5_Serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1412DBFD10ACD24300BBA8F4 /* libR5_Serialization.a */; };
+		14B544D6120E5FED001228A2 /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C1541F0DA670D600588C73 /* libR5_Basic.a */; };
+		14B544D7120E5FED001228A2 /* libR5_Math.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154200DA670D600588C73 /* libR5_Math.a */; };
+		14B544D8120E5FED001228A2 /* libR5_Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154210DA670D600588C73 /* libR5_Core.a */; };
+		14B544D9120E5FED001228A2 /* libR5_UI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154230DA670D600588C73 /* libR5_UI.a */; };
+		14B544DA120E5FED001228A2 /* libR5_Font.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154240DA670D600588C73 /* libR5_Font.a */; };
+		14B544DB120E5FED001228A2 /* libR5_Image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154250DA670D600588C73 /* libR5_Image.a */; };
+		14B544DC120E5FED001228A2 /* libR5_OpenGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154260DA670D600588C73 /* libR5_OpenGL.a */; };
+		14B544DD120E5FED001228A2 /* libR5_SysWindow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154270DA670D600588C73 /* libR5_SysWindow.a */; };
+		14B544ED120E6187001228A2 /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C1541F0DA670D600588C73 /* libR5_Basic.a */; };
+		14B544EE120E6187001228A2 /* libR5_Math.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154200DA670D600588C73 /* libR5_Math.a */; };
+		14B544EF120E6187001228A2 /* libR5_Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154210DA670D600588C73 /* libR5_Core.a */; };
+		14B544F0120E6187001228A2 /* libR5_Noise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154220DA670D600588C73 /* libR5_Noise.a */; };
+		14B544F1120E6187001228A2 /* libR5_UI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154230DA670D600588C73 /* libR5_UI.a */; };
+		14B544F2120E6187001228A2 /* libR5_Font.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154240DA670D600588C73 /* libR5_Font.a */; };
+		14B544F3120E6187001228A2 /* libR5_Image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154250DA670D600588C73 /* libR5_Image.a */; };
+		14B544F4120E6187001228A2 /* libR5_OpenGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154260DA670D600588C73 /* libR5_OpenGL.a */; };
+		14B544F5120E6187001228A2 /* libR5_SysWindow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14C154270DA670D600588C73 /* libR5_SysWindow.a */; };
+		14B544F6120E6187001228A2 /* libR5_Serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1412DBFD10ACD24300BBA8F4 /* libR5_Serialization.a */; };
 		14BA96500F95C9A800E41525 /* Emitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14BA964F0F95C9A800E41525 /* Emitter.cpp */; };
 		14BA96940F95CB6D00E41525 /* Dev7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14BA96910F95CB6D00E41525 /* Dev7.cpp */; };
 		14BA96950F95CB6D00E41525 /* FireEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14BA96920F95CB6D00E41525 /* FireEmitter.cpp */; };
@@ -446,13 +465,6 @@
 			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
-		1417138110FAFCE200BA7643 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		1417138310FAFCE200BA7643 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -536,13 +548,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
-		};
-		141713B210FAFD5700BA7643 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
 		};
 		141713B410FAFD5700BA7643 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -691,34 +696,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		1434863E10B4E9A600FD9B41 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
-			remoteInfo = Basic;
-		};
-		1434866210B4EA6C00FD9B41 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
-		1434866410B4EA7300FD9B41 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
-		1434866610B4EA7C00FD9B41 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		1437764A10B216FB0004D92E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -859,13 +836,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		144C2D8910B632DD009CA886 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		144F1AE00EF9CD8C00284312 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -984,13 +954,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
-		};
-		144F731E11DAB7CE008EF73F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
 		};
 		14753CC10D9C14B9000D05A5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1209,13 +1172,6 @@
 			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
-		14ACB3C61106790300258C54 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		14ACB3C81106790300258C54 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1328,20 +1284,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		14ACB415110679ED00258C54 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
-		14AFF1941145C32400318F9F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		14AFF2541145E90000318F9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1412,13 +1354,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		14AFF2681145E90000318F9F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		14B42536112CFA910063BD8F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1439,13 +1374,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
-		};
-		14B48F1710FAFDE100C22373 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
 		};
 		14B48F1910FAFDE100C22373 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1510,13 +1438,6 @@
 			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
-		14B48F3710FAFE4200C22373 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		14B48F3910FAFE4200C22373 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1565,6 +1486,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
+		};
+		14B544F7120E618E001228A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteInfo = Noise;
 		};
 		14BA96750F95CB2700E41525 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2007,13 +1935,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		14E5FB48115FD163002EED30 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		14E5FB54115FD188002EED30 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2091,13 +2012,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		BB3F32C911798C0400D1F593 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		BB3F32DB11798C6900D1F593 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2168,13 +2082,6 @@
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
 		};
-		BB3F32EF11798C6900D1F593 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
-		};
 		BB3F330111798CD000D1F593 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2237,13 +2144,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = OSXWindow;
-		};
-		BB3F331311798CD000D1F593 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1434863C10B4E9A600FD9B41;
-			remoteInfo = Render;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2319,7 +2219,6 @@
 		1432D50010B3634A00BE38E6 /* T06.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T06.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1432D50310B3638B00BE38E6 /* T05.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = T05.cpp; path = Tutorials/T05/T05.cpp; sourceTree = SOURCE_ROOT; };
 		1432D50610B363B700BE38E6 /* T06.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = T06.cpp; path = Tutorials/T06/T06.cpp; sourceTree = SOURCE_ROOT; };
-		1434865410B4E9A600FD9B41 /* libR5_Render.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libR5_Render.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1436F67410FAFF8900580BF8 /* Dev9.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dev9.cpp; path = Samples/Dev9/Dev9.cpp; sourceTree = SOURCE_ROOT; };
 		1437766010B216FB0004D92E /* T01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T01.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1437767910B2171C0004D92E /* T03.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = T03.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2704,6 +2603,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14B544ED120E6187001228A2 /* libR5_Basic.a in Frameworks */,
+				14B544EE120E6187001228A2 /* libR5_Math.a in Frameworks */,
+				14B544EF120E6187001228A2 /* libR5_Core.a in Frameworks */,
+				14B544F0120E6187001228A2 /* libR5_Noise.a in Frameworks */,
+				14B544F1120E6187001228A2 /* libR5_UI.a in Frameworks */,
+				14B544F2120E6187001228A2 /* libR5_Font.a in Frameworks */,
+				14B544F3120E6187001228A2 /* libR5_Image.a in Frameworks */,
+				14B544F4120E6187001228A2 /* libR5_OpenGL.a in Frameworks */,
+				14B544F5120E6187001228A2 /* libR5_SysWindow.a in Frameworks */,
+				14B544F6120E6187001228A2 /* libR5_Serialization.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2736,13 +2645,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1432D4FC10B3634A00BE38E6 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1434865010B4E9A600FD9B41 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2872,6 +2774,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14B544D4120E5FED001228A2 /* libR5_Serialization.a in Frameworks */,
+				14B544D6120E5FED001228A2 /* libR5_Basic.a in Frameworks */,
+				14B544D7120E5FED001228A2 /* libR5_Math.a in Frameworks */,
+				14B544D8120E5FED001228A2 /* libR5_Core.a in Frameworks */,
+				14B544D9120E5FED001228A2 /* libR5_UI.a in Frameworks */,
+				14B544DA120E5FED001228A2 /* libR5_Font.a in Frameworks */,
+				14B544DB120E5FED001228A2 /* libR5_Image.a in Frameworks */,
+				14B544DC120E5FED001228A2 /* libR5_OpenGL.a in Frameworks */,
+				14B544DD120E5FED001228A2 /* libR5_SysWindow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4304,7 +4215,6 @@
 				14C9279D10B2184D00D71A09 /* T04.app */,
 				1432D4E710B3633A00BE38E6 /* T05.app */,
 				1432D50010B3634A00BE38E6 /* T06.app */,
-				1434865410B4E9A600FD9B41 /* libR5_Render.a */,
 				144C2D8310B63264009CA886 /* T07.app */,
 				1417139710FAFCE200BA7643 /* T08.app */,
 				141713C810FAFD5700BA7643 /* T09.app */,
@@ -4427,13 +4337,6 @@
 
 /* Begin PBXHeadersBuildPhase section */
 		1412DBE810ACD24300BBA8F4 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1434863F10B4E9A600FD9B41 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -4569,8 +4472,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				14B544F8120E618E001228A2 /* PBXTargetDependency */,
 				1417136910FAFC8200BA7643 /* PBXTargetDependency */,
-				1434866710B4EA7C00FD9B41 /* PBXTargetDependency */,
 				1410ACBA0F453F920099D80E /* PBXTargetDependency */,
 				1410AC9F0F453F630099D80E /* PBXTargetDependency */,
 				1410ACA10F453F630099D80E /* PBXTargetDependency */,
@@ -4619,7 +4522,6 @@
 				1417139F10FAFD3900BA7643 /* PBXTargetDependency */,
 				1417139C10FAFD1300BA7643 /* PBXTargetDependency */,
 				1417137E10FAFCE200BA7643 /* PBXTargetDependency */,
-				1417138010FAFCE200BA7643 /* PBXTargetDependency */,
 				1417138210FAFCE200BA7643 /* PBXTargetDependency */,
 				1417138410FAFCE200BA7643 /* PBXTargetDependency */,
 				1417138610FAFCE200BA7643 /* PBXTargetDependency */,
@@ -4654,7 +4556,6 @@
 				141713BB10FAFD5700BA7643 /* PBXTargetDependency */,
 				141713BD10FAFD5700BA7643 /* PBXTargetDependency */,
 				141713BF10FAFD5700BA7643 /* PBXTargetDependency */,
-				141713B110FAFD5700BA7643 /* PBXTargetDependency */,
 			);
 			name = T09;
 			productName = "Cocoa Window";
@@ -4710,24 +4611,6 @@
 			productName = "Cocoa Window";
 			productReference = 1432D50010B3634A00BE38E6 /* T06.app */;
 			productType = "com.apple.product-type.application";
-		};
-		1434863C10B4E9A600FD9B41 /* Render */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1434865110B4E9A600FD9B41 /* Build configuration list for PBXNativeTarget "Render" */;
-			buildPhases = (
-				1434863F10B4E9A600FD9B41 /* Headers */,
-				1434864010B4E9A600FD9B41 /* Sources */,
-				1434865010B4E9A600FD9B41 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1434863D10B4E9A600FD9B41 /* PBXTargetDependency */,
-			);
-			name = Render;
-			productName = Math;
-			productReference = 1434865410B4E9A600FD9B41 /* libR5_Render.a */;
-			productType = "com.apple.product-type.library.static";
 		};
 		1437764810B216FB0004D92E /* T01 */ = {
 			isa = PBXNativeTarget;
@@ -4790,7 +4673,6 @@
 			);
 			dependencies = (
 				1417137710FAFCB000BA7643 /* PBXTargetDependency */,
-				144C2D8A10B632DD009CA886 /* PBXTargetDependency */,
 				144C2D6C10B63263009CA886 /* PBXTargetDependency */,
 				144C2D6E10B63263009CA886 /* PBXTargetDependency */,
 				144C2D7010B63263009CA886 /* PBXTargetDependency */,
@@ -4816,7 +4698,6 @@
 			);
 			dependencies = (
 				1417136110FAFC7000BA7643 /* PBXTargetDependency */,
-				1434866510B4EA7300FD9B41 /* PBXTargetDependency */,
 				144F1ADF0EF9CD8C00284312 /* PBXTargetDependency */,
 				144F1AE10EF9CD8C00284312 /* PBXTargetDependency */,
 				144F1AE30EF9CD8C00284312 /* PBXTargetDependency */,
@@ -4851,7 +4732,6 @@
 				144F731711DAB7CE008EF73F /* PBXTargetDependency */,
 				144F731911DAB7CE008EF73F /* PBXTargetDependency */,
 				144F731B11DAB7CE008EF73F /* PBXTargetDependency */,
-				144F731D11DAB7CE008EF73F /* PBXTargetDependency */,
 			);
 			name = Dev13;
 			productName = "Cocoa Window";
@@ -4943,7 +4823,6 @@
 			);
 			dependencies = (
 				1417135F10FAFC6200BA7643 /* PBXTargetDependency */,
-				1434866310B4EA6C00FD9B41 /* PBXTargetDependency */,
 				148487350E42836500B02838 /* PBXTargetDependency */,
 				148487370E42836500B02838 /* PBXTargetDependency */,
 				148487390E42836500B02838 /* PBXTargetDependency */,
@@ -4972,7 +4851,6 @@
 				14ACB3BF1106790300258C54 /* PBXTargetDependency */,
 				14ACB3C11106790300258C54 /* PBXTargetDependency */,
 				14ACB3C31106790300258C54 /* PBXTargetDependency */,
-				14ACB3C51106790300258C54 /* PBXTargetDependency */,
 				14ACB3C71106790300258C54 /* PBXTargetDependency */,
 				14ACB3C91106790300258C54 /* PBXTargetDependency */,
 				14ACB3CB1106790300258C54 /* PBXTargetDependency */,
@@ -5006,7 +4884,6 @@
 				14ACB3F81106798500258C54 /* PBXTargetDependency */,
 				14ACB3FA1106798500258C54 /* PBXTargetDependency */,
 				14ACB3FC1106798500258C54 /* PBXTargetDependency */,
-				14ACB416110679ED00258C54 /* PBXTargetDependency */,
 			);
 			name = Dev10;
 			productName = "Cocoa Window";
@@ -5034,7 +4911,6 @@
 				14AFF2611145E90000318F9F /* PBXTargetDependency */,
 				14AFF2631145E90000318F9F /* PBXTargetDependency */,
 				14AFF2651145E90000318F9F /* PBXTargetDependency */,
-				14AFF2671145E90000318F9F /* PBXTargetDependency */,
 			);
 			name = T10;
 			productName = "Cocoa Window";
@@ -5054,7 +4930,6 @@
 			dependencies = (
 				14B48F1010FAFDE100C22373 /* PBXTargetDependency */,
 				14B48F1410FAFDE100C22373 /* PBXTargetDependency */,
-				14B48F1610FAFDE100C22373 /* PBXTargetDependency */,
 				14B48F1810FAFDE100C22373 /* PBXTargetDependency */,
 				14B48F1A10FAFDE100C22373 /* PBXTargetDependency */,
 				14B48F1C10FAFDE100C22373 /* PBXTargetDependency */,
@@ -5081,7 +4956,6 @@
 			dependencies = (
 				14B48F3210FAFE4200C22373 /* PBXTargetDependency */,
 				14B48F3410FAFE4200C22373 /* PBXTargetDependency */,
-				14B48F3610FAFE4200C22373 /* PBXTargetDependency */,
 				14B48F3810FAFE4200C22373 /* PBXTargetDependency */,
 				14B48F3A10FAFE4200C22373 /* PBXTargetDependency */,
 				14B48F3C10FAFE4200C22373 /* PBXTargetDependency */,
@@ -5266,7 +5140,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				14AFF1951145C32400318F9F /* PBXTargetDependency */,
 				14753D0C0D9C2B8F000D05A5 /* PBXTargetDependency */,
 				14753D0A0D9C2B8C000D05A5 /* PBXTargetDependency */,
 			);
@@ -5464,7 +5337,6 @@
 				14E5FB41115FD163002EED30 /* PBXTargetDependency */,
 				14E5FB43115FD163002EED30 /* PBXTargetDependency */,
 				14E5FB45115FD163002EED30 /* PBXTargetDependency */,
-				14E5FB47115FD163002EED30 /* PBXTargetDependency */,
 			);
 			name = Dev11;
 			productName = "Cocoa Window";
@@ -5492,7 +5364,6 @@
 				BB3F32C211798C0400D1F593 /* PBXTargetDependency */,
 				BB3F32C411798C0400D1F593 /* PBXTargetDependency */,
 				BB3F32C611798C0400D1F593 /* PBXTargetDependency */,
-				BB3F32C811798C0400D1F593 /* PBXTargetDependency */,
 			);
 			name = T11;
 			productName = "Cocoa Window";
@@ -5520,7 +5391,6 @@
 				BB3F32E811798C6900D1F593 /* PBXTargetDependency */,
 				BB3F32EA11798C6900D1F593 /* PBXTargetDependency */,
 				BB3F32EC11798C6900D1F593 /* PBXTargetDependency */,
-				BB3F32EE11798C6900D1F593 /* PBXTargetDependency */,
 			);
 			name = T12;
 			productName = "Cocoa Window";
@@ -5547,7 +5417,6 @@
 				BB3F330C11798CD000D1F593 /* PBXTargetDependency */,
 				BB3F330E11798CD000D1F593 /* PBXTargetDependency */,
 				BB3F331011798CD000D1F593 /* PBXTargetDependency */,
-				BB3F331211798CD000D1F593 /* PBXTargetDependency */,
 			);
 			name = Dev12;
 			productName = "Cocoa Window";
@@ -5580,7 +5449,6 @@
 				14CE0F680D904D7E0027155A /* Image */,
 				14CE0F780D904DA10027155A /* SysWindow */,
 				14CE0F700D904D940027155A /* OpenGL */,
-				1434863C10B4E9A600FD9B41 /* Render */,
 				14E5FB0A115FCC94002EED30 /* Sound */,
 				1483A8850E0C577100C96079 /* Network Test */,
 				14C01EE40D92B50600CB59E3 /* Window Creation */,
@@ -5891,13 +5759,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1432D50710B363B700BE38E6 /* T06.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1434864010B4E9A600FD9B41 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6490,11 +6351,6 @@
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
 			targetProxy = 1417137F10FAFCE200BA7643 /* PBXContainerItemProxy */;
 		};
-		1417138010FAFCE200BA7643 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 1417138110FAFCE200BA7643 /* PBXContainerItemProxy */;
-		};
 		1417138210FAFCE200BA7643 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F700D904D940027155A /* OpenGL */;
@@ -6554,11 +6410,6 @@
 			isa = PBXTargetDependency;
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
 			targetProxy = 141713B010FAFD5700BA7643 /* PBXContainerItemProxy */;
-		};
-		141713B110FAFD5700BA7643 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 141713B210FAFD5700BA7643 /* PBXContainerItemProxy */;
 		};
 		141713B310FAFD5700BA7643 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -6665,26 +6516,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 1432D4F910B3634A00BE38E6 /* PBXContainerItemProxy */;
 		};
-		1434863D10B4E9A600FD9B41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 14753BC70D9C12E3000D05A5 /* Basic */;
-			targetProxy = 1434863E10B4E9A600FD9B41 /* PBXContainerItemProxy */;
-		};
-		1434866310B4EA6C00FD9B41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 1434866210B4EA6C00FD9B41 /* PBXContainerItemProxy */;
-		};
-		1434866510B4EA7300FD9B41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 1434866410B4EA7300FD9B41 /* PBXContainerItemProxy */;
-		};
-		1434866710B4EA7C00FD9B41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 1434866610B4EA7C00FD9B41 /* PBXContainerItemProxy */;
-		};
 		1437764910B216FB0004D92E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F700D904D940027155A /* OpenGL */;
@@ -6785,11 +6616,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 144C2D7B10B63263009CA886 /* PBXContainerItemProxy */;
 		};
-		144C2D8A10B632DD009CA886 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 144C2D8910B632DD009CA886 /* PBXContainerItemProxy */;
-		};
 		144F1ADF0EF9CD8C00284312 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F700D904D940027155A /* OpenGL */;
@@ -6874,11 +6700,6 @@
 			isa = PBXTargetDependency;
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 144F731C11DAB7CE008EF73F /* PBXContainerItemProxy */;
-		};
-		144F731D11DAB7CE008EF73F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 144F731E11DAB7CE008EF73F /* PBXContainerItemProxy */;
 		};
 		14753CC20D9C14B9000D05A5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7035,11 +6856,6 @@
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
 			targetProxy = 14ACB3C41106790300258C54 /* PBXContainerItemProxy */;
 		};
-		14ACB3C51106790300258C54 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14ACB3C61106790300258C54 /* PBXContainerItemProxy */;
-		};
 		14ACB3C71106790300258C54 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F700D904D940027155A /* OpenGL */;
@@ -7120,16 +6936,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 14ACB3FD1106798500258C54 /* PBXContainerItemProxy */;
 		};
-		14ACB416110679ED00258C54 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14ACB415110679ED00258C54 /* PBXContainerItemProxy */;
-		};
-		14AFF1951145C32400318F9F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14AFF1941145C32400318F9F /* PBXContainerItemProxy */;
-		};
 		14AFF2531145E90000318F9F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F580D904D1B0027155A /* UI */;
@@ -7180,11 +6986,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 14AFF2661145E90000318F9F /* PBXContainerItemProxy */;
 		};
-		14AFF2671145E90000318F9F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14AFF2681145E90000318F9F /* PBXContainerItemProxy */;
-		};
 		14B42537112CFA910063BD8F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
@@ -7199,11 +7000,6 @@
 			isa = PBXTargetDependency;
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
 			targetProxy = 14B48F1510FAFDE100C22373 /* PBXContainerItemProxy */;
-		};
-		14B48F1610FAFDE100C22373 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14B48F1710FAFDE100C22373 /* PBXContainerItemProxy */;
 		};
 		14B48F1810FAFDE100C22373 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7250,11 +7046,6 @@
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
 			targetProxy = 14B48F3510FAFE4200C22373 /* PBXContainerItemProxy */;
 		};
-		14B48F3610FAFE4200C22373 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14B48F3710FAFE4200C22373 /* PBXContainerItemProxy */;
-		};
 		14B48F3810FAFE4200C22373 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F700D904D940027155A /* OpenGL */;
@@ -7289,6 +7080,11 @@
 			isa = PBXTargetDependency;
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 14B48F4510FAFE4200C22373 /* PBXContainerItemProxy */;
+		};
+		14B544F8120E618E001228A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 14CE0F1F0D904A060027155A /* Noise */;
+			targetProxy = 14B544F7120E618E001228A2 /* PBXContainerItemProxy */;
 		};
 		14BA96740F95CB2700E41525 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7605,11 +7401,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = 14E5FB46115FD163002EED30 /* PBXContainerItemProxy */;
 		};
-		14E5FB47115FD163002EED30 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = 14E5FB48115FD163002EED30 /* PBXContainerItemProxy */;
-		};
 		14E5FB55115FD188002EED30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14E5FB0A115FCC94002EED30 /* Sound */;
@@ -7665,11 +7456,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = BB3F32C711798C0400D1F593 /* PBXContainerItemProxy */;
 		};
-		BB3F32C811798C0400D1F593 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = BB3F32C911798C0400D1F593 /* PBXContainerItemProxy */;
-		};
 		BB3F32DA11798C6900D1F593 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 14CE0F580D904D1B0027155A /* UI */;
@@ -7720,11 +7506,6 @@
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = BB3F32ED11798C6900D1F593 /* PBXContainerItemProxy */;
 		};
-		BB3F32EE11798C6900D1F593 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = BB3F32EF11798C6900D1F593 /* PBXContainerItemProxy */;
-		};
 		BB3F330011798CD000D1F593 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1412DBE510ACD24300BBA8F4 /* Serialization */;
@@ -7769,11 +7550,6 @@
 			isa = PBXTargetDependency;
 			target = 14CE0F780D904DA10027155A /* SysWindow */;
 			targetProxy = BB3F331111798CD000D1F593 /* PBXContainerItemProxy */;
-		};
-		BB3F331211798CD000D1F593 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1434863C10B4E9A600FD9B41 /* Render */;
-			targetProxy = BB3F331311798CD000D1F593 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -7868,15 +7644,6 @@
 					"-lz",
 					"-lpng",
 					"-ljpeg",
-					"-lR5_Basic",
-					"-lR5_Math",
-					"-lR5_Serialization",
-					"-lR5_Core",
-					"-lR5_UI",
-					"-lR5_Font",
-					"-lR5_Image",
-					"-lR5_SysWindow",
-					"-lR5_OpenGL",
 				);
 			};
 			name = Debug;
@@ -7901,15 +7668,6 @@
 					"-lz",
 					"-lpng",
 					"-ljpeg",
-					"-lR5_Basic",
-					"-lR5_Math",
-					"-lR5_Serialization",
-					"-lR5_Core",
-					"-lR5_UI",
-					"-lR5_Font",
-					"-lR5_Image",
-					"-lR5_SysWindow",
-					"-lR5_OpenGL",
 				);
 			};
 			name = Release;
@@ -8206,21 +7964,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		1434865210B4E9A600FD9B41 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_32_BIT)";
-				PRODUCT_NAME = "R5_$(TARGETNAME)";
-			};
-			name = Debug;
-		};
-		1434865310B4E9A600FD9B41 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "R5_$(TARGETNAME)";
 			};
 			name = Release;
 		};
@@ -9225,15 +8968,6 @@
 					"-lz",
 					"-lpng",
 					"-ljpeg",
-					"-lR5_Basic",
-					"-lR5_Math",
-					"-lR5_Serialization",
-					"-lR5_Core",
-					"-lR5_UI",
-					"-lR5_Font",
-					"-lR5_Image",
-					"-lR5_SysWindow",
-					"-lR5_OpenGL",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -9259,15 +8993,6 @@
 					"-lz",
 					"-lpng",
 					"-ljpeg",
-					"-lR5_Basic",
-					"-lR5_Math",
-					"-lR5_Serialization",
-					"-lR5_Core",
-					"-lR5_UI",
-					"-lR5_Font",
-					"-lR5_Image",
-					"-lR5_SysWindow",
-					"-lR5_OpenGL",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -10166,15 +9891,6 @@
 			buildConfigurations = (
 				1432D4FE10B3634A00BE38E6 /* Debug */,
 				1432D4FF10B3634A00BE38E6 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1434865110B4E9A600FD9B41 /* Build configuration list for PBXNativeTarget "Render" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1434865210B4E9A600FD9B41 /* Debug */,
-				1434865310B4E9A600FD9B41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
