@@ -148,6 +148,16 @@ bool Core::Update()
 		if (!mWin->Update()) return false;
 		bool minimized = mWin->IsMinimized();
 
+		// Handle mouse movement
+		if (mMouseDelta != 0)
+		{
+			if (mUI == 0 || !mUI->OnMouseMove(mMousePos, mMouseDelta))
+			{
+				HandleOnMouseMove(mMousePos, mMouseDelta);
+			}
+			mMouseDelta = 0;
+		}
+
 		// Size update is queued rather than executed in Core::OnResize() because that call needs to update
 		// the graphics controller, and the controller may be created in a different thread than the window.
 		if (mUpdatedSize)
@@ -438,8 +448,8 @@ bool Core::OnKeyPress(const Vector2i& pos, byte key, bool isDown)
 bool Core::OnMouseMove(const Vector2i& pos, const Vector2i& delta)
 {
 	mMousePos = pos;
-	if (mUI && mUI->OnMouseMove(pos, delta)) return true;
-	return HandleOnMouseMove(pos, delta);
+	mMouseDelta += delta;
+	return true;
 }
 
 //============================================================================================================

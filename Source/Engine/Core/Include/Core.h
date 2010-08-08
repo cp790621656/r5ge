@@ -28,6 +28,7 @@ protected:
 	bool			mIsDirty;			// Whether to update the scene next update, regardless of time delta
 	bool			mIsKeyDown[256];	// Provides a quick way of checking whether some key is held down
 	Vector2i		mMousePos;			// Saved current mouse position
+	Vector2i		mMouseDelta;		// Saved mouse delta movement since last update
 	Vector2i		mUpdatedSize;		// If the window size gets updated, appropriate components must be notified
 	Resources		mResources;			// Managed array of resources
 	Meshes			mMeshes;			// Managed array of regular meshes

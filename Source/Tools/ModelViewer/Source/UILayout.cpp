@@ -60,11 +60,6 @@ UIMenu*			_matMenu		= 0;
 UIMenu*			_texMenu		= 0;
 UIMenu*			_animMenu		= 0;
 
-UIWindow*		_fileDialog		= 0;
-UILabel*		_fileLabel		= 0;
-UIInput*		_fileInput		= 0;
-UIButton*		_fileOK			= 0;
-
 UIWindow*		_confirmDialog	= 0;
 UILabel*		_confirmLabel	= 0;
 UIButton*		_confirmOK		= 0;
@@ -140,6 +135,17 @@ String			_currentTech;
 String			_currentAnim;
 
 //============================================================================================================
+// Model loading callback, simply triggers the load function from another thread
+//============================================================================================================
+
+R5_THREAD_FUNCTION(LoadModel, ptr)
+{
+	ModelViewer* mv = (ModelViewer*)ptr;
+	mv->Load();
+	return 0;
+}
+
+//============================================================================================================
 // Helper function used by widget creation functions
 //============================================================================================================
 
@@ -197,7 +203,6 @@ void ModelViewer::Load()
 	// Load the model from the specified file
 	if ( mModel->Load(mLoadFilename) )
 	{
-		_fileInput->AddToHistory(mLoadFilename);
 		_loadFrame->Hide();
 		mInst->SetDirty();
 		mModel->SetDirty();
@@ -208,27 +213,6 @@ void ModelViewer::Load()
 	{
 		_loadFrame->Hide();
 		SetStatusText("Either path is invalid or the requested file cannot be opened", Color3f(1.0f, 0.0f, 0.0f));
-	}
-}
-
-//============================================================================================================
-// Serialization -- Save
-//============================================================================================================
-
-void ModelViewer::SerializeTo (TreeNode& root) const
-{
-	if (_fileInput != 0)
-	{
-		const UIInput::HistoryList& history = _fileInput->GetHistory();
-
-		if (history.IsValid())
-		{
-			TreeNode& node = root.AddChild("File History");
-
-			history.Lock();
-			node.mValue = history;
-			history.Unlock();
-		}
 	}
 }
 
@@ -613,87 +597,6 @@ bool ModelViewer::CreateUI()
 		_colorAlpha->AddScript<USEventListener>()->SetOnFocus	( bind(&ModelViewer::OnColorSelect, this) );
 	}
 
-	// File dialog
-	{
-		// Dialog window
-		{
-			_fileDialog = mUI->AddWidget<UIWindow>("File Dialog");
-			_fileDialog->SetSerializable(false);
-			_fileDialog->SetResizable(false);
-			_fileDialog->SetAlpha(0.0f);
-			_fileDialog->SetTitlebarHeight(20);
-		}
-
-		// Caption label
-		{
-			_fileLabel = _fileDialog->AddWidget<UILabel>("File Dialog Label");
-			_fileLabel->SetLayer(1, false);
-			_fileLabel->SetAlignment( UILabel::Alignment::Center );
-			_fileLabel->SetEventHandling( UIWindow::EventHandling::None );
-
-			UIRegion& rgn = _fileLabel->GetRegion();
-			rgn.SetLeft		(0.0f,   5.0f);
-			rgn.SetRight	(1.0f,  -5.0f);
-			rgn.SetTop		(0.0f,   5.0f);
-			rgn.SetBottom	(1.0f, -50.0f);
-		}
-
-		// Input field
-		{
-			_fileInput = _fileDialog->AddWidget<UIInput>("File Dialog Input");
-			_fileInput->SetFace("Dark Area");
-			_fileInput->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnFileInputValue, this) );
-			_fileInput->SetMaxHistorySize(10);
-
-			// Copy over the history and release the cached list as it's no longer needed
-			if (mSavedHistory.IsValid())
-			{
-				mSavedHistory.Lock();
-				{
-					for (uint i = 0; i < mSavedHistory.GetSize(); ++i)
-					{
-						_fileInput->AddToHistory( mSavedHistory[i] );
-					}
-					mSavedHistory.Release();
-				}
-				mSavedHistory.Unlock();
-			}
-
-			UIRegion& rgn = _fileInput->GetRegion();
-			rgn.SetLeft		(0.0f,   5.0f);
-			rgn.SetRight	(1.0f,  -5.0f);
-			rgn.SetTop		(1.0f, -50.0f);
-			rgn.SetBottom	(1.0f, -29.0f);
-		}
-
-		// Cancel button
-		{
-			UIButton* cancel = _fileDialog->AddWidget<UIButton>("File Dialog Cancel");
-			cancel->AddScript<USEventListener>()->SetOnFocus( &HideParent );
-			cancel->SetText("Cancel");
-			cancel->SetShadowColor(SHADOW);
-
-			UIRegion& rgn = cancel->GetRegion();
-			rgn.SetLeft		(0.5f,  10.0f);
-			rgn.SetRight	(0.5f, 150.0f);
-			rgn.SetTop		(1.0f, -25.0f);
-			rgn.SetBottom	(1.0f,  -5.0f);
-		}
-
-		// OK button
-		{
-			_fileOK = _fileDialog->AddWidget<UIButton>("File Dialog OK");
-			_fileOK->AddScript<USEventListener>()->SetOnKey( bind(&ModelViewer::OnFileDialogOK, this) );
-			_fileOK->SetShadowColor(SHADOW);
-
-			UIRegion& rgn = _fileOK->GetRegion();
-			rgn.SetLeft		(0.5f, -150.0f);
-			rgn.SetRight	(0.5f,  -10.0f);
-			rgn.SetTop		(1.0f,  -25.0f);
-			rgn.SetBottom	(1.0f,   -5.0f);
-		}
-	}
-
 	// Confirm dialog
 	{
 		// Dialog window
@@ -793,19 +696,16 @@ void ModelViewer::OnFileSave()
 
 void ModelViewer::ShowOpenDialog()
 {
-	if (_fileDialog != 0)
-	{
-		UIRegion& rgn = _fileDialog->GetRegion();
-		rgn.SetLeft		(0.5f, -200.0f);
-		rgn.SetRight	(0.5f,  200.0f);
-		rgn.SetTop		(0.5f, -50.0f);
-		rgn.SetBottom	(0.5f,  50.0f);
+	FileDialog dlg;
+	dlg.AddFilter("R5 ASCII", "R5A");
+	dlg.AddFilter("R5 Binary", "R5B");
+	dlg.AddFilter("R5 Compressed", "R5C");
+	dlg.SetFilename(mLoadFilename);
 
-		_fileDialog->SetText("Open File");
-		_fileLabel->SetText("What file do you want to load?");
-		_fileInput->SetText( mModel->GetFilename() );
-		_fileOK->SetText("Load");
-		_fileDialog->Show();
+	if (dlg.Show("Load Model", true))
+	{
+		mLoadFilename = dlg.GetFilename();
+		Thread::Create( LoadModel, this );
 	}
 }
 
@@ -815,19 +715,22 @@ void ModelViewer::ShowOpenDialog()
 
 void ModelViewer::ShowSaveAsDialog()
 {
-	if (_fileDialog != 0)
-	{
-		UIRegion& rgn = _fileDialog->GetRegion();
-		rgn.SetLeft		(0.5f, -200.0f);
-		rgn.SetRight	(0.5f,  200.0f);
-		rgn.SetTop		(0.5f, -50.0f);
-		rgn.SetBottom	(0.5f,  50.0f);
+	FileDialog dlg;
+	dlg.AddFilter("R5 ASCII", "R5A");
+	dlg.AddFilter("R5 Binary", "R5B");
+	dlg.AddFilter("R5 Compressed", "R5C");
+	dlg.SetFilename(mLoadFilename);
 
-		_fileDialog->SetText("Save As");
-		_fileLabel->SetText("Save as what file?");
-		_fileInput->SetText( mModel->GetFilename() );
-		_fileOK->SetText("Save");
-		_fileDialog->Show();
+	if (dlg.Show("Save Model", false))
+	{
+		if (mModel->Save(dlg.GetFilename()))
+		{
+			SetStatusText( String("Saved as '%s'", dlg.GetFilename().GetBuffer()) );
+		}
+		else
+		{
+			SetStatusText("Unable to save, please provide a different path", Color3f(1.0f, 0.0f, 0.0f));
+		}
 	}
 }
 
@@ -1202,19 +1105,6 @@ UIHighlight* ModelViewer::AddHighlight (UIWidget* parent, uint line, const Strin
 	hlt->SetSerializable(false);
 	hlt->SetLayer(1, false);
 	return hlt;
-}
-
-//============================================================================================================
-// Delegate function triggered when an "OK" button is clicked on the file dialog menu
-//============================================================================================================
-
-void ModelViewer::OnFileDialogOK (UIWidget* widget, const Vector2i& pos, byte key, bool isDown)
-{
-	// Ensure that the click was on the button itself
-	if ( key == Key::MouseLeft && !isDown && widget->GetRegion().Contains(pos) )
-	{
-		_ConfirmFileDialog();
-	}
 }
 
 //============================================================================================================
@@ -2799,46 +2689,5 @@ void ModelViewer::_UpdateLimbData()
 
 		// Mark the model as having changed
 		mModel->SetDirty();
-	}
-}
-
-//============================================================================================================
-// Model loading callback, simply triggers the load function from another thread
-//============================================================================================================
-
-R5_THREAD_FUNCTION(LoadModel, ptr)
-{
-	ModelViewer* mv = (ModelViewer*)ptr;
-	mv->Load();
-	return 0;
-}
-
-//============================================================================================================
-// Triggers the confirmation function for the file dialog, saving or loading the model
-//============================================================================================================
-
-void ModelViewer::_ConfirmFileDialog()
-{
-	const String& text = _fileOK->GetText();
-	const String& file = _fileInput->GetText();
-
-	if ( text == "Save" )
-	{
-		if ( mModel->Save( file ) )
-		{
-			SetStatusText( String("Saved as '%s'", file.GetBuffer()) );
-			_fileInput->AddToHistory( _fileInput->GetText() );
-			_fileDialog->Hide();
-		}
-		else
-		{
-			SetStatusText("Unable to save, please provide a different path", Color3f(1.0f, 0.0f, 0.0f));
-		}
-	}
-	else if ( text == "Load" )
-	{
-		_fileDialog->Hide();
-		mLoadFilename = file;
-		Thread::Create( LoadModel, this );
 	}
 }

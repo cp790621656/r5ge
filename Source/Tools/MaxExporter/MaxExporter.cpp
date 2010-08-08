@@ -1119,6 +1119,11 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 		if (g_config.mGraphics.IsValid()) graphics = g_config.mGraphics;
 		else graphics.AddChild("Serializable", false);
 
+		// Ensure tags are proper
+		graphics.mTag	= "Graphics";
+		core.mTag		= "Core";
+		model.mTag		= "Template";
+
 		// Not all bones may end up getting saved out, and we need to keep track of that
 		Array<byte> boneIndices;
 		uint lastBone = 0;

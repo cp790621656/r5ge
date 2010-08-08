@@ -39,6 +39,9 @@ void FileDialog::AddFilter (const String& name, const String& extension)
 
 bool FileDialog::Show (const char* title, bool existingFilesOnly)
 {
+	// Windows file dialog changes the current working directory... sigh.
+	String currentPath (System::GetCurrentPath());
+
 	OPENFILENAME ofn;
 	char szFile[512] = {0};
 	Array<char> filterData;
@@ -88,20 +91,28 @@ bool FileDialog::Show (const char* title, bool existingFilesOnly)
 	ofn.Flags			= OFN_PATHMUSTEXIST;
 	ofn.lpstrDefExt		= extension.GetBuffer();
 
+	bool retVal;
+
 	if (existingFilesOnly)
 	{
 		// Show the open file dialog
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		if (!GetOpenFileName(&ofn)) return false;
+		retVal = GetOpenFileName(&ofn) != 0;
 	}
 	else
 	{
 		// Show the save file dialog
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		if (!GetSaveFileName(&ofn)) return false;
+		retVal = GetSaveFileName(&ofn) != 0;
 	}
-	mFilename = szFile;
-	return true;
+
+	if (retVal)
+	{
+		// Remember the filename and restore the current working directory
+		mFilename = szFile;
+		System::SetCurrentPath(currentPath);
+	}
+	return retVal;
 }
 
 #elif defined _MACOS

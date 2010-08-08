@@ -60,8 +60,6 @@ void ModelViewer::Run()
 
 	if (root.Load("Config/Model Viewer.txt") && mCore->SerializeFrom(root))
 	{
-		FOREACH(i, root.mChildren) SerializeFrom(root.mChildren[i]);
-
 		// Event listeners
 		mCore->AddOnKey		 ( bind(&ModelViewer::OnKeyPress,	this) );
 		mCore->AddOnMouseMove( bind(&ModelViewer::OnMouseMove,	this) );
@@ -99,7 +97,6 @@ void ModelViewer::Run()
 		// Save the current scene
 		root.Release();
 		mCore->SerializeTo(root);
-		SerializeTo(root);
 		root.Save("Config/Model Viewer.txt");
 	}
 }
@@ -293,25 +290,6 @@ uint ModelViewer::OnScroll(const Vector2i& pos, float delta)
 {
 	if (mCam) return mCam->Scroll(pos, delta * 0.5f);
 	return 0;
-}
-
-//============================================================================================================
-// Serialization -- Load
-//============================================================================================================
-
-bool ModelViewer::SerializeFrom (const TreeNode& root)
-{
-	if (root.mTag == "File History")
-	{
-		if (root.mValue.IsStringArray())
-		{
-			mSavedHistory.Lock();
-			mSavedHistory = root.mValue.AsStringArray();
-			mSavedHistory.Unlock();
-		}
-		return true;
-	}
-	return false;
 }
 
 //============================================================================================================

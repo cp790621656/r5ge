@@ -49,8 +49,6 @@ public:
 	uint OnKeyPress		(const Vector2i& pos, byte key, bool isDown);
 	uint OnMouseMove	(const Vector2i& pos, const Vector2i& delta);
 	uint OnScroll		(const Vector2i& pos, float delta);
-	bool SerializeFrom	(const TreeNode& root);
-	void SerializeTo	(TreeNode& root) const;
 
 private:
 
@@ -92,8 +90,6 @@ protected: // Functions that facilitate widget creation with common properties a
 
 private: // Numerous callback functions triggered by the UI elements
 
-	void OnFileInputValue		(UIWidget* widget) { _ConfirmFileDialog(); }
-	void OnFileDialogOK			(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 	void OnConfirmDialogOK		(UIWidget* widget, const Vector2i& pos, byte key, bool isDown);
 
 	void ToggleBoth				(UIWidget* widget, uint state, bool isSet);
@@ -170,6 +166,5 @@ private:
 	// Functions that update their respective graphics/scene counterparts based on UI values
 	void _UpdateModelData();
 	void _UpdateLimbData();
-	void _ConfirmFileDialog();
 	void _CopyHistory();
 };
