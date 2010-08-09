@@ -525,32 +525,32 @@ void Object::Release()
 		// Run through all scripts
 		for (uint i = mScripts.GetSize(); i > 0; )
 		{
-			// Remove the reference to this object
 			if (mScripts[--i] != 0)
 			{
-				mScripts[i]->mObject = 0;
+				mScripts[i]->DestroySelf();
 			}
 		}
 		
 		// Release all scripts
 		mScripts.Release();
 	}
+	mDeletedScripts.Release();
 
 	if (mChildren.IsValid())
 	{
 		// Run through all children
 		for (uint i = mChildren.GetSize(); i > 0; )
 		{
-			// Remove all references to this object
 			if (mChildren[--i] != 0)
 			{
-				mChildren[i]->mParent = 0;
+				mChildren[i]->DestroySelf();
 			}
 		}
 
 		// Release all children
 		mChildren.Release();
 	}
+	mDeletedObjects.Release();
 }
 
 //============================================================================================================
