@@ -261,19 +261,19 @@ void UIWidget::SetLayer (int layer, bool setDirty)
 
 void UIWidget::DestroySelf()
 {
+	// Remove all references to this widget
+	mUI->RemoveAllReferencesTo(this);
+
+	// Destroy all scripts
+	for (uint i = mScripts.GetSize(); i > 0; )
+		mScripts[--i]->DestroySelf();
+
+	// Destroy all children
+	for (uint i = mChildren.GetSize(); i > 0; )
+		mChildren[--i]->DestroySelf();
+
 	if (mParent != 0)
 	{
-		// Remove all references to this widget
-		mUI->RemoveAllReferencesTo(this);
-
-		// Destroy all scripts
-		for (uint i = mScripts.GetSize(); i > 0; )
-			mScripts[--i]->DestroySelf();
-
-		// Destroy all children
-		for (uint i = mChildren.GetSize(); i > 0; )
-			mChildren[--i]->DestroySelf();
-
 		// Notify the listener
 		OnDestroy();
 

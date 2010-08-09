@@ -56,6 +56,9 @@ public:
 
 	UIManager();
 
+	// Access to the root widget
+	UIFrame& GetRoot() { return mRoot; }
+
 	// Triggered by Frame::OnDirty, indicating the need for the UI to be redrawn
 	bool IsDirty() const { return mIsDirty || mDimsChanged; }
 	void SetDirty() { mIsDirty = true; }
