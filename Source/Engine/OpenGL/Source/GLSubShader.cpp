@@ -417,7 +417,7 @@ void GLSubShader::_Init()
 				// Light's depth textures follow
 				for (uint i = 0; i < cascades; ++i)
 				{
-					mCode << "uniform sampler2D R5_texture";
+					mCode << "uniform sampler2DShadow R5_texture";
 					mCode << (i + 1);
 					mCode << ";\n";
 				}
