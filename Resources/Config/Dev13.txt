@@ -44,7 +44,7 @@ Root
 
 		Model Instance = "Test Scene"
 		{
-			Model = "Models/shadow test 2.r5a"
+			Model = "Models/shadow test.r5a"
 
 			Directional Light = "First Light"
 			{
@@ -59,21 +59,21 @@ Root
 
 			Debug Camera = "Default Camera"
 			{
-				Position = -41.595245 -40.311329 6.251074
+				Position = 0 0 0
 				Rotation = -0.202522 0.103897 -0.444483 0.866386
-				Range = 1.000000 200.000000 60.000000
-				Dolly = 0.000000 49.000004 150.000000
+				Range = 1.000000 50.000000 60.000000
+				Dolly = 0.000000 25.000004 150.000000
 
 				Script = "OSDrawDeferred"
 				{
 					Shadowmap
 					{
-						Texture Size = 512
-						Cascades = 4
-						Blur Passes = 2
+						Texture Size = 1024
+						Cascades = 3
+						Blur Passes = 1
 						Softness = 3.000000
-						Kernel Size = 0.000000
-						Depth Bias = 6.000000
+						Kernel Size = 1.000000
+						Depth Bias = 3.000000
 					}
 
 					Bloom = 1.000000

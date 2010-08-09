@@ -417,7 +417,7 @@ void GLSubShader::_Init()
 				// Light's depth textures follow
 				for (uint i = 0; i < cascades; ++i)
 				{
-					mCode << "uniform sampler2DShadow R5_texture";
+					mCode << "uniform sampler2D R5_texture";
 					mCode << (i + 1);
 					mCode << ";\n";
 				}
@@ -436,7 +436,7 @@ void GLSubShader::_Init()
 				// Next comes the common component
 				mCode << g_shadow;
 				mCode << "vec4 pos4 = shadowMatrix0 * worldPos;\n";
-				mCode << "float final = Sample(R5_texture1, pos4.xyz / pos4.w);\n";
+				mCode << "float final = SamplePCF(R5_texture1, pos4.xyz / pos4.w);\n";
 
 				// Run through all remaining cascades and add them up
 				for (uint i = 1; i < cascades; ++i)
@@ -449,7 +449,7 @@ void GLSubShader::_Init()
 					if (i == 1) mCode << "float ";
 
 					// Sample the shadow texture
-					mCode << "shadow = Sample(R5_texture";
+					mCode << "shadow = SamplePCF(R5_texture";
 					mCode << (i + 1);
 					mCode << ", pos4.xyz / pos4.w);\n";
 

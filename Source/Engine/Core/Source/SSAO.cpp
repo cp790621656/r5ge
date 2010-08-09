@@ -13,7 +13,7 @@ void SetSSAOProperties (const String& name, Uniform& data) { data = g_params; }
 // Generates a random texture used by SSAO
 //============================================================================================================
 
-ITexture* GetRandomizedNormalmap (IGraphics* graphics)
+ITexture* R5::GetRandomizedNormalmap (IGraphics* graphics)
 {
 	ITexture* random = graphics->GetTexture("[Generated] Random Offset");
 

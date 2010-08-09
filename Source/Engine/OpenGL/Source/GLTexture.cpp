@@ -845,13 +845,13 @@ uint GLTexture::Activate()
 		{
 			mActiveCompareMode = mCompareMode;
 
-			if (mCompareMode == CompareMode::Shadow)
-			{
-				// Compare depth
-				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
-				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
-			}
-			else
+			//if (mCompareMode == CompareMode::Shadow)
+			//{
+			//	// Compare depth
+			//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+			//	glTexParameteri(mGlType, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
+			//}
+			//else
 			{
 				// No comparison
 				glTexParameteri(mGlType, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);

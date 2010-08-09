@@ -34,3 +34,6 @@ public:
 	ITexture* Create (TemporaryStorage& storage, bool highQuality, uint passes,
 		float range, float strength, float sharpness);
 };
+
+// Generated normalized normap map texture
+ITexture* GetRandomizedNormalmap (IGraphics* graphics);
