@@ -188,6 +188,15 @@ void GLShader::SetUniform_IPM (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
+// Shader callback for R5_inverseMVPMatrix
+//============================================================================================================
+
+void GLShader::SetUniform_IMVPM (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetInverseMVPMatrix();
+}
+
+//============================================================================================================
 // Shader callback function for R5_inverseViewRotationMatrix
 //============================================================================================================
 
@@ -266,6 +275,7 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	_InsertUniform( "R5_projectionMatrix",			bind(&GLShader::SetUniform_PM,			this) );
 	_InsertUniform( "R5_inverseViewMatrix",			bind(&GLShader::SetUniform_IVM,			this) );
 	_InsertUniform( "R5_inverseProjMatrix",			bind(&GLShader::SetUniform_IPM,			this) );
+	_InsertUniform( "R5_inverseMVPMatrix",			bind(&GLShader::SetUniform_IMVPM,		this) );
 	_InsertUniform( "R5_inverseViewRotationMatrix",	bind(&GLShader::SetUniform_IVRM,		this) );
 	_InsertUniform( "R5_worldTransformMatrix",		bind(&GLShader::SetUniform_WTM,			this) );
 	_InsertUniform( "R5_worldRotationMatrix",		bind(&GLShader::SetUniform_WRM,			this) );

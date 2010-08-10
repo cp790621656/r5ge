@@ -47,6 +47,7 @@ private:
 	void SetUniform_PM			(const String& name, Uniform& uniform);
 	void SetUniform_IVM			(const String& name, Uniform& uniform);
 	void SetUniform_IPM			(const String& name, Uniform& uniform);
+	void SetUniform_IMVPM		(const String& name, Uniform& uniform);
 	void SetUniform_IVRM		(const String& name, Uniform& uniform);
 	void SetUniform_WTM			(const String& name, Uniform& uniform);
 	void SetUniform_WRM			(const String& name, Uniform& uniform);
