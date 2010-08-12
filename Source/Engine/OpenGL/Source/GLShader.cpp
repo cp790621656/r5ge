@@ -522,6 +522,28 @@ bool GLShader::_Link()
 			System::Log("          - Using '%s' (%s)", sub->mName.GetBuffer(), type);
 		}
 
+		Array<String> lines;
+		R5::CreateDebugLog(lines, log, "");
+
+		// Print the debug log if there is something to print
+		if (lines.IsValid())
+		{
+			FOREACH(i, lines)
+			{
+				if (lines[i].Contains("Warning"))
+				{
+					WARNING(lines[i].GetBuffer());
+				}
+#ifdef _DEBUG
+				else
+				{
+					System::Log("          - %s", lines[i].GetBuffer());
+				}
+#endif
+			}
+			System::FlushLog();
+		}
+
 		if (retVal == GL_TRUE)
 		{
 			// List the program's common supported features
@@ -531,19 +553,6 @@ bool GLShader::_Link()
 		}
 		else
 		{
-			// Print the debug log if there is something to print
-			Array<String> lines;
-			R5::CreateDebugLog(lines, log, "");
-
-			if (lines.IsValid())
-			{
-				FOREACH(i, lines)
-				{
-					System::Log("          - %s", lines[i].GetBuffer());
-				}
-				System::FlushLog();
-			}
-
 #ifdef _DEBUG
 			String errMsg ("Failed to link '");
 			errMsg << mName;

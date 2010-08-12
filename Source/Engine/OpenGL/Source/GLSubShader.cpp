@@ -600,6 +600,9 @@ bool GLSubShader::_Compile()
 			glGetShaderInfoLog (mGLID, logLength, &charsWritten, (char*)log.GetBuffer());
 		}
 
+		Array<String> lines;
+		R5::CreateDebugLog(lines, log, mCode);
+
 		if (retVal == GL_TRUE)
 		{
 			System::Log( "[SHADER]  '%s' has compiled successfully", mName.GetBuffer() );
@@ -607,20 +610,29 @@ bool GLSubShader::_Compile()
 		else
 		{
 			System::Log( "[SHADER]  '%s' has FAILED to compile!", mName.GetBuffer() );
+		}
 
-			// Print the debug log if there is something to print
-			Array<String> lines;
-			R5::CreateDebugLog(lines, log, mCode);
-
-			if (lines.IsValid())
+		// Print the debug log if there is something to print
+		if (lines.IsValid())
+		{
+			FOREACH(i, lines)
 			{
-				FOREACH(i, lines)
+				if (lines[i].Contains("Warning"))
+				{
+					WARNING(lines[i].GetBuffer());
+				}
+#ifdef _DEBUG
+				else
 				{
 					System::Log("          - %s", lines[i].GetBuffer());
 				}
-				System::FlushLog();
+#endif
 			}
+			System::FlushLog();
+		}
 
+		if (retVal != GL_TRUE)
+		{
 #ifdef _DEBUG
 			// Trigger an assert
 			String errMsg ("Failed to compile '");
