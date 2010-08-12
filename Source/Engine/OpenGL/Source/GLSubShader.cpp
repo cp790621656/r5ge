@@ -111,6 +111,45 @@ uint PreprocessCommon (const String& source,
 }
 
 //============================================================================================================
+// Preprocess deprecated GLSL vertex shader functionality, replacing such things as 'gl_MultiTexCoord1' with
+// their equivalent vertex attribute names.
+//============================================================================================================
+
+void PreprocessAttributes (String& source)
+{
+	String mtc ("gl_MultiTexCoord");
+	String match0, match1;
+
+	for (uint i = 8; i > 0; )
+	{
+		match0 = mtc;
+		match0 << --i;
+		match1 = match0;
+		match1 << ".xyz";
+
+		if (source.Contains(match0))
+		{
+			if (source.Contains(match1))
+			{
+				source.Replace(match1, String("R5_texCoord%u.xyz", i));
+				source = String("attribute vec3 R5_texCoord%u;\n", i) + source;
+			}
+			else
+			{
+				source.Replace(match0, String("R5_texCoord%u", i));
+				source = String("attribute vec2 R5_texCoord%u;\n", i) + source;
+			}
+
+			// If this warning is triggered, you should replace gl_MultiTexCoord series of coordinates with
+			// R5_texCoord series of attributes. For your convenience, R5 takes care of doing that for you,
+			// however in order for your shaders to be compliant with the latest GLSL specs, it's highly
+			// advised that you do this yourself.
+			//WARNING("Using deprecated GLSL functionality, consider replacing with a 'R5_texCoord#' attribute");
+		}
+	}
+}
+
+//============================================================================================================
 // Macro that adds skinning support. Example implementations:
 //============================================================================================================
 // // R5_IMPLEMENT_SKINNING vertex
@@ -512,6 +551,10 @@ void GLSubShader::_Preprocess()
 	// Preprocess all macros
 	if (mType == Type::Vertex)
 	{
+		// Preprocesses deprecated GLSL functionality, such as 'gl_MultiTexCoord1',
+		// replacing it appropriate vertex attributes.
+		::PreprocessAttributes(mCode);
+
 		if (::PreprocessSkinning(mCode))		mFlags.Set(IShader::Flag::Skinned,		true);
 		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
