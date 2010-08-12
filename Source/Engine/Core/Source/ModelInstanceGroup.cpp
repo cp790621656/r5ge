@@ -50,7 +50,7 @@ bool GetModelInfo (ModelInstance* inst, ModelInfo& info)
 ModelInstanceGroup::TerrainData* ModelInstanceGroup::GetData (ModelInstance* inst, bool create)
 {
 	Octree::Node* node = (Octree::Node*)inst->GetSubParent();
-	ASSERT(node != 0, "SubParent is set to null");
+	if (node == 0) return 0;
 	if (create && node->mData == 0) node->mData = new TerrainData();
 	return (TerrainData*)node->mData;
 }

@@ -88,6 +88,7 @@ void Core::Init()
 #else
 	mSleepDelay = 0;
 #endif
+	mUISleepDelay = 10;
 
 	// First update should update the scene regardless of time delta
 	mIsDirty = true;
@@ -263,7 +264,7 @@ bool Core::Update()
 		}
 
 		// Sleep the thread, letting others run in the background
-		Thread::Sleep(mFullDraw > 0 ? mSleepDelay : 10);
+		Thread::Sleep(mFullDraw > 0 ? mSleepDelay : mUISleepDelay);
 		return true;
 	}
 	return true;

@@ -38,6 +38,7 @@ protected:
 	Models			mModels;			// Managed array of instantiable models
 	Array<String>	mExecuted;			// Executed resources, for serialization purposes
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
+	uint			mUISleepDelay;		// How long the graphics thread will sleep in UI-only mode
 	uint			mFullDraw;			// How many times in a row the scene has been drawn fully (up to 10)
 	Thread::IDType	mThreadID;			// ID of the thread the Core was created in
 
@@ -124,6 +125,10 @@ public:
 	// Sleep delay is used to put the graphics thread to sleep after drawing the frame
 	uint GetSleepDelay() const		{ return mSleepDelay; }
 	void SetSleepDelay (uint delay) { mSleepDelay = delay; }
+
+	// Sleep delay used when the game is in UI-only mode
+	uint GetUIOnlyModeSleepDelay() const		{ return mUISleepDelay; }
+	void SetUIOnlyModeSleepDelay (uint delay)	{ mUISleepDelay = delay; }
 
 public:
 
