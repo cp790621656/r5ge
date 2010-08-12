@@ -298,6 +298,7 @@ bool Emitter::OnSerializeFrom (const TreeNode& node)
 		IGraphics* graphics = mCore->GetGraphics();
 		mTech = graphics->GetTechnique( node.mValue.IsString() ? node.mValue.AsString() :
 			node.mValue.GetString(), true );
+		return true;
 	}
 	return false;
 }
