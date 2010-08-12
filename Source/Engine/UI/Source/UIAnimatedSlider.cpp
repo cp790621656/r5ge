@@ -25,10 +25,16 @@ bool UIAnimatedSlider::OnUpdate (bool dimensionsChanged)
 {
 	if ( Float::IsNotEqual(mVal, mTargetVal) )
 	{
-		float time = mUI->GetCurrentTime();
-		float factor = (mAnimTime > 0.0f) ? Float::Clamp((time - mStartTime) / mAnimTime, 0.0f, 1.0f) : 1.0f;
-		mVal = mStartVal * (1.0f - factor) + mTargetVal * factor;
-
+		if (GetAlpha() == 0.0f)
+		{
+			mVal = mTargetVal;
+		}
+		else
+		{
+			float time = mUI->GetCurrentTime();
+			float factor = (mAnimTime > 0.0f) ? Float::Clamp((time - mStartTime) / mAnimTime, 0.0f, 1.0f) : 1.0f;
+			mVal = mStartVal * (1.0f - factor) + mTargetVal * factor;
+		}
 		// Trigger the callback
 		OnValueChange();
 		return true;
