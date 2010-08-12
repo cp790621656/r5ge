@@ -120,7 +120,12 @@ void PreprocessAttributes (String& source)
 	String mtc ("gl_MultiTexCoord");
 	String match0, match1;
 
-	for (uint i = 8; i > 0; )
+	// ATI has an interesting list of features on their drivers... They don't like gl_MultiTexCoord1 because
+	// it has been deprecated in the latest GLSL specs (and I assume all higher gl_MultiTexCoords as well),
+	// and need to have them replaced with vertex attributes instead. Fine, but at the same time ATI drivers
+	// don't like it when gl_MultiTexCoord0 gets replaced with a vertex attribute as well! Sigh.
+
+	for (uint i = 8; i > 1; )
 	{
 		match0 = mtc;
 		match0 << --i;
@@ -139,12 +144,6 @@ void PreprocessAttributes (String& source)
 				source.Replace(match0, String("R5_texCoord%u", i));
 				source = String("attribute vec2 R5_texCoord%u;\n", i) + source;
 			}
-
-			// If this warning is triggered, you should replace gl_MultiTexCoord series of coordinates with
-			// R5_texCoord series of attributes. For your convenience, R5 takes care of doing that for you,
-			// however in order for your shaders to be compliant with the latest GLSL specs, it's highly
-			// advised that you do this yourself.
-			//WARNING("Using deprecated GLSL functionality, consider replacing with a 'R5_texCoord#' attribute");
 		}
 	}
 }
