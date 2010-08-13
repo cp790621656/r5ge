@@ -37,7 +37,16 @@ bool UIHighlight::OnSerializeFrom (const TreeNode& node)
 	Color4ub color (0xFFFFFFFF);
 
 	// Legacy support
-	if (node.mTag == "Color" || node.mTag == "Top Color")
+	if (node.mTag == "Color")
+	{
+		if (node.mValue >> color)
+		{
+			SetTopColor(color);
+			SetBottomColor(color);
+		}
+		return true;
+	}
+	else if (node.mTag == "Top Color")
 	{
 		if (node.mValue >> color) SetTopColor(color);
 		return true;
