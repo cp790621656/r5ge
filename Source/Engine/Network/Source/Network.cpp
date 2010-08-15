@@ -844,18 +844,21 @@ void Network::Disconnect()
 {
 	mSockets.Lock();
 	{
-		for (uint i = mSockets.GetSize(); i > 0; )
+		while (mSockets.IsValid())
 		{
-			Socket& socket = mSockets[--i];
+			Socket& socket = mSockets.Back();
 			Address remote (socket.mAddress);
 			VoidPtr userData (socket.mUserData);
 			uint id (socket.mId);
 
 			// Close the socket
 			::CloseSocket(socket);
+			mSockets.Shrink();
+			mSockets.Unlock();
 
 			// Inform the callback that the socket has been closed
 			if (mOnClose) mOnClose(remote, id, userData);
+			mSockets.Lock();
 		}
 		mSockets.Clear();
 	}
