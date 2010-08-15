@@ -4,37 +4,26 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Resource is just a TreeNode structure with a name, usually processed on a separate thread
+// Resource is just a way to pass strings to a worker thread
 //============================================================================================================
 
+class Core;
 class Resource
 {
 protected:
 
-	String				mName;
-	String				mSource;
-	TreeNode			mContents;
-	bool				mSerializable;
-	Thread::Lockable	mLock;
+	String	mName;
+	Core*	mCore;
+
+	friend class Core;
 
 public:
 
-	Resource(const String& name);
+	Resource(const String& name) : mName(name) {}
 
 	R5_DECLARE_SOLO_CLASS("Resource");
 
-	void Lock()		const	{ mLock.Lock();	}
-	void Unlock()	const	{ mLock.Unlock();	}
+	Core* GetCore() { return mCore; }
 
-	const String&	GetName() const { return mName; }
-	const TreeNode&	GetRoot() const { return mContents; }
-
-	bool IsValid() const { return mName.IsValid() && mContents.mChildren.IsValid(); }
-	bool Load (const char* source);
-
-	// Serialization functions
-	void SetSerializable(bool val) { mSerializable = val; }
-	bool IsSerializable() const { return mSerializable && mSource.IsValid(); }
-	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
-	bool SerializeTo (TreeNode& root) const;
+	const String& GetName() const { return mName; }
 };

@@ -72,6 +72,7 @@ public:
 	const String&	GetName()		 const	{ return mName;			}
 	const String&	GetTooltip()	 const	{ return mTooltip;		}
 	const Children& GetAllChildren() const	{ return mChildren;		}
+	Children&		GetAllChildren()		{ return mChildren;		}
 	const Scripts&	GetAllScripts()	 const	{ return mScripts;		}
 	UIWidget*		GetParent()				{ return mParent;		}
 	int				GetLayer()		 const	{ return mLayer;		}
@@ -177,9 +178,13 @@ private:
 	// Updates the widget
 	bool _Update (bool areaChanged);
 
+public:
+
 	// Serialization
 	bool SerializeTo	(TreeNode& root) const;
 	bool SerializeFrom	(const TreeNode& root);
+
+private:
 
 	// Calls the virtual Area::OnDraw() and recurses through children
 	uint Draw();

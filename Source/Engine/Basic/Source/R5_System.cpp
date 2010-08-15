@@ -182,11 +182,9 @@ String System::GetCurrentPath()
 // "c:\temp\test.abc" becomes "test.abc"
 //============================================================================================================
 
-String System::GetFilenameFromPath (const String& in)
+String System::GetFilenameFromPath (const String& in, bool extension)
 {
-	uint i = 0;
-
-	for (i = in.GetLength(); i > 0;)
+	for (uint i = in.GetLength(); i > 0; )
 	{
 		char character = in[--i];
 
@@ -194,6 +192,20 @@ String System::GetFilenameFromPath (const String& in)
 		{
 			String out;
 			in.GetString(out, i + 1);
+
+			if (!extension)
+			{
+				for (uint b = in.GetLength(); b > i; )
+				{
+					char character = in[--b];
+
+					if (character == '.')
+					{
+						in.GetString(out, i + 1, b);
+						break;
+					}
+				}
+			}
 			return out;
 		}
 	}
@@ -206,9 +218,7 @@ String System::GetFilenameFromPath (const String& in)
 
 String System::GetPathFromFilename (const String& in)
 {
-	uint i = 0;
-
-	for ( i = in.GetLength(); i > 0; )
+	for (uint i = in.GetLength(); i > 0; )
 	{
 		char character = in[--i];
 
@@ -229,9 +239,7 @@ String System::GetPathFromFilename (const String& in)
 
 String System::GetExtensionFromFilename (const String& in)
 {
-	uint i = 0;
-
-	for ( i = in.GetLength(); i > 0; )
+	for (uint i = in.GetLength(); i > 0; )
 	{
 		char character = in[--i];
 		if (character == '.')
@@ -252,9 +260,18 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 {
 	String file;
 
+	String path (dir);
+	path.Replace("\\", "/", true);
+	if (path.IsValid() && !path.EndsWith("/")) path << "/";
+	else if (path == "/") path.Clear();
+
 #ifdef _WINDOWS
 	WIN32_FIND_DATA info;
-	void* fileHandle = FindFirstFile((dir + "/*.*").GetBuffer(), &info);
+
+	String match (path);
+	match << "*.*";
+
+	void* fileHandle = FindFirstFile(match.GetBuffer(), &info);
 	if (fileHandle == INVALID_HANDLE_VALUE) return false;
 
 	do 
@@ -265,31 +282,45 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 		{
 			if ((info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
 			{
-				folders.Expand() = file;
+				String& out = folders.Expand();
+				out << path;
+				out << file;
+				out << "/";
 			}
 			else
 			{
-				files.Expand() = file;
+				String& out = files.Expand();
+				out << path;
+				out << file;
 			}
 		}
 	}
 	while (FindNextFile(fileHandle, &info));
 
 #else
-	DIR* dp = opendir(dir.GetBuffer());
+	DIR* dp = opendir(dir.IsValid() ? dir.GetBuffer() : "./");
 	if (dp == 0) return false;
 	struct dirent* dirp = 0;
 
 	while ((dirp = readdir(dp)) != 0)
 	{
-		if (dirp->d_type == DT_DIR)
+		String file (dirp->d_name);
+
+		if (!file.BeginsWith("."))
 		{
-			folders.Expand() = dirp->d_name;
-			if (folders.Back().BeginsWith(".")) folders.Shrink();
-		}
-		else
-		{
-			files.Expand() = dirp->d_name;
+			if (dirp->d_type == DT_DIR)
+			{
+				String& out = folders.Expand();
+				out << path;
+				out << file;
+				out << "/";
+			}
+			else
+			{
+				String& out = files.Expand();
+				out << path;
+				out << file;
+			}
 		}
 	}
     closedir(dp);
@@ -303,10 +334,8 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 // Fills out a list of all files with the partial path matching 'path'. Returns 'true' if one was found.
 //============================================================================================================
 
-bool System::GetFiles (const String& path, Array<String>& files)
+bool System::GetFiles (const String& path, Array<String>& files, bool recursive)
 {
-	files.Clear();
-
 	if (FileExists(path))
 	{
 		files.Expand() = path;
@@ -314,7 +343,10 @@ bool System::GetFiles (const String& path, Array<String>& files)
 	else
 	{
 		String dir  (GetPathFromFilename(path));
-		String name (GetFilenameFromPath(path));
+		String name (GetFilenameFromPath(path, false));
+
+		String match (dir);
+		match << name;
 
 		Array<String> fd, fl;
 
@@ -324,14 +356,52 @@ bool System::GetFiles (const String& path, Array<String>& files)
 			{
 				const String& s = fl[i];
 
-				if (s.BeginsWith(name))
+				if (s.BeginsWith(match))
 				{
 					String& fout = files.Expand();
-					fout << dir;
 					fout << s;
+				}
+			}
+
+			if (recursive)
+			{
+				FOREACH(i, fd)
+				{
+					GetFiles(fd[i], files, true);
 				}
 			}
 		}
 	}
 	return files.IsValid();
+}
+
+//============================================================================================================
+// Returns the best matching filename that exists. Allows specifying a different extension than
+// that of the existing file. "c:/temp/test.abc" will match "c:/temp/test.txt" if it exists instead.
+//============================================================================================================
+
+String System::GetBestMatch (const String& filename)
+{
+	if (FileExists(filename)) return filename;
+
+	String dir  (GetPathFromFilename(filename));
+	String name (GetFilenameFromPath(filename, false));
+
+	if (name.IsValid())
+	{
+		String match (dir);
+		match << name;
+
+		Array<String> fd, fl;
+
+		if (ReadFolder(dir, fd, fl))
+		{
+			FOREACH(i, fl)
+			{
+				const String& s = fl[i];
+				if (s.BeginsWith(match)) return s;
+			}
+		}
+	}
+	return "";
 }

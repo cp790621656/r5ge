@@ -2,42 +2,28 @@
 using namespace R5;
 
 //============================================================================================================
-// Since R5::Core has worker threads, they need to have a pointer to the core
+// Thread for resource serialization
 //============================================================================================================
 
-Core*			g_core			= 0;
-Thread::ValType	g_threadCount	= 0;
-
-//============================================================================================================
-// Resource executioner thread callback
-//============================================================================================================
-
-R5_THREAD_FUNCTION(WorkerThread, ptr)
+R5_THREAD_FUNCTION(SerializeResourceThread, ptr)
 {
-	if (g_core)
-	{
-		Resource* resource = (Resource*)ptr;
+	Resource* resource = (Resource*)ptr;
 
 #ifdef _DEBUG
-		long threadId = g_threadCount;
-		ulong timestamp = Time::GetMilliseconds();
-		System::Log("[THREAD]  Executing '%s' [ID: %u]", resource->GetName().GetBuffer(), threadId);
+	long threadId = Thread::GetID();
+	ulong timestamp = Time::GetMilliseconds();
+	System::Log("[THREAD]  Executing '%s' [ID: %u]", resource->GetName().GetBuffer(), threadId);
 #endif
 
-		resource->Lock();
-		g_core->SerializeFrom( resource->GetRoot() );
-		resource->Unlock();
-
-		Thread::Decrement( g_threadCount );
+	resource->GetCore()->SerializeFrom( resource->GetName(), false, false );
+	resource->GetCore()->DecrementThreadCount();
 
 #ifdef _DEBUG
-		System::Log("[THREAD]  Finished executing '%s' in %u ms [ID: %u]",
-			resource->GetName().GetBuffer(), Time::GetMilliseconds() - timestamp, threadId);
+	System::Log("[THREAD]  Finished executing '%s' in %u ms [ID: %u]",
+		resource->GetName().GetBuffer(), Time::GetMilliseconds() - timestamp, threadId);
 #endif
-	}
 	return 0;
 }
-
 //============================================================================================================
 // Core constructor and destructor
 //============================================================================================================
@@ -62,9 +48,8 @@ Core::Core (IWindow* window, IGraphics* graphics, IUI* gui, IAudio* audio, Scene
 Core::~Core()
 {
 	// Ensure that the core won't be deleted until all worker threads finish
-	while (g_threadCount > 0) Thread::Sleep(1);
+	while (mThreadCount > 0) Thread::Sleep(1);
 	if (mWin != 0) mWin->SetGraphics(0);
-	g_core = 0;
 
 	// We no longer need the improved timer frequency
 	Thread::ImproveTimerFrequency(false);
@@ -80,9 +65,6 @@ Core::~Core()
 
 void Core::Init()
 {
-	ASSERT(g_core == 0, "Only one instance of R5::Core is possible per application at this time");
-	g_core = this;
-
 #ifdef _DEBUG
 	mSleepDelay = 1;
 #else
@@ -95,6 +77,7 @@ void Core::Init()
 
 	// Remember the thread ID
 	mThreadID = Thread::GetID();
+	mThreadCount = 0;
 
 	// Root of the scene needs to know who owns it
 	mRoot.mCore = this;
@@ -325,7 +308,11 @@ Model* Core::GetModel (const String& name, bool createIfMissing)
 Resource* Core::GetResource (const String& name, bool createIfMissing)
 {
 	if (name.IsEmpty()) return 0;
-	return (createIfMissing ? mResources.AddUnique(name) : mResources.Find(name));
+	mResources.Lock();
+	Resource* res = (createIfMissing ? mResources.AddUnique(name, false) : mResources.Find(name, false));
+	if (res != 0) res->mCore = this;
+	mResources.Unlock();
+	return res;
 }
 
 //============================================================================================================
@@ -367,12 +354,6 @@ ModelTemplate* Core::GetModelTemplate (const String& name, bool createIfMissing)
 	}
 	return mModelTemplates.Find(name);
 }
-
-//============================================================================================================
-// Whether Core is currently executing one or more scripts
-//============================================================================================================
-
-uint Core::CountExecutingThreads() const { return g_threadCount; }
 
 //============================================================================================================
 // Load the specified file
@@ -490,20 +471,13 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	if (mUI != 0 && ui) mUI->SerializeTo(root);
 
 	// Save all resources and models
-	if (mResources.IsValid() || mExecuted.IsValid() || mModels.IsValid())
+	if (mResources.IsValid() || mFileResource.IsValid() || mModels.IsValid())
 	{
 		TreeNode& node = root.AddChild( Core::ClassID() );
 
-		mResources.Lock();
-		{
-			for (uint i = 0; i < mResources.GetSize(); ++i)
-				mResources[i]->SerializeTo(node);
-		}
-		mResources.Unlock();
-
-		mExecuted.Lock();
-		node.AddChild("Execute", mExecuted);
-		mExecuted.Unlock();
+		mFileResource.Lock();
+		node.AddChild("Serialize From", mFileResource);
+		mFileResource.Unlock();
 
 		mModelTemplates.Lock();
 		{
@@ -566,9 +540,9 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 // Serialization -- Load
 //============================================================================================================
 
-bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
+bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThreads)
 {
-	Thread::Increment(g_threadCount);
+	IncrementThreadCount();
 	bool serializable = true;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
@@ -577,51 +551,51 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		const String&	tag		= node.mTag;
 		const Variable&	value	= node.mValue;
 
-		if ( tag == Core::ClassID() )
+		if (tag == Core::ClassID())
 		{
 			// SerializeFrom only returns 'false' if something important failed
-			if ( !SerializeFrom(node, forceUpdate) )
+			if ( !SerializeFrom(node, forceUpdate, createThreads) )
 				return false;
 		}
-		else if ( tag == IWindow::ClassID() )
+		else if (tag == IWindow::ClassID())
 		{
 			// If window creation fails, let the calling function know
 			if (mWin != 0 && !mWin->SerializeFrom(node))
 				return false;
 		}
-		else if ( tag == IGraphics::ClassID() )
+		else if (tag == IGraphics::ClassID())
 		{
 			// If graphics init fails, let the calling function know
 			if (mGraphics != 0 && !mGraphics->SerializeFrom(node, forceUpdate))
 				return false;
 		}
-		else if ( tag == IUI::ClassID() )
+		else if (tag == IUI::ClassID())
 		{
 			if (mUI != 0 && mGraphics != 0)
 				mUI->SerializeFrom(node);
 		}
-		else if ( tag == Scene::ClassID() )
+		else if (tag == Scene::ClassID())
 		{
 			Lock();
 			mRoot.SerializeFrom(node, forceUpdate);
 			Unlock();
 		}
-		else if ( tag == Mesh::ClassID() )
+		else if (tag == Mesh::ClassID())
 		{
 			Mesh* mesh = GetMesh(value.AsString(), true);
 			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
 		}
-		else if ( tag == Cloud::ClassID() )
+		else if (tag == Cloud::ClassID())
 		{
 			Cloud* bm = GetCloud(value.AsString(), true);
 			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
 		}
-		else if ( tag == Skeleton::ClassID() )
+		else if (tag == Skeleton::ClassID())
 		{
 			Skeleton* skel = GetSkeleton(value.AsString(), true);
 			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
 		}
-		else if ( tag == ModelTemplate::ClassID() )
+		else if (tag == ModelTemplate::ClassID())
 		{
 			ModelTemplate* temp = GetModelTemplate(value.AsString(), true);
 
@@ -631,7 +605,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				if (!serializable) temp->SetSerializable(false);
 			}
 		}
-		else if ( tag == Model::ClassID() )
+		else if (tag == Model::ClassID())
 		{
 			Model* model = GetModel(value.AsString(), true);
 
@@ -641,16 +615,16 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				if (!serializable) model->SetSerializable(false);
 			}
 		}
-		else if ( tag == "Serializable" )
+		else if (tag == "Serializable")
 		{
 			value >> serializable;
 		}
-		else if ( tag == "Sleep" )
+		else if (tag == "Sleep")
 		{
 			uint ms;
 			if (value >> ms) Thread::Sleep( ms );
 		}
-		else if ( tag == "Execute" )
+		else if (tag == "Serialize From" || tag == "Execute")
 		{
 			if (value.IsStringArray())
 			{
@@ -658,72 +632,56 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate)
 
 				FOREACH(b, arr)
 				{
-					const String& filename = arr[b];
-
-					// Execute on a different thread if we're serializing the result
-					if (SerializeFrom(filename, serializable))
-					{
-						if (serializable)
-						{
-							mExecuted.Lock();
-							mExecuted.Expand() = filename;
-							mExecuted.Unlock();
-						}
-					}
+					SerializeFrom(arr[b], serializable && createThreads, serializable);
 				}
 			}
 			else if (value.IsString())
 			{
-				const String& filename = value.AsString();
-
-				// Execute on a different thread if we're serializing the result
-				if (SerializeFrom(filename, serializable))
-				{
-					if (serializable)
-					{
-						mExecuted.Lock();
-						mExecuted.Expand() = filename;
-						mExecuted.Unlock();
-					}
-				}
+				SerializeFrom(value.AsString(), serializable && createThreads, serializable);
 			}
 		}
 	}
 	// Something may have changed, update the scene
 	mIsDirty = true;
-	Thread::Decrement(g_threadCount);
+	DecrementThreadCount();
 	return true;
 }
 
 //============================================================================================================
-// Serializes from the specified file (the file will be kept in memory as a Resource)
+// Serializes from the specified path
 //============================================================================================================
 
-bool Core::SerializeFrom (const String& file, bool separateThread)
+bool Core::SerializeFrom (const String& path, bool separateThread, bool save)
 {
-	Resource* res = GetResource(file);
+	bool retVal (false);
 
-	if (res->IsValid())
-	{
-		SerializeFrom(res);
-		return true;
-	}
-	return false;
-}
-
-//============================================================================================================
-// Executes an existing (loaded) resource in a different thread
-//============================================================================================================
-
-void Core::SerializeFrom (Resource* resource)
-{
-	if (resource != 0 && resource->IsValid())
-	{
 #ifndef R5_MEMORY_TEST
-		Thread::Increment( g_threadCount );
-		Thread::Create( WorkerThread, resource );
-#else
-		SerializeFrom( resource->GetRoot() );
-#endif
+	if (separateThread)
+	{
+		IncrementThreadCount();
+		Thread::Create( SerializeResourceThread, GetResource(path) );
 	}
+	else
+#endif
+	{
+		Array<String> files;
+
+		if (System::GetFiles(path, files, true))
+		{
+			FOREACH(i, files)
+			{
+				TreeNode root;
+				if (root.Load(files[i])) SerializeFrom(root);
+			}
+		}
+	}
+
+	// Remember this serialization request
+	if (save)
+	{
+		mFileResource.Lock();
+		mFileResource.AddUnique(path);
+		mFileResource.Unlock();
+	}
+	return retVal;
 }

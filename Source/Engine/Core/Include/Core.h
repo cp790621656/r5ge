@@ -36,11 +36,12 @@ protected:
 	Skeletons		mSkeletons;			// Managed array of skeletons
 	ModelTemplates	mModelTemplates;	// Managed array of model templates that can be used to create models
 	Models			mModels;			// Managed array of instantiable models
-	Array<String>	mExecuted;			// Executed resources, for serialization purposes
+	Array<String>	mFileResource;			// Executed resources, for serialization purposes
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
 	uint			mUISleepDelay;		// How long the graphics thread will sleep in UI-only mode
 	uint			mFullDraw;			// How many times in a row the scene has been drawn fully (up to 10)
 	Thread::IDType	mThreadID;			// ID of the thread the Core was created in
+	Thread::ValType mThreadCount;		// Number of active threads known to the core
 
 	// Thread safety
 	Thread::Lockable mLock;
@@ -108,7 +109,9 @@ public:
 	ModelTemplate*	GetModelTemplate(const String& name, bool createIfMissing = true);
 
 	// Number of threads currently being executed in the background
-	uint CountExecutingThreads() const;
+	void IncrementThreadCount() { Thread::Increment(mThreadCount); }
+	void DecrementThreadCount() { Thread::Decrement(mThreadCount); }
+	uint GetNumberOfThreads() const { return mThreadCount; }
 
 	// Whether we're in a UI-only mode where the scene is not being processed
 	bool IsInUIOnlyMode() const { return mFullDraw < 3 || !mRoot.GetFlag(Object::Flag::Enabled); }
@@ -145,11 +148,8 @@ public:
 	bool SerializeTo (TreeNode& root, bool window = true, bool graphics = true, bool ui = true) const;
 
 	// Serialization functions -- 'false' is returned only if the application should exit immediately
-	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false);
+	bool SerializeFrom (const TreeNode& root, bool forceUpdate = false, bool createThreads = true);
 
-	// Serializes from the specified file (the file will be kept in memory as a Resource)
-	bool SerializeFrom (const String& file, bool separateThread = true);
-
-	// Executes an existing (loaded) resource in a different thread
-	void SerializeFrom (Resource* ptr);
+	// Serializes from the specified path
+	bool SerializeFrom (const String& path, bool separateThread = false, bool save = false);
 };

@@ -627,6 +627,10 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 					}
 				}
 			}
+			else if (tag == "Script")
+			{
+				WARNING("Deprecated functionality: change 'Script' to 'UIScript'");
+			}
 			else if (!OnSerializeFrom(node))
 			{
 				// Try to find or add a child node
@@ -642,6 +646,7 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 	}
 
 	SetLayer(layer);
+	if (mParent != 0) Update(mParent->GetRegion());
 	return true;
 }
 
