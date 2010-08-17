@@ -11,6 +11,7 @@ using namespace R5;
 
 Sound::~Sound()
 {
+	SOURCE(mSource)->drop();
 	mSource = 0;
 }
 
