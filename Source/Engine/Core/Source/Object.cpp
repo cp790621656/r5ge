@@ -672,11 +672,8 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			{
 				script->OnPreUpdate();
 
-				if (!mFlags.Get(Flag::Enabled))
-				{
-					return true;
-				}
-				else if (mScripts.IsEmpty()) break;
+				if (!mFlags.Get(Flag::Enabled)) return true;
+				while (i > mScripts.GetSize()) --i;
 			}
 		}
 
@@ -702,11 +699,8 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			{
 				script->OnUpdate();
 
-				if (!mFlags.Get(Flag::Enabled))
-				{
-					return true;
-				}
-				else if (mScripts.IsEmpty()) break;
+				if (!mFlags.Get(Flag::Enabled)) return true;
+				while (i > mScripts.GetSize()) --i;
 			}
 		}
 
@@ -726,11 +720,8 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 				{
 					mIsDirty |= obj->Update(mAbsolutePos, mAbsoluteRot, mAbsoluteScale, parentMoved);
 
-					if (!mFlags.Get(Flag::Enabled))
-					{
-						return true;
-					}
-					else if (mChildren.IsEmpty()) break;
+					if (!mFlags.Get(Flag::Enabled)) return true;
+					while (i > mChildren.GetSize()) --i;
 				}
 			}
 		}
@@ -782,11 +773,8 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 			{
 				script->OnPostUpdate();
 
-				if (!mFlags.Get(Flag::Enabled))
-				{
-					return true;
-				}
-				else if (mScripts.IsEmpty()) break;
+				if (!mFlags.Get(Flag::Enabled)) return true;
+				while (i > mScripts.GetSize()) --i;
 			}
 		}
 
@@ -983,6 +971,9 @@ uint Object::KeyPress (const Vector2i& pos, byte key, bool isDown)
 			{
 				Script* script = mScripts[--i];
 				retVal |= script->OnKeyPress(pos, key, isDown);
+
+				if (!mFlags.Get(Flag::Enabled)) return true;
+				while (i > mScripts.GetSize()) --i;
 			}
 		}
 		mCore->Unlock();
@@ -1006,6 +997,9 @@ uint Object::MouseMove (const Vector2i& pos, const Vector2i& delta)
 			{
 				Script* script = mScripts[--i];
 				retVal |= script->OnMouseMove(pos, delta);
+
+				if (!mFlags.Get(Flag::Enabled)) return true;
+				while (i > mScripts.GetSize()) --i;
 			}
 		}
 		mCore->Unlock();
@@ -1029,6 +1023,9 @@ uint Object::Scroll (const Vector2i& pos, float delta)
 			{
 				Script* script = mScripts[--i];
 				retVal |= script->OnScroll(pos, delta);
+
+				if (!mFlags.Get(Flag::Enabled)) return true;
+				while (i > mScripts.GetSize()) --i;
 			}
 		}
 		mCore->Unlock();
