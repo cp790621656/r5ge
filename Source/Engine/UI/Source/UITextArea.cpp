@@ -36,7 +36,6 @@ void UITextArea::AddParagraph (const String& text, const Color4ub& textColor, co
 
 				if (tex != 0)
 				{
-					
 					for (uint i = mLines.GetSize(); i > 0; )
 					{
 						// If this texture is currently in use, invalidate its draw queue

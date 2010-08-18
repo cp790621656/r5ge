@@ -58,10 +58,14 @@ UIWidget* UIWidget::GetRoot()
 void UIWidget::AddWidget (UIWidget* widget)
 {
 	UIWidget* parent = widget->GetParent();
-	if (parent != 0) parent->RemoveWidget(widget);
-	mChildren.Expand() = widget;
-	widget->_SetParentPtr(this);
-	widget->SetDirty();
+
+	if (parent != this)
+	{
+		if (parent != 0) parent->RemoveWidget(widget);
+		mChildren.Expand() = widget;
+		widget->_SetParentPtr(this);
+		widget->SetDirty();
+	}
 }
 
 //============================================================================================================
@@ -78,6 +82,24 @@ bool UIWidget::RemoveWidget (UIWidget* widget)
 		return true;
 	}
 	return false;
+}
+
+//============================================================================================================
+// Changes the parent of the widget, resetting the region's coordinates to currently calculated values
+//============================================================================================================
+
+void UIWidget::SetParent (UIWidget* parent)
+{
+	if (parent != 0 && mParent != parent)
+	{
+		parent->AddWidget(this);
+		UIRegion& rgn = parent->GetRegion();
+
+		mRegion.SetLeft	 (0.0f, mRegion.GetCalculatedLeft()		- rgn.GetCalculatedLeft());
+		mRegion.SetRight (0.0f, mRegion.GetCalculatedRight()	- rgn.GetCalculatedLeft());
+		mRegion.SetTop	 (0.0f, mRegion.GetCalculatedTop()		- rgn.GetCalculatedTop());
+		mRegion.SetBottom(0.0f, mRegion.GetCalculatedBottom()	- rgn.GetCalculatedTop());
+	}
 }
 
 //============================================================================================================

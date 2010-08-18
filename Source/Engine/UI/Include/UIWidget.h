@@ -91,6 +91,9 @@ public:
 	// NOTE: Doing this does not release the widget. 'delete' the widget if you mean to destroy it.
 	bool RemoveWidget (UIWidget* widget);
 
+	// Changes the parent of the widget, resetting the region's coordinates to currently calculated values
+	void SetParent (UIWidget* parent);
+
 private:
 
 	// INTERNAL: Registers a new widget type

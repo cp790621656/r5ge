@@ -1,0 +1,147 @@
+//R5A
+
+Root
+{
+	Window
+	{
+		Title = "R5 Engine: Cards"
+		Position = 165 143
+		Size = 600 300
+		Full Screen = false
+	}
+	
+	UI
+	{
+		Default Skin = "Config/Neon"
+		Default Font = "Arial 15"
+
+		Layout
+		{
+			UIHighlight = "Background"
+			{
+				Color = 0.25 0.25 0.25 1.0
+
+				UIInput = "Server Address"
+				{
+					Right = 0.5 -30
+					Bottom = 0 25
+					Text = "127.0.0.1:3574"
+				}
+				
+				UIInput = "Player Name"
+				{
+					Left = 0.5 -30
+					Bottom = 0 25
+					Right = 1 -60
+					Text = "Guest"
+				}
+
+				UIButton = "Connect Button"
+				{
+					Left = 1 -60
+					Bottom = 0 25
+					Text = "Go"
+					Text Color = 0.2 0.2 0.2 1
+					Shadow Color = 0.8 0.8 1 1
+					UIScript = "USConnect"
+				}
+
+				UIHighlight = "Table"
+				{
+					Left = 0 100
+					Top = 0 70
+					Bottom = 1 -40
+					Top Color = 1 1 1 0.1
+					Bottom Color = 0 0 0 0.1
+				}
+				
+				UITextArea = "Message Log"
+				{
+					Left = 0 100
+					Top = 0 70
+					Bottom = 1 -40
+					Alignment = "Center"
+					UIScript = "USMessageLog"
+					Style = "Chat"
+					Event Handling = "None"
+				}
+				
+				UIHighlight = "Previous Hand 0"
+				{
+					Left = 0 2
+					Right = 0.333 -2
+					Top = 0 25
+					Bottom = 0 65
+					Top Color = 0.5 0.5 0.5 0.2
+					Bottom Color = 0 0 0 0.1
+					Event Handling = "None"
+					UIScript = "USHand"
+				}
+				
+				UIHighlight = "Previous Hand 1"
+				{
+					Left = 0.333 2
+					Right = 0.667 -2
+					Top = 0 25
+					Bottom = 0 65
+					Top Color = 0.25 0.25 0.25 0.3
+					Bottom Color = 0 0 0 0.1
+					Event Handling = "None"
+					UIScript = "USHand"
+				}
+				
+				UIHighlight = "Previous Hand 2"
+				{
+					Left = 0.667 2
+					Right = 1 -2
+					Top = 0 25
+					Bottom = 0 65
+					Top Color = 0 0 0 0.4
+					Bottom Color = 0 0 0 0.1
+					Event Handling = "None"
+					UIScript = "USHand"
+				}
+
+				UIHighlight = "Players Backdrop"
+				{
+					Right = 0 95
+					Top = 0 70
+					Bottom = 1 -40
+					Top Color = 0 0 0 0.1
+					Bottom Color = 1 1 1 0.1
+
+					UITextArea = "Players"
+					{
+						Left = 0 2
+						Right = 1 -2
+						Top = 0 2
+						Bottom = 1 -2
+					}
+				}
+				
+				UIHighlight = "Player Hand"
+				{
+					Right = 1 -60
+					Top = 1 -40
+					Top Color = 1 1 1 0.0
+					Bottom Color = 0 0 0 0.8
+
+					UIScript = "USHand"
+					{
+						Draggable = true
+					}
+				}
+
+				UIButton = "Play Button"
+				{
+					Left = 1 -60
+					Top = 1 -40
+					Text = "Play"
+					Text Color = 0.2 0.2 0.2 1
+					Shadow Color = 0.8 0.8 1 1
+					State = "Disabled"
+				}
+			}
+		}
+	}
+}
