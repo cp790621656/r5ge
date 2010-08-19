@@ -6,6 +6,10 @@
 #include "CardsClient.h"
 using namespace R5;
 
+String g_message;
+uint g_allowDiscard = 0;
+Array<Card> g_discard;
+
 //============================================================================================================
 // Ensure the script is attached to a button
 //============================================================================================================
@@ -22,11 +26,11 @@ void USConnect::OnInit()
 
 void USConnect::OnDestroy()
 {
-	mNet.Disconnect();
 	mNet.SetOnConnect(0);
 	mNet.SetOnClose	 (0);
 	mNet.SetOnReceive(0);
 	mNet.SetOnError	 (0);
+	mNet.Disconnect();
 }
 
 //============================================================================================================
@@ -40,6 +44,7 @@ void USConnect::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		mAddress	= mWidget->GetUI()->FindWidget<UIInput>("Server Address");
 		mName		= mWidget->GetUI()->FindWidget<UIInput>("Player Name");
 		mPlay		= mWidget->GetUI()->FindWidget<UIButton>("Play Button");
+		mHand		= mWidget->GetUI()->FindWidget<UIHighlight>("Player Hand");
 
 		if (mAddress != 0 && mName != 0 && mPlay != 0 && mName->GetText().IsValid())
 		{
@@ -63,6 +68,61 @@ void USConnect::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 }
 
 //============================================================================================================
+// Send out messages when they arrive
+//============================================================================================================
+
+void USConnect::OnUpdate (bool areaChanged)
+{
+	if (g_message.IsValid())
+	{
+		BeginSend();
+		mRoot.mTag = "Message";
+		mRoot.mValue = g_message;
+		EndSend();
+		g_message.Clear();
+	}
+
+	// Enable or disable the play button depending on whether we can actually play
+	bool canPlay = !g_allowDiscard && mMyTurn;
+
+	if (mPlay != 0)
+	{
+		mPlay->SetState(UIButton::State::Enabled, canPlay);
+
+		if (!canPlay)
+		{
+			mPlay->SetState(UIButton::State::Highlighted,	false);
+			mPlay->SetState(UIButton::State::Pressed,		false);
+		}
+	}
+
+	// Color the dock accordingly
+	if (mHand != 0)
+	{
+		if (g_allowDiscard > 0)	mHand->SetBottomColor(Color4f(0.0f, 0.5f, 1.0f, 0.8f));
+		else if (mMyTurn)		mHand->SetBottomColor(Color4f(0.5f, 1.0f, 0.0f, 0.8f));
+		else					mHand->SetBottomColor(Color4f(0.0f, 0.0f, 0.0f, 0.8f));
+	}
+
+	// If we have cards to discard, notify the server
+	if (g_discard.IsValid())
+	{
+		g_discard.Lock();
+		{
+			BeginSend();
+			{
+				mRoot.mTag = "Discard";
+				Array<ushort>& arr = mRoot.mValue.ToUShortArray();
+				FOREACH(i, g_discard) arr.Expand() = g_discard[i];
+				g_discard.Clear();
+			}
+			EndSend();
+		}
+		g_discard.Unlock();
+	}
+}
+
+//============================================================================================================
 // Locks the buffer, starts the send process
 //============================================================================================================
 
@@ -75,16 +135,6 @@ void USConnect::BeginSend()
 }
 
 //============================================================================================================
-// Retrieves the player's hand script
-//============================================================================================================
-
-USHand* USConnect::GetHand (const String& name)
-{
-	UIWidget* playerHand = mWidget->GetUI()->FindWidget<UIWidget>(name);
-	return (playerHand != 0) ? playerHand->GetScript<USHand>() : 0;
-}
-
-//============================================================================================================
 // Connection has been closed notification
 //============================================================================================================
 
@@ -92,12 +142,11 @@ void USConnect::OnClose (const Network::Address& addr, uint socketId, VoidPtr& p
 {
 	mIsConnected = false;
 
-	USHand* hand = GetPlayerHand();
-	if (hand != 0) hand->Clear();
+	USHand* hand = (mHand != 0 ? mHand->GetScript<USHand>() : 0);
 
+	if (hand	 != 0) hand->Clear();
 	if (mAddress != 0) mAddress->SetEventHandling(UIWidget::EventHandling::Normal);
 	if (mName	 != 0) mName->SetEventHandling(UIWidget::EventHandling::Normal);
-	if (mPlay	 != 0) mPlay->SetState(UIButton::State::Enabled, false);
 
 	mButton->SetState(UIButton::State::Enabled, true);
 	USMessageLog::Show("Disconnected");
@@ -175,7 +224,6 @@ void USConnect::EndSend()
 void USConnect::OnConnect (const Network::Address& addr, uint socketId, VoidPtr& ptr, const String& msg)
 {
 	mIsConnected = true;
-	mPlay->SetState(UIButton::State::Enabled, true);
 
 	BeginSend();
 	{
@@ -231,7 +279,7 @@ void USConnect::SetHand (const TreeNode& root)
 {
 	LockUI();
 	{
-		USHand* hand = GetHand(root.mTag);
+		USHand* hand = (mHand != 0 ? mHand->GetScript<USHand>() : 0);
 
 		if (hand != 0)
 		{
@@ -263,11 +311,12 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 
 	if (root.mTag.Contains("Hand"))
 	{
+		g_allowDiscard = 0;
 		SetHand(root);
 	}
-	else if (root.mTag.Contains("Table"))
+	else if (root.mTag == "Table")
 	{
-		mPlay->SetState(UIButton::State::Enabled, false);
+		mMyTurn = false;
 
 		LockUI();
 		{
@@ -275,33 +324,25 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 
 			if (table != 0)
 			{
-				if (root.mTag.Contains("Clear")) table->DestroyAllWidgets();
+				table->DestroyAllWidgets();
 				table->SerializeFrom(root);
-
-				// Ensure that the entire table is marked as not belonging to the player
-				UIWidget::Children& children = table->GetAllChildren();
-
-				FOREACH(i, children)
-				{
-					UIWidget* child = children[i];
-					USCard* card = child->GetScript<USCard>();
-					if (card != 0) card->SetBelongsToPlayer(false);
-				}
 			}
 		}
 		UnlockUI();
 	}
 	else if (root.mTag == "Play")
 	{
-		mPlay->SetState(UIButton::State::Enabled,		true);
-		mPlay->SetState(UIButton::State::Highlighted,	false);
-		mPlay->SetState(UIButton::State::Pressed,		false);
-
+		mMyTurn = true;
 		USMessageLog::Show(root.mValue.AsString());
 	}
 	else if (root.mTag == "Message")
 	{
 		USMessageLog::Show(root.mValue.AsString());
+	}
+	else if (root.mTag == "Discard")
+	{
+		uint add;
+		if (root.mValue >> add) g_allowDiscard += add;
 	}
 	else if (root.mTag == "Players")
 	{
@@ -325,6 +366,12 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 			}
 		}
 		UnlockUI();
+	}
+	else
+	{
+		String desc ("Unknown tag: ");
+		desc << root.mTag;
+		ASSERT(false, desc.GetBuffer());
 	}
 	return true;
 }

@@ -8,6 +8,8 @@
 #include "CardsClient.h"
 using namespace R5;
 
+Core* g_core = 0;
+
 //============================================================================================================
 
 class CardsClient
@@ -37,12 +39,17 @@ CardsClient::CardsClient() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	UIScript::Register<USConnect>();
 	UIScript::Register<USMessageLog>();
 	UIScript::Register<USCard>();
+	UIScript::Register<USChatInput>();
+
+	g_core = mCore;
 }
 
 //============================================================================================================
 
 CardsClient::~CardsClient()
 {
+	g_core = 0;
+
 	if (mCore)		delete mCore;
 	if (mUI)		delete mUI;
 	if (mGraphics)	delete mGraphics;

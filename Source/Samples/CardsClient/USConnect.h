@@ -9,18 +9,21 @@
 
 class USConnect : public UIScript
 {
-	UIButton*	mButton;
-	UIInput*	mAddress;
-	UIInput*	mName;
-	UIButton*	mPlay;
-	UIWidget*	mTable;
-	Network		mNet;
-	bool		mIsConnected;
-	Memory		mIn;
-	Memory		mOut;
-	TreeNode	mRoot;
+	UIButton*		mButton;
+	UIInput*		mAddress;
+	UIInput*		mName;
+	UIButton*		mPlay;
+	UIWidget*		mTable;
+	UIHighlight*	mHand;
+	Network			mNet;
+	bool			mIsConnected;
+	bool			mMyTurn;
+	Memory			mIn;
+	Memory			mOut;
+	TreeNode		mRoot;
 
-	USConnect() : mButton(0), mAddress(0), mName(0), mPlay(0), mTable(0), mIsConnected(false) {}
+	USConnect() : mButton(0), mAddress(0), mName(0), mPlay(0), mTable(0), mHand(0), mIsConnected(false),
+		mMyTurn(false) {}
 
 public:
 
@@ -34,6 +37,9 @@ public:
 
 	// Connect to the server
 	virtual void OnKeyPress (const Vector2i& pos, byte key, bool isDown);
+
+	// Send out messages when they arrive
+	virtual void OnUpdate (bool areaChanged);
 
 public:
 
@@ -53,10 +59,6 @@ public:
 
 	void LockUI()	{ mWidget->GetUI()->Lock(); }
 	void UnlockUI()	{ mWidget->GetUI()->Unlock(); }
-
-	// Retrieves the specified hand
-	USHand* GetPlayerHand() { return GetHand("Player Hand"); }
-	USHand* GetHand (const String& name);
 
 	// Gets the table widget
 	UIWidget* GetTable() { if (mTable == 0) mTable = mWidget->GetUI()->FindWidget<UIWidget>("Table"); return mTable; }

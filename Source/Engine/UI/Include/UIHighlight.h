@@ -21,10 +21,10 @@ public:
 	void SetColor (const Color4ub& color)		{ mTopColor = color; mBottomColor = color; OnDirty(0); }
 
 	const Color4ub& GetTopColor() const			{ return mTopColor; }
-	void SetTopColor (const Color4ub& color)	{ mTopColor = color; OnDirty(0); }
+	void SetTopColor (const Color4ub& color)	{ if (color != mTopColor) { mTopColor = color; OnDirty(0); } }
 
 	const Color4ub& GetBottomColor() const		{ return mBottomColor; }
-	void SetBottomColor (const Color4ub& color)	{ mBottomColor = color; OnDirty(0); }
+	void SetBottomColor (const Color4ub& color)	{ if (color != mBottomColor) { mBottomColor = color; OnDirty(0); } }
 
 public:
 

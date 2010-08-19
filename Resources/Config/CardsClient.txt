@@ -50,7 +50,7 @@ Root
 				{
 					Left = 0 100
 					Top = 0 70
-					Bottom = 1 -40
+					Bottom = 1 -65
 					Top Color = 1 1 1 0.1
 					Bottom Color = 0 0 0 0.1
 				}
@@ -59,7 +59,7 @@ Root
 				{
 					Left = 0 100
 					Top = 0 70
-					Bottom = 1 -40
+					Bottom = 1 -65
 					Alignment = "Center"
 					UIScript = "USMessageLog"
 					Style = "Chat"
@@ -106,7 +106,7 @@ Root
 				{
 					Right = 0 95
 					Top = 0 70
-					Bottom = 1 -40
+					Bottom = 1 -65
 					Top Color = 0 0 0 0.1
 					Bottom Color = 1 1 1 0.1
 
@@ -118,11 +118,12 @@ Root
 						Bottom = 1 -2
 					}
 				}
-				
+
 				UIHighlight = "Player Hand"
 				{
 					Right = 1 -60
-					Top = 1 -40
+					Top = 1 -65
+					Bottom = 1 -20
 					Top Color = 1 1 1 0.0
 					Bottom Color = 0 0 0 0.8
 
@@ -135,11 +136,18 @@ Root
 				UIButton = "Play Button"
 				{
 					Left = 1 -60
-					Top = 1 -40
+					Top = 1 -65
+					Bottom = 1 -20
 					Text = "Play"
 					Text Color = 0.2 0.2 0.2 1
 					Shadow Color = 0.8 0.8 1 1
 					State = "Disabled"
+				}
+				
+				UIInput = "Chat Input"
+				{
+					Top = 1 -25
+					UIScript = "USChatInput"
 				}
 			}
 		}

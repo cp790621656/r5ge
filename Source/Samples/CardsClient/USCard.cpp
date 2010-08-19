@@ -6,6 +6,9 @@
 #include "CardsClient.h"
 using namespace R5;
 
+extern uint g_allowDiscard;
+extern Array<Card> g_discard;
+
 //============================================================================================================
 // Whether the card can be dragged around by the player
 //============================================================================================================
@@ -43,7 +46,18 @@ void USCard::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 
 			if (table != 0 && table->GetRegion().Contains(pos))
 			{
-				mWidget->SetParent(table);
+				if (g_allowDiscard > 0)
+				{
+					--g_allowDiscard;
+					g_discard.Lock();
+					g_discard.Expand() = mCard;
+					g_discard.Unlock();
+					mWidget->DestroySelf();
+				}
+				else
+				{
+					mWidget->SetParent(table);
+				}
 			}
 			else if (hand != 0 && hand->GetRegion().Contains(pos))
 			{
@@ -55,7 +69,9 @@ void USCard::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 			// It must be the player's turn before they can drag cards
 			UIManager* ui = mWidget->GetUI();
 			UIButton* play = ui->FindWidget<UIButton>("Play Button");
-			if (play == 0 || !play->GetState(UIButton::State::Enabled)) return;
+
+			if (play == 0) return;
+			if (g_allowDiscard == 0 && !play->GetState(UIButton::State::Enabled)) return;
 
 			// The widget's parent will now be the root node
 			mWidget->SetParent(&ui->GetRoot());

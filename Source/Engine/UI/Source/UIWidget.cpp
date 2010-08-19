@@ -456,23 +456,24 @@ void UIWidget::Adjust (float left, float top, float right, float bottom)
 
 void UIWidget::DestroyAllWidgets()
 {
-	mDeletedWidgets.Release();
+	SetDirty();
 
 	if (mChildren.IsValid())
 	{
-		SetDirty();
-
 		for (uint i = mChildren.GetSize(); i > 0; )
 		{
 			UIWidget* widget = mChildren[--i];
 
 			if (widget != 0)
 			{
-				mUI->RemoveAllReferencesTo(widget);
+				widget->SetDirty();
+				widget->DestroySelf();
 			}
+			while (i > 0 && i >= mChildren.GetSize()) --i;
 		}
 		mChildren.Release();
 	}
+	mDeletedWidgets.Release();
 }
 
 //============================================================================================================
@@ -481,21 +482,24 @@ void UIWidget::DestroyAllWidgets()
 
 void UIWidget::DestroyAllScripts()
 {
-	mDeletedScripts.Release();
-
 	if (mScripts.IsValid())
 	{
 		// Run through all scripts
 		for (uint i = mScripts.GetSize(); i > 0; )
 		{
+			UIScript* script = mScripts[--i];
+
 			// Remove the reference to this widget
-			if (mScripts[--i] != 0)
+			if (script != 0)
 			{
-				mScripts[i]->mWidget = 0;
+				script->DestroySelf();
+				script->mWidget = 0;
 			}
+			while (i > 0 && i >= mScripts.GetSize()) --i;
 		}
 		mScripts.Release();
 	}
+	mDeletedScripts.Release();
 }
 
 //============================================================================================================

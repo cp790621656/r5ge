@@ -20,6 +20,7 @@ namespace R5
 	#include "USHand.h"
 	#include "USConnect.h"
 	#include "USCard.h"
+	#include "USChatInput.h"
 }
 
 #endif
