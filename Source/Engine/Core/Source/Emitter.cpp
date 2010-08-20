@@ -279,6 +279,9 @@ void Emitter::OnSerializeTo (TreeNode& root) const
 {
 	if (mTex  != 0) root.AddChild(   ITexture::ClassID(),  mTex->GetName() );
 	if (mTech != 0) root.AddChild( ITechnique::ClassID(), mTech->GetName() );
+	root.AddChild("Lifetime",		mLifetime);
+	root.AddChild("Max Particles",	mMaxParticles);
+	root.AddChild("Frequency",		mFrequency);
 }
 
 //============================================================================================================
@@ -298,6 +301,21 @@ bool Emitter::OnSerializeFrom (const TreeNode& node)
 		IGraphics* graphics = mCore->GetGraphics();
 		mTech = graphics->GetTechnique( node.mValue.IsString() ? node.mValue.AsString() :
 			node.mValue.GetString(), true );
+		return true;
+	}
+	else if (node.mTag == "Lifetime")
+	{
+		node.mValue >> mLifetime;
+		return true;
+	}
+	else if (node.mTag == "Max Particles")
+	{
+		node.mValue >> mMaxParticles;
+		return true;
+	}
+	else if (node.mTag == "Frequency")
+	{
+		node.mValue >> mFrequency;
 		return true;
 	}
 	return false;
