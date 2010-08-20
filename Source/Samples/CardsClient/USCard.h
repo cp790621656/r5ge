@@ -21,7 +21,7 @@ public:
 	R5_DECLARE_INHERITED_CLASS("USCard", USCard, UIScript, UIScript);
 
 	const Card& GetCard() const { return mCard; }
-	void SetCard (const Card& card) { mCard = card; }
+	void SetCard (const Card& card) { mCard = card; mButton->SetBackColor(mCard.GetColor()); }
 
 	// Whether the card can be dragged around by the player
 	void SetBelongsToPlayer (bool val);

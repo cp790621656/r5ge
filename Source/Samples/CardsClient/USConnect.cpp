@@ -326,6 +326,20 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 			{
 				table->DestroyAllWidgets();
 				table->SerializeFrom(root);
+
+				UIWidget::Children& children = table->GetAllChildren();
+
+				FOREACH(i, children)
+				{
+					UIButton* btn = R5_CAST(UIButton, children[i]);
+
+					if (btn != 0)
+					{
+						btn->SetTextColor(Color4ub(255, 255, 255, 255));
+						btn->SetEventHandling(UIWidget::EventHandling::None);
+						btn->SetState(UIButton::State::Enabled, false);
+					}
+				}
 			}
 		}
 		UnlockUI();

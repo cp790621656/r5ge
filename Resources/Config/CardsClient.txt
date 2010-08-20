@@ -49,7 +49,7 @@ Root
 				UIHighlight = "Table"
 				{
 					Left = 0 100
-					Top = 0 70
+					Top = 0 25
 					Bottom = 1 -65
 					Top Color = 1 1 1 0.1
 					Bottom Color = 0 0 0 0.1
@@ -58,54 +58,18 @@ Root
 				UITextArea = "Message Log"
 				{
 					Left = 0 100
-					Top = 0 70
+					Top = 0 25
 					Bottom = 1 -65
 					Alignment = "Center"
 					UIScript = "USMessageLog"
 					Style = "Chat"
 					Event Handling = "None"
 				}
-				
-				UIHighlight = "Previous Hand 0"
-				{
-					Left = 0 2
-					Right = 0.333 -2
-					Top = 0 25
-					Bottom = 0 65
-					Top Color = 0.5 0.5 0.5 0.2
-					Bottom Color = 0 0 0 0.1
-					Event Handling = "None"
-					UIScript = "USHand"
-				}
-				
-				UIHighlight = "Previous Hand 1"
-				{
-					Left = 0.333 2
-					Right = 0.667 -2
-					Top = 0 25
-					Bottom = 0 65
-					Top Color = 0.25 0.25 0.25 0.3
-					Bottom Color = 0 0 0 0.1
-					Event Handling = "None"
-					UIScript = "USHand"
-				}
-				
-				UIHighlight = "Previous Hand 2"
-				{
-					Left = 0.667 2
-					Right = 1 -2
-					Top = 0 25
-					Bottom = 0 65
-					Top Color = 0 0 0 0.4
-					Bottom Color = 0 0 0 0.1
-					Event Handling = "None"
-					UIScript = "USHand"
-				}
 
 				UIHighlight = "Players Backdrop"
 				{
 					Right = 0 95
-					Top = 0 70
+					Top = 0 25
 					Bottom = 1 -65
 					Top Color = 0 0 0 0.1
 					Bottom Color = 1 1 1 0.1

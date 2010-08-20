@@ -185,10 +185,17 @@ void Server::OnClose (const Network::Address& addr, uint socketId, VoidPtr& ptr)
 			}
 		}
 		mPlayers.Delete(player);
-		SendPlayerList();
 
-		msg << " has abandoned the game.";
-		SendMessage(0, msg.GetBuffer());
+		if (mPlayers.IsEmpty())
+		{
+			mActive = false;
+		}
+		else
+		{
+			SendPlayerList();
+			msg << " has abandoned the game.";
+			SendMessage(0, msg.GetBuffer());
+		}
 	}
 }
 
@@ -417,6 +424,7 @@ void Server::StartGame()
 {
 	mWinners.Clear();
 	mTable.Release();
+	mMove.Clear();
 	mActive = true;
 	mCurrent = 0;
 

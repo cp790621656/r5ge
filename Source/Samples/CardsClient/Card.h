@@ -32,9 +32,9 @@ struct Card
 
 	Color4ub GetColor() const
 	{
-		if (color == 0) return Color4ub(255, 50, 50, 255);
-		if (color == 1) return Color4ub(255, 255, 50, 255);
-		if (color == 2) return Color4ub(50, 100, 200, 255);
-		return Color4ub(50, 50, 50, 255);
+		if (color == 0) return Color4ub(255, 175, 150, 255);
+		if (color == 1) return Color4ub(200, 175, 150, 255);
+		if (color == 2) return Color4ub(200, 200, 200, 255);
+		return Color4ub(150, 150, 150, 255);
 	}
 };
