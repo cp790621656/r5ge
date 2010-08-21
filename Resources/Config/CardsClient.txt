@@ -48,7 +48,6 @@ Root
 
 				UIHighlight = "Table"
 				{
-					Left = 0 100
 					Top = 0 25
 					Bottom = 1 -65
 					Top Color = 1 1 1 0.1
@@ -73,6 +72,7 @@ Root
 					Bottom = 1 -65
 					Top Color = 0 0 0 0.1
 					Bottom Color = 1 1 1 0.1
+					Event Handling = "None"
 
 					UITextArea = "Players"
 					{

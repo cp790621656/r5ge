@@ -146,7 +146,7 @@ static const char* g_lightEndDir = {
 //============================================================================================================
 
 static const char* g_lightEndDirAO = {
-"	float lightmap = texture2D(R5_texture3, texCoord).r;\n"
+"	float lightmap = texture2D(R5_texture3, texCoord).a;\n"
 "	gl_FragData[0] = gl_LightSource[0].ambient * lightmap + gl_LightSource[0].diffuse * diffuseFactor;\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * specularFactor;\n"
 "}\n"
@@ -168,7 +168,7 @@ static const char* g_lightEndPoint = {
 //============================================================================================================
 
 static const char* g_lightEndPointAO = {
-"	float lightmap = texture2D(R5_texture3, texCoord).r;\n"
+"	float lightmap = texture2D(R5_texture3, texCoord).a;\n"
 "	gl_FragData[0] = gl_LightSource[0].ambient * (atten * lightmap) + \n"
 "					 gl_LightSource[0].diffuse * (diffuseFactor * atten);\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * (specularFactor * atten);\n"

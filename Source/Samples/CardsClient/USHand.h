@@ -25,6 +25,9 @@ public:
 	// Remove all cards from the hand
 	void Clear();
 
+	// Whether the hand is valid
+	bool IsValid() const { return mHand.IsValid(); }
+
 	// If a reset was requested, recreate the visual representation of available cards
 	virtual void OnUpdate (bool areaChanged);
 

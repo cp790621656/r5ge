@@ -12,7 +12,25 @@ using namespace R5;
 #define TWOCARD  12
 #define WILDCARD 13
 
-const char* g_description[] = {"3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace", "2", "Wildcard"};
+//============================================================================================================
+
+const char* g_description[] =
+{
+	"Three",
+	"Four",
+	"Five",
+	"Six",
+	"Seven",
+	"Eight",
+	"Nine",
+	"Ten",
+	"Jack",
+	"Queen",
+	"King",
+	"Ace",
+	"Two",
+	"Wildcard"
+};
 
 //============================================================================================================
 
@@ -48,6 +66,7 @@ struct Player
 	String		mName;
 	Array<Card> mHand;
 	Memory		mIn;
+	//ulong		mTime;
 };
 
 //============================================================================================================
@@ -77,7 +96,7 @@ class Server
 	Random					mRand;		// Random number generator
 	Player*					mCurrent;	// Player whos turn it is right now
 	TreeNode				mTable;		// Current contents of the table
-	uint					mMoveCount;		// How many rounds has it been since a discard
+	uint					mMoveCount;	// How many rounds has it been since a discard
 
 public:
 
@@ -186,15 +205,22 @@ void Server::OnClose (const Network::Address& addr, uint socketId, VoidPtr& ptr)
 		}
 		mPlayers.Delete(player);
 
-		if (mPlayers.IsEmpty())
+		SendPlayerList();
+		msg << " has abandoned the game.";
+		SendMessage(0, msg.GetBuffer());
+
+		if (mPlayers.GetSize() == 1)
 		{
 			mActive = false;
-		}
-		else
-		{
-			SendPlayerList();
-			msg << " has abandoned the game.";
-			SendMessage(0, msg.GetBuffer());
+
+			FOREACH(i, mPlayers)
+			{
+				Player* p = mPlayers[i];
+
+				p->mHand.Clear();
+				SendCards(p);
+				SendMessage(p, "You can start another game by pressing Play when everyone is connected.");
+			}
 		}
 	}
 }
@@ -209,6 +235,7 @@ void Server::OnReceive (const Network::Address& addr, uint socketId, VoidPtr& pt
 
 	if (player != 0)
 	{
+		//player->mTime = Time::GetMilliseconds();
 		player->mIn.Append(data, size);
 		Process(*player);
 	}
@@ -259,12 +286,12 @@ void Server::Init (uint decks)
 	if (mDeckCount < 1) mDeckCount = 1;
 	if (mDeckCount > 2) mDeckCount = 2;
 
-	puts("Cards Server v.1.0.0");
+	puts("Cards Server v.1.0.5");
 
 	// Bind the network listener callbacks
-	mNet.SetOnConnect(bind(&Server::OnConnect, this));
+	mNet.SetOnConnect(bind(&Server::OnConnect,	this));
 	mNet.SetOnClose	 (bind(&Server::OnClose,	this));
-	mNet.SetOnReceive(bind(&Server::OnReceive, this));
+	mNet.SetOnReceive(bind(&Server::OnReceive,	this));
 	mNet.Listen(3574);
 	mNet.SpawnWorkerThread();
 }
@@ -275,6 +302,21 @@ void Server::Init (uint decks)
 
 bool Server::Process (Player& player)
 {
+	//FOREACH(i, mPlayers)
+	//{
+	//	Player* p = mPlayers[i];
+
+	//	if (p == mCurrent)
+	//	{
+	//		if (mCurrent->mTime + 60000 < Time::GetMilliseconds())
+	//		{
+	//			NotifyPlayers(&player, "Message", "You took too long. Passing.",
+	//				String("%s took too long and was skipped.", p->mName.GetBuffer()));
+	//			AdvanceGame(true);
+	//		}
+	//	}
+	//}
+
 	const byte* buffer = player.mIn.GetBuffer();
 	uint size = player.mIn.GetSize();
 	uint original = size;
@@ -328,8 +370,12 @@ bool Server::ProcessPacket (Player& player, const byte* buffer, uint size)
 			printf("%s has joined the game.\n", player.mName.GetBuffer());
 			SendPlayerList();
 
+			// The game is not currently active
 			if (!mActive)
 			{
+				mActive = false;
+				mTable.Release();
+				SendTable(&player);
 				NotifyPlayers(&player, "Play", "You can start the game by pressing Play when everyone is connected.",
 					String("%s has joined the game.", player.mName.GetBuffer()));
 			}
@@ -367,7 +413,7 @@ bool Server::ProcessPacket (Player& player, const byte* buffer, uint size)
 		}
 		victoryCheck = true;
 	}
-	else if (root.mTag == "Play")
+	else if (root.mTag == "Play" && mPlayers.GetSize() > 1)
 	{
 		if (mActive)
 		{
@@ -398,15 +444,15 @@ bool Server::ProcessPacket (Player& player, const byte* buffer, uint size)
 
 		if (mWinners.GetSize() == 1)
 		{
-			SendMessage(0, String("[FF9900]%s[-] is the [99FF00]president[-]!", player.mName.GetBuffer()));
+			SendMessage(0, String("[99FF00]%s is the president!", player.mName.GetBuffer()));
 		}
 		else if (mWinners.GetSize() == mPlayers.GetSize())
 		{
-			SendMessage(0, String("[FF9900]%s[-] is the [FF0000]asshole[-]!", player.mName.GetBuffer()));
+			SendMessage(0, String("[FF0000]%s is the asshole!", player.mName.GetBuffer()));
 		}
 		else
 		{
-			SendMessage(0, String("[FF9900]%s[-] is out!", player.mName.GetBuffer()));
+			SendMessage(0, String("[FFFF00]%s is out!", player.mName.GetBuffer()));
 		}
 
 		// Advance the game
@@ -444,6 +490,7 @@ void Server::StartGame()
 	// Disconnect all players who still don't have a name
 	FOREACH(i, boot) mNet.Close(boot[i]);
 	mDeck.Clear();
+	mDeckCount = (mPlayers.GetSize() > 6) ? 2 : 1;
 
 	// Create the cards
 	for (uint a = 0; a < mDeckCount; ++a)
@@ -569,7 +616,7 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 	if (move.mCard.value == WILDCARD)
 	{
 		// A single wildcard beats everything and clears the table
-		msg << " has cleared the table with a wildcard!";
+		msg << "[FFFF00] decided to put an end to this BS with a wildcard!";
 
 		Card card;
 
@@ -633,17 +680,18 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 
 	if (move.mCount == 1)
 	{
-		msg << (move.mCard.value == 11 ? "an " : "a ");
+		msg << ((move.mCard.value == 11 || move.mCard.value == 5) ? "[00FF99]an " : "[00FF99]a ");
 		msg << g_description[move.mCard.value];
 	}
 	else if (move.mCount == 2)
 	{
-		msg << "a pair of ";
+		msg << "[00FF99]a pair of ";
 		msg << g_description[move.mCard.value];
 		msg << "s";
 	}
 	else
 	{
+		msg << "[00FF99]";
 		msg << move.mCount;
 		msg << " ";
 		msg << g_description[move.mCard.value];
@@ -661,7 +709,7 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 			mMove.Back(2).mCard.value + 2 == mMove.Back(0).mCard.value)
 		{
 			uint count = mMove.Back().mCount;
-			SendMessage(0, String("A streak of 3! Discard %u!", count));
+			SendMessage(0, String("[FFFF00]A streak of 3! Discard %u!", count));
 
 			Array<Player*> discards;
 			discards.AddUnique(mMove.Back(0).mPlayer);
@@ -679,7 +727,6 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 					mRoot.mTag = "Discard";
 					mRoot.mValue = val;
 					EndSend(dis->mSocket);
-					printf("%s discards %u\n", dis->mName.GetBuffer(), val);
 				}
 			}
 
@@ -700,6 +747,18 @@ void Server::AdvanceGame (bool passed)
 {
 	bool found = false;
 	Player* next (0);
+
+	uint count = 0;
+
+	FOREACH(i, mPlayers)
+	{
+		Player* player = mPlayers[i];
+
+		if (player->mHand.IsValid())
+		{
+			++count;
+		}
+	}
 
 	FOREACH(i, mPlayers)
 	{
@@ -730,7 +789,7 @@ void Server::AdvanceGame (bool passed)
 		}
 	}
 
-	if (next == 0 || next == mCurrent)
+	if (next == 0 || next == mCurrent || count < 2)
 	{
 		SendMessage(0, "Game over!");
 		StartGame();
@@ -743,9 +802,10 @@ void Server::AdvanceGame (bool passed)
 		{
 			const Move& last = mMove.Back();
 
-			if (last.mPlayer == mCurrent)
+			if (last.mPlayer == mCurrent || !mPlayers.Contains(last.mPlayer) ||
+				last.mPlayer == 0 || last.mPlayer->mHand.IsEmpty())
 			{
-				SendMessage(0, "The cards have come a full circle. New round.");
+				SendMessage(0, "[6699FF]The cards have come a full circle. New round.");
 				mMove.Release();
 				mTable.Release();
 				mMoveCount = 0;
@@ -754,7 +814,8 @@ void Server::AdvanceGame (bool passed)
 		}
 
 		SendPlayerList();
-		NotifyPlayers(mCurrent, "Play", "[FF9966]Your turn!", String("[FF9966]%s[-]'s turn.",
+		SendTable(0);
+		NotifyPlayers(mCurrent, "Play", "[6699FF]Your turn!", String("[6699FF]%s[-]'s turn.",
 			mCurrent->mName.GetBuffer()));
 	}
 }
@@ -776,15 +837,28 @@ void Server::SendPlayerList()
 
 			if (p->mName.IsValid())
 			{
-				out = p->mName;
-
 				if (mWinners.IsValid() && p == mWinners.Front())
 				{
-					out << " (Prez)";
+					out = "[99FF66]";
+					out << p->mName;
+				}
+				else if (p->mHand.IsEmpty())
+				{
+					out = "[777777]";
+					out << p->mName;
+				}
+				else if (p == mCurrent)
+				{
+					out = "[6699FF]";
+					out << p->mName;
+					out << " (";
+					out << p->mHand.GetSize();
+					out << ")";
 				}
 				else
 				{
-					out << " (";
+					out = p->mName;
+					out << " [777777](";
 					out << p->mHand.GetSize();
 					out << ")";
 				}

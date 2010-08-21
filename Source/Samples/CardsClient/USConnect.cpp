@@ -9,6 +9,7 @@ using namespace R5;
 String g_message;
 uint g_allowDiscard = 0;
 Array<Card> g_discard;
+ulong g_activityTime = 0;
 
 //============================================================================================================
 // Ensure the script is attached to a button
@@ -80,6 +81,46 @@ void USConnect::OnUpdate (bool areaChanged)
 		mRoot.mValue = g_message;
 		EndSend();
 		g_message.Clear();
+	}
+
+	// Automatically pass if taken too long
+	if (mMyTurn && (g_activityTime + 30000 < Time::GetMilliseconds()))
+	{
+		if (mTable != 0 && mHand != 0)
+		{
+			USHand* hand = mHand->GetScript<USHand>();
+
+			if (hand != 0 && hand->IsValid())
+			{
+				UIWidget::Children& children = mTable->GetAllChildren();
+
+				// Refund the player's cards
+				for (uint i = 0; i < children.GetSize(); )
+				{
+					UIWidget* child = children[i];
+					USCard* card = child->GetScript<USCard>();
+
+					if (card != 0 && card->BelongsToPlayer())
+					{
+						child->SetParent(mHand);
+						UIRegion& rgn	= child->GetRegion();
+						float height	= rgn.GetCalculatedHeight();
+						rgn.SetTop(0.5f, -height * 0.5f);
+						rgn.SetBottom(0.5f, height * 0.5f);
+					}
+					else ++i;
+				}
+
+				USMessageLog::Show("[FF0000]Your turn has timed out. You took too long!");
+
+				// Skip the player's turn
+				BeginSend();
+				mRoot.mTag = "Play";
+				mRoot.mValue.ToUShortArray();
+				EndSend();
+				mMyTurn = false;
+			}
+		}
 	}
 
 	// Enable or disable the play button depending on whether we can actually play
@@ -158,6 +199,7 @@ void USConnect::OnClose (const Network::Address& addr, uint socketId, VoidPtr& p
 
 void USConnect::OnReceive (const Network::Address& addr, uint socketId, VoidPtr& ptr, const byte* data, uint size, Thread::IDType threadId)
 {
+	mIn.Lock();
 	mIn.Append(data, size);
 
 	const byte* buffer = mIn.GetBuffer();
@@ -182,6 +224,7 @@ void USConnect::OnReceive (const Network::Address& addr, uint socketId, VoidPtr&
 		if (retVal < 1)
 		{
 			if (retVal == -1) printf("ERROR: Failed to parse a packet of size %u\n", packetSize);
+			mIn.Unlock();
 			return;
 		}
 
@@ -191,7 +234,7 @@ void USConnect::OnReceive (const Network::Address& addr, uint socketId, VoidPtr&
 	}
 	// Remove the processed data
 	if (size < original) mIn.Remove(original - size);
-	return;
+	mIn.Unlock();
 }
 
 //============================================================================================================
@@ -277,27 +320,23 @@ void USConnect::OnPlay (UIWidget* widget, const Vector2i& pos, byte key, bool is
 
 void USConnect::SetHand (const TreeNode& root)
 {
-	LockUI();
+	USHand* hand = (mHand != 0 ? mHand->GetScript<USHand>() : 0);
+
+	if (hand != 0)
 	{
-		USHand* hand = (mHand != 0 ? mHand->GetScript<USHand>() : 0);
+		hand->Clear();
 
-		if (hand != 0)
+		if (root.mValue.IsUShortArray())
 		{
-			hand->Clear();
+			const Array<ushort>& cards = root.mValue.AsUShortArray();
 
-			if (root.mValue.IsUShortArray())
+			FOREACH(i, cards)
 			{
-				const Array<ushort>& cards = root.mValue.AsUShortArray();
-
-				FOREACH(i, cards)
-				{
-					ushort card = cards[i];
-					hand->Add((byte)(card >> 8), (byte)(card & 0xF));
-				}
+				ushort card = cards[i];
+				hand->Add((byte)(card >> 8), (byte)(card & 0xF));
 			}
 		}
 	}
-	UnlockUI();
 }
 
 //============================================================================================================
@@ -308,6 +347,7 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 {
 	TreeNode root;
 	if (!root.SerializeFrom(buffer, size)) return false;
+	LockUI();
 
 	if (root.mTag.Contains("Hand"))
 	{
@@ -318,35 +358,32 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 	{
 		mMyTurn = false;
 
-		LockUI();
+		UIWidget* table = GetTable();
+
+		if (table != 0)
 		{
-			UIWidget* table = GetTable();
+			table->DestroyAllWidgets();
+			table->SerializeFrom(root);
 
-			if (table != 0)
+			UIWidget::Children& children = table->GetAllChildren();
+
+			FOREACH(i, children)
 			{
-				table->DestroyAllWidgets();
-				table->SerializeFrom(root);
+				UIButton* btn = R5_CAST(UIButton, children[i]);
 
-				UIWidget::Children& children = table->GetAllChildren();
-
-				FOREACH(i, children)
+				if (btn != 0)
 				{
-					UIButton* btn = R5_CAST(UIButton, children[i]);
-
-					if (btn != 0)
-					{
-						btn->SetTextColor(Color4ub(255, 255, 255, 255));
-						btn->SetEventHandling(UIWidget::EventHandling::None);
-						btn->SetState(UIButton::State::Enabled, false);
-					}
+					btn->SetTextColor(Color4ub(255, 255, 255, 255));
+					btn->SetEventHandling(UIWidget::EventHandling::None);
+					btn->SetState(UIButton::State::Enabled, false);
 				}
 			}
 		}
-		UnlockUI();
 	}
 	else if (root.mTag == "Play")
 	{
 		mMyTurn = true;
+		g_activityTime = Time::GetMilliseconds();
 		USMessageLog::Show(root.mValue.AsString());
 	}
 	else if (root.mTag == "Message")
@@ -360,26 +397,22 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 	}
 	else if (root.mTag == "Players")
 	{
-		LockUI();
+		UITextArea* text = mWidget->GetUI()->FindWidget<UITextArea>("Players");
+
+		if (text != 0)
 		{
-			UITextArea* text = mWidget->GetUI()->FindWidget<UITextArea>("Players");
+			text->Clear();
 
-			if (text != 0)
+			FOREACH(i, root.mChildren)
 			{
-				text->Clear();
+				TreeNode& node = root.mChildren[i];
 
-				FOREACH(i, root.mChildren)
+				if (node.mTag == "Name")
 				{
-					TreeNode& node = root.mChildren[i];
-
-					if (node.mTag == "Name")
-					{
-						text->AddParagraph(node.mValue.AsString());
-					}
+					text->AddParagraph(node.mValue.AsString());
 				}
 			}
 		}
-		UnlockUI();
 	}
 	else
 	{
@@ -387,5 +420,6 @@ bool USConnect::ProcessPacket (const byte* buffer, uint size)
 		desc << root.mTag;
 		ASSERT(false, desc.GetBuffer());
 	}
+	UnlockUI();
 	return true;
 }

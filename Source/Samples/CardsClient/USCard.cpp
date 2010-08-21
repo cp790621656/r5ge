@@ -8,6 +8,7 @@ using namespace R5;
 
 extern uint g_allowDiscard;
 extern Array<Card> g_discard;
+extern ulong g_activityTime;
 
 //============================================================================================================
 // Whether the card can be dragged around by the player
@@ -88,6 +89,7 @@ void USCard::OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 {
 	if (mDragging && mBelongsToPlayer)
 	{
+		g_activityTime = Time::GetMilliseconds();
 		mWidget->Adjust(delta.x, delta.y, delta.x, delta.y);
 	}
 }
