@@ -19,6 +19,7 @@ struct Color3f
 	Color3f(float val)									{ r = val;	g = val;	b = val; }
 	Color3f(int val)									{ *this = val; }
 	Color3f(uint val)									{ *this = val; }
+	Color3f(float* f)									{ r = f[0]; g = f[1]; b = f[2]; }
 
 	operator const float*() const						{ return &r; }
 

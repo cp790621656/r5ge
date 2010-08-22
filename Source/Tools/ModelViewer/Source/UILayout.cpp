@@ -91,9 +91,13 @@ UILabel*		_meshTri		= 0;
 UIFrame*		_matFrame		= 0;
 UIInput*		_matName		= 0;
 UIHighlight*	_matDiff		= 0;
-UIHighlight*	_matSpec		= 0;
 UISlider*		_matGlow		= 0;
-UISlider*		_matADT			= 0;
+UISlider*		_matHue			= 0;
+UISlider*		_matSpec		= 0;
+UISlider*		_matShin		= 0;
+UISlider*		_matRefl		= 0;
+UISlider*		_matOccl		= 0;
+UISlider*		_matCOff		= 0;
 UIList*			_matTech		= 0;
 UIList*			_matShaderList	= 0;
 UIInput*		_matShaderInput	= 0;
@@ -440,35 +444,47 @@ bool ModelViewer::CreateUI()
 		_matMenu->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatMenuSelection,	this) );
 		_matMenu->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnFillMatMenu,			this) );
 
-		_matFrame = AddArea("Materials", 7 + TEXTURES);
+		_matFrame = AddArea("Materials", 11 + TEXTURES);
 
 		AddCaption(_matFrame, 0, "Material:");
 		AddCaption(_matFrame, 1, "Diffuse:");
-		AddCaption(_matFrame, 2, "Specular:");
-		AddCaption(_matFrame, 3, "Glow:");
-		AddCaption(_matFrame, 4, "ADT:");
-		AddCaption(_matFrame, 5, "Technique:");
-		AddCaption(_matFrame, 6, "Shader:");
+		AddCaption(_matFrame, 2, "Glow:");
+		AddCaption(_matFrame, 3, "Specular Hue:");
+		AddCaption(_matFrame, 4, "Specularity:");
+		AddCaption(_matFrame, 5, "Shininess:");
+		AddCaption(_matFrame, 6, "Reflectivity:");
+		AddCaption(_matFrame, 7, "Occlusion:");
+		AddCaption(_matFrame, 8, "Alpha Cutoff:");
+		AddCaption(_matFrame, 9, "Technique:");
+		AddCaption(_matFrame, 10, "Shader:");
 		
 		_matName		= AddInput		(_matFrame, 0, "Material Name");
 		_matDiff		= AddHighlight	(_matFrame, 1, "Material Diffuse");
-		_matSpec		= AddHighlight	(_matFrame, 2, "Material Specular");
-		_matGlow		= AddSlider		(_matFrame, 3, "Material Glow");
-		_matADT			= AddSlider		(_matFrame, 4, "Material ADT");
-		_matTech		= AddList		(_matFrame, 5, "Material Technique");
-		_matShaderList	= AddList		(_matFrame, 6, "Material Shader");
-		_matShaderInput	= AddInput		(_matFrame, 6, "Material Input");
+		_matGlow		= AddSlider		(_matFrame, 2, "Material Glow");
+		_matHue			= AddSlider		(_matFrame, 3, "Material Hue");
+		_matSpec		= AddSlider		(_matFrame, 4, "Material Spec");
+		_matShin		= AddSlider		(_matFrame, 5, "Material Shininess");
+		_matRefl		= AddSlider		(_matFrame, 6, "Material Reflect");
+		_matOccl		= AddSlider		(_matFrame, 7, "Material Occlusion");
+		_matCOff		= AddSlider		(_matFrame, 8, "Material Cutoff");
+		_matTech		= AddList		(_matFrame, 9, "Material Technique");
+		_matShaderList	= AddList		(_matFrame, 10, "Material Shader");
+		_matShaderInput	= AddInput		(_matFrame, 10, "Material Input");
 
 		_matGlow->SetTooltip("Percentage of material affected by light. 0% is normal, 100% makes it immune to light");
-		_matADT->SetTooltip("Alpha Discard Threshold: Alpha test will fail below this value");
+		_matCOff->SetTooltip("Alpha Discard Threshold: Alpha test will fail below this value");
 
 		_matName->SetTooltip("You can change this name to whatever you like");
 		_matName->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatNameSelect,	this) );
 		_matName->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatNameValue,	this) );
 		_matGlow->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
-		_matADT->AddScript<USEventListener>()->SetOnValueChange ( bind(&ModelViewer::OnMatProperties,	this) );
+		_matHue->AddScript<USEventListener>()->SetOnValueChange ( bind(&ModelViewer::OnMatProperties,	this) );
+		_matSpec->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
+		_matShin->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
+		_matRefl->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
+		_matOccl->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
+		_matCOff->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnMatProperties,	this) );
 		_matDiff->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatColor,		this) );
-		_matSpec->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnMatColor,		this) );
 
 		_matShaderList->AddScript<USEventListener>()->SetOnFocus		( bind(&ModelViewer::OnShaderListFocus,	this) );
 		_matShaderList->AddScript<USEventListener>()->SetOnValueChange	( bind(&ModelViewer::OnMatShaderList,	this) );
@@ -489,10 +505,10 @@ bool ModelViewer::CreateUI()
 
 		for (uint i = 0; i < TEXTURES; ++i)
 		{
-			AddCaption(_matFrame, 7+i, String("Texture %u:", i));
+			AddCaption(_matFrame, 11+i, String("Texture %u:", i));
 
-			_matTexList [i] = AddList (_matFrame, 7+i, String("MaterialTexList %u",  i));
-			_matTexInput[i] = AddInput(_matFrame, 7+i, String("MaterialTexInput %u", i));
+			_matTexList [i] = AddList (_matFrame, 11+i, String("MaterialTexList %u",  i));
+			_matTexInput[i] = AddInput(_matFrame, 11+i, String("MaterialTexInput %u", i));
 			_matTexInput[i]->SetAlpha(0.0f);
 
 			_matTexList	[i]->SetTooltip( String("Texture bound to texture unit %u", i) );
@@ -805,11 +821,15 @@ void ModelViewer::UpdateMatPanel (const IMaterial* mat)
 {
 	if (mat != 0)
 	{
-		_matName->SetText ( mat->GetName() );
-		_matDiff->SetColor( mat->GetDiffuse() );
-		_matSpec->SetColor( mat->GetSpecular() );
-		_matGlow->SetValue( mat->GetGlow() );
-		_matADT->SetValue ( mat->GetADT() );
+		_matName->SetText (mat->GetName());
+		_matDiff->SetColor(mat->GetDiffuse());
+		_matGlow->SetValue(mat->GetGlow());
+		_matHue->SetValue (mat->GetSpecularHue());
+		_matSpec->SetValue(mat->GetSpecularity());
+		_matShin->SetValue(mat->GetShininess());
+		_matRefl->SetValue(mat->GetReflectiveness());
+		_matOccl->SetValue(mat->GetOcclusion());
+		_matCOff->SetValue(mat->GetAlphaCutoff());
 	}
 }
 
@@ -1320,7 +1340,7 @@ void ModelViewer::OnFillMatMenu (UIWidget* widget, bool hasFocus)
 			{
 				const IMaterial* mat = mats[i];
 
-				if (mat != 0 && mat->GetDiffuse().GetColor4ub().a > 0)
+				if (mat != 0 && mat->GetDiffuse().IsVisible())
 				{
 					_matMenu->AddEntry( mat->GetName() );
 				}
@@ -1567,7 +1587,7 @@ void ModelViewer::OnMatMenuSelection (UIWidget* widget)
 
 				if (mat != 0)
 				{
-					if ( isNew && mat->GetDiffuse().GetColor4ub().a == 0 )
+					if ( isNew && !mat->GetDiffuse().IsVisible() )
 					{
 						// Make the new material visible right away
 						mat->SetDiffuse( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
@@ -1597,7 +1617,7 @@ void ModelViewer::OnMatMenuSelection (UIWidget* widget)
 						method0->SetShader( mGraphics->GetShader("Deferred/Material") );
 
 						// Set the material's diffuse color if this material is not visible
-						if (mat->GetDiffuse().GetColor4ub().a == 0)
+						if (!mat->GetDiffuse().IsVisible())
 							mat->SetDiffuse( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
 						// Update the current technique
@@ -2015,8 +2035,13 @@ void ModelViewer::OnMatProperties (UIWidget* widget)
 
 	if (mat != 0)
 	{
-		mat->SetGlow ( _matGlow->GetValue() );
-		mat->SetADT	 ( _matADT->GetValue()  );
+		mat->SetGlow(_matGlow->GetValue());
+		mat->SetSpecularHue(_matHue->GetValue());
+		mat->SetSpecularity(_matSpec->GetValue());
+		mat->SetShininess(_matShin->GetValue());
+		mat->SetReflectiveness(_matRefl->GetValue());
+		mat->SetOcclusion(_matOccl->GetValue());
+		mat->SetAlphaCutoff(_matCOff->GetValue());
 	}
 }
 
@@ -2204,16 +2229,8 @@ void ModelViewer::OnMatColor (UIWidget* widget, bool hasFocus)
 		{
 			Color4f color (1.0f);
 
-			if (widget->GetName() == "Material Diffuse")
-			{
-				_colorLabel->SetText("Alpha:");
-				color = mat->GetDiffuse().GetColor4f();
-			}
-			else
-			{
-				_colorLabel->SetText("Gloss:");
-				color = mat->GetSpecular().GetColor4f();
-			}
+			_colorLabel->SetText("Alpha:");
+			color = mat->GetDiffuse();
 
 			_colorRed->SetValue  (color.r);
 			_colorGreen->SetValue(color.g);
@@ -2240,20 +2257,9 @@ void ModelViewer::OnColor (UIWidget* widget)
 					_colorBlue->GetValue(),
 					Float::Max(_colorAlpha->GetValue(), 0.003921568627451f) );
 
-	if (_colorLabel->GetText() == "Alpha:")
-	{
-		_matDiff->SetColor(color);
-
-		IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
-		if (mat != 0) mat->SetDiffuse(color);
-	}
-	else
-	{
-		_matSpec->SetColor(color);
-
-		IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
-		if (mat != 0) mat->SetSpecular(color);
-	}
+	_matDiff->SetColor(color);
+	IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
+	if (mat != 0) mat->SetDiffuse(color);
 }
 
 //============================================================================================================
@@ -2465,7 +2471,7 @@ void ModelViewer::OnMatListFocus (UIWidget* widget, bool hasFocus)
 				{
 					const IMaterial* mat = mats[i];
 
-					if (mat != 0 && mat->GetDiffuse().GetColor4ub().a > 0)
+					if (mat != 0 && mat->GetDiffuse().IsVisible())
 					{
 						list->AddEntry( mat->GetName() );
 					}

@@ -94,13 +94,16 @@ public:
 	{
 		String		mName;
 		Color4f		mDiffuse;
-		Color4f		mSpecular;
 		float		mGlow;
+		float		mSpecularity;
+		float		mShininess;
 		bool		mWireframe;
 		bool		mTwosided;
 		bool		mClouds;
 
-		Material (const String& name) : mName(name), mGlow(0.0f), mWireframe(false), mTwosided(false), mClouds(false) {}
+		Material (const String& name) : mName(name), mGlow(0.0f), mSpecularity(0.0f), mShininess(0.2f),
+			mWireframe(false), mTwosided(false), mClouds(false) {}
+
 		const String& GetName() const { return mName; }
 	};
 
@@ -168,7 +171,7 @@ public:
 	virtual const char*		CopyrightMessage()		{ return "Copyright (c) 2007-2010 Michael Lyashenko"; }
 	virtual const char*		OtherMessage1()			{ return "";  }
 	virtual const char*		OtherMessage2()			{ return "";  }
-	virtual unsigned int	Version()				{ return 270; }
+	virtual unsigned int	Version()				{ return 280; }
 	virtual void			ShowAbout(HWND hWnd)	{ Thread::MessageWindow("R5 Engine 3ds Max Exporter: Please visit [www.nextrevision.com] for more information."); }
 
 	virtual int SupportsOptions (int ext, unsigned long options) { return 0; }

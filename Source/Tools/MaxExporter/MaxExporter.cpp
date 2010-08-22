@@ -768,10 +768,10 @@ R5MaxExporter::Material*  R5MaxExporter::_ConvertMaterial (::Mtl* mtl, uint subM
 			// Retrieve the material and set its properties
 			myMat				= GetMaterial(matName);
 			myMat->mDiffuse		= diffuse;
-			myMat->mSpecular	= specular;
 			myMat->mDiffuse.a	= alpha;
-			myMat->mSpecular.a	= shininess;
 			myMat->mGlow		= (emission.r + emission.g + emission.b) / 3.0f;
+			myMat->mSpecularity	= (specular.r + specular.g + specular.b) / 3.0f;
+			myMat->mShininess	= shininess;
 			myMat->mWireframe	= wireframe;
 			myMat->mTwosided	= twosided;
 			myMat->mClouds		= faceted;
@@ -790,8 +790,9 @@ R5MaxExporter::Material*  R5MaxExporter::_ConvertMaterial (::Mtl* mtl, uint subM
 	{
 		myMat = GetMaterial("Default Material");
 		myMat->mDiffuse.Set (1.0f, 1.0f, 1.0f, 1.0f);
-		myMat->mSpecular.Set(0.0f, 0.0f, 0.0f, 0.2f);
 		myMat->mGlow		= 0.0f;
+		myMat->mSpecularity = 0.0f;
+		myMat->mShininess	= 0.2f;
 		myMat->mWireframe	= false;
 		myMat->mTwosided	= false;
 		myMat->mClouds		= false;
@@ -818,10 +819,7 @@ void R5MaxExporter::_CreateLimbs (  MultiMesh&		myMultiMesh,
 			String myName (meshName);
 
 			// If the compound mesh has more than 1 sub-mesh, each one should become a separate mesh
-			if (myMultiMesh.GetValidCount() > 1)
-			{
-				myName.Append(" [%d]", i);
-			}
+			if (myMultiMesh.GetValidCount() > 1) myName.Append(" %d", i);
 
 			// Get the mesh and copy over the list of vertices and indices
 			Mesh* myMesh			= GetMesh(myName);
@@ -1253,10 +1251,10 @@ bool R5MaxExporter::SaveR5 (const String& filename)
 
 			// Add a new material entry
 			TreeNode& node	= graphics.AddChild("Material", mat->mName);
-
 			node.AddChild("Diffuse", mat->mDiffuse);
-			node.AddChild("Specular", mat->mSpecular);
 			node.AddChild("Glow", mat->mGlow);
+			node.AddChild("Specularity", mat->mSpecularity);
+			node.AddChild("Shininess", mat->mShininess);
 			node.AddChild("Technique", "Depth");
 
 			// Add the deferred technique first
