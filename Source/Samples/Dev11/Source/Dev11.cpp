@@ -168,7 +168,7 @@ void TestApp::OnPlayClick (UIWidget* widget, uint state, bool isSet)
 		if (btn->GetState() & UIButton::State::Pressed)
 		{
 			UIInput*	sound		= mUI->FindWidget<UIInput>("Sound Name");
-			UICheckbox* checkBox	= mUI->FindWidget<UICheckbox>("Repeat UICheckbox");
+			UICheckbox* checkBox	= mUI->FindWidget<UICheckbox>("Repeat Checkbox");
 			UISlider*	slider		= mUI->FindWidget<UISlider>("Volume");
 			UIInput*	layer		= mUI->FindWidget<UIInput>("Layer");
 
