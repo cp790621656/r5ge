@@ -57,7 +57,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T07.txt")
 	{
 		// Find the model and play the "Run" animation
-		Model* model = mCore->GetModel("First Model");
+		Model* model = mCore->GetModel("Models/peasant.r5a");
 		model->PlayAnimation("Run");
 
 		// Retrieve the material created in the previous tutorial
@@ -95,6 +95,8 @@ void TestApp::Run()
 
 		// Enter the message processing loop
 		while (mCore->Update());
+
+		//*mCore >> "Config/T07.txt";
 	}
 }
 

@@ -137,6 +137,7 @@ void TestApp::Run()
 		}
 
 		while (mCore->Update());
+
 		//*mCore >> "Config/T09.txt";
 	}
 }

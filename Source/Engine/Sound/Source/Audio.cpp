@@ -26,10 +26,7 @@ using namespace R5;
 Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
 {
 	mAudioLib = irrklang::createIrrKlangDevice();
-	if (!mAudioLib)
-	{
-		WARNING("Could not startup engine\n");
-	}
+	ASSERT(mAudioLib != 0, "Failed to start the Audio engine!\n");
 }
 
 //============================================================================================================

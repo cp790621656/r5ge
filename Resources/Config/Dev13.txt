@@ -64,7 +64,7 @@ Root
 
 				Script = "OSDrawDeferred"
 				{
-					Background Color = 0.35 0.35 0.35 1.0
+					Background Color = 1 1 1 1
 					Fog Range = 0.5 1.0
 
 					Shadowmap

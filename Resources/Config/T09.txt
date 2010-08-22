@@ -13,64 +13,64 @@ Root
 	Graphics
 	{
 		Default AF = 4
-		Background Color = 0.000000 0.000000 0.000000 0.000000
-		Fog Range = 30.000000 75.000000
 
 		Material = "Terrain"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 0.0
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.75
+			Alpha Cutoff = 0.003922
 
 			Technique = "Opaque"
 			{
 				Shader = "Forward/Terrain"
-				Texture 0 = "Textures/Stone/lime.jpg"
-				Texture 1 = "Textures/Sand/beach.jpg"
-				Texture 2 = "Textures/Grass/wild.jpg"
-				Texture 3 = "Textures/Stone/rocky.jpg"
-				Texture 4 = "Textures/Other/snow.jpg"
-				Texture 5 = "Terrain"
+
+				Textures = String[]
+				{
+					"Textures/Stone/lime.jpg"
+					"Textures/Sand/beach.jpg"
+					"Textures/Grass/wild.jpg"
+					"Textures/Stone/rocky.jpg"
+					"Textures/Other/snow.jpg"
+					"Terrain"
+				}
 			}
 		}
-	}
-
-	UI
-	{
-		Default Skin
-		Default Font
-		Tooltip Delay = 1.000000
 	}
 
 	Scene
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.038171 0.296486 -0.946463 -0.121849
-			Scale = 1.000000
-			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 20.000088 30.000000
+			Position = -0.520545 1.009997 -1.8068
+			Rotation = -0.060876 0.282943 -0.935788 0.20134
+			Range = 0.3 100.0 90.0
+			Dolly = 0.0 20.000088 30.0
+
 			Script = "OSDrawForward"
+			{
+				Background Color = 0.25 0.25 0.25 1.0
+				Fog Range = 0.5 1.0
+			}
 		}
 
 		Directional Light = "First Light"
 		{
-			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.240526 0.154892 -0.518793 0.805611
-			Scale = 1.000000
-			Ambient = 0.50000 0.50000 0.50000
-			Diffuse = 1.0000 1.0000 1.0000
-			Specular = 1.000000 1.000000 1.000000
-			Brightness = 1.000000
+			Ambient = 0.5 0.5 0.5
+			Diffuse = 1.0 1.0 1.0
+			Specular = 1.0 1.0 1.0
+			Brightness = 1.0
+			Shadows = false
 		}
 
 		Terrain = "First Terrain"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Layer = 0
 			Material = "Terrain"
 		}
 	}

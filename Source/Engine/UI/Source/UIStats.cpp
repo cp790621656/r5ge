@@ -32,6 +32,7 @@ void UIStats::OnInit()
 	mLabels.Expand() = _AddLabel("Shader Switches");
 	mLabels.Expand() = _AddLabel("Technique Switches");
 	mLabels.Expand() = _AddLabel("Light Switches");
+	FOREACH(i, mLabels) mLabels[i]->SetShadowColor(Color4ub(0, 0, 0, 175));
 	mIsDirty = true;
 }
 

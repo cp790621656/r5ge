@@ -164,6 +164,8 @@ void TestApp::Run()
 
 		// Enter the message processing loop
 		while (mCore->Update());
+
+		//*mCore >> "Config/T08.txt";
 	}
 }
 

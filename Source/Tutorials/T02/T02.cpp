@@ -59,16 +59,7 @@ TestApp::~TestApp()
 void TestApp::Run()
 {
 	// First thing we want to do is load the resource file. In case you're wondering, this resource
-	// file was created by simply saving the previous tutorial with the opposite call (>>), and then
-	// adding the OSDrawForward script to the debug camera. You could also add this script to the
-	// camera manually via code like so: mCam->AddScript<OSDrawForward>();
-
-	// We will cover scripts in greater detail in a later tutorial, but for now all you have to know is this:
-	// with a draw script attached to the camera the scene will be drawn using all default techniques
-	// associated with that particular process. In this case we're using forward rendering. Since we don't
-	// actually have any objects in the scene at this point, we set "Grid = true" property on OSDrawForward,
-	// which can used for debugging purposes -- and is rather self-explanatory.
-
+	// file was created by simply saving the previous tutorial with the opposite call (>>) on the Core.
 	if (*mCore << "Config/T02.txt")
 	{
 		// Enter the message processing loop

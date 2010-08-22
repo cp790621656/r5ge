@@ -62,7 +62,11 @@ void TestApp::Run()
 	cam->SetRelativePosition( Vector3f(0.0f, 0.0f, 6.0f) );
 	cam->SetRelativeRotation( Vector3f(1.0f, -5.0f, -1.0f) );
 	cam->SetDolly( Vector3f(0.0f, 16.0f, 30.0f) );
-	cam->AddScript<OSDrawForward>()->SetShowGrid(true);
+
+	// Draw script
+	OSDrawForward* draw = cam->AddScript<OSDrawForward>();
+	draw->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f, 1.0f) );
+	draw->SetShowGrid(true);
 
 	// Let's attach a directional light source to the camera just so that we can see the scene.
 	DirectionalLight* light = cam->AddObject<DirectionalLight>("First Light");
@@ -82,12 +86,11 @@ void TestApp::Run()
 	// forest is uniquely animated? This way you're only paying for 5 animations, not 1000. R5 allows
 	// you to do just that. Animate and skin once, render multiple times.
 
-	Model* model = mCore->GetModel("First Model", true);
+	Model* model = mCore->GetModel("Models/peasant.r5a", true);
 
-	// Load the peasant model and play the "Run" animation defined inside the model file.
+	// Play the "Run" animation defined inside the model file.
 	// The model is saved in ASCII format on purpose -- you can open it up and see what's inside.
 
-	model->Load("Models/peasant.r5a");
 	model->PlayAnimation("Run");
 
 	// Now comes the instancing part. We want to create an instance of this model inside our world.

@@ -59,8 +59,7 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	// In addition to the configuration covered in the previous tutorial, we want to also load the UI config
-	if ((*mCore << "Config/T03.txt") && (*mCore << "Config/Default UI Skin.txt"))
+	if (*mCore << "Config/T03.txt")
 	{
 		// Create a simple UI window via code
 		CreateWindow();
@@ -78,10 +77,6 @@ void TestApp::Run()
 
 void TestApp::CreateWindow()
 {
-	// Default skin and font are defined in the UI config file we loaded above
-	UISkin* skin = mUI->GetDefaultSkin();
-	IFont*  font = mUI->GetDefaultFont();
-
 	// Add a new UI widget: a simple window. R5::UI is optimized to "collect" all widgets into as few draw
 	// calls as possible, dividing them by parent frames. Each frame creates a new set of draw buffers,
 	// and each frame can be further refined by specifying different layers for widgets, which can also
@@ -104,12 +99,6 @@ void TestApp::CreateWindow()
 	// by specifying the top-left in absolute coordinates, followed by width and height.
 	win->GetRegion().SetRect(100, 100, 300, 200);
 
-	// Set the skin that will be used to draw the window
-	win->SetSkin(skin);
-
-	// Set the font that will be used to print the window's title
-	win->SetFont(font);
-
 	// Set the window title's text
 	win->SetText("Hello World!");
 
@@ -127,9 +116,6 @@ void TestApp::CreateWindow()
 	{
 		UISlider* sld = win->AddWidget<UISlider>("First Slider");
 
-		// The slider will use the same UI
-		sld->SetSkin(skin);
-
 		// We want to listen to value changing events, so that when we drag the slider our
 		// callback gets called. We can do that by attaching a listener script to the widget.
 		USEventListener* listener = sld->AddScript<USEventListener>();
@@ -146,15 +132,12 @@ void TestApp::CreateWindow()
 		{
 			mLabel = sld->AddWidget<UILabel>("Slider Value");
 
-			// Label will use the default font
-			mLabel->SetFont(font);
-
 			// We want to center the text inside the label
 			mLabel->SetAlignment( UILabel::Alignment::Center );
 
 			// In order to make text easier to read on both bright and dark backgrounds, it may be
 			// a good idea to have it automatically drop a dark shadow behind it.
-			mLabel->SetShadow(true);
+			mLabel->SetShadowColor(Color4ub(0, 0, 0, 175));
 
 			// Note that we don't set the label's region at all. This means the label will use the full
 			// dimensions of the parent. The problem with this is that since the label covers the slider

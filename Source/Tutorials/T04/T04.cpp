@@ -48,7 +48,7 @@ public:
 			mLabel->SetSerializable(false);
 			mLabel->SetEventHandling( UIWidget::EventHandling::None );
 			mLabel->SetAlignment(UILabel::Alignment::Center);
-			mLabel->SetShadow(true);
+			mLabel->SetShadowColor(Color4ub(0, 0, 0, 175));
 			mLabel->SetLayer(1);
 		}
 		else
@@ -119,7 +119,7 @@ void TestApp::Run()
 	// function to enable persistent behavior (slider's value will be saved for next time). You can
 	// also choose to add that script via code instead using the UIWidget::AddScript<> template.
 
-	if ((*mCore << "Config/T04.txt") && (*mCore << "Config/Default UI Skin.txt"))
+	if (*mCore << "Config/T04.txt")
 	{
 		// Enter the message processing loop
 		while (mCore->Update());

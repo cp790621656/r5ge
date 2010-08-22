@@ -74,36 +74,23 @@ void TestApp::Run()
 	// Move the camera back 10 units
 	mCam->SetDolly(Vector3f(0.0f, 10.0f, 20.0f));
 
-	// Note that the debug camera is a convenience camera. It registers itself as a listener for mouse move
+	// Note that the debug camera is a convenience class. It registers itself as a listener for mouse move
 	// and key events so you don't have to. With any other camera you will have to create a script to handle
-	// how it reacts to various keys -- but we'll cover scripts in the next tutorial.
+	// how it reacts to various keys -- but we'll cover scripts in greater detail in a later tutorial.
 
-	// Register our draw function -- it will be called every frame unless the window is minimized.
-	// By default the priority of the function is 1000, and higher priority callbacks are called. first.
-	mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
+	// In order to draw the scene at this point, all you have to do is add a draw script to the camera:
+	// OSDrawForward to draw using forward rendering, or OSDrawDeferred for deferred, like so:
+	OSDrawForward* draw = mCam->AddScript<OSDrawForward>();
 
-	// Note that it's easier to simply add "OSDrawForward" or "OSDrawDeferred" script to the camera
-	// and that will take care of drawing the scene for you using forward or deferred rendering, respectively.
-	// Doing that won't let you manually draw things however, such as the grid we're adding below.
+	// Right now the scene is just empty though. There are no objects, no lights, nothing.
+	// Let's add a simple grid so we can see what's going on.
+	draw->SetShowGrid(true);
+
+	// Let's also change the background color to grey:
+	draw->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f, 1.0f) );
 
 	// Enter the message processing loop
 	while (mCore->Update());
-}
-
-//============================================================================================================
-// Callback registered with the R5::Core, triggered when it's time to draw the scene
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	// Cull the scene from our camera's perspective
-	mScene.Cull(mCam);
-
-	// Clear the screen
-	mGraphics->Clear();
-
-	// Draw a simple 20x20 grid centered at (0, 0, 0)
-	mGraphics->Draw( IGraphics::Drawable::Grid );
 }
 
 //============================================================================================================

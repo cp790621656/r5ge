@@ -10,55 +10,47 @@ Root
 		Full Screen = false
 	}
 
-	Graphics
-	{
-		Default AF = 0
-		Background Color = 0.000000 0.000000 0.000000 0.000000
-		Fog Range = 30.000000 75.000000
-	}
-
-	Core
-	{
-		Model = "First Model"
-		{
-			Source = "Models/peasant.r5a"
-			Layer = 0
-		}
-	}
-
 	Scene
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 6.000000
+			Position = 0.0 0.0 6.0
 			Rotation = -0.009526 0.096207 -0.990472 0.098076
-			Scale = 1.000000
-			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 16.000000 30.000000
+			Range = 0.3 100.0 90.0
+			Dolly = 0.0 16.0 30.0
 
 			Script = "OSDrawForward"
 			{
+				Background Color = 0.0 0.0 0.0 1.0
+				Fog Range = 0.5 1.0
 				Grid = true
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascade Count = 3
+					Cascade Bias = 0.5
+					Blur Passes = 2
+					Softness = 2.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
+				}
 			}
 
 			Directional Light = "First Light"
 			{
-				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Ambient = 0.150000 0.150000 0.150000
-				Diffuse = 1.250000 1.250000 1.250000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.000000
+				Ambient = 0.15 0.15 0.15
+				Diffuse = 1.25 1.25 1.25
+				Specular = 1.0 1.0 1.0
+				Brightness = 1.0
+				Shadows = false
 			}
 		}
 
 		Model Instance = "First Instance"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 10.000000
-			Model = "First Model"
+			Scale = 10.0
+			Model = "Models/peasant.r5a"
 		}
 	}
 }

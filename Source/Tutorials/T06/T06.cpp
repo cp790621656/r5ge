@@ -57,7 +57,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T06.txt")
 	{
 		// Find the model and play the "Run" animation
-		Model* model = mCore->GetModel("First Model");
+		Model* model = mCore->GetModel("Models/peasant.r5a");
 		model->PlayAnimation("Run");
 
 		// Create a new material we'll be using
@@ -104,7 +104,6 @@ void TestApp::Run()
 
 		// Think of the DrawMethod like this: when rendering this material with the specified
 		// technique, what shader and textures should we use? DrawMethod allows us to specify them.
-
 		IMaterial::DrawMethod* method = mat->GetDrawMethod(tech);
 
 		// We want to replace whatever shader was there with our chromatic shader loaded above.
@@ -130,9 +129,11 @@ void TestApp::Run()
 		// try to do animation on the GPU if the shader has the appropriate code inside of it. If the
 		// shader used on an animated model doesn't have the code that would enable GPU skinning, R5 will
 		// simply use the CPU instead. Visually there is no difference, but for optimal performance
-		// I recommend adding animation code to all the shaders that will be used by animated models.
+		// I recommend adding skinning-enabling macro to all the shaders that will be used by animated models.
 
 		while (mCore->Update());
+
+		//*mCore >> "Config/T06.txt";
 	}
 }
 
