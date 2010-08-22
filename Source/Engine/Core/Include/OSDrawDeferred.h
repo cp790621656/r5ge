@@ -22,7 +22,7 @@ protected:
 	ITexture*	mDepth;
 	ITexture*	mNormal;
 	ITexture*	mMatDiff;
-	ITexture*	mMatSpec;
+	ITexture*	mMatParams;
 	ITexture*	mLightDiff;
 	ITexture*	mLightSpec;
 	ITexture*	mFinal;

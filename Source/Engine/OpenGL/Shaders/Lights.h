@@ -27,14 +27,15 @@ static const char* g_lightPrefix3 = {
 };
 
 //============================================================================================================
-// Ambient occlusion + shadows
+// Light + ambient occlusion + shadows
+// NOTE: AO takes over channel 2 because it's also the channel potentially used by AO tex for deferred combine
 //============================================================================================================
 
 static const char* g_lightPrefix4 = {
 "uniform sampler2D	R5_texture0;\n"		// Depth
 "uniform sampler2D	R5_texture1;\n"		// View space normal and material shininess
-"uniform sampler2D	R5_texture2;\n"		// Shadows
-"uniform sampler2D	R5_texture3;\n"		// Ambient Lightmap
+"uniform sampler2D	R5_texture2;\n"		// Ambient Lightmap
+"uniform sampler2D	R5_texture3;\n"		// Shadows
 };
 
 //============================================================================================================
@@ -58,7 +59,6 @@ static const char* g_lightCommon = {
 
 "void main()\n"
 "{\n"
-
 	// Figure out the pixel's texture coordinates
 "	vec2 texCoord = gl_FragCoord.xy * R5_pixelSize;\n"
 
@@ -120,12 +120,24 @@ static const char* g_lightBody = {
 };
 
 //============================================================================================================
-// Apply the shadow
+
+static const char* g_lightAO = {
+"	float lightmap = texture2D(R5_texture2, texCoord).a;\n"
+};
+
 //============================================================================================================
 
 static const char* g_lightShadow = {
-	// Apply the shadow
 "	float shadowFactor 	= texture2D(R5_texture2, gl_FragCoord.xy * R5_pixelSize).a;\n"
+"	diffuseFactor  		= min(diffuseFactor, shadowFactor);\n"
+"	specularFactor 		= min(diffuseFactor, specularFactor);\n"
+};
+
+//============================================================================================================
+
+static const char* g_lightShadowAO = {
+"	float lightmap		= texture2D(R5_texture2, texCoord).a;\n"
+"	float shadowFactor 	= texture2D(R5_texture3, gl_FragCoord.xy * R5_pixelSize).a;\n"
 "	diffuseFactor  		= min(diffuseFactor, shadowFactor);\n"
 "	specularFactor 		= min(diffuseFactor, specularFactor);\n"
 };
@@ -134,7 +146,7 @@ static const char* g_lightShadow = {
 // End of the shader for a directional light
 //============================================================================================================
 
-static const char* g_lightEndDir = {
+static const char* g_lightDirEnd = {
 "	gl_FragData[0] = gl_LightSource[0].ambient + gl_LightSource[0].diffuse * diffuseFactor;\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * specularFactor;\n"
 "}\n"
@@ -142,12 +154,11 @@ static const char* g_lightEndDir = {
 
 //============================================================================================================
 // End of the shader for a directional light with Ambient Occlusion
-// NOTE: Ideally AO shouldn't affect the diffuse channel. It does here just to make the effect more evident.
 //============================================================================================================
 
-static const char* g_lightEndDirAO = {
-"	float lightmap = texture2D(R5_texture3, texCoord).a;\n"
-"	gl_FragData[0] = gl_LightSource[0].ambient * lightmap + gl_LightSource[0].diffuse * diffuseFactor;\n"
+static const char* g_lightDirAOEnd = {
+"	gl_FragData[0] = gl_LightSource[0].ambient * lightmap + \n"
+"					 gl_LightSource[0].diffuse * (diffuseFactor * (0.75 + 0.25 * lightmap));\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * specularFactor;\n"
 "}\n"
 };
@@ -156,22 +167,20 @@ static const char* g_lightEndDirAO = {
 // End of the shader for a point light
 //============================================================================================================
 
-static const char* g_lightEndPoint = {
-"	gl_FragData[0] = gl_LightSource[0].ambient * atten + gl_LightSource[0].diffuse * (diffuseFactor * atten);\n"
+static const char* g_lightPointEnd = {
+"	gl_FragData[0] = gl_LightSource[0].ambient * atten + \n"
+"					 gl_LightSource[0].diffuse * (diffuseFactor * atten);\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * (specularFactor * atten);\n"
 "}\n"
 };
 
 //============================================================================================================
 // End of the shader for a point light with Ambient Occlusion
-// NOTE: Ideally AO shouldn't affect the diffuse channel. It does here just to make the effect more evident.
 //============================================================================================================
 
-static const char* g_lightEndPointAO = {
-"	float lightmap = texture2D(R5_texture3, texCoord).a;\n"
+static const char* g_lightPointAOEnd = {
 "	gl_FragData[0] = gl_LightSource[0].ambient * (atten * lightmap) + \n"
-"					 gl_LightSource[0].diffuse * (diffuseFactor * atten);\n"
+"					 gl_LightSource[0].diffuse * (diffuseFactor * atten * (0.75 + 0.25 * lightmap));\n"
 "	gl_FragData[1] = gl_LightSource[0].specular * (specularFactor * atten);\n"
 "}\n"
 };
-

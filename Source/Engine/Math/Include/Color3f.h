@@ -7,6 +7,7 @@
 // 96-bit color
 //============================================================================================================
 
+struct Color4ub;
 struct Color3f
 {
 	float r, g, b;
@@ -14,17 +15,18 @@ struct Color3f
 	Color3f()											: r(0.0f),	g(0.0f),	b(0.0f) {}
 	Color3f(float R, float G, float B)					: r(R),		g(G),		b(B)	{}
 	Color3f(const Color3f& c)							{ r = c.r;	g = c.g;	b = c.b; }
+	Color3f(const Color4ub& c);							// Inlined in Color4ub.h
 	Color3f(float val)									{ r = val;	g = val;	b = val; }
 	Color3f(int val)									{ *this = val; }
 	Color3f(uint val)									{ *this = val; }
-	Color3f(const float* f)								{ r = f[0];	g = f[1];	b = f[2];}
-	
+
 	operator const float*() const						{ return &r; }
 
 	void operator  = (int val)							{ *this = (uint)val; }
 	void operator  = (uint val)							{ r = Float::FromRangeByte( (val)		& 0xFF );
 														  g = Float::FromRangeByte( (val >> 8)  & 0xFF );
 														  b = Float::FromRangeByte( (val >> 16) & 0xFF ); }
+	void operator  = (const Color4ub& v);				// Inlined in Color4ub.h
 	void operator  = (const Color3f& v)					{ r = v.r; g = v.g; b = v.b; }
 	void operator  = (float f)							{ r = f; g = f; b = f; }
 	void operator += (float f)							{ r += f; g += f; b += f; }

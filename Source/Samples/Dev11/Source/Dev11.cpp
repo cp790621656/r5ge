@@ -35,6 +35,8 @@ class TestApp : Thread::Lockable
 	{
 		SoundInstance*	mSound;
 		String			mName;
+
+		NamedSound() : mSound(0) {}
 	};
 
 	PointerArray<NamedSound> mSounds;
@@ -166,9 +168,11 @@ void TestApp::OnPlayClick (UIWidget* widget, uint state, bool isSet)
 		if (btn->GetState() & UIButton::State::Pressed)
 		{
 			UIInput*	sound		= mUI->FindWidget<UIInput>("Sound Name");
-			UICheckbox* checkBox	= mUI->FindWidget<UICheckbox>("Repeat Checkbox");
+			UICheckbox* checkBox	= mUI->FindWidget<UICheckbox>("Repeat UICheckbox");
 			UISlider*	slider		= mUI->FindWidget<UISlider>("Volume");
 			UIInput*	layer		= mUI->FindWidget<UIInput>("Layer");
+
+			ASSERT(checkBox != 0 && slider != 0 && layer != 0, "Missing a widget");
 
 			Lock();
 			if (sound)

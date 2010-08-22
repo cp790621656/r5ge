@@ -93,30 +93,29 @@ uint ConvertOperation[] =
 //============================================================================================================
 
 GLController::GLController() :
-	mFog				(false),
-	mDepthWrite			(false),
-	mDepthTest			(false),
-	mColorWrite			(true),
-	mAlphaTest			(false),
-	mStencilTest		(false),
-	mWireframe			(false),
-	mLighting			(Lighting::None),
-	mBlending			(Blending::None),
-	mCulling			(Culling::None),
-	mAdt				(0.0f),
-	mThickness			(1.0f),
-	mNormalize			(false),
-	mDepthOffset		(false),
-	mAf					(0),
-	mSimpleMaterial		(false),
-	mMatGlow			(0.0f),
-	mTarget				(0),
-	mTechnique			(0),
-	mMaterial			(0),
-	mShader				(0),
-	mSkybox				(0),
-	mActiveTU			(0),
-	mNextTU				(0) {}
+	mFog			(false),
+	mDepthWrite		(false),
+	mDepthTest		(false),
+	mColorWrite		(true),
+	mAlphaTest		(false),
+	mStencilTest	(false),
+	mWireframe		(false),
+	mLighting		(Lighting::None),
+	mBlending		(Blending::None),
+	mCulling		(Culling::None),
+	mAdt			(0.0f),
+	mThickness		(1.0f),
+	mNormalize		(false),
+	mDepthOffset	(false),
+	mAf				(0),
+	mSimpleMaterial	(false),
+	mTarget			(0),
+	mTechnique		(0),
+	mMaterial		(0),
+	mShader			(0),
+	mSkybox			(0),
+	mActiveTU		(0),
+	mNextTU			(0) {}
 
 //============================================================================================================
 // Changes the currently active texture unit
@@ -362,7 +361,7 @@ void GLController::SetCulling (uint val)
 // Alpha testing will discard fragments with alpha less than the specified value
 //============================================================================================================
 
-void GLController::SetADT (float val)
+void GLController::SetAlphaCutoff (float val)
 {
 	if (mAlphaTest && Float::IsNotEqual(mAdt, val))
 	{
@@ -612,7 +611,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 			for (uint i = maxIU; i > 0; )
 				SetActiveTexture(--i, 0);
 
-			SetADT(0.003921568627451f);
+			SetAlphaCutoff(0.003921568627451f);
 			SetActiveShader(0);
 			SetSimpleMaterial(true);
 			SetActiveColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
@@ -621,70 +620,50 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 		}
 		else
 		{
-			const Color& diff = ptr->GetDiffuse();
-			const Color& spec = ptr->GetSpecular();
-			const float  glow = ptr->GetGlow();
+			const Color4f diff (ptr->GetDiffuse());
+			const float glow (ptr->GetGlow());
 
-			// Shininess should be clamped between 1 and 128
-			int shininess = Float::RoundToInt(spec.GetColor4f().a * 128.0f);
-			if		(shininess < 1)		shininess = 1;
-			else if (shininess > 128)	shininess = 128;
+			Color4f spec, emis;
+			const IShader* shader = ren->GetShader();
 
-			if (mSimpleMaterial)
+			if (shader != 0 && shader->GetFlag(IShader::Flag::Material))
 			{
-				// Disable the simple material
-				SetSimpleMaterial(false);
-
-				// Update the saved material properties
-				mMatDiff = diff;
-				mMatSpec = spec;
-				mMatGlow = glow;
-
-				Color4f emis (diff.GetColor4f() * glow);
+				// Shader with R5_MATERIAL tags used -- specular channel holds special values
+				spec.r = ptr->GetSpecularity();
+				spec.g = ptr->GetSpecularHue();
+				spec.b = ptr->GetReflectiveness();
+				spec.a = ptr->GetShininess();
+				emis.g = ptr->GetOcclusion();
+				emis.r = 1.0f - emis.g;
 				emis.a = glow;
-
-				// Set all material properties
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diff);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emis);
-				glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 			}
 			else
 			{
-				if (mMatDiff != diff)
-				{
-					// Diffuse color has changed -- it affects emissive color as well
-					mMatDiff = diff;
-					mMatGlow = glow;
+				spec   = diff;
+				spec  *= ptr->GetSpecularity();
+				spec.a = ptr->GetShininess();
 
-					Color4f emis (diff.GetColor4f() * glow);
-					emis.a = glow;
-
-					glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diff);
-					glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emis);
-				}
-				else if ( Float::IsNotEqual(mMatGlow, glow) )
-				{
-					// Only glow has changed -- affects the emission color
-					mMatGlow = glow;
-
-					Color4f emis (diff.GetColor4f() * glow);
-					emis.a = glow;
-
-					glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emis);
-				}
-
-				if (mMatSpec != spec)
-				{
-					// Specular color has changed -- specular color also sets shininess
-					mMatSpec = spec;
-					glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-					glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-				}
+				emis   = diff;
+				emis  *= glow;
+				emis.a = glow;
 			}
 
-			// Materials have their own ADT (alpha discard threshold)
-			SetADT( ptr->GetADT() * diff.GetColor4f().a );
+			// Shininess should be clamped between 1 and 128
+			int shininess = Float::RoundToInt(ptr->GetShininess() * 128.0f);
+			if		(shininess < 1)		shininess = 1;
+			else if (shininess > 128)	shininess = 128;
+
+			// Disable the simple material
+			SetSimpleMaterial(false);
+
+			// Set all material properties
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diff);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emis);
+			glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+			// Materials have their own AlphaCutoff
+			SetAlphaCutoff( ptr->GetAlphaCutoff() * diff.a );
 			CHECK_GL_ERROR;
 
 			// Retrieve all textures used by the material
@@ -704,7 +683,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 			textures.Unlock();
 
 			// Activate the shader
-			SetActiveShader( ren->GetShader() );
+			SetActiveShader(shader);
 		}
 
 		// Remember the currently active material

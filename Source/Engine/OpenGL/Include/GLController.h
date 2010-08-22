@@ -51,11 +51,7 @@ protected:
 	uint		mAf;				// Current anisotropy level
 	Color4f		mBackground;		// Current window background color
 	bool		mSimpleMaterial;	// Whether current active color defines the material colors
-
 	Color		mColor;				// Current active vertex color
-	Color		mMatDiff;			// Active diffuse and ambient color
-	Color		mMatSpec;			// Active specular color
-	float		mMatGlow;			// Active material glow (emission alpha value)
 
 	const IRenderTarget*	mTarget;		// Active rendering target
 	const ITechnique*		mTechnique;		// Active rendering technique
@@ -95,7 +91,7 @@ public:
 	virtual void SetLighting		(uint val);
 	virtual void SetBlending		(uint val);
 	virtual void SetCulling			(uint val);
-	virtual void SetADT				(float val);
+	virtual void SetAlphaCutoff				(float val);
 	virtual void SetThickness		(float val);
 	virtual void SetNormalize		(bool val);
 	virtual void SetDepthOffset		(uint val);
@@ -123,7 +119,7 @@ public:
 	virtual uint				GetLighting()			const	{ return mLighting;		}
 	virtual uint				GetBlending()			const	{ return mBlending;		}
 	virtual uint				GetCulling()			const	{ return mCulling;		}
-	virtual float				GetADT()				const	{ return mAdt;			}
+	virtual float				GetAlphaCutoff()				const	{ return mAdt;			}
 	virtual float				GetThickness()			const	{ return mThickness;	}
 	virtual bool				GetNormalize()			const	{ return mNormalize;	}
 	virtual uint				GetDepthOffset()		const	{ return mDepthOffset;	}

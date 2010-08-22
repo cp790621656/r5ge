@@ -241,7 +241,7 @@ uint Emitter::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* t
 		// Set up initial drawing states
 		graphics->ResetModelViewMatrix();
 		graphics->SetActiveShader(0);
-		graphics->SetADT(0.003921568627451f);
+		graphics->SetAlphaCutoff(0.003921568627451f);
 		graphics->SetActiveMaterial(mTex);
 
 		// Trigger the custom functionality

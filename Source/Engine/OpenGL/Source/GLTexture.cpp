@@ -307,6 +307,7 @@ void GLTexture::_CheckForSource()
 		if (mRequestedFormat == Format::Optimal)
 		{
 			if		(source.Contains("_Alpha") ||
+					 source.Contains("_AO") ||
 					 source.Contains("_Glow"))		mRequestedFormat = Format::Alpha;
 			else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
 			else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;

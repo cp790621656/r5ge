@@ -29,6 +29,9 @@ void main()
 
 	// Encode the values
 	gl_FragData[0] = vec4(color, gl_FrontMaterial.diffuse.a);
-	gl_FragData[1] = vec4(gl_FrontMaterial.specular.rgb * maps.r, gl_FrontMaterial.emission.a + maps.b);
+	gl_FragData[1] = vec4(
+		R5_MATERIAL_SPECULARITY * maps.r,
+		R5_MATERIAL_SPECULAR_HUE,
+		R5_MATERIAL_GLOW + maps.b, 1.0);
 	gl_FragData[2] = vec4(normal * 0.5 + 0.5, gl_FrontMaterial.specular.a);
 }

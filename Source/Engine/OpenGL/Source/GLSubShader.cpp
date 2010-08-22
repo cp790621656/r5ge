@@ -417,9 +417,9 @@ void GLSubShader::_Init()
 			bool ao = mName.Contains("AO");
 			bool shadow = mName.Contains("Shadow");
 
-			if (ao)				mCode = g_lightPrefix4;
-			else if (shadow)	mCode = g_lightPrefix3;
-			else				mCode = g_lightPrefix2;
+			if (ao && shadow)		mCode = g_lightPrefix4;
+			else if (ao || shadow)	mCode = g_lightPrefix3;
+			else					mCode = g_lightPrefix2;
 
 			mCode << g_lightCommon;
 
@@ -428,15 +428,23 @@ void GLSubShader::_Init()
 			{
 				mCode << g_lightDirectional;
 				mCode << g_lightBody;
-				if (shadow) mCode << g_lightShadow;
-				mCode << (ao ? g_lightEndDirAO : g_lightEndDir);
+
+				if (ao && shadow)	mCode << g_lightShadowAO;
+				else if (ao)		mCode << g_lightAO;
+				else if (shadow)	mCode << g_lightShadow;
+
+				mCode << (ao ? g_lightDirAOEnd : g_lightDirEnd);
 			}
 			else
 			{
 				mCode << g_lightPoint;
 				mCode << g_lightBody;
-				if (shadow) mCode << g_lightShadow;
-				mCode << (ao ? g_lightEndPointAO : g_lightEndPoint);
+
+				if (ao && shadow)	mCode << g_lightShadowAO;
+				else if (ao)		mCode << g_lightAO;
+				else if (shadow)	mCode << g_lightShadow;
+
+				mCode << (ao ? g_lightPointAOEnd : g_lightPointEnd);
 			}
 		}
 		else if (mName.BeginsWith("[R5] Shadow"))
@@ -547,10 +555,10 @@ void GLSubShader::_Preprocess()
 	else if (mCode.Contains("gl_FragData") || mCode.Contains("gl_FragColor")) mType = Type::Fragment;
 	else if (mCode.Contains("gl_Position")) mType = Type::Vertex;
 
-	// Preprocess all macros
+	// Pre-process all macros
 	if (mType == Type::Vertex)
 	{
-		// Preprocesses deprecated GLSL functionality, such as 'gl_MultiTexCoord1',
+		// Pre-processes deprecated GLSL functionality, such as 'gl_MultiTexCoord1',
 		// replacing it appropriate vertex attributes.
 		::PreprocessAttributes(mCode);
 
@@ -558,6 +566,17 @@ void GLSubShader::_Preprocess()
 		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
 		if (mCode.Contains("R5_worldScale"))	mFlags.Set(IShader::Flag::WorldScale,	true);
+	}
+	else
+	{
+		bool matShader (false);
+		matShader |= mCode.Replace("R5_MATERIAL_SPECULARITY",	"gl_FrontMaterial.specular.r") != 0;
+		matShader |= mCode.Replace("R5_MATERIAL_SPECULAR_HUE",	"gl_FrontMaterial.specular.g") != 0;
+		matShader |= mCode.Replace("R5_MATERIAL_REFLECTIVENESS","gl_FrontMaterial.specular.b") != 0;
+		matShader |= mCode.Replace("R5_MATERIAL_SHININESS",		"gl_FrontMaterial.specular.a") != 0;
+		matShader |= mCode.Replace("R5_MATERIAL_OCCLUSION",		"gl_FrontMaterial.emission.r + gl_FrontMaterial.emission.g") != 0;
+		matShader |= mCode.Replace("R5_MATERIAL_GLOW",			"gl_FrontMaterial.emission.a") != 0;
+		mFlags.Set(IShader::Flag::Material, matShader);
 	}
 
 	// Preprocess all dependencies

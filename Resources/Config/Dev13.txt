@@ -13,24 +13,22 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
-		Fog Range = 100.000000 100.000000
 	}
 
 	UI
 	{
-		Default Skin = "Default"
+		Default Skin = "Config/Neon"
 		Default Font = "Arial 15"
 
 		Layout
 		{
 			UIStats = "Game UIStats"
 			{
-				Left = 1.000000 -150.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 0.000000 250.000000
-				Alpha = 1.000000
+				Left = 1.0 -150.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 0.0 250.0
+				Alpha = 1.0
 				Font = "Arial 15"
 				Event Handling = "None"
 				Layer = 0
@@ -48,39 +46,43 @@ Root
 
 			Directional Light = "First Light"
 			{
-				Rotation = -0.460703 0.013116 -0.025261 0.887098
-				Ambient = 0.200000 0.200000 0.200000
-				Diffuse = 0.800000 0.800000 0.800000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.000000
+				Rotation = -0.193095 -0.186432 0.669095 0.693014
+				Ambient = 0.72549 0.72549 0.72549
+				Diffuse = 0.45098 0.45098 0.419608
+				Specular = 1.0 1.0 1.0
+				Brightness = 1.0
 				Shadows = true
 				Script = "OSRotateLight"
 			}
 
 			Debug Camera = "Default Camera"
 			{
-				Position = 0 0 0
-				Rotation = -0.202522 0.103897 -0.444483 0.866386
-				Range = 1.000000 50.000000 60.000000
-				Dolly = 0.000000 25.000004 150.000000
+				Position = -0.007266 -1.306526 0.663197
+				Rotation = -0.319257 0.029006 -0.085713 0.943338
+				Range = 1.0 50.0 60.0
+				Dolly = 0.0 24.000051 150.0
 
 				Script = "OSDrawDeferred"
 				{
+					Background Color = 0.35 0.35 0.35 1.0
+					Fog Range = 0.5 1.0
+
 					Shadowmap
 					{
 						Texture Size = 1024
-						Cascades = 3
+						Cascade Count = 3
+						Cascade Bias = 0.5
 						Blur Passes = 1
-						Softness = 3.000000
-						Kernel Size = 1.000000
-						Depth Bias = 3.000000
+						Softness = 3.0
+						Kernel Size = 1.0
+						Depth Bias = 3.0
 					}
 
-					Bloom = 1.000000
-					Focal Range = 0.000000 0.000000 0.000000
+					Bloom = 1.0
+					Focal Range = 0.0 0.0 0.0
 					AO Quality = 0
 					AO Blur Passes = 2
-					AO Parameters = 1.000000 4.000000 1.000000
+					AO Parameters = 0.5 4.0 1.0
 				}
 			}
 		}

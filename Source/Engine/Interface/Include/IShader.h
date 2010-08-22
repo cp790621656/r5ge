@@ -18,6 +18,7 @@ struct IShader
 			Instanced	= 0x02,	// The shader has a pseudo-instancing component
 			Billboarded	= 0x04,	// The shader is meant for a billboarded quad (or a series of quads)
 			WorldScale	= 0x08,	// The shader has the R5_worldScale parameter.
+			Material	= 0x10,	// Has the R5_material uniform
 		};
 	};
 

@@ -82,11 +82,16 @@ void DirectionalLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 			shader = mShader01;
 		}
 
-		// No depth test as directional light has no volume
+		// Activate proper textures
+		mGraphics->SetActiveMaterial((ITexture*)0);
 		mGraphics->SetActiveTexture(0, storage.GetDepth());
 		mGraphics->SetActiveTexture(1, storage.GetNormal());
-		mGraphics->SetActiveTexture(2, storage.GetShadow());
-		mGraphics->SetActiveTexture(3, storage.GetAO());
+
+		uint index (2);
+		if (storage.GetAO()		!= 0) mGraphics->SetActiveTexture(index++, storage.GetAO());
+		if (storage.GetShadow() != 0) mGraphics->SetActiveTexture(index++, storage.GetShadow());
+
+		// No depth test as directional light has no volume
 		mGraphics->SetDepthTest(false);
 		mGraphics->SetScreenProjection(true);
 		mGraphics->ResetModelViewMatrix();

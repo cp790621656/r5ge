@@ -475,9 +475,12 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	{
 		TreeNode& node = root.AddChild( Core::ClassID() );
 
-		mFileResource.Lock();
-		node.AddChild("Serialize From", mFileResource);
-		mFileResource.Unlock();
+		if (mFileResource.IsValid())
+		{
+			mFileResource.Lock();
+			node.AddChild("Serialize From", mFileResource);
+			mFileResource.Unlock();
+		}
 
 		mModelTemplates.Lock();
 		{

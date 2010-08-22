@@ -253,7 +253,7 @@ void PostProcess::DepthOfField (TemporaryStorage& storage, const Vector3f& focal
 
 void PostProcess::Both (TemporaryStorage& storage, float threshold, const Vector3f&	focalRange)
 {
-	uint format = storage.GetColor()->GetFormat();
+	uint format = storage.GetColor()->GetFormat() & (~ITexture::Format::Alpha);
 	if (format == ITexture::Format::Invalid) format = ITexture::Format::RGB16F;
 
 	// Only apply bloom if the format is HDR or the threshold has been set below 1

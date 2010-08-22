@@ -21,7 +21,7 @@ PointLight::PointLight() :
 }
 
 //============================================================================================================
-// Updates appropriate fields in 'mParams'
+// Updates appropriate fields in 'mProperties'
 //============================================================================================================
 
 inline void PointLight::_UpdateColors()
@@ -129,10 +129,10 @@ void PointLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 	// Activate initial states
 	if (setStates)
 	{
+		mGraphics->SetActiveMaterial((ITexture*)0);
 		mGraphics->SetActiveTexture(0, storage.GetDepth());
 		mGraphics->SetActiveTexture(1, storage.GetNormal());
-		mGraphics->SetActiveTexture(2, storage.GetShadow());
-		mGraphics->SetActiveTexture(3, storage.GetAO());
+		mGraphics->SetActiveTexture(2, storage.GetAO());
 		mGraphics->SetScreenProjection(false);
 
 		if (!vbo->IsValid())

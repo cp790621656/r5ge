@@ -56,17 +56,43 @@ public:
 
 	virtual void Release()=0;
 
-	virtual const String&	GetName()		const=0;
-	virtual const Color&	GetDiffuse()	const=0;	// Diffuse color
-	virtual const Color&	GetSpecular()	const=0;	// Specular color
-	virtual float			GetGlow()		const=0;	// Percentage of Color unaffected by diminishing light
-	virtual float			GetADT()		const=0;	// Alpha Discard Threshold for alpha testing
+	// Name of the material
+	virtual const String& GetName() const=0;
 
-	virtual void SetName		(const String& name)=0;
-	virtual void SetDiffuse		(const Color& color)=0;
-	virtual void SetSpecular	(const Color& color)=0;
-	virtual void SetGlow		(float val)=0;
-	virtual void SetADT			(float val)=0;
+	// Diffuse color
+	virtual const Color4f& GetDiffuse() const=0;
+
+	// Percentage of Color unaffected by diminishing light
+	virtual float GetGlow() const=0;
+
+	// How much the specular component is affected by material's color
+	// Specular Color = mix(specular, specular * diffuse, hue)
+	virtual float GetSpecularHue() const=0;
+
+	// Material's specularity (0.0 = No specular highlights, 1.0 = Full specular highlights)
+	virtual float GetSpecularity() const=0;
+
+	// Material's shininess (0.0 = dull specularity, 1.0 = sharp specularity)
+	virtual float GetShininess() const=0;
+
+	// Material's reflectiveness, used by certain shaders
+	virtual float GetReflectiveness() const=0;
+
+	// How much the material should be affected by ambient occlusion (0.0 = Not at all, 1.0 = Fully)
+	virtual float GetOcclusion() const=0;
+
+	// Pixels will be discarded if their alpha goes below this value
+	virtual float GetAlphaCutoff() const=0;
+
+	virtual void SetName			(const String& name)=0;
+	virtual void SetDiffuse			(const Color4f& color)=0;
+	virtual void SetGlow			(float val)=0;
+	virtual void SetSpecularHue		(float val)=0;
+	virtual void SetSpecularity		(float val)=0;
+	virtual void SetShininess		(float val)=0;
+	virtual void SetReflectiveness	(float val)=0;
+	virtual void SetOcclusion		(float val)=0;
+	virtual void SetAlphaCutoff		(float val)=0;
 
 	// Returns a mask of available techniques
 	virtual uint				GetTechniqueMask()	 const=0;
@@ -86,6 +112,6 @@ public:
 	// Helper function that can be used to determine whether the material can be drawn with this technique
 	inline bool IsVisibleWith (const ITechnique* tech) const
 	{
-		return (GetDiffuse().GetColor4ub().a != 0) && ((GetTechniqueMask() & tech->GetMask()) != 0);
+		return (GetDiffuse().a > FLOAT_TOLERANCE) && ((GetTechniqueMask() & tech->GetMask()) != 0);
 	}
 };

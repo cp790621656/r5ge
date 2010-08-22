@@ -72,7 +72,7 @@ void Billboard::DrawBillboard()
 
 	// Set up active render states
 	IGraphics* graphics = mCore->GetGraphics();
-	graphics->SetADT();
+	graphics->SetAlphaCutoff();
 	graphics->SetActiveShader(0);
 	graphics->SetActiveMaterial(mTex);
 

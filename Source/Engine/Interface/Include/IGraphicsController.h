@@ -97,7 +97,7 @@ public:
 	virtual void SetLighting		(uint val)=0;
 	virtual void SetBlending		(uint val)=0;
 	virtual void SetCulling			(uint val)=0;
-	virtual void SetADT				(float val = 0.003921568627451f)=0;
+	virtual void SetAlphaCutoff				(float val = 0.003921568627451f)=0;
 	virtual void SetThickness		(float val)=0;
 	virtual void SetNormalize		(bool val)=0;
 	virtual void SetDepthOffset		(uint val)=0;
@@ -118,7 +118,7 @@ public:
 	virtual uint				GetLighting()			const=0;
 	virtual uint				GetBlending()			const=0;
 	virtual uint				GetCulling()			const=0;
-	virtual float				GetADT()				const=0;
+	virtual float				GetAlphaCutoff()				const=0;
 	virtual float				GetThickness()			const=0;
 	virtual bool				GetNormalize()			const=0;
 	virtual uint				GetDepthOffset()		const=0;

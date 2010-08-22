@@ -201,7 +201,7 @@ bool GLGraphics::Init()
 		SetDepthWrite	(true);
 		SetDepthTest	(true);
 		SetAlphaTest	(true);
-		SetADT			(0.003921568627451f);
+		SetAlphaCutoff			(0.003921568627451f);
 		SetBlending		(true);
 		SetBlending		(Blending::Replace);
 		SetCulling		(Culling::Back);

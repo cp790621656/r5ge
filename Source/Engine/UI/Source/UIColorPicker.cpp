@@ -156,6 +156,7 @@ void UIColorPicker::OnInit()
 		}
 
 		// Set the texture's colors
+		tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
 		tex->Set(colors.GetBuffer(), size, size, 1, ITexture::Format::RGBA, ITexture::Format::RGB);
 	}
 

@@ -107,6 +107,20 @@ struct Color4ub
 // Convenience conversion functions
 //============================================================================================================
 
+inline Color3f::Color3f(const Color4ub& c)
+{
+	r = 0.00392156862f * c.r;
+	g = 0.00392156862f * c.g;
+	b = 0.00392156862f * c.b;
+}
+
+inline void Color3f::operator =(const Color4ub& c)
+{
+	r = 0.00392156862f * c.r;
+	g = 0.00392156862f * c.g;
+	b = 0.00392156862f * c.b;
+}
+
 inline Color4f::Color4f(const Color4ub& c)
 {
 	r = 0.00392156862f * c.r;

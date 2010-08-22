@@ -7,11 +7,15 @@ using namespace R5;
 
 void GLMaterial::Release()
 {
-	mDiffuse.Clear();
-	mSpecular = Color4f(0.0f, 0.0f, 0.0f, 0.2f);
+	mDiffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mGlow			= 0.0f;
-	mAdt			= 0.003921568627451f;
+	mSpecularHue	= 0.0f;
+	mSpecularity	= 0.0f;
+	mShininess		= 0.2f;
+	mReflectiveness	= 0.0f;
+	mOcclusion		= 0.75f;
+	mAlphaCutoff	= 0.003921568627451f;
 	mSerializable	= false;
 
 	mMethods.Lock();
@@ -77,7 +81,7 @@ IMaterial::DrawMethod*  GLMaterial::GetDrawMethod (const ITechnique* t, bool cre
 
 const IMaterial::DrawMethod* GLMaterial::GetVisibleMethod (const ITechnique* t) const
 {
-	if (mDiffuse.GetColor4ub().a == 0) return 0;
+	if (mDiffuse.a < FLOAT_TOLERANCE) return 0;
 	GLMaterial* ptr = const_cast<GLMaterial*>(this);
 	return ptr->GetDrawMethod(t, false);
 }
@@ -217,26 +221,29 @@ bool GLMaterial::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if ( tag == "Diffuse" || tag == "Color" )
+		if (tag == "Diffuse" || tag == "Color")
 		{
 			if (value >> c) SetDiffuse(c);
 		}
-		else if ( tag == "Specular"	 )	{ if (value >> c) SetSpecular(c); }
-		else if ( tag == "Glow"		 )	{ if (value >> f) SetGlow(f); }
-		else if ( tag == "Shininess" )
+		else if (tag == "Glow")				{ if (value >> f) SetGlow(f); }
+		else if (tag == "Specular Hue")		{ if (value >> f) SetSpecularHue(f); }
+		else if (tag == "Specularity")		{ if (value >> f) SetSpecularity(f); }
+		else if (tag == "Shininess")		{ if (value >> f) SetShininess(f); }
+		else if (tag == "Reflectiveness")	{ if (value >> f) SetReflectiveness(f); }
+		else if (tag == "Occlusion")		{ if (value >> f) SetOcclusion(f); }
+		else if (tag == "Specular")			// Deprecated syntax
 		{
-			if (value >> f)
+			if (value >> c)
 			{
-				Color4f spec (mSpecular.GetColor4f());
-				spec.a = f / 128.0f;
-				SetSpecular(spec);
+				SetSpecularity((c.r + c.g + c.b) / 3.0f);
+				SetShininess(c.a);
 			}
 		}
-		else if ( tag == "ADT" )
+		else if (tag == "Alpha Cutoff" || tag == "ADT")
 		{
-			value >> mAdt;
+			value >> mAlphaCutoff;
 		}
-		else if ( tag == ITechnique::ClassID() )
+		else if (tag == ITechnique::ClassID())
 		{
 			const ITechnique* tech = mGraphics->GetTechnique(value.AsString());
 			DrawMethod* ren = GetDrawMethod(tech, true);
@@ -256,10 +263,14 @@ bool GLMaterial::SerializeTo (TreeNode& root) const
 	{
 		TreeNode& node = root.AddChild( ClassID(), mName );
 
-		node.AddChild("Diffuse", mDiffuse.GetColor4f());
-		node.AddChild("Specular", mSpecular.GetColor4f());
-		node.AddChild("Glow", mGlow);
-		node.AddChild("ADT", mAdt);
+		node.AddChild("Diffuse",		mDiffuse);
+		node.AddChild("Glow",			mGlow);
+		node.AddChild("Specular Hue",	mSpecularHue);
+		node.AddChild("Specularity",	mSpecularity);
+		node.AddChild("Shininess",		mShininess);
+		node.AddChild("Reflectiveness", mReflectiveness);
+		node.AddChild("Occlusion",		mOcclusion);
+		node.AddChild("Alpha Cutoff",	mAlphaCutoff);
 
 		mMethods.Lock();
 		{

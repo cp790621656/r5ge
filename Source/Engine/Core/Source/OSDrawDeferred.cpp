@@ -12,7 +12,7 @@ OSDrawDeferred::OSDrawDeferred() :
 	mDepth(0),
 	mNormal(0),
 	mMatDiff(0),
-	mMatSpec(0),
+	mMatParams(0),
 	mLightDiff(0),
 	mLightSpec(0),
 	mFinal(0),
@@ -82,13 +82,13 @@ void OSDrawDeferred::MaterialStage()
 		mDepth			= mScene.GetRenderTexture(0);
 		mNormal			= mScene.GetRenderTexture(1);
 		mMatDiff		= mScene.GetRenderTexture(2);
-		mMatSpec		= mScene.GetRenderTexture(3);
+		mMatParams		= mScene.GetRenderTexture(3);
 
 		// Set up the material render target
 		mMaterialTarget->AttachDepthTexture(mDepth);
 		mMaterialTarget->AttachStencilTexture(mDepth);
 		mMaterialTarget->AttachColorTexture(0, mMatDiff, HDRFormat);
-		mMaterialTarget->AttachColorTexture(1, mMatSpec, ITexture::Format::RGBA);
+		mMaterialTarget->AttachColorTexture(1, mMatParams, ITexture::Format::RGBA);
 		mMaterialTarget->AttachColorTexture(2, mNormal,  ITexture::Format::RGBA);
 	}
 
@@ -114,6 +114,7 @@ void OSDrawDeferred::MaterialStage()
 	// Draw the scene
 	mScene.SetDepth(mDepth);
 	mScene.SetNormal(mNormal);
+	mScene.SetAO(mMatParams);
 	mScene.DrawWithTechniques(mDeferred, false, false);
 }
 
@@ -128,8 +129,11 @@ void OSDrawDeferred::LightStage()
 	if (lights.IsEmpty()) return;
 
 	// Create AO
-	mScene.SetAO( (mAOQuality > 0) ? mSSAO.Create(mScene, (mAOQuality > 1), mAOPasses,
-		mAOParams.x, mAOParams.y, mAOParams.z) : 0 );
+	if (mAOQuality > 0)
+	{
+		mScene.SetAO(mSSAO.Create(mScene, (mAOQuality > 1),
+			mAOPasses, mAOParams.x, mAOParams.y, mAOParams.z));
+	}
 
 	// Disable all active lights except the first
 	for (uint b = lights.GetSize(); b > 1; ) mGraphics->SetActiveLight(--b, 0);
@@ -141,10 +145,13 @@ void OSDrawDeferred::LightStage()
 		mLightDiff	 = mScene.GetRenderTexture(4);
 		mLightSpec	 = mScene.GetRenderTexture(5);
 
+		// Additive blending doesn't write to the alpha channel
+		uint format	= mMatDiff->GetFormat() & (~ITexture::Format::Alpha);
+
 		mLightTarget->AttachDepthTexture(mDepth);
 		mLightTarget->AttachStencilTexture(mDepth);
-		mLightTarget->AttachColorTexture(0, mLightDiff, mMatDiff->GetFormat());
-		mLightTarget->AttachColorTexture(1, mLightSpec, mMatDiff->GetFormat());
+		mLightTarget->AttachColorTexture(0, mLightDiff, format);
+		mLightTarget->AttachColorTexture(1, mLightSpec, format);
 		mLightTarget->UseSkybox(false);
 	}
 
@@ -305,7 +312,7 @@ void OSDrawDeferred::CombineStage()
 	mGraphics->SetActiveShader(mCombine);
 	mGraphics->SetActiveTexture(0, mDepth);
 	mGraphics->SetActiveTexture(1, mMatDiff);
-	mGraphics->SetActiveTexture(2, mMatSpec);
+	mGraphics->SetActiveTexture(2, mMatParams);
 	mGraphics->SetActiveTexture(3, mLightDiff);
 	mGraphics->SetActiveTexture(4, mLightSpec);
 	mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
