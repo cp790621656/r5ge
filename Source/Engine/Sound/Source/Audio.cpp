@@ -37,7 +37,9 @@ Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
 Audio::~Audio()
 {
 	Release();
-	IRRKLANG->drop();
+
+	// BUG: Doing this crashes irrKlang.
+	//IRRKLANG->drop();
 }
 
 //============================================================================================================
