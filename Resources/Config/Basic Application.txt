@@ -60,24 +60,7 @@ Root
 					UIScript = "USDestroyWindow"
 				}
 
-				UIButton = "Button Test"
-				{
-					Left = 0.5 -70.0
-					Right = 0.5 70.0
-					Top = 0.0 30.0
-					Bottom = 0.0 60.0
-					Alpha = 1.0
-					Back Color = 0xFFFFFFFF
-					Text Color = 0xFFFFFFFF
-					Text = "Simple Button"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.15
-					Event Handling = "Normal"
-					Layer = 0
-				}
+				UIColorPicker = "Test"
 			}
 		}
 	}

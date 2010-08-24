@@ -52,14 +52,23 @@ Color4ub UIColorPicker::GetColor (Vector2i pos)
 
 Color4f UIColorPicker::GetColor (float x, float y)
 {
-	float r = Float::Clamp(Float::Max(1.0f - x * 3.0f, 1.0f - (1.0f - x) * 3.0f), 0.0f, 1.0f);
-	float g = Float::Clamp(1.0f - Float::Abs(1.0f / 3.0f - x) * 3.0f, 0.0f, 1.0f);
-	float b = Float::Clamp(1.0f - Float::Abs(2.0f / 3.0f - x) * 3.0f, 0.0f, 1.0f);
+	static SplineV spline;
 
-	Color4f color (r, g, b);
-	color.r = Interpolation::Linear(color.r, 1.0f, y);
-	color.g = Interpolation::Linear(color.g, 1.0f, y);
-	color.b = Interpolation::Linear(color.b, 1.0f, y);
+	if (spline.IsEmpty())
+	{
+		spline.AddKey(0.0f,			Vector3f(1.0f, 0.0f, 0.0f));
+		spline.AddKey(1.0f / 6.0f,	Vector3f(1.0f, 1.0f, 0.0f));
+		spline.AddKey(2.0f / 6.0f,	Vector3f(0.0f, 1.0f, 0.0f));
+		spline.AddKey(3.0f / 6.0f,	Vector3f(0.0f, 1.0f, 1.0f));
+		spline.AddKey(4.0f / 6.0f,	Vector3f(0.0f, 0.0f, 1.0f));
+		spline.AddKey(5.0f / 6.0f,	Vector3f(1.0f, 0.0f, 1.0f));
+		spline.AddKey(1.0f,			Vector3f(1.0f, 0.0f, 0.0f));
+	}
+
+	Color4f color (spline.Sample(x, 2));
+	color.r = Float::Clamp(Interpolation::Linear(color.r, 1.0f, y), 0.0f, 1.0f);
+	color.g = Float::Clamp(Interpolation::Linear(color.g, 1.0f, y), 0.0f, 1.0f);
+	color.b = Float::Clamp(Interpolation::Linear(color.b, 1.0f, y), 0.0f, 1.0f);
 	return color;
 }
 

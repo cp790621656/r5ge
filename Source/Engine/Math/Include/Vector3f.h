@@ -136,3 +136,5 @@ inline void	Color4ub::operator =(const Vector3f& v)
 	b = Float::ToNormalMapByte(v.z);
 	a = 255;
 }
+
+inline Color4f::Color4f(const Vector3f& v, float alpha) { r = v.x;	g = v.y;	b = v.z;	a = alpha;	}

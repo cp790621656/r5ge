@@ -7,6 +7,7 @@
 // 128-bit color
 //============================================================================================================
 
+struct Vector3f;
 struct Color4f
 {
 	float r, g, b, a;
@@ -17,6 +18,7 @@ struct Color4f
 	Color4f(float R, float G, float B, float A = 1.0f)	: r(R),		g(G),		b(B),		a(A)		{}
 	Color4f(const Color3f& c, float alpha = 1.0f)		{ r = c.r;  g = c.g;	b = c.b;	a = alpha;	}
 	Color4f(const Color4f& c, float alpha = 1.0f)		{ r = c.r;	g = c.g;	b = c.b;	a = c.a * alpha;	}
+	Color4f(const Vector3f& v, float alpha = 1.0f);		// Inlined in Vector3f.h
 	Color4f(const float* f)								{ r = f[0];	g = f[1];	b = f[2];	a = f[3];	}
 	
 	operator const float*() const						{ return &r; }
