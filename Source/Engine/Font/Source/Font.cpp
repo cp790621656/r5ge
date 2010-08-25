@@ -376,14 +376,27 @@ uint Font::GetLength (	const String&	text,
 	{
 		ch = text[start++];
 
-		if ( (tags != Tags::Ignore) && (ch == '[') && (start + 6 < end) && (text[start + 6] == ']') )
+		if ( (tags != Tags::Ignore) && (ch == '[') )
 		{
-			start += 7;
+			if ((start + 1 < end) && (text[start + 1] == ']'))
+			{
+				start += 2;
+				continue;
+			}
+
+			if ((start + 6 < end) && (text[start + 6] == ']'))
+			{
+				start += 7;
+				continue;
+			}
+
+			if ((start + 8 < end) && (text[start + 8] == ']'))
+			{
+				start += 9;
+				continue;
+			}
 		}
-		else
-		{
-			size += _GetCharWidth( ch );
-		}
+		size += _GetCharWidth( ch );
 	}
 	return size;
 }
@@ -412,22 +425,38 @@ uint Font::CountChars ( const String&	text,
 		{
 			ch = text[--end];
 
-			if ( (tags != Tags::Ignore) && (ch == ']') && (end > 7) && (text[end - 7] == '[') )
+			if ((tags != Tags::Ignore) && (ch == ']'))
 			{
-				count += 7;
-				start -= 7;
-			}
-			else
-			{
-				charWidth = _GetCharWidth( ch );
-				length   += charWidth;
-
-				if (length > width)
+				if ((end > 1) && (text[end - 2] == '['))
 				{
-					// Round the result by half of the character's width if asked for
-					if (round && (length - charWidth / 2) <= width) ++count;
-					break;
+					count += 2;
+					start -= 2;
+					continue;
 				}
+
+				if ((end > 6) && (text[end - 7] == '['))
+				{
+					count += 7;
+					start -= 7;
+					continue;
+				}
+
+				if ((end > 8) && (text[end - 9] == '['))
+				{
+					count += 9;
+					start -= 9;
+					continue;
+				}
+			}
+
+			charWidth = _GetCharWidth( ch );
+			length   += charWidth;
+
+			if (length > width)
+			{
+				// Round the result by half of the character's width if asked for
+				if (round && (length - charWidth / 2) <= width) ++count;
+				break;
 			}
 		}
 	}
@@ -474,10 +503,25 @@ bool Font::UpdateColor (const String&	text,
 	{
 		char ch = text[--end];
 
-		if ( (ch == ']') && (end > 7) && (text[end - 7] == '[') )
+		if (ch == ']')
 		{
-			color.SetByHexString( text.GetBuffer() + end - 6, 6 );
-			return true;
+			// Tag: [-]
+			if (end > 1 && text[end - 2] == '[')
+				return false;
+
+			// Tag: [RRGGBB]
+			if (end > 6 && text[end - 7] == '[')
+			{
+				color.SetByHexString( text.GetBuffer() + end - 6, 6 );
+				return true;
+			}
+
+			// Tag: [RRGGBBAA]
+			if (end > 8 && text[end - 9] == '[')
+			{
+				color.SetByHexString( text.GetBuffer() + end - 8, 8 );
+				return true;
+			}
 		}
 	}
 	return false;
