@@ -96,15 +96,27 @@ Root
 				Position = -1 38
 				Size = 22 22
 			}
+			
+			Face = "UITreeView: Plus"
+			{
+				Position = 47 28
+				Size = 16 16
+			}
+			
+			Face = "UITreeView: Minus"
+			{
+				Position = 47 44
+				Size = 16 16
+			}
 
-			Face = "Bright Area"
+			Face = "Grey Area"
 			{
 				Position = 0 0
 				Size = 17 17
 				Border = 5
 			}
 
-			Face = "Grey Area"
+			Face = "Bright Area"
 			{
 				Position = 19 3
 				Size = 11 11

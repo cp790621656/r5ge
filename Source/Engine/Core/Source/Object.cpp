@@ -970,14 +970,13 @@ uint Object::KeyPress (const Vector2i& pos, byte key, bool isDown)
 			for (uint i = mScripts.GetSize(); i > 0; )
 			{
 				Script* script = mScripts[--i];
-				retVal |= script->OnKeyPress(pos, key, isDown);
 
-				if (!mFlags.Get(Flag::Enabled))
+				if (!script->mIgnore.Get(Script::Ignore::KeyPress))
 				{
-					mCore->Unlock();
-					return true;
+					retVal |= script->OnKeyPress(pos, key, isDown);
+					if (!mFlags.Get(Flag::Enabled)) break;
+					while (i > mScripts.GetSize()) --i;
 				}
-				while (i > mScripts.GetSize()) --i;
 			}
 		}
 		mCore->Unlock();
@@ -1000,14 +999,13 @@ uint Object::MouseMove (const Vector2i& pos, const Vector2i& delta)
 			for (uint i = mScripts.GetSize(); i > 0; )
 			{
 				Script* script = mScripts[--i];
-				retVal |= script->OnMouseMove(pos, delta);
 
-				if (!mFlags.Get(Flag::Enabled))
+				if (!script->mIgnore.Get(Script::Ignore::MouseMove))
 				{
-					mCore->Unlock();
-					return true;
+					retVal |= script->OnMouseMove(pos, delta);
+					if (!mFlags.Get(Flag::Enabled)) break;
+					while (i > mScripts.GetSize()) --i;
 				}
-				while (i > mScripts.GetSize()) --i;
 			}
 		}
 		mCore->Unlock();
@@ -1030,14 +1028,13 @@ uint Object::Scroll (const Vector2i& pos, float delta)
 			for (uint i = mScripts.GetSize(); i > 0; )
 			{
 				Script* script = mScripts[--i];
-				retVal |= script->OnScroll(pos, delta);
 
-				if (!mFlags.Get(Flag::Enabled))
+				if (!script->mIgnore.Get(Script::Ignore::Scroll))
 				{
-					mCore->Unlock();
-					return true;
+					retVal |= script->OnScroll(pos, delta);
+					if (!mFlags.Get(Flag::Enabled)) break;
+					while (i > mScripts.GetSize()) --i;
 				}
-				while (i > mScripts.GetSize()) --i;
 			}
 		}
 		mCore->Unlock();

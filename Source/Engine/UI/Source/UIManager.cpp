@@ -58,8 +58,11 @@ UIManager::UIManager() :
 		UIWidget::Register<UIShadedArea>();
 		UIWidget::Register<UIColorPicker>();
 		UIWidget::Register<UIStats>();
+		UIWidget::Register<UITreeView>();
 
 		UIScript::Register<USEventListener>();
+		UIScript::Register<USFadeOut>();
+		UIScript::Register<USFadeIn>();
 	}
 }
 

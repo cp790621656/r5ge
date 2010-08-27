@@ -22,6 +22,7 @@ struct TreeNode
 	String			mTag;
 	Variable		mValue;
 	Array<TreeNode>	mChildren;
+	Flags			mFlags;
 
 	TreeNode(const char* tag = "Root") { mTag = tag; }
 	TreeNode(const String& s) { mTag = s; }
@@ -35,6 +36,7 @@ struct TreeNode
 		mTag = "Root";
 		mValue.Release();
 		mChildren.Release();
+		mFlags.Clear();
 	}
 
 	// The node is valid as long as it has a tag

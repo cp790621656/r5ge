@@ -32,9 +32,9 @@ Root
 				Titlebar Height = 22
 				Resizable = true
 				Back Color = 0xFFFFFFDD
-				Text Color = 0xFFFFFFFF
 				Text = "Hello World!"
-				Shadow = true
+				Text Color = 0xFFFFFFFF
+				Shadow Color = 0x000000FF
 				Alignment = "Center"
 				Event Handling = "Normal"
 				Tooltip = "This is a basic window created in the UI Layout section of [FF8800]Basic Application.txt"
@@ -48,19 +48,35 @@ Root
 					Bottom = 0.0 0.0
 					Alpha = 1.0
 					Back Color = 0xFF0000FF
-					Text Color = 0xFFFFFFFF
 					Text = "X"
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
 					Animation Time = 0.15
 					Event Handling = "Normal"
 					Layer = 0
-					UIScript = "USDestroyWindow"
+					UIScript = "USCloseButton"
 				}
 
-				UIColorPicker = "Test"
+				UITreeView = "Test"
+				{
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Skin = "Config/Neon"
+					Font = "Arial 15"
+					Padding = 1
+					Back Color = 0xFFFFFFFF
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USFillTree"
+				}
 			}
 		}
 	}

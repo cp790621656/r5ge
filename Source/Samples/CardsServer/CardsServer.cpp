@@ -286,7 +286,7 @@ void Server::Init (uint decks)
 	if (mDeckCount < 1) mDeckCount = 1;
 	if (mDeckCount > 2) mDeckCount = 2;
 
-	puts("Cards Server v.1.0.5");
+	puts("Cards Server v.1.1.0");
 
 	// Bind the network listener callbacks
 	mNet.SetOnConnect(bind(&Server::OnConnect,	this));
@@ -421,7 +421,8 @@ bool Server::ProcessPacket (Player& player, const byte* buffer, uint size)
 			if (&player != mCurrent) return true;
 			if (!root.mValue.IsUShortArray()) return false;
 
-			const Array<ushort>& arr = root.mValue.AsUShortArray();
+			Array<ushort>& arr = root.mValue.ToUShortArray();
+			arr.Sort();
 
 			// Play this move
 			if (!Play(arr, root))
@@ -602,14 +603,43 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 	move.mCard	 = cards.Front();
 	move.mCount  = cards.GetSize();
 
+	bool straight = false;
+
 	// Ensure that the played cards are the same value
 	{
 		Card card;
+		bool sameValue = true;
 
 		FOREACH(i, cards)
 		{
 			card = cards[i];
-			if (move.mCard.value != card.value) return false;
+
+			if (move.mCard.value != card.value)
+			{
+				sameValue = false;
+				break;
+			}
+		}
+
+		// Only straights are allowed -- 5 cards in a row
+		if (!sameValue)
+		{
+			if (cards.GetSize() == 5)
+			{
+				Card prev;
+
+				for (uint i = 1; i < 5; ++i)
+				{
+					prev = cards[i-1];
+					card = cards[i];
+
+					if (prev.value + 1 != card.value) return false;
+				}
+			}
+			else return false;
+
+			// Played a straight
+			straight = true;
 		}
 	}
 
@@ -652,7 +682,7 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 		{
 			// A single two can beat up to a pair.
 			// A pair of twos can beat a triple, etc.
-			if (last.mCount > move.mCount + 1) return false;
+			if ((last.mCount / 2 + last.mCount % 2) > move.mCount) return false;
 			msg << " slammed the table with ";
 			mMove.Expand() = move;
 			mMoveCount = 0;
@@ -689,6 +719,13 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 		msg << g_description[move.mCard.value];
 		msg << "s";
 	}
+	else if (straight)
+	{
+		msg << "[00FF99]a straight beginning at ";
+		msg << ((move.mCard.value == 11 || move.mCard.value == 5) ? "[00FF99]an " : "[00FF99]a ");
+		msg << g_description[move.mCard.value];
+		msg << "!";
+	}
 	else
 	{
 		msg << "[00FF99]";
@@ -709,6 +746,7 @@ uint Server::Play (const Array<ushort>& cards, const TreeNode& table)
 			mMove.Back(2).mCard.value + 2 == mMove.Back(0).mCard.value)
 		{
 			uint count = mMove.Back().mCount;
+			if (straight) count = 3;
 			SendMessage(0, String("[FFFF00]A streak of 3! Discard %u!", count));
 
 			Array<Player*> discards;

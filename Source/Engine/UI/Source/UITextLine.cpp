@@ -77,9 +77,9 @@ void UITextLine::SetFont (const IFont* font)
 {
 	if (mFont != font)
 	{
-		SetDirty();
+		if (mFont != 0) SetDirty();
 		mFont = const_cast<IFont*>(font);
-		SetDirty();
+		if (mFont != 0) SetDirty();
 	}
 }
 

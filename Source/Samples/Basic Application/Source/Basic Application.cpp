@@ -3,15 +3,34 @@ using namespace R5;
 
 //============================================================================================================
 
-struct USDestroyWindow : public UIScript
+struct USCloseButton : public UIScript
 {
-	R5_DECLARE_INHERITED_CLASS("USDestroyWindow", USDestroyWindow, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS("USCloseButton", USCloseButton, UIScript, UIScript);
 
 	virtual void OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 	{
 		if (key == Key::MouseLeft && !isDown && mWidget->GetRegion().Contains(pos))
 		{
-			mWidget->GetParent()->DestroySelf();
+			UIWidget* parent = mWidget->GetParent();
+			parent->AddScript<USFadeOut>()->SetDuration(2.0f);
+		}
+	}
+};
+
+//============================================================================================================
+
+struct USFillTree : public UIScript
+{
+	R5_DECLARE_INHERITED_CLASS("USFillTree", USFillTree, UIScript, UIScript);
+
+	virtual void OnInit()
+	{
+		UITreeView* view = R5_CAST(UITreeView, mWidget);
+
+		if (view != 0)
+		{
+			mWidget->GetUI()->GetRoot().SerializeTo(view->GetTree());
+			view->SetDirty();
 		}
 	}
 };
@@ -25,7 +44,8 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);
 
-	UIScript::Register<USDestroyWindow>();
+	UIScript::Register<USCloseButton>();
+	UIScript::Register<USFillTree>();
 }
 
 //============================================================================================================

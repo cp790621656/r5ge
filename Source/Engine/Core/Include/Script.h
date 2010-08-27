@@ -28,6 +28,9 @@ protected:
 			Update			= 1 << 2,
 			PostUpdate		= 1 << 3,
 			Fill			= 1 << 4,
+			KeyPress		= 1 << 5,
+			MouseMove		= 1 << 6,
+			Scroll			= 1 << 7,
 		};
 	};
 
@@ -99,9 +102,9 @@ protected:
 	virtual void OnFill (FillParams& params) { mIgnore.Set(Ignore::Fill, true); }
 
 	// Key and mouse events
-	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { return false; }
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta) { return false; }
-	virtual bool OnScroll	(const Vector2i& pos, float delta)			 { return false; }
+	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { mIgnore.Set(Ignore::KeyPress,  true); return false; }
+	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta) { mIgnore.Set(Ignore::MouseMove, true); return false; }
+	virtual bool OnScroll	(const Vector2i& pos, float delta)			 { mIgnore.Set(Ignore::Scroll,	  true); return false; }
 
 	// Serialization
 	virtual void OnSerializeTo	(TreeNode& node) const {}

@@ -47,7 +47,11 @@ namespace R5
 	#include "UIContext.h"			// Context menu
 	#include "UIMenu.h"				// Drop-down menu, animated button + context menu
 	#include "UIList.h"				// Slightly extended menu class that updates the button's text
+	#include "UITreeView.h"			// Widget designed to visualize TreeNode hierarchies
 	#include "UIStats.h"			// Debugger widget -- contains various run-time statistics
+
+	#include "USFadeIn.h"			// Script that fades in the widget
+	#include "USFadeOut.h"			// Script that fades out the widget
 
 	#include "UIWindow.h"			// Window is a complex widget based on Animated Frame, using several other widgets
 	#include "UIManager.h"			// User interface manager
