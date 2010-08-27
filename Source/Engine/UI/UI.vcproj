@@ -286,11 +286,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\UITreeView.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UIWidget.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\UIWindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\USFadeIn.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\USFadeOut.cpp"
 				>
 			</File>
 		</Filter>
@@ -428,6 +440,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\UITreeView.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\UIWidget.h"
 				>
 			</File>
@@ -437,6 +453,14 @@
 			</File>
 			<File
 				RelativePath=".\Include\USEventListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\USFadeIn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\USFadeOut.h"
 				>
 			</File>
 		</Filter>
