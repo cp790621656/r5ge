@@ -37,9 +37,9 @@ public:
 
 	// Returns whether the transformed bounding volume is visible,
 	// and includes the transformed volume in the provided final bounds
-	bool IncludeIfVisible ( const Bounds&		bounds,
+	/*bool IncludeIfVisible ( const Bounds&		bounds,
 							const Vector3f&		pos,
 							const Quaternion&	rot,
 							float				scale,
-							Bounds&				final ) const;
+							Bounds&				final ) const;*/
 };

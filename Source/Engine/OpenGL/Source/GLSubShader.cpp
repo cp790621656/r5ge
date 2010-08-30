@@ -565,7 +565,6 @@ void GLSubShader::_Preprocess()
 		if (::PreprocessSkinning(mCode))		mFlags.Set(IShader::Flag::Skinned,		true);
 		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
-		if (mCode.Contains("R5_worldScale"))	mFlags.Set(IShader::Flag::WorldScale,	true);
 	}
 	else
 	{
@@ -578,6 +577,9 @@ void GLSubShader::_Preprocess()
 		matShader |= mCode.Replace("R5_MATERIAL_GLOW",			"gl_FrontMaterial.emission.a") != 0;
 		mFlags.Set(IShader::Flag::Material, matShader);
 	}
+
+	// Common flags
+	if (mCode.Contains("R5_worldScale")) mFlags.Set(IShader::Flag::WorldScale, true);
 
 	// Preprocess all dependencies
 	Array<String> list;

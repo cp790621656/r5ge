@@ -104,7 +104,23 @@ bool operator >> (const String& s, Vector2f& v)
 
 bool operator >> (const String& s, Vector3f& v)
 {
-	return s.IsValid() && (sscanf(s, "%f %f %f", &v.x, &v.y, &v.z) == 3);
+	if (!s.IsValid()) return false;
+	int count = sscanf(s, "%f %f %f", &v.x, &v.y, &v.z);
+	if (count == 0) return false;
+
+	if (count != 3)
+	{
+		if (count == 1)
+		{
+			v.y = v.x;
+			v.z = v.x;
+		}
+		else if (count == 2)
+		{
+			v.z = 0.0f;
+		}
+	}
+	return true;
 }
 
 //============================================================================================================

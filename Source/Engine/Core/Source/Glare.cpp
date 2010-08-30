@@ -54,10 +54,10 @@ uint Glare::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 	if (graphics->IsPointVisible(mAbsolutePos)) _SetTargetAlpha(1.0f);
 
 	// Current scale
-	float scale = mAbsoluteScale * mAlpha.y;
+	const Vector3f& scale = mAbsoluteScale * mAlpha.y;
 
 	// Only draw the billboard if it's large enough to be drawn
-	if (scale > 0.0f)
+	if (!scale.IsZero())
 	{
 		graphics->ResetModelViewMatrix();
 		IGraphics* graphics = mCore->GetGraphics();

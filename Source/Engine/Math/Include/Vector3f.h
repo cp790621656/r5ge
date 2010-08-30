@@ -83,8 +83,10 @@ struct Vector3f
 
 	// Whether this vector has default (all zero) values
 	bool  IsZero() const									{ return Float::IsZero( Float::Abs(x) + Float::Abs(y) + Float::Abs(z) ); }
+	bool  IsOne() const										{ return Float::IsZero( Float::Abs(x - 1.0f) + Float::Abs(y - 1.0f) + Float::Abs(z - 1.0f) ); }
 	void  Flip()											{ x = -x; y = -y; z = -z;									}
 	float Sum() const										{ return Float::Abs(x) + Float::Abs(y) + Float::Abs(z);		}
+	float Average() const									{ return (x + y + z) * 0.333333f; }
 	float Magnitude() const									{ return Float::Sqrt((x * x) + (y * y) + (z * z));			}
 	float Dot() const										{ return x * x + y * y + z * z;								}
 	float Dot(const Vector3f& v) const						{ return ((x * v.x) + (y * v.y) + (z * v.z));				}

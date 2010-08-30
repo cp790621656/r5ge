@@ -262,8 +262,8 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 
 		// Create a matrix that will transform the coordinates from camera to light space
 		// Bias matrix transforming -1 to 1 range into 0 to 1
-		static Matrix43 mvpToScreen (Vector3f(0.5f, 0.5f, 0.5f), 0.5f);
-		static Matrix43 screenToMVP (Vector3f(-1.0f, -1.0f, -1.0f), 2.0f);
+		static Matrix43 mvpToScreen (Vector3f(0.5f, 0.5f, 0.5f), Vector3f(0.5f));
+		static Matrix43 screenToMVP (Vector3f(-1.0f, -1.0f, -1.0f), Vector3f(2.0f));
 
 		// Matrix that will transform coordinates from camera space to light space
 		g_shadowMat[i]  = screenToMVP;

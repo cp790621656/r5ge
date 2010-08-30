@@ -39,7 +39,7 @@ public:
 	ModelViewer();
 	~ModelViewer();
 
-	const char* GetVersion() const { return "1.8.0"; }
+	const char* GetVersion() const { return "1.9.0"; }
 
 	void  Run();
 	void  OnDraw();

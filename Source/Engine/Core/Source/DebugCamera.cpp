@@ -54,9 +54,9 @@ void DebugCamera::Stop (bool animation)
 
 	if (animation)
 	{
-		mSplineV.Clear();
-		mSplineQ.Clear();
-		mSplineF.Clear();
+		mPosSpline.Clear();
+		mRotSpline.Clear();
+		mDollySpline.Clear();
 	}
 }
 
@@ -68,16 +68,16 @@ void DebugCamera::AnimateTo (const Vector3f& pos, const Quaternion& rot, float d
 {
 	Stop(false);
 
-	if (mSplineV.IsEmpty())
+	if (mPosSpline.IsEmpty())
 	{
 		float time = Time::GetTime();
-		mSplineV.AddKey(time, mRelativePos);
-		mSplineQ.AddKey(time, mRelativeRot.GetForward());
-		mSplineF.AddKey(time, mDolly.y);
+		mPosSpline.AddKey(time, mRelativePos);
+		mRotSpline.AddKey(time, mRelativeRot.GetForward());
+		mDollySpline.AddKey(time, mDolly.y);
 	}
-	mSplineV.AddKey(mSplineV.EndTime() + delay, pos);
-	mSplineQ.AddKey(mSplineQ.EndTime() + delay, rot);
-	mSplineF.AddKey(mSplineF.EndTime() + delay, dolly);
+	mPosSpline.AddKey(mPosSpline.EndTime() + delay, pos);
+	mRotSpline.AddKey(mRotSpline.EndTime() + delay, rot);
+	mDollySpline.AddKey(mDollySpline.EndTime() + delay, dolly);
 }
 
 //============================================================================================================
@@ -86,17 +86,17 @@ void DebugCamera::AnimateTo (const Vector3f& pos, const Quaternion& rot, float d
 
 Vector3f DebugCamera::_UpdateOffsetPosition()
 {
-	if (mSplineV.IsValid())
+	if (mPosSpline.IsValid())
 	{
 		float time		= Time::GetTime();
-		mRelativePos	= mSplineV.Sample(time);
-		mRelativeRot	= mSplineQ.Sample(time);
-		mDolly.y		= mSplineF.Sample(time);
+		mRelativePos	= mPosSpline.Sample(time);
+		mRelativeRot	= mRotSpline.Sample(time);
+		mDolly.y		= mDollySpline.Sample(time);
 		mDolly.y		= Float::Clamp(mDolly.y, mDolly.x, mDolly.z );
 		mIsDirty		= true;
 
 		// Stop the animation once the animation reaches the end
-		if (time > mSplineV.EndTime()) Stop();
+		if (time > mPosSpline.EndTime()) Stop();
 	}
 	else if (mHasMovement)
 	{
@@ -169,7 +169,7 @@ Vector3f DebugCamera::_UpdateOffsetPosition()
 
 uint DebugCamera::MouseMove (const Vector2i& pos, const Vector2i& delta)
 {
-	if (mSplineV.IsEmpty())
+	if (mPosSpline.IsEmpty())
 	{
 		if (mCore->IsKeyDown(Key::MouseLeft))
 		{
@@ -202,7 +202,7 @@ uint DebugCamera::MouseMove (const Vector2i& pos, const Vector2i& delta)
 
 uint DebugCamera::Scroll (const Vector2i& pos, float delta)
 {
-	if (mSplineV.IsEmpty() && Float::IsNotZero(delta))
+	if (mPosSpline.IsEmpty() && Float::IsNotZero(delta))
 	{
 		mHasMovement = true;
 		mDollyMovement -= delta * 0.001f * Float::Clamp(mDolly.y, 1.0f, 10.0f);
@@ -217,7 +217,7 @@ uint DebugCamera::Scroll (const Vector2i& pos, float delta)
 
 void DebugCamera::OnPreUpdate()
 {
-	if (mIsDirty || mHasMovement || mSplineV.IsValid())
+	if (mIsDirty || mHasMovement || mPosSpline.IsValid())
 	{
 		// Update the offset position
 		Vector3f offsetPos = _UpdateOffsetPosition();

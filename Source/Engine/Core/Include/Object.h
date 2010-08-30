@@ -49,11 +49,11 @@ protected:
 	Vector3f	mLastPos;			// Saved last relative position (used for velocity)
 	Vector3f	mRelativePos;		// Local space position
 	Quaternion	mRelativeRot;		// Local space rotation
-	float		mRelativeScale;		// Local space scale
+	Vector3f	mRelativeScale;		// Local space scale
 	Vector3f	mRelativeVel;		// Local space velocity, calculated every Update()
 	Vector3f	mAbsolutePos;		// World space position, calculated every Update()
 	Quaternion	mAbsoluteRot;		// World space rotation
-	float		mAbsoluteScale;		// World space scale
+	Vector3f	mAbsoluteScale;		// World space scale
 	Vector3f	mAbsoluteVel;		// World space velocity
 	
 	Bounds		mRelativeBounds;	// Local bounds
@@ -184,13 +184,13 @@ public:
 	// Retrieves relative (local space) position / rotation
 	const Vector3f&		GetRelativePosition()	const	{ return mRelativePos;		}
 	const Quaternion&	GetRelativeRotation()	const	{ return mRelativeRot;		}
-	float				GetRelativeScale()		const	{ return mRelativeScale;	}
+	const Vector3f&		GetRelativeScale()		const	{ return mRelativeScale;	}
 	const Vector3f&		GetRelativeVelocity()	const	{ return mRelativeVel;		}
 
 	// Retrieves absolute (world space) position / rotation
 	const Vector3f&		GetAbsolutePosition()	const	{ return mAbsolutePos;		}
 	const Quaternion&	GetAbsoluteRotation()	const	{ return mAbsoluteRot;		}
-	float				GetAbsoluteScale()		const	{ return mAbsoluteScale;	}
+	const Vector3f&		GetAbsoluteScale()		const	{ return mAbsoluteScale;	}
 	const Vector3f&		GetAbsoluteVelocity()	const	{ return mAbsoluteVel;		}
 
 	// Retrieves object bounds
@@ -227,24 +227,24 @@ public:
 	// Sets all relative values
 	void SetRelativePosition ( const Vector3f& pos )	{ mRelativePos	  = pos;	mIsDirty = true; }
 	void SetRelativeRotation ( const Quaternion& rot )	{ mRelativeRot	  = rot;	mIsDirty = true; }
-	void SetRelativeScale	 ( float scale )			{ mRelativeScale  = scale;	mIsDirty = true; }
+	void SetRelativeScale	 ( const Vector3f& scale )	{ mRelativeScale  = scale;	mIsDirty = true; }
 	void SetRelativeBounds	 ( const Bounds& b )		{ mRelativeBounds = b;		mIsDirty = true; mCalcRelBounds = false; }
 
 	// Sets both relative and absolute values using provided absolute values
 	void SetAbsolutePosition ( const Vector3f& pos );
 	void SetAbsoluteRotation ( const Quaternion& rot );
-	void SetAbsoluteScale	 ( float scale );
+	void SetAbsoluteScale	 ( const Vector3f& scale );
 
 	// It should be possible to temporarily override the absolute values
 	void OverrideAbsolutePosition (const Vector3f&   pos)	{ mAbsolutePos	 = pos;		}
 	void OverrideAbsoluteRotation (const Quaternion& rot)	{ mAbsoluteRot	 = rot;		}
-	void OverrideAbsoluteScale	  (float scale)				{ mAbsoluteScale = scale;	}
+	void OverrideAbsoluteScale	  (const Vector3f& scale)	{ mAbsoluteScale = scale;	}
 
 	// Convenience function -- force-updates the object based on the parent's absolute values
 	void Update();
 
 	// Updates the object, calling appropriate virtual functions
-	bool Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved);
+	bool Update (const Vector3f& pos, const Quaternion& rot, const Vector3f& scale, bool parentMoved);
 
 	// Fills the render queues and updates the visibility mask
 	void Fill (FillParams& params);

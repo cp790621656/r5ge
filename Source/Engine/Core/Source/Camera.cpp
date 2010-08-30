@@ -7,8 +7,8 @@ using namespace R5;
 
 void Camera::SetAbsoluteRange (const Vector3f& range)
 {
-	mRelativeRange.x = range.x / mAbsoluteScale;
-	mRelativeRange.y = range.y / mAbsoluteScale;
+	mRelativeRange.x = range.x / mAbsoluteScale.y;
+	mRelativeRange.y = range.y / mAbsoluteScale.y;
 	mRelativeRange.z = range.z;
 }
 
@@ -18,8 +18,8 @@ void Camera::SetAbsoluteRange (const Vector3f& range)
 
 void Camera::OnUpdate()
 {
-	mAbsoluteRange.x = mRelativeRange.x * mAbsoluteScale;
-	mAbsoluteRange.y = mRelativeRange.y * mAbsoluteScale;
+	mAbsoluteRange.x = mRelativeRange.x * mAbsoluteScale.y;
+	mAbsoluteRange.y = mRelativeRange.y * mAbsoluteScale.y;
 	mAbsoluteRange.z = mRelativeRange.z;
 }
 

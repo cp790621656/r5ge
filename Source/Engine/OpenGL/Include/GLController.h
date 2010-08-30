@@ -138,6 +138,7 @@ public:
 	virtual const Vector3f&		GetCameraDirection()	const	{ return mTrans.mView.dir;		}
 	virtual const Vector3f&		GetCameraUpVector()		const	{ return mTrans.mView.up;		}
 	virtual const Vector3f&		GetCameraRange()		const	{ return mTrans.mProj.range;	}
+	virtual const Bounds&		GetCameraNearBounds()	const	{ return mTrans.mCam;			}
 
 	// Matrix retrieval
 	virtual const Matrix43&		GetModelMatrix()			{ return mTrans.GetModelMatrix(); }

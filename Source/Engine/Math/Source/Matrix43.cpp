@@ -312,42 +312,10 @@ void Matrix43::SetToOrtho (float minX, float minY, float maxX, float maxY, float
 }
 
 //============================================================================================================
-// Optimized position+scaling transformation matrix -- just 16 assignment ops!
+// Sets the matrix transform using a translation and a rotation component
 //============================================================================================================
 
-void Matrix43::SetToTransform (const Vector3f& pos, float scale)
-{
-	mF[0] = scale;
-	mF[1] = 0.0f;
-	mF[2] = 0.0f;
-	mF[3] = 0.0f;
-
-	mF[4] = 0.0f;
-	mF[5] = scale;
-	mF[6] = 0.0f;
-	mF[7] = 0.0f;
-
-	mF[8]  = 0.0f;
-	mF[9]  = 0.0f;
-	mF[10] = scale;
-	mF[11] = 0.0f;
-
-	mF[12] = pos.x;
-	mF[13] = pos.y;
-	mF[14] = pos.z;
-	mF[15] = 1.0f;
-}
-
-//============================================================================================================
-// Optimized transformation matrix calculation. Performs (*this = rot), Scale and Translate
-//============================================================================================================
-// Non-1.0 scaling:  39 arithmetic, 1 comparison
-// Scaling is 1.0:   30 arithmetic, 1 comparison
-//============================================================================================================
-
-void Matrix43::SetToTransform ( const Vector3f&		pos,
-								const Quaternion&	rot,
-								float				scale )
+void Matrix43::SetToTransform (const Vector3f& pos, const Quaternion& rot)
 {
 	float xx, xy, xz, xw, yy, yz, yw, zz, zw;
 
@@ -382,19 +350,90 @@ void Matrix43::SetToTransform ( const Vector3f&		pos,
 	mF[13] = pos.y;
 	mF[14] = pos.z;
 	mF[15] = 1.0f;
+}
 
-	if (scale != 1.0f)
-	{
-		mF[0]  *= scale;
-		mF[1]  *= scale;
-		mF[2]  *= scale;
-		mF[4]  *= scale;
-		mF[5]  *= scale;
-		mF[6]  *= scale;
-		mF[8]  *= scale;
-		mF[9]  *= scale;
-		mF[10] *= scale;
-	}
+//============================================================================================================
+// Optimized position+scaling transformation matrix -- just 16 assignment ops!
+//============================================================================================================
+
+void Matrix43::SetToTransform (const Vector3f& pos, const Vector3f& scale)
+{
+	mF[0] = scale.x;
+	mF[1] = 0.0f;
+	mF[2] = 0.0f;
+	mF[3] = 0.0f;
+
+	mF[4] = 0.0f;
+	mF[5] = scale.y;
+	mF[6] = 0.0f;
+	mF[7] = 0.0f;
+
+	mF[8]  = 0.0f;
+	mF[9]  = 0.0f;
+	mF[10] = scale.z;
+	mF[11] = 0.0f;
+
+	mF[12] = pos.x;
+	mF[13] = pos.y;
+	mF[14] = pos.z;
+	mF[15] = 1.0f;
+}
+
+//============================================================================================================
+// Optimized transformation matrix calculation. Performs (*this = rot), Scale and Translate
+//============================================================================================================
+// 39 arithmetic ops
+//============================================================================================================
+
+void Matrix43::SetToTransform ( const Vector3f&		pos,
+								const Quaternion&	rot,
+								const Vector3f&		scale )
+{
+	float xx, xy, xz, xw, yy, yz, yw, zz, zw;
+
+	xx = rot.x * rot.x;
+    xy = rot.x * rot.y;
+    xz = rot.x * rot.z;
+    xw = rot.x * rot.w;
+
+    yy = rot.y * rot.y;
+    yz = rot.y * rot.z;
+    yw = rot.y * rot.w;
+
+    zz = rot.z * rot.z;
+    zw = rot.z * rot.w;
+
+	mF[0]  = 1.0f - 2.0f * (yy + zz);
+	mF[1]  =        2.0f * (xy + zw);
+	mF[2]  =        2.0f * (xz - yw);
+	mF[3]  = 0.0f;
+
+	mF[4]  =        2.0f * (xy - zw);
+	mF[5]  = 1.0f - 2.0f * (xx + zz);
+	mF[6]  =        2.0f * (yz + xw);
+	mF[7]  = 0.0f;
+
+	mF[8]  =        2.0f * (xz + yw);
+	mF[9]  =        2.0f * (yz - xw);
+	mF[10] = 1.0f - 2.0f * (xx + yy);
+	mF[11] = 0.0f;
+
+	mF[0]  *= scale.x;
+	mF[1]  *= scale.y;
+	mF[2]  *= scale.z;
+
+	mF[4]  *= scale.x;
+	mF[5]  *= scale.y;
+	mF[6]  *= scale.z;
+
+	mF[8]  *= scale.x;
+	mF[9]  *= scale.y;
+	mF[10] *= scale.z;
+
+	mF[12] = pos.x;
+	mF[13] = pos.y;
+	mF[14] = pos.z;
+	mF[15] = 1.0f;
 }
 
 //============================================================================================================
@@ -449,26 +488,26 @@ void Matrix43::SetToTransform (	const Vector3f&		invBindPos,
     zz = fz * fz;
     zw = fz * fw;
 
-	mF[0]  = 1.0f - 2.0f * (yy + zz);
-	mF[1]  =        2.0f * (xy + zw);
-	mF[2]  =        2.0f * (xz - yw);
+	mF[0]	= 1.0f - 2.0f * (yy + zz);
+	mF[1]	=        2.0f * (xy + zw);
+	mF[2]	=        2.0f * (xz - yw);
 	mF[3]	= 0.0f;
 
-	mF[4]  =        2.0f * (xy - zw);
-	mF[5]  = 1.0f - 2.0f * (xx + zz);
-	mF[6]  =        2.0f * (yz + xw);
+	mF[4]	=        2.0f * (xy - zw);
+	mF[5]	= 1.0f - 2.0f * (xx + zz);
+	mF[6]	=        2.0f * (yz + xw);
 	mF[7]	= 0.0f;
 
-	mF[8]  =        2.0f * (xz + yw);
-	mF[9]  =        2.0f * (yz - xw);
-	mF[10] = 1.0f - 2.0f * (xx + yy);
-	mF[11] = 0.0f;
+	mF[8]	=        2.0f * (xz + yw);
+	mF[9]	=        2.0f * (yz - xw);
+	mF[10]	= 1.0f - 2.0f * (xx + yy);
+	mF[11]	= 0.0f;
 
 	// Translation
-	mF[12] = mF[0] * invBindPos.x + mF[4] * invBindPos.y + mF[8 ] * invBindPos.z + absolutePos.x;
-	mF[13] = mF[1] * invBindPos.x + mF[5] * invBindPos.y + mF[9 ] * invBindPos.z + absolutePos.y;
-	mF[14] = mF[2] * invBindPos.x + mF[6] * invBindPos.y + mF[10] * invBindPos.z + absolutePos.z;
-	mF[15] = 1.0f;
+	mF[12]	= mF[0] * invBindPos.x + mF[4] * invBindPos.y + mF[8 ] * invBindPos.z + absolutePos.x;
+	mF[13]	= mF[1] * invBindPos.x + mF[5] * invBindPos.y + mF[9 ] * invBindPos.z + absolutePos.y;
+	mF[14]	= mF[2] * invBindPos.x + mF[6] * invBindPos.y + mF[10] * invBindPos.z + absolutePos.z;
+	mF[15]	= 1.0f;
 }
 
 //============================================================================================================
@@ -668,20 +707,32 @@ void Matrix43::Transpose()
 }
 
 //============================================================================================================
+// Gets the scale component from the matrix
+//============================================================================================================
+
+Vector3f Matrix43::GetScale() const
+{
+	Vector3f rt (mF[0], mF[1], mF[2]);
+	Vector3f fw	(mF[4], mF[5], mF[6]);
+	Vector3f up (mF[8], mF[9], mF[10]);
+	return Vector3f (rt.Magnitude(), fw.Magnitude(), up.Magnitude());
+}
+
+//============================================================================================================
 // Eliminates the rotational and scaling components of the matrix, replacing it with the specified scaling
 //============================================================================================================
 
-void Matrix43::ReplaceScaling (float scale)
+void Matrix43::ReplaceScaling (const Vector3f& scale)
 {
-	mF[ 0] = scale;
+	mF[ 0] = scale.x;
 	mF[ 1] = 0.0f;
 	mF[ 2] = 0.0f;
 	mF[ 4] = 0.0f;
-	mF[ 5] = scale;
+	mF[ 5] = scale.y;
 	mF[ 6] = 0.0f;
 	mF[ 8] = 0.0f;
 	mF[ 9] = 0.0f;
-	mF[10] = scale;
+	mF[10] = scale.z;
 }
 
 //============================================================================================================

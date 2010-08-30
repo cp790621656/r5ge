@@ -23,24 +23,6 @@ Decal::Decal() : mShader(0), mColor(1.0f)
 }
 
 //============================================================================================================
-// Global values needed by the shader
-//============================================================================================================
-
-Quaternion	g_pos;
-Vector3f	g_forward;
-Vector3f	g_right;
-Vector3f	g_up;
-
-//============================================================================================================
-// Shader uniform update callback functions
-//============================================================================================================
-
-void OnSetPos		(const String& name, Uniform& uni) { uni = g_pos;		}
-void OnSetForward	(const String& name, Uniform& uni) { uni = g_forward;	}
-void OnSetRight		(const String& name, Uniform& uni) { uni = g_right;		}
-void OnSetUp		(const String& name, Uniform& uni) { uni = g_up;		}
-
-//============================================================================================================
 // Set the mask
 //============================================================================================================
 
@@ -57,23 +39,6 @@ void Decal::SetShader (const String& shader)
 }
 
 //============================================================================================================
-// Changing the shader means having to re-register uniforms used by this shader
-//============================================================================================================
-
-void Decal::SetShader (IShader* shader)
-{
-	mShader = shader;
-
-	if (mShader != 0)
-	{
-		mShader->RegisterUniform("g_pos",	  OnSetPos);
-		mShader->RegisterUniform("g_forward", OnSetForward);
-		mShader->RegisterUniform("g_right",	  OnSetRight);
-		mShader->RegisterUniform("g_up",	  OnSetUp);
-	}
-}
-
-//============================================================================================================
 // Update function should update the transformation matrix if coordinates have changed
 //============================================================================================================
 
@@ -81,14 +46,11 @@ void Decal::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		// Recalculate absolute bounds directly as it's faster than having to transform relative bounds.
-		// 1.732f multiplication is here because we draw a cube, but its corners are sqrt(3) farther away
-		// than the sides. In order to cull it properly we treat it as a maximum range sphere instead.
-		mAbsoluteBounds.Clear();
-		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.732f);
-
-		// Transform matrix uses calculated absolute values
 		mMatrix.SetToTransform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
+
+		mAbsoluteBounds.Clear();
+		mAbsoluteBounds.Set(Vector3f(-1.0f), Vector3f(1.0f));
+		mAbsoluteBounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
 	}
 }
 
@@ -121,6 +83,8 @@ bool Decal::OnFill (FillParams& params)
 
 uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tech, void* param, bool insideOut)
 {
+	if (mShader == 0) return 0;
+
 	IVBO* vbo = storage.GetVBO(2);
 	IVBO* ibo = storage.GetVBO(3);
 
@@ -142,14 +106,6 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 		ibo->Set(indices,  IVBO::Type::Index);
 	}
 
-	// Update the values used by the shader
-	const Matrix43& mat = mGraphics->GetViewMatrix();
-	g_pos.xyz()	= mAbsolutePos * mat;
-	g_pos.w		= mAbsoluteScale;
-	g_forward	= mAbsoluteRot.GetForward() % mat;
-	g_right		= mAbsoluteRot.GetRight() % mat;
-	g_up		= mAbsoluteRot.GetUp() % mat;
-
 	// Finish all draw operations
 	mGraphics->Flush();
 
@@ -159,10 +115,27 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 	mGraphics->SetModelMatrix(mMatrix);
 
 	// Activate the shader, force-updating the uniforms
-	mGraphics->SetActiveShader(mShader, true);
+	mGraphics->SetActiveShader(mShader);
+
+	// It's faster to invert a 4x3 matrix then multiply it by a cached inverted 4x4 matrix
+	// than it is to invert a full 4x4 matrix every time a projected texture is drawn.
+	const Matrix44& invProj = mGraphics->GetInverseProjMatrix();
+	Matrix43 invView (mMatrix);
+	invView *= mGraphics->GetViewMatrix();
+	invView.Invert();
+	Matrix44 invMVP (invProj);
+	invMVP *= invView;
+
+	// Update the shader uniforms
+	const Matrix43& mat = mGraphics->GetViewMatrix();
+	mShader->SetUniform("g_mat",	 invMVP);
+	mShader->SetUniform("g_forward", mAbsoluteRot.GetForward() % mat);
+	mShader->SetUniform("g_right",	 mAbsoluteRot.GetRight() % mat);
+	mShader->SetUniform("g_up",		 mAbsoluteRot.GetUp() % mat);
+	mShader->SetUniform("g_color",	 mColor);
 
 	// ATI cards seem to clamp gl_FrontMaterial.diffuse in 0-1 range
-	if (mShader != 0) mShader->SetUniform("g_color", mColor);
+	mShader->SetUniform("g_color", mColor);
 
 	// Activate the 4 mandatory textures
 	mGraphics->SetActiveTexture(0, depth);
@@ -174,11 +147,8 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 	for (uint i = 0; i < mTextures.GetSize(); ++i)
 		mGraphics->SetActiveTexture(i+4, mTextures[i]);
 
-	// Distance from the center to the farthest corner of the box before it starts getting clipped
-	float range = mAbsoluteScale * 1.732f + mGraphics->GetCameraRange().x;
-
-	// Invert the depth testing and culling if the camera is inside the box
-	bool invert = mAbsolutePos.GetDistanceTo(mGraphics->GetCameraPosition()) < range;
+	// See if the camera intersects with the bounding box of the projected texture
+	bool invert = mAbsoluteBounds.Intersects(mGraphics->GetCameraNearBounds());
 
 	if (invert)
 	{

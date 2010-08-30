@@ -22,11 +22,11 @@ SmokeEmitter::SmokeEmitter()
 void SmokeEmitter::InitParticle (Particle& particle)
 {
 	particle.mSpawnPos		= mAbsolutePos;
-	particle.mSpawnPos.x   += mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.15f);
-	particle.mSpawnPos.y   += mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.15f);
-	particle.mSpawnDir.x	= mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.35f);
-	particle.mSpawnDir.y	= mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.35f);
-	particle.mSpawnDir.z	= mAbsoluteScale * (randomGen.GenerateRangeFloat() + 10.0f);
+	particle.mSpawnPos.x   += mAbsoluteScale.x * (randomGen.GenerateRangeFloat() * 0.15f);
+	particle.mSpawnPos.y   += mAbsoluteScale.y * (randomGen.GenerateRangeFloat() * 0.15f);
+	particle.mSpawnDir.x	= mAbsoluteScale.x * (randomGen.GenerateRangeFloat() * 0.35f);
+	particle.mSpawnDir.y	= mAbsoluteScale.y * (randomGen.GenerateRangeFloat() * 0.35f);
+	particle.mSpawnDir.z	= mAbsoluteScale.z * (randomGen.GenerateRangeFloat() + 10.0f);
 	particle.mParam			= (randomGen.GenerateRangeFloat() < 0.0f) ? 0 : 1;
 }
 
@@ -40,7 +40,7 @@ void SmokeEmitter::UpdateParticle (Particle& particle)
 	float progress		= Interpolation::Linear( 0.0f, 1.0f, Float::Clamp(time / mLifetime, 0.0f, 1.0f ) );
 	float movement		= pow(progress * 2.0f, 0.75f);
 	particle.mPos		= particle.mSpawnPos + particle.mSpawnDir * movement;
-	particle.mRadius	= mAbsoluteScale * (1.0f + movement * 2.0f);
+	particle.mRadius	= mAbsoluteScale.x * (1.0f + movement * 2.0f);
 	particle.mRotation	= (particle.mParam == 0 ? PI : -PI) * Float::Sin( Float::Sqrt(progress) );
 	particle.mColor.r	= 0;
 	particle.mColor.g	= 0;

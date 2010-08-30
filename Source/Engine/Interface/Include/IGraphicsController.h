@@ -137,6 +137,7 @@ public:
 	virtual const Vector3f&		GetCameraDirection()	const=0;
 	virtual const Vector3f&		GetCameraUpVector()		const=0;
 	virtual const Vector3f&		GetCameraRange()		const=0;
+	virtual const Bounds&		GetCameraNearBounds()	const=0;
 
 	// Matrix retrieval
 	virtual const Matrix43&		GetModelMatrix()=0;

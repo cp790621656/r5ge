@@ -25,11 +25,11 @@ FireEmitter::FireEmitter()
 void FireEmitter::InitParticle (Particle& particle)
 {
 	particle.mSpawnPos		= mAbsolutePos;
-	particle.mSpawnPos.x   += mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.15f);
-	particle.mSpawnPos.y   += mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.15f);
-	particle.mSpawnDir.x	= mAbsoluteScale * (randomGen.GenerateRangeFloat());
-	particle.mSpawnDir.y	= mAbsoluteScale * (randomGen.GenerateRangeFloat());
-	particle.mSpawnDir.z	= mAbsoluteScale * (randomGen.GenerateRangeFloat() * 0.5f + 4.5f);
+	particle.mSpawnPos.x   += mAbsoluteScale.x * (randomGen.GenerateRangeFloat() * 0.15f);
+	particle.mSpawnPos.y   += mAbsoluteScale.y * (randomGen.GenerateRangeFloat() * 0.15f);
+	particle.mSpawnDir.x	= mAbsoluteScale.x * (randomGen.GenerateRangeFloat());
+	particle.mSpawnDir.y	= mAbsoluteScale.y * (randomGen.GenerateRangeFloat());
+	particle.mSpawnDir.z	= mAbsoluteScale.z * (randomGen.GenerateRangeFloat() * 0.5f + 4.5f);
 	particle.mRotation		= 0.0f;
 }
 
@@ -43,7 +43,7 @@ void FireEmitter::UpdateParticle (Particle& particle)
 	float progress		= Interpolation::Linear( 0.0f, 1.0f, Float::Clamp(time / mLifetime, 0.0f, 1.0f ) );
 	float movement		= pow(progress, 1.5f);
 	particle.mPos		= particle.mSpawnPos + particle.mSpawnDir * movement;
-	particle.mRadius	= mAbsoluteScale * (1.0f - movement);
+	particle.mRadius	= mAbsoluteScale.y * (1.0f - movement);
 
 	// Make the flame get narrower as it gets higher
 	Vector3f pos ( particle.mSpawnPos.x, particle.mSpawnPos.y, particle.mPos.z );

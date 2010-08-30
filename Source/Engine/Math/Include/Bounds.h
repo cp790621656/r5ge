@@ -89,7 +89,7 @@ public:
 	void Include (const Vector3f& v);
 
 	// Transform the bounding volume by the specified transformation
-	void Transform (const Vector3f& pos, const Quaternion& rot, float scale);
+	void Transform (const Vector3f& pos, const Quaternion& rot, const Vector3f& scale);
 
 	// Transform the bounding volume by the specified rotation
 	void Transform (const Quaternion& rot);

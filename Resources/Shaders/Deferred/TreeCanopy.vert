@@ -2,7 +2,7 @@
 
 uniform vec3 R5_time;
 uniform vec3 R5_origin;
-uniform float R5_worldScale;
+uniform vec3 R5_worldScale;
 
 varying vec2 _texCoord;
 varying vec3 _normal;
@@ -40,7 +40,7 @@ void main()
 	spin += dot(vertex.xyz, vertex.xyz);
 
 	// Offset the vertex in world space
-	vertex.xyz += wind * ((windOffset * 0.025 + 0.025) * windStrength * R5_worldScale);
+	vertex.xyz += R5_worldScale * wind * ((windOffset * 0.025 + 0.025) * windStrength);
 
 	// Calculate the view-transformed vertex
 	vertex = gl_ModelViewMatrix * vertex;
@@ -62,6 +62,6 @@ void main()
 	gl_Position 	= gl_ProjectionMatrix * vertex;
 	gl_FrontColor	= gl_Color;
 	_normal 		= gl_NormalMatrix * _normal;
-    _tangent		= gl_NormalMatrix * _tangent;
+	_tangent		= gl_NormalMatrix * _tangent;
 	_texCoord		= gl_MultiTexCoord0.xy;
 }

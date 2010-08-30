@@ -7,12 +7,12 @@ R5::Random randomGen;
 // Constructor and destructor pair
 //============================================================================================================
 
-TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0), mCam(0)
+TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
 	mWin		= new GLWindow();
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
-	mCore		= new Core(mWin, mGraphics, mUI, 0, mScene);
+	mCore		= new Core(mWin, mGraphics, mUI);
 
 	mCore->SetSleepDelay(0);
 
@@ -37,33 +37,9 @@ void TestApp::Run()
 {
     if (*mCore << "Config/Dev7.txt")
 	{
-		mCam = mScene.FindObject<Camera>("Default Camera");
-
-		if (mCam != 0)
-		{
-			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
-
-			while (mCore->Update());
-
-			//*mCore >> "Config/Dev7.txt";
-		}
+		while (mCore->Update());
+		//*mCore >> "Config/Dev7.txt";
 	}
-}
-
-//============================================================================================================
-
-void TestApp::OnDraw()
-{
-	mScene.Cull(mCam);
-
-	mGraphics->Clear();
-	mGraphics->SetScreenProjection( false );
-	mGraphics->Draw( IGraphics::Drawable::Grid );
-
-	mScene.DrawWithTechnique("Particle", false, false);
-
-	static Object* place = mScene.FindObject<Object>("Stage");
-	if (place != 0) place->SetRelativeRotation( Quaternion(0.0f, 0.0f, Time::GetTime()) );
 }
 
 //============================================================================================================

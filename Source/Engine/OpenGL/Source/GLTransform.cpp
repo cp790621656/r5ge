@@ -315,7 +315,10 @@ uint GLTransform::Activate (const IShader* shader)
 		{
 			// Scale parameter needs to be updated each time the model matrix changes
 			if (shader != 0 && shader->GetFlag(IShader::Flag::WorldScale))
-				shader->SetUniform("R5_worldScale", m.GetScale());
+			{
+				Vector3f scale (m.GetScale());
+				shader->SetUniform("R5_worldScale", scale);
+			}
 
 			// If the active shader supports pseudo-instancing, take advantage of that
 			if (shader != 0 && shader->GetFlag(IShader::Flag::Instanced))

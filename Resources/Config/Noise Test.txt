@@ -13,15 +13,17 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
-		Fog Range = 100.000000 200.000000
 
 		Material = "Noise"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.001000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 0.0
+			Shininess = 0.001
+			Reflectiveness = 0.0
+			Occlusion = 0.75
+			Alpha Cutoff = 0.003922
 
 			Technique = "Opaque"
 			{
@@ -36,10 +38,14 @@ Root
 
 		Material = "Test Material"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 0.0
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.75
+			Alpha Cutoff = 0.003922
 			Technique = "Opaque Depth"
 			Technique = "Opaque"
 		}
@@ -47,31 +53,31 @@ Root
 
 	UI
 	{
-		Default Skin = "Default"
+		Default Skin = "Config/Neon"
 		Default Font = "Arial 15"
 
 		Layout
 		{
 			UIFrame = "Top UIFrame"
 			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
+				Left = 0.0 0.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 1.0 0.0
+				Alpha = 1.0
 				Event Handling = "None"
 				Layer = 0
 
 				UILabel = "Time"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 0.000000 16.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "Time: 78"
-					Shadow = true
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 0.0 16.0
+					Alpha = 1.0
+					Text = "Time: 38"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
 					Alignment = "Center"
 					Event Handling = "None"
 					Layer = 0
@@ -80,27 +86,30 @@ Root
 
 			UIWindow = "Texture UIWindow"
 			{
-				Left = 1.000000 -256.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 0.000000 512.000000
-				Alpha = 1.000000
+				Left = 1.0 -256.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 0.0 512.0
+				Alpha = 1.0
 				Titlebar Height = 0
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Back Color = 0xFFFFFFFF
 				Text = "Noise Texture"
-				Shadow = true
+				Text Color = 0xFFFFFFFF
+				Shadow Color = 0x000000FF
 				Alignment = "Center"
 				Event Handling = "Normal"
 				Layer = 0
 
 				UIPicture = "Normal Map"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.500000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.5 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Tiled = false
+					Back Color = 0xFFFFFFFF
 					Texture = "Normal Map"
 					Ignore Alpha = true
 					Event Handling = "None"
@@ -109,11 +118,13 @@ Root
 
 				UIPicture = "Noise"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 0.500000 0.000000
-					Alpha = 1.000000
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 0.5 0.0
+					Alpha = 1.0
+					Tiled = false
+					Back Color = 0xFFFFFFFF
 					Texture = "Noise"
 					Ignore Alpha = true
 					Event Handling = "None"
@@ -123,92 +134,57 @@ Root
 
 			UIWindow = "Options"
 			{
-				Left = 0.000000 10.000000
-				Right = 0.000000 271.000000
-				Top = 0.000000 12.000000
-				Bottom = 0.000000 260.000000
-				Alpha = 1.000000
+				Left = 0.0 10.0
+				Right = 0.0 271.0
+				Top = 0.0 12.0
+				Bottom = 0.0 280.0
+				Alpha = 1.0
 				Titlebar Height = 22
-				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Resizable = false
+				Back Color = 0xFFFFFFFF
 				Text = "Options"
-				Shadow = true
+				Text Color = 0xFFFFFFFF
+				Shadow Color = 0x000000FF
 				Alignment = "Center"
 				Event Handling = "Normal"
 				Layer = 0
 
-				UIButton = "512"
-				{
-					Left = 0.500000 2.000000
-					Right = 0.750000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "512"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Event Handling = "Normal"
-					Layer = 0
-					UIScript = "USEventListener"
-				}
-
-				UIButton = "1024"
-				{
-					Left = 0.750000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "1024"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Event Handling = "Normal"
-					Layer = 0
-					UIScript = "USEventListener"
-				}
-
 				UIInput = "Input 2"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 42.000000
-					Bottom = 0.000000 60.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 46.0
+					Bottom = 0.0 66.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
-					Tooltip = "Normalizes the noise to be within 0-1 range (no parameters)"
+					Tooltip = "Select a new filter from the drop-down list"
 					Layer = 0
 				}
 
 				UIList = "Filter 3"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 62.000000
-					Bottom = 0.000000 80.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 68.0
+					Bottom = 0.0 88.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -237,17 +213,18 @@ Root
 
 				UIInput = "Input 3"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 62.000000
-					Bottom = 0.000000 80.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 68.0
+					Bottom = 0.0 88.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -256,19 +233,20 @@ Root
 
 				UIList = "Filter 4"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 82.000000
-					Bottom = 0.000000 100.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 90.0
+					Bottom = 0.0 110.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -297,17 +275,18 @@ Root
 
 				UIInput = "Input 4"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 82.000000
-					Bottom = 0.000000 100.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 90.0
+					Bottom = 0.0 110.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -316,19 +295,20 @@ Root
 
 				UIList = "Filter 5"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 102.000000
-					Bottom = 0.000000 120.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 112.0
+					Bottom = 0.0 132.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -357,17 +337,18 @@ Root
 
 				UIInput = "Input 5"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 102.000000
-					Bottom = 0.000000 120.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 112.0
+					Bottom = 0.0 132.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -376,19 +357,20 @@ Root
 
 				UIList = "Filter 6"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 122.000000
-					Bottom = 0.000000 140.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 134.0
+					Bottom = 0.0 154.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -417,17 +399,18 @@ Root
 
 				UIInput = "Input 6"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 122.000000
-					Bottom = 0.000000 140.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 134.0
+					Bottom = 0.0 154.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -436,19 +419,20 @@ Root
 
 				UIList = "Filter 7"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 142.000000
-					Bottom = 0.000000 160.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 156.0
+					Bottom = 0.0 176.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -477,17 +461,18 @@ Root
 
 				UIInput = "Input 7"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 142.000000
-					Bottom = 0.000000 160.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 156.0
+					Bottom = 0.0 176.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -496,19 +481,20 @@ Root
 
 				UIList = "Filter 8"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 162.000000
-					Bottom = 0.000000 180.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 178.0
+					Bottom = 0.0 198.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -537,17 +523,18 @@ Root
 
 				UIInput = "Input 8"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 162.000000
-					Bottom = 0.000000 180.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 178.0
+					Bottom = 0.0 198.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -556,19 +543,20 @@ Root
 
 				UIList = "Filter 9"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 182.000000
-					Bottom = 0.000000 200.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 200.0
+					Bottom = 0.0 220.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -597,17 +585,142 @@ Root
 
 				UIInput = "Input 9"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 182.000000
-					Bottom = 0.000000 200.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 200.0
+					Bottom = 0.0 220.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
 					Text
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
+					History Size = 0
+					Event Handling = "Full"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+				}
+
+				UIButton = "128"
+				{
+					Left = 0.0 2.0
+					Right = 0.25 0.0
+					Top = 1.0 -22.0
+					Bottom = 1.0 -2.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "128"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIList = "Filter 1"
+				{
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 24.0
+					Bottom = 0.0 44.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIList = "Filter 2"
+				{
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 46.0
+					Bottom = 0.0 66.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Menu Face
+
+					Entries = String[]
+					{
+						""
+						"Simple"
+						"Fractal"
+						"Perlin"
+						"Normalize"
+						"Blur"
+						"Power"
+						"Sqrt"
+						"Add"
+						"Multiply"
+						"Round"
+						"Clamp"
+						"Mirror"
+						"Erode"
+					}
+
+					Event Handling = "Normal"
+					Tooltip = "Select a new filter from the drop-down list"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIInput = "Input 1"
+				{
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 24.0
+					Bottom = 0.0 44.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
+					Text
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
+					Font = "Arial"
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
 					Tooltip = "Select a new filter from the drop-down list"
@@ -616,19 +729,20 @@ Root
 
 				UIList = "Filter 0"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 2.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
+					Left = 0.0 2.0
+					Right = 0.5 -2.0
+					Top = 0.0 2.0
+					Bottom = 0.0 22.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "Fractal"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "Perlin"
-					Shadow = false
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Menu Face
 
 					Entries = String[]
@@ -650,126 +764,26 @@ Root
 					}
 
 					Event Handling = "Normal"
-					Tooltip = "Perlin noise (up to 3 parameters): Octaves, ridge threshold, smoothness"
+					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
 					Layer = 0
 					UIScript = "USEventListener"
 				}
 
-				UIList = "Filter 1"
+				UIButton = "1024"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 22.000000
-					Bottom = 0.000000 40.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "Clamp"
-					Shadow = false
+					Left = 0.75 2.0
+					Right = 1.0 -2.0
+					Top = 1.0 -22.0
+					Bottom = 1.0 -2.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "1024"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
-					Menu Face
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Event Handling = "Normal"
-					Tooltip = "Clamp filter, 2 parameters: Low boundary, high boundary"
-					Layer = 0
-					UIScript = "USEventListener"
-				}
-
-				UIList = "Filter 2"
-				{
-					Left = 0.000000 2.000000
-					Right = 0.500000 -2.000000
-					Top = 0.000000 42.000000
-					Bottom = 0.000000 60.000000
-					Alpha = 1.000000
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "Normalize"
-					Shadow = false
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
-					Menu Face
-
-					Entries = String[]
-					{
-						""
-						"Simple"
-						"Fractal"
-						"Perlin"
-						"Normalize"
-						"Blur"
-						"Power"
-						"Sqrt"
-						"Add"
-						"Multiply"
-						"Round"
-						"Clamp"
-						"Mirror"
-						"Erode"
-					}
-
-					Event Handling = "Normal"
-					Tooltip = "Normalizes the noise to be within 0-1 range (no parameters)"
-					Layer = 0
-					UIScript = "USEventListener"
-				}
-
-				UIInput = "Input 1"
-				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 22.000000
-					Bottom = 0.000000 40.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
-					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "0.35 0.45"
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
-					History Size = 0
-					Event Handling = "Full"
-					Tooltip = "Clamp filter, 2 parameters: Low boundary, high boundary"
-					Layer = 0
-				}
-
-				UIButton = "256"
-				{
-					Left = 0.250000 2.000000
-					Right = 0.500000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "256"
-					Shadow = true
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
 					Event Handling = "Normal"
 					Layer = 0
 					UIScript = "USEventListener"
@@ -777,37 +791,59 @@ Root
 
 				UIInput = "Input 0"
 				{
-					Left = 0.500000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 2.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
-					Face = "Grey Area"
+					Left = 0.5 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 2.0
+					Bottom = 0.0 22.0
+					Alpha = 1.0
+					Face = "UIInput: Background"
+					Back Color = 0xFFFFFFFF
+					Text = "2"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Font = "Arial"
-					Color = 1.000000 1.000000 1.000000
-					Text = "5"
-					Shadow = false
-					Selection Color = 1.000000 0.667000 0.161000 0.500000
+					Selection Color = 0xFFAA2980
 					History Size = 0
 					Event Handling = "Full"
-					Tooltip = "Perlin noise (up to 3 parameters): Octaves, ridge threshold, smoothness"
+					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
 					Layer = 0
 				}
 
-				UIButton = "128"
+				UIButton = "256"
 				{
-					Left = 0.000000 2.000000
-					Right = 0.250000 0.000000
-					Top = 1.000000 -22.000000
-					Bottom = 1.000000 -2.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Text = "128"
-					Shadow = true
+					Left = 0.25 2.0
+					Right = 0.5 0.0
+					Top = 1.0 -22.0
+					Bottom = 1.0 -2.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "256"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
+					Animation Time = 0.15
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
+
+				UIButton = "512"
+				{
+					Left = 0.5 2.0
+					Right = 0.75 0.0
+					Top = 1.0 -22.0
+					Bottom = 1.0 -2.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "512"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
 					Event Handling = "Normal"
 					Layer = 0
 					UIScript = "USEventListener"
@@ -818,7 +854,10 @@ Root
 
 	Core
 	{
-		Execute = "Config/Leo UI Skin.txt"
+		Serialize From = String[]
+		{
+			"Config/Leo UI Skin.txt"
+		}
 
 		Model = "Teapot"
 		{
@@ -847,32 +886,38 @@ Root
 	{
 		Directional Light = "Directional Light"
 		{
+			Position = 0.0 0.0 0.0
 			Rotation = -0.453398 0.187803 -0.333431 0.804975
-			Scale = 1.004070
-			Ambient = 0.100000 0.100000 0.100000
-			Diffuse = 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000
-			Brightness = 1.000000
+			Scale = 1.00407 1.00407 1.00407
+			Ambient = 0.1 0.1 0.1
+			Diffuse = 1.0 1.0 1.0
+			Specular = 0.0 0.0 0.0
+			Brightness = 1.0
 			Shadows = false
 		}
 
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 3.000000
-			Rotation = 0.131543 -0.181271 0.788855 -0.572316
-			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 15.891080 50.000000
+			Position = 0.0 0.0 3.0
+			Rotation = 0.111581 -0.234321 0.871963 -0.415118
+			Scale = 1.0 1.0 1.0
+			Range = 0.3 100.0 90.0
+			Dolly = 0.0 19.267731 50.0
 		}
 
 		Model Instance = "Teapot"
 		{
-			Scale = 1.500000
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.5 1.5 1.5
 			Model = "Teapot"
 		}
 
 		Model Instance = "Plane"
 		{
-			Scale = 50.000000
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 50.0 50.0 50.0
 			Model = "Plane"
 		}
 	}

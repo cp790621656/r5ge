@@ -21,14 +21,11 @@ void ProjectedTexture::OnUpdate()
 {
 	if (mIsDirty)
 	{
-		// Recalculate absolute bounds directly as it's faster than having to transform relative bounds.
-		// 1.732f multiplication is here because we draw a cube, but its corners are sqrt(3) farther away
-		// than the sides. In order to cull it properly we treat it as a maximum range sphere instead.
-		mAbsoluteBounds.Clear();
-		mAbsoluteBounds.Include(mAbsolutePos, mAbsoluteScale * 1.732f);
-
-		// Transform matrix uses calculated absolute values
 		mMatrix.SetToTransform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
+
+		mAbsoluteBounds.Clear();
+		mAbsoluteBounds.Set(Vector3f(-1.0f), Vector3f(1.0f));
+		mAbsoluteBounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
 	}
 }
 
@@ -66,16 +63,6 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 		ibo->Set(indices,  IVBO::Type::Index);
 	}
 
-	// Calculate the values used by the shader
-	const Matrix43& mat = mGraphics->GetViewMatrix();
-	Vector4f pos;
-	pos.xyz() = mAbsolutePos * mat;
-	pos.w = mAbsoluteScale;
-
-	Vector3f forward(mAbsoluteRot.GetForward() % mat);
-	Vector3f right	(mAbsoluteRot.GetRight() % mat);
-	Vector3f up		(mAbsoluteRot.GetUp() % mat);
-
 	// Set the color and world matrix
 	mGraphics->SetActiveColor(mColor);
 	mGraphics->SetNormalize(false);
@@ -98,11 +85,17 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 		mGraphics->SetActiveShader(shader = mReplace);
 	}
 
+	// It's faster to invert a 4x3 matrix then multiply it by a cached inverted 4x4 matrix
+	// than it is to invert a full 4x4 matrix every time a projected texture is drawn.
+	const Matrix44& invProj = mGraphics->GetInverseProjMatrix();
+	Matrix43 invView (mMatrix);
+	invView *= mGraphics->GetViewMatrix();
+	invView.Invert();
+	Matrix44 invMVP (invProj);
+	invMVP *= invView;
+
 	// Update the shader uniforms
-	shader->SetUniform("g_pos", pos);
-	shader->SetUniform("g_forward", forward);
-	shader->SetUniform("g_right", right);
-	shader->SetUniform("g_up", up);
+	shader->SetUniform("g_mat", invMVP);
 	shader->SetUniform("g_color", mColor);
 
 	// Activate the textures
@@ -112,21 +105,18 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 	mGraphics->SetActiveTexture(3, 0);
 	mGraphics->SetActiveTexture(4, 0);
 
-	// Distance from the center to the farthest corner of the box before it starts getting clipped
-	float range = mAbsoluteScale * 1.732f + mGraphics->GetCameraRange().x;
-
-	// Invert the depth testing and culling if the camera is inside the box
-	bool invert = mAbsolutePos.GetDistanceTo(mGraphics->GetCameraPosition()) < range;
+	// See if the camera intersects with the bounding box of the projected texture
+	bool invert = mAbsoluteBounds.Intersects(mGraphics->GetCameraNearBounds());
 
 	if (invert)
 	{
-		// If the camera is inside the sphere, switch to reverse culling and depth testing
+		// If the camera is inside the bounds, switch to reverse culling and depth testing
 		mGraphics->SetCulling( insideOut ? IGraphics::Culling::Back : IGraphics::Culling::Front );
 		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
 	}
 	else
 	{
-		// If the camera is outside of the sphere, use normal culling and depth testing
+		// If the camera is outside of the bounds, use normal culling and depth testing
 		mGraphics->SetCulling( insideOut ? IGraphics::Culling::Front : IGraphics::Culling::Back );
 		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Less );
 	}
@@ -142,7 +132,7 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
 		vbo, 0, IGraphics::DataType::Float, 3, 12 );
 
-	// Draw the decal
+	// Draw the projected texture
 	mGraphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, ibo->GetSize() / sizeof(ushort));
 
 	// Restore the depth function

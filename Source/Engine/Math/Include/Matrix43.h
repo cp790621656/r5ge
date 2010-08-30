@@ -53,11 +53,14 @@ public:
 			  const Vector3f& dir,
 			  const Vector3f& up )								{ SetToView(eye, dir, up); }
 
-	Matrix43 (const Vector3f& pos, float scale)					{ SetToTransform(pos, scale); }
+	Matrix43 (const Vector3f&	pos,
+			  const Quaternion&	rot)							{ SetToTransform(pos, rot); }
+
+	Matrix43 (const Vector3f& pos, const Vector3f& scale)		{ SetToTransform(pos, scale); }
 
 	Matrix43 (const Vector3f&	pos,
 			  const Quaternion&	rot,
-			  float				scale)							{ SetToTransform(pos, rot, scale); }
+			  const Vector3f&	scale)							{ SetToTransform(pos, rot, scale); }
 
 private: // Invalid functions:
 
@@ -95,13 +98,16 @@ public:
 	// Sets the matrix to a full orthographic projection
 	void SetToOrtho (float minX, float minY, float maxX, float maxY, float near, float far);
 
+	// Sets the matrix transform using a translation and a rotation component
+	void SetToTransform (const Vector3f& pos, const Quaternion& rot);
+
 	// Sets the matrix transform using a translation and a scale component
-	void SetToTransform (const Vector3f& pos, float scale);
+	void SetToTransform (const Vector3f& pos, const Vector3f& scale);
 
 	// Most optimized function to use that combines translation, rotation, and scaling
 	void SetToTransform (const Vector3f& pos,
 						 const Quaternion& rot,
-						 float scale);
+						 const Vector3f& scale);
 
 	// Optimized matrix setting function meant for bone transforms
 	void SetToTransform	(const Vector3f&	invBindPos,
@@ -112,7 +118,7 @@ public:
 	bool IsIdentity();
 	void SetToIdentity();
 	void Translate		(const Vector3f& offset)				{ x += offset.x;	y += offset.y;		z += offset.z; }
-	void Rotate			(const Vector3f& axis, float radAngle);
+	void Rotate			(const Vector3f& normalizedAxis, float radAngle);
 	void Scale			(float scale);
 	void Scale			(const Vector3f& scale);
 	void Invert();
@@ -122,10 +128,14 @@ public:
 	void ClearTranslation()										{ x = 0.0f; y = 0.0f; z = 0.0f; }
 
 	// Returns the uniform scaling component (since uniform scale is used, this is quite simple)
-	float GetScale() const { return Vector3f(mF[0], mF[1], mF[2]).Magnitude(); }
+	float GetUniformScale() const { return Vector3f(mF[0], mF[1], mF[2]).Magnitude(); }
+
+	// Gets the scale component from the matrix
+	// NOTE: The result will not return negative scaling. (ie: -1 1 1 will be returned as 1 1 1)
+	Vector3f GetScale() const;
 
 	// Replaces scaling and rotation component with the specified uniform scale
-	void ReplaceScaling (float scale = 1.0f);
+	void ReplaceScaling (const Vector3f& scale);
 
 	// Prior-to-transform manipulation
 	void PreTranslate	(const Vector3f& offset);

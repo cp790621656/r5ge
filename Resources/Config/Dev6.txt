@@ -13,8 +13,8 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
-		Fog Range = 30.000000 75.000000
+		Background Color = 0.250000 0.250000 0.250000 1.0
+		Fog Range = 30.0 75.0
 
 		Technique = "CPU"
 		{
@@ -46,9 +46,9 @@ Root
 		
 		Material = "Peasant"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
+			Diffuse = 1.0 1.0 1.0 1.0
+			Specular = 0.0 0.0 0.0 0.100000
+			Glow = 0.0
 			ADT = 0.003922
 
 			Technique = "CPU"
@@ -67,9 +67,9 @@ Root
 
 	UI
 	{
-		Default Skin = "Default"
+		Default Skin = "Config/Neon"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
+		Tooltip Delay = 1.0
 
 		Layout
 		{
@@ -82,19 +82,18 @@ Root
 
 			UICheckbox = "Technique"
 			{
-				Left = 0.000000 3.000000
-				Right = 1.000000 -3.000000
-				Top = 0.000000 3.000000
-				Bottom = 0.000000 18.000000
-				Alpha = 1.000000
-				Skin = "Default"
-				Color = 1.000000 1.000000 1.000000
+				Left = 0.0 1.0
+				Right = 1.0 -1.0
+				Top = 0.0 1.0
+				Bottom = 0.0 20.0
+				Alpha = 1.0
+				Color = 1.0 1.0 1.0
 				Font = "Arial 15"
 				Text = " Skinning on [55FF55]GPU"
 				Shadow = true
 				Alignment = "Left"
 				State = "Checked"
-				Animation Time = 0.150000
+				Animation Time = 0.15
 				Receives Events = true
 				Layer = 0
 			}
@@ -123,21 +122,21 @@ Root
 		{
 			Position = 1.118778 -4.750380 4.046780
 			Rotation = -0.218756 0.028878 -0.129805 0.966676
-			Scale = 1.000000
+			Scale = 1.0
 			Layer = 10
-			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 50.000000 50.000000
+			Range = 0.300000 100.0 90.0
+			Dolly = 0.0 50.0 50.0
 
 			Directional Light = "First Light"
 			{
-				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
+				Position = 0.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0
 				Layer = 10
-				Ambient = 0.150000 0.150000 0.150000
-				Diffuse = 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.250000
+				Ambient = 0.15 0.15 0.15
+				Diffuse = 1.0 1.0 1.0
+				Specular = 1.0 1.0 1.0
+				Brightness = 1.25
 			}
 		}
 	}

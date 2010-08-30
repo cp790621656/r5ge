@@ -27,7 +27,7 @@ PointLight::PointLight() :
 inline void PointLight::_UpdateColors()
 {
 	mProperties.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
-	mProperties.mDiffuse  = Color4f(mDiffuse  * mBrightness, mRange * mAbsoluteScale);
+	mProperties.mDiffuse  = Color4f(mDiffuse  * mBrightness, mRange * mAbsoluteScale.Average());
 	mProperties.mSpecular = Color4f(mSpecular * mBrightness, mPower);
 }
 
@@ -35,7 +35,7 @@ inline void PointLight::_UpdateColors()
 
 inline void PointLight::_UpdateAtten()
 {
-	mProperties.mAtten.x = mRange * mAbsoluteScale;
+	mProperties.mAtten.x = mRange * mAbsoluteScale.Average();
 	mProperties.mAtten.y = mPower;
 }
 
@@ -87,7 +87,7 @@ void PointLight::OnUpdate()
 	if (mIsDirty)
 	{
 		mRelativeBounds.Clear();
-		mRelativeBounds.Include(Vector3f(), mRange);
+		mRelativeBounds.Set(Vector3f(-mRange), Vector3f(mRange));
 
 		mProperties.mPos = mAbsolutePos;
 		mProperties.mDir = mAbsoluteRot.GetForward();
@@ -103,7 +103,7 @@ void PointLight::OnUpdate()
 
 bool PointLight::OnFill (FillParams& params)
 {
-	float range = mRange * mAbsoluteScale;
+	float range = mRange * mAbsoluteScale.Average();
 
 	if ( (mProperties.mDiffuse.IsVisibleRGB() || mProperties.mAmbient.IsVisibleRGB()) && range > 0.0001f )
 	{

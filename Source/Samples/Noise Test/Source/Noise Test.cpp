@@ -37,8 +37,6 @@ TestApp::~TestApp()
 void TestApp::InitUI()
 {
 	UIWindow* parent = mUI->FindWidget<UIWindow>("Options");
-	UISkin*	skin	 = mUI->GetSkin("Default");
-	IFont*	font	 = mUI->GetFont("Arial");
 
 	if (parent != 0)
 	{
@@ -60,11 +58,9 @@ void TestApp::InitUI()
 				UIRegion& r = list->GetRegion();
 				r.SetLeft	(0.0f,  padding);
 				r.SetRight	(0.5f, -padding);
-				r.SetTop	(0.0f,  padding + i * 20);
-				r.SetBottom	(0.0f,  padding + i * 20 + 18);
+				r.SetTop	(0.0f,  padding + i * 22);
+				r.SetBottom	(0.0f,  padding + i * 22 + 20);
 
-				list->SetSkin(skin);
-				list->SetFont(font);
 				list->ClearAllEntries();
 				list->AddEntry("");
 
@@ -81,12 +77,8 @@ void TestApp::InitUI()
 				UIRegion& r = input->GetRegion();
 				r.SetLeft	(0.5f,  padding);
 				r.SetRight	(1.0f, -padding);
-				r.SetTop	(0.0f,  padding + i * 20);
-				r.SetBottom	(0.0f,  padding + i * 20 + 18);
-
-				input->SetSkin(skin);
-				input->SetFace("Grey Area");
-				input->SetFont(font);
+				r.SetTop	(0.0f,  padding + i * 22);
+				r.SetBottom	(0.0f,  padding + i * 22 + 20);
 			}
 		}
 		parent->SetAlpha(1.0f);

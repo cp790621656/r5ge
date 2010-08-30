@@ -1441,9 +1441,9 @@ void ModelViewer::OnFillModelMenu (UIWidget* widget, bool hasFocus)
 		if (mInst->GetRelativeRotation()	>> temp)	_modelRot->SetText(temp);
 		if (mInst->GetRelativeScale()		>> temp)	_modelScale->SetText(temp);
 
-		bool usePos		= !(mInst->GetRelativePosition().IsZero());
-		bool useRot		= !(mInst->GetRelativeRotation().IsIdentity());
-		bool useScale	=  (mInst->GetRelativeScale() != 1.0f);
+		bool usePos		= !mInst->GetRelativePosition().IsZero();
+		bool useRot		= !mInst->GetRelativeRotation().IsIdentity();
+		bool useScale	= !mInst->GetRelativeScale().IsOne();
 
 		_modelUsePos->SetState	( UICheckbox::State::Checked, usePos );
 		_modelUseRot->SetState	( UICheckbox::State::Checked, useRot );
@@ -1809,7 +1809,7 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 	{
 		const Vector3f&		pos		= mInst->GetRelativePosition();
 		const Quaternion&	rot		= mInst->GetRelativeRotation();
-		float				scale	= mInst->GetRelativeScale();
+		const Vector3f&		scale	= mInst->GetRelativeScale();
 
 		Skeleton* skel = mModel->GetSkeleton();
 
@@ -1927,6 +1927,8 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 				mesh->Unlock();
 			}
 
+			float radius = (scale.x + scale.y + scale.z) / 3.0f;
+
 			for (uint b = 0; b < clouds.GetSize(); ++b)
 			{
 				Cloud* cloud = clouds[b];
@@ -1938,7 +1940,7 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 					for (uint i = list.GetSize(); i > 0; )
 					{
 						list[--i].xyz() *= mat;
-						list[i].w *= scale;
+						list[i].w *= radius;
 					}
 					cloud->SetOrigin( cloud->GetOrigin() * mat );
 					cloud->SetDirty();
@@ -1949,7 +1951,7 @@ void ModelViewer::OnModelBake (UIWidget* widget, const Vector2i& pos, byte key, 
 
 		// Reset the current transforms
 		mInst->SetRelativeRotation( Quaternion() );
-		mInst->SetRelativePosition( Vector3f() );
+		mInst->SetRelativePosition( 0.0f );
 		mInst->SetRelativeScale( 1.0f );
 
 		// Remove then re-add the skeleton, forcing an update
@@ -2639,7 +2641,7 @@ void ModelViewer::_UpdateModelData()
 	String text;
 	Vector3f pos;
 	Quaternion rot;
-	float scale (1.0f);
+	Vector3f scale (1.0f);
 
 	bool usePos		= (_modelUsePos->GetState()	  & UICheckbox::State::Checked) != 0;
 	bool useRot		= (_modelUseRot->GetState()	  & UICheckbox::State::Checked) != 0;

@@ -147,7 +147,7 @@ bool Frustum::IsVisible (const Bounds& bounds, const Vector3f& pos, const Quater
 // and includes the transformed volume in the provided final bounds
 //============================================================================================================
 
-bool Frustum::IncludeIfVisible (const Bounds&		bounds,
+/*bool Frustum::IncludeIfVisible (const Bounds&		bounds,
 								const Vector3f&		pos,
 								const Quaternion&	rot,
 								float				scale,
@@ -192,4 +192,4 @@ bool Frustum::IncludeIfVisible (const Bounds&		bounds,
 		}
 	}
 	return false;
-}
+}*/

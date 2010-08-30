@@ -27,6 +27,8 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath("../../../");
 #endif
 
+	uint errors = 0;
+
 	if (argc > 1)
 	{
 		TreeNode root;
@@ -41,11 +43,7 @@ int main (int argc, char* argv[])
 
 				if (filename.EndsWith(".r5a"))
 				{
-					filename.Replace(".r5a", ".r5b");
-				}
-				else if (filename.EndsWith(".r5b"))
-				{
-					filename.Replace(".r5b", ".r5c");
+					filename.Replace(".r5a", ".r5c");
 				}
 				else
 				{
@@ -68,22 +66,29 @@ int main (int argc, char* argv[])
 				else
 				{
 					WRITE_ERROR;
+					++errors;
 				}
 			}
 			else
 			{
 				READ_ERROR;
+				++errors;
 			}
 		}
 	}
 	else
-	{	
+	{
+		++errors;
 		puts("Usage: ConfigConverter file0 [file1] [file2] [...]");
 		puts("Example 1: FontConverter HelloWorld.r5a");
 		puts("Example 2: FontConverter HelloWorld.r5b HelloWorld.r5c");
 		puts("You can also drag the file in question onto this executable in order to convert it.");
 	}
-	puts("Press Enter to exit...");
-	getchar();
+
+	if (errors > 0)
+	{
+		puts("Press Enter to exit...");
+		getchar();
+	}
 	return 0;
 }

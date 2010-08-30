@@ -423,20 +423,26 @@ uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 
 		float factor = Float::Abs(Float::Cos(4.0f * Time::GetTime()));
 		bool stencil = graphics->GetStencilTest();
+		bool depth = graphics->GetDepthTest();
 
-		graphics->SetActiveMaterial (0);
-		graphics->SetActiveColor( Color4f(factor, 1.0f - factor, 0, 1) );
+		graphics->SetActiveMaterial(0);
+		graphics->SetDepthTest(false);
+		graphics->SetStencilTest(false);
 
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Normal,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Color,		0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Tangent,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord0,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord1,	0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,	v);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Normal,	 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Color,		 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Tangent,	 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord0,	 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord1,	 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::BoneWeight, 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::BoneIndex,	 0);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,	 v);
+		graphics->SetActiveColor( Color4f(factor, 1.0f - factor, 0.0f, 1.0f) );
 
 		result += graphics->DrawVertices( IGraphics::Primitive::Line, v.GetSize() );
 
 		// Restore the active technique
+		graphics->SetDepthTest(depth);
 		graphics->SetStencilTest(stencil);
 		graphics->SetActiveColor( Color4f(1.0f) );
 		graphics->SetActiveTechnique(tech);
@@ -584,8 +590,8 @@ void Object::SetAbsolutePosition (const Vector3f& pos)
 
 	if (mParent != 0)
 	{
-		float invScale = 1.0f / mParent->GetAbsoluteScale();
-		mRelativePos = Interpolation::GetDifference(mParent->GetAbsolutePosition(), mAbsolutePos) * invScale;
+		mRelativePos = Interpolation::GetDifference(mParent->GetAbsolutePosition(), mAbsolutePos) /
+			mParent->GetAbsoluteScale();
 	}
 	else mRelativePos = mAbsolutePos;
 }
@@ -610,7 +616,7 @@ void Object::SetAbsoluteRotation (const Quaternion& rot)
 // Sets the position using an absolute value
 //============================================================================================================
 
-void Object::SetAbsoluteScale (float scale)
+void Object::SetAbsoluteScale (const Vector3f& scale)
 {
 	mIsDirty = true;
 	mAbsoluteScale = scale;
@@ -643,7 +649,7 @@ void Object::Update()
 // INTERNAL: Updates the object, calling appropriate virtual functions
 //============================================================================================================
 
-bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bool parentMoved)
+bool Object::Update (const Vector3f& pos, const Quaternion& rot, const Vector3f& scale, bool parentMoved)
 {
 	mHasMoved = false;
 	bool retVal (false);
@@ -653,12 +659,6 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 
 	if (mFlags.Get(Flag::Enabled))
 	{
-		// Calculate the velocity since last update
-		mRelativeVel = (mRelativePos - mLastPos) / Time::GetDelta();
-		mAbsoluteVel = mRelativeVel;
-		if (mParent != 0) mAbsoluteVel += mParent->GetAbsoluteVelocity();
-		mLastPos = mRelativePos;
-
 		// If the parent has moved then we need to recalculate the absolute values
 		if (parentMoved) mIsDirty = true;
 
@@ -684,10 +684,21 @@ bool Object::Update (const Vector3f& pos, const Quaternion& rot, float scale, bo
 		if (mIsDirty)
 		{
 			mHasMoved = true;
-			mAbsolutePos = (mRelativePos * scale) * rot + pos;
+			mAbsolutePos = (mRelativePos * rot) * scale + pos;
 			mAbsoluteScale = mRelativeScale * scale;
 			mAbsoluteRot.Combine(rot, mRelativeRot);
 		}
+
+		// Calculate the velocity since last update
+		mRelativeVel = (mRelativePos - mLastPos) / Time::GetDelta();
+		mAbsoluteVel = mRelativeVel;
+
+		if (mParent != 0)
+		{
+			mAbsoluteVel *= mAbsoluteScale;
+			mAbsoluteVel += mParent->GetAbsoluteVelocity();
+		}
+		mLastPos = mRelativePos;
 
 		// Run through all scripts and notify them
 		for (uint i = mScripts.GetSize(); i > 0; )
@@ -801,9 +812,7 @@ void Object::Fill (FillParams& params)
 {
 	if (mFlags.Get(Flag::Enabled))
 	{
-		// Cull the bounding volume if it's available. Note that we check the absolute bounds but actually
-		// use the com(plete bounds. This is because complete bounds can be valid even if absolute aren't.
-		bool isVisible = mAbsoluteBounds.IsValid() ? params.mFrustum.IsVisible(mCompleteBounds) : true;
+		bool isVisible = mCompleteBounds.IsValid() ? params.mFrustum.IsVisible(mCompleteBounds) : true;
 
 		// If the object is visible, increment the visibility counter
 		if (isVisible) ++mVisibility;
@@ -814,21 +823,26 @@ void Object::Fill (FillParams& params)
 		// If the object is visible, fill the render queue
 		if (isVisible)
 		{
-			// Inform script listeners of this event
-			for (uint i = mScripts.GetSize(); i > 0; )
-			{
-				Script* script = mScripts[--i];
+			bool considerChildren = true;
 
-				if (!script->mIgnore.Get(Script::Ignore::Fill))
+			if (!mAbsoluteBounds.IsValid() || params.mFrustum.IsVisible(mAbsoluteBounds))
+			{
+				// Inform script listeners of this event
+				for (uint i = mScripts.GetSize(); i > 0; )
 				{
-					script->OnFill(params);
+					Script* script = mScripts[--i];
+
+					if (!script->mIgnore.Get(Script::Ignore::Fill))
+					{
+						script->OnFill(params);
+					}
 				}
+
+				// Trigger the virtual function if it's available
+				considerChildren = OnFill(params);
 			}
 
-			// Trigger the virtual function if it's available
-			bool considerChildren = mIgnore.Get(Ignore::Fill) ? true : OnFill(params);
-
-			if (considerChildren)
+			if (mIgnore.Get(Ignore::Fill) || considerChildren)
 			{
 				// Recurse through all children
 				for (uint i = 0; i < mChildren.GetSize(); ++i)
@@ -1052,9 +1066,9 @@ bool Object::SerializeTo (TreeNode& root) const
 	{
 		TreeNode& node = root.AddChild( GetClassID(), mName );
 
-		if (!mRelativePos.IsZero())		node.AddChild("Position", mRelativePos);
-		if (!mRelativeRot.IsIdentity()) node.AddChild("Rotation", mRelativeRot);
-		if (mRelativeScale != 1.0f)		node.AddChild("Scale", mRelativeScale);
+		node.AddChild("Position", mRelativePos);
+		node.AddChild("Rotation", mRelativeRot);
+		node.AddChild("Scale", mRelativeScale);
 
 		if (!mCalcRelBounds && mRelativeBounds.IsValid())
 		{

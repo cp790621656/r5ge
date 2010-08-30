@@ -30,14 +30,14 @@ public:
 	// Changes the default drawing layer that will be used by decals
 	static void SetDefaultLayer(byte layer);
 
-	const IShader*		GetShader()		const	{ return mShader;		}
-	const Color4f&		GetColor()		const	{ return mColor;		}
+	const IShader*	GetShader()	const	{ return mShader;	}
+	const Color4f&	GetColor()	const	{ return mColor;	}
 
 	void SetShader	(const String& shader);
-	void SetShader	(IShader* shader);
-	void SetColor	(const Color4f& val)		{ mColor	 = val;		}
+	void SetShader	(IShader* val)			{ mShader	= val;	}
+	void SetColor	(const Color4f& val)	{ mColor	= val;	}
 	
-	Array<const ITexture*>& GetTextureArray()	{ return mTextures;		}
+	Array<const ITexture*>& GetTextureArray()	{ return mTextures;	}
 
 protected:
 

@@ -998,12 +998,12 @@ bool Variable::operator >> (Vector2f& value) const
 
 bool Variable::operator >> (Vector3f& value) const
 {
-	if (IsVector3f())
-	{
-		value = AsVector3f();
-		return true;
-	}
-	return false;
+	if		(IsVector3f())	value = AsVector3f();
+	else if (IsVector2f())	value = AsVector2f();
+	else if (IsFloat())		value = AsFloat();
+	else if (IsInt())		value = (float)AsInt();
+	else return false;
+	return true;
 }
 
 //============================================================================================================

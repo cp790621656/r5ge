@@ -73,7 +73,7 @@ void Bounds::Include (const Vector3f& v)
 // Transform the bounding volume by the specified transformation
 //============================================================================================================
 
-void Bounds::Transform (const Vector3f& pos, const Quaternion& rot, float scale)
+void Bounds::Transform (const Vector3f& pos, const Quaternion& rot, const Vector3f& scale)
 {
 	if (mIsValid)
 	{
@@ -85,9 +85,7 @@ void Bounds::Transform (const Vector3f& pos, const Quaternion& rot, float scale)
 		}
 		else
 		{
-			scale *= 0.5f;
-
-			Vector3f dir0 ( (mMax - mMin) * scale);		// Top-right
+			Vector3f dir0 ( (mMax - mMin) * 0.5f);		// Top-right
 			Vector3f dir1 ( dir0.x, dir0.y, -dir0.z);	// Bottom-right
 			Vector3f dir2 (-dir0.x, dir0.y,  dir0.z);	// Top-left
 			Vector3f dir3 (-dir0.x, dir0.y, -dir0.z);	// Bottom-left
@@ -97,10 +95,16 @@ void Bounds::Transform (const Vector3f& pos, const Quaternion& rot, float scale)
 			dir2 *= rot;
 			dir3 *= rot;
 
+			dir0 *= scale;
+			dir1 *= scale;
+			dir2 *= scale;
+			dir3 *= scale;
+
 			Clear();
 
-			mCenter  = (mMax + mMin) * scale;
+			mCenter  = (mMax + mMin) * 0.5f;
 			mCenter *= rot;
+			mCenter *= scale;
 			mCenter += pos;
 
 			Include(mCenter + dir0);

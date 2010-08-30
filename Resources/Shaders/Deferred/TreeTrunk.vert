@@ -3,7 +3,7 @@
 attribute vec3 R5_tangent;
 
 uniform vec3 R5_time;
-uniform float R5_worldScale;
+uniform vec3 R5_worldScale;
 
 varying vec2 _texCoord;
 varying vec3 _normal;
@@ -39,7 +39,7 @@ void main()
 	// Calculate the remaining values
 	gl_Position 	= gl_ModelViewProjectionMatrix * vertex;
 	gl_FrontColor	= gl_Color;
-    _normal 		= gl_NormalMatrix * _normal;
-    _tangent		= gl_NormalMatrix * _tangent;
-    _texCoord   	= gl_MultiTexCoord0.xy;
+	_normal 		= gl_NormalMatrix * _normal;
+	_tangent		= gl_NormalMatrix * _tangent;
+	_texCoord   	= gl_MultiTexCoord0.xy;
 }

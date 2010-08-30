@@ -97,6 +97,7 @@ private:
 	ModelMatrix	mModel;	// Model matrix
 	ViewMatrix	mView;	// View matrix
 	ProjMatrix	mProj;	// Projection matrix
+	Bounds		mCam;	// Camera bounds
 	Mat43		mMV;	// World * View matrix
 	Mat43		mIMV;	// Inverse ModelView matrix
 	Mat44		mMVP;	// ModelView*Projection matrix
@@ -117,10 +118,21 @@ public:
 	void SetProjectionRange (const Vector3f& range) { mProj.Set(range); }
 
 	// Sets the projection matrix
-	void SetProjectionMatrix (float fov, float aspect, float near, float far) { mProj.Set(fov, aspect, near, far); }
+	void SetProjectionMatrix (float fov, float aspect, float near, float far)
+	{
+		mProj.Set(fov, aspect, near, far);
+		UpdateCameraNearBounds();
+	}
 
 	// Sets the view matrix
-	void SetViewMatrix (const Vector3f& eyePos, const Vector3f& dir, const Vector3f& up) { mView.Set(eyePos, dir, up); }
+	void SetViewMatrix (const Vector3f& eyePos, const Vector3f& dir, const Vector3f& up)
+	{
+		mView.Set(eyePos, dir, up);
+		UpdateCameraNearBounds();
+	}
+
+	// Recalculates the bounds taken up by the camera
+	void UpdateCameraNearBounds() { mCam.Clear(); mCam.Include(mView.pos, mProj.range.x * 2.0f); }
 
 	// Model matrix manipulation
 	void OverrideModelMatrix (const Matrix43& mat) { mModel.Override(mat); }

@@ -18,9 +18,9 @@ protected:
 	Vector3f	mSavedPos;			// Saved relative position, restored in post-update
 	float		mDollyMovement;		// Current dolly movement
 	bool		mHasMovement;		// Whether there is potential movement in progress
-	SplineV		mSplineV;
-	SplineQ		mSplineQ;
-	SplineF		mSplineF;
+	SplineV		mPosSpline;
+	SplineQ		mRotSpline;
+	SplineF		mDollySpline;
 
 public:
 

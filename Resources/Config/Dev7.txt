@@ -13,41 +13,38 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.250000 0.250000 0.250000 1.000000
-		Fog Range = 30.000000 75.000000
 	}
 
 	UI
 	{
 		Default Skin = "Default"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
 
 		Layout
 		{
-			Left = 0.000000 0.000000
-			Right = 1.000000 0.000000
-			Top = 0.000000 0.000000
-			Bottom = 1.000000 0.000000
-			Alpha = 1.000000
-
 			UIStats = "Game UIStats"
 			{
+				Left = 0.0 0.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 1.0 0.0
+				Alpha = 1.0
 				Font = "Arial 15"
-				Receives Events = false
+				Event Handling = "None"
+				Layer = 0
 
 				UILabel = "Status"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
-					Font = "Arial 15"
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 1.0 -20.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
 					Text = "Copyright (c) 2009 Michael Lyashenko (www.nextrevision.com)"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Alignment = "Center"
-					Receives Events = true
+					Event Handling = "Normal"
 					Layer = 0
 				}
 			}
@@ -56,79 +53,117 @@ Root
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Directional Light = "First Light"
 		{
-			Position = 0.000000 0.000000 0.000000
+			Position = 0.0 0.0 0.0
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
-			Scale = 1.000000
-			Ambient = 0.150000 0.150000 0.150000 1.000000
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 1.000000
-			Brightness = 1.000000
+			Scale = 1.0 1.0 1.0
+			Ambient = 0.15 0.15 0.15
+			Diffuse = 1.0 1.0 1.0
+			Specular = 1.0 1.0 1.0
+			Brightness = 1.0
+			Shadows = false
 		}
 
 		Debug Camera = "Default Camera"
 		{
-			Position = 0 0 2
-			Rotation = -0.281647 0.044020 -0.149677 0.946749
-			Scale = 1.000000
-			FOV = 10.000000 90.000000 180.000000
-			Dolly = 0.000000 13.999970 50.000000
-			Range = 0.100000 100.000000
-			Friction = 0.970000 0.970000 0.990000 0.990000
+			Position = 0.0 0.0 2.0
+			Rotation = -0.281647 0.04402 -0.149677 0.946749
+			Scale = 1.0 1.0 1.0
+			Range = 0.1 100.0 90.0
+			Dolly = 0.0 13.99997 50.0
+
+			Script = "OSDrawForward"
+			{
+				Background Color = 0.25 0.25 0.25 1.0
+				Fog Range = 0.5 1.0
+				Grid = true
+			}
 		}
 
 		Object = "Stage"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.551860 -0.833937
-			Scale = 1.000000
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.55186 -0.833937
+			Scale = 1.0 1.0 1.0
+
+			Script = "OSRotate"
+			{
+				Axis = 0 0 1
+				Rate = 0.1
+			}
 
 			Fire Emitter = "Fire 0"
 			{
-				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
+				Position = 0.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Texture = "Textures/Billboards/fire.jpg"
+				Technique = "Particle"
+				Lifetime = 1000
+				Max Particles = 15
+				Frequency = 66
 
 				Smoke Emitter = "Smoke 0"
 				{
-					Position = 0.000000 0.000000 0.000000
-					Rotation = 0.000000 0.000000 0.000000 1.000000
-					Scale = 1.000000
+					Position = 0.0 0.0 0.0
+					Rotation = 0.0 0.0 0.0 1.0
+					Scale = 1.0 1.0 1.0
 					Texture = "Textures/Billboards/smoke.png"
+					Technique = "Particle"
+					Lifetime = 3000
+					Max Particles = 10
+					Frequency = 300
 				}
 			}
 
 			Fire Emitter = "Fire 1"
 			{
-				Position = 3.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 0.750000
+				Position = 3.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 0.75 0.75 0.75
 				Texture = "Textures/Billboards/fire.jpg"
+				Technique = "Particle"
+				Lifetime = 1000
+				Max Particles = 15
+				Frequency = 66
 
 				Smoke Emitter = "Smoke 1"
 				{
-					Position = 0.000000 0.000000 0.000000
-					Rotation = 0.000000 0.000000 0.000000 1.000000
-					Scale = 1.000000
+					Position = 0.0 0.0 0.0
+					Rotation = 0.0 0.0 0.0 1.0
+					Scale = 1.0 1.0 1.0
 					Texture = "Textures/Billboards/smoke.png"
+					Technique = "Particle"
+					Lifetime = 3000
+					Max Particles = 10
+					Frequency = 300
 				}
 			}
 
 			Fire Emitter = "Fire 2"
 			{
-				Position = -3.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 0.750000
+				Position = -3.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 0.75 0.75 0.75
 				Texture = "Textures/Billboards/fire.jpg"
+				Technique = "Particle"
+				Lifetime = 1000
+				Max Particles = 15
+				Frequency = 66
 
 				Smoke Emitter = "Smoke 2"
 				{
-					Position = 0.000000 0.000000 0.000000
-					Rotation = 0.000000 0.000000 0.000000 1.000000
-					Scale = 1.000000
+					Position = 0.0 0.0 0.0
+					Rotation = 0.0 0.0 0.0 1.0
+					Scale = 1.0 1.0 1.0
 					Texture = "Textures/Billboards/smoke.png"
+					Technique = "Particle"
+					Lifetime = 3000
+					Max Particles = 10
+					Frequency = 300
 				}
 			}
 		}
