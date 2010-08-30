@@ -68,11 +68,11 @@ public:
 
 	// Initial text color
 	const Color4ub& GetTextColor() const { return mTextColor; }
-	void SetTextColor (const Color4ub& c) { if (mTextColor != c) { mTextColor = c; SetDirty(); } }
+	void SetTextColor (const Color4ub& c) { if (mTextColor != c) { mTextColor = c; OnDirty(GetFontTexture()); } }
 
 	// Background color
 	const Color4ub& GetShadowColor() const { return mShadowColor; }
-	void SetShadowColor (const Color4ub& c) { if (mShadowColor != c) { mShadowColor = c; SetDirty(); } }
+	void SetShadowColor (const Color4ub& c) { if (mShadowColor != c) { mShadowColor = c; OnDirty(GetFontTexture()); } }
 
 	// Background color
 	const Color4ub& GetBackColor() const { return mPlusPic.GetBackColor(); }

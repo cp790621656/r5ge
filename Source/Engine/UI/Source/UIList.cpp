@@ -30,7 +30,7 @@ void UIList::OnLayerChanged()
 }
 
 //============================================================================================================
-// Notification of texture being changed
+// Notification of texture having changed
 //============================================================================================================
 
 void UIList::OnTextureChanged (const ITexture* ptr)

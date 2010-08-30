@@ -184,7 +184,7 @@ private:
 public:
 
 	// Serialization
-	bool SerializeTo	(TreeNode& root) const;
+	bool SerializeTo	(TreeNode& root, bool self = true, bool children = true) const;
 	bool SerializeFrom	(const TreeNode& root);
 
 private:

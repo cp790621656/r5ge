@@ -208,8 +208,8 @@ void UITreeView::_PrintSymbols (PrintParams& params)
 			if (root == mSelection)
 			{
 				UIRegion& rgn = mSelectPic.GetRegion();
-				rgn.SetTop   (0.0f, params.v0.y - mRegion.GetCalculatedTop());
-				rgn.SetBottom(0.0f, params.v0.y + size - mRegion.GetCalculatedTop());
+				rgn.SetTop   (0.0f, params.v0.y);
+				rgn.SetBottom(0.0f, params.v0.y + size);
 				rgn.Update(mRegion, false, true);
 				mSelectPic.OnFill(params.queue);
 			}
@@ -220,20 +220,20 @@ void UITreeView::_PrintSymbols (PrintParams& params)
 				if (params.root->mFlags.Get(1 << 31))
 				{
 					UIRegion& rgn = mMinusPic.GetRegion();
-					rgn.SetTop	 (0.0f, params.v0.y - mRegion.GetCalculatedTop());
-					rgn.SetBottom(0.0f, params.v0.y + size - mRegion.GetCalculatedTop());
-					rgn.SetLeft	 (0.0f, params.v0.x - mRegion.GetCalculatedLeft());
-					rgn.SetRight (0.0f, params.v0.x + size - mRegion.GetCalculatedLeft());
+					rgn.SetTop	 (0.0f, params.v0.y);
+					rgn.SetBottom(0.0f, params.v0.y + size);
+					rgn.SetLeft	 (0.0f, params.v0.x);
+					rgn.SetRight (0.0f, params.v0.x + size);
 					rgn.Update(mRegion, false, true);
 					mMinusPic.OnFill(params.queue);
 				}
 				else
 				{
 					UIRegion& rgn = mPlusPic.GetRegion();
-					rgn.SetTop	 (0.0f, params.v0.y - mRegion.GetCalculatedTop());
-					rgn.SetBottom(0.0f, params.v0.y + size - mRegion.GetCalculatedTop());
-					rgn.SetLeft	 (0.0f, params.v0.x - mRegion.GetCalculatedLeft());
-					rgn.SetRight (0.0f, params.v0.x + size - mRegion.GetCalculatedLeft());
+					rgn.SetTop	 (0.0f, params.v0.y);
+					rgn.SetBottom(0.0f, params.v0.y + size );
+					rgn.SetLeft	 (0.0f, params.v0.x);
+					rgn.SetRight (0.0f, params.v0.x + size);
 					rgn.Update(mRegion, false, true);
 					mPlusPic.OnFill(params.queue);
 				}
@@ -310,18 +310,15 @@ TreeNode* UITreeView::_GetNode (PrintParams& params, float y)
 
 void UITreeView::SetDirty()
 {
-	if (mRoot.IsValid())
-	{
-		const ITexture* tex = GetFontTexture();
-		if (tex != 0) OnDirty(tex, mLayer + 1);
+	const ITexture* tex = GetFontTexture();
+	if (tex != 0) OnDirty(tex, mLayer + 1);
 
-		tex = GetSkinTexture();
-		if (tex != 0) OnDirty(tex, mLayer);
-	}
+	tex = GetSkinTexture();
+	if (tex != 0) OnDirty(tex, mLayer);
 }
 
 //============================================================================================================
-// Notification of texture being changed
+// Notification of texture having changed
 //============================================================================================================
 
 void UITreeView::OnTextureChanged (const ITexture* ptr)
@@ -374,10 +371,10 @@ void UITreeView::OnFill (UIQueue* queue)
 
 		PrintParams params;
 		params.queue	= queue;
-		params.v0.x		= mRegion.GetCalculatedLeft();
-		params.v0.y		= mRegion.GetCalculatedTop();
-		params.v1.x		= mRegion.GetCalculatedRight();
-		params.v1.y		= mRegion.GetCalculatedBottom();
+		params.v0.x		= 0.0f;
+		params.v0.y		= 0.0f;
+		params.v1.x		= mRegion.GetCalculatedWidth();
+		params.v1.y		= mRegion.GetCalculatedHeight();
 		params.start	= mStart;
 
 		// Print all symbols
@@ -485,6 +482,9 @@ void UITreeView::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 						break;
 					}
 				}
+
+				// Clear the selection if no node was found
+				if (node == 0) SetSelection(0);
 			}
 		}
 	}
@@ -497,11 +497,11 @@ void UITreeView::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 
 void UITreeView::OnSerializeTo (TreeNode& root) const
 {
-	if (mPrefix != ClassID())		root.AddChild("Prefix",			ClassID());
+	if (mPrefix != ClassID())		root.AddChild("Prefix",			mPrefix);
 	if (GetSkin() != 0)				root.AddChild("Skin",			GetSkin()->GetName());
 	if (GetFont() != 0)				root.AddChild(IFont::ClassID(), GetFont()->GetName());
 
-	root.AddChild("Padding",		mPadding);
+	root.AddChild("Padding",		(int)mPadding);
 	root.AddChild("Back Color",		GetBackColor());
 	root.AddChild("Text Color",		GetTextColor());
 	root.AddChild("Shadow Color",	GetShadowColor());
@@ -527,8 +527,8 @@ bool UITreeView::OnSerializeFrom (const TreeNode& node)
 	}
 	else if (node.mTag == "Padding")
 	{
-		uint val;
-		if (node.mValue >> val) SetPadding((byte)val);
+		int val;
+		if (node.mValue >> val) SetPadding((char)val);
 	}
 	else if (node.mTag == "Back Color")
 	{

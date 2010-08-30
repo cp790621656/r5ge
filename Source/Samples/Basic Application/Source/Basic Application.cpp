@@ -29,7 +29,9 @@ struct USFillTree : public UIScript
 
 		if (view != 0)
 		{
-			mWidget->GetUI()->GetRoot().SerializeTo(view->GetTree());
+			const UIWidget& uiRoot = mWidget->GetUI()->GetRoot();
+			TreeNode& tree = view->GetTree();
+			uiRoot.SerializeTo(tree, false, true);
 			view->SetDirty();
 		}
 	}

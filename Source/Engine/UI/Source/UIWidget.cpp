@@ -552,26 +552,30 @@ bool UIWidget::_Update (bool areaChanged)
 // Serialization -- Save
 //============================================================================================================
 
-bool UIWidget::SerializeTo (TreeNode& root) const
+bool UIWidget::SerializeTo (TreeNode& root, bool self, bool children) const
 {
 	if (mSerializable)
 	{
-		TreeNode& node = root.AddChild(GetClassID(), GetName());
-		mRegion.OnSerializeTo(node);
-		OnSerializeTo(node);
+		TreeNode& node = self ? root.AddChild(GetClassID(), GetName()) : root;
 
-		const char* events = "None";
+		if (self)
+		{
+			mRegion.OnSerializeTo(node);
+			OnSerializeTo(node);
 
-		if		(mEventHandling == EventHandling::Children)	events = "Children";
-		else if (mEventHandling == EventHandling::Self)		events = "Self";
-		else if (mEventHandling == EventHandling::Normal)	events = "Normal";
-		else if (mEventHandling == EventHandling::Full)		events = "Full";
+			const char* events = "None";
 
-		node.AddChild("Event Handling", events);
+			if		(mEventHandling == EventHandling::Children)	events = "Children";
+			else if (mEventHandling == EventHandling::Self)		events = "Self";
+			else if (mEventHandling == EventHandling::Normal)	events = "Normal";
+			else if (mEventHandling == EventHandling::Full)		events = "Full";
 
-		if (mTooltip.IsValid()) node.AddChild("Tooltip", mTooltip);
+			node.AddChild("Event Handling", events);
 
-		node.AddChild("Layer", mLayer);
+			if (mTooltip.IsValid()) node.AddChild("Tooltip", mTooltip);
+
+			node.AddChild("Layer", mLayer);
+		}
 
 		for (uint i = 0; i < mScripts.GetSize(); ++i)
 		{
@@ -580,7 +584,13 @@ bool UIWidget::SerializeTo (TreeNode& root) const
 			script->OnSerializeTo(child);
 		}
 
-		for (uint i = 0; i < mChildren.GetSize(); ++i) mChildren[i]->SerializeTo(node);
+		if (children)
+		{
+			for (uint i = 0; i < mChildren.GetSize(); ++i)
+			{
+				mChildren[i]->SerializeTo(node);
+			}
+		}
 		return true;
 	}
 	return false;
