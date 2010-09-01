@@ -249,20 +249,37 @@ bool Memory::ExtractSize (ConstBytePtr& buffer, uint& size, uint& val)
 
 bool Memory::Load (const char* filename)
 {
-	FILE* fp = fopen(filename, "rb");
-	if (fp == 0) return false;
+	String found (System::GetBestMatch(filename));
 
-	fseek(fp, 0, SEEK_END);
-	uint size = (uint)ftell(fp);
-	byte* buffer = Resize(size);
-
-	if (size > 0)
+	if (found.IsValid())
 	{
-		fseek(fp, 0, SEEK_SET);
-		fread(buffer, 1, size, fp);
+		FILE* fp = fopen(found.GetBuffer(), "rb");
+
+		fseek(fp, 0, SEEK_END);
+		uint size = (uint)ftell(fp);
+
+		if (size > 0)
+		{
+			fseek(fp, 0, SEEK_SET);
+			fread(Resize(size), 1, size, fp);
+		}
+		fclose(fp);
+		return true;
 	}
-	fclose(fp);
-	return true;
+
+	// Retrieve all known asset bundles
+	const Array<Bundle>& bundles = Bundle::GetAllBundles();
+
+	// Run through all bundles
+	FOREACH(i, bundles)
+	{
+		// See if the asset can be located here
+		if (bundles[i].Extract(filename, *this))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 //============================================================================================================

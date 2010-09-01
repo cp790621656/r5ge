@@ -54,6 +54,7 @@ namespace R5
 	#include "R5_Hash.h"			// uint-based hash template
 	#include "R5_PointerHash.h"		// Hash meant to store pointers -- automatically deletes them
 	#include "R5_Keys.h"			// Key map
+	#include "R5_Bundle.h"			// Bundle is a collection of assets packed into a single file
 	#include "R5_Random.h"			// Cross-platform pseudo-random number generator
 	#include "R5_FileDialog.h"		// File dialog window (implemented natively on each system)
 };

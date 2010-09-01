@@ -25,12 +25,12 @@ FILE* g_file = 0;
 // File container that has a destructor that will properly close the file
 //============================================================================================================
 
-struct File
+struct LogFile
 {
 	Thread::Lockable lock;
 
-	File (const char* filename) { g_file = fopen(filename, "w"); }
-	~File() { if (g_file) { fflush(g_file); fclose(g_file); g_file = 0; } }
+	LogFile (const char* filename) { g_file = fopen(filename, "w"); }
+	~LogFile() { if (g_file) { fflush(g_file); fclose(g_file); g_file = 0; } }
 
 	operator FILE* () { return g_file; }
 	operator bool () const { return g_file != 0; }
@@ -81,9 +81,9 @@ void System::FlushLog()
 // Dumps a string into the log file
 //============================================================================================================
 
-void System::Log(const char *format, ...)
+void System::Log (const char *format, ...)
 {
-	static File log ("log.txt");
+	static LogFile log ("log.txt");
 	static ulong last = 0;
 
 	// In rare cases the log may need to be used after the static variable has been released.
@@ -184,13 +184,14 @@ String System::GetCurrentPath()
 
 String System::GetFilenameFromPath (const String& in, bool extension)
 {
+	String out;
+
 	for (uint i = in.GetLength(); i > 0; )
 	{
 		char character = in[--i];
 
 		if (character == '/' || character == '\\')
 		{
-			String out;
 			in.GetString(out, i + 1);
 
 			if (!extension)
@@ -207,6 +208,21 @@ String System::GetFilenameFromPath (const String& in, bool extension)
 				}
 			}
 			return out;
+		}
+	}
+
+	if (!extension)
+	{
+		for (uint b = in.GetLength(); b > 0; )
+		{
+			char character = in[--b];
+
+			if (character == '.')
+			{
+				in.GetString(out, 0, b);
+				return out;
+				break;
+			}
 		}
 	}
 	return in;
@@ -242,6 +258,9 @@ String System::GetExtensionFromFilename (const String& in)
 	for (uint i = in.GetLength(); i > 0; )
 	{
 		char character = in[--i];
+
+		if (character == '/' || character == '\\') break;
+
 		if (character == '.')
 		{
 			String out;
@@ -331,48 +350,62 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 }
 
 //============================================================================================================
+// Recursive file search function
+//============================================================================================================
+
+uint FindFiles (const String& dir, const String& name, const String& ext, Array<String>& files, bool recursive)
+{
+	uint count (0);
+	String match (dir);
+	if (name != "*") match << name;
+
+	Array<String> fd, fl;
+
+	if (System::ReadFolder(dir, fd, fl))
+	{
+		FOREACH(i, fl)
+		{
+			const String& s = fl[i];
+
+			if (match.IsValid() && !s.BeginsWith(match)) continue;
+			if (ext.IsValid() && !s.EndsWith(ext)) continue;
+			files.Expand() << s;
+			++count;
+		}
+
+		if (recursive)
+		{
+			FOREACH(i, fd)
+			{
+				count += FindFiles(fd[i], name, ext, files, true);
+			}
+		}
+	}
+	return count;
+}
+
+//============================================================================================================
 // Fills out a list of all files with the partial path matching 'path'. Returns 'true' if one was found.
 //============================================================================================================
 
 bool System::GetFiles (const String& path, Array<String>& files, bool recursive)
 {
+	uint count (0);
+
 	if (FileExists(path))
 	{
+		++count;
 		files.Expand() = path;
 	}
 	else
 	{
 		String dir  (GetPathFromFilename(path));
 		String name (GetFilenameFromPath(path, false));
+		String ext	(GetExtensionFromFilename(path));
 
-		String match (dir);
-		match << name;
-
-		Array<String> fd, fl;
-
-		if (ReadFolder(dir, fd, fl))
-		{
-			FOREACH(i, fl)
-			{
-				const String& s = fl[i];
-
-				if (s.BeginsWith(match))
-				{
-					String& fout = files.Expand();
-					fout << s;
-				}
-			}
-
-			if (recursive)
-			{
-				FOREACH(i, fd)
-				{
-					GetFiles(fd[i], files, true);
-				}
-			}
-		}
+		count += ::FindFiles(dir, name, ext, files, recursive);
 	}
-	return files.IsValid();
+	return (count > 0);
 }
 
 //============================================================================================================
