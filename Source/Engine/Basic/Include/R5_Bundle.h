@@ -37,11 +37,14 @@ public:
 	// Load the specified asset bundle
 	bool Load (const String& filename);
 
+	// Finds the file of specified name within the bundle
+	bool FindFiles (const String& filename, Array<String>& files) const;
+
 	// Extract the specified file from the bundle
-	bool Extract (const char* filename, Memory& mem) const;
+	bool Extract (const String& filename, Memory& mem, String* actualFilename = 0) const;
 
 public:
 
 	// Retrieves all bundles that can be found
-	static Array<Bundle>& GetAllBundles();
+	static const Array<Bundle>& GetAllBundles();
 };

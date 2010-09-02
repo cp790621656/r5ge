@@ -91,6 +91,7 @@ void ModelViewer::Run()
 		// Endless loop
 		while ( mCore->Update() );
 
+#ifndef _DEBUG
 		// Reset the stage's rotation before saving the scene
 		mStage->SetRelativeRotation( Quaternion() );
 
@@ -98,6 +99,7 @@ void ModelViewer::Run()
 		root.Release();
 		mCore->SerializeTo(root);
 		root.Save("Config/Model Viewer.txt");
+#endif
 	}
 }
 
@@ -302,9 +304,9 @@ R5_MAIN_FUNCTION
 	System::SetCurrentPath("../../../");
 #endif
 	System::SetCurrentPath("../../../Resources/");
-#ifdef _DEBUG
-	System::SetCurrentPath("../../DotC/Resources/");
-#endif
+//#ifdef _DEBUG
+//	System::SetCurrentPath("../../DotC/Resources/");
+//#endif
 	ModelViewer app;
 	app.Run();
 	return 0;

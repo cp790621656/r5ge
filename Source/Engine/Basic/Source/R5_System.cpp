@@ -278,7 +278,6 @@ String System::GetExtensionFromFilename (const String& in)
 bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String>& files)
 {
 	String file;
-
 	String path (dir);
 	path.Replace("\\", "/", true);
 	if (path.IsValid() && !path.EndsWith("/")) path << "/";
@@ -404,8 +403,61 @@ bool System::GetFiles (const String& path, Array<String>& files, bool recursive)
 		String ext	(GetExtensionFromFilename(path));
 
 		count += ::FindFiles(dir, name, ext, files, recursive);
+
+		if (!path.EndsWith(".r5d"))
+		{
+			const Array<Bundle>& bundles = Bundle::GetAllBundles();
+
+			FOREACH(i, bundles)
+			{
+				bundles[i].FindFiles(path, files);
+			}
+		}
 	}
 	return (count > 0);
+}
+
+//============================================================================================================
+// Whether the filename is close enough to be a match
+//============================================================================================================
+
+bool System::IsFilenameCloseEnough (const String& filename, const String& dir,
+									const String& name, const String& ext, byte flag)
+{
+	// Match the folder
+	if (dir.IsValid() && !filename.BeginsWith(dir)) return false;
+
+	// Extract the filename
+	String currentName (System::GetFilenameFromPath(filename, false));
+
+	// If we have a name to work with, match it
+	if (name.IsValid())
+	{
+		if (flag == 1 && !currentName.BeginsWith(name)) return false;
+		else if (flag == 2 && !currentName.EndsWith(name)) return false;
+		else if (currentName != name) return false;
+	}
+
+	// If an extension was specified, we need to match it
+	if (ext.IsValid() && !filename.EndsWith(ext))
+	{
+		// Automatic similar extension conversion
+		if (ext == "r5a" || ext == "r5b" || ext == "r5c")
+		{
+			if (!filename.EndsWith("r5a") &&
+				!filename.EndsWith("r5b") &&
+				!filename.EndsWith("r5c")) return false;
+		}
+		else if (ext == "tga" || ext == "png" || ext == "jpg" || ext == "r5t")
+		{
+			if (!filename.EndsWith(".tga") &&
+				!filename.EndsWith(".png") &&
+				!filename.EndsWith(".jpg") &&
+				!filename.EndsWith(".r5t")) return false;
+		}
+		else return false;
+	}
+	return true;
 }
 
 //============================================================================================================
@@ -419,12 +471,23 @@ String System::GetBestMatch (const String& filename)
 
 	String dir  (GetPathFromFilename(filename));
 	String name (GetFilenameFromPath(filename, false));
+	String ext	(GetExtensionFromFilename(filename));
+
+	byte flag (0);
+
+	if (name == "*")
+	{
+		name.Clear();
+	}
+	else
+	{
+		if (name.BeginsWith("*")) flag = 1;
+		else if (name.EndsWith("*")) flag = 2;
+		name.Replace("*", "", true);
+	}
 
 	if (name.IsValid())
 	{
-		String match (dir);
-		match << name;
-
 		Array<String> fd, fl;
 
 		if (ReadFolder(dir, fd, fl))
@@ -432,7 +495,7 @@ String System::GetBestMatch (const String& filename)
 			FOREACH(i, fl)
 			{
 				const String& s = fl[i];
-				if (s.BeginsWith(match)) return s;
+				if (IsFilenameCloseEnough(s, dir, name, ext, flag)) return s;
 			}
 		}
 	}

@@ -38,6 +38,14 @@ namespace System
 	// Fills out a list of all files with the partial path matching 'path'. Returns 'true' if one was found.
 	bool GetFiles (const String& path, Array<String>& files, bool recursive = false);
 
+	// Whether the filename is close enough to be a match
+	// Flag 0 = Filename must be an exact match to 'name'
+	// Flag 1 = Starts with 'name'
+	// Flag 2 = Ends with 'name'
+	bool IsFilenameCloseEnough (const String& filename,
+		const String& dir, const String& name,
+		const String& ext, byte flag = 0);
+
 	// Returns the best matching filename that exists. Allows specifying a different extension than
 	// that of the existing file. "c:/temp/test.abc" will match "c:/temp/test.txt" if it exists instead.
 	String GetBestMatch (const String& filename);

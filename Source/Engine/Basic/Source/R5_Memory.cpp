@@ -247,12 +247,14 @@ bool Memory::ExtractSize (ConstBytePtr& buffer, uint& size, uint& val)
 // Load the specified file fully into memory
 //============================================================================================================
 
-bool Memory::Load (const char* filename)
+bool Memory::Load (const char* filename, String* actualFilename)
 {
 	String found (System::GetBestMatch(filename));
 
 	if (found.IsValid())
 	{
+		if (actualFilename != 0) *actualFilename = found;
+
 		FILE* fp = fopen(found.GetBuffer(), "rb");
 
 		fseek(fp, 0, SEEK_END);
@@ -274,7 +276,7 @@ bool Memory::Load (const char* filename)
 	FOREACH(i, bundles)
 	{
 		// See if the asset can be located here
-		if (bundles[i].Extract(filename, *this))
+		if (bundles[i].Extract(filename, *this, actualFilename))
 		{
 			return true;
 		}

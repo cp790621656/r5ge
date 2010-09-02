@@ -46,6 +46,8 @@ inline bool IsWordChar (char c)
 
 String::String(const char* format, ...) : mLarge(0), mLength(0), mAllocated(0)
 {
+	mSmall[0] = 0;
+
 	if (format != 0 && format[0] != 0)
 	{
 		va_list args;
@@ -805,18 +807,16 @@ bool String::Erase (uint from, uint to)
 
 bool String::Load (const char* filename)
 {
-	FILE* fp = fopen(filename, "rb");
-	if (!fp) return false;
+	Memory mem;
 
-	fseek(fp, 0, SEEK_END);
-	mLength = ftell(fp);
-	fseek(fp, 0, 0);
-
-	Reserve(mLength);
-	char* buff (GetBuffer());
-	mLength = (uint)fread(buff, 1, mLength, fp);
-	buff[mLength] = 0;
-	fclose(fp);
+	if (mem.Load(filename))
+	{
+		mLength = mem.GetSize();
+		Reserve(mLength);
+		char* buff = GetBuffer();
+		memcpy(buff, mem.GetBuffer(), mLength);
+		buff[mLength] = 0;
+	}
 	return true;
 }
 

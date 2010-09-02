@@ -79,6 +79,7 @@ int main (int argc, char* argv[])
 	else
 	{
 		++errors;
+		puts("R5 Config Converter Tool v.1.0.0 by Michael Lyashenko");
 		puts("Usage: ConfigConverter file0 [file1] [file2] [...]");
 		puts("Example 1: FontConverter HelloWorld.r5a");
 		puts("Example 2: FontConverter HelloWorld.r5b HelloWorld.r5c");

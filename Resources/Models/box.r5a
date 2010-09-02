@@ -12,6 +12,8 @@ Root
 			Specular = 0.000000 0.000000 0.000000 0.100000
 			Glow = 0.000000
 
+			Technique = "Depth"
+
 			Technique = "Deferred"
 			{
 				Shader = "Deferred/Material"

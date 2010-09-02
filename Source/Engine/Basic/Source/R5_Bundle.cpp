@@ -88,16 +88,18 @@ bool Bundle::Load (const String& filename)
 	if (::Extract(fp, size, header, 5))
 	{
 		// Ensure that the header is proper
-		if (header[0] != '/' ||
-			header[1] != '/' ||
-			header[2] != 'R' ||
-			header[3] != '5' ||
-			header[4] != 'D')
+		if (header[0] == '/' &&
+			header[1] == '/' &&
+			header[2] == 'R' &&
+			header[3] == '5' &&
+			header[4] == 'D')
 		{
 			String name;
 
 			while (size > 0)
 			{
+				name.Clear();
+
 				// The asset's name comes first
 				if (!::Extract(fp, size, name)) break;
 
@@ -105,6 +107,19 @@ bool Bundle::Load (const String& filename)
 				Asset& asset = mAssets.Expand();
 				asset.name	 = name;
 				asset.offset = (uint)ftell(fp);
+
+				// Whether the asset has been compressed flag comes next
+				bool compressed;
+				if (!::Extract(fp, size, &compressed, 1)) break;
+
+				// Asset's size follows
+				uint length;
+				if (!::ExtractSize(fp, size, length)) break;
+
+				// Skip to the end of this asset
+				if (length > size) break;
+				fseek(fp, length, SEEK_CUR);
+				size -= length;
 			}
 			fclose(fp);
 			return true;
@@ -115,19 +130,31 @@ bool Bundle::Load (const String& filename)
 }
 
 //============================================================================================================
-// Extract the specified file from the bundle
+// Finds the file of specified name within the bundle
 //============================================================================================================
 
-bool Bundle::Extract (const char* filename, Memory& mem) const
+bool Bundle::FindFiles (const String& filename, Array<String>& files) const
 {
 	String dir  (System::GetPathFromFilename(filename));
 	String name (System::GetFilenameFromPath(filename, false));
 	String ext	(System::GetExtensionFromFilename(filename));
 
-	String match (dir);
-	if (name != "*") match << name;
+	byte flag (0);
+
+	if (name == "*")
+	{
+		name.Clear();
+	}
+	else
+	{
+		if (name.BeginsWith("*")) flag = 1;
+		else if (name.EndsWith("*")) flag = 2;
+		name.Replace("*", "", true);
+	}
 
 	String current;
+
+	uint count (0);
 
 	FOREACH(i, mAssets)
 	{
@@ -135,37 +162,98 @@ bool Bundle::Extract (const char* filename, Memory& mem) const
 		current = mDir;
 		current << asset.name;
 
-		if (match.IsValid() && !current.BeginsWith(match)) continue;
-		if (ext.IsValid() && !current.EndsWith(ext)) continue;
-
-		// If this point was reached, then a matching asset has been located -- try to open it
-		FILE* fp = fopen(mFilename.GetBuffer(), "rb");
-
-		if (fp != 0)
+		// Check to see if the filename is close enough
+		if (System::IsFilenameCloseEnough(current, dir, name, ext, flag))
 		{
-			fseek(fp, 0, SEEK_END);
-			uint size = (uint)ftell(fp);
+			++count;
+			files.Expand() = current;
+		}
+	}
+	return (count > 0);
+}
 
-			// Just a safety precaution
-			if (asset.offset < size)
+//============================================================================================================
+// Extract the specified file from the bundle
+//============================================================================================================
+
+bool Bundle::Extract (const String& filename, Memory& mem, String* actualFilename) const
+{
+	String expectedName;
+
+	// Find an exact match first
+	FOREACH(i, mAssets)
+	{
+		if (mAssets[i].name == filename)
+		{
+			expectedName = filename;
+			break;
+		}
+	}
+
+	// No exact match found -- try a broader search
+	if (expectedName.IsEmpty())
+	{
+		Array<String> files;
+		if (FindFiles(filename, files)) expectedName = files[0];
+	}
+
+	// Match found
+	if (expectedName.IsValid())
+	{
+		FOREACH(i, mAssets)
+		{
+			const Asset& asset = mAssets[i];
+
+			if (asset.name == expectedName)
 			{
-				// Jump directly to the offset within the file
-				fseek(fp, asset.offset, SEEK_SET);
-				size -= asset.offset;
+				// Open the bundle
+				FILE* fp = fopen(mFilename.GetBuffer(), "rb");
 
-				// Extract the size of the asset
-				uint length (0);
-				if (!::ExtractSize(fp, size, length)) break;
-
-				// If the matching asset gets located, read it into memory and exit
-				if (length <= size)
+				if (fp != 0)
 				{
-					fread(mem.Resize(length), 1, length, fp);
+					fseek(fp, 0, SEEK_END);
+					uint size = (uint)ftell(fp);
+
+					// Just a safety precaution
+					if (asset.offset < size)
+					{
+						// Jump directly to the offset within the file
+						fseek(fp, asset.offset, SEEK_SET);
+						size -= asset.offset;
+						uint length (0);
+						bool compressed;
+
+						if (::Extract(fp, size, &compressed, 1) && ::ExtractSize(fp, size, length) && length <= size)
+						{
+							if (actualFilename != 0) *actualFilename = expectedName;
+
+							if (compressed)
+							{
+								// If the data has been compressed, decompress it first
+								Memory comp;
+								mem.Clear();
+								fread(comp.Resize(length), 1, length, fp);
+
+								if (!Decompress(comp, mem))
+								{
+									mem.Clear();
+									fclose(fp);
+									return false;
+								}
+							}
+							else
+							{
+								// Read the data as-is
+								fread(mem.Resize(length), 1, length, fp);
+							}
+							fclose(fp);
+							return true;
+						}
+					}
 					fclose(fp);
-					return true;
 				}
+				break;
 			}
-			fclose(fp);
 		}
 	}
 	return false;
@@ -175,7 +263,7 @@ bool Bundle::Extract (const char* filename, Memory& mem) const
 // Retrieves all bundles that can be found
 //============================================================================================================
 
-Array<Bundle>& Bundle::GetAllBundles()
+const Array<Bundle>& Bundle::GetAllBundles()
 {
 	// The file cannot be found -- try to locate it within the asset bundles
 	static bool doOnce = true;
@@ -195,10 +283,11 @@ Array<Bundle>& Bundle::GetAllBundles()
 			System::GetFiles("*.r5d", files, true);
 
 			// Run through all located bundles
-			for (uint i = files.GetSize(); i > 0; --i)
+			for (uint i = files.GetSize(); i > 0; )
 			{
+				const String& file = files[--i];
 				Bundle& bundle = bundles.Expand();
-				if (!bundle.Load(files[i])) bundles.Shrink();
+				if (!bundle.Load(file)) bundles.Shrink();
 			}
 		}
 		bundles.Unlock();

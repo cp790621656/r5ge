@@ -13,7 +13,6 @@
 namespace R5
 {
 	#include "Conversion.h"
-	#include "Compression.h"
 	#include "Variable.h"
 	#include "TreeNode.h"
 };

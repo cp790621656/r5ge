@@ -101,7 +101,7 @@ public:
 public:
 
 	// Load the specified file fully into memory
-	bool Load (const char* filename);
+	bool Load (const char* filename, String* actualFilename = 0);
 
 	// Dump the current buffer into the file
 	bool Save (const char* filename);

@@ -66,10 +66,10 @@ public:
 										const Vector3f&		scale = Vector3f(1.0f, 1.0f, 0.1f) );
 
 	// STATIC: Saves the specified texture buffer into the specified memory buffer as if saving to a file
-	static bool Save (Memory& out, const String& extension, const byte* buff, uint width, uint height, uint format);
+	static bool StaticSave (Memory& out, const String& extension, const byte* buff, uint width, uint height, uint format);
 
 	// STATIC: Saves the specified texture buffer into the specified file
-	static bool Save (const String& file, const byte* buff, uint width, uint height, uint format);
+	static bool StaticSave (const String& file, const byte* buff, uint width, uint height, uint format);
 
 public:
 
@@ -96,5 +96,14 @@ public:
 	bool Load (const void* buffer, uint size);
 
 	// Saves the texture into the specified file
-	bool Save (const String& file) const { return Save(file, (const byte*)GetBuffer(), GetWidth(), GetHeight(), GetFormat()); }
+	bool Save (const String& file) const
+	{
+		return StaticSave(file, (const byte*)GetBuffer(), GetWidth(), GetHeight(), GetFormat());
+	}
+
+	// Saves the texture into the specified memory buffer
+	bool Save (Memory& mem, const String& extension)
+	{
+		return StaticSave(mem, extension, (const byte*)GetBuffer(), GetWidth(), GetHeight(), GetFormat());
+	}
 };

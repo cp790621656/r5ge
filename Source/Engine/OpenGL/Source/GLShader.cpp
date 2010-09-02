@@ -9,32 +9,6 @@ using namespace R5;
 uint g_activeProgram = 0;
 
 //============================================================================================================
-// Finds a shader file given the filename and extension
-//============================================================================================================
-
-String FindShader (const String& file, const char* extension)
-{
-	String path (file);
-	path << extension;
-	if (System::FileExists(path)) return path;
-
-	if (!path.BeginsWith("Shaders/"))
-	{
-		path = String("Shaders/") + path;
-		if (System::FileExists(path)) return path;
-	}
-
-	path = String("Shaders/");
-	path << System::GetFilenameFromPath(file);
-	if (System::FileExists(path)) return path;
-
-	path << extension;
-	if (System::FileExists(path)) return path;
-
-	return "";
-}
-
-//============================================================================================================
 // Sets a uniform integer value in a shader
 //============================================================================================================
 
@@ -253,17 +227,26 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	mName		= name;
 
 	// Shaders that begin with [R5] are built-in shaders
-	if (name.BeginsWith("[R5]") || System::FileExists(name))
+	if (name.BeginsWith("[R5]"))
 	{
 		// Exact match -- use this shader
 		_Append(name);
 	}
 	else
 	{
-		// No exact match -- try to find the common shader types
-		_Append(::FindShader(name, ".vert"));
-		_Append(::FindShader(name, ".frag"));
-		_Append(::FindShader(name, ".geom"));
+		Array<String> files;
+		System::GetFiles(name, files, true);
+		System::GetFiles("Shaders/" + name, files, true);
+		String expectedName (System::GetFilenameFromPath(name, false));
+
+		FOREACH(i, files)
+		{
+			const String& file = files[i];
+			String fileName (System::GetFilenameFromPath(file, false));
+
+			// Shader file names must match exactly (ie: Deferred/D shouldn't match Deferred/D_N)
+			if (fileName == expectedName) _Append(file);
+		}
 	}
 
 	// Register common uniforms that remain identical in all shaders

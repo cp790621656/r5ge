@@ -459,25 +459,18 @@ bool ModelTemplate::Load (const String& file, bool forceUpdate)
 	// Don't attempt to load anything unless forced to do so
 	if (!forceUpdate && IsValid()) return true;
 
-	// Find the model
-	Array<String> files;
+	Memory mem;
+	String actual;
 
-	// If the file was found, load it
-	if (System::GetFiles(file, files))
+	if (mem.Load(file, &actual))
 	{
-		Memory mem;
+		String extension ( System::GetExtensionFromFilename(actual) );
 
-		// Load the entire file into memory
-		if (mem.Load(files[0]))
+		if ( Load(mem.GetBuffer(), mem.GetSize(), extension, forceUpdate) )
 		{
-			String extension ( System::GetExtensionFromFilename(files[0]) );
-
-			if ( Load(mem.GetBuffer(), mem.GetSize(), extension, forceUpdate) )
-			{
-				mFilename = files[0];
-				mSerializable = true;
-				return true;
-			}
+			mFilename = actual;
+			mSerializable = true;
+			return true;
 		}
 	}
 	return false;

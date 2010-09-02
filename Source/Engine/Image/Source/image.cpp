@@ -218,7 +218,7 @@ void Image::HeightMapToNormalMap (	const float*		buffer,
 // STATIC: Saves the specified texture buffer into the specified file
 //============================================================================================================
 
-bool Image::Save (Memory& out, const String& extension, const byte* buffer, uint width, uint height, uint format)
+bool Image::StaticSave (Memory& out, const String& extension, const byte* buffer, uint width, uint height, uint format)
 {
 	// Sanity check
 	if (buffer != 0 && (width * height) > 0)
@@ -252,11 +252,11 @@ bool Image::Save (Memory& out, const String& extension, const byte* buffer, uint
 // STATIC: Saves the specified texture buffer into the specified file
 //============================================================================================================
 
-bool Image::Save (const String& file, const byte* buff, uint width, uint height, uint format)
+bool Image::StaticSave (const String& file, const byte* buff, uint width, uint height, uint format)
 {
 	Memory out;
 	String extension (System::GetExtensionFromFilename(file));
-	return Save(out, extension, buff, width, height, format) && out.Save(file);
+	return StaticSave(out, extension, buff, width, height, format) && out.Save(file);
 }
 
 //============================================================================================================

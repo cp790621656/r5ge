@@ -178,6 +178,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\R5_Compression.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\R5_FileDialog.cpp"
 				>
 			</File>
@@ -233,6 +237,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\R5_Bundle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\R5_Compression.h"
 				>
 			</File>
 			<File
@@ -293,6 +301,18 @@
 			</File>
 			<File
 				RelativePath=".\Include\R5_Time.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="zlib"
+			>
+			<File
+				RelativePath=".\Include\zconf.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\zlib.h"
 				>
 			</File>
 		</Filter>
