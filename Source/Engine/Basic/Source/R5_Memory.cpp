@@ -288,9 +288,26 @@ bool Memory::Load (const char* filename, String* actualFilename)
 // Dump the current buffer into the file
 //============================================================================================================
 
-bool Memory::Save (const char* filename)
+bool Memory::Save (const String& filename)
 {
 	if (mBuffer == 0) return false;
+
+	String fileDir (System::GetPathFromFilename(filename));
+
+	if (fileDir.IsValid())
+	{
+		Array<String> folders, files;
+
+		// Attempt to read the folder
+		if (!System::ReadFolder(fileDir, folders, files))
+		{
+#ifdef _WINDOWS
+			fileDir.Replace("/", "\\");
+#endif
+			// Folder does not exist -- create it
+			System::Execute(String("mkdir ""%s""", fileDir.GetBuffer()));
+		}
+	}
 
 	FILE* fp = fopen(filename, "wb");
 	if (fp == 0) return false;

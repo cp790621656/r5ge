@@ -14,6 +14,9 @@ using namespace R5;
 
 int main (int argc, char* argv[])
 {
+	String path ( System::GetPathFromFilename(argv[0]) );
+	System::SetCurrentPath(path.GetBuffer());
+
 #ifdef _MACOS
 	String path ( System::GetPathFromFilename(argv[0]) );
 	System::SetCurrentPath(path.GetBuffer());
@@ -193,11 +196,13 @@ int main (int argc, char* argv[])
 	
 	if (showUsage)
 	{
-		puts("R5 Bundle Maker Tool v.1.0.0 by Michael Lyashenko");
+		puts("R5 Bundle Maker Tool v.1.0.1 by Michael Lyashenko");
 		puts("Usage: BundleMaker [file/folder 1] [file/folder 2] [...]");
 		puts("Example 1: BundleMaker bundle.r5d model.r5c texture0.png texture1.png");
 		puts("Example 2: BundleMaker bundle.r5d");
 		puts("Example 3: BundleMaker bundle.r5d *.jpg *.png");
+		puts("Press Enter to exit...");
+		getchar();
 	}
 #ifdef _DEBUG
 	getchar();

@@ -55,10 +55,14 @@ Root
 
 		Material = "Held Objects"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 0.0
+			Shininess = 0.1
+			Reflectiveness = 0.0
+			Occlusion = 0.75
+			Alpha Cutoff = 0.003922
 
 			Technique = "Deferred"
 			{
@@ -75,10 +79,14 @@ Root
 
 		Material = "Weapons"
 		{
-			Diffuse = 0.431871 0.431871 0.441109 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 0.431871 0.431871 0.441109 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 0.0
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.75
+			Alpha Cutoff = 0.003922
 
 			Technique = "Deferred"
 			{
@@ -99,77 +107,23 @@ Root
 
 		Layout
 		{
-			UIFrame = "Debug Frame"
-			{
-				Left = 0.000000 0.000000
-				Right = 1.000000 0.000000
-				Top = 0.000000 0.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
-				Event Handling = "None"
-				Layer = 0
-
-				UILabel = "FPS"
-				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 18.000000
-					Alpha = 1.000000
-					Text Color = 0xFFFFFFFF
-					Text = "460"
-					Shadow = true
-					Alignment = "Right"
-					Event Handling = "None"
-					Layer = 1
-				}
-
-				UIHighlight = "Status Highlight"
-				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 1.000000 -20.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 0.000000
-					Top Color = 0x00000000
-					Bottom Color = 0x000000FF
-					Event Handling = "Normal"
-					Layer = 0
-
-					UILabel = "Status Label"
-					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Text Color = 0xFFFFFFFF
-						Text = "R5 Model Viewer v.1.7.1. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
-						Shadow = true
-						Alignment = "Center"
-						Event Handling = "None"
-						Layer = 1
-					}
-				}
-			}
-
 			UIFrame = "Options Frame"
 			{
-				Left = 0.000000 0.000000
-				Right = 0.000000 344.000000
-				Top = 0.000000 24.000000
-				Bottom = 0.000000 101.000000
-				Alpha = 0.000000
+				Left = 0.0 0.0
+				Right = 0.0 344.0
+				Top = 0.0 24.0
+				Bottom = 0.0 101.0
+				Alpha = 1.0
 				Event Handling = "Normal"
 				Layer = 0
 
 				UISubPicture = "Options Background"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
 					Face = "UIWindow: Background"
 					Back Color = 0xFFFFFFFF
 					Event Handling = "Normal"
@@ -177,14 +131,14 @@ Root
 
 					UILabel = "Rendering Method Label"
 					{
-						Left = 0.000000 0.000000
-						Right = 0.400000 -3.000000
-						Top = 0.000000 6.000000
-						Bottom = 0.000000 23.000000
-						Alpha = 1.000000
-						Text Color = 0xFFFFFFFF
+						Left = 0.0 0.0
+						Right = 0.4 -3.0
+						Top = 0.0 6.0
+						Bottom = 0.0 23.0
+						Alpha = 1.0
 						Text = "Rendering Method:"
-						Shadow = false
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x00000000
 						Alignment = "Right"
 						Event Handling = "None"
 						Layer = 1
@@ -192,14 +146,14 @@ Root
 
 					UILabel = "Background Label"
 					{
-						Left = 0.000000 0.000000
-						Right = 0.400000 -3.000000
-						Top = 0.000000 28.000000
-						Bottom = 0.000000 45.000000
-						Alpha = 1.000000
-						Text Color = 0xFFFFFFFF
+						Left = 0.0 0.0
+						Right = 0.4 -3.0
+						Top = 0.0 28.0
+						Bottom = 0.0 45.0
+						Alpha = 1.0
 						Text = "Background:"
-						Shadow = false
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x00000000
 						Alignment = "Right"
 						Event Handling = "None"
 						Layer = 1
@@ -207,14 +161,14 @@ Root
 
 					UILabel = "Bloom Label"
 					{
-						Left = 0.000000 0.000000
-						Right = 0.400000 -3.000000
-						Top = 0.000000 49.000000
-						Bottom = 0.000000 66.000000
-						Alpha = 1.000000
-						Text Color = 0xFFFFFFFF
+						Left = 0.0 0.0
+						Right = 0.4 -3.0
+						Top = 0.0 49.0
+						Bottom = 0.0 66.0
+						Alpha = 1.0
 						Text = "Bloom:"
-						Shadow = false
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x00000000
 						Alignment = "Right"
 						Event Handling = "None"
 						Layer = 1
@@ -222,19 +176,19 @@ Root
 
 					UIList = "Background"
 					{
-						Left = 0.400000 3.000000
-						Right = 1.000000 -3.000000
-						Top = 0.000000 26.000000
-						Bottom = 0.000000 46.000000
-						Alpha = 1.000000
+						Left = 0.4 3.0
+						Right = 1.0 -3.0
+						Top = 0.0 26.0
+						Bottom = 0.0 46.0
+						Alpha = 1.0
 						Back Color = 0xFFFFFFFF
-						Text Color = 0xFFFFFFFF
 						Text = "Grey Color"
-						Shadow = true
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x000000FF
 						Alignment = "Left"
 						State = "Enabled"
 						Sticky = false
-						Animation Time = 0.150000
+						Animation Time = 0.15
 						Menu Face
 
 						Entries = String[]
@@ -254,19 +208,19 @@ Root
 
 					UIList = "Rendering Method"
 					{
-						Left = 0.400000 3.000000
-						Right = 1.000000 -3.000000
-						Top = 0.000000 4.000000
-						Bottom = 0.000000 24.000000
-						Alpha = 1.000000
+						Left = 0.4 3.0
+						Right = 1.0 -3.0
+						Top = 0.0 4.0
+						Bottom = 0.0 24.0
+						Alpha = 1.0
 						Back Color = 0xFFFFFFFF
-						Text Color = 0xFFFFFFFF
 						Text = "Deferred"
-						Shadow = true
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x000000FF
 						Alignment = "Left"
 						State = "Enabled"
 						Sticky = false
-						Animation Time = 0.150000
+						Animation Time = 0.15
 						Menu Face
 
 						Entries = String[]
@@ -283,17 +237,18 @@ Root
 
 					UICheckbox = "Bloom Checkbox"
 					{
-						Left = 0.400000 5.000000
-						Right = 0.400000 19.000000
-						Top = 0.000000 51.000000
-						Bottom = 0.000000 65.000000
-						Alpha = 1.000000
-						Text Color = 0xFFFFFFFF
+						Left = 0.4 5.0
+						Right = 0.4 19.0
+						Top = 0.0 51.0
+						Bottom = 0.0 65.0
+						Alpha = 1.0
+						Back Color = 0xFFFFFFFF
 						Text
-						Shadow = false
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x00000000
 						Alignment = "Left"
 						State = "Checked"
-						Animation Time = 0.150000
+						Animation Time = 0.15
 						Event Handling = "Normal"
 						Tooltip = "Turning this on will make bright areas glow"
 						Layer = 0
@@ -302,17 +257,71 @@ Root
 
 					UISlider = "Bloom Slider"
 					{
-						Left = 0.400000 24.000000
-						Right = 1.000000 -5.000000
-						Top = 0.000000 50.000000
-						Bottom = 0.000000 66.000000
-						Alpha = 1.000000
-						Value = 1.000000
+						Left = 0.4 24.0
+						Right = 1.0 -5.0
+						Top = 0.0 50.0
+						Bottom = 0.0 66.0
+						Alpha = 1.0
+						Value = 1.0
 						Back Color = 0xFFFFFFFF
-						Animation Time = 0.000000
+						Animation Time = 0.0
 						Event Handling = "Normal"
 						Layer = 0
 						UIScript = "USEventListener"
+					}
+				}
+			}
+
+			UIFrame = "Debug Frame"
+			{
+				Left = 0.0 0.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 1.0 0.0
+				Alpha = 1.0
+				Event Handling = "None"
+				Layer = 0
+
+				UILabel = "FPS"
+				{
+					Left = 0.0 3.0
+					Right = 1.0 -3.0
+					Top = 0.0 3.0
+					Bottom = 0.0 18.0
+					Alpha = 1.0
+					Text = "432"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
+					Alignment = "Right"
+					Event Handling = "None"
+					Layer = 1
+				}
+
+				UIHighlight = "Status Highlight"
+				{
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 1.0 -20.0
+					Bottom = 1.0 0.0
+					Alpha = 0.0
+					Top Color = 0x00000000
+					Bottom Color = 0x000000FF
+					Event Handling = "Normal"
+					Layer = 0
+
+					UILabel = "Status Label"
+					{
+						Left = 0.0 0.0
+						Right = 1.0 0.0
+						Top = 0.0 0.0
+						Bottom = 1.0 0.0
+						Alpha = 1.0
+						Text = "R5 Model Viewer v.1.9.0. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x000000FF
+						Alignment = "Center"
+						Event Handling = "None"
+						Layer = 1
 					}
 				}
 			}
@@ -333,47 +342,52 @@ Root
 
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.001267 0.018200 0.617190
+			Position = 0.001267 0.0182 0.61719
 			Rotation = 0.031823 -0.187256 0.967918 -0.164493
-			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 1.628507 50.000000
+			Scale = 1.0 1.0 1.0
+			Range = 0.3 100.0 90.0
+			Dolly = 0.0 1.628507 50.0
 
 			Script = "OSDrawDeferred"
 			{
-				Background Color = 0.250000 0.250000 0.250000 1.000000
-				Fog Range = 0.500000 1.000000
+				Background Color = 0.25 0.25 0.25 1.0
+				Fog Range = 0.5 1.0
 				Grid = true
 
 				Shadowmap
 				{
 					Texture Size = 1024
 					Cascade Count = 1
-					Cascade Bias = 0.500000
+					Cascade Bias = 0.5
 					Blur Passes = 2
-					Softness = 2.000000
-					Kernel Size = 1.000000
-					Depth Bias = 6.000000
+					Softness = 2.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
 				}
 
-				Bloom = 1.000000
-				Focal Range = 0.000000 0.000000 0.000000
+				Bloom = 1.0
+				Focal Range = 0.0 0.0 0.0
 				AO Quality = 0
 				AO Blur Passes = 2
-				AO Parameters = 0.100000 4.000000 1.000000
+				AO Parameters = 0.1 4.0 1.0
 			}
 
 			Directional Light = "Default Light"
 			{
+				Position = 0.0 0.0 0.0
 				Rotation = 0.350759 0.053338 -0.140635 -0.924856
-				Ambient = 0.150000 0.150000 0.150000
-				Diffuse = 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.250000
+				Scale = 1.0 1.0 1.0
+				Ambient = 0.15 0.15 0.15
+				Diffuse = 1.0 1.0 1.0
+				Specular = 1.0 1.0 1.0
+				Brightness = 1.25
 				Shadows = true
 
 				Directional Billboard
 				{
-					Scale = 0.250000
+					Position = 0.0 0.0 0.0
+					Rotation = 0.0 0.0 0.0 1.0
+					Scale = 0.25 0.25 0.25
 					Color = 0xFFFFFFFF
 					Texture = "Textures/Billboards/light.jpg"
 					Technique = "Glow"
@@ -381,7 +395,9 @@ Root
 
 				Directional Glare
 				{
-					Scale = 2.000000
+					Position = 0.0 0.0 0.0
+					Rotation = 0.0 0.0 0.0 1.0
+					Scale = 2.0 2.0 2.0
 					Color = 0xFFFFFFFF
 					Texture = "Textures/Billboards/glare_rgb.jpg"
 					Technique = "Glare"
@@ -391,21 +407,17 @@ Root
 
 		Object = "Stage"
 		{
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
+
 			Model Instance = "Default Instance"
 			{
+				Position = 0.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Default Model"
 			}
 		}
-	}
-
-	File History = String[]
-	{
-		"Models/torch.r5a"
-		"Models/fern.r5a"
-		"Models/peasant.r5c"
-		"Models/shadow test.r5a"
-		"Models/dummy.r5a"
-		"Models/peasant.r5a"
-		"weapons.r5a"
 	}
 }

@@ -104,5 +104,5 @@ public:
 	bool Load (const char* filename, String* actualFilename = 0);
 
 	// Dump the current buffer into the file
-	bool Save (const char* filename);
+	bool Save (const String& filename);
 };

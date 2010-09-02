@@ -273,6 +273,7 @@ bool ModelViewer::CreateUI()
 		{
 			UIButton* btn = AddMenuButton("Options");
 			btn->SetTooltip("Non-model related options: rendering method, background, bloom");
+			btn->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnShowOptionsMenu, this) );
 
 			_optFrame->SetAlpha(0.0f);
 
@@ -1267,6 +1268,26 @@ void ModelViewer::ToggleOff (UIWidget* widget, uint state, bool isSet)
 		if ( frame != 0 )
 		{
 			frame->Hide();
+		}
+	}
+}
+
+//============================================================================================================
+// State change for the menu item that opens the options menu
+//============================================================================================================
+
+void ModelViewer::OnShowOptionsMenu (UIWidget* widget, uint state, bool isSet)
+{
+	if ((state & UIButton::State::Pressed) != 0)
+	{
+		if (isSet)
+		{
+			_optFrame->Show();
+			_optFrame->BringToFront();
+		}
+		else
+		{
+			_optFrame->Hide();
 		}
 	}
 }

@@ -39,7 +39,7 @@ public:
 	ModelViewer();
 	~ModelViewer();
 
-	const char* GetVersion() const { return "1.9.0"; }
+	const char* GetVersion() const { return "1.10.0"; }
 
 	void  Run();
 	void  OnDraw();
@@ -94,6 +94,7 @@ private: // Numerous callback functions triggered by the UI elements
 
 	void ToggleBoth				(UIWidget* widget, uint state, bool isSet);
 	void ToggleOff				(UIWidget* widget, uint state, bool isSet);
+	void OnShowOptionsMenu			(UIWidget* widget, uint state, bool isSet);
 
 	void OnFillModelMenu		(UIWidget* widget, bool hasFocus);
 	void OnFillLimbMenu			(UIWidget* widget, bool hasFocus);
