@@ -73,7 +73,7 @@ public:
 	void SetTop		(float relative, float absolute)	{ mDimsChanged |= mRelativeTop.Set(relative, absolute); }
 	void SetRight	(float relative, float absolute)	{ mDimsChanged |= mRelativeRight.Set(relative, absolute); }
 	void SetBottom	(float relative, float absolute)	{ mDimsChanged |= mRelativeBottom.Set(relative, absolute); }
-	void SetAlpha	(float relative)					{ mRelativeAlpha = relative; }
+	void SetAlpha	(float relative)					{ mRelativeAlpha = Float::Clamp(relative, 0.0f, 1.0f); }
 	void SetDirty() { mDimsChanged = true; }
 
 	// Read access to relative values

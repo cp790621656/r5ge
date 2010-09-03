@@ -29,4 +29,6 @@ public:
 	virtual void OnInit();
 	virtual void OnDestroy() { mWidget->SetEventHandling(mEvents); }
 	virtual void OnUpdate(bool areaChanged);
+	virtual void OnSerializeTo (TreeNode& root) const;
+	virtual void OnSerializeFrom(const TreeNode& node);
 };

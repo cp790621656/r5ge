@@ -113,7 +113,7 @@ Root
 				Right = 0.0 344.0
 				Top = 0.0 24.0
 				Bottom = 0.0 101.0
-				Alpha = 1.0
+				Alpha = 0.0
 				Event Handling = "Normal"
 				Layer = 0
 

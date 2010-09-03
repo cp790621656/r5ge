@@ -277,10 +277,10 @@ bool ModelViewer::CreateUI()
 
 			_optFrame->SetAlpha(0.0f);
 
-			UIList*			ren = _optFrame->FindWidget<UIList>			("Rendering Method");
-			UIList*			bgd = _optFrame->FindWidget<UIList>			("Background");
-			UICheckbox*		chk = _optFrame->FindWidget<UICheckbox>		("Bloom Checkbox");
-			UISlider*		sld = _optFrame->FindWidget<UISlider>		("Bloom Slider");
+			UIList*			ren = _optFrame->FindWidget<UIList>		("Rendering Method");
+			UIList*			bgd = _optFrame->FindWidget<UIList>		("Background");
+			UICheckbox*		chk = _optFrame->FindWidget<UICheckbox>	("Bloom Checkbox");
+			UISlider*		sld = _optFrame->FindWidget<UISlider>	("Bloom Slider");
 
 			if (ren != 0)
 			{

@@ -128,29 +128,23 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate, bool scheduledU
 	float alpha = mParentAlpha * mRelativeAlpha;
 
 	// Update the alpha
-	if ( Float::IsNotEqual (mAlpha, alpha) )
+	if (Float::IsNotEqual (mAlpha, alpha))
 	{
 		changed = true;
 		mAlpha	= alpha;
 	}
 
+	const Rectangle<float>& pr (parent.GetCalculatedRect());
+
 	// Update the dimensions
 	if (forceUpdate || mDimsChanged)
 	{
-		const Rectangle<float>& pr (parent.GetCalculatedRect());
-
 		float width  = pr.GetWidth();
 		float height = pr.GetHeight();
 		float left	 = pr.mLeft +   mRelativeLeft.mAbsolute +   mRelativeLeft.mRelative * width;
 		float right  = pr.mLeft +  mRelativeRight.mAbsolute +  mRelativeRight.mRelative * width;
 		float top	 = pr.mTop  +    mRelativeTop.mAbsolute +    mRelativeTop.mRelative * height;
 		float bottom = pr.mTop  + mRelativeBottom.mAbsolute + mRelativeBottom.mRelative * height;
-
-		// Pixel-align the result
-		//left		= Float::Round(left);
-		//right		= Float::Round(right);
-		//top		= Float::Round(top);
-		//bottom	= Float::Round(bottom);
 
 		if (right < left) right = left;
 		if (bottom < top) bottom = top;
@@ -161,22 +155,23 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate, bool scheduledU
 						Float::IsNotEqual(top,	  mRect.mTop)	||
 						Float::IsNotEqual(bottom, mRect.mBottom);
 
-		// Check to see if the widget is really visible according to dimensions
-		bool isVisible = (!(left	> pr.mRight		||
-							right	< pr.mLeft		||
-							top		> pr.mBottom	||
-							bottom	< pr.mTop))		&&
-							right	> left			&&
-							bottom	> top;
-
-		// If dimensions or visibility changed, 
-		if (mDimsChanged || (wasVisible != (isVisible && mAlpha > 0.001f)))
-		{
-			changed = true;
-			mIsVisible = isVisible;
-			mRect.Set(left, right, top, bottom);
-		}
+		// Update the rectangle
+		if (mDimsChanged) mRect.Set(left, right, top, bottom);
 	}
+
+	// Check to see if the widget is really visible according to dimensions
+	bool isVisible = (!(mRect.mLeft		> pr.mRight		||
+						mRect.mRight	< pr.mLeft		||
+						mRect.mTop		> pr.mBottom	||
+						mRect.mBottom	< pr.mTop))		&&
+						mRect.mRight	> mRect.mLeft	&&
+						mRect.mBottom	> mRect.mTop;
+
+	// If dimensions or visibility changed, note the change
+	changed = (mDimsChanged || (wasVisible != (isVisible && mAlpha > 0.001f)) || (isVisible && changed));
+
+	// Update the visibility flag
+	mIsVisible = isVisible;
 
 	// Set the new visibility flag and reset the change flags
 	mDimsChanged = false;

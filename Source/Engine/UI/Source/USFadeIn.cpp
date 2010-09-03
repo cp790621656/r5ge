@@ -22,11 +22,30 @@ void USFadeIn::OnUpdate (bool areaChanged)
 
 	if (alpha < 1.0f)
 	{
-		mWidget->GetRegion().SetAlpha(alpha + (Time::GetDelta() * (1.0f / mDuration)));
+		alpha += (Time::GetDelta() * (1.0f / mDuration));
+		mWidget->GetRegion().SetAlpha(alpha);
 	}
 	else
 	{
 		mWidget->GetRegion().SetAlpha(1.0f);
 		DestroySelf();
 	}
+}
+
+//============================================================================================================
+// Serialization -- Save
+//============================================================================================================
+
+void USFadeIn::OnSerializeTo (TreeNode& root) const
+{
+	root.AddChild("Duration", mDuration);
+}
+
+//============================================================================================================
+// Serialization -- Load
+//============================================================================================================
+
+void USFadeIn::OnSerializeFrom(const TreeNode& node)
+{
+	if (node.mTag == "Duration") node.mValue >> mDuration;
 }
