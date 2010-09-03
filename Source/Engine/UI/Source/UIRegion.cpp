@@ -121,14 +121,14 @@ bool UIRegion::Update (const Vector2i& size, bool forceUpdate)
 bool UIRegion::Update (const UIRegion& parent, bool forceUpdate, bool scheduledUpdate)
 {
 	bool changed (forceUpdate || mUnscheduled);
-	bool wasVisible ( mIsVisible && mAlpha > 0.001f );
+	bool wasVisible = mIsVisible;
 
 	// Calculate the current alpha
 	mParentAlpha = parent.GetCalculatedAlpha();
 	float alpha = mParentAlpha * mRelativeAlpha;
 
 	// Update the alpha
-	if (Float::IsNotEqual (mAlpha, alpha))
+	if (Float::IsNotEqual(mAlpha, alpha))
 	{
 		changed = true;
 		mAlpha	= alpha;
@@ -165,10 +165,11 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate, bool scheduledU
 						mRect.mTop		> pr.mBottom	||
 						mRect.mBottom	< pr.mTop))		&&
 						mRect.mRight	> mRect.mLeft	&&
-						mRect.mBottom	> mRect.mTop;
+						mRect.mBottom	> mRect.mTop	&&
+						mAlpha			> 0.001f;
 
 	// If dimensions or visibility changed, note the change
-	changed = (mDimsChanged || (wasVisible != (isVisible && mAlpha > 0.001f)) || (isVisible && changed));
+	changed = (mDimsChanged || (wasVisible != isVisible) || (isVisible && changed));
 
 	// Update the visibility flag
 	mIsVisible = isVisible;

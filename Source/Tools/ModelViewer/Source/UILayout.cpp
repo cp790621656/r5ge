@@ -284,14 +284,14 @@ bool ModelViewer::CreateUI()
 
 			if (ren != 0)
 			{
-				ren->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnDrawMode, this) );
-				OnDrawMode(ren, 0, false);
+				ren->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnDrawMode, this) );
+				OnDrawMode(ren);
 			}
 
 			if (bgd != 0)
 			{
-				bgd->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnBackground, this) );
-				OnBackground(bgd, 0, false);
+				bgd->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnBackground, this) );
+				OnBackground(bgd);
 			}
 
 			if (chk != 0)
@@ -1758,7 +1758,7 @@ void ModelViewer::OnAnimMenuSelection (UIWidget* widget)
 // Program options panel callbacks
 //============================================================================================================
 
-void ModelViewer::OnDrawMode (UIWidget* widget, uint state, bool isSet)
+void ModelViewer::OnDrawMode (UIWidget* widget)
 {
 	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
@@ -1773,29 +1773,30 @@ void ModelViewer::OnDrawMode (UIWidget* widget, uint state, bool isSet)
 
 //============================================================================================================
 
-void ModelViewer::OnBackground (UIWidget* widget, uint state, bool isSet)
+void ModelViewer::OnBackground (UIWidget* widget)
 {
 	UIList* list = (UIList*)widget;
 	const String& value (list->GetText());
+	OSDraw* draw = mCam->GetScript<OSDraw>();
 
 	if (value == "Black Color")
 	{
-		mGraphics->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+		draw->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 0.0f) );
 		mGraphics->SetActiveSkybox(0);
 	}
 	else if (value == "White Color")
 	{
-		mGraphics->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
+		draw->SetBackgroundColor( Color4f(1.0f, 1.0f, 1.0f, 0.0f) );
 		mGraphics->SetActiveSkybox(0);
 	}
 	else if (value == "Grey Color")
 	{
-		mGraphics->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f, 1.0f) );
+		draw->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f, 0.0f) );
 		mGraphics->SetActiveSkybox(0);
 	}
 	else
 	{
-		mGraphics->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 1.0f) );
+		draw->SetBackgroundColor( Color4f(0.0f, 0.0f, 0.0f, 0.0f) );
 		mGraphics->SetActiveSkybox( mGraphics->GetTexture(value) );
 	}
 }

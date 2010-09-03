@@ -291,6 +291,7 @@ void DirectionalShadow::DrawShadows (const ITexture* camDepth)
 			mShadowTarget	= mGraphics->CreateRenderTarget();
 			mShadowTex		= mGraphics->CreateRenderTexture();
 			mShadowTarget->AttachColorTexture(0, mShadowTex, ITexture::Format::Alpha);
+			mShadowTarget->UseSkybox(false);
 		}
 
 		// The shadow texture should have the same dimensions as the depth texture

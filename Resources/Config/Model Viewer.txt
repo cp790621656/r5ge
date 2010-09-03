@@ -22,7 +22,7 @@ Root
 			Negative Y = "Textures/Skyboxes/spires_ny.jpg"
 			Positive Z = "Textures/Skyboxes/spires_pz.jpg"
 			Negative Z = "Textures/Skyboxes/spires_nz.jpg"
-			Format = "DXT1"
+			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
 		}
@@ -35,7 +35,7 @@ Root
 			Negative Y = "Textures/Skyboxes/thunder_ny.jpg"
 			Positive Z = "Textures/Skyboxes/thunder_pz.jpg"
 			Negative Z = "Textures/Skyboxes/thunder_nz.jpg"
-			Format = "DXT1"
+			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
 		}
@@ -48,55 +48,9 @@ Root
 			Negative Y = "Textures/Skyboxes/test_ny.jpg"
 			Positive Z = "Textures/Skyboxes/test_pz.jpg"
 			Negative Z = "Textures/Skyboxes/test_nz.jpg"
-			Format = "DXT1"
+			Format = "Default"
 			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
-		}
-
-		Material = "Held Objects"
-		{
-			Diffuse = 1.0 1.0 1.0 1.0
-			Glow = 0.0
-			Specular Hue = 0.0
-			Specularity = 0.0
-			Shininess = 0.1
-			Reflectiveness = 0.0
-			Occlusion = 0.75
-			Alpha Cutoff = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D"
-
-				Textures = String[]
-				{
-					"Textures/Skins/held.jpg"
-				}
-			}
-
-			Technique = "Opaque"
-		}
-
-		Material = "Weapons"
-		{
-			Diffuse = 0.431871 0.431871 0.441109 1.0
-			Glow = 0.0
-			Specular Hue = 0.0
-			Specularity = 0.0
-			Shininess = 0.2
-			Reflectiveness = 0.0
-			Occlusion = 0.75
-			Alpha Cutoff = 0.003922
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D"
-
-				Textures = String[]
-				{
-					"C:/Temp/weaponPack/weapons_col.png"
-				}
-			}
 		}
 	}
 
@@ -350,7 +304,7 @@ Root
 
 			Script = "OSDrawDeferred"
 			{
-				Background Color = 0.25 0.25 0.25 1.0
+				Background Color = 0.25 0.25 0.25 0.0
 				Fog Range = 0.5 1.0
 				Grid = true
 

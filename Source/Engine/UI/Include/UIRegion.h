@@ -105,7 +105,7 @@ public:
 	bool Contains (const Vector2i& pos) const;
 
 	// Whether the region is actually visible (lies at least partially within the parent's)
-	bool IsVisible() const { return (mIsVisible && mAlpha > 0.001f); }
+	bool IsVisible() const { return mIsVisible; }
 
 	// Allows to adjust relative coordinates by the specified amount
 	void Adjust (float left, float top, float right, float bottom);

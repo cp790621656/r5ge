@@ -24,7 +24,7 @@ Root
 			Positive Z = "Textures/Skyboxes/uffizi_pz.hdr"
 			Negative Z = "Textures/Skyboxes/uffizi_nz.hdr"
 			Format = "Default"
-			Filtering = "Linear"
+			Filtering = "Anisotropic"
 			Wrap Mode = "Clamp to Edge"
 		}
 

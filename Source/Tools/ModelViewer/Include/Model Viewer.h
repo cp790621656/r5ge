@@ -39,7 +39,7 @@ public:
 	ModelViewer();
 	~ModelViewer();
 
-	const char* GetVersion() const { return "1.10.0"; }
+	const char* GetVersion() const { return "1.10.2"; }
 
 	void  Run();
 	void  OnDraw();
@@ -94,7 +94,7 @@ private: // Numerous callback functions triggered by the UI elements
 
 	void ToggleBoth				(UIWidget* widget, uint state, bool isSet);
 	void ToggleOff				(UIWidget* widget, uint state, bool isSet);
-	void OnShowOptionsMenu			(UIWidget* widget, uint state, bool isSet);
+	void OnShowOptionsMenu		(UIWidget* widget, uint state, bool isSet);
 
 	void OnFillModelMenu		(UIWidget* widget, bool hasFocus);
 	void OnFillLimbMenu			(UIWidget* widget, bool hasFocus);
@@ -111,8 +111,8 @@ private: // Numerous callback functions triggered by the UI elements
 	void OnTexMenuSelection		(UIWidget* widget);
 	void OnAnimMenuSelection	(UIWidget* widget);
 
-	void OnDrawMode				(UIWidget* widget, uint state, bool isSet);
-	void OnBackground			(UIWidget* widget, uint state, bool isSet);
+	void OnDrawMode				(UIWidget* widget);
+	void OnBackground			(UIWidget* widget);
 	void OnBloomToggle			(UIWidget* widget, uint state, bool isSet);
 	void OnBloomChange			(UIWidget* widget);
 
