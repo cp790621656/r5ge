@@ -24,7 +24,7 @@ public:
 	float GetAnimationTime() const		{ return mAnimTime; }
 	void  SetAnimationTime(float val)	{ mAnimTime = val;  }
 
-	// Changes the state of the button
+	// Changes the state of the checkbox
 	virtual bool SetState(uint state, bool val);
 
 public:

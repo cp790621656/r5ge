@@ -29,17 +29,17 @@ using namespace R5;
 #define TOGGLE_FULLSCREEN	"Toggle Fullscreen [FFB948](F5)"
 #define ABOUT				"Credits"
 
-#ifdef _WINDOWS
+//#ifdef _WINDOWS
  #define SAVE	"Save [FFB948](Ctrl+S)"
  #define SAVEAS "Save As [FFB948](Ctrl+A)"
  #define OPEN	"Open [FFB948](Ctrl+O)"
  #define EXIT	"Exit [FFB948](Escape)"
-#else
- #define SAVE	"Save [FFB948](Cmd+S)"
- #define SAVEAS "Save As [FFB948](Cmd+A)"
- #define OPEN	"Open [FFB948](Cmd+O)"
- #define EXIT	"Exit [FFB948](Escape)"
-#endif
+//#else
+// #define SAVE	"Save [FFB948](Cmd+S)"
+// #define SAVEAS "Save As [FFB948](Cmd+A)"
+// #define OPEN	"Open [FFB948](Cmd+O)"
+// #define EXIT	"Exit [FFB948](Escape)"
+//#endif
 
 //============================================================================================================
 // Not the best code, I agree, but keeping it local here makes everything much more compartmentalized.
@@ -202,14 +202,28 @@ void ModelViewer::Load()
 	SetStatusText("Loading, please wait...");
 
 	// Release the model
-	mModel->Release(false, false, false);
+	mCore->Lock();
+	{
+		mInst->DestroyAllScripts();
+		mInst->DestroyAllChildren();
+		mInst->SetModel(0);
+		mModel->Release(true, true, true);
+	}
+	mCore->Unlock();
 
 	// Load the model from the specified file
 	if ( mModel->Load(mLoadFilename) )
 	{
 		_loadFrame->Hide();
-		mInst->SetDirty();
-		mModel->SetDirty();
+
+		mCore->Lock();
+		{
+			mInst->SetDirty();
+			mModel->SetDirty();
+			mInst->SetModel(mModel);
+		}
+		mCore->Unlock();
+
 		mResetCamera = 1;
 		SetStatusText( String("Loaded '%s'", mLoadFilename.GetBuffer()) );
 	}
@@ -296,8 +310,8 @@ bool ModelViewer::CreateUI()
 
 			if (chk != 0)
 			{
-				chk->AddScript<USEventListener>()->SetOnStateChange( bind(&ModelViewer::OnBloomToggle, this) );
-				OnBloomToggle(chk, 0, false);
+				chk->AddScript<USEventListener>()->SetOnValueChange( bind(&ModelViewer::OnBloomToggle, this) );
+				OnBloomToggle(chk);
 			}
 
 			if (sld != 0)
@@ -1156,11 +1170,27 @@ void ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte
 					{
 						IMaterial* mat = mGraphics->GetMaterial(entry, false);
 
-						// Only release this material if it's not in use
-						if (mat != 0 && !mModel->IsUsingMaterial(mat))
+						if (mat == 0) continue;
+
+						// Only release this material if it's not currently used
+						mCore->Lock();
 						{
-							mat->Release();
+							Core::Models& models = mCore->GetAllModels();
+
+							bool used (false);
+
+							FOREACH(i, models)
+							{
+								if (models[i]->IsUsingMaterial(mat))
+								{
+									used = true;
+									break;
+								}
+							}
+
+							if (!used) mat->Release();
 						}
+						mCore->Unlock();
 					}
 				}
 			}
@@ -1181,12 +1211,33 @@ void ModelViewer::OnConfirmDialogOK	(UIWidget* widget, const Vector2i& pos, byte
 					if ( entry.IsValid() && entry != CLEAR && entry != NEW )
 					{
 						ITexture* tex = mGraphics->GetTexture(entry, false);
-						UISkin* skin = mUI->GetDefaultSkin();
 
-						// Only release this texture if it's not currently used
-						if (skin != 0 && tex != 0 && tex != skin->GetTexture() && !mModel->IsUsingTexture(tex))
+						if (tex != 0)
 						{
-							tex->Release();
+							UISkin* skin = mUI->GetDefaultSkin();
+
+							if (skin != 0 && tex != skin->GetTexture())
+							{
+								// Only release this texture if it's not currently used
+								mCore->Lock();
+								{
+									Core::Models& models = mCore->GetAllModels();
+
+									bool used (false);
+
+									FOREACH(i, models)
+									{
+										if (models[i]->IsUsingTexture(tex))
+										{
+											used = true;
+											break;
+										}
+									}
+
+									if (!used) tex->Release();
+								}
+								mCore->Unlock();
+							}
 						}
 					}
 				}
@@ -1805,7 +1856,7 @@ void ModelViewer::OnBackground (UIWidget* widget)
 
 float g_bloom = 1.0f;
 
-void ModelViewer::OnBloomToggle	(UIWidget* widget, uint state, bool isSet)
+void ModelViewer::OnBloomToggle	(UIWidget* widget)
 {
 	UICheckbox* chk = (UICheckbox*)widget;
 	bool bloom = ((chk->GetState() & UICheckbox::State::Checked) != 0);

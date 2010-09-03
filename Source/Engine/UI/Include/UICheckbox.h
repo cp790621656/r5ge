@@ -29,7 +29,12 @@ public:
 	// Area creation
 	R5_DECLARE_INHERITED_CLASS("UICheckbox", UICheckbox, UIButton, UIWidget);
 
+	// Whether the checkbox is checked
+	bool IsChecked() const { return (mState & State::Checked) != 0; }
+	void SetChecked (bool val) { SetState(State::Checked, val); }
+
 	// Area functions
+	virtual bool SetState (uint state, bool val);
 	virtual bool OnUpdate (bool dimensionsChanged);
 	virtual void OnFill (UIQueue* queue);
 

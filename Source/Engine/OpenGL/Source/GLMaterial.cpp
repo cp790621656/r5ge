@@ -7,20 +7,20 @@ using namespace R5;
 
 void GLMaterial::Release()
 {
-	mDiffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
+	mDiffuse.Set(1.0f, 1.0f, 1.0f, 0.0f);
 
 	mGlow			= 0.0f;
 	mSpecularHue	= 0.0f;
 	mSpecularity	= 0.0f;
 	mShininess		= 0.2f;
 	mReflectiveness	= 0.0f;
-	mOcclusion		= 0.75f;
+	mOcclusion		= 0.85f;
 	mAlphaCutoff	= 0.003921568627451f;
 	mSerializable	= false;
 
 	mMethods.Lock();
 	mMask = 0;
-	mMethods.Clear();
+	mMethods.Release();
 	mMethods.Unlock();
 }
 

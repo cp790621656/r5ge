@@ -26,7 +26,13 @@ struct IMaterial
 
 		DrawMethod() : mTechnique(0), mShader(0) {}
 
-		void Clear() { mTechnique = 0; mShader = 0; for (uint i = 0; i < mTextures.GetSize(); ++i) mTextures[i] = 0; }
+		void Clear()
+		{
+			mTechnique = 0;
+			mShader = 0;
+			mTextures.Release();
+			mShader = 0;
+		}
 
 		void				SetTechnique (const ITechnique* tech)	{ mTechnique = tech; }
 		const ITechnique*	GetTechnique() const					{ return mTechnique; }
@@ -34,9 +40,18 @@ struct IMaterial
 		IShader*			GetShader()								{ return mShader; }
 		const IShader*		GetShader() const						{ return mShader; }
 
-		void				SetTexture (uint textureUnit, const ITexture* tex)	{ mTextures.ExpandTo(textureUnit+1); mTextures[textureUnit] = tex;}
-		const ITexture*		GetTexture (uint textureUnit) const					{ return (textureUnit < mTextures.GetSize()) ? mTextures[textureUnit] : 0; }
-		const Textures&		GetAllTextures() const								{ return mTextures; }
+		void SetTexture (uint textureUnit, const ITexture* tex)
+		{
+			mTextures.ExpandTo(textureUnit+1);
+			mTextures[textureUnit] = tex;
+		}
+
+		const ITexture* GetTexture (uint textureUnit) const
+		{
+			return (textureUnit < mTextures.GetSize()) ? mTextures[textureUnit] : 0;
+		}
+
+		const Textures&	GetAllTextures() const { return mTextures; }
 	};
 
 	typedef Array<DrawMethod> DrawMethods;

@@ -217,9 +217,14 @@ void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 
 				if (limb != 0)
 				{
-					if (meshes    && limb->mMat		!= 0)  limb->mMat->Release();
-					if (materials && limb->mMesh	!= 0)  limb->mMesh->Release();
-					if (materials && limb->mCloud	!= 0)  limb->mCloud->Release();
+					// Don't release materials that are marked as serializable
+					if (materials && limb->mMat != 0 && !limb->mMat->IsSerializable())
+					{
+						limb->mMat->Release();
+					}
+
+					if (meshes && limb->mMesh	!= 0)  limb->mMesh->Release();
+					if (meshes && limb->mCloud	!= 0)  limb->mCloud->Release();
 				}
 			}
 		}
@@ -235,6 +240,8 @@ void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 		mTemplate	= 0;
 		mIsDirty	= false;
 		mBounds.Clear();
+
+		mOnSerialize.Release();
 	}
 	Unlock();
 }
