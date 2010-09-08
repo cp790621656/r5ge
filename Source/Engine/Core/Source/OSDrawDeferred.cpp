@@ -4,7 +4,6 @@ using namespace R5;
 //============================================================================================================
 
 OSDrawDeferred::OSDrawDeferred() :
-	mCam(0),
 	mBloom(1.0f),
 	mAOQuality(0),
 	mAOPasses(2),
@@ -29,17 +28,10 @@ OSDrawDeferred::OSDrawDeferred() :
 
 void OSDrawDeferred::OnInit()
 {
-	mCam = R5_CAST(Camera, mObject);
+	OSDraw::OnInit();
 
-	if (mCam == 0)
+	if (mCam != 0)
 	{
-		ASSERT(false, "You've attached OSDrawDeferred to something other than a camera, unable to proceed!");
-		DestroySelf();
-	}
-	else
-	{
-		OSDraw::OnInit();
-		mScene.Initialize(mGraphics);
 		mScene.SetOnDraw(bind(&OSDrawDeferred::OnDrawWithTechnique, this));
 
 		// Initial AO settings

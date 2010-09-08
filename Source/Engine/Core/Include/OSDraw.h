@@ -14,13 +14,14 @@ protected:
 	Core*				mCore;
 	IGraphics*			mGraphics;
 	OSSceneRoot*		mRoot;
+	Camera*				mCam;
 	Scene				mScene;
 	Color4f				mBackground;
 	Vector2f			mFogRange;
 	DirectionalShadow	mShadow;
 	bool				mGrid;
 
-	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mGrid(false) {}
+	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mCam(0), mGrid(false) {}
 
 public:
 

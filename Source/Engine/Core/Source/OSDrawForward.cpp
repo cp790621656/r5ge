@@ -7,17 +7,10 @@ using namespace R5;
 
 void OSDrawForward::OnInit()
 {
-	mCam = R5_CAST(Camera, mObject);
+	OSDraw::OnInit();
 
-	if (mCam == 0)
+	if (mCam != 0)
 	{
-		ASSERT(false, "You've attached OSDrawForward to something other than a camera, unable to proceed!");
-		DestroySelf();
-	}
-	else
-	{
-		OSDraw::OnInit();
-
 		mShadowmap	= mGraphics->GetTexture("R5_Shadowmap");
 		mOpaque		= mGraphics->GetTechnique("Opaque");
 		mShadowed	= mGraphics->GetTechnique("Shadowed Opaque");
@@ -170,7 +163,7 @@ void OSDrawForward::OnDraw()
 		}
 	}
 
-	// Add particles
+	// If nothing was drawn, we might as well draw the scene with all techniques at once
 	if (pass == 0)
 	{
 		if (mComplete.IsEmpty())

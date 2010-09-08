@@ -11,7 +11,6 @@ class OSDrawDeferred : public OSDraw
 {
 protected:
 
-	Camera*		mCam;
 	float		mBloom;
 	Vector3f	mFocalRange;
 	uint		mAOQuality;

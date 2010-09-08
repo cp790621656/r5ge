@@ -14,6 +14,64 @@
 using namespace R5;
 
 //============================================================================================================
+// Common preprocessing function that removes the matched value
+//============================================================================================================
+
+uint PreprocessCommon (const String& source, const String& match, Array<String*>& words)
+{
+	uint length = source.GetLength();
+	uint phrase = source.Find(match);
+
+	if (phrase < length)
+	{
+		String line, vertex, normal, tangent;
+
+		// Extract the entire macroed line
+		uint lineEnd = source.GetLine(line, phrase + match.GetLength());
+
+		// Extract the names of the variables
+		uint offset = 0;
+
+		FOREACH(i, words)
+		{
+			offset = line.GetWord(*words[i], offset);
+		}
+		return lineEnd;
+	}
+	return length;
+}
+
+//============================================================================================================
+
+uint PreprocessCommon (const String& source, const String& match, String& v0)
+{
+	Array<String*> words;
+	words.Expand() = &v0;
+	return PreprocessCommon(source, match, words);
+}
+
+//============================================================================================================
+
+uint PreprocessCommon (const String& source, const String& match, String& v0, String& v1)
+{
+	Array<String*> words;
+	words.Expand() = &v0;
+	words.Expand() = &v1;
+	return PreprocessCommon(source, match, words);
+}
+
+//============================================================================================================
+
+uint PreprocessCommon (const String& source, const String& match, String& v0, String& v1, String& v2)
+{
+	Array<String*> words;
+	words.Expand() = &v0;
+	words.Expand() = &v1;
+	words.Expand() = &v2;
+	return PreprocessCommon(source, match, words);
+}
+
+//============================================================================================================
 // Prints the specified shader log
 //============================================================================================================
 
@@ -76,73 +134,6 @@ void R5::CreateDebugLog (Array<String>& out, const String& log, const String& co
 						offset = code.Find(newLine, true, offset) + 1;
 					}
 				}
-			}
-		}
-	}
-}
-
-//============================================================================================================
-// Common preprocessing function that removes the matched value
-//============================================================================================================
-
-uint PreprocessCommon (const String& source,
-					   const String& match,
-					   String& v0,
-					   String& v1,
-					   String& v2)
-{
-	uint length = source.GetLength();
-	uint phrase = source.Find(match);
-
-	if (phrase < length)
-	{
-		String line, vertex, normal, tangent;
-
-		// Extract the entire macroed line
-		uint lineEnd = source.GetLine(line, phrase + match.GetLength());
-
-		// Extract the names of the variables
-		uint offset = line.GetWord(v0);
-		offset = line.GetWord(v1, offset);
-		offset = line.GetWord(v2, offset);
-		return lineEnd;
-	}
-	return length;
-}
-
-//============================================================================================================
-// Preprocess deprecated GLSL vertex shader functionality, replacing such things as 'gl_MultiTexCoord1' with
-// their equivalent vertex attribute names.
-//============================================================================================================
-
-void PreprocessAttributes (String& source)
-{
-	String mtc ("gl_MultiTexCoord");
-	String match0, match1;
-
-	// ATI has an interesting list of features on their drivers... They don't like gl_MultiTexCoord1 because
-	// it has been deprecated in the latest GLSL specs (and I assume all higher gl_MultiTexCoords as well),
-	// and need to have them replaced with vertex attributes instead. Fine, but at the same time ATI drivers
-	// don't like it when gl_MultiTexCoord0 gets replaced with a vertex attribute as well! Sigh.
-
-	for (uint i = 8; i > 1; )
-	{
-		match0 = mtc;
-		match0 << --i;
-		match1 = match0;
-		match1 << ".xyz";
-
-		if (source.Contains(match0))
-		{
-			if (source.Contains(match1))
-			{
-				source.Replace(match1, String("R5_texCoord%u.xyz", i));
-				source = String("attribute vec3 R5_texCoord%u;\n", i) + source;
-			}
-			else
-			{
-				source.Replace(match0, String("R5_texCoord%u", i));
-				source = String("attribute vec2 R5_texCoord%u;\n", i) + source;
 			}
 		}
 	}
@@ -319,6 +310,191 @@ bool PreprocessBillboarding (String& source)
 		// Copy the result back into the Source
 		source = "uniform vec3 R5_origin;\n";
 		source << "uniform float R5_worldScale;\n";
+		source << left;
+		source << right;
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
+// Preprocess deprecated GLSL vertex shader functionality, replacing such things as 'gl_MultiTexCoord1' with
+// their equivalent vertex attribute names.
+//============================================================================================================
+
+void PreprocessAttributes (String& source)
+{
+	String mtc ("gl_MultiTexCoord");
+	String match0, match1;
+
+	// ATI has an interesting list of features on their drivers... They don't like gl_MultiTexCoord1 because
+	// it has been deprecated in the latest GLSL specs (and I assume all higher gl_MultiTexCoords as well),
+	// and need to have them replaced with vertex attributes instead. Fine, but at the same time ATI drivers
+	// don't like it when gl_MultiTexCoord0 gets replaced with a vertex attribute as well! Sigh.
+
+	for (uint i = 8; i > 1; )
+	{
+		match0 = mtc;
+		match0 << --i;
+		match1 = match0;
+		match1 << ".xyz";
+
+		if (source.Contains(match0))
+		{
+			if (source.Contains(match1))
+			{
+				source.Replace(match1, String("R5_texCoord%u.xyz", i));
+				source = String("attribute vec3 R5_texCoord%u;\n", i) + source;
+			}
+			else
+			{
+				source.Replace(match0, String("R5_texCoord%u", i));
+				source = String("attribute vec2 R5_texCoord%u;\n", i) + source;
+			}
+		}
+	}
+}
+
+//============================================================================================================
+// Macro that adds forward lighting code to the vertex shader
+//============================================================================================================
+// R5_IMPLEMENT_LIGHTING vertex
+//============================================================================================================
+
+bool PreprocessVertexLighting (String& source)
+{
+	String left, right, vertex;
+
+	uint offset = ::PreprocessCommon(source, "R5_IMPLEMENT_LIGHTING", vertex);
+
+	if (vertex.IsValid())
+	{
+		source.GetString(left, 0, offset);
+		source.GetString(right, offset);
+
+		// Forward rendering lighting code
+		left << "\n{\n";
+		left << "	_eyeDir = (gl_ModelViewMatrix * ";
+		left << vertex;
+		left << ").xyz;\n";
+		left << "	_fogFactor = clamp((gl_Position.z - gl_Fog.start) * gl_Fog.scale, 0.0, 1.0);\n";
+
+   		left << "	if ( gl_LightSource[0].position.w == 0.0 )\n";
+		left << "	{\n";
+		left << "		_light.xyz = normalize(gl_LightSource[0].position.xyz);\n";
+		left << "		_light.w = 1.0;\n";
+		left << "	}\n";
+		left << "	else\n";
+		left << "	{\n";
+		left << "		vec3 eyeToLight = gl_LightSource[0].position.xyz - _eyeDir;\n";
+		left << "		float dist = length(eyeToLight);\n";
+		left << "		float atten = 1.0 - clamp(dist / gl_LightSource[0].constantAttenuation, 0.0, 1.0);\n";
+
+		left << "		_light.xyz = normalize(eyeToLight);\n";
+		left << "		_light.w = pow(atten, gl_LightSource[0].linearAttenuation);\n";
+		left << "	}\n";
+		left << "}\n";
+
+		// Varyings for eye direction, light properties and fog factor must be defined up top
+		source = "varying vec3 _eyeDir;\n";
+		source << "varying vec4 _light;\n";
+		source << "varying float _fogFactor;\n";
+		source << left;
+		source << right;
+		return true;
+	}
+	return false;
+}
+
+//============================================================================================================
+// Macro that adds forward lighting code to the fragment shader
+//============================================================================================================
+// R5_IMPLEMENT_LIGHTING normal diffuse maps shininess
+// - 'normal' contains the pixel's normal
+// - 'diffuse' is RGBA diffuse color
+// - 'maps' contains specularity (R), specular hue (G), glow (B), and occlusion (A)
+// - 'shininess' contains specularity's shininess component
+//============================================================================================================
+
+bool PreprocessFragmentLighting (String& source)
+{
+	String left, right, normal, diffuse, maps;
+
+	uint offset = ::PreprocessCommon(source, "R5_IMPLEMENT_LIGHTING", diffuse, maps, normal);
+
+	if (normal.IsValid())
+	{
+		source.GetString(left, 0, offset);
+		source.GetString(right, offset);
+
+		left << "\n{\n";
+
+		// Forward lighting
+		left << "	vec3 eyeDir   = normalize(_eyeDir);\n";
+		left << "	vec3 lightDir = normalize(_light.xyz);\n";
+
+		// Diffuse factor
+		left << "	float diffuseFactor = max( 0.0, dot(";
+		left << normal;
+		left << ".xyz, lightDir) );\n";
+
+		// Reflective factor
+		left << "	float reflectiveFactor = max( 0.0, dot(reflect(lightDir, ";
+		left << normal;
+		left << ".xyz), eyeDir) );\n";
+
+		// Specular factor
+		left << "	float specularFactor = pow( reflectiveFactor, 0.3 * ";
+		left << normal;
+		left << ".w);\n";
+
+		// TODO: Figure out how to apply a shadow as well. Likely by adding automatic support
+		// by detecting [Shadowed] tag in the shader's name. Note that this also means that
+		// the shadow texture should be added and bound automatically.
+
+		// Apply the shadow
+		//float shadowFactor 	= texture2D(R5_texture0, gl_FragCoord.xy * R5_pixelSize).a;
+		//diffuseFactor  		= min(diffuseFactor, shadowFactor);
+		//specularFactor 		= min(diffuseFactor, specularFactor);
+
+		// Material diffuse
+		left << "	vec3 matDiff = gl_LightSource[0].diffuse.rgb * ";
+		left << diffuse;
+		left << ".rgb * diffuseFactor;\n";
+
+		// Material color attenuated by light
+		left << "	vec3 color = (gl_LightSource[0].ambient.rgb + matDiff) * _light.w;\n";
+
+		// Material color should transition back to its original unlit color as the 'glow' parameter grows
+		left << "	color = mix(color, ";
+		left << diffuse;
+		left << ".rgb, ";
+		left << maps;
+		left << ".b);\n";
+
+		// Specular color should be affected by specularity and the specular factor
+		left << "	vec3 specular = gl_FrontLightProduct[0].specular.rgb * (";
+		left << maps;
+		left << ".r * specularFactor);\n";
+
+		// Add specular component to the material color
+		left << "	color += mix(specular, specular * ";
+		left << diffuse;
+		left << ".rgb, ";
+		left << maps;
+		left << ".g) * _light.w;\n";
+
+		// Make the material color fade out with fog
+		left << "	color = mix(color, gl_Fog.color.rgb, _fogFactor);\n";
+
+		// Final color
+		left << "	gl_FragColor = vec4(color, diffuse.a);\n";
+		left << "}\n";
+
+		// Varyings for eye direction, light properties and fog factor must be defined up top
+		source =  "varying vec3 _eyeDir;\n";
+		source << "varying float _fogFactor;\n";
+		source << "varying vec4 _light;\n";
 		source << left;
 		source << right;
 		return true;
@@ -552,8 +728,8 @@ void GLSubShader::_Preprocess()
 
 	// Figure out what type of shader this is
 	if (mCode.Contains("EndPrimitive();")) mType = Type::Geometry;
-	else if (mCode.Contains("gl_FragData") || mCode.Contains("gl_FragColor")) mType = Type::Fragment;
 	else if (mCode.Contains("gl_Position")) mType = Type::Vertex;
+	else mType = Type::Fragment;
 
 	// Pre-process all macros
 	if (mType == Type::Vertex)
@@ -565,9 +741,15 @@ void GLSubShader::_Preprocess()
 		if (::PreprocessSkinning(mCode))		mFlags.Set(IShader::Flag::Skinned,		true);
 		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
+
+		// Vertex shader forward lighting
+		::PreprocessVertexLighting(mCode);
 	}
 	else
 	{
+		// Vertex shader forward lighting
+		::PreprocessFragmentLighting(mCode);
+
 		bool matShader (false);
 		matShader |= mCode.Replace("R5_MATERIAL_SPECULARITY",	"gl_FrontMaterial.specular.r") != 0;
 		matShader |= mCode.Replace("R5_MATERIAL_SPECULAR_HUE",	"gl_FrontMaterial.specular.g") != 0;
@@ -697,6 +879,12 @@ bool GLSubShader::_Compile()
 		if (retVal != GL_TRUE)
 		{
 #ifdef _DEBUG
+
+			System::Log("==================================== CODE =====================================");
+			System::Log(mCode.GetBuffer());
+			System::Log("===================================== END =====================================");
+			System::FlushLog();
+
 			// Trigger an assert
 			String errMsg ("Failed to compile '");
 			errMsg << mName;

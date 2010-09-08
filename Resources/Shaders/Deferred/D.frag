@@ -10,5 +10,5 @@ void main()
 		R5_MATERIAL_SPECULARITY,
 		R5_MATERIAL_SPECULAR_HUE,
 		R5_MATERIAL_GLOW, 1.0);
-	gl_FragData[2] = vec4(normalize(_normal) * 0.5 + 0.5, gl_FrontMaterial.specular.a);
+	gl_FragData[2] = vec4(normalize(_normal) * 0.5 + 0.5, R5_MATERIAL_SHININESS);
 }

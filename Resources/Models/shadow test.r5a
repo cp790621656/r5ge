@@ -13,27 +13,27 @@ Root
 			Specular Hue = 1.0
 			Shininess = 1.0
 			Glow = 0.0
+
 			Technique = "Depth"
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/L"
-				
-				Textures = String[]
-				{
-					"Textures/Skins/shadowtest_ao.png"
-				}
-			}
-
 			Technique = "Opaque"
-
-            Technique = "Shadowed Opaque"
+			
+			Technique = "Shadowed Opaque"
 			{
 				Shader = "Forward/Shadowed_Material"
 
 				Textures = String[]
 				{
 					"R5_Shadowmap"
+				}
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/L"
+
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 		}

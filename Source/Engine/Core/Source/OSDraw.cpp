@@ -7,25 +7,36 @@ using namespace R5;
 
 void OSDraw::OnInit()
 {
-	// Find the root
-	mRoot = OSSceneRoot::FindRootOf(mObject);
+	mCam = R5_CAST(Camera, mObject);
 
-	// For convenience
-	mCore		= mObject->GetCore();
-	mGraphics	= mObject->GetGraphics();
+	if (mCam == 0)
+	{
+		ASSERT(false, "You've attached OSDraw to something other than a camera!");
+		DestroySelf();
+	}
+	else
+	{
+		// Find the root
+		mRoot = OSSceneRoot::FindRootOf(mObject);
 
-	// Set the root of the scene
-	mScene.SetRoot(mRoot->GetOwner());
+		// For convenience
+		mCore		= mObject->GetCore();
+		mGraphics	= mObject->GetGraphics();
 
-	// Initialize the shadow class
-	mShadow.Initialize(mGraphics);
+		// Set the root of the scene
+		mScene.SetRoot(mRoot->GetOwner());
+		mScene.Initialize(mGraphics);
 
-	// Default fog and background color
-	mFogRange.Set(0.5f, 1.0f);
-	mBackground.Set(0.0f, 0.0f, 0.0f, 1.0f);
-	
-	// Add the draw callback to a high priority so that it's drawn before the default (1000) callbacks
-	mCore->AddOnDraw( bind(&OSDraw::OnDraw, this), 10000 );
+		// Initialize the shadow class
+		mShadow.Initialize(mGraphics);
+
+		// Default fog and background color
+		mFogRange.Set(0.5f, 1.0f);
+		mBackground.Set(0.0f, 0.0f, 0.0f, 1.0f);
+		
+		// Add the draw callback to a high priority so that it's drawn before the default (1000) callbacks
+		mCore->AddOnDraw( bind(&OSDraw::OnDraw, this), 10000 );
+	}
 }
 
 //============================================================================================================
