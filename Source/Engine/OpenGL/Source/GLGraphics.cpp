@@ -843,18 +843,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 			{
 				tech = new GLTechnique(name);
 
-				if (name == "Opaque")
-				{
-					// Solid material group -- no alpha testing or blending needed
-					tech->SetAlphaTest(false);
-					tech->SetBlending(ITechnique::Blending::None);
-				}
-				else if (name == "Transparent")
-				{
-					// Group for objects with transparency, drawn after solids -- default everything
-					tech->SetSorting(ITechnique::Sorting::BackToFront);
-				}
-				else if (name == "Depth")
+				if (name == "Depth")
 				{
 					tech->SetFog(false);
 					tech->SetColorWrite(false);
@@ -904,13 +893,6 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetLighting(IGraphics::Lighting::None);
 					tech->SetBlending(IGraphics::Blending::None);
 				}
-				else if (name == "Wireframe")
-				{
-					tech->SetFog(false);
-					tech->SetLighting(IGraphics::Lighting::None);
-					tech->SetBlending(IGraphics::Blending::None);
-					tech->SetWireframe(true);
-				}
 				else if (name == "Decal")
 				{
 					tech->SetFog(false);
@@ -924,6 +906,27 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 					tech->SetDepthWrite(false);
 					tech->SetLighting(IGraphics::Lighting::None);
 					tech->SetBlending(IGraphics::Blending::Replace);
+				}
+
+				// Wireframe technique
+				if (name.Contains("Wireframe"))
+				{
+					tech->SetFog(false);
+					tech->SetLighting(IGraphics::Lighting::None);
+					tech->SetBlending(IGraphics::Blending::None);
+					tech->SetWireframe(true);
+				}
+
+				// Solid material group -- no alpha testing or blending needed
+				if (name.Contains("Opaque"))
+				{
+					tech->SetAlphaTest(false);
+					tech->SetBlending(ITechnique::Blending::None);
+				}
+				else if (name.Contains("Transparent"))
+				{
+					// Group for objects with transparency, drawn after solids -- default everything
+					tech->SetSorting(ITechnique::Sorting::BackToFront);
 				}
 
 				// Newly created techniques should not be serializable until something changes

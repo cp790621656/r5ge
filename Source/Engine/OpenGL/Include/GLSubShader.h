@@ -35,7 +35,7 @@ private:
 	void _Release();
 
 	// INTERNAL: Preprocess the shader's source code
-	void _Preprocess();
+	void _Preprocess (bool deferred = false, bool shadowed = false);
 
 	// INTERNAL: Compile the shader
 	bool _Compile();

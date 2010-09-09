@@ -114,6 +114,7 @@ GLController::GLController() :
 	mMaterial		(0),
 	mShader			(0),
 	mSkybox			(0),
+	mShadowmap		(0),
 	mActiveTU		(0),
 	mNextTU			(0) {}
 
@@ -674,9 +675,21 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 			// Activate all textures
 			textures.Lock();
 			{
+				bool bindShadow = (shader != 0 && shader->GetFlag(IShader::Flag::Shadowed));
+
+				// Bind all of the material's textures
 				for (uint i = maxIU; i > 0; )
 				{
 					const ITexture* tex = (--i < lastTex) ? textures[i] : 0;
+
+					// Automatically bind the shadowmap texture after the last texture
+					if (i == lastTex && bindShadow)
+					{
+						if (mShadowmap == 0) mShadowmap = GetTexture("R5_Shadowmap");
+						tex = mShadowmap;
+					}
+
+					// Bind the material's texture
 					SetActiveTexture(i, tex);
 				}
 			}

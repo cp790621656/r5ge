@@ -356,147 +356,222 @@ void PreprocessAttributes (String& source)
 }
 
 //============================================================================================================
-// Macro that adds forward lighting code to the vertex shader
+// Macro that implements common vertex output functionality including adding forward rendering lighting code
 //============================================================================================================
-// R5_IMPLEMENT_LIGHTING vertex
+// R5_VERTEX_OUTPUT vertex
 //============================================================================================================
 
-bool PreprocessVertexLighting (String& source)
+bool PreprocessVertexOutput (String& source, bool deferred)
 {
-	String left, right, vertex;
+	String left, right, vertex, color;
 
-	uint offset = ::PreprocessCommon(source, "R5_IMPLEMENT_LIGHTING", vertex);
+	uint offset = ::PreprocessCommon(source, "R5_VERTEX_OUTPUT", vertex, color);
 
 	if (vertex.IsValid())
 	{
 		source.GetString(left, 0, offset);
 		source.GetString(right, offset);
 
-		// Forward rendering lighting code
-		left << "\n{\n";
-		left << "	_eyeDir = (gl_ModelViewMatrix * ";
+		left << "\n	gl_Position = gl_ModelViewProjectionMatrix * ";
 		left << vertex;
-		left << ").xyz;\n";
-		left << "	_fogFactor = clamp((gl_Position.z - gl_Fog.start) * gl_Fog.scale, 0.0, 1.0);\n";
 
-   		left << "	if ( gl_LightSource[0].position.w == 0.0 )\n";
-		left << "	{\n";
-		left << "		_light.xyz = normalize(gl_LightSource[0].position.xyz);\n";
-		left << "		_light.w = 1.0;\n";
-		left << "	}\n";
-		left << "	else\n";
-		left << "	{\n";
-		left << "		vec3 eyeToLight = gl_LightSource[0].position.xyz - _eyeDir;\n";
-		left << "		float dist = length(eyeToLight);\n";
-		left << "		float atten = 1.0 - clamp(dist / gl_LightSource[0].constantAttenuation, 0.0, 1.0);\n";
+		if (color.IsValid())
+		{
+			left << ";\n	gl_FrontColor = ";
+			left << color;
+		}
 
-		left << "		_light.xyz = normalize(eyeToLight);\n";
-		left << "		_light.w = pow(atten, gl_LightSource[0].linearAttenuation);\n";
-		left << "	}\n";
-		left << "}\n";
+		left << ";\n";
 
-		// Varyings for eye direction, light properties and fog factor must be defined up top
-		source = "varying vec3 _eyeDir;\n";
-		source << "varying vec4 _light;\n";
-		source << "varying float _fogFactor;\n";
-		source << left;
-		source << right;
+		if (deferred)
+		{
+			source = left;
+			source << right;
+		}
+		else
+		{
+			// Forward rendering needs additional code to calculate per-vertex lighting and fog
+			left << "\n{\n";
+			left << "	_eyeDir = (gl_ModelViewMatrix * ";
+			left << vertex;
+			left << ").xyz;\n";
+			left << "	_fogFactor = clamp((gl_Position.z - gl_Fog.start) * gl_Fog.scale, 0.0, 1.0);\n";
+
+   			left << "	if ( gl_LightSource[0].position.w == 0.0 )\n";
+			left << "	{\n";
+			left << "		_light.xyz = normalize(gl_LightSource[0].position.xyz);\n";
+			left << "		_light.w = 1.0;\n";
+			left << "	}\n";
+			left << "	else\n";
+			left << "	{\n";
+			left << "		vec3 eyeToLight = gl_LightSource[0].position.xyz - _eyeDir;\n";
+			left << "		float dist = length(eyeToLight);\n";
+			left << "		float atten = 1.0 - clamp(dist / gl_LightSource[0].constantAttenuation, 0.0, 1.0);\n";
+
+			left << "		_light.xyz = normalize(eyeToLight);\n";
+			left << "		_light.w = pow(atten, gl_LightSource[0].linearAttenuation);\n";
+			left << "	}\n";
+			left << "}\n";
+
+			// Varyings for eye direction, light properties and fog factor must be defined up top
+			source = "varying vec3 _eyeDir;\n";
+			source << "varying vec4 _light;\n";
+			source << "varying float _fogFactor;\n";
+			source << left;
+			source << right;
+		}
 		return true;
 	}
 	return false;
 }
 
 //============================================================================================================
-// Macro that adds forward lighting code to the fragment shader
+// Macro that implements common fragment shader output functionality used by the engine
 //============================================================================================================
-// R5_IMPLEMENT_LIGHTING normal diffuse maps shininess
-// - 'normal' contains the pixel's normal
-// - 'diffuse' is RGBA diffuse color
+// R5_FRAGMENT_OUTPUT diffuse maps normal
+// - 'normal' contains the pixel's normal (XYZ) and shininess (W)
+// - 'diffuse' is the pixel's diffuse color (RGBA)
 // - 'maps' contains specularity (R), specular hue (G), glow (B), and occlusion (A)
-// - 'shininess' contains specularity's shininess component
 //============================================================================================================
 
-bool PreprocessFragmentLighting (String& source)
+bool PreprocessFragmentOutput (String& source, bool deferred, bool shadowed)
 {
 	String left, right, normal, diffuse, maps;
 
-	uint offset = ::PreprocessCommon(source, "R5_IMPLEMENT_LIGHTING", diffuse, maps, normal);
+	uint offset = ::PreprocessCommon(source, "R5_FRAGMENT_OUTPUT", diffuse, maps, normal);
 
 	if (normal.IsValid())
 	{
 		source.GetString(left, 0, offset);
 		source.GetString(right, offset);
 
-		left << "\n{\n";
+		if (deferred)
+		{
+			// Deferred rendering output is simple -- it's copied nearly as-is
+			source = left;
+			source << "\n	normal.xyz = normal.xyz * 0.5 + 0.5;";
+			source << "\n	gl_FragData[0] = ";
+			source << diffuse;
+			source << ";\n	gl_FragData[1] = ";
+			source << maps;
+			source << ";\n	gl_FragData[2] = ";
+			source << normal;
+			source << ";\n";
+			source << right;
+		}
+		else
+		{
+			// Forward rendering should add lighting
+			left << "\n	vec3 eyeDir   = normalize(_eyeDir);\n";
+			left << "	vec3 lightDir = normalize(_light.xyz);\n";
 
-		// Forward lighting
-		left << "	vec3 eyeDir   = normalize(_eyeDir);\n";
-		left << "	vec3 lightDir = normalize(_light.xyz);\n";
+			// Shininess
+			left << "	float shininess = ";
+			left << normal;
+			left << ".w;\n";
+			left << "	shininess = 4.0 + shininess * shininess * 250.0;\n";
 
-		// Diffuse factor
-		left << "	float diffuseFactor = max( 0.0, dot(";
-		left << normal;
-		left << ".xyz, lightDir) );\n";
+			// Diffuse factor
+			left << "	float diffuseFactor = max(0.0, dot(";
+			left << normal;
+			left << ".xyz, lightDir));\n";
 
-		// Reflective factor
-		left << "	float reflectiveFactor = max( 0.0, dot(reflect(lightDir, ";
-		left << normal;
-		left << ".xyz), eyeDir) );\n";
+			// Reflective factor
+			left << "	float reflectiveFactor = max(0.0, dot(reflect(lightDir, ";
+			left << normal;
+			left << ".xyz), eyeDir));\n";
 
-		// Specular factor
-		left << "	float specularFactor = pow( reflectiveFactor, 0.3 * ";
-		left << normal;
-		left << ".w);\n";
+			// Specular factor
+			left << "	float specularFactor = pow(reflectiveFactor, shininess);";
 
-		// TODO: Figure out how to apply a shadow as well. Likely by adding automatic support
-		// by detecting [Shadowed] tag in the shader's name. Note that this also means that
-		// the shadow texture should be added and bound automatically.
+			// Taking diffuse into account avoids the "halo" artifact. pow(3) smooths it out.
+			//left << "	float invDiff = 1.0 - diffuseFactor;\n";
+			//left << "	specularFactor *= 1.0 - invDiff * invDiff * invDiff;\n";
 
-		// Apply the shadow
-		//float shadowFactor 	= texture2D(R5_texture0, gl_FragCoord.xy * R5_pixelSize).a;
-		//diffuseFactor  		= min(diffuseFactor, shadowFactor);
-		//specularFactor 		= min(diffuseFactor, specularFactor);
+			// Apply the shadow
+			if (shadowed)
+			{
+				uint offset(0), texture(0);
+				String temp;
 
-		// Material diffuse
-		left << "	vec3 matDiff = gl_LightSource[0].diffuse.rgb * ";
-		left << diffuse;
-		left << ".rgb * diffuseFactor;\n";
+				// Find all existing used textures and figure out the next unused texture's index
+				for (;;)
+				{
+					offset = source.Find("R5_texture", true, offset) + 10;
 
-		// Material color attenuated by light
-		left << "	vec3 color = (gl_LightSource[0].ambient.rgb + matDiff) * _light.w;\n";
+					if (offset < source.GetLength())
+					{
+						uint current (0);
+						source.GetWord(temp, offset);
+						if (temp >> current && texture < current + 1) texture = current + 1;
+						++offset;
+					}
+					else break;
+				}
 
-		// Material color should transition back to its original unlit color as the 'glow' parameter grows
-		left << "	color = mix(color, ";
-		left << diffuse;
-		left << ".rgb, ";
-		left << maps;
-		left << ".b);\n";
+				// Remember whether the shader already used R5_pixelSize or not
+				bool pixelSizeExists = source.Find("R5_pixelSize") < source.GetLength();
 
-		// Specular color should be affected by specularity and the specular factor
-		left << "	vec3 specular = gl_FrontLightProduct[0].specular.rgb * (";
-		left << maps;
-		left << ".r * specularFactor);\n";
+				// Append the shadowmap texture sampling, mixing it with diffuse and specular factors
+				left << "	float shadowFactor = texture2D(R5_texture";
+				left << texture;
+				left << ", gl_FragCoord.xy * R5_pixelSize).a;\n";
+				left << "	diffuseFactor  = min(diffuseFactor, shadowFactor);\n";
+				left << "	specularFactor = min(diffuseFactor, specularFactor);\n";
 
-		// Add specular component to the material color
-		left << "	color += mix(specular, specular * ";
-		left << diffuse;
-		left << ".rgb, ";
-		left << maps;
-		left << ".g) * _light.w;\n";
+				// Prepend the shadow texture definition
+				source = left;
+				left = "uniform sampler2D R5_texture";
+				left << texture;
+				left << ";\n";
 
-		// Make the material color fade out with fog
-		left << "	color = mix(color, gl_Fog.color.rgb, _fogFactor);\n";
+				// Prepend the pixel size if it hasn't been used previously
+				if (!pixelSizeExists) left << "uniform vec2 R5_pixelSize;\n";
 
-		// Final color
-		left << "	gl_FragColor = vec4(color, diffuse.a);\n";
-		left << "}\n";
+				// Append the rest of the current buffer
+				left << source;
+			}
 
-		// Varyings for eye direction, light properties and fog factor must be defined up top
-		source =  "varying vec3 _eyeDir;\n";
-		source << "varying float _fogFactor;\n";
-		source << "varying vec4 _light;\n";
-		source << left;
-		source << right;
+			// Material diffuse
+			left << "	vec3 matDiff = gl_LightSource[0].diffuse.rgb * ";
+			left << diffuse;
+			left << ".rgb * diffuseFactor;\n";
+
+			// Material color attenuated by light
+			left << "	vec3 color = (gl_LightSource[0].ambient.rgb + matDiff) * _light.w;\n";
+
+			// Material color should transition back to its original unlit color as the 'glow' parameter grows
+			left << "	color = mix(color, ";
+			left << diffuse;
+			left << ".rgb, ";
+			left << maps;
+			left << ".b);\n";
+
+			// Specular color should be affected by specularity and the specular factor
+			left << "	vec3 specular = vec3(";
+			left << maps;
+			left << ".r * specularFactor);\n";
+
+			// Add specular component to the material color
+			left << "	color += mix(specular, specular * ";
+			left << diffuse;
+			left << ".rgb, ";
+			left << maps;
+			left << ".g) * _light.w;\n";
+
+			// Make the material color fade out with fog
+			left << "	color = mix(color, gl_Fog.color.rgb, _fogFactor);\n";
+
+			// Final color
+			left << "	gl_FragColor = vec4(color, diffuse.a);\n";
+
+			// Varyings for eye direction, light properties and fog factor must be defined up top
+			source =  "varying vec3 _eyeDir;\n";
+			source << "varying float _fogFactor;\n";
+			source << "varying vec4 _light;\n";
+			source << left;
+			source << right;
+		}
 		return true;
 	}
 	return false;
@@ -695,8 +770,33 @@ void GLSubShader::_Init()
 	}
 	else
 	{
-		// Try to load the code from a file
-		mCode.Load(mName);
+		// Encoded parameters, such as: "Shaders/Material [Forward Shadowed]"
+		uint index = mName.Find("[");
+
+		if (index < mName.GetSize())
+		{
+			String temp, source, tags;
+
+			// Source
+			mName.GetString(temp, 0, index);
+			temp.GetTrimmed(source);
+
+			// Parameters
+			mName.GetString(temp, index+1, mName.Find("]", true, index+1, -1, true));
+			temp.GetTrimmed(tags);
+
+			// Load the shader
+			mCode.Load(source);
+
+			// Pre-process the code
+			if (mCode.IsValid()) _Preprocess(tags.Contains("Deferred"), tags.Contains("Shadowed"));
+			return;
+		}
+		else
+		{
+			// Try to load the code from a file
+			mCode.Load(mName);
+		}
 	}
 
 	if (mCode.IsValid()) _Preprocess();
@@ -721,14 +821,14 @@ void GLSubShader::_Release()
 // Preprocess the shader's source code
 //============================================================================================================
 
-void GLSubShader::_Preprocess()
+void GLSubShader::_Preprocess (bool deferred, bool shadowed)
 {
 	mFlags.Clear();
 	mDependencies.Clear();
 
 	// Figure out what type of shader this is
 	if (mCode.Contains("EndPrimitive();")) mType = Type::Geometry;
-	else if (mCode.Contains("gl_Position")) mType = Type::Vertex;
+	else if (mCode.Contains("gl_Position") || mCode.Contains("R5_VERTEX_OUTPUT")) mType = Type::Vertex;
 	else mType = Type::Fragment;
 
 	// Pre-process all macros
@@ -743,12 +843,12 @@ void GLSubShader::_Preprocess()
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
 
 		// Vertex shader forward lighting
-		::PreprocessVertexLighting(mCode);
+		::PreprocessVertexOutput(mCode, deferred);
 	}
 	else
 	{
 		// Vertex shader forward lighting
-		::PreprocessFragmentLighting(mCode);
+		::PreprocessFragmentOutput(mCode, deferred, shadowed);
 
 		bool matShader (false);
 		matShader |= mCode.Replace("R5_MATERIAL_SPECULARITY",	"gl_FrontMaterial.specular.r") != 0;
@@ -757,7 +857,9 @@ void GLSubShader::_Preprocess()
 		matShader |= mCode.Replace("R5_MATERIAL_SHININESS",		"gl_FrontMaterial.specular.a") != 0;
 		matShader |= mCode.Replace("R5_MATERIAL_OCCLUSION",		"gl_FrontMaterial.emission.r + gl_FrontMaterial.emission.g") != 0;
 		matShader |= mCode.Replace("R5_MATERIAL_GLOW",			"gl_FrontMaterial.emission.a") != 0;
+
 		mFlags.Set(IShader::Flag::Material, matShader);
+		mFlags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
 	}
 
 	// Common flags

@@ -234,18 +234,42 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	}
 	else
 	{
+		// Clean up the filename, removing parameters specified in square brackets
+		String path (System::GetPathFromFilename(name));
+		path << System::GetFilenameFromPath(name, true);
+
+		// Collect the files matching the specified path
 		Array<String> files;
-		System::GetFiles(name, files, true);
-		System::GetFiles("Shaders/" + name, files, true);
+		System::GetFiles(path, files, true);
+		System::GetFiles("Shaders/" + path, files, true);
+
+		// This is the expected filename
 		String expectedName (System::GetFilenameFromPath(name, false));
 
+		// Shader parameters are specified after a bracket (this part is trimmed by GetFilenameFromPath)
+		uint bracket = name.Find("[");
+		String file, arguments;
+		if (bracket < name.GetSize()) name.GetString(arguments, bracket);
+
+		// Run through all located files and use shaders with filenames matching the expected value
 		FOREACH(i, files)
 		{
-			const String& file = files[i];
+			file = files[i];
 			String fileName (System::GetFilenameFromPath(file, false));
 
 			// Shader file names must match exactly (ie: Deferred/D shouldn't match Deferred/D_N)
-			if (fileName == expectedName) _Append(file);
+			if (fileName == expectedName)
+			{
+				// Append the arguments so that the sub shader processes them
+				if (arguments.IsValid())
+				{
+					file << " ";
+					file << arguments;
+				}
+
+				// Append this sub shader
+				_Append(file);
+			}
 		}
 	}
 

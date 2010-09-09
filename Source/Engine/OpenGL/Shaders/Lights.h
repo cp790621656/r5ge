@@ -106,17 +106,17 @@ static const char* g_lightBody = {
 
 	// Get the view space normal
 "	vec4  normalMap = texture2D(R5_texture1, texCoord);\n"
-"	vec3  normal	= normalize(normalMap.rgb * 2.0 - 1.0);\n"
+"	vec3  normal	= normalize(normalMap.xyz * 2.0 - 1.0);\n"
 
 	// Calculate contribution factors (view is flipped, so subtract instead of add here)
-"	float shininess 		= 4.0 + (normalMap.a * normalMap.a) * 250.0;\n"
-"	float diffuseFactor 	= max(0.0, dot(light, normal));\n"
+"	float shininess 		= 4.0 + normalMap.w * normalMap.w * 500.0;\n"
+"	float diffuseFactor 	= max(0.0, dot(normal, light));\n"
 "	float reflectiveFactor 	= max(0.0, dot(normal, normalize(light - view)));\n"
 "	float specularFactor 	= pow(reflectiveFactor, shininess);\n"
 
    	// Taking diffuse into account avoids the "halo" artifact. pow(3) smooths it out.
-"	float temp = 1.0 - diffuseFactor;\n"
-"	specularFactor *= 1.0 - temp * temp * temp;\n"
+//"	float invDiff = 1.0 - diffuseFactor;\n"
+//"	specularFactor *= 1.0 - invDiff * invDiff * invDiff;\n"
 };
 
 //============================================================================================================

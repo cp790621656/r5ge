@@ -19,6 +19,7 @@ struct IShader
 			Billboarded	= 0x04,	// The shader is meant for a billboarded quad (or a series of quads)
 			WorldScale	= 0x08,	// The shader has the R5_worldScale parameter.
 			Material	= 0x10,	// Has the R5_material uniform
+			Shadowed	= 0x20,	// The material's last texture must be "R5_Shadowmap"
 		};
 	};
 

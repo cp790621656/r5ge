@@ -58,6 +58,7 @@ protected:
 	const IMaterial*		mMaterial;		// Active material
 	const GLShader*			mShader;		// Active shader
 	const ITexture*			mSkybox;		// Active skybox cubemap texture
+	const ITexture*			mShadowmap;		// Shadowmap texture, cached once it's retrieved
 
 	Array<TextureUnit>		mTu;			// Texture units
 	Array<GLTexture*>		mNextTex;		// Textures that will be activated prior to next draw call

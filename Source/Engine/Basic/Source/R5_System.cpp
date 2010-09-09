@@ -185,18 +185,20 @@ String System::GetCurrentPath()
 String System::GetFilenameFromPath (const String& in, bool extension)
 {
 	String out;
+	uint last = in.Find("[");
+	while (last > 0 && in[last-1] < 33) --last;
 
-	for (uint i = in.GetLength(); i > 0; )
+	for (uint i = last; i > 0; )
 	{
 		char character = in[--i];
 
 		if (character == '/' || character == '\\')
 		{
-			in.GetString(out, i + 1);
+			in.GetString(out, i + 1, last);
 
 			if (!extension)
 			{
-				for (uint b = in.GetLength(); b > i; )
+				for (uint b = last; b > i; )
 				{
 					char character = in[--b];
 
@@ -213,7 +215,7 @@ String System::GetFilenameFromPath (const String& in, bool extension)
 
 	if (!extension)
 	{
-		for (uint b = in.GetLength(); b > 0; )
+		for (uint b = last; b > 0; )
 		{
 			char character = in[--b];
 
