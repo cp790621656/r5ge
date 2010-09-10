@@ -56,6 +56,7 @@ Object::Object() :
 	mVisibility		(0)
 {
 	mFlags.Set(Flag::Enabled, true);
+	mIgnore.Set(Ignore::Subscriptions, true);
 }
 
 //============================================================================================================
@@ -506,6 +507,15 @@ void Object::Release()
 {
 	ASSERT_IF_CORE_IS_UNLOCKED;
 
+	// Automatically remove the listener callbacks
+	if (!mIgnore.Get(Ignore::Subscriptions))
+	{
+		mIgnore.Set(Ignore::Subscriptions, true);
+		mCore->RemoveOnMouseMove( bind(&Object::MouseMove,	this) );
+		mCore->RemoveOnKey		( bind(&Object::KeyPress,	this) );
+		mCore->RemoveOnScroll	( bind(&Object::Scroll,		this) );
+	}
+
 	mCalcRelBounds = true;
 	mCalcAbsBounds = true;
 
@@ -921,6 +931,7 @@ void Object::Raycast (const Vector3f& pos, const Vector3f& dir, Array<RaycastHit
 
 void Object::SubscribeToKeyPress (uint priority)
 {
+	mIgnore.Set(Ignore::Subscriptions, false);
 	mCore->AddOnKey( bind(&Object::KeyPress, this), priority );
 }
 
@@ -928,6 +939,7 @@ void Object::SubscribeToKeyPress (uint priority)
 
 void Object::SubscribeToMouseMove (uint priority)
 {
+	mIgnore.Set(Ignore::Subscriptions, false);
 	mCore->AddOnMouseMove( bind(&Object::MouseMove, this), priority );
 }
 
@@ -935,6 +947,7 @@ void Object::SubscribeToMouseMove (uint priority)
 
 void Object::SubscribeToScroll (uint priority)
 {
+	mIgnore.Set(Ignore::Subscriptions, false);
 	mCore->AddOnScroll( bind(&Object::Scroll, this), priority );
 }
 

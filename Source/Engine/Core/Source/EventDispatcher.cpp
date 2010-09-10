@@ -16,9 +16,28 @@ using namespace R5;
 \
 	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback, uint priority) \
 	{ \
-		mOn##val.Lock(); \
-		mOn##val.Remove(Pair<On##val##Delegate>(priority, callback)); \
-		mOn##val.Unlock(); \
+		if (mOn##val.IsValid()) \
+		{ \
+			mOn##val.Lock(); \
+			mOn##val.Remove(Pair<On##val##Delegate>(priority, callback)); \
+			mOn##val.Unlock(); \
+		} \
+	} \
+\
+	void EventDispatcher::RemoveOn##val (const On##val##Delegate& callback) \
+	{ \
+		if (mOn##val.IsValid()) \
+		{ \
+			mOn##val.Lock(); \
+			{ \
+				FOREACH( i, mOn##val ) \
+				{ \
+					Pair<On##val##Delegate>& entry = mOn##val[i]; \
+					if (entry.callback == callback) mOn##val.RemoveAt(i); \
+				} \
+			} \
+			mOn##val.Unlock(); \
+		} \
 	}
 
 //============================================================================================================

@@ -61,13 +61,17 @@ public:
 
 	// Event listener registration -- higher priority is handled first
 	void AddOnDraw			(const OnDrawDelegate& callback, uint priority = 1000);
-	void RemoveOnDraw		(const OnDrawDelegate& callback, uint priority = 1000);
+	void RemoveOnDraw		(const OnDrawDelegate& callback, uint priority);
+	void RemoveOnDraw		(const OnDrawDelegate& callback);
 	void AddOnKey			(const OnKeyDelegate& callback, uint priority = 1000);
-	void RemoveOnKey		(const OnKeyDelegate& callback, uint priority = 1000);
+	void RemoveOnKey		(const OnKeyDelegate& callback, uint priority);
+	void RemoveOnKey		(const OnKeyDelegate& callback);
 	void AddOnMouseMove		(const OnMouseMoveDelegate& callback, uint priority = 1000);
-	void RemoveOnMouseMove	(const OnMouseMoveDelegate& callback, uint priority = 1000);
+	void RemoveOnMouseMove	(const OnMouseMoveDelegate& callback, uint priority);
+	void RemoveOnMouseMove	(const OnMouseMoveDelegate& callback);
 	void AddOnScroll		(const OnScrollDelegate& callback, uint priority = 1000);
-	void RemoveOnScroll		(const OnScrollDelegate& callback, uint priority = 1000);
+	void RemoveOnScroll		(const OnScrollDelegate& callback, uint priority);
+	void RemoveOnScroll		(const OnScrollDelegate& callback);
 
 	// Update callback registration -- the execution delay is in seconds
 	void AddOnPreUpdate		(const UpdateList::Callback& callback, float delay = 0.0f)	{ mPreList.Add(callback, delay); }

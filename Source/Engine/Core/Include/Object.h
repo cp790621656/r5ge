@@ -94,6 +94,7 @@ private:
 			Draw			= 1 << 6,
 			SerializeFrom	= 1 << 7,
 			SerializeTo		= 1 << 8,
+			Subscriptions	= 1 << 9,
 		};
 	};
 
