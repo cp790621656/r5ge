@@ -528,13 +528,10 @@ bool PreprocessFragmentOutput (String& source, bool deferred, bool shadowed)
 				left << source;
 			}
 
-			// Material diffuse
-			left << "	vec3 matDiff = gl_LightSource[0].diffuse.rgb * ";
-			left << diffuse;
-			left << ".rgb * diffuseFactor;\n";
-
 			// Material color attenuated by light
-			left << "	vec3 color = (gl_LightSource[0].ambient.rgb + matDiff) * _light.w;\n";
+			left << "	vec3 color = (gl_LightSource[0].ambient.rgb + gl_LightSource[0].diffuse.rgb * diffuseFactor) *";
+			left << diffuse;
+			left << ".rgb * _light.w;\n";
 
 			// Material color should transition back to its original unlit color as the 'glow' parameter grows
 			left << "	color = mix(color, ";
