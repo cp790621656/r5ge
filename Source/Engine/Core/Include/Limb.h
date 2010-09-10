@@ -38,7 +38,7 @@ public:
 	Cloud*				GetCloud()					{ return mCloud; }
 	IMaterial*			GetMaterial()				{ return mMat;	}
 	
-	bool IsVisibleWith	(uint mask) const		{ return mIsVisible && IsValid() && ((mMat->GetTechniqueMask() & mask) != 0); }
+	bool IsVisibleWith	(uint mask) const		{ return IsValid() && ((mMat->GetTechniqueMask() & mask) != 0); }
 	void SetName		(const String& name)	{ if (mName		!= name && mName.IsValid())	mSerializable = true; mName		= name;	}
 	void SetMesh		(Mesh* mesh)			{ if (mMesh		!= mesh && mMesh	!= 0)	mSerializable = true; mMesh		= mesh;	}
 	void SetMesh		(Cloud* bm)				{ if (mCloud	!= bm	&& mCloud	!= 0)	mSerializable = true; mCloud	= bm;	}

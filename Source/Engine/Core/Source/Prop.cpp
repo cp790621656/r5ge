@@ -7,21 +7,19 @@ using namespace R5;
 
 uint Prop::GetNumberOfTriangles()
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	uint triangleCount (0);
 
-	Lock();
+	for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
 	{
-		for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
-		{
-			Limb* limb (*start);
+		Limb* limb (*start);
 
-			if ( limb != 0 && limb->mMesh != 0 && limb->mMat != 0 )
-			{
-				triangleCount += limb->mMesh->GetNumberOfTriangles();
-			}
+		if ( limb != 0 && limb->mMesh != 0 && limb->mMat != 0 )
+		{
+			triangleCount += limb->mMesh->GetNumberOfTriangles();
 		}
 	}
-	Unlock();
 	return triangleCount;
 }
 
@@ -31,20 +29,17 @@ uint Prop::GetNumberOfTriangles()
 
 bool Prop::IsUsingMaterial (const IMaterial* mat) const
 {
-	Lock();
-	{
-		for (uint i = 0; i < mLimbs.GetSize(); ++i)
-		{
-			const Limb* limb = mLimbs[i];
+	ASSERT_IF_CORE_IS_UNLOCKED;
 
-			if (limb != 0 && limb->mMat == mat)
-			{
-				Unlock();
-				return true;
-			}
+	for (uint i = 0; i < mLimbs.GetSize(); ++i)
+	{
+		const Limb* limb = mLimbs[i];
+
+		if (limb != 0 && limb->mMat == mat)
+		{
+			return true;
 		}
 	}
-	Unlock();
 	return false;
 }
 
@@ -54,40 +49,37 @@ bool Prop::IsUsingMaterial (const IMaterial* mat) const
 
 bool Prop::IsUsingTexture (const ITexture* ptr) const
 {
-	Lock();
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
+	for (uint i = 0; i < mLimbs.GetSize(); ++i)
 	{
-		for (uint i = 0; i < mLimbs.GetSize(); ++i)
+		const Limb* limb = mLimbs[i];
+
+		if (limb != 0 && limb->mMat != 0)
 		{
-			const Limb* limb = mLimbs[i];
+			const IMaterial::DrawMethods& methods = limb->mMat->GetAllDrawMethods();
 
-			if (limb != 0 && limb->mMat != 0)
+			methods.Lock();
 			{
-				const IMaterial::DrawMethods& methods = limb->mMat->GetAllDrawMethods();
-
-				methods.Lock();
+				for (uint b = 0; b < methods.GetSize(); ++b)
 				{
-					for (uint b = 0; b < methods.GetSize(); ++b)
+					const IMaterial::Textures& textures = methods[b].GetAllTextures();
+
+					for (uint c = 0; c < textures.GetSize(); ++c)
 					{
-						const IMaterial::Textures& textures = methods[b].GetAllTextures();
+						const ITexture* tex = textures[c];
 
-						for (uint c = 0; c < textures.GetSize(); ++c)
+						if (tex != 0 && tex == ptr)
 						{
-							const ITexture* tex = textures[c];
-
-							if (tex != 0 && tex == ptr)
-							{
-								methods.Unlock();
-								Unlock();
-								return true;
-							}
+							methods.Unlock();
+							return true;
 						}
 					}
 				}
-				methods.Unlock();
 			}
+			methods.Unlock();
 		}
 	}
-	Unlock();
 	return false;
 }
 
@@ -95,37 +87,27 @@ bool Prop::IsUsingTexture (const ITexture* ptr) const
 // Draw the object, called by the rendering queue this object was added to
 //============================================================================================================
 
-uint Prop::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
+uint Prop::_Draw (uint group, IGraphics* graphics, const ITechnique* tech, Limb* limb)
 {
-	uint mask = tech->GetMask();
+	ASSERT_IF_CORE_IS_UNLOCKED;
 
-	// Go through every limb and render it
-	Lock();
+	// Only draw limbs as long as they are visible with the current technique
+	if (limb->IsVisibleWith(tech->GetMask()))
 	{
-		for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
+		if (group == GetUID() || group == limb->GetMaterial()->GetUID())
 		{
-			Limb* limb (*start);
-
-			// Only draw limbs as long as they are visible with the current technique
-			if (limb->IsVisibleWith(mask))
+			if ( graphics->SetActiveMaterial(limb->mMat) )
 			{
-				if (group == GetUID() || group == limb->GetMaterial()->GetUID())
+				if (limb->mMesh != 0)
 				{
-					if ( graphics->SetActiveMaterial(limb->mMat) )
-					{
-						if (limb->mMesh != 0)
-						{
-							limb->mMesh->Draw(graphics);
-						}
-						else if (limb->mCloud != 0)
-						{
-							limb->mCloud->Draw(graphics);
-						}
-					}
+					limb->mMesh->Draw(graphics);
+				}
+				else if (limb->mCloud != 0)
+				{
+					limb->mCloud->Draw(graphics);
 				}
 			}
 		}
 	}
-	Unlock();
 	return 1;
 }

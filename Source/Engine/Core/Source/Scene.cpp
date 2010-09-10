@@ -2,6 +2,7 @@
 using namespace R5;
 
 void* g_lastScene = 0;
+ModelInstance* g_lastModel = 0;
 
 //============================================================================================================
 // Sets the root of the scene
@@ -145,6 +146,8 @@ void Scene::Cull (const Vector3f& pos, const Quaternion& rot, const Matrix44& pr
 
 void Scene::ActivateMatrices()
 {
+	g_lastModel = 0;
+
 	mGraphics->SetScreenProjection(false);
 	mGraphics->SetActiveRenderTarget(mTarget);
 	mGraphics->SetCameraOrientation(mLastCamPos, mLastCamRot.GetForward(), mLastCamRot.GetUp());

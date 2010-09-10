@@ -470,56 +470,56 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	// User interface comes next
 	if (mUI != 0 && ui) mUI->SerializeTo(root);
 
-	// Save all resources and models
-	if (mResources.IsValid() || mFileResource.IsValid() || mModels.IsValid())
-	{
-		TreeNode& node = root.AddChild( Core::ClassID() );
-
-		if (mFileResource.IsValid())
-		{
-			mFileResource.Lock();
-			node.AddChild("Serialize From", mFileResource);
-			mFileResource.Unlock();
-		}
-
-		mModelTemplates.Lock();
-		{
-			for (uint i = 0; i < mModelTemplates.GetSize(); ++i)
-			{
-				const ModelTemplate* temp = mModelTemplates[i];
-
-				if (temp != 0)
-				{
-					temp->SerializeTo(node, false);
-				}
-			}
-		}
-		mModelTemplates.Unlock();
-
-		mModels.Lock();
-		{
-			for (uint i = 0; i < mModels.GetSize(); ++i)
-			{
-				const Model* model = mModels[i];
-
-				if (model != 0)
-				{
-					model->SerializeTo(node, false);
-				}
-			}
-		}
-		mModels.Unlock();
-
-		// Remove this node if it's empty
-		if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
-	}
-
-	// Save out the scenegraph only if there is something to save
 	Lock();
 	{
+		// Save all resources and models
+		if (mResources.IsValid() || mFileResource.IsValid() || mModels.IsValid())
+		{
+			TreeNode& node = root.AddChild( Core::ClassID() );
+
+			if (mFileResource.IsValid())
+			{
+				mFileResource.Lock();
+				node.AddChild("Serialize From", mFileResource);
+				mFileResource.Unlock();
+			}
+
+			mModelTemplates.Lock();
+			{
+				for (uint i = 0; i < mModelTemplates.GetSize(); ++i)
+				{
+					const ModelTemplate* temp = mModelTemplates[i];
+
+					if (temp != 0)
+					{
+						temp->SerializeTo(node, false);
+					}
+				}
+			}
+			mModelTemplates.Unlock();
+
+			mModels.Lock();
+			{
+				for (uint i = 0; i < mModels.GetSize(); ++i)
+				{
+					const Model* model = mModels[i];
+
+					if (model != 0)
+					{
+						model->SerializeTo(node, false);
+					}
+				}
+			}
+			mModels.Unlock();
+
+			// Remove this node if it's empty
+			if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
+		}
+
 		const Object::Children& children = mRoot.GetChildren();
 		const Object::Scripts&  scripts  = mRoot.GetScripts();
 
+		// Save out the scenegraph only if there is something to save
 		if (children.IsValid() || scripts.IsValid())
 		{
 			TreeNode& node = root.AddChild(Scene::ClassID());
@@ -604,7 +604,9 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 
 			if (temp != 0)
 			{
+				Lock();
 				temp->SerializeFrom(node, forceUpdate);
+				Unlock();
 				if (!serializable) temp->SetSerializable(false);
 			}
 		}
@@ -614,7 +616,9 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 
 			if (model != 0)
 			{
+				Lock();
 				model->SerializeFrom(node, forceUpdate);
+				Unlock();
 				if (!serializable) model->SetSerializable(false);
 			}
 		}

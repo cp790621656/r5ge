@@ -38,7 +38,6 @@ protected:
 	Limbs				mLimbs;			// List of model's limbs
 	ModelTemplate*		mTemplate;		// Model templates can be based on other templates
 	Skeleton*			mSkeleton;		// Skeleton used by this model
-	Thread::Lockable	mLock;			// Thread-safety lock
 	Core*				mCore;			// Pointer back to the core that contains this template
 	bool				mSerializable;	// Whether this template is serializable
 	bool				mIsDirty;		// Whether the bounds of the model need to be recalculated
@@ -55,10 +54,6 @@ public:
 
 	// Unique identifiers are meant to be used as hash keys
 	uint GetUID() const { return mUID; }
-
-	// Thread safety locking/unlocking
-	void Lock()		const { mLock.Lock();	}
-	void Unlock()	const { mLock.Unlock(); }
 
 	// These functions may need to recalculate the values if something has changed
 	const Bounds&	GetBounds()		{ if (mIsDirty) _OnUpdate(); return mBounds;	}

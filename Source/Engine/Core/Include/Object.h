@@ -377,3 +377,15 @@ public:
 		if (script != 0) script->DestroySelf();
 	}
 };
+
+//============================================================================================================
+// Useful assert macro
+//============================================================================================================
+
+#ifdef _DEBUG
+#define ASSERT_IF_CORE_IS_UNLOCKED ASSERT(mCore->IsLocked() || \
+	(mCore->GetNumberOfThreads() == 0 && mCore->GetThreadID() == Thread::GetID()), \
+	"You must lock the core before you work with objects!");
+#else
+#define ASSERT_IF_CORE_IS_UNLOCKED
+#endif

@@ -1,6 +1,8 @@
 #include "../Include/_All.h"
 using namespace R5;
 
+extern ModelInstance* g_lastModel;
+
 //============================================================================================================
 // Retrieves the world transformation matrix
 //============================================================================================================
@@ -73,45 +75,41 @@ bool ModelInstance::OnFill (FillParams& params)
 		// trunk and canopy limbs). Doing this saves texture, matrix, and shader switches.
 		if (limbs.GetSize() > 1)
 		{
-			mModel->Lock();
+			for (uint i = 0, imax = limbs.GetSize(); i < imax; ++i)
 			{
-				for (uint i = 0, imax = limbs.GetSize(); i < imax; ++i)
+				Limb* limb = limbs[i];
+
+				if (limb->IsValid())
 				{
-					Limb* limb = limbs[i];
+					bool isVisible (true);
 
-					if (limb->IsValid())
+					// Models with 3 or more limbs should cull their limbs individually,
+					// but only if the model is referenced just once. This is a quick-and-dirty
+					// optimization for complex scenes created as one large model.
+
+					if ((limbs.GetSize() > 2) && (mModel->GetNumberOfReferences() == 1))
 					{
-						bool isVisible (true);
+						Bounds bounds (limb->GetMesh()->GetBounds());
+						bounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
+						isVisible = params.mFrustum.IsVisible(bounds);
+					}
 
-						// Models with 3 or more limbs should cull their limbs individually,
-						// but only if the model is referenced just once. This is a quick-and-dirty
-						// optimization for complex scenes created as one large model.
+					// Update the limb's visibility flag
+					limb->SetVisible(isVisible);
 
-						if ((limbs.GetSize() > 2) && (mModel->GetNumberOfReferences() == 1))
-						{
-							Bounds bounds (limb->GetMesh()->GetBounds());
-							bounds.Transform(mAbsolutePos, mAbsoluteRot, mAbsoluteScale);
-							isVisible = params.mFrustum.IsVisible(bounds);
-						}
-
-						// Update the limb's visibility flag
-						limb->SetVisible(isVisible);
-
-						// If the limb is visible, add this model to the draw queue
-						if (isVisible)
-						{
-							IMaterial* mat = limb->GetMaterial();
-							params.mDrawQueue.Add(mLayer, this, 0, mat->GetTechniqueMask(), mat->GetUID(), dist);	
-						}
+					// If the limb is visible, add this model to the draw queue
+					if (isVisible)
+					{
+						IMaterial* mat = limb->GetMaterial();
+						params.mDrawQueue.Add(mLayer, this, limb, mat->GetTechniqueMask(), mat->GetUID(), dist);	
 					}
 				}
 			}
-			mModel->Unlock();
 		}
 		else if (limbs.IsValid())
 		{
 			// If we only have 1 limb, it makes sense to group by model instead
-			params.mDrawQueue.Add(mLayer, this, 0, mModel->GetMask(), mModel->GetUID(), dist);
+			params.mDrawQueue.Add(mLayer, this, limbs[0], mModel->GetMask(), mModel->GetUID(), dist);
 			limbs[0]->SetVisible(true);
 		}
 	}
@@ -126,14 +124,15 @@ uint ModelInstance::OnDraw (TemporaryStorage& storage, uint group, const ITechni
 {
 	IGraphics* graphics = mCore->GetGraphics();
 
-	// Automatically normalize normals if the scale is not 1.0
-	graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
-
-	// Set the model's world matrix so the rendered objects show up in their proper place
-	graphics->SetModelMatrix( GetMatrix() );
+	if (g_lastModel != this)
+	{
+		g_lastModel = this;
+		graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
+		graphics->SetModelMatrix( GetMatrix() );
+	}
 
 	// Draw the model
-	return mModel->_Draw(group, graphics, tech);
+	return mModel->_Draw(group, graphics, tech, (Limb*)param);
 }
 
 //============================================================================================================

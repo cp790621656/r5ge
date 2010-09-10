@@ -127,51 +127,45 @@ void ModelTemplate::SetSource (ModelTemplate* temp)
 {
 	if (mTemplate != temp)
 	{
-		Lock();
+		ASSERT_IF_CORE_IS_UNLOCKED;
+
+		// Release all current model data
+		_OnRelease();
+		mLimbs.Clear();
+		mFilename.Clear();
+
+		mSkeleton = 0;
+		mTemplate = temp;
+		mIsDirty = true;
+
+		// If we were given a valid template, we need to copy limb information over
+		if ( mSerializable = (mTemplate != 0) )
 		{
-			// Release all current model data
-			_OnRelease();
-			mLimbs.Clear();
-			mFilename.Clear();
+			// Lock the passed template as well
+			ModelTemplate::Limbs& limbs = mTemplate->GetAllLimbs();
 
-			mSkeleton = 0;
-			mTemplate = temp;
-			mIsDirty = true;
-
-			// If we were given a valid template, we need to copy limb information over
-			if ( mSerializable = (mTemplate != 0) )
+			for (uint i = 0; i < limbs.GetSize(); ++i)
 			{
-				// Lock the passed template as well
-				mTemplate->Lock();
+				Limb* limb = limbs[i];
+
+				if (limb != 0)
 				{
-					ModelTemplate::Limbs& limbs = mTemplate->GetAllLimbs();
-
-					for (uint i = 0; i < limbs.GetSize(); ++i)
-					{
-						Limb* limb = limbs[i];
-
-						if (limb != 0)
-						{
-							// Copy the limb mesh and material information
-							Limb* myLimb = mLimbs.Add( limb->GetName() );
-							myLimb->SetMesh( limb->GetMesh() );
-							myLimb->SetMesh( limb->GetCloud() );
-							myLimb->SetMaterial( limb->GetMaterial() );
-						}
-					}
-
-					// Copy over other parameters
-					mSkeleton		= temp->GetSkeleton();
-					mFilename		= temp->GetFilename();
-					mOnSerialize	= temp->GetOnSerialize();
-
-					// Update the skeletal information
-					_OnSkeletonChanged();
+					// Copy the limb mesh and material information
+					Limb* myLimb = mLimbs.Add( limb->GetName() );
+					myLimb->SetMesh( limb->GetMesh() );
+					myLimb->SetMesh( limb->GetCloud() );
+					myLimb->SetMaterial( limb->GetMaterial() );
 				}
-				mTemplate->Unlock();
 			}
+
+			// Copy over other parameters
+			mSkeleton		= temp->GetSkeleton();
+			mFilename		= temp->GetFilename();
+			mOnSerialize	= temp->GetOnSerialize();
+
+			// Update the skeletal information
+			_OnSkeletonChanged();
 		}
-		Unlock();
 	}
 }
 
@@ -183,12 +177,9 @@ void ModelTemplate::SetSkeleton (Skeleton* skel)
 {
 	if (mSkeleton != skel)
 	{
-		Lock();
-		{
-			mSkeleton = skel;
-			_OnSkeletonChanged();
-		}
-		Unlock();
+		ASSERT_IF_CORE_IS_UNLOCKED;
+		mSkeleton = skel;
+		_OnSkeletonChanged();
 	}
 }
 
@@ -205,45 +196,43 @@ void ModelTemplate::SetSkeleton (const String& name)
 
 void ModelTemplate::Release (bool meshes, bool materials, bool skeleton)
 {
-	Lock();
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
+	_OnRelease();
+
+	if (meshes || materials)
 	{
-		_OnRelease();
-
-		if (meshes || materials)
+		for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
 		{
-			for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
+			Limb* limb (*start);
+
+			if (limb != 0)
 			{
-				Limb* limb (*start);
-
-				if (limb != 0)
+				// Don't release materials that are marked as serializable
+				if (materials && limb->mMat != 0 && !limb->mMat->IsSerializable())
 				{
-					// Don't release materials that are marked as serializable
-					if (materials && limb->mMat != 0 && !limb->mMat->IsSerializable())
-					{
-						limb->mMat->Release();
-					}
-
-					if (meshes && limb->mMesh	!= 0)  limb->mMesh->Release();
-					if (meshes && limb->mCloud	!= 0)  limb->mCloud->Release();
+					limb->mMat->Release();
 				}
+
+				if (meshes && limb->mMesh	!= 0)  limb->mMesh->Release();
+				if (meshes && limb->mCloud	!= 0)  limb->mCloud->Release();
 			}
 		}
-
-		mLimbs.Clear();
-
-		if (skeleton && mSkeleton != 0)
-		{
-			mSkeleton->Release();
-		}
-
-		mSkeleton	= 0;
-		mTemplate	= 0;
-		mIsDirty	= false;
-		mBounds.Clear();
-
-		mOnSerialize.Release();
 	}
-	Unlock();
+
+	mLimbs.Clear();
+
+	if (skeleton && mSkeleton != 0)
+	{
+		mSkeleton->Release();
+	}
+
+	mSkeleton	= 0;
+	mTemplate	= 0;
+	mIsDirty	= false;
+	mBounds.Clear();
+
+	mOnSerialize.Release();
 }
 
 //============================================================================================================
@@ -350,48 +339,44 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 
 	if ((mesh != 0 || bm != 0) && mat != 0)
 	{
-		Lock();
+		// First get the limb by its name
+		String name (root.mValue.GetString());
+		Limb* limb = GetLimb(name, false);
+
+		// If the limb is missing, see if we can match it by mesh
+		if (limb == 0)
 		{
-			// First get the limb by its name
-			String name (root.mValue.GetString());
-			Limb* limb = GetLimb(name, false);
-
-			// If the limb is missing, see if we can match it by mesh
-			if (limb == 0)
+			// Run through the current limbs and see if there is already a limb using this mesh
+			for (uint i = 0; i < mLimbs.GetSize(); ++i)
 			{
-				// Run through the current limbs and see if there is already a limb using this mesh
-				for (uint i = 0; i < mLimbs.GetSize(); ++i)
-				{
-					Limb* ptr = mLimbs[i];
+				Limb* ptr = mLimbs[i];
 
-					// Remember the matching limb
-					if ( ptr  != 0 &&
-						(mesh != 0 && ptr->mMesh == mesh) ||
-						(bm   != 0 && ptr->mCloud == bm) )
-					{
-						limb = ptr;
-						break;
-					}
+				// Remember the matching limb
+				if ( ptr  != 0 &&
+					(mesh != 0 && ptr->mMesh == mesh) ||
+					(bm   != 0 && ptr->mCloud == bm) )
+				{
+					limb = ptr;
+					break;
 				}
 			}
-
-			// If the limb is still missing, time to add a new entry
-			if (limb == 0)
-			{
-				limb = mLimbs.Add(name);
-				forceUpdate = true;
-			}
-
-			if (forceUpdate)
-			{
-				// Update the limb's name, mesh, and material
-				limb->SetName(name);
-				if (mesh != 0) limb->Set(mesh, mat);
-				else limb->Set(bm, mat);
-				SetDirty();
-			}
 		}
-		Unlock();
+
+		// If the limb is still missing, time to add a new entry
+		if (limb == 0)
+		{
+			limb = mLimbs.Add(name);
+			forceUpdate = true;
+		}
+
+		if (forceUpdate)
+		{
+			// Update the limb's name, mesh, and material
+			limb->SetName(name);
+			if (mesh != 0) limb->Set(mesh, mat);
+			else limb->Set(bm, mat);
+			SetDirty();
+		}
 	}
 	return true;
 }
@@ -402,29 +387,27 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 
 void ModelTemplate::_SaveLimbs (TreeNode& node, bool forceSave) const
 {
-	Lock();
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
+	for (uint i = 0; i < mLimbs.GetSize(); ++i)
 	{
-		for (uint i = 0; i < mLimbs.GetSize(); ++i)
+		const Limb* limb ( mLimbs[i] );
+
+		if ( limb != 0 && (forceSave || limb->mSerializable) && limb->IsValid() )
 		{
-			const Limb* limb ( mLimbs[i] );
+			TreeNode& child = node.AddChild( Limb::ClassID(), limb->GetName() );
 
-			if ( limb != 0 && (forceSave || limb->mSerializable) && limb->IsValid() )
+			if (limb->mMesh != 0) 
 			{
-				TreeNode& child = node.AddChild( Limb::ClassID(), limb->GetName() );
-
-				if (limb->mMesh != 0) 
-				{
-					child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
-				}
-				else if (limb->mCloud != 0)
-				{
-					child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
-				}
-				child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
+				child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
 			}
+			else if (limb->mCloud != 0)
+			{
+				child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
+			}
+			child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
 		}
 	}
-	Unlock();
 }
 
 //============================================================================================================
@@ -439,21 +422,19 @@ void ModelTemplate::_OnUpdate()
 
 	if (mLimbs.IsValid())
 	{
-		Lock();
-		{
-			for (uint i = mLimbs.GetSize(); i > 0; )
-			{
-				const Limb* limb = mLimbs[--i];
+		ASSERT_IF_CORE_IS_UNLOCKED;
 
-				if (limb->IsValid())
-				{
-					if (limb->mMesh != 0) mBounds.Include(limb->mMesh->GetBounds());
-					else if (limb->mCloud != 0) mBounds.Include(limb->mCloud->GetBounds());
-					mMask |= limb->mMat->GetTechniqueMask();
-				}
+		for (uint i = mLimbs.GetSize(); i > 0; )
+		{
+			const Limb* limb = mLimbs[--i];
+
+			if (limb->IsValid())
+			{
+				if (limb->mMesh != 0) mBounds.Include(limb->mMesh->GetBounds());
+				else if (limb->mCloud != 0) mBounds.Include(limb->mCloud->GetBounds());
+				mMask |= limb->mMat->GetTechniqueMask();
 			}
 		}
-		Unlock();
 	}
 }
 
@@ -529,156 +510,154 @@ void GatherModels (const TreeNode& root, Array<String>& models)
 
 bool ModelTemplate::Save (TreeNode& root) const
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
 	Array<Mesh*> meshes;
 	Array<Cloud*> mBMs;
 	Array<IMaterial*> materials;
 
-	Lock();
+	TreeNode& graphics	= root.AddUnique(IGraphics::ClassID());
+	TreeNode& core		= root.AddUnique(Core::ClassID());
+
+	bool isFirst = true;
+
+	FOREACH(i, root.mChildren)
 	{
-		TreeNode& graphics	= root.AddUnique(IGraphics::ClassID());
-		TreeNode& core		= root.AddUnique(Core::ClassID());
-
-		bool isFirst = true;
-
-		FOREACH(i, root.mChildren)
+		if (root.mChildren[i].mTag == "Template")
 		{
-			if (root.mChildren[i].mTag == "Template")
+			isFirst = false;
+			break;
+		}
+	}
+
+	// First model template gets saved into an unnamed "Template" tag, others into their own
+	TreeNode& model = isFirst ? root.AddChild("Template") : core.AddChild(ModelTemplate::ClassID(), mName);
+
+	// Disable serialization for all sections
+	graphics.AddUnique("Serializable").mValue = false;
+	model.AddUnique   ("Serializable").mValue = false;
+
+	// Save the skeleton if it's present
+	if (mSkeleton != 0)
+	{
+		mSkeleton->SerializeTo(core);
+		model.AddChild( Skeleton::ClassID(), mSkeleton->GetName() );
+	}
+
+	// Collect all unique meshes and materials
+	for (uint i = 0; i < mLimbs.GetSize(); ++i)
+	{
+		const Limb* limb ( mLimbs[i] );
+
+		if (limb != 0)
+		{
+			if (limb->mMat		!= 0) materials.AddUnique(limb->mMat);
+			if (limb->mMesh		!= 0) meshes.AddUnique(limb->mMesh);
+			if (limb->mCloud	!= 0) mBMs.AddUnique(limb->mCloud);
+
+			// If the limb is valid, save it right away
+			if (limb->IsValid())
 			{
-				isFirst = false;
+				TreeNode& child ( model.AddChild( Limb::ClassID(), limb->GetName() ) );
+
+				if (limb->mMesh != 0)
+				{
+					child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+				}
+				else if (limb->mCloud != 0)
+				{
+					child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
+				}
+				child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
+			}
+		}
+	}
+
+	// Save materials
+	for (uint i = 0; i < materials.GetSize(); ++i)
+	{
+		IMaterial* mat = materials[i];
+		if (mat == 0) continue;
+
+		FOREACH(b, graphics.mChildren)
+		{
+			TreeNode& child = graphics.mChildren[b];
+
+			if (child.mTag == IMaterial::ClassID() &&
+				child.mValue.IsString() &&
+				child.mValue.AsString() == mat->GetName())
+			{
+				mat = 0;
 				break;
 			}
 		}
 
-		// First model template gets saved into an unnamed "Template" tag, others into their own
-		TreeNode& model = isFirst ? root.AddChild("Template") : core.AddChild(ModelTemplate::ClassID(), mName);
-
-		// Disable serialization for all sections
-		graphics.AddUnique("Serializable").mValue = false;
-		model.AddUnique   ("Serializable").mValue = false;
-
-		// Save the skeleton if it's present
-		if (mSkeleton != 0)
+		if (mat != 0)
 		{
-			mSkeleton->SerializeTo(core);
-			model.AddChild( Skeleton::ClassID(), mSkeleton->GetName() );
-		}
-
-		// Collect all unique meshes and materials
-		for (uint i = 0; i < mLimbs.GetSize(); ++i)
-		{
-			const Limb* limb ( mLimbs[i] );
-
-			if (limb != 0)
-			{
-				if (limb->mMat		!= 0) materials.AddUnique(limb->mMat);
-				if (limb->mMesh		!= 0) meshes.AddUnique(limb->mMesh);
-				if (limb->mCloud	!= 0) mBMs.AddUnique(limb->mCloud);
-
-				// If the limb is valid, save it right away
-				if (limb->IsValid())
-				{
-					TreeNode& child ( model.AddChild( Limb::ClassID(), limb->GetName() ) );
-
-					if (limb->mMesh != 0)
-					{
-						child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
-					}
-					else if (limb->mCloud != 0)
-					{
-						child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
-					}
-					child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
-				}
-			}
-		}
-
-		// Save materials
-		for (uint i = 0; i < materials.GetSize(); ++i)
-		{
-			IMaterial* mat = materials[i];
-			if (mat == 0) continue;
-
-			FOREACH(b, graphics.mChildren)
-			{
-				TreeNode& child = graphics.mChildren[b];
-
-				if (child.mTag == IMaterial::ClassID() &&
-					child.mValue.IsString() &&
-					child.mValue.AsString() == mat->GetName())
-				{
-					mat = 0;
-					break;
-				}
-			}
-
-			if (mat != 0)
-			{
-				bool ser = mat->IsSerializable();
-				mat->SetSerializable(true);
-				mat->SerializeTo(graphics);
-				mat->SetSerializable(ser);
-			}
-		}
-
-		// Save all unique meshes
-		for (uint i = 0; i < meshes.GetSize(); ++i)
-		{
-			Mesh* mesh = meshes[i];
-
-			FOREACH(b, core.mChildren)
-			{
-				TreeNode& child = core.mChildren[b];
-
-				if (child.mTag == Mesh::ClassID() &&
-					child.mValue.IsString() &&
-					child.mValue.AsString() == mesh->GetName())
-				{
-					mesh = 0;
-					break;
-				}
-			}
-			if (mesh != 0) mesh->SerializeTo(core);
-		}
-
-		// Save all unique billboard clouds
-		for (uint i = 0; i < mBMs.GetSize(); ++i)
-		{
-			Cloud* mesh = mBMs[i];
-
-			FOREACH(b, core.mChildren)
-			{
-				TreeNode& child = core.mChildren[b];
-
-				if (child.mTag == Mesh::ClassID() &&
-					child.mValue.IsString() &&
-					child.mValue.AsString() == mesh->GetName())
-				{
-					mesh = 0;
-					break;
-				}
-			}
-			if (mesh != 0) mBMs[i]->SerializeTo(core);
-		}
-
-		// Save all templates this model depends on
-		if (mOnSerialize.HasChildren())
-		{
-			Array<String> models;
-			GatherModels(mOnSerialize, models);
-
-			FOREACH(i, models)
-			{
-				const String& m = models[i];
-				ModelTemplate* temp = mCore->GetModelTemplate(m, false);
-				if (temp != 0 && temp != this) temp->Save(root);
-			}
-
-			// Save the OnSerialize section itself
-			model.mChildren.Expand() = mOnSerialize;
-			model.mChildren.Back().mTag = "OnSerialize";
+			bool ser = mat->IsSerializable();
+			mat->SetSerializable(true);
+			mat->SerializeTo(graphics);
+			mat->SetSerializable(ser);
 		}
 	}
-	Unlock();
+
+	// Save all unique meshes
+	for (uint i = 0; i < meshes.GetSize(); ++i)
+	{
+		Mesh* mesh = meshes[i];
+
+		FOREACH(b, core.mChildren)
+		{
+			TreeNode& child = core.mChildren[b];
+
+			if (child.mTag == Mesh::ClassID() &&
+				child.mValue.IsString() &&
+				child.mValue.AsString() == mesh->GetName())
+			{
+				mesh = 0;
+				break;
+			}
+		}
+		if (mesh != 0) mesh->SerializeTo(core);
+	}
+
+	// Save all unique billboard clouds
+	for (uint i = 0; i < mBMs.GetSize(); ++i)
+	{
+		Cloud* mesh = mBMs[i];
+
+		FOREACH(b, core.mChildren)
+		{
+			TreeNode& child = core.mChildren[b];
+
+			if (child.mTag == Mesh::ClassID() &&
+				child.mValue.IsString() &&
+				child.mValue.AsString() == mesh->GetName())
+			{
+				mesh = 0;
+				break;
+			}
+		}
+		if (mesh != 0) mBMs[i]->SerializeTo(core);
+	}
+
+	// Save all templates this model depends on
+	if (mOnSerialize.HasChildren())
+	{
+		Array<String> models;
+		GatherModels(mOnSerialize, models);
+
+		FOREACH(i, models)
+		{
+			const String& m = models[i];
+			ModelTemplate* temp = mCore->GetModelTemplate(m, false);
+			if (temp != 0 && temp != this) temp->Save(root);
+		}
+
+		// Save the OnSerialize section itself
+		model.mChildren.Expand() = mOnSerialize;
+		model.mChildren.Back().mTag = "OnSerialize";
+	}
 	return true;
 }
 

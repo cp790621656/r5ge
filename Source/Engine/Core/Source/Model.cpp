@@ -51,124 +51,120 @@ void Model::Update()
 			static Array<Notification> notifications;
 			notifications.Clear();
 
-			Lock();
-			{
-				const Skeleton::Bones& bones = mSkeleton->GetAllBones();
+			const Skeleton::Bones& bones = mSkeleton->GetAllBones();
 
-				// Reset the transform contribution values
-				for (uint i = mTransforms.GetSize(); i > 0; )
+			// Reset the transform contribution values
+			for (uint i = mTransforms.GetSize(); i > 0; )
+			{
+				BoneTransform& trans = mTransforms[--i];
+				trans.mCombinedPos = 0.0f;
+				trans.mCombinedRot = 0.0f;
+			}
+
+			// Run through all animation layers
+			for (uint i = mAnimLayers.GetSize(); i > 0; )
+			{
+				// Get the list of animations playing on the current layer
+				AnimationLayer* animLayer = mAnimLayers[--i];
+				if (animLayer == 0) continue;
+
+				// Skip this layer if it has no animations
+				PlayingAnims& playingAnims = animLayer->mPlayingAnims;
+				if (playingAnims.IsEmpty()) continue;
+
+				float remain = 1.0f, total = 0.0f;
+
+				// Run through all playing animations
+				for (uint b = playingAnims.GetSize(); b > 0; )
 				{
-					BoneTransform& trans = mTransforms[--i];
-					trans.mCombinedPos = 0.0f;
-					trans.mCombinedRot = 0.0f;
+					PlayingAnimation& play = playingAnims[--b];
+					ActiveAnimation* aa = play.mActiveAnim;
+
+					if (remain > 0.0f)
+					{
+						// Calculate the target duration
+						total = Interpolation::Linear(total, aa->mPlaybackDuration, remain);
+						remain -= aa->mCurrentAlpha;
+					}
+					else
+					{
+						// If the animation is completely hidden, remove it from the list
+						aa->mIsActive = false;
+						playingAnims.RemoveAt(b);
+
+						if (play.mOnEnd)
+						{
+							// Notify the listener that this animation has been removed
+							Notification& n = notifications.Expand();
+							n.mOnEnd		= play.mOnEnd;
+							n.mAnim			= aa->mAnimation;
+							n.mTimeToEnd	= 0.0f;
+						}
+					}
 				}
 
-				// Run through all animation layers
-				for (uint i = mAnimLayers.GetSize(); i > 0; )
+				if (total > 0.0f)
 				{
-					// Get the list of animations playing on the current layer
-					AnimationLayer* animLayer = mAnimLayers[--i];
-					if (animLayer == 0) continue;
-
-					// Skip this layer if it has no animations
-					PlayingAnims& playingAnims = animLayer->mPlayingAnims;
-					if (playingAnims.IsEmpty()) continue;
-
-					float remain = 1.0f, total = 0.0f;
-
 					// Run through all playing animations
 					for (uint b = playingAnims.GetSize(); b > 0; )
 					{
 						PlayingAnimation& play = playingAnims[--b];
 						ActiveAnimation* aa = play.mActiveAnim;
 
-						if (remain > 0.0f)
+						// Whether the animation is not yet fading out
+						bool wasPlaying = (aa->mPlaybackFactor < aa->mFadeOutStart);
+
+						// Advance the animation, transitioning the sampling
+						bool done = aa->AdvanceSample(delta * (aa->mPlaybackDuration / total),
+							bones, mTransforms);
+
+						// If the animation has been deactivated, remove it from the list
+						if (!aa->mIsActive)
 						{
-							// Calculate the target duration
-							total = Interpolation::Linear(total, aa->mPlaybackDuration, remain);
-							remain -= aa->mCurrentAlpha;
-						}
-						else
-						{
-							// If the animation is completely hidden, remove it from the list
-							aa->mIsActive = false;
 							playingAnims.RemoveAt(b);
-
-							if (play.mOnEnd)
-							{
-								// Notify the listener that this animation has been removed
-								Notification& n = notifications.Expand();
-								n.mOnEnd		= play.mOnEnd;
-								n.mAnim			= aa->mAnimation;
-								n.mTimeToEnd	= 0.0f;
-							}
+							aa->mIsActive = false;
 						}
-					}
 
-					if (total > 0.0f)
-					{
-						// Run through all playing animations
-						for (uint b = playingAnims.GetSize(); b > 0; )
+						// Whether the animation is still actively playing
+						bool isPlaying = aa->mIsActive && (aa->mPlaybackFactor < aa->mFadeOutStart);
+						
+						// If there is a listener and this animation is coming to an end, notify it
+						if (play.mOnEnd && (!aa->mIsActive || (wasPlaying && !isPlaying)))
 						{
-							PlayingAnimation& play = playingAnims[--b];
-							ActiveAnimation* aa = play.mActiveAnim;
-
-							// Whether the animation is not yet fading out
-							bool wasPlaying = (aa->mPlaybackFactor < aa->mFadeOutStart);
-
-							// Advance the animation, transitioning the sampling
-							bool done = aa->AdvanceSample(delta * (aa->mPlaybackDuration / total),
-								bones, mTransforms);
-
-							// If the animation has been deactivated, remove it from the list
-							if (!aa->mIsActive)
-							{
-								playingAnims.RemoveAt(b);
-								aa->mIsActive = false;
-							}
-
-							// Whether the animation is still actively playing
-							bool isPlaying = aa->mIsActive && (aa->mPlaybackFactor < aa->mFadeOutStart);
-							
-							// If there is a listener and this animation is coming to an end, notify it
-							if (play.mOnEnd && (!aa->mIsActive || (wasPlaying && !isPlaying)))
-							{
-								Notification& n = notifications.Expand();
-								n.mOnEnd		= play.mOnEnd;
-								n.mAnim			= aa->mAnimation;
-								n.mTimeToEnd	= (isPlaying) ? (1.0f - aa->mPlaybackFactor) *
-									aa->mPlaybackDuration / mAnimationSpeed : 0.0f;
-							}
-
-							// If we've reached 100%, we're done with this layer
-							if (done) break;
+							Notification& n = notifications.Expand();
+							n.mOnEnd		= play.mOnEnd;
+							n.mAnim			= aa->mAnimation;
+							n.mTimeToEnd	= (isPlaying) ? (1.0f - aa->mPlaybackFactor) *
+								aa->mPlaybackDuration / mAnimationSpeed : 0.0f;
 						}
-					}
-				}
 
-				// Combine all active animations, creating the final set of bone matrices
-				for (uint t = 0, tmax = mTransforms.GetSize(); t < tmax; ++t)
-				{
-					BoneTransform& trans = mTransforms[t];
-
-					if (trans.mParent < mTransforms.GetSize())
-					{
-						trans.CalculateTransformMatrix( mTransforms[trans.mParent] );
+						// If we've reached 100%, we're done with this layer
+						if (done) break;
 					}
-					else
-					{
-						trans.CalculateTransformMatrix();
-					}
-
-					// Set the bone's final transformation matrix
-					mMatrices[t].SetToTransform(
-						trans.mInvBindPos,
-						trans.mAbsolutePos,
-						trans.mInvBindRot,
-						trans.mAbsoluteRot );
 				}
 			}
-			Unlock();
+
+			// Combine all active animations, creating the final set of bone matrices
+			for (uint t = 0, tmax = mTransforms.GetSize(); t < tmax; ++t)
+			{
+				BoneTransform& trans = mTransforms[t];
+
+				if (trans.mParent < mTransforms.GetSize())
+				{
+					trans.CalculateTransformMatrix( mTransforms[trans.mParent] );
+				}
+				else
+				{
+					trans.CalculateTransformMatrix();
+				}
+
+				// Set the bone's final transformation matrix
+				mMatrices[t].SetToTransform(
+					trans.mInvBindPos,
+					trans.mAbsolutePos,
+					trans.mInvBindRot,
+					trans.mAbsoluteRot );
+			}
 
 			// Inform the listeners
 			for (uint i = notifications.GetSize(); i > 0; )
@@ -189,13 +185,15 @@ void Model::Update()
 // Draw the object using the specified technique
 //============================================================================================================
 
-uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
+uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech, Limb* limb)
 {
 	if ( mSkeleton == 0 || mMatrices.IsEmpty() )
 	{
 		// If this model has no skeleton, just render it as a static prop
-		return Prop::_Draw(group, graphics, tech);
+		return Prop::_Draw(group, graphics, tech, limb);
 	}
+
+	ASSERT_IF_CORE_IS_UNLOCKED;
 
 	// Last rendered model
 	static const Model* lastModel = 0;
@@ -205,68 +203,57 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech)
 	// If the model has changed or the animation has been updated
 	bool updateSkin = (mAnimUpdated || lastModel != this || lastTech != tech);
 
-	// Go through every limb and render it
-	Lock();
+	// Only draw the limbs that are visible with the limb technique
+	if (limb->IsVisibleWith(mask))
 	{
-		// Go through all limbs
-		for (Limb** start = mLimbs.GetStart(), **end = mLimbs.GetEnd(); start != end; ++start)
+		Mesh*		mesh	= limb->GetMesh();
+		IMaterial*	mat		= limb->GetMaterial();
+
+		// Skip limbs that belong to different groups
+		if (group != GetUID() && group != mat->GetUID()) return 0;
+
+		IMaterial::DrawMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
+
+		if (mesh != 0 && method != 0)
 		{
-			Limb* limb (*start);
-
-			// Only draw the limbs that are visible with the current technique
-			if (limb->IsVisibleWith(mask))
+			// Set the active material, possibly updating the shader in the process
+			if ( graphics->SetActiveMaterial(mat) )
 			{
-				Mesh*		mesh	= limb->GetMesh();
-				IMaterial*	mat		= limb->GetMaterial();
-
-				// Skip limbs that belong to different groups
-				if (group != GetUID() && group != mat->GetUID()) continue;
-
-				IMaterial::DrawMethod* method = (mat != 0 ? mat->GetVisibleMethod(tech) : 0);
-
-				if (mesh != 0 && method != 0)
+				if (updateSkin)
 				{
-					// Set the active material, possibly updating the shader in the process
-					if ( graphics->SetActiveMaterial(mat) )
+					IShader* shader = method->GetShader();
+
+					// If we're skinning on the GPU and we have a shader active
+					if (g_skinOnGPU && shader != 0 && shader->GetFlag(IShader::Flag::Skinned))
 					{
-						if (updateSkin)
-						{
-							IShader* shader = method->GetShader();
+						Uniform uniform;
+						uniform.mType		= Uniform::Type::ArrayFloat16;
+						uniform.mPtr		= &mMatrices[0][0];
+						uniform.mElements	= mMatrices.GetSize();
 
-							// If we're skinning on the GPU and we have a shader active
-							if (g_skinOnGPU && shader != 0 && shader->GetFlag(IShader::Flag::Skinned))
-							{
-								Uniform uniform;
-								uniform.mType		= Uniform::Type::ArrayFloat16;
-								uniform.mPtr		= &mMatrices[0][0];
-								uniform.mElements	= mMatrices.GetSize();
+						// Update the transform matrix
+						shader->SetUniform("R5_boneTransforms", uniform);
 
-								// Update the transform matrix
-								shader->SetUniform("R5_boneTransforms", uniform);
-
-								// If we're skinning on the GPU, we don't need transformed vertices
-								mesh->DiscardTransforms();
-							}
-							else
-							{
-								// If we're skinning on the CPU however, we need to apply the transforms
-								mesh->ApplyTransforms( mMatrices, GetNumberOfReferences() );
-							}
-						}
-
-						// Draw the mesh
-						mesh->Draw(graphics);
-
-						// Remember the current values
-						mAnimUpdated	= false;
-						lastModel		= this;
-						lastTech		= tech;
+						// If we're skinning on the GPU, we don't need transformed vertices
+						mesh->DiscardTransforms();
+					}
+					else
+					{
+						// If we're skinning on the CPU however, we need to apply the transforms
+						mesh->ApplyTransforms( mMatrices, GetNumberOfReferences() );
 					}
 				}
+
+				// Draw the mesh
+				mesh->Draw(graphics);
+
+				// Remember the limb values
+				mAnimUpdated	= false;
+				lastModel		= this;
+				lastTech		= tech;
 			}
 		}
 	}
-	Unlock();
 	return 1;
 }
 
@@ -555,7 +542,7 @@ bool Model::IsAnimated() const
 
 	if (mSkeleton != 0)
 	{
-		Lock();
+		ASSERT_IF_CORE_IS_UNLOCKED;
 
 		for (uint i = mAnimLayers.GetSize(); i > 0; )
 		{
@@ -567,7 +554,6 @@ bool Model::IsAnimated() const
 				break;
 			}
 		}
-		Unlock();
 	}
 	return retVal;
 }
@@ -582,9 +568,8 @@ const BoneTransform* Model::GetBoneTransform (uint index) const
 
 	if (mSkeleton != 0)
 	{
-		Lock();
+		ASSERT_IF_CORE_IS_UNLOCKED;
 		if (index < mTransforms.GetSize()) retVal = &mTransforms[index];
-		Unlock();
 	}
 	return retVal;
 }
@@ -599,12 +584,9 @@ const BoneTransform* Model::GetBoneTransform (const String& name) const
 
 	if (mSkeleton != 0)
 	{
-		Lock();
-		{
-			uint index = mSkeleton->GetBoneIndex(name);
-			if (index < mTransforms.GetSize()) retVal = &mTransforms[index];
-		}
-		Unlock();
+		ASSERT_IF_CORE_IS_UNLOCKED;
+		uint index = mSkeleton->GetBoneIndex(name);
+		if (index < mTransforms.GetSize()) retVal = &mTransforms[index];
 	}
 	return retVal;
 }
@@ -613,7 +595,7 @@ const BoneTransform* Model::GetBoneTransform (const String& name) const
 // Retrieves the specified animation, creating it if necessary
 //============================================================================================================
 
-Animation*	Model::GetAnimation (const String& name, bool createIfMissing)
+Animation* Model::GetAnimation (const String& name, bool createIfMissing)
 {
 	return (mSkeleton != 0 ? mSkeleton->GetAnimation(name, createIfMissing) : 0);
 }
@@ -636,99 +618,96 @@ uint Model::PlayAnimation (const Animation* anim, float strength, const Animatio
 {
 	if (anim == 0 || mSkeleton == 0) return PlayResponse::Failed;
 
-	Lock();
+	ASSERT_IF_CORE_IS_UNLOCKED;
+
+	ActiveAnimation*	activeAnim		= 0;
+	PlayingAnims*		playingAnims	= 0;
+	PlayingAnimation*	playingAnim		= 0;
+	uint				animLayer		= anim->GetLayer();
+
+	// Check all active animations to see if the requested animation has already been played
+	for (uint i = mActiveAnims.GetSize(); i > 0; )
 	{
-		ActiveAnimation*	activeAnim		= 0;
-		PlayingAnims*		playingAnims	= 0;
-		PlayingAnimation*	playingAnim		= 0;
-		uint				animLayer		= anim->GetLayer();
+		activeAnim = mActiveAnims[--i];
 
-		// Check all active animations to see if the requested animation has already been played
-		for (uint i = mActiveAnims.GetSize(); i > 0; )
+		if (activeAnim->mAnimation == anim)
 		{
-			activeAnim = mActiveAnims[--i];
-
-			if (activeAnim->mAnimation == anim)
+			if (activeAnim->mIsActive)
 			{
-				if (activeAnim->mIsActive)
+				// The animation should no longer be trying to fade out
+				if (activeAnim->mOverrideDuration > 0.0f)
 				{
-					// The animation should no longer be trying to fade out
-					if (activeAnim->mOverrideDuration > 0.0f)
-					{
-						// Flip the duration, making the animation fade in instead
-						activeAnim->mOverrideDuration = -activeAnim->mOverrideDuration;
-					}
-
-					// Update the animation's strength, just in case it has changed
-					activeAnim->mStrength = strength;
-
-					// The animation is already active -- fade out all animations that are covering it
-					const Vector3f& duration = anim->GetDuration();
-					float delay = anim->IsLooping() ? duration.x : duration.z;
-
-					// Stop the animation, fading it out with an appropriate delay
-					_StopCoveringAnimations(animLayer, anim, (delay > 0.0f) ? delay : 0.25f);
-					Unlock();
-					return PlayResponse::AlreadyPlaying;
+					// Flip the duration, making the animation fade in instead
+					activeAnim->mOverrideDuration = -activeAnim->mOverrideDuration;
 				}
 
-				// The requested animation is currently inactive -- make it active
-				playingAnims				= _GetPlayingAnims(animLayer);
-				playingAnim					= &playingAnims->Expand();
-				playingAnim->mActiveAnim	= activeAnim;
-				playingAnim->mOnEnd			= onAnimEnd;
-				break;
+				// Update the animation's strength, just in case it has changed
+				activeAnim->mStrength = strength;
+
+				// The animation is already active -- fade out all animations that are covering it
+				const Vector3f& duration = anim->GetDuration();
+				float delay = anim->IsLooping() ? duration.x : duration.z;
+
+				// Stop the animation, fading it out with an appropriate delay
+				_StopCoveringAnimations(animLayer, anim, (delay > 0.0f) ? delay : 0.25f);
+				return PlayResponse::AlreadyPlaying;
 			}
-		}
 
-		// If the animation was not found, we should create a new one
-		if (playingAnim == 0)
-		{
-			ASSERT( anim == mSkeleton->GetAnimation(anim->GetID()), "Animation wasn't found!" );
-
-			// Create a new active animation
-			activeAnim = (mActiveAnims.Expand() = new ActiveAnimation());
-			activeAnim->mAnimation	= const_cast<Animation*>(anim);
-
-			// Add a new playing animation entry
+			// The requested animation is currently inactive -- make it active
 			playingAnims				= _GetPlayingAnims(animLayer);
 			playingAnim					= &playingAnims->Expand();
 			playingAnim->mActiveAnim	= activeAnim;
 			playingAnim->mOnEnd			= onAnimEnd;
-		}
-
-		const Vector3f& duration = anim->GetDuration();
-
-		// Ensure that the specified values are positive
-		float fadeInDuration	= Float::Abs(duration.x);
-		float playDuration		= Float::Abs(duration.y);
-		float fadeOutDuration	= Float::Abs(duration.z);
-
-		// No need for a fade-out duration if the animation is looping
-		if (anim->IsLooping()) fadeOutDuration = 0.0f;
-
-		// Animation's combined length includes fade in and fade out times
-		float fadeLength		= fadeInDuration + fadeOutDuration;
-		float totalDuration		= Float::Max(playDuration, fadeLength);
-
-		// Activate the animation
-		activeAnim->Activate((totalDuration == 0.0f) ? 0.0f : (fadeInDuration	/ totalDuration),
-							 (totalDuration == 0.0f) ? 0.0f : (playDuration		/ totalDuration),
-							 (totalDuration == 0.0f) ? 0.0f : (fadeOutDuration	/ totalDuration),
-							  totalDuration, strength);
-
-		// Sync up looping animations
-		if (playingAnims->GetSize() > 1)
-		{
-			ActiveAnimation* previous = playingAnims->Back(1).mActiveAnim;
-
-			if (anim->IsLooping() && previous->mAnimation->IsLooping())
-			{
-				activeAnim->mSamplingOffset = previous->mSamplingFactor;
-			}
+			break;
 		}
 	}
-	Unlock();
+
+	// If the animation was not found, we should create a new one
+	if (playingAnim == 0)
+	{
+		ASSERT( anim == mSkeleton->GetAnimation(anim->GetID()), "Animation wasn't found!" );
+
+		// Create a new active animation
+		activeAnim = (mActiveAnims.Expand() = new ActiveAnimation());
+		activeAnim->mAnimation	= const_cast<Animation*>(anim);
+
+		// Add a new playing animation entry
+		playingAnims				= _GetPlayingAnims(animLayer);
+		playingAnim					= &playingAnims->Expand();
+		playingAnim->mActiveAnim	= activeAnim;
+		playingAnim->mOnEnd			= onAnimEnd;
+	}
+
+	const Vector3f& duration = anim->GetDuration();
+
+	// Ensure that the specified values are positive
+	float fadeInDuration	= Float::Abs(duration.x);
+	float playDuration		= Float::Abs(duration.y);
+	float fadeOutDuration	= Float::Abs(duration.z);
+
+	// No need for a fade-out duration if the animation is looping
+	if (anim->IsLooping()) fadeOutDuration = 0.0f;
+
+	// Animation's combined length includes fade in and fade out times
+	float fadeLength		= fadeInDuration + fadeOutDuration;
+	float totalDuration		= Float::Max(playDuration, fadeLength);
+
+	// Activate the animation
+	activeAnim->Activate((totalDuration == 0.0f) ? 0.0f : (fadeInDuration	/ totalDuration),
+						 (totalDuration == 0.0f) ? 0.0f : (playDuration		/ totalDuration),
+						 (totalDuration == 0.0f) ? 0.0f : (fadeOutDuration	/ totalDuration),
+						  totalDuration, strength);
+
+	// Sync up looping animations
+	if (playingAnims->GetSize() > 1)
+	{
+		ActiveAnimation* previous = playingAnims->Back(1).mActiveAnim;
+
+		if (anim->IsLooping() && previous->mAnimation->IsLooping())
+		{
+			activeAnim->mSamplingOffset = previous->mSamplingFactor;
+		}
+	}
 	return PlayResponse::NowPlaying;
 }
 
@@ -738,6 +717,7 @@ uint Model::PlayAnimation (const Animation* anim, float strength, const Animatio
 
 bool Model::StopAnimation (const String& name, float duration, const AnimationEnd& onAnimEnd)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
 	Animation* anim = (mSkeleton != 0 ? mSkeleton->GetAnimation(name, false) : 0);
 	return (anim != 0) ? StopAnimation(anim, duration, onAnimEnd) : false;
 }
@@ -748,24 +728,21 @@ bool Model::StopAnimation (const String& name, float duration, const AnimationEn
 
 bool Model::StopAnimation (const Animation* anim, float duration, const AnimationEnd& onAnimEnd)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
 	bool retVal = false;
 
 	if (anim != 0 && mAnimLayers.IsValid())
 	{
-		Lock();
+		FOREACH(i, mAnimLayers)
 		{
-			FOREACH(i, mAnimLayers)
-			{
-				AnimationLayer* layer = mAnimLayers[i];
+			AnimationLayer* layer = mAnimLayers[i];
 
-				if (layer != 0 && _StopAnimation(layer->mPlayingAnims, anim, duration, onAnimEnd))
-				{
-					retVal = true;
-					break;
-				}
+			if (layer != 0 && _StopAnimation(layer->mPlayingAnims, anim, duration, onAnimEnd))
+			{
+				retVal = true;
+				break;
 			}
 		}
-		Unlock();
 	}
 	return retVal;
 }
@@ -776,24 +753,21 @@ bool Model::StopAnimation (const Animation* anim, float duration, const Animatio
 
 bool Model::StopAnimationsOnLayer (uint animationLayer, float duration, const AnimationEnd& onAnimEnd)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
 	bool retVal = false;
 
 	if (mAnimLayers.IsValid())
 	{
-		Lock();
+		FOREACH(i, mAnimLayers)
 		{
-			FOREACH(i, mAnimLayers)
-			{
-				AnimationLayer* layer = mAnimLayers[i];
+			AnimationLayer* layer = mAnimLayers[i];
 
-				if (layer != 0 && layer->mLayer == animationLayer)
-				{
-					retVal = _StopAnimation(layer->mPlayingAnims, 0, duration, onAnimEnd);
-					break;
-				}
+			if (layer != 0 && layer->mLayer == animationLayer)
+			{
+				retVal = _StopAnimation(layer->mPlayingAnims, 0, duration, onAnimEnd);
+				break;
 			}
 		}
-		Unlock();
 	}
 	return retVal;
 }
@@ -804,23 +778,20 @@ bool Model::StopAnimationsOnLayer (uint animationLayer, float duration, const An
 
 bool Model::StopAllAnimations (float duration, const AnimationEnd& onAnimEnd)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
 	bool retVal = false;
 
 	if (mAnimLayers.IsValid())
 	{
-		Lock();
+		FOREACH(i, mAnimLayers)
 		{
-			FOREACH(i, mAnimLayers)
-			{
-				AnimationLayer* layer = mAnimLayers[i];
+			AnimationLayer* layer = mAnimLayers[i];
 
-				if (layer != 0 && _StopAnimation(layer->mPlayingAnims, 0, duration, onAnimEnd))
-				{
-					retVal = true;
-				}
+			if (layer != 0 && _StopAnimation(layer->mPlayingAnims, 0, duration, onAnimEnd))
+			{
+				retVal = true;
 			}
 		}
-		Unlock();
 	}
 	return retVal;
 }
@@ -832,36 +803,33 @@ bool Model::StopAllAnimations (float duration, const AnimationEnd& onAnimEnd)
 
 float Model::GetTimeToAnimationEnd (const Animation* anim)
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
 	float time = 0.0f;
 
 	if (anim != 0)
 	{
-		Lock();
+		FOREACH(i, mActiveAnims)
 		{
-			FOREACH(i, mActiveAnims)
-			{
-				ActiveAnimation* aa = mActiveAnims[i];
+			ActiveAnimation* aa = mActiveAnims[i];
 
-				if (aa != 0 && aa->mAnimation == anim)
+			if (aa != 0 && aa->mAnimation == anim)
+			{
+				if (aa->mIsActive)
 				{
-					if (aa->mIsActive)
+					if (mAnimationSpeed > 0.0f && !anim->IsLooping())
 					{
-						if (mAnimationSpeed > 0.0f && !anim->IsLooping())
-						{
-							// Remaining time in seconds
-							time = (1.0f - aa->mPlaybackFactor) * aa->mPlaybackDuration / mAnimationSpeed;
-						}
-						else
-						{
-							// The animation has no end
-							time = -1.0f;
-						}
+						// Remaining time in seconds
+						time = (1.0f - aa->mPlaybackFactor) * aa->mPlaybackDuration / mAnimationSpeed;
 					}
-					break;
+					else
+					{
+						// The animation has no end
+						time = -1.0f;
+					}
 				}
+				break;
 			}
 		}
-		Unlock();
 	}
 	return time;
 }
@@ -872,6 +840,7 @@ float Model::GetTimeToAnimationEnd (const Animation* anim)
 
 void Model::DestroySelf()
 {
+	ASSERT_IF_CORE_IS_UNLOCKED;
 	ASSERT(GetNumberOfReferences() == 0, "The model is still in use");
 
 	if (GetNumberOfReferences() == 0)
