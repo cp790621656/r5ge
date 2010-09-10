@@ -32,7 +32,7 @@ void UIStats::OnInit()
 	mLabels.Expand() = _AddLabel("Shader Switches");
 	mLabels.Expand() = _AddLabel("Technique Switches");
 	mLabels.Expand() = _AddLabel("Light Switches");
-	FOREACH(i, mLabels) mLabels[i]->SetShadowColor(Color4ub(0, 0, 0, 175));
+	mShadow.Set(0, 0, 0, 175);
 	mIsDirty = true;
 }
 
@@ -68,6 +68,8 @@ bool UIStats::OnUpdate (bool dimensionsChanged)
 
 	const FrameStats& stats = (mName.BeginsWith("Game")) ? mUI->GetGameStats() : mUI->GetUIStats();
 
+	for (uint i = 0; i < 9; ++i) mLabels[i]->SetShadowColor(mShadow);
+
 	mLabels[0]->SetText( String("[FF5555]%u[FFFFFF] FPS", Time::GetFPS()) );
 	mLabels[1]->SetText( String("[FF5555]%u[FFFFFF] triangles", stats.mTriangles) );
 	mLabels[2]->SetText( String("[FF5555]%u[FFFFFF] draw calls", stats.mDrawCalls) );
@@ -93,7 +95,8 @@ bool UIStats::OnUpdate (bool dimensionsChanged)
 void UIStats::OnSerializeTo (TreeNode& node) const
 {
 	const IFont* font = GetFont();
-	if (font != 0) node.AddChild("Font", font->GetName());
+	if (font != 0 && font != mUI->GetDefaultFont()) node.AddChild("Font", font->GetName());
+	node.AddChild("Shadow Color", mShadow);
 }
 
 //============================================================================================================
@@ -111,6 +114,12 @@ bool UIStats::OnSerializeFrom (const TreeNode& node)
 			mLabels[--i]->SetFont(font);
 			mIsDirty = true;
 		}
+		return true;
+	}
+	else if (node.mTag == "Shadow Color")
+	{
+		Color4ub c;
+		if (node.mValue >> c) SetShadowColor(c);
 		return true;
 	}
 	return false;

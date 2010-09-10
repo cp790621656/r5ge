@@ -1,6 +1,14 @@
 #include "../Include/_All.h"
 using namespace R5;
 
+#ifdef _DEBUG
+#define ASSERT_IF_SELF_IS_UNLOCKED ASSERT(IsLocked() || \
+	(GetNumberOfThreads() == 0 && GetThreadID() == Thread::GetID()), \
+	"You must lock the core before you work with objects!");
+#else
+#define ASSERT_IF_SELF_IS_UNLOCKED
+#endif
+
 //============================================================================================================
 // Thread for resource serialization
 //============================================================================================================
@@ -15,8 +23,11 @@ R5_THREAD_FUNCTION(SerializeResourceThread, ptr)
 	System::Log("[THREAD]  Executing '%s' [ID: %u]", resource->GetName().GetBuffer(), threadId);
 #endif
 
-	resource->GetCore()->SerializeFrom( resource->GetName(), false, false );
-	resource->GetCore()->DecrementThreadCount();
+	Core* core = resource->GetCore();
+	core->Lock();
+	core->SerializeFrom( resource->GetName(), false, false );
+	core->Unlock();
+	core->DecrementThreadCount();
 
 #ifdef _DEBUG
 	System::Log("[THREAD]  Finished executing '%s' in %u ms [ID: %u]",
@@ -362,7 +373,10 @@ ModelTemplate* Core::GetModelTemplate (const String& name, bool createIfMissing)
 bool Core::operator << (const char* file)
 {
 	TreeNode node;
-	return node.Load(file) ? SerializeFrom(node) : false;
+	Lock();
+	bool retVal = node.Load(file) ? SerializeFrom(node) : false;
+	Unlock();
+	return retVal;
 }
 
 //============================================================================================================
@@ -373,8 +387,10 @@ bool Core::operator >> (const char* file) const
 {
 	TreeNode node;
 	node.mTag = "Root";
-	if (!SerializeTo(node)) return false;
-	return node.Save(file);
+	Lock();
+	bool retVal = SerializeTo(node) && node.Save(file);
+	Unlock();
+	return retVal;
 }
 
 //============================================================================================================
@@ -461,6 +477,8 @@ void Core::OnResize(const Vector2i& size)
 
 bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) const
 {
+	ASSERT_IF_SELF_IS_UNLOCKED;
+
 	// Window information should always be saved first as it *has* to come first
 	if (mWin != 0 && window) mWin->SerializeTo(root);
 
@@ -470,72 +488,68 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	// User interface comes next
 	if (mUI != 0 && ui) mUI->SerializeTo(root);
 
-	Lock();
+	// Save all resources and models
+	if (mResources.IsValid() || mFileResource.IsValid() || mModels.IsValid())
 	{
-		// Save all resources and models
-		if (mResources.IsValid() || mFileResource.IsValid() || mModels.IsValid())
+		TreeNode& node = root.AddChild( Core::ClassID() );
+
+		if (mFileResource.IsValid())
 		{
-			TreeNode& node = root.AddChild( Core::ClassID() );
-
-			if (mFileResource.IsValid())
-			{
-				mFileResource.Lock();
-				node.AddChild("Serialize From", mFileResource);
-				mFileResource.Unlock();
-			}
-
-			mModelTemplates.Lock();
-			{
-				for (uint i = 0; i < mModelTemplates.GetSize(); ++i)
-				{
-					const ModelTemplate* temp = mModelTemplates[i];
-
-					if (temp != 0)
-					{
-						temp->SerializeTo(node, false);
-					}
-				}
-			}
-			mModelTemplates.Unlock();
-
-			mModels.Lock();
-			{
-				for (uint i = 0; i < mModels.GetSize(); ++i)
-				{
-					const Model* model = mModels[i];
-
-					if (model != 0)
-					{
-						model->SerializeTo(node, false);
-					}
-				}
-			}
-			mModels.Unlock();
-
-			// Remove this node if it's empty
-			if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
+			mFileResource.Lock();
+			node.AddChild("Serialize From", mFileResource);
+			mFileResource.Unlock();
 		}
 
-		const Object::Children& children = mRoot.GetChildren();
-		const Object::Scripts&  scripts  = mRoot.GetScripts();
-
-		// Save out the scenegraph only if there is something to save
-		if (children.IsValid() || scripts.IsValid())
+		mModelTemplates.Lock();
 		{
-			TreeNode& node = root.AddChild(Scene::ClassID());
+			for (uint i = 0; i < mModelTemplates.GetSize(); ++i)
+			{
+				const ModelTemplate* temp = mModelTemplates[i];
 
-			for (uint i = 0; i < scripts.GetSize(); ++i)
-				scripts[i]->SerializeTo(node);
-
-			for (uint i = 0; i < children.GetSize(); ++i)
-				children[i]->SerializeTo(node);
-
-			// If nothing was saved, don't keep the node around
-			if (node.mChildren.IsEmpty())
-				root.mChildren.Shrink();
+				if (temp != 0)
+				{
+					temp->SerializeTo(node, false);
+				}
+			}
 		}
+		mModelTemplates.Unlock();
+
+		mModels.Lock();
+		{
+			for (uint i = 0; i < mModels.GetSize(); ++i)
+			{
+				const Model* model = mModels[i];
+
+				if (model != 0)
+				{
+					model->SerializeTo(node, false);
+				}
+			}
+		}
+		mModels.Unlock();
+
+		// Remove this node if it's empty
+		if (node.mChildren.IsEmpty()) root.mChildren.Shrink();
 	}
-	Unlock();
+
+	const Object::Children& children = mRoot.GetChildren();
+	const Object::Scripts&  scripts  = mRoot.GetScripts();
+
+	// Save out the scenegraph only if there is something to save
+	if (children.IsValid() || scripts.IsValid())
+	{
+		TreeNode& node = root.AddChild(Scene::ClassID());
+
+		for (uint i = 0; i < scripts.GetSize(); ++i)
+			scripts[i]->SerializeTo(node);
+
+		for (uint i = 0; i < children.GetSize(); ++i)
+			children[i]->SerializeTo(node);
+
+		// If nothing was saved, don't keep the node around
+		if (node.mChildren.IsEmpty())
+			root.mChildren.Shrink();
+	}
 	return true;
 }
 
@@ -545,6 +559,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 
 bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThreads)
 {
+	ASSERT_IF_SELF_IS_UNLOCKED;
 	IncrementThreadCount();
 	bool serializable = true;
 
@@ -579,9 +594,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 		}
 		else if (tag == Scene::ClassID())
 		{
-			Lock();
 			mRoot.SerializeFrom(node, forceUpdate);
-			Unlock();
 		}
 		else if (tag == Mesh::ClassID())
 		{
@@ -604,9 +617,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 
 			if (temp != 0)
 			{
-				Lock();
 				temp->SerializeFrom(node, forceUpdate);
-				Unlock();
 				if (!serializable) temp->SetSerializable(false);
 			}
 		}
@@ -616,9 +627,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 
 			if (model != 0)
 			{
-				Lock();
 				model->SerializeFrom(node, forceUpdate);
-				Unlock();
 				if (!serializable) model->SetSerializable(false);
 			}
 		}

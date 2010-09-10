@@ -11,7 +11,8 @@ class UIStats : public UIAnimatedFrame
 {
 private:
 
-	bool mIsDirty;
+	bool			mIsDirty;
+	Color4ub		mShadow;
 	Array<UILabel*>	mLabels;
 
 	// INTERNAL: Adds a new label to the list
@@ -26,6 +27,10 @@ public:
 	// Font is the only thing that can be changed
 	const IFont* GetFont() const { return mLabels.IsValid() ? mLabels[0]->GetFont() : 0; }
 	void SetFont (const IFont* font) { for (uint i = mLabels.GetSize(); i > 0; ) mLabels[--i]->SetFont(font); }
+
+	// Color of the drop-down shadow
+	const Color4ub& GetShadowColor() const { return mShadow; }
+	void SetShadowColor (const Color4ub& c) { mShadow = c; }
 
 	// Function called after the parent and root have been set
 	virtual void OnInit();
