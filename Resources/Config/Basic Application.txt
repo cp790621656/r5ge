@@ -102,13 +102,13 @@ Root
 			Position = 0.0 0.0 2.0
 			Rotation = -0.4854 -0.040937 0.072304 0.870335
 			Scale = 1.0 1.0 1.0
-			Range = 0.3 100.0 90.0
+			Range = 0.3 25.0 90.0
 			Dolly = 0.0 14.001606 50.0
 
 			Script = "OSDrawForward"
 			{
 				Background Color = 0.25 0.25 0.25 1.0
-				Fog Range = 30.0 75.0
+				Fog Range = 10.0 25.0
 
 				Shadowmap
 				{

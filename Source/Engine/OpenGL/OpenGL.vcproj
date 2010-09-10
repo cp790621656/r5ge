@@ -320,6 +320,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\Preprocess.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\Preprocess.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\ProjectedTexture.h"
 				>
 			</File>
