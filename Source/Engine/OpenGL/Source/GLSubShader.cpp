@@ -484,10 +484,6 @@ bool PreprocessFragmentOutput (String& source, bool deferred, bool shadowed)
 			// Specular factor
 			left << "	float specularFactor = pow(reflectiveFactor, shininess);";
 
-			// Taking diffuse into account avoids the "halo" artifact. pow(3) smooths it out.
-			//left << "	float invDiff = 1.0 - diffuseFactor;\n";
-			//left << "	specularFactor *= 1.0 - invDiff * invDiff * invDiff;\n";
-
 			// Apply the shadow
 			if (shadowed)
 			{

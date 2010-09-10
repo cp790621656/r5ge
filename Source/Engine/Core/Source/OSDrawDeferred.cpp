@@ -81,7 +81,7 @@ void OSDrawDeferred::MaterialStage()
 		mMaterialTarget->AttachStencilTexture(mDepth);
 		mMaterialTarget->AttachColorTexture(0, mMatDiff, HDRFormat);
 		mMaterialTarget->AttachColorTexture(1, mMatParams, ITexture::Format::RGBA);
-		mMaterialTarget->AttachColorTexture(2, mNormal,  ITexture::Format::RGBA);
+		mMaterialTarget->AttachColorTexture(2, mNormal, ITexture::Format::RGBA16F);
 	}
 
 	// Update changing target properties
