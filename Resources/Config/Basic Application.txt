@@ -100,10 +100,10 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.0 0.0 2.0
-			Rotation = -0.4854 -0.040937 0.072304 0.870335
+			Rotation = -0.300696 0.169002 -0.461229 0.817489
 			Scale = 1.0 1.0 1.0
 			Range = 0.3 25.0 90.0
-			Dolly = 0.0 14.001606 50.0
+			Dolly = 0.0 13.001741 50.0
 
 			Script = "OSDrawForward"
 			{

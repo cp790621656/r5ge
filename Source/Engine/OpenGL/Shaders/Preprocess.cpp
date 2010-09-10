@@ -317,6 +317,7 @@ bool R5::PreprocessVertexOutput (String& source, bool deferred)
 			left << vertex;
 			left << ").xyz;\n";
 			left << "	_fogFactor = 1.0 - (R5_clipRange.y + _eyeDir.z) / R5_clipRange.w;\n";
+			left << "	_fogFactor = clamp((_fogFactor - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n";
 			left << "	_fogFactor = 0.5 * (_fogFactor + _fogFactor * _fogFactor);\n";
 
    			left << "	if (gl_LightSource[0].position.w == 0.0)\n";
