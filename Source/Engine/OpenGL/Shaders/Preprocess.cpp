@@ -454,7 +454,11 @@ bool R5::PreprocessFragmentOutput (String& source, bool deferred, bool shadowed)
 			}
 
 			// Material color attenuated by light
-			left << "	vec3 color = (gl_LightSource[0].ambient.rgb + gl_LightSource[0].diffuse.rgb * diffuseFactor) *";
+			left << "	vec3 color = (gl_LightSource[0].ambient.rgb * ";
+			left << maps;
+			left << ".a + gl_LightSource[0].diffuse.rgb * (diffuseFactor * (0.75 + 0.25 * ";
+			left << maps;
+			left << ".a))) *";
 			left << diffuse;
 			left << ".rgb * _light.w;\n";
 
@@ -476,6 +480,11 @@ bool R5::PreprocessFragmentOutput (String& source, bool deferred, bool shadowed)
 			left << ".rgb, ";
 			left << maps;
 			left << ".g) * _light.w;\n";
+
+			// AO visualization:
+			//left << "	color = vec3(";
+			//left << maps;
+			//left << ".a);\n";
 
 			// Make the material color fade out with fog
 			left << "	color = mix(color, gl_Fog.color.rgb, _fogFactor);\n";

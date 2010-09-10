@@ -6,30 +6,37 @@ Root
 	{
 		Serializable = false
 
-		Material = "Material #359 - Lime"
+		Material = "Lime"
 		{
 			Diffuse = 0.682353 1.0 0.0 1.0
 			Specularity = 1.0
 			Specular Hue = 1.0
 			Shininess = 1.0
 			Glow = 0.0
-
 			Technique = "Depth"
 			Technique = "Opaque"
+			{
+				Shader = "Surface/L"
+				
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
+				}
+			}
 			
 			Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_Material"
+				Shader = "Surface/L [Shadowed]"
 
 				Textures = String[]
 				{
-					"R5_Shadowmap"
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/L"
+				Shader = "Surface/L [Deferred]"
 
 				Textures = String[]
 				{
@@ -38,16 +45,15 @@ Root
 			}
 		}
 
-		Material = "Material #359 - Bright Red"
+		Material = "Bright Red"
 		{
 			Diffuse = 1.0 0.0 0.0 1.0
 			Specular = 0.0 0.0 0.0 0.1
 			Glow = 0.0
 			Technique = "Depth"
-
-			Technique = "Deferred"
+			Technique = "Opaque"
 			{
-				Shader = "Deferred/L"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -55,29 +61,36 @@ Root
 				}
 			}
 
-			Technique = "Opaque"
-
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_Material"
+				Shader = "Surface/L [Shadowed]"
 
 				Textures = String[]
 				{
-					"R5_Shadowmap"
+					"Textures/Skins/shadowtest_ao.png"
+				}
+			}
+			
+			Technique = "Deferred"
+			{
+				Shader = "Surface/L [Deferred]"
+
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 		}
 
-		Material = "Material #359 - Purple"
+		Material = "Purple"
 		{
 			Diffuse = 0.470588 0.0 1.0 1.0
 			Specular = 0.0 0.0 0.0 0.1
 			Glow = 0.0
 			Technique = "Depth"
-
-			Technique = "Deferred"
+			Technique = "Opaque"
 			{
-				Shader = "Deferred/L"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -85,20 +98,28 @@ Root
 				}
 			}
 
-			Technique = "Opaque"
-
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_Material"
+				Shader = "Surface/L [Shadowed]"
 
 				Textures = String[]
 				{
-					"R5_Shadowmap"
+					"Textures/Skins/shadowtest_ao.png"
+				}
+			}
+			
+			Technique = "Deferred"
+			{
+				Shader = "Surface/L [Deferred]"
+				
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 		}
 
-		Material = "Material #359 - Blue"
+		Material = "Blue"
 		{
 			Diffuse = 0.517647 0.607843 1.0 1.0
 			Specularity = 0.684
@@ -106,10 +127,9 @@ Root
 			Specular Hue = 1.0
 			Glow = 0.0
 			Technique = "Depth"
-
-			Technique = "Deferred"
+			Technique = "Opaque"
 			{
-				Shader = "Deferred/L"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -117,29 +137,36 @@ Root
 				}
 			}
 
-			Technique = "Opaque"
-
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_Material"
+				Shader = "Surface/L [Shadowed]"
 
 				Textures = String[]
 				{
-					"R5_Shadowmap"
+					"Textures/Skins/shadowtest_ao.png"
+				}
+			}
+			
+			Technique = "Deferred"
+			{
+				Shader = "Surface/L [Deferred]"
+				
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 		}
 
-		Material = "Material #359 - White"
+		Material = "White"
 		{
 			Diffuse = 1.0 1.0 1.0 1.0
 			Specular = 0.0 0.0 0.0 0.1
 			Glow = 0.0
 			Technique = "Depth"
-
-			Technique = "Deferred"
+			Technique = "Opaque"
 			{
-				Shader = "Deferred/L"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -147,29 +174,36 @@ Root
 				}
 			}
 
-			Technique = "Opaque"
-
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_Material"
+				Shader = "Surface/L [Shadowed]"
 
 				Textures = String[]
 				{
-					"R5_Shadowmap"
+					"Textures/Skins/shadowtest_ao.png"
+				}
+			}
+			
+			Technique = "Deferred"
+			{
+				Shader = "Surface/L [Deferred]"
+				
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 		}
 
-		Material = "Material #359 - Green"
+		Material = "Green"
 		{
 			Diffuse = 0.0 0.776471 0.345098 1.0
 			Specular = 0.0 0.0 0.0 0.1
 			Glow = 0.0
 			Technique = "Depth"
-
-			Technique = "Deferred"
+			Technique = "Opaque"
 			{
-				Shader = "Deferred/L"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -177,15 +211,23 @@ Root
 				}
 			}
 
-			Technique = "Opaque"
-
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_Material"
+				Shader = "Surface/L [Shadowed]"
 
 				Textures = String[]
 				{
-					"R5_Shadowmap"
+					"Textures/Skins/shadowtest_ao.png"
+				}
+			}
+			
+			Technique = "Deferred"
+			{
+				Shader = "Surface/L [Deferred]"
+				
+				Textures = String[]
+				{
+					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
 		}
@@ -13976,37 +14018,37 @@ Root
 		Limb = "Test Scene [1]"
 		{
 			Mesh = "Test Scene [1]"
-			Material = "Material #359 - Lime"
+			Material = "Lime"
 		}
 
 		Limb = "Test Scene [2]"
 		{
 			Mesh = "Test Scene [2]"
-			Material = "Material #359 - Bright Red"
+			Material = "Bright Red"
 		}
 
 		Limb = "Test Scene [3]"
 		{
 			Mesh = "Test Scene [3]"
-			Material = "Material #359 - Purple"
+			Material = "Purple"
 		}
 
 		Limb = "Test Scene [4]"
 		{
 			Mesh = "Test Scene [4]"
-			Material = "Material #359 - Blue"
+			Material = "Blue"
 		}
 
 		Limb = "Test Scene [5]"
 		{
 			Mesh = "Test Scene [5]"
-			Material = "Material #359 - White"
+			Material = "White"
 		}
 
 		Limb = "Test Scene [6]"
 		{
 			Mesh = "Test Scene [6]"
-			Material = "Material #359 - Green"
+			Material = "Green"
 		}
 	}
 }
