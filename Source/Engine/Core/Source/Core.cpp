@@ -18,7 +18,7 @@ R5_THREAD_FUNCTION(SerializeResourceThread, ptr)
 	Resource* resource = (Resource*)ptr;
 
 #ifdef _DEBUG
-	long threadId = Thread::GetID();
+	Thread::IDType threadId = Thread::GetID();
 	ulong timestamp = Time::GetMilliseconds();
 	System::Log("[THREAD]  Executing '%s' [ID: %u]", resource->GetName().GetBuffer(), threadId);
 #endif

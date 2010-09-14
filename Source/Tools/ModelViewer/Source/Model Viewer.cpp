@@ -58,49 +58,52 @@ void ModelViewer::Run()
 		tex->SetWrapMode(ITexture::WrapMode::Repeat);
 	}
 
-	if (root.Load("Config/Model Viewer.txt") && mCore->SerializeFrom(root))
-	{
-		// Event listeners
-		mCore->AddOnKey		 ( bind(&ModelViewer::OnKeyPress,	this) );
-		mCore->AddOnMouseMove( bind(&ModelViewer::OnMouseMove,	this) );
-		mCore->AddOnScroll	 ( bind(&ModelViewer::OnScroll,		this) );
-		mCore->AddOnDraw	 ( bind(&ModelViewer::OnDraw,		this) );
+	if (!root.Load("Config/Model Viewer.txt")) return;
+	
+	mCore->Lock();
+	mCore->SerializeFrom(root);
+	mCore->Unlock();
 
-		Object* rootObj = mCore->GetRoot();
+	// Event listeners
+	mCore->AddOnKey		 ( bind(&ModelViewer::OnKeyPress,	this) );
+	mCore->AddOnMouseMove( bind(&ModelViewer::OnMouseMove,	this) );
+	mCore->AddOnScroll	 ( bind(&ModelViewer::OnScroll,		this) );
+	mCore->AddOnDraw	 ( bind(&ModelViewer::OnDraw,		this) );
 
-		mCam			= rootObj->FindObject<DebugCamera>	("Default Camera");
-		mLight			= rootObj->FindObject<Light>		("Default Light");
-		mStage			= rootObj->FindObject<Object>		("Stage");
-		mInst			= rootObj->FindObject<ModelInstance>("Default Instance");
-		mSbHighlight	= mUI->FindWidget<UIHighlight>		("Status Highlight");
-		mSbLabel		= mUI->FindWidget<UILabel>			("Status Label");
+	Object* rootObj = mCore->GetRoot();
 
-		// Model viewer deals with only one model
-		mModel = mCore->GetModel("Default Model");
+	mCam			= rootObj->FindObject<DebugCamera>	("Default Camera");
+	mLight			= rootObj->FindObject<Light>		("Default Light");
+	mStage			= rootObj->FindObject<Object>		("Stage");
+	mInst			= rootObj->FindObject<ModelInstance>("Default Instance");
+	mSbHighlight	= mUI->FindWidget<UIHighlight>		("Status Highlight");
+	mSbLabel		= mUI->FindWidget<UILabel>			("Status Label");
 
-		// If something wasn't found, just exit
-		if (mCam == 0 || mLight == 0 || mStage == 0 || mInst == 0 || mModel == 0 || !CreateUI()) return;
+	// Model viewer deals with only one model
+	mModel = mCore->GetModel("Default Model");
 
-		// Deferred drawing
-		mDraw  = mCam->AddScript<OSDrawDeferred>();
-		mScene = &mDraw->GetScene();
+	// If something wasn't found, just exit
+	if (mCam == 0 || mLight == 0 || mStage == 0 || mInst == 0 || mModel == 0 || !CreateUI()) return;
 
-		// Display the current version
-		ShowAboutInfo();
+	// Deferred drawing
+	mDraw  = mCam->AddScript<OSDrawDeferred>();
+	mScene = &mDraw->GetScene();
 
-		// Endless loop
-		while ( mCore->Update() );
+	// Display the current version
+	ShowAboutInfo();
+
+	// Endless loop
+	while ( mCore->Update() );
 
 #ifndef _DEBUG
-		// Reset the stage's rotation before saving the scene
-		mStage->SetRelativeRotation( Quaternion() );
+	// Reset the stage's rotation before saving the scene
+	mStage->SetRelativeRotation( Quaternion() );
 
-		// Save the current scene
-		root.Release();
-		mCore->SerializeTo(root);
-		root.Save("Config/Model Viewer.txt");
+	// Save the current scene
+	root.Release();
+	mCore->SerializeTo(root);
+	root.Save("Config/Model Viewer.txt");
 #endif
-	}
 }
 
 //============================================================================================================

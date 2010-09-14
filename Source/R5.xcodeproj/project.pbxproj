@@ -83,6 +83,15 @@
 		1468B8B60D903F1300E0AE61 /* Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1468B88E0D903DE300E0AE61 /* Quaternion.cpp */; };
 		1468B8B80D903F1300E0AE61 /* Vector2i.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1468B8900D903DE300E0AE61 /* Vector2i.cpp */; };
 		1468B8B90D903F1300E0AE61 /* Vector3f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1468B8910D903DE300E0AE61 /* Vector3f.cpp */; };
+		147124FD123EEDF700A7FBE1 /* R5_Bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 147124FB123EEDF700A7FBE1 /* R5_Bundle.cpp */; };
+		147124FE123EEDF700A7FBE1 /* R5_Compression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 147124FC123EEDF700A7FBE1 /* R5_Compression.cpp */; };
+		14712510123EEE8800A7FBE1 /* UITreeView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471250D123EEE8800A7FBE1 /* UITreeView.cpp */; };
+		14712511123EEE8800A7FBE1 /* USFadeIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471250E123EEE8800A7FBE1 /* USFadeIn.cpp */; };
+		14712512123EEE8800A7FBE1 /* USFadeOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471250F123EEE8800A7FBE1 /* USFadeOut.cpp */; };
+		1471251E123EEFB200A7FBE1 /* Preprocess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471251A123EEFB200A7FBE1 /* Preprocess.cpp */; };
+		1471251F123EEFB200A7FBE1 /* Preprocess.h in Headers */ = {isa = PBXBuildFile; fileRef = 1471251B123EEFB200A7FBE1 /* Preprocess.h */; };
+		14712520123EEFB200A7FBE1 /* ProjectedTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = 1471251C123EEFB200A7FBE1 /* ProjectedTexture.h */; };
+		14712521123EEFB200A7FBE1 /* Shadow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1471251D123EEFB200A7FBE1 /* Shadow.h */; };
 		14726B9B0ED7C87A0005A1B2 /* R5_Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14726B9A0ED7C87A0005A1B2 /* R5_Thread.cpp */; };
 		14753BE00D9C1315000D05A5 /* _All.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14DFD21F0D901A4000A81978 /* _All.cpp */; };
 		14753BE10D9C1315000D05A5 /* R5_String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14DFD2200D901A4000A81978 /* R5_String.cpp */; };
@@ -188,7 +197,6 @@
 		14D619A110FAF3E800C41C13 /* DrawQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199310FAF3E800C41C13 /* DrawQueue.cpp */; };
 		14D619A210FAF3E800C41C13 /* Glare.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199410FAF3E800C41C13 /* Glare.cpp */; };
 		14D619A310FAF3E800C41C13 /* QuadNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199510FAF3E800C41C13 /* QuadNode.cpp */; };
-		14D619A410FAF3E800C41C13 /* Resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199610FAF3E800C41C13 /* Resource.cpp */; };
 		14D619A510FAF3E800C41C13 /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199710FAF3E800C41C13 /* Terrain.cpp */; };
 		14D619A610FAF3E800C41C13 /* TerrainNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199810FAF3E800C41C13 /* TerrainNode.cpp */; };
 		14DB4E1A0F735B55004F23C0 /* Dev6.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14DB4E190F735B55004F23C0 /* Dev6.cpp */; };
@@ -203,7 +211,6 @@
 		14F0F8460ED60FBF0034CF84 /* Shapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8450ED60FBF0034CF84 /* Shapes.cpp */; };
 		14F0F8620ED611F00034CF84 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */; };
 		14F0F8630ED611F00034CF84 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F0F8610ED611F00034CF84 /* PointLight.cpp */; };
-		14F68046112B8021001C7CED /* Compression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F68045112B8021001C7CED /* Compression.cpp */; };
 		14F82D2B111A897E001DDF69 /* UIStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F82D2A111A897E001DDF69 /* UIStats.cpp */; };
 		14F8E6880F89D889005431C6 /* ModelTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F8E6870F89D889005431C6 /* ModelTemplate.cpp */; };
 		B399CFAE1161828E00E8710D /* libirrklang.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B399CFAD1161828E00E8710D /* libirrklang.dylib */; };
@@ -1491,7 +1498,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
 			remoteInfo = Noise;
 		};
 		14BA96750F95CB2700E41525 /* PBXContainerItemProxy */ = {
@@ -2288,6 +2295,31 @@
 		1468B88E0D903DE300E0AE61 /* Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Quaternion.cpp; path = Engine/Math/Source/Quaternion.cpp; sourceTree = "<group>"; };
 		1468B8900D903DE300E0AE61 /* Vector2i.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector2i.cpp; path = Engine/Math/Source/Vector2i.cpp; sourceTree = "<group>"; };
 		1468B8910D903DE300E0AE61 /* Vector3f.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector3f.cpp; path = Engine/Math/Source/Vector3f.cpp; sourceTree = "<group>"; };
+		147124E8123EED5700A7FBE1 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = Engine/Basic/Include/zlib.h; sourceTree = "<group>"; };
+		147124E9123EED8A00A7FBE1 /* R5_Bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = R5_Bundle.h; path = Engine/Basic/Include/R5_Bundle.h; sourceTree = "<group>"; };
+		147124EA123EED8A00A7FBE1 /* R5_Compression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = R5_Compression.h; path = Engine/Basic/Include/R5_Compression.h; sourceTree = "<group>"; };
+		147124EB123EED8A00A7FBE1 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zconf.h; path = Engine/Basic/Include/zconf.h; sourceTree = "<group>"; };
+		147124FB123EEDF700A7FBE1 /* R5_Bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = R5_Bundle.cpp; path = Engine/Basic/Source/R5_Bundle.cpp; sourceTree = "<group>"; };
+		147124FC123EEDF700A7FBE1 /* R5_Compression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = R5_Compression.cpp; path = Engine/Basic/Source/R5_Compression.cpp; sourceTree = "<group>"; };
+		147124FF123EEE2000A7FBE1 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceInfo.h; path = Engine/Interface/Include/DeviceInfo.h; sourceTree = "<group>"; };
+		14712500123EEE2000A7FBE1 /* FrameStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameStats.h; path = Engine/Interface/Include/FrameStats.h; sourceTree = "<group>"; };
+		14712501123EEE2000A7FBE1 /* IAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IAudio.h; path = Engine/Interface/Include/IAudio.h; sourceTree = "<group>"; };
+		14712502123EEE2000A7FBE1 /* ILight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ILight.h; path = Engine/Interface/Include/ILight.h; sourceTree = "<group>"; };
+		14712503123EEE2000A7FBE1 /* ISound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISound.h; path = Engine/Interface/Include/ISound.h; sourceTree = "<group>"; };
+		14712504123EEE2000A7FBE1 /* ISoundInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISoundInstance.h; path = Engine/Interface/Include/ISoundInstance.h; sourceTree = "<group>"; };
+		14712505123EEE2000A7FBE1 /* ISubShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISubShader.h; path = Engine/Interface/Include/ISubShader.h; sourceTree = "<group>"; };
+		1471250A123EEE6B00A7FBE1 /* UITreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITreeView.h; path = Engine/UI/Include/UITreeView.h; sourceTree = "<group>"; };
+		1471250B123EEE6B00A7FBE1 /* USFadeIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = USFadeIn.h; path = Engine/UI/Include/USFadeIn.h; sourceTree = "<group>"; };
+		1471250C123EEE6B00A7FBE1 /* USFadeOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = USFadeOut.h; path = Engine/UI/Include/USFadeOut.h; sourceTree = "<group>"; };
+		1471250D123EEE8800A7FBE1 /* UITreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITreeView.cpp; path = Engine/UI/Source/UITreeView.cpp; sourceTree = "<group>"; };
+		1471250E123EEE8800A7FBE1 /* USFadeIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = USFadeIn.cpp; path = Engine/UI/Source/USFadeIn.cpp; sourceTree = "<group>"; };
+		1471250F123EEE8800A7FBE1 /* USFadeOut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = USFadeOut.cpp; path = Engine/UI/Source/USFadeOut.cpp; sourceTree = "<group>"; };
+		1471251A123EEFB200A7FBE1 /* Preprocess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Preprocess.cpp; path = Engine/OpenGL/Shaders/Preprocess.cpp; sourceTree = "<group>"; };
+		1471251B123EEFB200A7FBE1 /* Preprocess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Preprocess.h; path = Engine/OpenGL/Shaders/Preprocess.h; sourceTree = "<group>"; };
+		1471251C123EEFB200A7FBE1 /* ProjectedTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectedTexture.h; path = Engine/OpenGL/Shaders/ProjectedTexture.h; sourceTree = "<group>"; };
+		1471251D123EEFB200A7FBE1 /* Shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shadow.h; path = Engine/OpenGL/Shaders/Shadow.h; sourceTree = "<group>"; };
+		1471252B123EF0E900A7FBE1 /* functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = functions.h; path = Engine/Math/Include/functions.h; sourceTree = "<group>"; };
+		14712580123EF79B00A7FBE1 /* Dev13.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Dev13.txt; path = ../Resources/Config/Dev13.txt; sourceTree = SOURCE_ROOT; };
 		14726B9A0ED7C87A0005A1B2 /* R5_Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = R5_Thread.cpp; path = Engine/Basic/Source/R5_Thread.cpp; sourceTree = "<group>"; };
 		147540C80DA2CD7F000D05A5 /* Window Creation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "Window Creation.cpp"; path = "Samples/Window Creation/Source/Window Creation.cpp"; sourceTree = SOURCE_ROOT; };
 		147540F60DA3CA14000D05A5 /* _All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = _All.h; path = Engine/OpenGL/Include/_All.h; sourceTree = "<group>"; };
@@ -2495,7 +2527,6 @@
 		14D6199310FAF3E800C41C13 /* DrawQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DrawQueue.cpp; path = Engine/Core/Source/DrawQueue.cpp; sourceTree = "<group>"; };
 		14D6199410FAF3E800C41C13 /* Glare.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Glare.cpp; path = Engine/Core/Source/Glare.cpp; sourceTree = "<group>"; };
 		14D6199510FAF3E800C41C13 /* QuadNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuadNode.cpp; path = Engine/Core/Source/QuadNode.cpp; sourceTree = "<group>"; };
-		14D6199610FAF3E800C41C13 /* Resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Resource.cpp; path = Engine/Core/Source/Resource.cpp; sourceTree = "<group>"; };
 		14D6199710FAF3E800C41C13 /* Terrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Terrain.cpp; path = Engine/Core/Source/Terrain.cpp; sourceTree = "<group>"; };
 		14D6199810FAF3E800C41C13 /* TerrainNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TerrainNode.cpp; path = Engine/Core/Source/TerrainNode.cpp; sourceTree = "<group>"; };
 		14DB4E160F735AF6004F23C0 /* Dev6.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dev6.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2552,10 +2583,6 @@
 		14F0F85F0ED611BD0034CF84 /* PointLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointLight.h; path = Engine/Core/Include/PointLight.h; sourceTree = "<group>"; };
 		14F0F8600ED611F00034CF84 /* DirectionalLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DirectionalLight.cpp; path = Engine/Core/Source/DirectionalLight.cpp; sourceTree = "<group>"; };
 		14F0F8610ED611F00034CF84 /* PointLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointLight.cpp; path = Engine/Core/Source/PointLight.cpp; sourceTree = "<group>"; };
-		14F68042112B7FE6001C7CED /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zconf.h; path = Engine/Serialization/Include/zconf.h; sourceTree = "<group>"; };
-		14F68043112B7FE6001C7CED /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = Engine/Serialization/Include/zlib.h; sourceTree = "<group>"; };
-		14F68044112B800A001C7CED /* Compression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Compression.h; path = Engine/Serialization/Include/Compression.h; sourceTree = "<group>"; };
-		14F68045112B8021001C7CED /* Compression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Compression.cpp; path = Engine/Serialization/Source/Compression.cpp; sourceTree = "<group>"; };
 		14F82D23111A8938001DDF69 /* Bloom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bloom.h; path = Engine/OpenGL/Shaders/Bloom.h; sourceTree = "<group>"; };
 		14F82D24111A8938001DDF69 /* Blur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blur.h; path = Engine/OpenGL/Shaders/Blur.h; sourceTree = "<group>"; };
 		14F82D25111A8938001DDF69 /* Deferred.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Deferred.h; path = Engine/OpenGL/Shaders/Deferred.h; sourceTree = "<group>"; };
@@ -2929,6 +2956,8 @@
 			isa = PBXGroup;
 			children = (
 				14DFD21F0D901A4000A81978 /* _All.cpp */,
+				147124FB123EEDF700A7FBE1 /* R5_Bundle.cpp */,
+				147124FC123EEDF700A7FBE1 /* R5_Compression.cpp */,
 				144F725911DAB2D6008EF73F /* R5_FileDialog.cpp */,
 				142BADAD1138F2D500424254 /* R5_Hash.cpp */,
 				1429C9A40E2C0B3600BD3B1A /* R5_Memory.cpp */,
@@ -2996,7 +3025,6 @@
 		1412DBE210ACD21F00BBA8F4 /* Serialization */ = {
 			isa = PBXGroup;
 			children = (
-				14F68041112B7FC8001C7CED /* zlib */,
 				1412DBE410ACD23100BBA8F4 /* Include */,
 				1412DBE310ACD22B00BBA8F4 /* Source */,
 			);
@@ -3007,7 +3035,6 @@
 			isa = PBXGroup;
 			children = (
 				1412DC0610ACD36400BBA8F4 /* _All.cpp */,
-				14F68045112B8021001C7CED /* Compression.cpp */,
 				1412DC0710ACD36400BBA8F4 /* Conversion.cpp */,
 				1412DC0810ACD36400BBA8F4 /* TreeNode.cpp */,
 				1412DC0910ACD36400BBA8F4 /* Variable.cpp */,
@@ -3019,7 +3046,6 @@
 			isa = PBXGroup;
 			children = (
 				1412DC0110ACD34E00BBA8F4 /* _All.h */,
-				14F68044112B800A001C7CED /* Compression.h */,
 				1412DC0210ACD34E00BBA8F4 /* Conversion.h */,
 				1412DC0310ACD34E00BBA8F4 /* TreeNode.h */,
 				1412DC0410ACD34E00BBA8F4 /* Variable.h */,
@@ -3189,6 +3215,7 @@
 		144F732E11DAB84A008EF73F /* Dev13 */ = {
 			isa = PBXGroup;
 			children = (
+				14712580123EF79B00A7FBE1 /* Dev13.txt */,
 				144F732F11DAB869008EF73F /* Dev13.cpp */,
 			);
 			name = Dev13;
@@ -3246,9 +3273,10 @@
 		1468B86D0D903D8200E0AE61 /* Include */ = {
 			isa = PBXGroup;
 			children = (
-				14AFF18D1145C27D00318F9F /* Intersect.h */,
 				14F0F8320ED60FA50034CF84 /* _All.h */,
 				14F0F8330ED60FA50034CF84 /* _Define.h */,
+				1471252B123EF0E900A7FBE1 /* functions.h */,
+				14AFF18D1145C27D00318F9F /* Intersect.h */,
 				1456F93F0F72D241002776C2 /* Color4f.h */,
 				1456F9400F72D241002776C2 /* Matrix43.h */,
 				1456F9410F72D241002776C2 /* Matrix44.h */,
@@ -3271,6 +3299,15 @@
 				14F0F8440ED60FA50034CF84 /* Vector3f.h */,
 			);
 			name = Include;
+			sourceTree = "<group>";
+		};
+		147124EC123EED9900A7FBE1 /* ZLib */ = {
+			isa = PBXGroup;
+			children = (
+				147124EB123EED8A00A7FBE1 /* zconf.h */,
+				147124E8123EED5700A7FBE1 /* zlib.h */,
+			);
+			name = ZLib;
 			sourceTree = "<group>";
 		};
 		147540F40DA3C9DA000D05A5 /* Source */ = {
@@ -3572,6 +3609,13 @@
 			isa = PBXGroup;
 			children = (
 				14CE0F040D9048160027155A /* _All.h */,
+				147124FF123EEE2000A7FBE1 /* DeviceInfo.h */,
+				14712500123EEE2000A7FBE1 /* FrameStats.h */,
+				14712501123EEE2000A7FBE1 /* IAudio.h */,
+				14712502123EEE2000A7FBE1 /* ILight.h */,
+				14712503123EEE2000A7FBE1 /* ISound.h */,
+				14712504123EEE2000A7FBE1 /* ISoundInstance.h */,
+				14712505123EEE2000A7FBE1 /* ISubShader.h */,
 				1412DBE010ACD1A800BBA8F4 /* IEventReceiver.h */,
 				1412DBE110ACD1A800BBA8F4 /* Uniform.h */,
 				1456F9500F72D2E7002776C2 /* Defines.h */,
@@ -3689,7 +3733,6 @@
 				1456F95A0F72D359002776C2 /* _All.cpp */,
 				14CE0F9E0D904EAB0027155A /* Core.cpp */,
 				1412DC3E10ACD9C800BBA8F4 /* EventDispatcher.cpp */,
-				14D6199610FAF3E800C41C13 /* Resource.cpp */,
 				1412DC3F10ACD9C800BBA8F4 /* UpdateList.cpp */,
 			);
 			name = Source;
@@ -3720,6 +3763,9 @@
 			isa = PBXGroup;
 			children = (
 				14ACB35A110674A300258C54 /* _All.cpp */,
+				1471250D123EEE8800A7FBE1 /* UITreeView.cpp */,
+				1471250E123EEE8800A7FBE1 /* USFadeIn.cpp */,
+				1471250F123EEE8800A7FBE1 /* USFadeOut.cpp */,
 				14ACB35B110674A300258C54 /* UI.cpp */,
 				14ACB35C110674A300258C54 /* UIAnimatedButton.cpp */,
 				14ACB35D110674A300258C54 /* UIAnimatedCheckbox.cpp */,
@@ -3759,6 +3805,9 @@
 			isa = PBXGroup;
 			children = (
 				14ACB3391106748C00258C54 /* _All.h */,
+				1471250A123EEE6B00A7FBE1 /* UITreeView.h */,
+				1471250B123EEE6B00A7FBE1 /* USFadeIn.h */,
+				1471250C123EEE6B00A7FBE1 /* USFadeOut.h */,
 				14ACB33A1106748C00258C54 /* UI.h */,
 				14ACB33B1106748C00258C54 /* UIAnchor.h */,
 				14ACB33C1106748C00258C54 /* UIAnimatedButton.h */,
@@ -4091,6 +4140,7 @@
 		14DFD2140D9019D700A81978 /* Basic */ = {
 			isa = PBXGroup;
 			children = (
+				147124EC123EED9900A7FBE1 /* ZLib */,
 				14DFD2150D9019F100A81978 /* Include */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 			);
@@ -4101,6 +4151,8 @@
 			isa = PBXGroup;
 			children = (
 				14DFD2160D901A2B00A81978 /* _All.h */,
+				147124E9123EED8A00A7FBE1 /* R5_Bundle.h */,
+				147124EA123EED8A00A7FBE1 /* R5_Compression.h */,
 				14BA96510F95C9F900E41525 /* R5_BaseArray.h */,
 				144F725811DAB2B1008EF73F /* R5_FileDialog.h */,
 				14BA96520F95C9F900E41525 /* R5_Flags.h */,
@@ -4163,18 +4215,13 @@
 			name = Dev11;
 			sourceTree = "<group>";
 		};
-		14F68041112B7FC8001C7CED /* zlib */ = {
-			isa = PBXGroup;
-			children = (
-				14F68042112B7FE6001C7CED /* zconf.h */,
-				14F68043112B7FE6001C7CED /* zlib.h */,
-			);
-			name = zlib;
-			sourceTree = "<group>";
-		};
 		14F82D22111A891F001DDF69 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				1471251A123EEFB200A7FBE1 /* Preprocess.cpp */,
+				1471251B123EEFB200A7FBE1 /* Preprocess.h */,
+				1471251C123EEFB200A7FBE1 /* ProjectedTexture.h */,
+				1471251D123EEFB200A7FBE1 /* Shadow.h */,
 				14F82D23111A8938001DDF69 /* Bloom.h */,
 				14F82D24111A8938001DDF69 /* Blur.h */,
 				14F82D25111A8938001DDF69 /* Deferred.h */,
@@ -4415,6 +4462,9 @@
 				141712CC10FAF9DE00BA7643 /* GLVBO.h in Headers */,
 				141712CD10FAF9DE00BA7643 /* GLWindow.h in Headers */,
 				14E1AF68110CE9EA0030F626 /* GLSubShader.h in Headers */,
+				1471251F123EEFB200A7FBE1 /* Preprocess.h in Headers */,
+				14712520123EEFB200A7FBE1 /* ProjectedTexture.h in Headers */,
+				14712521123EEFB200A7FBE1 /* Shadow.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4472,13 +4522,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				1410ACA50F453F630099D80E /* PBXTargetDependency */,
 				14B544F8120E618E001228A2 /* PBXTargetDependency */,
 				1417136910FAFC8200BA7643 /* PBXTargetDependency */,
 				1410ACBA0F453F920099D80E /* PBXTargetDependency */,
 				1410AC9F0F453F630099D80E /* PBXTargetDependency */,
 				1410ACA10F453F630099D80E /* PBXTargetDependency */,
 				1410ACA30F453F630099D80E /* PBXTargetDependency */,
-				1410ACA50F453F630099D80E /* PBXTargetDependency */,
 				1410ACA70F453F630099D80E /* PBXTargetDependency */,
 				1410ACA90F453F630099D80E /* PBXTargetDependency */,
 				1410ACAB0F453F630099D80E /* PBXTargetDependency */,
@@ -5726,7 +5776,6 @@
 				1412DC0B10ACD36400BBA8F4 /* Conversion.cpp in Sources */,
 				1412DC0C10ACD36400BBA8F4 /* TreeNode.cpp in Sources */,
 				1412DC0D10ACD36400BBA8F4 /* Variable.cpp in Sources */,
-				14F68046112B8021001C7CED /* Compression.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5838,6 +5887,8 @@
 				14726B9B0ED7C87A0005A1B2 /* R5_Thread.cpp in Sources */,
 				142BADAE1138F2D500424254 /* R5_Hash.cpp in Sources */,
 				144F725A11DAB2D6008EF73F /* R5_FileDialog.cpp in Sources */,
+				147124FD123EEDF700A7FBE1 /* R5_Bundle.cpp in Sources */,
+				147124FE123EEDF700A7FBE1 /* R5_Compression.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6004,7 +6055,6 @@
 				14D619A110FAF3E800C41C13 /* DrawQueue.cpp in Sources */,
 				14D619A210FAF3E800C41C13 /* Glare.cpp in Sources */,
 				14D619A310FAF3E800C41C13 /* QuadNode.cpp in Sources */,
-				14D619A410FAF3E800C41C13 /* Resource.cpp in Sources */,
 				14D619A510FAF3E800C41C13 /* Terrain.cpp in Sources */,
 				14D619A610FAF3E800C41C13 /* TerrainNode.cpp in Sources */,
 				1427076C1107C72F0080A80E /* DrawGroup.cpp in Sources */,
@@ -6062,6 +6112,9 @@
 				14ACB395110674A300258C54 /* UIWindow.cpp in Sources */,
 				14F82D2B111A897E001DDF69 /* UIStats.cpp in Sources */,
 				14C63715120B02A8005B0735 /* UIColorPicker.cpp in Sources */,
+				14712510123EEE8800A7FBE1 /* UITreeView.cpp in Sources */,
+				14712511123EEE8800A7FBE1 /* USFadeIn.cpp in Sources */,
+				14712512123EEE8800A7FBE1 /* USFadeOut.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6103,6 +6156,7 @@
 				141712DF10FAF9F700BA7643 /* GLVBO.cpp in Sources */,
 				14E1AF6A110CEA090030F626 /* GLSubShader.cpp in Sources */,
 				144F727911DAB704008EF73F /* GLTransform.cpp in Sources */,
+				1471251E123EEFB200A7FBE1 /* Preprocess.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

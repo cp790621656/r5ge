@@ -537,6 +537,8 @@ bool GLShader::_Link()
 		{
 			FOREACH(i, lines)
 			{
+				if (lines[i].Contains("BindAttributeLocation")) continue;
+
 				if (lines[i].Contains("Warning"))
 				{
 					WARNING(lines[i].GetBuffer());
