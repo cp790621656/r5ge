@@ -273,7 +273,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 		g_shadowMat[i] *= mvpToScreen;
 
 		// Draw the scene from the light's point of view, creating the "Light Depth" texture
-		tempScene.DrawWithTechnique("Depth", true);
+		tempScene.DrawWithTechnique("Depth", true, true, true);
 	}
 }
 

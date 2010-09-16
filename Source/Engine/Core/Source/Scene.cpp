@@ -199,13 +199,13 @@ Scene::RayHits& Scene::Raycast (const Vector2i& screenPos)
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::DrawWithTechnique (const String& technique, bool clearScreen, bool useLighting)
+uint Scene::DrawWithTechnique (const String& technique, bool clearColor, bool clearDepth, bool useLighting)
 {
 	if (mRoot != 0)
 	{
 		mTechs.Clear();
 		mTechs.Expand() = mGraphics->GetTechnique(technique);
-		return DrawWithTechniques(mTechs, clearScreen, useLighting);
+		return DrawWithTechniques(mTechs, clearColor, clearDepth, useLighting);
 	}
 	return 0;
 }
@@ -214,25 +214,25 @@ uint Scene::DrawWithTechnique (const String& technique, bool clearScreen, bool u
 // Draws the scene using the specified technique
 //============================================================================================================
 
-uint Scene::DrawWithTechnique (const ITechnique* technique, bool clearScreen, bool useLighting)
+uint Scene::DrawWithTechnique (const ITechnique* technique, bool clearColor, bool clearDepth, bool useLighting)
 {
 	mTechs.Clear();
 	mTechs.Expand() = technique;
-	return DrawWithTechniques(mTechs, clearScreen, useLighting);
+	return DrawWithTechniques(mTechs, clearColor, clearDepth, useLighting);
 }
 
 //============================================================================================================
 // Draw the specified scene
 //============================================================================================================
 
-uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearScreen, bool useLighting)
+uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearColor, bool clearDepth, bool useLighting)
 {
 	uint result(0);
 
 	if (mRoot != 0)
 	{
 		// Clear the screen if needed
-		if (clearScreen) mGraphics->Clear();
+		if (clearColor || clearDepth) mGraphics->Clear(clearColor, clearDepth, clearDepth);
 
 		if (mQueue.IsValid())
 		{

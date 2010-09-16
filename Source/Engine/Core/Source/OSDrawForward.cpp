@@ -66,16 +66,34 @@ void OSDrawForward::OnDraw()
 		// Skip non-directional lights
 		if (light.mType != ILight::Type::Directional) continue;
 
+		bool depthWrite (false);
+
 		// Create the depth texture of what the camera sees -- but only once
 		if (pass == 0)
 		{
 			// Create the depth texture target
 			if (mDepthTarget == 0)
 			{
-				mDepthTarget  = mGraphics->CreateRenderTarget();
-				mDepthTexture = mGraphics->CreateRenderTexture();
-				mDepthTarget->AttachDepthTexture(mDepthTexture);
+				mDepthTarget = mGraphics->CreateRenderTarget();
+
+				if (target == 0 || target->GetDepthTexture() == 0)
+				{
+					// No depth texture available -- create a new one
+					mDepthTexture = mGraphics->CreateRenderTexture();
+					mDepthTarget->AttachDepthTexture(mDepthTexture);
+					depthWrite = true;
+				}
+				else
+				{
+					// Reuse the target's depth
+					mDepthTexture = (ITexture*)target->GetDepthTexture();
+					mDepthTarget->AttachStencilTexture((ITexture*)target->GetStencilTexture());
+				}
 			}
+
+			// Update the depth texture pointed to by "[R5] Depth"
+			mFinalDepth->SetReplacement(mDepthTexture);
+			mScene.SetDepth(mDepthTexture);
 
 			// The depth target's size should match the scene's target
 			mDepthTarget->SetSize((target == 0) ? mCore->GetWindow()->GetSize() : target->GetSize());
@@ -84,7 +102,7 @@ void OSDrawForward::OnDraw()
 			mGraphics->SetActiveRenderTarget(mDepthTarget);
 
 			// Draw the scene into the depth render target
-			mScene.DrawWithTechnique("Depth");
+			mScene.DrawWithTechnique("Depth", true, true, false);
 
 			// Save the inverse modelview-projection matrix
 			imvp = mGraphics->GetInverseMVPMatrix();
@@ -95,14 +113,15 @@ void OSDrawForward::OnDraw()
 
 		// Draw the shadows and associate the shadow texture with the shadowmap
 		{
-			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(), lights[i].mLight, light.mDir, imvp, mDepthTexture) );
+			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(),
+				lights[i].mLight, light.mDir, imvp, mDepthTexture) );
 		}
 
 		// Draw the scene normally but with a shadow texture created above
 		{
 			// Adjust the technique's blending -- first pass should use normal blending, after that -- add
 			mShadowed->SetBlending(pass == 0 ? IGraphics::Blending::Replace : IGraphics::Blending::Add);
-			mShadowed->SetDepthWrite(pass == 0);
+			mShadowed->SetDepthWrite(depthWrite);
 			mShadowed->SetSerializable(false);
 
 			// We'll now be drawing into the scene's render target
@@ -112,7 +131,7 @@ void OSDrawForward::OnDraw()
 			mScene.ActivateMatrices();
 
 			// Activate the light and the depth offset
-			mGraphics->SetDepthOffset(pass == 0 ? 0 : 1);
+			mGraphics->SetDepthOffset(depthWrite ? 0 : 1);
 			mGraphics->SetActiveLight(0, &light);
 
 			// Update the fog parameters
@@ -120,7 +139,7 @@ void OSDrawForward::OnDraw()
 			mGraphics->SetFogRange(mFogRange);
 
 			// Draw the scene with the shadowed technique
-			mScene.DrawWithTechnique(mShadowed, pass == 0, false);
+			mScene.DrawWithTechnique(mShadowed, pass == 0, depthWrite, false);
 
 			// Remove the shadowmap association
 			mShadowmap->SetReplacement(0);
@@ -154,7 +173,7 @@ void OSDrawForward::OnDraw()
 			mOpaque->SetDepthWrite(false);
 
 			// Draw the scene with all opaque techniques
-			mScene.DrawWithTechnique(mOpaque, false, false);
+			mScene.DrawWithTechnique(mOpaque, false, false, false);
 
 			// Restore the default opaque technique values, just in case
 			mOpaque->SetBlending(IGraphics::Blending::Replace);
@@ -166,6 +185,9 @@ void OSDrawForward::OnDraw()
 	// If nothing was drawn, we might as well draw the scene with all techniques at once
 	if (pass == 0)
 	{
+		// Update the depth texture
+		mFinalDepth->SetReplacement(mDepthTexture);
+
 		if (mComplete.IsEmpty())
 		{
 			mComplete.Expand() = mGraphics->GetTechnique("Opaque");
@@ -185,7 +207,7 @@ void OSDrawForward::OnDraw()
 		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Nothing has been drawn -- draw everything
-		mScene.DrawWithTechniques(mComplete, false, true);
+		mScene.DrawWithTechniques(mComplete, false, false, true);
 	}
 	else
 	{
@@ -202,6 +224,9 @@ void OSDrawForward::OnDraw()
 		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
 
 		// Add additive objects after everything else has been drawn
-		mScene.DrawWithTechniques(mAdditive, false, true);
+		mScene.DrawWithTechniques(mAdditive, false, false, true);
 	}
+
+	// Clear the replacement texture
+	mFinalDepth->SetReplacement(0);
 }

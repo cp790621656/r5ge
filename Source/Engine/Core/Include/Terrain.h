@@ -41,6 +41,9 @@ public:
 	const IMaterial* GetMaterial() const { return mMat; }
 	void SetMaterial (const IMaterial* mat) { mMat = mat; }
 
+	// Generate the terrain
+	void Generate (Heightmap& hm) { FillGeometry(&hm); }
+
 protected:
 
 	// Derived classes must override this function

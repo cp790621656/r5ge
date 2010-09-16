@@ -36,6 +36,9 @@ void OSDraw::OnInit()
 		
 		// Add the draw callback to a high priority so that it's drawn before the default (1000) callbacks
 		mCore->AddOnDraw( bind(&OSDraw::OnDraw, this), 10000 );
+
+		// Save the depth texture
+		mFinalDepth = mGraphics->GetTexture("[R5] Depth");
 	}
 }
 

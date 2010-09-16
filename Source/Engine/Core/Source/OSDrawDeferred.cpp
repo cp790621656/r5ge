@@ -84,6 +84,9 @@ void OSDrawDeferred::MaterialStage()
 		mMaterialTarget->AttachColorTexture(2, mNormal, ITexture::Format::RGBA16F);
 	}
 
+	// Update the depth texture pointed to by "[R5] Depth"
+	mFinalDepth->SetReplacement(mDepth);
+
 	// Update changing target properties
 	mMaterialTarget->SetSize(size);
 	mMaterialTarget->UseSkybox(false);
@@ -107,7 +110,7 @@ void OSDrawDeferred::MaterialStage()
 	mScene.SetDepth(mDepth);
 	mScene.SetNormal(mNormal);
 	mScene.SetAO(mMatParams);
-	mScene.DrawWithTechniques(mDeferred, false, false);
+	mScene.DrawWithTechniques(mDeferred, false, false, false);
 }
 
 //============================================================================================================
@@ -327,7 +330,7 @@ void OSDrawDeferred::PostProcessStage()
 	if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
 
 	// Draw all objects with forward rendering techniques
-	mScene.DrawWithTechniques(mForward, false, true);
+	mScene.DrawWithTechniques(mForward, false, false, true);
 
 	// Update the fog color
 	mGraphics->SetBackgroundColor(mBackground);
@@ -368,6 +371,9 @@ void OSDrawDeferred::OnDraw()
 
 		// Final stage -- add forward-rendered objects and post-process effects
 		PostProcessStage();
+
+		// Clear the replacement texture
+		mFinalDepth->SetReplacement(0);
 	}
 	else
 	{

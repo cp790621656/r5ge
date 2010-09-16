@@ -79,13 +79,13 @@ public:
 	RayHits& Raycast (const Vector2i& screenPos);
 
 	// Advanced: Draws the scene using the specified technique
-	uint DrawWithTechnique (const String& technique, bool clearScreen = true, bool useLighting = true);
+	uint DrawWithTechnique (const String& technique, bool clearColor, bool clearDepth, bool useLighting);
 
 	// Advanced: Draws the scene using the specified technique
-	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen = true, bool useLighting = true);
+	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen, bool clearDepth, bool useLighting);
 
 	// Advanced: Draws the scene using the specified techniques
-	uint DrawWithTechniques (const Techniques& techniques, bool clearScreen = true, bool useLighting = true);
+	uint DrawWithTechniques (const Techniques& techniques, bool clearScreen, bool clearDepth, bool useLighting);
 
 private:
 

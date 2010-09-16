@@ -11,11 +11,11 @@ class OSDrawForward : public OSDraw
 {
 protected:
 
-	ITexture*			mShadowmap;
-	ITexture*			mDepthTexture;
-	IRenderTarget*		mDepthTarget;
-	ITechnique*			mOpaque;
-	ITechnique*			mShadowed;
+	ITexture*		mShadowmap;
+	ITexture*		mDepthTexture;
+	IRenderTarget*	mDepthTarget;
+	ITechnique*		mOpaque;
+	ITechnique*		mShadowed;
 
 	Array<const ITechnique*> mComplete;
 	Array<const ITechnique*> mAdditive;

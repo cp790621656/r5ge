@@ -20,8 +20,9 @@ protected:
 	Vector2f			mFogRange;
 	DirectionalShadow	mShadow;
 	bool				mGrid;
+	ITexture*			mFinalDepth;
 
-	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mCam(0), mGrid(false) {}
+	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mCam(0), mGrid(false), mFinalDepth(0) {}
 
 public:
 
