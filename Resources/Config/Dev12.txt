@@ -76,7 +76,7 @@ Root
 			Range = 0.300000 10.000000 90.000000
 			Dolly = 0.000000 1.897729 15.000000
 
-			Script = "OSDrawDeferred"
+			Script = "OSDrawForward"
 			{
 				Shadowmap
 				{
@@ -111,7 +111,7 @@ Root
 				Range = 0.100000 5.000000 45.000000
 				Dolly = 0.000000 1.000000 5.000000
 
-				Script = "OSDrawDeferred"
+				Script = "OSDrawForward"
 				{
 					Shadowmap
 					{

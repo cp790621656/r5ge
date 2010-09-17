@@ -71,12 +71,14 @@ void OSDrawForward::OnDraw()
 		// Create the depth texture of what the camera sees -- but only once
 		if (pass == 0)
 		{
+			depthWrite = (target == 0 || target->GetDepthTexture() == 0);
+
 			// Create the depth texture target
 			if (mDepthTarget == 0)
 			{
 				mDepthTarget = mGraphics->CreateRenderTarget();
 
-				if (target == 0 || target->GetDepthTexture() == 0)
+				if (depthWrite)
 				{
 					// No depth texture available -- create a new one
 					mDepthTexture = mGraphics->CreateRenderTexture();
@@ -87,6 +89,7 @@ void OSDrawForward::OnDraw()
 				{
 					// Reuse the target's depth
 					mDepthTexture = (ITexture*)target->GetDepthTexture();
+					mDepthTarget->AttachDepthTexture(mDepthTexture);
 					mDepthTarget->AttachStencilTexture((ITexture*)target->GetStencilTexture());
 				}
 			}
