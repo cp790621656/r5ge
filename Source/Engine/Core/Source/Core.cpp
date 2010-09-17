@@ -590,7 +590,11 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 		else if (tag == IUI::ClassID())
 		{
 			if (mUI != 0 && mGraphics != 0)
+			{
+				Unlock();
 				mUI->SerializeFrom(node);
+				Lock();
+			}
 		}
 		else if (tag == Scene::ClassID())
 		{
