@@ -45,18 +45,22 @@ void TestApp::Run()
 			PlayAnimation(model0, "Walk");
 			PlayAnimation(model1, "Run");
 
-			for (int y = -10; y < 11; ++y)
+			mCore->Lock();
 			{
-				for (int x = -10; x < 11; ++x)
+				for (int y = -10; y < 11; ++y)
 				{
-					ModelInstance* inst = mScene.AddObject<ModelInstance>(String("Instance %dx%d", x, y));
-					inst->SetModel( (((x + y) & 1) == 0) ? model0 : model1 );
-					inst->SetRelativePosition( Vector3f(2.0f * x, 2.0f * y, 0.0f) );
-					inst->SetRelativeRotation( Vector3f(0.0f, -1.0f, 0.0f) );
-					inst->SetRelativeScale(5.0f);
-					inst->SetSerializable(false);
+					for (int x = -10; x < 11; ++x)
+					{
+						ModelInstance* inst = mScene.AddObject<ModelInstance>(String("Instance %dx%d", x, y));
+						inst->SetModel( (((x + y) & 1) == 0) ? model0 : model1 );
+						inst->SetRelativePosition( Vector3f(2.0f * x, 2.0f * y, 0.0f) );
+						inst->SetRelativeRotation( Vector3f(0.0f, -1.0f, 0.0f) );
+						inst->SetRelativeScale(5.0f);
+						inst->SetSerializable(false);
+					}
 				}
 			}
+			mCore->Unlock();
 
 			while (mCore->Update());
 
@@ -72,7 +76,7 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	mScene.Cull(mCam);
-	mScene.DrawWithTechnique(mTech);
+	mScene.DrawWithTechnique(mTech, true, true, true);
 }
 
 //============================================================================================================

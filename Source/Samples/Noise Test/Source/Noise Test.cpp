@@ -106,7 +106,9 @@ void TestApp::Run()
 		{
 			mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 			while (mCore->Update());
+#ifndef _DEBUG
 			*mCore >> "Config/Noise Test.txt";
+#endif
 		}
 	}
 }
@@ -118,8 +120,6 @@ void TestApp::Run()
 void TestApp::OnDraw()
 {
 	if (mRegenerate) Regenerate();
-	mScene.Cull(mCam);
-	mScene.DrawWithTechnique("Opaque");
 }
 
 //============================================================================================================

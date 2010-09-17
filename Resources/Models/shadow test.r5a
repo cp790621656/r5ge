@@ -23,10 +23,10 @@ Root
 					"Textures/Skins/shadowtest_ao.png"
 				}
 			}
-			
+
 			Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/L [Shadowed]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -36,7 +36,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Surface/L [Deferred]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -63,7 +63,7 @@ Root
 
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/L [Shadowed]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -73,7 +73,7 @@ Root
 			
 			Technique = "Deferred"
 			{
-				Shader = "Surface/L [Deferred]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -100,7 +100,7 @@ Root
 
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/L [Shadowed]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -110,7 +110,7 @@ Root
 			
 			Technique = "Deferred"
 			{
-				Shader = "Surface/L [Deferred]"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -139,7 +139,7 @@ Root
 
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/L [Shadowed]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -149,7 +149,7 @@ Root
 			
 			Technique = "Deferred"
 			{
-				Shader = "Surface/L [Deferred]"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -176,7 +176,7 @@ Root
 
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/L [Shadowed]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -186,7 +186,7 @@ Root
 			
 			Technique = "Deferred"
 			{
-				Shader = "Surface/L [Deferred]"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{
@@ -213,7 +213,7 @@ Root
 
             Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/L [Shadowed]"
+				Shader = "Surface/L"
 
 				Textures = String[]
 				{
@@ -223,7 +223,7 @@ Root
 			
 			Technique = "Deferred"
 			{
-				Shader = "Surface/L [Deferred]"
+				Shader = "Surface/L"
 				
 				Textures = String[]
 				{

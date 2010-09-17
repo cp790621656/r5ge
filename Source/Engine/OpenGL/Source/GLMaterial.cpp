@@ -39,7 +39,7 @@ IMaterial::DrawMethod*  GLMaterial::GetDrawMethod (const ITechnique* t, bool cre
 			// Go through all material option entries
 			for (uint i = 0; i < mMethods.GetSize(); ++i)
 			{
-				if (mMethods[i].GetTechnique() == t)
+				if (mMethods[i].mTechnique == t)
 				{
 					ptr = &mMethods[i];
 					break;
@@ -54,10 +54,10 @@ IMaterial::DrawMethod*  GLMaterial::GetDrawMethod (const ITechnique* t, bool cre
 				// Try to reuse unassigned entries first
 				for (uint i = 0; i < mMethods.GetSize(); ++i)
 				{
-					if (mMethods[i].GetTechnique() == 0)
+					if (mMethods[i].mTechnique == 0)
 					{
 						ptr = &mMethods[i];
-						ptr->SetTechnique(t);
+						ptr->mTechnique = t;
 						break;
 					}
 				}
@@ -66,7 +66,7 @@ IMaterial::DrawMethod*  GLMaterial::GetDrawMethod (const ITechnique* t, bool cre
 				if (ptr == 0)
 				{
 					ptr = &mMethods.Expand();
-					ptr->SetTechnique(t);
+					ptr->mTechnique = t;
 				}
 			}
 		}
@@ -101,7 +101,7 @@ void GLMaterial::DeleteDrawMethod (const ITechnique* t)
 			{
 				DrawMethod& ren = mMethods[i];
 
-				if (ren.GetTechnique() == t)
+				if (ren.mTechnique == t)
 				{
 					mMask &= ~(t->GetMask());
 					ren.Clear();
@@ -144,8 +144,8 @@ void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 
 		if (tag == IShader::ClassID())
 		{
-			m.SetShader( (value.IsValid()) ? graphics->GetShader(
-				value.AsString()) : 0 );
+			m.mShader = (value.IsValid()) ? graphics->GetShader(
+				value.AsString()) : 0;
 		}
 		else if (tag == "Textures")
 		{
@@ -176,29 +176,24 @@ void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 
 void SerializeMethodTo (const IMaterial::DrawMethod& m, TreeNode& root)
 {
-	const ITechnique* tech = m.GetTechnique();
-
-	if (tech != 0)
+	if (m.mTechnique != 0)
 	{
-		TreeNode& node = root.AddChild( ITechnique::ClassID(), tech->GetName() );
+		TreeNode& node = root.AddChild( ITechnique::ClassID(), m.mTechnique->GetName() );
 
-		const IShader* shader = m.GetShader();
-		if (shader != 0) node.AddChild( IShader::ClassID(), shader->GetName() );
+		if (m.mShader != 0) node.AddChild( IShader::ClassID(), m.mShader->GetName() );
 
-		const IMaterial::Textures& list = m.GetAllTextures();
-
-		if (list.IsValid())
+		if (m.mTextures.IsValid())
 		{
 			Array<String>& sa = node.AddChild("Textures").mValue.ToStringArray();
 
-			list.Lock();
+			m.mTextures.Lock();
 			{
-				for (uint i = 0; i < list.GetSize(); ++i)
+				for (uint i = 0; i < m.mTextures.GetSize(); ++i)
 				{
-					if (list[i] != 0) sa.Expand() = list[i]->GetName();
+					if (m.mTextures[i] != 0) sa.Expand() = m.mTextures[i]->GetName();
 				}
 			}
-			list.Unlock();
+			m.mTextures.Unlock();
 		}
 	}
 }

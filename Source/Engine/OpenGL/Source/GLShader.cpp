@@ -738,6 +738,10 @@ bool GLShader::IsValid() const
 
 bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 {
+	// Automatically delegate to hidden alternate versions of this shader if they are active instead
+	if (mDeferred != 0 && g_activeProgram == mDeferred->mProgram) return mDeferred->SetUniform(name, uniform);
+	if (mShadowed != 0 && g_activeProgram == mShadowed->mProgram) return mShadowed->SetUniform(name, uniform);
+
 	ASSERT(g_activeProgram == mProgram, "Setting a uniform on an incorrect program?");
 
 	for (uint i = mUniforms.GetSize(); i > 0; )

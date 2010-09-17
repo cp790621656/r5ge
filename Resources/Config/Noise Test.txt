@@ -5,8 +5,8 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Noise Test"
-		Position = 62 107
-		Size = 1321 532
+		Position = 0 107
+		Size = 1264 532
 		Full Screen = false
 	}
 
@@ -27,27 +27,13 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/N"
+				Shader = "Surface/N"
 
 				Textures = String[]
 				{
 					"Normal Map"
 				}
 			}
-		}
-
-		Material = "Test Material"
-		{
-			Diffuse = 1.0 1.0 1.0 1.0
-			Glow = 0.0
-			Specular Hue = 0.0
-			Specularity = 0.0
-			Shininess = 0.2
-			Reflectiveness = 0.0
-			Occlusion = 0.75
-			Alpha Cutoff = 0.003922
-			Technique = "Opaque Depth"
-			Technique = "Opaque"
 		}
 	}
 
@@ -75,7 +61,7 @@ Root
 					Top = 0.0 0.0
 					Bottom = 0.0 16.0
 					Alpha = 1.0
-					Text = "Time: 38"
+					Text = "Time: 41"
 					Text Color = 0xFFFFFFFF
 					Shadow Color = 0x000000FF
 					Alignment = "Center"
@@ -89,7 +75,7 @@ Root
 				Left = 1.0 -256.0
 				Right = 1.0 0.0
 				Top = 0.0 0.0
-				Bottom = 0.0 512.0
+				Bottom = 0.0 483.0
 				Alpha = 1.0
 				Titlebar Height = 0
 				Resizable = true
@@ -134,10 +120,10 @@ Root
 
 			UIWindow = "Options"
 			{
-				Left = 0.0 10.0
-				Right = 0.0 271.0
-				Top = 0.0 12.0
-				Bottom = 0.0 280.0
+				Left = 0.0 0.0
+				Right = 0.0 261.0
+				Top = 0.0 0.0
+				Bottom = 0.0 268.0
 				Alpha = 1.0
 				Titlebar Height = 22
 				Resizable = false
@@ -603,26 +589,6 @@ Root
 					Layer = 0
 				}
 
-				UIButton = "128"
-				{
-					Left = 0.0 2.0
-					Right = 0.25 0.0
-					Top = 1.0 -22.0
-					Bottom = 1.0 -2.0
-					Alpha = 1.0
-					Back Color = 0xFFFFFFFF
-					Text = "128"
-					Text Color = 0xFFFFFFFF
-					Shadow Color = 0x000000FF
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.15
-					Event Handling = "Normal"
-					Layer = 0
-					UIScript = "USEventListener"
-				}
-
 				UIList = "Filter 1"
 				{
 					Left = 0.0 2.0
@@ -769,26 +735,6 @@ Root
 					UIScript = "USEventListener"
 				}
 
-				UIButton = "1024"
-				{
-					Left = 0.75 2.0
-					Right = 1.0 -2.0
-					Top = 1.0 -22.0
-					Bottom = 1.0 -2.0
-					Alpha = 1.0
-					Back Color = 0xFFFFFFFF
-					Text = "1024"
-					Text Color = 0xFFFFFFFF
-					Shadow Color = 0x000000FF
-					Alignment = "Center"
-					State = "Enabled"
-					Sticky = false
-					Animation Time = 0.15
-					Event Handling = "Normal"
-					Layer = 0
-					UIScript = "USEventListener"
-				}
-
 				UIInput = "Input 0"
 				{
 					Left = 0.5 2.0
@@ -807,6 +753,26 @@ Root
 					Event Handling = "Full"
 					Tooltip = "Fractal noise (up to 3 parameters): Octaves, ridge threshold, octave multiplier"
 					Layer = 0
+				}
+
+				UIButton = "128"
+				{
+					Left = 0.0 2.0
+					Right = 0.25 0.0
+					Top = 1.0 -22.0
+					Bottom = 1.0 -2.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "128"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
 				}
 
 				UIButton = "256"
@@ -848,6 +814,26 @@ Root
 					Layer = 0
 					UIScript = "USEventListener"
 				}
+
+				UIButton = "1024"
+				{
+					Left = 0.75 2.0
+					Right = 1.0 -2.0
+					Top = 1.0 -22.0
+					Bottom = 1.0 -2.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
+					Text = "1024"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Event Handling = "Normal"
+					Layer = 0
+					UIScript = "USEventListener"
+				}
 			}
 		}
 	}
@@ -861,7 +847,7 @@ Root
 
 		Model = "Teapot"
 		{
-			Source = "Models/Teapot.r5b"
+			Source = "Models/Teapot.r5c"
 
 			Limb = "Teapot"
 			{
@@ -884,6 +870,8 @@ Root
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Directional Light = "Directional Light"
 		{
 			Position = 0.0 0.0 0.0
@@ -899,10 +887,27 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.0 0.0 3.0
-			Rotation = 0.111581 -0.234321 0.871963 -0.415118
+			Rotation = 0.069032 -0.192421 0.921422 -0.330441
 			Scale = 1.0 1.0 1.0
 			Range = 0.3 100.0 90.0
 			Dolly = 0.0 19.267731 50.0
+
+			Script = "OSDrawForward"
+			{
+				Background Color = 0.25 0.25 0.25 1.0
+				Fog Range = 0.5 1.0
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascade Count = 3
+					Cascade Bias = 0.5
+					Blur Passes = 2
+					Softness = 2.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
+				}
+			}
 		}
 
 		Model Instance = "Teapot"

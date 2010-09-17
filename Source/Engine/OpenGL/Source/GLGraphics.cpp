@@ -889,6 +889,7 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 				}
 				else if (name == "Deferred")
 				{
+					tech->SetFlag(ITechnique::Flag::Deferred, true);
 					tech->SetFog(false);
 					tech->SetLighting(IGraphics::Lighting::None);
 					tech->SetBlending(IGraphics::Blending::None);
@@ -927,6 +928,11 @@ ITechnique* GLGraphics::GetTechnique (const String& name, bool createIfMissing)
 				{
 					// Group for objects with transparency, drawn after solids -- default everything
 					tech->SetSorting(ITechnique::Sorting::BackToFront);
+				}
+
+				if (name.Contains("Shadowed"))
+				{
+					tech->SetFlag(ITechnique::Flag::Shadowed, true);
 				}
 
 				// Newly created techniques should not be serializable until something changes

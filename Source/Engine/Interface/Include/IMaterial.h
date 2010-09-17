@@ -14,31 +14,23 @@ struct IMaterial
 	typedef Array<const ITexture*> Textures;
 
 	// Material options differ for every rendering technique
-	class DrawMethod
+	struct DrawMethod
 	{
-	protected:
-
 		const ITechnique*	mTechnique;
 		IShader*			mShader;
 		Textures			mTextures;
 
-	public:
+		// NOTE: Deferred and shadowed versions of the shader will be set (and chosen) automatically by the
+		// graphics controller when activating a shader if the shader happens to be a surface shader.
 
 		DrawMethod() : mTechnique(0), mShader(0) {}
 
 		void Clear()
 		{
-			mTechnique = 0;
-			mShader = 0;
+			mTechnique		= 0;
+			mShader			= 0;
 			mTextures.Release();
-			mShader = 0;
 		}
-
-		void				SetTechnique (const ITechnique* tech)	{ mTechnique = tech; }
-		const ITechnique*	GetTechnique() const					{ return mTechnique; }
-		void				SetShader(IShader* shader)				{ mShader = shader; }
-		IShader*			GetShader()								{ return mShader; }
-		const IShader*		GetShader() const						{ return mShader; }
 
 		void SetTexture (uint textureUnit, const ITexture* tex)
 		{
@@ -50,8 +42,6 @@ struct IMaterial
 		{
 			return (textureUnit < mTextures.GetSize()) ? mTextures[textureUnit] : 0;
 		}
-
-		const Textures&	GetAllTextures() const { return mTextures; }
 	};
 
 	typedef Array<DrawMethod> DrawMethods;

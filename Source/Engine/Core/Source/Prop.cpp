@@ -63,7 +63,7 @@ bool Prop::IsUsingTexture (const ITexture* ptr) const
 			{
 				for (uint b = 0; b < methods.GetSize(); ++b)
 				{
-					const IMaterial::Textures& textures = methods[b].GetAllTextures();
+					const IMaterial::Textures& textures = methods[b].mTextures;
 
 					for (uint c = 0; c < textures.GetSize(); ++c)
 					{

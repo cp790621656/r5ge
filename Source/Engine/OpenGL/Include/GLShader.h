@@ -33,6 +33,10 @@ private:
 	// Registered values
 	mutable Array<UniformEntry> mUniforms;
 
+	// Alternate versions of this shader
+	mutable GLShader* mDeferred;	// Shader Name [Deferred]
+	mutable GLShader* mShadowed;	// Shader Name [Shadowed]
+
 private:
 
 	// Allow the graphics classes to call these functions
@@ -92,7 +96,7 @@ private:
 
 public:
 
-	GLShader() : mGraphics(0), mProgram(0), mIsDirty(false) {}
+	GLShader() : mGraphics(0), mProgram(0), mIsDirty(false), mDeferred(0), mShadowed(0) {}
 	virtual ~GLShader() {}
 
 	// Clears the shader, making it invalid

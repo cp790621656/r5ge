@@ -181,7 +181,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 			mOffscreen.SetFinalTarget(diffuseTarget);
 			mOffscreen.Cull(offCam);
 			mGraphics->SetBackgroundColor( Color4ub(65, 90, 20, 0) );
-			mOffscreen.DrawWithTechnique("Diffuse Map");
+			mOffscreen.DrawWithTechnique("Diffuse Map", true, true, true);
 			mGraphics->Flush();
 
 			// Turn alpha above 0 into a solid color -- we don't want the hideous alpha-bleeding
@@ -202,7 +202,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 			mOffscreen.SetFinalTarget(normalTarget);
 			mOffscreen.ActivateMatrices();
 			mGraphics->SetBackgroundColor( Color4ub(127, 127, 255, 220) );
-			mOffscreen.DrawWithTechnique("Normal Map");
+			mOffscreen.DrawWithTechnique("Normal Map", true, true, true);
 			mGraphics->Flush();
 		}
 
@@ -240,14 +240,14 @@ void TestApp::SaveTextures (IGraphicsManager* graphics, void* param)
 	{
 		String filename ("leaves%3u.tga", counter);
 		filename.Replace(" ", "0");
-		Image::Save(filename, diffuse.GetBuffer(), d.x, d.y, mFinalD->GetFormat());
+		Image::StaticSave(filename, diffuse.GetBuffer(), d.x, d.y, mFinalD->GetFormat());
 	}
 	
 	if (mFinalN->GetBuffer(normal))
 	{
 		String filename ("leaves%3u_nm.tga", counter);
 		filename.Replace(" ", "0");
-		Image::Save(filename, normal.GetBuffer(), n.x, n.y, mFinalN->GetFormat());
+		Image::StaticSave(filename, normal.GetBuffer(), n.x, n.y, mFinalN->GetFormat());
 	}
 	++counter;
 }

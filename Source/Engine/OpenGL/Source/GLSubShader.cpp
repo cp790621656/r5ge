@@ -257,7 +257,7 @@ void GLSubShader::_Init()
 	}
 	else
 	{
-		// Encoded parameters, such as: "Shaders/Material [Forward Shadowed]"
+		// Encoded parameters, such as: "Shaders/Material [Shadowed]"
 		uint index = mName.Find("[");
 
 		if (index < mName.GetSize())
@@ -329,13 +329,13 @@ void GLSubShader::_Preprocess (bool deferred, bool shadowed)
 		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
 		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
 
-		// Vertex shader forward lighting
+		// Vertex shader output
 		::PreprocessVertexOutput(mCode, deferred);
 	}
 	else
 	{
-		// Vertex shader forward lighting
-		::PreprocessFragmentOutput(mCode, deferred, shadowed);
+		// Fragment shader output
+		mFlags.Set(IShader::Flag::Surface, ::PreprocessFragmentOutput(mCode, deferred, shadowed));
 
 		bool matShader (false);
 		matShader |= mCode.Replace("R5_MATERIAL_SPECULARITY",	"gl_FrontMaterial.specular.r") != 0;

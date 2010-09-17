@@ -20,6 +20,7 @@ struct IShader
 			WorldScale	= 0x08,	// The shader has the R5_worldScale parameter.
 			Material	= 0x10,	// Has the R5_material uniform
 			Shadowed	= 0x20,	// The material's last texture must be "R5_Shadowmap"
+			Surface		= 0x40,	// This is a surface shader, usable for both forward and deferred
 		};
 	};
 

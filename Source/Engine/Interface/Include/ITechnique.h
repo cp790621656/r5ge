@@ -11,6 +11,15 @@ struct ITechnique
 {
 	R5_DECLARE_INTERFACE_CLASS("Technique");
 
+	struct Flag
+	{
+		enum
+		{
+			Deferred = 0x1,
+			Shadowed = 0x2,
+		};
+	};
+
 	struct Lighting
 	{
 		enum
@@ -61,14 +70,18 @@ protected:
 	// index and mask retrieval functions must remain identical in all implementations.
 
 	uint mIndex;
+	Flags mFlags;
 
 public:
 
 	ITechnique() : mIndex(0) {}
 	virtual ~ITechnique() {}
 
-	inline uint GetIndex() const { return mIndex; }
-	inline uint GetMask() const { return (1 << mIndex); }
+	uint GetIndex() const { return mIndex; }
+	uint GetMask() const { return (1 << mIndex); }
+
+	bool GetFlag (uint flag) const { return mFlags.Get(flag); }
+	void SetFlag (uint flag, bool val) { mFlags.Set(flag, val); }
 
 	virtual const String& GetName() const=0;
 	virtual bool GetFog()			const=0;

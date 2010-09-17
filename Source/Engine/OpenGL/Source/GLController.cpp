@@ -625,9 +625,8 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 			const float glow (ptr->GetGlow());
 
 			Color4f spec, emis;
-			const IShader* shader = ren->GetShader();
 
-			if (shader != 0 && shader->GetFlag(IShader::Flag::Material))
+			if (ren->mShader != 0 && ren->mShader->GetFlag(IShader::Flag::Material))
 			{
 				// Shader with R5_MATERIAL tags used -- specular channel holds special values
 				spec.r = ptr->GetSpecularity();
@@ -668,19 +667,21 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 			CHECK_GL_ERROR;
 
 			// Retrieve all textures used by the material
-			const IMaterial::Textures& textures (ren->GetAllTextures());
-			uint lastTex = textures.GetSize();
+			uint lastTex = ren->mTextures.GetSize();
 			if (lastTex > maxIU) lastTex = maxIU;
 
+			// Activate the appropriate shader
+			SetActiveShader(ren->mShader);
+
 			// Activate all textures
-			textures.Lock();
+			ren->mTextures.Lock();
 			{
-				bool bindShadow = (shader != 0 && shader->GetFlag(IShader::Flag::Shadowed));
+				bool bindShadow = (mShader != 0 && mShader->GetFlag(IShader::Flag::Shadowed));
 
 				// Bind all of the material's textures
 				for (uint i = maxIU; i > 0; )
 				{
-					const ITexture* tex = (--i < lastTex) ? textures[i] : 0;
+					const ITexture* tex = (--i < lastTex) ? ren->mTextures[i] : 0;
 
 					// Automatically bind the shadowmap texture after the last texture
 					if (i == lastTex && bindShadow)
@@ -693,10 +694,7 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 					SetActiveTexture(i, tex);
 				}
 			}
-			textures.Unlock();
-
-			// Activate the shader
-			SetActiveShader(shader);
+			ren->mTextures.Unlock();
 		}
 
 		// Remember the currently active material
@@ -727,18 +725,66 @@ bool GLController::SetActiveMaterial (const ITexture* ptr)
 
 bool GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms)
 {
-	// Which shader is currently active is kept inside the Shader.cpp file,
+	// "Which shader is currently active" is kept inside the Shader.cpp file,
 	// so we don't check for inequality here.
 	if (ptr != 0)
 	{
 		GLShader* shader = (GLShader*)ptr;
+
+		for (;;)
+		{
+			// If this is a surface shader, we might need to activate a different shader
+			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface))
+			{
+				const String& shaderName = shader->GetName();
+
+				if (mTechnique->GetFlag(ITechnique::Flag::Deferred))
+				{
+					if (shader->mDeferred == 0)
+					{
+						// Remember this alternate version of the shader
+						shader->mDeferred = (GLShader*)GetShader(shaderName + " [Deferred]");
+
+						// Copy over registered uniforms
+						FOREACH(i, shader->mUniforms)
+						{
+							GLShader::UniformEntry& ent = shader->mUniforms[i];
+							shader->mDeferred->RegisterUniform(ent.mName, ent.mDelegate);
+						}
+					}
+					shader = shader->mDeferred;
+				}
+				else if (mTechnique->GetFlag(ITechnique::Flag::Shadowed))
+				{
+					if (shader->mShadowed == 0)
+					{
+						shader->mShadowed = (GLShader*)GetShader(shaderName + " [Shadowed]");
+
+						FOREACH(i, shader->mUniforms)
+						{
+							GLShader::UniformEntry& ent = shader->mUniforms[i];
+							shader->mShadowed->RegisterUniform(ent.mName, ent.mDelegate);
+						}
+					}
+					shader = shader->mShadowed;
+				}
+
+				// Activate the shader
+				if (shader->Activate(false)) ++mStats.mShaderSwitches;
+				break;
+			}
+
+			// Activate the shader
+			if (shader->Activate(false)) ++mStats.mShaderSwitches;
+
+			// If this is actually a surface shader, we might need to activate a different one
+			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface)) continue;
+			break;
+		}
+
+		// Remember the shader that we activated
 		mMaterial = (const IMaterial*)(-1);
 		mShader = shader;
-
-		if (shader->Activate(forceUpdateUniforms))
-		{
-			++mStats.mShaderSwitches;
-		}
 		return true;
 	}
 	else if (mShader != 0)

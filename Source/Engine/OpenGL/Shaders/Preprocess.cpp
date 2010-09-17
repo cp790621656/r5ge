@@ -374,7 +374,11 @@ bool R5::PreprocessFragmentOutput (String& source, bool deferred, bool shadowed)
 		{
 			// Deferred rendering output is simple -- it's copied nearly as-is
 			source = left;
-			source << "\n	normal.xyz = normal.xyz * 0.5 + 0.5;";
+			source << "\n	";
+			source << normal;
+			source << ".xyz = ";
+			source << normal;
+			source << ".xyz * 0.5 + 0.5;";
 			source << "\n	gl_FragData[0] = ";
 			source << diffuse;
 			source << ";\n	gl_FragData[1] = ";

@@ -221,10 +221,8 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech, Limb
 			{
 				if (updateSkin)
 				{
-					IShader* shader = method->GetShader();
-
 					// If we're skinning on the GPU and we have a shader active
-					if (g_skinOnGPU && shader != 0 && shader->GetFlag(IShader::Flag::Skinned))
+					if (g_skinOnGPU && method->mShader != 0 && method->mShader->GetFlag(IShader::Flag::Skinned))
 					{
 						Uniform uniform;
 						uniform.mType		= Uniform::Type::ArrayFloat16;
@@ -232,7 +230,7 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech, Limb
 						uniform.mElements	= mMatrices.GetSize();
 
 						// Update the transform matrix
-						shader->SetUniform("R5_boneTransforms", uniform);
+						method->mShader->SetUniform("R5_boneTransforms", uniform);
 
 						// If we're skinning on the GPU, we don't need transformed vertices
 						mesh->DiscardTransforms();
