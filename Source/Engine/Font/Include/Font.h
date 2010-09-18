@@ -33,8 +33,6 @@ public:
 protected:
 
 	String			mSource;	// Actual filename from which the font has been loaded
-	String			mLoadingFN;	// Temporary filename, internal use
-
 	byte			mSize;		// Font size (maximum height) in pixels
 	byte			mPadding;	// Padding between characters inside the image buffer
 	byte			mGlyphSize;	// Calculated glyph size that fits 'mSize' by 'mSize' glyph + 'mPadding'

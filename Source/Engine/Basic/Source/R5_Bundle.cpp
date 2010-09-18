@@ -105,7 +105,8 @@ bool Bundle::Load (const String& filename)
 
 				// Create a new asset entry within the bundle
 				Asset& asset = mAssets.Expand();
-				asset.name	 = name;
+				asset.name = mDir;
+				asset.name << name;
 				asset.offset = (uint)ftell(fp);
 
 				// Whether the asset has been compressed flag comes next
@@ -152,21 +153,17 @@ bool Bundle::FindFiles (const String& filename, Array<String>& files) const
 		name.Replace("*", "", true);
 	}
 
-	String current;
-
 	uint count (0);
 
 	FOREACH(i, mAssets)
 	{
 		const Asset& asset = mAssets[i];
-		current = mDir;
-		current << asset.name;
 
 		// Check to see if the filename is close enough
-		if (System::IsFilenameCloseEnough(current, dir, name, ext, flag))
+		if (System::IsFilenameCloseEnough(asset.name, dir, name, ext, flag))
 		{
 			++count;
-			files.Expand() = current;
+			files.Expand() = asset.name;
 		}
 	}
 	return (count > 0);

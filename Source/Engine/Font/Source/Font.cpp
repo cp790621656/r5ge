@@ -47,30 +47,6 @@ using namespace R5;
 #endif
 
 //============================================================================================================
-// Locates a font file, if it's nearby
-//============================================================================================================
-
-bool _Locate (String& file)
-{
-	if (file.IsEmpty()) return false;
-	if (System::FileExists(file)) return true;
-
-	String name (System::GetFilenameFromPath(file));
-
-	file = "Fonts/" + name;
-	if (System::FileExists(file)) return true;
-
-	file << ".r5f";
-	if (System::FileExists(file)) return true;
-
-#ifdef R5_USE_FREETYPE
-	file.Replace(".r5f", ".ttf", true);
-	if (System::FileExists(file)) return true;
-#endif
-	return false;
-}
-
-//============================================================================================================
 // Allows replacement of current glyphs
 //============================================================================================================
 
@@ -104,26 +80,15 @@ bool Font::Load (const String& filename, byte fontSize, byte padding, byte spaci
 	// Temporary memory buffer used to load the file
 	Memory in;
 
-	mLoadingFN = filename;
-
 	// Try to load the file, and ensure that it has enough data for a header, at least
-	if (!_Locate(mLoadingFN) || !in.Load(mLoadingFN) || !(in.GetSize() > 5))
-	{
-		mLoadingFN = filename;
-		mLoadingFN << " ";
-		mLoadingFN << (uint)fontSize;
-	}
-
-	if (in.IsValid() || (_Locate(mLoadingFN) && in.Load(mLoadingFN) && in.GetSize() > 5))
+	if (in.Load(filename, &mSource) || in.Load(String("Fonts/") + filename, &mSource))
 	{
 		if ( Font::Load(in.GetBuffer(), in.GetSize(), fontSize, padding, spacing) )
 		{
-			mSource = mLoadingFN;
-			mLoadingFN.Release();
 			return true;
 		}
 	}
-	mLoadingFN.Release();
+	mSource.Release();
 	return false;
 }
 

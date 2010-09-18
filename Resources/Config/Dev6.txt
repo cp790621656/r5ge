@@ -67,7 +67,7 @@ Root
 
 	UI
 	{
-		Default Skin = "Config/Neon"
+		Default Skin = "Skins/Neon"
 		Default Font = "Arial 15"
 		Tooltip Delay = 1.0
 

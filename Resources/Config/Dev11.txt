@@ -19,7 +19,7 @@ Root
 
 	UI
 	{
-		Default Skin = "Config/Neon"
+		Default Skin = "Skins/Neon"
 		Default Font = "Arial 15"
 		Tooltip Delay = 1.000000
 
@@ -351,7 +351,7 @@ Root
 
 	Core
 	{
-		Execute = "Config/Neon UI Skin.txt"
+		Execute = "Skins/Neon UI Skin.txt"
 	}
 
 	Scene

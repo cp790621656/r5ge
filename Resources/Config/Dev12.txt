@@ -18,7 +18,7 @@ Root
 
 	UI
 	{
-		Default Skin = "Config/Neon"
+		Default Skin = "Skins/Neon"
 		Default Font = "Arial 15"
 
 		Layout
@@ -64,7 +64,7 @@ Root
 
 	Core
 	{
-		Execute = "Config/Neon UI Skin.txt"
+		Execute = "Skins/Neon UI Skin.txt"
 	}
 
 	Scene

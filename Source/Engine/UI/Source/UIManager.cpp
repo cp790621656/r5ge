@@ -104,11 +104,24 @@ UISkin* UIManager::GetSkin (const String& name, bool loadIfPossible)
 				// Find all files that match the specified name
 				if (System::GetFiles(name, files))
 				{
-					ASSERT(files.GetSize() == 1, "More than one match found");
+					// Configuration files for the UI must be in TreeNode format, which implies
+					// TreeNode extensions. All other files should be ignored.
+
+					for (uint i = files.GetSize(); i > 0; )
+					{
+						String& file = files[--i];
+						if (!file.EndsWith(".r5a") &&
+							!file.EndsWith(".r5b") &&
+							!file.EndsWith(".r5c")) files.RemoveAt(i);
+					}
+
+					ASSERT(files.IsValid(), "Unable to find the requested skin");
+					ASSERT(files.GetSize() < 2, "More than one match found");
 					TreeNode root;
 
 					// Load the located UI file
-					if (root.Load(files[0]))
+					if (files.IsValid() &&
+						root.Load(files[0]))
 					{
 						// Find the "Skin" tag and serialize from it
 						TreeNode* node = root.FindChild("Skin", true);

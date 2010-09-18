@@ -17,7 +17,7 @@ Root
 
 	UI
 	{
-		Default Skin = "Config/Neon"
+		Default Skin = "Skins/Neon"
 		Default Font = "Arial 15"
 
 		Layout
