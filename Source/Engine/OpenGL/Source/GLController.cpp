@@ -99,6 +99,7 @@ GLController::GLController() :
 	mColorWrite		(true),
 	mAlphaTest		(false),
 	mStencilTest	(false),
+	mScissorTest		(false),
 	mWireframe		(false),
 	mLighting		(Lighting::None),
 	mBlending		(Blending::None),
@@ -145,7 +146,7 @@ void GLController::Flush()
 }
 
 //============================================================================================================
-// Toggles the fog on/off
+// Sets the fog on/off
 //============================================================================================================
 
 void GLController::SetFog (bool val)
@@ -173,7 +174,7 @@ void GLController::SetFog (bool val)
 }
 
 //============================================================================================================
-// Toggles writing to Z-buffer
+// Sets writing to Z-buffer
 //============================================================================================================
 
 void GLController::SetDepthWrite (bool val)
@@ -192,7 +193,7 @@ void GLController::SetDepthWrite (bool val)
 }
 
 //============================================================================================================
-// Toggles depth test
+// Enables or disables the depth testing
 //============================================================================================================
 
 void GLController::SetDepthTest (bool val)
@@ -226,7 +227,7 @@ void GLController::SetColorWrite (bool val)
 }
 
 //============================================================================================================
-// Toggles alpha testing
+// Toggles the alpha testing
 //============================================================================================================
 
 void GLController::SetAlphaTest (bool val)
@@ -240,7 +241,7 @@ void GLController::SetAlphaTest (bool val)
 }
 
 //============================================================================================================
-// Toggles stencil test
+// Toggles the stencil test
 //============================================================================================================
 
 void GLController::SetStencilTest (bool val)
@@ -249,6 +250,19 @@ void GLController::SetStencilTest (bool val)
 	{
 		if (mStencilTest = val) glEnable(GL_STENCIL_TEST);
 		else glDisable(GL_STENCIL_TEST);
+	}
+}
+
+//============================================================================================================
+// Toggles the scissor test
+//============================================================================================================
+
+void GLController::SetScissorTest (bool val)
+{
+	if ( mScissorTest != val )
+	{
+		if (mScissorTest = val) glEnable(GL_SCISSOR_TEST);
+		else glDisable(GL_SCISSOR_TEST);
 	}
 }
 
@@ -439,6 +453,21 @@ void GLController::SetViewport (const Vector2i& size)
 	{
 		mSize = size;
 		if (mTarget == 0) mTrans.SetTargetSize(mSize);
+	}
+}
+
+//============================================================================================================
+// Changes the scissor rectangle
+//============================================================================================================
+
+void GLController::SetScissorRect (const Rect& rect)
+{
+	if (mScissorRect != rect)
+	{
+		mScissorRect = rect;
+		const Vector2i& size = GetActiveViewport();
+		glScissor((GLint)rect.left, (GLint)size.y - (GLint)rect.bottom,
+			(GLsizei)rect.GetWidth(), (GLsizei)rect.GetHeight());
 	}
 }
 

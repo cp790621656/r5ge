@@ -11,16 +11,16 @@ Root
 
 			Face = "UIWindow: Background"
 			{
-				Position = 5 5
-				Size = 7 7
-				Border = -6
+				Position = 2 2
+				Size = 13 13
+				Border = 3
 			}
 
 			Face = "UIWindow: Titlebar"
 			{
-				Position = 3 20
-				Size = 14 14
-				Border = -1
+				Position = 1 19
+				Size = 18 16
+				Border = 2
 			}
 			
 			Face = "UIInput: Background"

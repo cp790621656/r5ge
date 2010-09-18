@@ -13,6 +13,7 @@ struct IGraphicsController
 	typedef ITechnique::Blending	Blending;
 	typedef ITechnique::Culling		Culling;
 	typedef ITechnique::Sorting		Sorting;
+	typedef Rectangle<int>			Rect;
 
 	struct DataType
 	{
@@ -93,15 +94,17 @@ public:
 	virtual void SetColorWrite		(bool val)=0;
 	virtual void SetAlphaTest		(bool val)=0;
 	virtual void SetStencilTest		(bool val)=0;
+	virtual void SetScissorTest		(bool val)=0;
 	virtual void SetWireframe		(bool val)=0;
 	virtual void SetLighting		(uint val)=0;
 	virtual void SetBlending		(uint val)=0;
 	virtual void SetCulling			(uint val)=0;
-	virtual void SetAlphaCutoff				(float val = 0.003921568627451f)=0;
+	virtual void SetAlphaCutoff		(float val = 0.003921568627451f)=0;
 	virtual void SetThickness		(float val)=0;
 	virtual void SetNormalize		(bool val)=0;
 	virtual void SetDepthOffset		(uint val)=0;
-	virtual void SetViewport		(const Vector2i& size )=0;
+	virtual void SetViewport		(const Vector2i& size)=0;
+	virtual void SetScissorRect		(const Rect& rect)=0;
 	virtual void SetFogRange		(const Vector2f& range)=0;
 	virtual void SetBackgroundColor	(const Color4f& color )=0;
 	virtual void SetDefaultAF		(uint level)=0;
@@ -114,16 +117,18 @@ public:
 	virtual bool				GetDepthTest()			const=0;
 	virtual bool				GetAlphaTest()			const=0;
 	virtual bool				GetStencilTest()		const=0;
+	virtual bool				GetScissorTest()		const=0;
 	virtual bool				GetWireframe()			const=0;
 	virtual uint				GetLighting()			const=0;
 	virtual uint				GetBlending()			const=0;
 	virtual uint				GetCulling()			const=0;
-	virtual float				GetAlphaCutoff()				const=0;
+	virtual float				GetAlphaCutoff()		const=0;
 	virtual float				GetThickness()			const=0;
 	virtual bool				GetNormalize()			const=0;
 	virtual uint				GetDepthOffset()		const=0;
 	virtual uint				GetDefaultAF()			const=0;
 	virtual const Vector2i&		GetViewport()			const=0;
+	virtual const Rect&			GetScissorRect()		const=0;
 	virtual const Vector2f&		GetFogRange()			const=0;
 	virtual const Color4f&		GetBackgroundColor()	const=0;
 	virtual const ITexture*		GetActiveSkybox()		const=0;

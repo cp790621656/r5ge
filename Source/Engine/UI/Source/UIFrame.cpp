@@ -12,6 +12,20 @@ void UIFrame::Hide (float animTime)
 }
 
 //============================================================================================================
+// Clipping rectangle set before drawing the contents of the frame
+//============================================================================================================
+
+UIFrame::Rect UIFrame::GetClipRect() const
+{
+	Rect rect;
+	rect.left	= Float::RoundToInt(mRegion.GetCalculatedLeft());
+	rect.top	= Float::RoundToInt(mRegion.GetCalculatedTop());
+	rect.right	= Float::RoundToInt(mRegion.GetCalculatedRight());
+	rect.bottom	= Float::RoundToInt(mRegion.GetCalculatedBottom());
+	return rect;
+}
+
+//============================================================================================================
 // Marks a rendering queue associated with this texture as being dirty
 //============================================================================================================
 
@@ -142,20 +156,26 @@ uint UIFrame::OnDraw()
 		}
 
 		// Rendering
-		for (uint i = 0; i < size; ++i)
+		if (mQs.IsValid())
 		{
-			UIQueue* queue (mQs[i]);
+			mUI->SetClipRect(GetClipRect());
 
-			if (queue != 0)
+			for (uint i = 0; i < size; ++i)
 			{
-				const ITexture* tex (queue->mTex);
+				UIQueue* queue (mQs[i]);
 
-				if (tex == 0 || tex->IsValid())
+				if (queue != 0)
 				{
-					// Draw the queue
-					triangles += mUI->DrawQueue( queue );
+					const ITexture* tex (queue->mTex);
+
+					if (tex == 0 || tex->IsValid())
+					{
+						// Draw the queue
+						triangles += mUI->DrawQueue( queue );
+					}
 				}
 			}
+			mUI->RestoreClipRect();
 		}
 	}
 	return triangles;

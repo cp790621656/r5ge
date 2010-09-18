@@ -132,9 +132,9 @@ void UISlider::OnFill (UIQueue* queue)
 		Color4ub color   ( mColor, mRegion.GetCalculatedAlpha() );
 		Vector2i texSize ( queue->mTex->GetSize() );
 
-		UIFace::Rectangle  full  (  mFull->GetRectangle(texSize) );
-		UIFace::Rectangle  empty ( mEmpty->GetRectangle(texSize) );
-		UIFace::Rectangle  knob  (  mKnob->GetRectangle(texSize) );
+		Rectangle<float>  full  (  mFull->GetRectangle(texSize) );
+		Rectangle<float>  empty ( mEmpty->GetRectangle(texSize) );
+		Rectangle<float>  knob  (  mKnob->GetRectangle(texSize) );
 
 		if ( width > height )
 		{
@@ -146,26 +146,26 @@ void UISlider::OnFill (UIQueue* queue)
 			float centerEmpty	= right - (width - offset);
 			float knobLeft		= centerFull - Float::Round(height * 0.5f);
 			float knobRight		= knobLeft + height;
-			float tcCenterFull  =  full.mLeft  + ( full.mRight -  full.mLeft) * factor;
-			float tcCenterEmpty = empty.mRight - (empty.mRight - empty.mLeft) * invFactor;
+			float tcCenterFull  =  full.left  + ( full.right -  full.left) * factor;
+			float tcCenterEmpty = empty.right - (empty.right - empty.left) * invFactor;
 
 			// Full bar
-			v.Expand().Set( left,			top,    full.mLeft,		full.mTop,		color );
-			v.Expand().Set( left,			bottom, full.mLeft,		full.mBottom,	color );
-			v.Expand().Set( centerFull,		bottom, tcCenterFull,	full.mBottom,	color );
-			v.Expand().Set( centerFull,		top,    tcCenterFull,	full.mTop,		color );
+			v.Expand().Set( left,			top,    full.left,		full.top,		color );
+			v.Expand().Set( left,			bottom, full.left,		full.bottom,	color );
+			v.Expand().Set( centerFull,		bottom, tcCenterFull,	full.bottom,	color );
+			v.Expand().Set( centerFull,		top,    tcCenterFull,	full.top,		color );
 
 			// Empty bar
-			v.Expand().Set( centerEmpty,	top,    tcCenterEmpty,	empty.mTop,		white );
-			v.Expand().Set( centerEmpty,	bottom, tcCenterEmpty,	empty.mBottom,	white );
-			v.Expand().Set( right,			bottom, empty.mRight,	empty.mBottom,	white );
-			v.Expand().Set( right,			top,    empty.mRight,	empty.mTop,		white );
+			v.Expand().Set( centerEmpty,	top,    tcCenterEmpty,	empty.top,		white );
+			v.Expand().Set( centerEmpty,	bottom, tcCenterEmpty,	empty.bottom,	white );
+			v.Expand().Set( right,			bottom, empty.right,	empty.bottom,	white );
+			v.Expand().Set( right,			top,    empty.right,	empty.top,		white );
 
 			// Knob
-			v.Expand().Set( knobLeft,		top,	knob.mLeft,		knob.mTop,		white);
-			v.Expand().Set( knobLeft,		bottom, knob.mLeft,		knob.mBottom,	white);
-			v.Expand().Set( knobRight,		bottom, knob.mRight,	knob.mBottom,	white);
-			v.Expand().Set( knobRight,		top,	knob.mRight,	knob.mTop,		white);
+			v.Expand().Set( knobLeft,		top,	knob.left,		knob.top,		white);
+			v.Expand().Set( knobLeft,		bottom, knob.left,		knob.bottom,	white);
+			v.Expand().Set( knobRight,		bottom, knob.right,		knob.bottom,	white);
+			v.Expand().Set( knobRight,		top,	knob.right,		knob.top,		white);
 		}
 		// Vertical slider
 		else
@@ -178,26 +178,26 @@ void UISlider::OnFill (UIQueue* queue)
 			float centerEmpty	= top + (height - offset);
 			float knobTop		= centerFull - Float::Round(width * 0.5f);
 			float knobBottom	= knobTop + width;
-			float tcCenterFull  =  full.mLeft  + ( full.mRight -  full.mLeft) * factor;
-			float tcCenterEmpty = empty.mRight - (empty.mRight - empty.mLeft) * invFactor;
+			float tcCenterFull  =  full.left  + ( full.right -  full.left) * factor;
+			float tcCenterEmpty = empty.right - (empty.right - empty.left) * invFactor;
 
 			// Full bar
-			v.Expand().Set( left,	centerFull,		tcCenterFull,	full.mTop,		color);
-			v.Expand().Set( left,	bottom,			full.mLeft,		full.mTop,		color);
-			v.Expand().Set( right,	bottom,			full.mLeft,		full.mBottom,	color);
-			v.Expand().Set( right,	centerFull,		tcCenterFull,	full.mBottom,	color);
+			v.Expand().Set( left,	centerFull,		tcCenterFull,	full.top,		color);
+			v.Expand().Set( left,	bottom,			full.left,		full.top,		color);
+			v.Expand().Set( right,	bottom,			full.left,		full.bottom,	color);
+			v.Expand().Set( right,	centerFull,		tcCenterFull,	full.bottom,	color);
 
 			// Empty bar
-			v.Expand().Set( left,	top,			empty.mRight,	empty.mTop,		white);
-			v.Expand().Set( left,	centerEmpty,	tcCenterEmpty,	empty.mTop,		white);
-			v.Expand().Set( right,	centerEmpty,	tcCenterEmpty,	empty.mBottom,	white);
-			v.Expand().Set( right,	top,			empty.mRight,	empty.mBottom,	white);
+			v.Expand().Set( left,	top,			empty.right,	empty.top,		white);
+			v.Expand().Set( left,	centerEmpty,	tcCenterEmpty,	empty.top,		white);
+			v.Expand().Set( right,	centerEmpty,	tcCenterEmpty,	empty.bottom,	white);
+			v.Expand().Set( right,	top,			empty.right,	empty.bottom,	white);
 
 			// Knob
-			v.Expand().Set( left,	knobTop,		knob.mRight,	knob.mTop,		white);
-			v.Expand().Set( left,	knobBottom,		knob.mLeft,		knob.mTop,		white);
-			v.Expand().Set( right,	knobBottom,		knob.mLeft,		knob.mBottom,	white);
-			v.Expand().Set( right,	knobTop,		knob.mRight,	knob.mBottom,	white);
+			v.Expand().Set( left,	knobTop,		knob.right,		knob.top,		white);
+			v.Expand().Set( left,	knobBottom,		knob.left,		knob.top,		white);
+			v.Expand().Set( right,	knobBottom,		knob.left,		knob.bottom,	white);
+			v.Expand().Set( right,	knobTop,		knob.right,		knob.bottom,	white);
 		}
 	}
 }

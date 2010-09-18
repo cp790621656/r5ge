@@ -9,17 +9,8 @@
 
 class UIFace
 {
-public:
-
-	struct Rectangle
-	{
-		float	mLeft;
-		float	mRight;
-		float	mTop;
-		float	mBottom;
-	};
-
 	friend class UISkin;
+
 private:
 
 	String		mName;
@@ -38,7 +29,7 @@ public:
 	short			GetBorder() const { return mBorder;	}
 
 	// Calculates the 4 texture coordinates for the image of specified size
-	Rectangle GetRectangle (const Vector2i& size) const;
+	Rectangle<float> GetRectangle (const Vector2i& size) const;
 
 	// Serialization
 	void SerializeFrom (const TreeNode& root);

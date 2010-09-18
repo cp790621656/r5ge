@@ -5,15 +5,15 @@ using namespace R5;
 // Calculates the 4 texture coordinates for the image of specified size
 //==============================================================================================
 
-UIFace::Rectangle UIFace::GetRectangle (const Vector2i& size) const
+Rectangle<float> UIFace::GetRectangle (const Vector2i& size) const
 {
 	// NOTE: The face coordinates are stored as top-left based, matching Photoshop and
 	// windows coordinates. R5 textures are bottom-left based, however. Solution? Flip the Y.
-	Rectangle out;
-	out.mLeft	=  ((float)mPos.x) / size.x;
-	out.mTop	= -((float)mPos.y) / size.y;
-	out.mBottom = -((float)(mPos.y + mSize.y)) / size.y;
-	out.mRight	=  ((float)(mPos.x + mSize.x)) / size.x;
+	Rectangle<float> out;
+	out.left	=  ((float)mPos.x) / size.x;
+	out.top		= -((float)mPos.y) / size.y;
+	out.bottom	= -((float)(mPos.y + mSize.y)) / size.y;
+	out.right	=  ((float)(mPos.x + mSize.x)) / size.x;
 	return out;
 }
 

@@ -36,10 +36,10 @@ void UIRegion::SetRect (float x, float y, float w, float h)
 
 bool UIRegion::Contains (const Vector2i& pos) const
 {
-	if ( pos.x < mRect.mLeft   ) return false;
-	if ( pos.y < mRect.mTop    ) return false;
-	if ( pos.x > mRect.mRight  ) return false;
-	if ( pos.y > mRect.mBottom ) return false;
+	if ( pos.x < mRect.left   ) return false;
+	if ( pos.y < mRect.top    ) return false;
+	if ( pos.x > mRect.right  ) return false;
+	if ( pos.y > mRect.bottom ) return false;
 	return true;
 }
 
@@ -110,7 +110,7 @@ void UIRegion::OnSerializeTo (TreeNode& node) const
 bool UIRegion::Update (const Vector2i& size, bool forceUpdate)
 {
 	static UIRegion screen;
-	screen.mRect.Set(0.0f, size.x, 0.0f, size.y);
+	screen.mRect.Set(0.0f, 0.0f, size.x, size.y);
 	return Update(screen, forceUpdate, true);
 }
 
@@ -141,31 +141,31 @@ bool UIRegion::Update (const UIRegion& parent, bool forceUpdate, bool scheduledU
 	{
 		float width  = pr.GetWidth();
 		float height = pr.GetHeight();
-		float left	 = pr.mLeft +   mRelativeLeft.mAbsolute +   mRelativeLeft.mRelative * width;
-		float right  = pr.mLeft +  mRelativeRight.mAbsolute +  mRelativeRight.mRelative * width;
-		float top	 = pr.mTop  +    mRelativeTop.mAbsolute +    mRelativeTop.mRelative * height;
-		float bottom = pr.mTop  + mRelativeBottom.mAbsolute + mRelativeBottom.mRelative * height;
+		float left	 = pr.left +   mRelativeLeft.mAbsolute +   mRelativeLeft.mRelative * width;
+		float right  = pr.left +  mRelativeRight.mAbsolute +  mRelativeRight.mRelative * width;
+		float top	 = pr.top  +    mRelativeTop.mAbsolute +    mRelativeTop.mRelative * height;
+		float bottom = pr.top  + mRelativeBottom.mAbsolute + mRelativeBottom.mRelative * height;
 
 		if (right < left) right = left;
 		if (bottom < top) bottom = top;
 
 		// Update the dimension change flag
-		mDimsChanged =	Float::IsNotEqual(left,   mRect.mLeft)	||
-						Float::IsNotEqual(right,  mRect.mRight)	||
-						Float::IsNotEqual(top,	  mRect.mTop)	||
-						Float::IsNotEqual(bottom, mRect.mBottom);
+		mDimsChanged =	Float::IsNotEqual(left,   mRect.left)	||
+						Float::IsNotEqual(right,  mRect.right)	||
+						Float::IsNotEqual(top,	  mRect.top)	||
+						Float::IsNotEqual(bottom, mRect.bottom);
 
 		// Update the rectangle
-		if (mDimsChanged) mRect.Set(left, right, top, bottom);
+		if (mDimsChanged) mRect.Set(left, top, right, bottom);
 	}
 
 	// Check to see if the widget is really visible according to dimensions
-	bool isVisible = (!(mRect.mLeft		> pr.mRight		||
-						mRect.mRight	< pr.mLeft		||
-						mRect.mTop		> pr.mBottom	||
-						mRect.mBottom	< pr.mTop))		&&
-						mRect.mRight	> mRect.mLeft	&&
-						mRect.mBottom	> mRect.mTop	&&
+	bool isVisible = (!(mRect.left		> pr.right		||
+						mRect.right		< pr.left		||
+						mRect.top		> pr.bottom		||
+						mRect.bottom	< pr.top))		&&
+						mRect.right		> mRect.left	&&
+						mRect.bottom	> mRect.top	&&
 						mAlpha			> 0.001f;
 
 	// If dimensions or visibility changed, note the change

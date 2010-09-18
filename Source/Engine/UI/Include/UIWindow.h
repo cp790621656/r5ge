@@ -72,6 +72,9 @@ public:
 
 public:
 
+	// Clipping rectangle set before drawing the contents of the frame
+	virtual Rect GetClipRect() const;
+
 	// Window uses a content region which is smaller than the actual region. All children use this content region.
 	virtual const UIRegion& GetSubRegion() const { return mContent; }
 

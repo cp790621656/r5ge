@@ -33,12 +33,13 @@ protected:
 
 	bool		mFog;				// Whether fog is on
 	bool		mDepthWrite;		// Whether writing to depth buffer happens
-	bool		mDepthTest;			// Whether depth test is on
+	bool		mDepthTest;			// Whether the depth test is on
 	bool		mColorWrite;		// Whether writing to the color buffer happens
-	bool		mAlphaTest;			// Whether alpha testing is on
-	bool		mStencilTest;		// Whether stencil test is on
-	bool		mWireframe;			// Whether wireframe mode is currently on
-	byte		mLighting;			// Whether lighting is on
+	bool		mAlphaTest;			// Whether the alpha testing is on
+	bool		mStencilTest;		// Whether the stencil test is on
+	bool		mScissorTest;		// Whether the scissor test is on
+	bool		mWireframe;			// Whether the wireframe mode is currently on
+	byte		mLighting;			// Whether the lighting is on
 	byte		mBlending;			// Active blending mode
 	byte		mCulling;			// Active culling mode
 	
@@ -47,6 +48,7 @@ protected:
 	bool		mNormalize;			// Whether to automatically normalize normals
 	uint		mDepthOffset;		// Whether depth offset is currently active
 	Vector2i	mSize;				// Screen size
+	Rect		mScissorRect;		// Scissor rectangle
 	Vector2f	mFogRange;			// Fog range
 	uint		mAf;				// Current anisotropy level
 	Color4f		mBackground;		// Current window background color
@@ -88,15 +90,17 @@ public:
 	virtual void SetColorWrite		(bool val);
 	virtual void SetAlphaTest		(bool val);
 	virtual void SetStencilTest		(bool val);
+	virtual void SetScissorTest		(bool val);
 	virtual void SetWireframe		(bool val);
 	virtual void SetLighting		(uint val);
 	virtual void SetBlending		(uint val);
 	virtual void SetCulling			(uint val);
-	virtual void SetAlphaCutoff				(float val);
+	virtual void SetAlphaCutoff		(float val);
 	virtual void SetThickness		(float val);
 	virtual void SetNormalize		(bool val);
 	virtual void SetDepthOffset		(uint val);
 	virtual void SetViewport		(const Vector2i& size);
+	virtual void SetScissorRect		(const Rect& rect);
 	virtual void SetFogRange		(const Vector2f& range);
 	virtual void SetBackgroundColor	(const Color4f& color);
 	virtual void SetDefaultAF		(uint level) { GLTexture::SetDefaultAF(mAf = level); }
@@ -116,16 +120,18 @@ public:
 	virtual bool				GetDepthTest()			const	{ return mDepthTest;	}
 	virtual bool				GetAlphaTest()			const	{ return mAlphaTest;	}
 	virtual bool				GetStencilTest()		const	{ return mStencilTest;	}
+	virtual bool				GetScissorTest()		const	{ return mScissorTest;	}
 	virtual bool				GetWireframe()			const	{ return mWireframe;	}
 	virtual uint				GetLighting()			const	{ return mLighting;		}
 	virtual uint				GetBlending()			const	{ return mBlending;		}
 	virtual uint				GetCulling()			const	{ return mCulling;		}
-	virtual float				GetAlphaCutoff()				const	{ return mAdt;			}
+	virtual float				GetAlphaCutoff()		const	{ return mAdt;			}
 	virtual float				GetThickness()			const	{ return mThickness;	}
 	virtual bool				GetNormalize()			const	{ return mNormalize;	}
 	virtual uint				GetDepthOffset()		const	{ return mDepthOffset;	}
 	virtual uint				GetDefaultAF()			const	{ return mAf;			}
 	virtual const Vector2i&		GetViewport()			const	{ return mSize;			}
+	virtual const Rect&			GetScissorRect()		const	{ return mScissorRect;	}
 	virtual const Vector2f&		GetFogRange()			const	{ return mFogRange;		}
 	virtual const Color4f&		GetBackgroundColor()	const	{ return mBackground;	}
 	virtual const ITexture*		GetActiveSkybox()		const	{ return mSkybox;		}

@@ -174,15 +174,15 @@ void UISubPicture::OnFill (UIQueue* queue)
 
 		Color4ub color (mColor, mRegion.GetCalculatedAlpha());
 		const Vector2i& texSize (queue->mTex->GetSize());
-		UIFace::Rectangle face (mFace->GetRectangle(texSize));
+		Rectangle<float> face (mFace->GetRectangle(texSize));
 
 		if (mFace->GetBorder() == 0)
 		{
 			// No border? Must be a basic sub-image, a single textured quad
-			v.Expand().Set( left,  top,		face.mLeft,  face.mTop,		color );
-			v.Expand().Set( left,  bottom,	face.mLeft,  face.mBottom,	color );
-			v.Expand().Set( right, bottom,	face.mRight, face.mBottom,	color );
-			v.Expand().Set( right, top,		face.mRight, face.mTop,		color );
+			v.Expand().Set( left,  top,		face.left,  face.top,		color );
+			v.Expand().Set( left,  bottom,	face.left,  face.bottom,	color );
+			v.Expand().Set( right, bottom,	face.right, face.bottom,	color );
+			v.Expand().Set( right, top,		face.right, face.top,		color );
 		}
 		else
 		{
@@ -200,23 +200,23 @@ void UISubPicture::OnFill (UIQueue* queue)
 			{
 				cx[0] = left;
 				cy[0] = top;
-				tx[0] = face.mLeft;
-				ty[0] = face.mTop;
+				tx[0] = face.left;
+				ty[0] = face.top;
 
 				cx[1] = left + border;
 				cy[1] = top + border;
-				tx[1] = face.mLeft + borderX;
-				ty[1] = face.mTop - borderY;
+				tx[1] = face.left + borderX;
+				ty[1] = face.top - borderY;
 
 				cx[2] = right - border;
 				cy[2] = bottom - border;
-				tx[2] = face.mRight - borderX;
-				ty[2] = face.mBottom + borderY;
+				tx[2] = face.right - borderX;
+				ty[2] = face.bottom + borderY;
 
 				cx[3] = right;
 				cy[3] = bottom;
-				tx[3] = face.mRight;
-				ty[3] = face.mBottom;
+				tx[3] = face.right;
+				ty[3] = face.bottom;
 				
 			}
 			// Negative border -- must be on the outside of the specified coordinates
@@ -224,23 +224,23 @@ void UISubPicture::OnFill (UIQueue* queue)
 			{
 				cx[0] = left + border;
 				cy[0] = top + border;
-				tx[0] = face.mLeft + borderX;
-				ty[0] = face.mTop - borderY;
+				tx[0] = face.left + borderX;
+				ty[0] = face.top - borderY;
 
 				cx[1] = left;
 				cy[1] = top;
-				tx[1] = face.mLeft;
-				ty[1] = face.mTop;
+				tx[1] = face.left;
+				ty[1] = face.top;
 
 				cx[2] = right;
 				cy[2] = bottom;
-				tx[2] = face.mRight;
-				ty[2] = face.mBottom;
+				tx[2] = face.right;
+				ty[2] = face.bottom;
 				
 				cx[3] = right - border;
 				cy[3] = bottom - border;
-				tx[3] = face.mRight - borderX;
-				ty[3] = face.mBottom + borderY;
+				tx[3] = face.right - borderX;
+				ty[3] = face.bottom + borderY;
 			}
 
 			// Run through all 9 quads and write them into the buffer

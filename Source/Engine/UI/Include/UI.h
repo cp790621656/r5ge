@@ -25,6 +25,9 @@ private:
 	IGraphics*  mGraphics;
 	IWindow*	mWindow;
 
+	// Stack of draw regions
+	Array<IGraphics::Rect> mRects;
+
 public:
 
 	// Graphics is necessary as it's used to draw the UI.
@@ -46,9 +49,11 @@ public:
 
 protected:
 
-	virtual UIQueue*	CreateQueue()					{ return new CustomQueue(mGraphics); }
-	virtual void		UpdateBuffer(UIQueue* queue);	// Updates the buffer associated with the rendering queue
-	virtual void		OnPreDraw() const;				// Prepares to render
-	virtual uint		DrawQueue(UIQueue* queue);		// Draws a single queue, returning the number of triangles drawn
-	virtual void		OnPostDraw() const;				// Post-render cleanup
+	virtual UIQueue*	CreateQueue()						{ return new CustomQueue(mGraphics); }
+	virtual void		UpdateBuffer(UIQueue* queue);		// Updates the buffer associated with the rendering queue
+	virtual void		OnPreDraw() const;					// Prepares to render
+	virtual void		SetClipRect (const Rect& rect);		// Sets the draw region
+	virtual uint		DrawQueue(UIQueue* queue);			// Draws a single queue, returning the number of triangles drawn
+	virtual void		RestoreClipRect();						// Restores the previous draw region
+	virtual void		OnPostDraw() const;					// Post-render cleanup
 };

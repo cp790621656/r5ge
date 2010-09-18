@@ -13,10 +13,13 @@ class UIManager : public IUI
 	friend class UIFrame;
 	friend class UIWidget;
 
+public:
+
+	typedef UIFrame::Rect Rect;
+
 private:
 
 	typedef FastDelegate<bool (UIFrame&, UIWidget*)> OnTooltipDelegate;
-
 	typedef PointerHash<USEventListener> Listeners;
 
 protected:
@@ -206,9 +209,11 @@ public:
 
 protected:
 
-	virtual UIQueue*	CreateQueue ()=0;				// Create a single rendering queue
-	virtual void		UpdateBuffer(UIQueue* queue)=0;	// Updates the buffer associated with the rendering queue
-	virtual void		OnPreDraw () const=0;			// Prepares to render
-	virtual uint		DrawQueue (UIQueue* queue)=0;	// Draws a single queue, returning the number of triangles drawn
-	virtual void		OnPostDraw() const=0;			// Post-render cleanup
+	virtual UIQueue*	CreateQueue ()=0;					// Create a single rendering queue
+	virtual void		UpdateBuffer(UIQueue* queue)=0;		// Updates the buffer associated with the rendering queue
+	virtual void		OnPreDraw () const=0;				// Prepares to render
+	virtual void		SetClipRect (const Rect& rect)=0;	// Sets the draw region
+	virtual uint		DrawQueue (UIQueue* queue)=0;		// Draws a single queue, returning the number of triangles drawn
+	virtual void		RestoreClipRect()=0;						// Restores the previous draw region
+	virtual void		OnPostDraw() const=0;				// Post-render cleanup
 };

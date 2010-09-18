@@ -88,6 +88,23 @@ void UIWindow::_SetRootPtr (UIManager* ptr)
 }
 
 //============================================================================================================
+// Clipping rectangle set before drawing the contents of the frame
+//============================================================================================================
+
+UIFrame::Rect UIWindow::GetClipRect() const
+{
+	int border = mBackground.GetFace() != 0 ? mBackground.GetFace()->GetBorder() : 0;
+	if (border > 0) border = 0;
+
+	Rect rect;
+	rect.left	= Float::RoundToInt(mRegion.GetCalculatedLeft())	+ border;
+	rect.top	= Float::RoundToInt(mRegion.GetCalculatedTop())		+ border;
+	rect.right	= Float::RoundToInt(mRegion.GetCalculatedRight())	- border;
+	rect.bottom	= Float::RoundToInt(mRegion.GetCalculatedBottom())	- border;
+	return rect;
+}
+
+//============================================================================================================
 // Called when something changes in the texture
 //============================================================================================================
 

@@ -9,6 +9,10 @@
 
 class UIFrame : public UIWidget
 {
+public:
+
+	typedef Rectangle<int> Rect;
+
 private:
 
 	PointerArray<UIQueue>	mQs;
@@ -23,6 +27,9 @@ public:
 
 	// Area creation
 	R5_DECLARE_INHERITED_CLASS("UIFrame", UIFrame, UIWidget, UIWidget);
+
+	// Clipping rectangle set before drawing the contents of the frame
+	virtual Rect GetClipRect() const;
 
 	// Marks a rendering queue associated with this texture as being dirty
 	virtual void OnDirty (const ITexture* tex, int layer, const UIWidget* widget);

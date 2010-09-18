@@ -9,30 +9,6 @@
 
 class UIRegion
 {
-public:
-
-	template <typename Type>
-	struct Rectangle
-	{
-		Type mLeft;
-		Type mRight;
-		Type mTop;
-		Type mBottom;
-
-		Rectangle() : mLeft(0), mRight(0), mTop(0), mBottom(0) {}
-
-		inline Type GetWidth()  const { return mRight - mLeft; }
-		inline Type GetHeight() const { return mBottom - mTop; }
-
-		inline void Set (Type left, Type right, Type top, Type bottom)
-		{
-			mLeft   = left;
-			mRight  = right;
-			mTop	= top;
-			mBottom = bottom;
-		}
-	};
-
 private:
 
 	UIAnchor	mRelativeLeft;		// Anchored left side
@@ -87,10 +63,10 @@ public:
 	const Rectangle<float>& GetCalculatedRect() const { return mRect; }
 
 	// Access to calculated absolute values
-	float GetCalculatedLeft()	const	{ return mRect.mLeft;		}
-	float GetCalculatedRight()	const	{ return mRect.mRight;		}
-	float GetCalculatedTop()	const	{ return mRect.mTop;		}
-	float GetCalculatedBottom()	const	{ return mRect.mBottom;		}
+	float GetCalculatedLeft()	const	{ return mRect.left;		}
+	float GetCalculatedRight()	const	{ return mRect.right;		}
+	float GetCalculatedTop()	const	{ return mRect.top;			}
+	float GetCalculatedBottom()	const	{ return mRect.bottom;		}
 	float GetCalculatedWidth()	const	{ return mRect.GetWidth();	}
 	float GetCalculatedHeight()	const	{ return mRect.GetHeight();	}
 	float GetCalculatedAlpha()	const	{ return mAlpha;			}

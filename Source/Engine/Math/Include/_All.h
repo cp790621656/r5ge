@@ -40,6 +40,7 @@ namespace R5
 	#include "SplineQ.h"		// Quaternion spline
 	#include "Shapes.h"			// Geometric shapes generated using math algorithms
 	#include "Intersect.h"		// Intersection test functions
+	#include "Rectangle.h"		// Basic templated rectangle
 };
 
 #endif

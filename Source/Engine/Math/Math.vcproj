@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\Rectangle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\Shapes.h"
 				>
 			</File>

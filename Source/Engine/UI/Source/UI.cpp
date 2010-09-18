@@ -48,6 +48,45 @@ void UI::UpdateBuffer (UIQueue* queue)
 }
 
 //============================================================================================================
+// Draw the entire User Interface
+//============================================================================================================
+
+void UI::OnPreDraw() const
+{
+	mGameStats = mGraphics->GetFrameStats();
+	mUIStats.Clear();
+
+	mGraphics->SetActiveRenderTarget	( 0 );
+	mGraphics->SetFog					( false );
+	mGraphics->SetDepthTest				( false );
+	mGraphics->SetDepthWrite			( false );
+	mGraphics->SetColorWrite			( true  );
+	mGraphics->SetAlphaTest				( false );
+	mGraphics->SetStencilTest			( false );
+	mGraphics->SetWireframe				( false );
+	mGraphics->SetLighting				( IGraphics::Lighting::None );
+	mGraphics->SetCulling				( IGraphics::Culling::Back );
+	mGraphics->SetActiveMaterial		( 0 );
+	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord1,	0 );
+	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Tangent,	0 );
+	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );
+	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
+	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
+	mGraphics->SetScreenProjection		( true );
+}
+
+//============================================================================================================
+// Sets the draw region
+//============================================================================================================
+
+void UI::SetClipRect (const Rect& rect)
+{
+	if (mRects.IsEmpty()) mGraphics->SetScissorTest(true);
+	mRects.Expand() = rect;
+	mGraphics->SetScissorRect(rect);
+}
+
+//============================================================================================================
 // Draws a single queue, returning the number of triangles drawn
 //============================================================================================================
 
@@ -81,31 +120,21 @@ uint UI::DrawQueue (UIQueue* queue)
 }
 
 //============================================================================================================
-// Draw the entire User Interface
+// Restores the previous draw region
 //============================================================================================================
 
-void UI::OnPreDraw() const
+void UI::RestoreClipRect()
 {
-	mGameStats = mGraphics->GetFrameStats();
-	mUIStats.Clear();
+	mRects.Shrink();
 
-	mGraphics->SetActiveRenderTarget	( 0 );
-	mGraphics->SetFog					( false );
-	mGraphics->SetDepthTest				( false );
-	mGraphics->SetDepthWrite			( false );
-	mGraphics->SetColorWrite			( true  );
-	mGraphics->SetAlphaTest				( false );
-	mGraphics->SetStencilTest			( false );
-	mGraphics->SetWireframe				( false );
-	mGraphics->SetLighting				( IGraphics::Lighting::None );
-	mGraphics->SetCulling				( IGraphics::Culling::Back );
-	mGraphics->SetActiveMaterial		( 0 );
-	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord1,	0 );
-	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Tangent,	0 );
-	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Normal,		0 );
-	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
-	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
-	mGraphics->SetScreenProjection		( true );
+	if (mRects.IsEmpty())
+	{
+		mGraphics->SetScissorTest(false);
+	}
+	else
+	{
+		mGraphics->SetScissorRect(mRects.Back());
+	}
 }
 
 //============================================================================================================

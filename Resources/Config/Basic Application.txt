@@ -33,7 +33,7 @@ Root
 				Event Handling = "Normal"
 				Layer = 0
 			}
-
+			
 			UIWindow = "First Window"
 			{
 				Left = 0.0 37.0
@@ -54,10 +54,10 @@ Root
 
 				UIButton = "Close"
 				{
-					Left = 1.0 -22.0
-					Right = 1.0 0.0
-					Top = 0.0 -22.0
-					Bottom = 0.0 0.0
+					Left = 1.0 -20.0
+					Right = 1.0 5.0
+					Top = 0.0 -24.0
+					Bottom = 0.0 2.0
 					Alpha = 1.0
 					Back Color = 0xFF0000FF
 					Text = "X"
@@ -138,7 +138,7 @@ Root
 			Diffuse = 0.85 0.85 0.85
 			Specular = 1.0 1.0 1.0
 			Brightness = 1.0
-			Shadows = true
+			Shadows = false
 
 			Directional Billboard = "Test 0"
 			{
