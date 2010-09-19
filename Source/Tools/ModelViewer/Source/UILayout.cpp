@@ -909,8 +909,7 @@ void ModelViewer::UpdateTechPanel (const DrawMethod* method)
 {
 	if (method != 0)
 	{
-		const IShader* shader = method->GetShader();
-		_matShaderList->SetText( (shader != 0 ? shader->GetName() : "") );
+		_matShaderList->SetText( (method->mShader != 0 ? method->mShader->GetName() : "") );
 
 		// Clear the current texture lists and set the visible text values to current textures
 		for (uint b = 0; b < TEXTURES; ++b)
@@ -1686,11 +1685,11 @@ void ModelViewer::OnMatMenuSelection (UIWidget* widget)
 						method0 = mat->GetDrawMethod(_deferred0, true);
 
 						// Basic deferred rendering shader using only material color
-						method0->SetShader( mGraphics->GetShader("Deferred/Material") );
+						method0->mShader = mGraphics->GetShader("Deferred/Material");
 
 						// Set the material's diffuse color if this material is not visible
 						if (!mat->GetDiffuse().IsVisible())
-							mat->SetDiffuse( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
+							 mat->SetDiffuse( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 
 						// Update the current technique
 						_currentTech = _deferred0->GetName();
@@ -2144,7 +2143,7 @@ void ModelViewer::OnMatTech (UIWidget* widget)
 				IMaterial::DrawMethod* method = mat->GetDrawMethod(tech, true);
 
 				// Copy over the shader
-				method->SetShader( mGraphics->GetShader(_matShaderList->GetText(), false) );
+				method->mShader = mGraphics->GetShader(_matShaderList->GetText(), false);
 
 				// Copy over all textures
 				for (uint i = 0; i < TEXTURES; ++i)
@@ -2676,7 +2675,7 @@ void ModelViewer::_SetMatShader (const String& name)
 			shader = 0;
 		}
 
-		method->SetShader(shader);
+		method->mShader = shader;
 		UpdateTechPanel(method);
 	}
 }
