@@ -139,4 +139,5 @@ inline void	Color4ub::operator =(const Vector3f& v)
 	a = 255;
 }
 
+inline Color3f::Color3f(const Vector3f& c)				{ r = c.x;	g = c.y;	b = c.z; }
 inline Color4f::Color4f(const Vector3f& v, float alpha) { r = v.x;	g = v.y;	b = v.z;	a = alpha;	}

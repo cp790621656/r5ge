@@ -8,6 +8,7 @@
 //============================================================================================================
 
 struct Color4ub;
+struct Vector3f;
 struct Color3f
 {
 	float r, g, b;
@@ -20,6 +21,7 @@ struct Color3f
 	Color3f(int val)									{ *this = val; }
 	Color3f(uint val)									{ *this = val; }
 	Color3f(float* f)									{ r = f[0]; g = f[1]; b = f[2]; }
+	Color3f(const Vector3f& c);
 
 	operator const float*() const						{ return &r; }
 
