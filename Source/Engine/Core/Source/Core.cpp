@@ -221,7 +221,7 @@ bool Core::Update()
 			mLateList.Execute();
 		}
 
-		// If we have an OnDraw listener, call it
+		// If the window is not minimized, start the drawing process
 		if (!minimized)
 		{
 			// Start the drawing process

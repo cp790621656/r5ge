@@ -43,9 +43,9 @@ public:
 	// NOTE: To be used with a Model-View-Projection Matrix
 	Vector2f Project (const Vector3f& pos) const;
 
-	// Converts screen space 0-1 range coordinates into 3D space
-	// NOTE: To be used with an Inverse Model-View-Projection Matrix
-	Vector3f Unproject (const Vector2f& pos, float depth) const;
+	// Converts screen space 0-1 range coordinates and non-linear depth into 3D space
+	// NOTE: To be used with an Inverse World-View-Projection Matrix
+	Vector3f Unproject (const Vector3f& pos) const;
 
 	// Retrieves the 8 corners of the projection matrix
 	// NOTE: To be used with an Inverse Model-View-Projection Matrix

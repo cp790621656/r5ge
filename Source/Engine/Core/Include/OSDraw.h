@@ -21,8 +21,10 @@ protected:
 	DirectionalShadow	mShadow;
 	bool				mGrid;
 	ITexture*			mFinalDepth;
+	Vector3f			mMousePos;
+	mutable bool		mSaveMousePos;
 
-	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mCam(0), mGrid(false), mFinalDepth(0) {}
+	OSDraw() : mCore(0), mGraphics(0), mRoot(0), mCam(0), mGrid(false), mFinalDepth(0), mSaveMousePos(false) {}
 
 public:
 
@@ -45,6 +47,13 @@ public:
 	// Background color, acts as a fog color as well
 	const Color4f& GetBackgroundColor() const { return mBackground; }
 	void SetBackgroundColor (const Color4f& c) { mBackground = c; }
+
+	// World-space mouse position (acquired by sampling the depth)
+	const Vector3f& GetMousePos() const { mSaveMousePos = true; return mMousePos; }
+
+	// Whether the mouse's 3D position will be recorded each frame
+	bool IsSavingMousePos() const { return mSaveMousePos; }
+	void SetSavingMousePos (bool val) { mSaveMousePos = val; }
 
 	// Virtual functionality
 	virtual void OnInit();

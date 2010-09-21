@@ -185,7 +185,7 @@ void OSDrawForward::OnDraw()
 		}
 	}
 
-	// If nothing was drawn, we might as well draw the scene with all techniques at once
+	// If nothing was drawn, draw the opaque technique first
 	if (pass == 0)
 	{
 		// Update the depth texture
@@ -194,11 +194,6 @@ void OSDrawForward::OnDraw()
 		if (mComplete.IsEmpty())
 		{
 			mComplete.Expand() = mGraphics->GetTechnique("Opaque");
-			mComplete.Expand() = mGraphics->GetTechnique("Wireframe");
-			mComplete.Expand() = mGraphics->GetTechnique("Transparent");
-			mComplete.Expand() = mGraphics->GetTechnique("Particle");
-			mComplete.Expand() = mGraphics->GetTechnique("Glow");
-			mComplete.Expand() = mGraphics->GetTechnique("Glare");
 		}
 
 		// Clear the screen
@@ -206,29 +201,31 @@ void OSDrawForward::OnDraw()
 		mGraphics->SetFogRange(mFogRange);
 		mGraphics->Clear();
 
-		// Draw the grid if asked for
-		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
-
 		// Nothing has been drawn -- draw everything
 		mScene.DrawWithTechniques(mComplete, false, false, true);
 	}
-	else
+
+	if (mAdditive.IsEmpty())
 	{
-		if (mAdditive.IsEmpty())
-		{
-			mAdditive.Expand() = mGraphics->GetTechnique("Wireframe");
-			mAdditive.Expand() = mGraphics->GetTechnique("Transparent");
-			mAdditive.Expand() = mGraphics->GetTechnique("Particle");
-			mAdditive.Expand() = mGraphics->GetTechnique("Glow");
-			mAdditive.Expand() = mGraphics->GetTechnique("Glare");
-		}
-
-		// Draw the grid if requested
-		if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
-
-		// Add additive objects after everything else has been drawn
-		mScene.DrawWithTechniques(mAdditive, false, false, true);
+		mAdditive.Expand() = mGraphics->GetTechnique("Wireframe");
+		mAdditive.Expand() = mGraphics->GetTechnique("Transparent");
+		mAdditive.Expand() = mGraphics->GetTechnique("Particle");
+		mAdditive.Expand() = mGraphics->GetTechnique("Glow");
+		mAdditive.Expand() = mGraphics->GetTechnique("Glare");
 	}
+
+	// Save the 3D position of the mouse
+	if (mSaveMousePos)
+	{
+		mMousePos = mGraphics->ConvertTo3D(mCore->GetMousePos(), false);
+		imvp.Unproject(mMousePos);
+	}
+
+	// Draw the grid if requested
+	if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
+
+	// Add additive objects after everything else has been drawn
+	mScene.DrawWithTechniques(mAdditive, false, false, true);
 
 	// Clear the replacement texture
 	mFinalDepth->SetReplacement(0);

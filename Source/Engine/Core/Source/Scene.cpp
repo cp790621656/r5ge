@@ -180,12 +180,14 @@ Scene::RayHits& Scene::Raycast (const Vector2i& screenPos)
 		const Matrix44& imvp = mGraphics->GetInverseMVPMatrix();
 		const Vector2i& size = mGraphics->GetViewport();
 
-		Vector2f pos2 (mRoot->mCore->GetMousePos());
-		pos2 /= size;
-		pos2.y = 1.0f - pos2.y;
+		const Vector2i& mousePos = mRoot->mCore->GetMousePos();
+		Vector3f pos (mousePos.x, mousePos.y, 0.0f);
+		pos.x /= size.x;
+		pos.y /= size.y;
+		pos.y = 1.0f - pos.y;
 
 		// Calculate the closest point on the near clipping plane
-		Vector3f near (imvp.Unproject(pos2, 0.0f));
+		Vector3f near (imvp.Unproject(pos));
 
 		// Populate the list
 		mHits.Clear();

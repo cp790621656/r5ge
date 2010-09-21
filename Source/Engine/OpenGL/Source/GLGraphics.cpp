@@ -111,19 +111,42 @@ bool GLGraphics::IsPointVisible (const Vector3f& v)
 }
 
 //============================================================================================================
+// Reads the buffer's color at the specified pixel
+//============================================================================================================
+
+Color4f GLGraphics::ReadColor (const Vector2i& v)
+{
+	Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
+	Vector2i pos  ( v.x, mSize.y - v.y );
+	Color4f color;
+
+	if (pos.x >= 0 && pos.y < size.x && pos.y >= 0 && pos.y < size.y)
+	{
+		glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, GL_FLOAT, &color);
+	}
+	return color;
+}
+
+//============================================================================================================
 // Converts screen coordinates to world coordinates
 //------------------------------------------------------------------------------------------------------------
 // WARNING: glReadPixels operation is very slow on some graphics cards (Intel X3100) when used with an FBO!
 //============================================================================================================
 
-Vector3f GLGraphics::ConvertTo3D (const Vector2i& v)
+Vector3f GLGraphics::ConvertTo3D (const Vector2i& v, bool unproject)
 {
+	ASSERT(mTarget == 0 || g_caps.mVendor != DeviceInfo::Vendor::Intel,
+		"This function is ungodly slow on Intel cards");
+
 	Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
 	Vector2i pos  ( v.x, mSize.y - v.y );
 
 	float depth (0.0f);
+
 	if (pos.x >= 0 && pos.y < size.x && pos.y >= 0 && pos.y < size.y)
+	{
 		glReadPixels(pos.x, pos.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+	}
 
 	// To calculate the linearly scaled value between near and far plane:
 	//float range = mFarPlane - mNearPlane;
@@ -133,7 +156,9 @@ Vector3f GLGraphics::ConvertTo3D (const Vector2i& v)
 	//val = (val - mNearPlane) / range;
     //val = Float::Clamp(val, 0.0f, 1.0f);
 
-	return GetInverseMVPMatrix().Unproject( Vector2f(pos) / size, depth);
+	Vector3f out ((float)pos.x / size.x, (float)pos.y / size.y, depth);
+	if (unproject) out = GetInverseMVPMatrix().Unproject(out);
+	return out;
 }
 
 //============================================================================================================

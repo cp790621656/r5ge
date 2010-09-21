@@ -51,9 +51,12 @@ struct IGraphicsManager
 	// Returns whether the specified point would be visible if rendered
 	virtual bool IsPointVisible (const Vector3f& v)=0;
 
+	// Reads the buffer's color at the specified pixel
+	virtual Color4f ReadColor (const Vector2i& pos)=0;
+
 	// Converts screen coordinates to world coordinates and vice versa
-	virtual Vector3f  ConvertTo3D (const Vector2i& v)=0;
-	virtual Vector2i  ConvertTo2D (const Vector3f& v)=0;
+	virtual Vector3f  ConvertTo3D (const Vector2i& pos, bool unproject = true)=0;
+	virtual Vector2i  ConvertTo2D (const Vector3f& pos)=0;
 
 	// Initialize/release the graphics manager
 	virtual bool Init()=0;

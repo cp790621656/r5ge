@@ -52,9 +52,12 @@ public:
 	// Returns whether the specified point would be visible if rendered
 	virtual bool IsPointVisible (const Vector3f& v);
 
+	// Reads the buffer's color at the specified pixel
+	virtual Color4f ReadColor (const Vector2i& pos);
+
 	// Converts screen coordinates to world coordinates and vice versa
-	virtual Vector3f  ConvertTo3D (const Vector2i& v);
-	virtual Vector2i  ConvertTo2D (const Vector3f& v);
+	virtual Vector3f  ConvertTo3D (const Vector2i& pos, bool unproject = true);
+	virtual Vector2i  ConvertTo2D (const Vector3f& pos);
 
 	// Returns the distance between 'v' and the depth-determined point
 	// of intersection on the ray from the camera's eyepoint to 'v'

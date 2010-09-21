@@ -265,19 +265,18 @@ Vector2f Matrix44::Project (const Vector3f& pos) const
 		out.x = 0.5f;
 		out.y = 0.5f;
 	}
-
 	return out;
 }
 
 //============================================================================================================
-// Converts screen space 0-1 range coordinates into 3D space
+// Converts screen space 0-1 range coordinates and non-linear depth into 3D space
 //============================================================================================================
 
-Vector3f Matrix44::Unproject (const Vector2f& pos, float depth) const
+Vector3f Matrix44::Unproject (const Vector3f& pos) const
 {
 	float px = pos.x * 2.0f - 1.0f;
 	float py = pos.y * 2.0f - 1.0f;
-	float pz = depth * 2.0f - 1.0f;
+	float pz = pos.z * 2.0f - 1.0f;
 
 	Vector3f out ( px * mF[0] + py * mF[4] + pz * mF[ 8] + mF[12],
 				   px * mF[1] + py * mF[5] + pz * mF[ 9] + mF[13],

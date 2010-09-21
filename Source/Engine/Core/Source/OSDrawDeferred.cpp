@@ -363,6 +363,13 @@ void OSDrawDeferred::OnDraw()
 		// First stage -- encode the entire scene's materials into the material render target
 		MaterialStage();
 
+		// Save the 3D position of the mouse
+		if (mSaveMousePos)
+		{
+			mMousePos = mGraphics->ConvertTo3D(mCore->GetMousePos(), false);
+			mIMVP.Unproject(mMousePos);
+		}
+
 		// Second stage -- encode all lights into the light render target
 		LightStage();
 
