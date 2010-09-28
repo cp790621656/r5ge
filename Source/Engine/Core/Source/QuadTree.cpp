@@ -72,6 +72,7 @@ void QuadTree::FillGeometry (void* ptr, float bboxPadding)
 	if (mRootNode != 0 && ptr != 0)
 	{
 		mRootNode->_FillGeometry(ptr, bboxPadding);
+		mRelativeBounds = mRootNode->mBounds;
 	}
 }
 
