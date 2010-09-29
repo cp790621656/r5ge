@@ -17,7 +17,6 @@ protected:
 	ITechnique*		mOpaque;
 	ITechnique*		mShadowed;
 
-	Array<const ITechnique*> mComplete;
 	Array<const ITechnique*> mAdditive;
 
 	OSDrawForward() : mShadowmap(0), mDepthTexture(0), mDepthTarget(0), mOpaque(0), mShadowed(0) {}

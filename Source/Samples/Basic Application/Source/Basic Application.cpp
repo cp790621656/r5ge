@@ -1,6 +1,8 @@
 #include "../Include/Basic Application.h"
 using namespace R5;
 
+IGraphics* g_graphics = 0;
+
 //============================================================================================================
 
 struct USCloseButton : public UIScript
@@ -39,6 +41,31 @@ struct USFillTree : public UIScript
 
 //============================================================================================================
 
+struct USShowPosition : public UIScript
+{
+	UILabel* mLabel;
+	USShowPosition() : mLabel(0) {}
+
+	R5_DECLARE_INHERITED_CLASS("USShowPosition", USShowPosition, UIScript, UIScript);
+
+	virtual void OnInit()
+	{
+		mLabel = R5_CAST(UILabel, mWidget);
+		if (mLabel == 0) DestroySelf();
+	}
+
+	virtual void OnUpdate (bool changed)
+	{
+		if (mWidget->GetUI()->IsKeyDown(Key::T))
+		{
+			Vector3f pos (g_graphics->ConvertTo3D(mWidget->GetUI()->GetMousePos()));
+			mLabel->SetText(String("%.2f %.2f %.2f", pos.x, pos.y, pos.z));
+		}
+	}
+};
+
+//============================================================================================================
+
 TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
 	mWin		= new GLWindow();
@@ -48,12 +75,17 @@ TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 
 	UIScript::Register<USCloseButton>();
 	UIScript::Register<USFillTree>();
+	UIScript::Register<USShowPosition>();
+
+	g_graphics = mGraphics;
 }
 
 //============================================================================================================
 
 TestApp::~TestApp()
 {
+	g_graphics = 0;
+
 	if (mCore)		delete mCore;
 	if (mUI)		delete mUI;
 	if (mGraphics)	delete mGraphics;
@@ -64,7 +96,7 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-    if (*mCore << "Config/Basic Application.txt")
+	if (*mCore << "Config/Basic Application.txt")
 	{
 		while (mCore->Update());
 		//*mCore >> "Config/Basic Application.txt";
@@ -82,6 +114,6 @@ R5_MAIN_FUNCTION
 #endif
 	System::SetCurrentPath("../../../Resources/");
 	TestApp app;
-    app.Run();
+	app.Run();
 	return 0;
 }

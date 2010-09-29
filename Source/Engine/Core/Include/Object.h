@@ -86,15 +86,15 @@ private:
 	{
 		enum
 		{
-			Fill			= 1 << 1,
-			PreUpdate		= 1 << 2,
-			Update			= 1 << 3,
-			PostUpdate		= 1 << 4,
-			Raycast			= 1 << 5,
-			Draw			= 1 << 6,
-			SerializeFrom	= 1 << 7,
-			SerializeTo		= 1 << 8,
-			Subscriptions	= 1 << 9,
+			Fill			= 1 << 0,
+			PreUpdate		= 1 << 1,
+			Update			= 1 << 2,
+			PostUpdate		= 1 << 3,
+			Raycast			= 1 << 4,
+			Draw			= 1 << 5,
+			SerializeFrom	= 1 << 6,
+			SerializeTo		= 1 << 7,
+			Subscriptions	= 1 << 8,
 		};
 	};
 

@@ -70,7 +70,7 @@ Root
 					Shadowmap
 					{
 						Texture Size = 1024
-						Cascade Count = 1l
+						Cascade Count = 2
 						Cascade Bias = 0.5
 						Blur Passes = 1
 						Softness = 3.0

@@ -22,6 +22,16 @@ Root
 
 		Layout
 		{
+			UILabel = "Test Label"
+			{
+				Left = 0.5 -100
+				Right = 0.5 100
+				Bottom = 0 25
+				Alignment = "Center"
+				Text = "Testing 123"
+				UIScript = "USShowPosition"
+			}
+		
 			UIStats = "Game Stats"
 			{
 				Left = 1.0 -150.0
@@ -128,26 +138,28 @@ Root
 			}
 		}
 
-		Directional Light = "First Light"
+		Directional Light = "Red"
 		{
-			Position = -7.0 -7.0 2.0
-			Rotation = -0.17592 0.424708 -0.820473 0.339851
-			Scale = 1.0 1.0 1.0
-			Ambient = 0.15 0.15 0.15
-			Diffuse = 0.85 0.85 0.85
-			Specular = 1.0 1.0 1.0
-			Brightness = 1.0
-			Shadows = false
-
-			Directional Billboard = "Test 0"
-			{
-				Position = 0.0 0.0 0.0
-				Rotation = 0.0 0.0 0.0 1.0
-				Scale = 1.0 1.0 1.0
-				Color = 0xFFFFFFFF
-				Texture = "Textures/Billboards/light.jpg"
-				Technique = "Glow"
-			}
+			Rotation = 1 0 0
+			Ambient = 0 0 0
+			Diffuse = 1 0 0
+			//Shadows = true
+		}
+		
+		Directional Light = "Green"
+		{
+			Rotation = 0 1 0
+			Ambient = 0 0 0
+			Diffuse = 0 1 0
+			//Shadows = true
+		}
+		
+		Directional Light = "Blue"
+		{
+			Rotation = 0 0 -1
+			Ambient = 0 0 0
+			Diffuse = 0 0 1
+			//Shadows = true
 		}
 
 		Model Instance = "Teapot"

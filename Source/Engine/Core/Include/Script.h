@@ -24,13 +24,13 @@ protected:
 	{
 		enum
 		{
-			PreUpdate		= 1 << 1,
-			Update			= 1 << 2,
-			PostUpdate		= 1 << 3,
-			Fill			= 1 << 4,
-			KeyPress		= 1 << 5,
-			MouseMove		= 1 << 6,
-			Scroll			= 1 << 7,
+			PreUpdate		= 1 << 0,
+			Update			= 1 << 1,
+			PostUpdate		= 1 << 2,
+			Fill			= 1 << 3,
+			KeyPress		= 1 << 4,
+			MouseMove		= 1 << 5,
+			Scroll			= 1 << 6,
 		};
 	};
 

@@ -152,66 +152,76 @@ void OSDrawForward::OnDraw()
 		++pass;
 	}
 
+	// Update the depth texture
+	mFinalDepth->SetReplacement(mDepthTexture);
+
 	// Now run through non-shadow casting lights and add them on top
-	if (pass > 0)
 	{
-		uint index (0);
+		uint index (pass == 0 ? 0 : 1);
 
 		FOREACH(i, lights)
 		{
 			const ILight& light = lights[i].mLight->GetProperties();
 
-			if (!light.mShadows)
+			// TODO: For point lights, only the objects affected by those lights should be getting drawn.
+			// Shadow-casting lights have already been handled above
+			if (light.mShadows) continue;
+
+			// If the pass is zero right now it means there were no shadow-casting lights
+			if (pass == 0)
 			{
-				if (index == 0) mScene.ActivateMatrices();
-				mGraphics->SetActiveLight(index++, &light);
+				// Disable all lights but the first
+				for (uint i = 1; i < 8; ++i) mGraphics->SetActiveLight(i, 0);
+
+				// Draw using default blending and writing to depth
+				mGraphics->SetDepthOffset(0);
+				mOpaque->SetBlending(IGraphics::Blending::Replace);
+				mOpaque->SetDepthWrite(true);
+
+				// Clear the active technique
+				mGraphics->SetActiveTechnique(0);
+
+				// Clear the screen
+				mGraphics->SetBackgroundColor(mBackground);
+				mGraphics->SetFogRange(mFogRange);
 			}
+			else if (index == 1)
+			{
+				mScene.ActivateMatrices();
+
+				// The depth buffer should be already full at this point, so don't draw to it
+				mGraphics->SetDepthOffset(1);
+				mOpaque->SetBlending(IGraphics::Blending::Add);
+				mOpaque->SetDepthWrite(false);
+
+				// Clear the active technique
+				mGraphics->SetActiveTechnique(0);
+			}
+
+			// Activate the light
+			mGraphics->SetActiveLight(0, &light);
+
+			// Draw the scene with the opaque technique
+			mScene.DrawWithTechnique(mOpaque, pass == 0, pass == 0, false);
+
+			// Next pass
+			++index;
+			++pass;
 		}
 
-		if (index > 0)
+		// Restore the default opaque technique values
+		if (index != 0)
 		{
-			// The depth buffer should be already full at this point, so don't draw to it
-			mGraphics->SetDepthOffset(1);
-			mOpaque->SetBlending(IGraphics::Blending::Add);
-			mOpaque->SetDepthWrite(false);
-
-			// Draw the scene with all opaque techniques
-			mScene.DrawWithTechnique(mOpaque, false, false, false);
-
-			// Restore the default opaque technique values, just in case
 			mOpaque->SetBlending(IGraphics::Blending::Replace);
 			mOpaque->SetDepthWrite(true);
 			mOpaque->SetSerializable(false);
 		}
 	}
 
-	// If nothing was drawn, draw the opaque technique first
+	// If we still haven't drawn anything, just draw the scene using the default opaque technique
 	if (pass == 0)
 	{
-		// Update the depth texture
-		mFinalDepth->SetReplacement(mDepthTexture);
-
-		if (mComplete.IsEmpty())
-		{
-			mComplete.Expand() = mGraphics->GetTechnique("Opaque");
-		}
-
-		// Clear the screen
-		mGraphics->SetBackgroundColor(mBackground);
-		mGraphics->SetFogRange(mFogRange);
-		mGraphics->Clear();
-
-		// Nothing has been drawn -- draw everything
-		mScene.DrawWithTechniques(mComplete, false, false, true);
-	}
-
-	if (mAdditive.IsEmpty())
-	{
-		mAdditive.Expand() = mGraphics->GetTechnique("Wireframe");
-		mAdditive.Expand() = mGraphics->GetTechnique("Transparent");
-		mAdditive.Expand() = mGraphics->GetTechnique("Particle");
-		mAdditive.Expand() = mGraphics->GetTechnique("Glow");
-		mAdditive.Expand() = mGraphics->GetTechnique("Glare");
+		mScene.DrawWithTechnique(mOpaque, true, true, true);
 	}
 
 	// Save the 3D position of the mouse
@@ -223,6 +233,16 @@ void OSDrawForward::OnDraw()
 
 	// Draw the grid if requested
 	if (mGrid) mGraphics->Draw( IGraphics::Drawable::Grid );
+
+	// Default additive technique list -- everything but 'Opaque'
+	if (mAdditive.IsEmpty())
+	{
+		mAdditive.Expand() = mGraphics->GetTechnique("Wireframe");
+		mAdditive.Expand() = mGraphics->GetTechnique("Transparent");
+		mAdditive.Expand() = mGraphics->GetTechnique("Particle");
+		mAdditive.Expand() = mGraphics->GetTechnique("Glow");
+		mAdditive.Expand() = mGraphics->GetTechnique("Glare");
+	}
 
 	// Add additive objects after everything else has been drawn
 	mScene.DrawWithTechniques(mAdditive, false, false, true);

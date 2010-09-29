@@ -82,10 +82,10 @@ public:
 	uint DrawWithTechnique (const String& technique, bool clearColor, bool clearDepth, bool useLighting);
 
 	// Advanced: Draws the scene using the specified technique
-	uint DrawWithTechnique (const ITechnique* technique, bool clearScreen, bool clearDepth, bool useLighting);
+	uint DrawWithTechnique (const ITechnique* technique, bool clearColor, bool clearDepth, bool useLighting);
 
 	// Advanced: Draws the scene using the specified techniques
-	uint DrawWithTechniques (const Techniques& techniques, bool clearScreen, bool clearDepth, bool useLighting);
+	uint DrawWithTechniques (const Techniques& techniques, bool clearColor, bool clearDepth, bool useLighting);
 
 private:
 
