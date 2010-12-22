@@ -44,20 +44,7 @@ R5_MAIN_FUNCTION
 	System::SetCurrentPath("../../../");
 #endif
 	System::SetCurrentPath("../../../Resources/");
-
-	typedef void* (*FUNC)();
-
-	HMODULE lib = (HMODULE)LoadLibrary("Test.dll");
-	FUNC getScripts = 0;
-
-	if (lib != 0)
-	{
-		getScripts = (FUNC)GetProcAddress(lib, "GetScriptTypes");
-		if (getScripts != 0) Script::SetTypeList((Script::List*)((*getScripts)()));
-
-		TestApp app;
-		app.Run();
-	}
-	if (lib != 0) FreeLibrary(lib);
+	TestApp app;
+	app.Run();
 	return 0;
 }
