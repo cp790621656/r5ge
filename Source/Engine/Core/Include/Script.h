@@ -17,6 +17,7 @@ public:
 
 	// Script creation function delegate
 	typedef FastDelegate<Script* (void)>  CreateDelegate;
+	typedef Hash<CreateDelegate> List;
 
 protected:
 
@@ -44,8 +45,20 @@ private:
 	// INTERNAL: Registers a new script of the specified type
 	static void _Register(const String& type, const CreateDelegate& func);
 
+	// INTERNAL: Registers a new script of the specified type
+	static void _Register(List& list, const String& type, const CreateDelegate& func);
+
+	// INTERNAL: Removes the specified script from the list of registered scripts
+	static void _UnRegister(const String& type);
+
+	// INTERNAL: Removes the specified script from the list of registered scripts
+	static void _UnRegister(List& list, const String& type);
+
 	// INTERNAL: Creates a new script of the specified type
 	static Script* _Create (const String& type);
+
+	// INTERNAL: Creates a new script of the specified type
+	static Script* _Create (List& list, const String& type);
 
 protected:
 
@@ -54,11 +67,20 @@ protected:
 
 public:
 
-	// This is a top-level base class
-	R5_DECLARE_INTERFACE_CLASS("Script");
-
 	// Registers a new script
 	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
+	template <typename Type> static void UnRegister() { _UnRegister( Type::ClassID() ); }
+
+	// Sets the replacement script type list that should be used instead of the built-in one
+	static void SetTypeList (List* list);
+
+	// Retrieves the local type list
+	static List* GetTypeList();
+
+public:
+
+	// This is a top-level base class
+	R5_DECLARE_INTERFACE_CLASS("Script");
 
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();

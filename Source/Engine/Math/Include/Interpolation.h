@@ -129,17 +129,20 @@ Real Hermite (const Real& previous, const Real& current, const Real& next, const
 {
 	float f2 = factor * factor;
 	float f3 = f2 * factor;
+	float invT = 1.0f - tension;
+	float bias0 = (1.0f + bias) * invT;
+	float bias1 = (1.0f - bias) * invT;
 
 	Real tan0
 	(
-		(current - previous) * ((1.0f + bias) * (1.0f - tension)) +
-		(next - current)	 * ((1.0f - bias) * (1.0f - tension))
+		(current - previous) * bias0 +
+		(next - current)	 * bias1
 	);
 	
 	Real tan1
 	(
-		(next - current) * ((1.0f + bias) * (1.0f - tension)) +
-		(future - next)  * ((1.0f - bias) * (1.0f - tension))
+		(next - current) * bias0 +
+		(future - next)  * bias1
 	);
 
 	float f32 = f3 * 2.0f;
@@ -159,14 +162,14 @@ Real Hermite (const Real& previous, const Real& current, const Real& next, const
 
 inline float GetHermiteTangent (float distance0, float distance1, float duration)
 {
-	return (distance0 + distance1) / duration * 0.75f;
+	return (distance0 + distance1) / duration * 0.5f;
 }
 
 //============================================================================================================
 
 inline float GetHermiteTangent (float distance0, float distance1, float duration0, float duration1)
 {
-	return (distance0 / duration0 + distance1 / duration1) * 0.75f;
+	return (distance0 / duration0 + distance1 / duration1) * 0.5f;
 }
 
 //============================================================================================================
@@ -175,7 +178,7 @@ inline float GetHermiteTangent (float distance0, float distance1, float duration
 
 inline Vector3f GetHermiteTangent (const Vector3f& distance0, const Vector3f& distance1, const float duration0, float duration1)
 {
-	return distance0 * (0.75f / duration0) + distance1 * (0.75f / duration1);
+	return distance0 * (0.5f / duration0) + distance1 * (0.5f / duration1);
 }
 
 //============================================================================================================
@@ -354,11 +357,11 @@ Real BicubicTile (const Real* buffer, uint width, uint height, float x, float y)
 	int iy = Float::RoundToInt(fy);
 
 	uint x0  = WrapIndex( ix - 1, width  );
-	uint x1  = WrapIndex( ix,	 width  );
+	uint x1  = WrapIndex( ix,	  width  );
 	uint x2  = WrapIndex( ix + 1, width  );
 	uint x3  = WrapIndex( ix + 2, width  );
 	uint y0w = WrapIndex( iy - 1, height ) * width;
-	uint y1w = WrapIndex( iy,	 height ) * width;
+	uint y1w = WrapIndex( iy,	  height ) * width;
 	uint y2w = WrapIndex( iy + 1, height ) * width;
 	uint y3w = WrapIndex( iy + 2, height ) * width;
 
@@ -390,11 +393,11 @@ Real BicubicClamp (const Real* buffer, uint width, uint height, float x, float y
 	int iy = Float::RoundToInt(fy);
 
 	uint x0  = ClampIndex( ix - 1, width  );
-	uint x1  = ClampIndex( ix,	  width  );
+	uint x1  = ClampIndex( ix,	   width  );
 	uint x2  = ClampIndex( ix + 1, width  );
 	uint x3  = ClampIndex( ix + 2, width  );
 	uint y0w = ClampIndex( iy - 1, height ) * width;
-	uint y1w = ClampIndex( iy,	  height ) * width;
+	uint y1w = ClampIndex( iy,	   height ) * width;
 	uint y2w = ClampIndex( iy + 1, height ) * width;
 	uint y3w = ClampIndex( iy + 2, height ) * width;
 
@@ -426,11 +429,11 @@ Real HermiteTile (const Real* buffer, uint width, uint height, float x, float y)
 	int iy = Float::RoundToInt(fy);
 
 	uint x0  = WrapIndex( ix - 1, width  );
-	uint x1  = WrapIndex( ix,	 width  );
+	uint x1  = WrapIndex( ix,	  width  );
 	uint x2  = WrapIndex( ix + 1, width  );
 	uint x3  = WrapIndex( ix + 2, width  );
 	uint y0w = WrapIndex( iy - 1, height ) * width;
-	uint y1w = WrapIndex( iy,	 height ) * width;
+	uint y1w = WrapIndex( iy,	  height ) * width;
 	uint y2w = WrapIndex( iy + 1, height ) * width;
 	uint y3w = WrapIndex( iy + 2, height ) * width;
 
@@ -462,11 +465,11 @@ Real HermiteClamp (const Real* buffer, uint width, uint height, float x, float y
 	int iy = Float::RoundToInt(fy);
 
 	uint x0  = ClampIndex( ix - 1, width  );
-	uint x1  = ClampIndex( ix,	  width  );
+	uint x1  = ClampIndex( ix,	   width  );
 	uint x2  = ClampIndex( ix + 1, width  );
 	uint x3  = ClampIndex( ix + 2, width  );
 	uint y0w = ClampIndex( iy - 1, height ) * width;
-	uint y1w = ClampIndex( iy,	  height ) * width;
+	uint y1w = ClampIndex( iy,	   height ) * width;
 	uint y2w = ClampIndex( iy + 1, height ) * width;
 	uint y3w = ClampIndex( iy + 2, height ) * width;
 

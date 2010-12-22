@@ -5,7 +5,8 @@ using namespace R5;
 // Registered script types
 //============================================================================================================
 
-Hash<Script::CreateDelegate> g_scriptTypes;
+Script::List g_scriptTypes;
+Script::List* g_remoteTypes = 0;
 
 //============================================================================================================
 // Registers common scripts that belong to the Core
@@ -33,32 +34,91 @@ void _RegisterDefaultScripts()
 // INTERNAL: Registers a new script of the specified type
 //============================================================================================================
 
-void Script::_Register(const String& type, const CreateDelegate& func)
+void Script::_Register (const String& type, const CreateDelegate& func)
 {
-	if (!g_scriptTypes.IsValid()) _RegisterDefaultScripts();
+	_Register(g_remoteTypes == 0 ? g_scriptTypes : *g_remoteTypes, type, func);
+}
 
-	g_scriptTypes.Lock();
-	g_scriptTypes[type] = func;
-	g_scriptTypes.Unlock();
+//============================================================================================================
+// INTERNAL: Registers a new script of the specified type
+//============================================================================================================
+
+void Script::_Register (List& list, const String& type, const CreateDelegate& func)
+{
+	if (!list.IsValid()) _RegisterDefaultScripts();
+
+	list.Lock();
+	list[type] = func;
+	list.Unlock();
+}
+
+//============================================================================================================
+// INTERNAL: Removes the specified script from the list of registered scripts
+//============================================================================================================
+
+void Script::_UnRegister (const String& type)
+{
+	_UnRegister(g_remoteTypes == 0 ? g_scriptTypes : *g_remoteTypes, type);
+}
+
+//============================================================================================================
+// INTERNAL: Removes the specified script from the list of registered scripts
+//============================================================================================================
+
+void Script::_UnRegister (List& list, const String& type)
+{
+	if (list.IsValid())
+	{
+		list.Lock();
+		list.Delete(type);
+		list.Unlock();
+	}
 }
 
 //============================================================================================================
 // INTERNAL: Creates a new script of the specified type
 //============================================================================================================
 
-Script* Script::_Create(const String& type)
+Script* Script::_Create (const String& type)
 {
-	if (!g_scriptTypes.IsValid()) _RegisterDefaultScripts();
+	return _Create(g_remoteTypes == 0 ? g_scriptTypes : *g_remoteTypes, type);
+}
+
+//============================================================================================================
+// INTERNAL: Creates a new script of the specified type
+//============================================================================================================
+
+Script* Script::_Create (List& list, const String& type)
+{
+	if (!list.IsValid()) _RegisterDefaultScripts();
 
 	Script* ptr (0);
-	g_scriptTypes.Lock();
+	list.Lock();
 	{
-		const CreateDelegate* callback = g_scriptTypes.GetIfExists(type);
+		const CreateDelegate* callback = list.GetIfExists(type);
 		if (callback != 0) ptr = (*callback)();
 		else WARNING(String("Unknown Script type '%s'", type.GetBuffer()).GetBuffer());
 	}
-	g_scriptTypes.Unlock();
+	list.Unlock();
 	return ptr;
+}
+
+//============================================================================================================
+// Sets the replacement script type list that should be used instead of the built-in one
+//============================================================================================================
+
+void Script::SetTypeList (List* list)
+{
+	g_remoteTypes = list;
+}
+
+//============================================================================================================
+// Retrieves the local type list
+//============================================================================================================
+
+Script::List* Script::GetTypeList()
+{
+	return &g_scriptTypes;
 }
 
 //============================================================================================================
