@@ -136,7 +136,7 @@ public:
 	void SetOnTooltip (const OnTooltipDelegate& fnct) { mTtDelegate = fnct; }
 
 	// Creates a default tooltip (returns whether the tooltip is valid)
-	bool CreateDefaultTooltip (UIWidget* widget);
+	bool CreateDefaultTooltip (const String& text);
 
 	// Aligns the tooltip using default logic (returns whether the tooltip is valid)
 	bool AlignDefaultTooltip();
