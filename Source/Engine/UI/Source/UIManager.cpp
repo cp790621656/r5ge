@@ -215,14 +215,10 @@ void UIManager::_SetEventArea (UIWidget* ptr)
 // Creates a default tooltip (returns whether the tooltip is valid)
 //============================================================================================================
 
-bool UIManager::CreateDefaultTooltip (UIWidget* widget)
+bool UIManager::CreateDefaultTooltip (const String& text)
 {
 	// If there is no widget to work with, or there is no default font, no need to do anything
-	if (widget == 0 || mDefaultFont == 0) return false;
-
-	// If the widget has no tooltip text, no need to do anything
-	const String& text (widget->GetTooltip());
-	if (text.IsEmpty()) return false;
+	if (mDefaultFont == 0 || text.IsEmpty()) return false;
 
 	byte textSize  = mDefaultFont->GetSize();
 	uint textWidth = mDefaultFont->GetLength(text, 0, 0xFFFFFFFF, IFont::Tags::Skip);
@@ -376,15 +372,11 @@ void UIManager::_HideTooltip()
 
 bool UIManager::_FillTooltip (UIWidget* widget)
 {
-	if (widget)
-	{
-		mTooltip.DestroyAllWidgets();
-		mTooltip.GetRegion().SetRect(0, 0, 0, 0);
+	mTooltip.DestroyAllWidgets();
+	mTooltip.GetRegion().SetRect(0, 0, 0, 0);
 
-		return (mTtDelegate ? mTtDelegate(mTooltip, widget) :
-			CreateDefaultTooltip(widget) && AlignDefaultTooltip());
-	}
-	return false;
+	if (mTtDelegate) return mTtDelegate(mTooltip, widget);
+	return (widget != 0) && CreateDefaultTooltip(widget->GetTooltip()) && AlignDefaultTooltip();
 }
 
 //============================================================================================================
