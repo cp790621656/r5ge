@@ -108,6 +108,7 @@ void OSDrawForward::OnDraw()
 			mScene.DrawWithTechnique("Depth", true, true, false);
 
 			// Save the inverse modelview-projection matrix
+			mGraphics->ResetModelMatrix();
 			imvp = mGraphics->GetInverseMVPMatrix();
 
 			// Disable all lights but the first

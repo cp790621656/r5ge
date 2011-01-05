@@ -569,8 +569,10 @@ void Object::SetParent (Object* ptr)
 {
 	ASSERT_IF_CORE_IS_UNLOCKED;
 
+	if (ptr == 0) ptr = mCore->GetRoot();
+
 	if (mParent != ptr)
-    {
+	{
 		if (mParent != 0) mParent->_Remove(this);
 
 		mParent		= ptr;
@@ -578,7 +580,7 @@ void Object::SetParent (Object* ptr)
 		mIsDirty	= true;
 
 		if (mParent != 0) mParent->_Add(this);
-    }
+	}
 }
 
 //============================================================================================================
@@ -615,7 +617,7 @@ void Object::SetAbsoluteRotation (const Quaternion& rot)
 }
 
 //============================================================================================================
-// Sets the position using an absolute value
+// Sets the scale using an absolute value
 //============================================================================================================
 
 void Object::SetAbsoluteScale (const Vector3f& scale)
