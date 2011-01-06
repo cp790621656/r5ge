@@ -21,29 +21,9 @@ Root
 			Shininess = 1.0
 			Glow = 0.0
 			ADT = 0.003922
+
 			Technique = "Depth"
-
-			Technique = "Opaque"
-			{
-				Shader = "Surface/D"
-				
-				Textures = String[]
-				{
-					"Textures/Stone/Rocky.jpg"
-				}
-			}
-
 			Technique = "Shadowed Opaque"
-			{
-				Shader = "Surface/D"
-				
-				Textures = String[]
-				{
-					"Textures/Stone/Rocky.jpg"
-				}
-			}
-
-			Technique = "Deferred"
 			{
 				Shader = "Surface/D"
 				
@@ -91,6 +71,13 @@ Root
 				Event Handling = "Normal"
 				Tooltip = "This is a basic window created in the UI Layout section of [FF8800]Basic Application.txt"
 				Layer = 0
+				
+				UIButton = "Test"
+				{
+					Top = 1 -30
+					Text = "Test"
+					UIScript = "UITest"
+				}
 			}
 		}
 	}
@@ -143,7 +130,20 @@ Root
 		{
 			Position = 0 0 0
 			Rotation = 0 0 0 1
-			Scale = 1 1 1
+			Scale = 1 0.5 0.5
+			Model = "Models/teapot.r5a"
+			
+			Script = "OSRotate"
+			{
+				Rate = 0.1
+			}
+		}
+		
+		Model Instance = "Teapot 2"
+		{
+			Position = 0 0 1
+			Rotation = -1 2 0
+			Scale = 0.5 0.5 0.5
 			Model = "Models/teapot.r5a"
 		}
 	}
