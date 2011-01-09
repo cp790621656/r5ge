@@ -79,6 +79,8 @@ struct TreeNode
 	// Finds a child with the specified tag
 	TreeNode* FindChild (const String& tag, bool recursive = true);
 
+public: // Simple serialization functions
+
 	// Saves to the specified file, using the file's extension to determine whether it should be binary
 	bool Save (const char* filename) const;
 
@@ -89,7 +91,14 @@ struct TreeNode
 	bool Load (const char* filename);
 
 	// Loads the tree from memory loaded elsewhere
+	// NOTE: Must contain a header tag, such as '//R5A'
 	bool Load (const byte* buffer, uint size);
+
+	// Convenience function
+	// NOTE: Must contain a header tag, such as '//R5A'
+	bool Load (const Memory& mem) { return Load(mem.GetBuffer(), mem.GetSize()); }
+
+public: // Advanced serialization functions
 
 	// Serialization to a memory buffer
 	bool SerializeTo (Memory& mem) const;

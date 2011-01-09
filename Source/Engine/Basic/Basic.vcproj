@@ -303,16 +303,8 @@
 				RelativePath=".\Include\R5_Time.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="zlib"
-			>
 			<File
-				RelativePath=".\Include\zconf.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\zlib.h"
+				RelativePath=".\LZMA\Types.h"
 				>
 			</File>
 		</Filter>

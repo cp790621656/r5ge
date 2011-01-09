@@ -243,7 +243,7 @@ Root
 					Top = 0.0 3.0
 					Bottom = 0.0 18.0
 					Alpha = 1.0
-					Text = "88"
+					Text = "216"
 					Text Color = 0xFFFFFFFF
 					Shadow Color = 0x000000FF
 					Alignment = "Right"
@@ -270,7 +270,7 @@ Root
 						Top = 0.0 0.0
 						Bottom = 1.0 0.0
 						Alpha = 1.0
-						Text = "R5 Model Viewer v.1.10.4. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
+						Text = "R5 Model Viewer v.1.10.5. Copyright (c) 2009-2010 Michael Lyashenko. [www.nextrevision.com]"
 						Text Color = 0xFFFFFFFF
 						Shadow Color = 0x000000FF
 						Alignment = "Center"
@@ -297,7 +297,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.001267 0.0182 0.61719
-			Rotation = 0.028204 -0.197751 0.97003 -0.138352
+			Rotation = 0.011032 -0.146824 0.98632 -0.074117
 			Scale = 1.0 1.0 1.0
 			Range = 0.3 100.0 90.0
 			Dolly = 0.0 1.628507 50.0
@@ -335,7 +335,7 @@ Root
 				Diffuse = 1.0 1.0 1.0
 				Specular = 1.0 1.0 1.0
 				Brightness = 1.25
-				Shadows = true
+				Shadows = false
 
 				Directional Billboard
 				{

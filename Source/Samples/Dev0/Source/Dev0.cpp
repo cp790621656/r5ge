@@ -15,54 +15,38 @@ using namespace R5;
 int main (int argc, char* argv[])
 {
 	TreeNode root;
-	Array<String> folders;
-	Array<String> files;
+	root.Load("C:/Projects/r5ge/Resources/Models/shadow test.r5a");
 
-	puts("SVN Multi-Repository Updater tool by Michael Lyashenko v1.0.5\n");
-	
-	System::SetCurrentPath(System::GetPathFromFilename(argv[0]));
+	Memory in, out;
+	root.SerializeTo(in);
 
-	if (root.Load(argc > 1 ? argv[1] : "repositories.txt"))
+	Time::Update();
+	printf("[%4u] Original: %u bytes\n", Time::GetMilliseconds(), in.GetSize());
+
+	if (Compress(in.GetBuffer(), in.GetSize(), out))
 	{
-		String command, url, path;
+		in.Clear();
+		Time::Update();
+		printf("[%4u] Compressed: %u bytes\n", Time::GetMilliseconds(), out.GetSize());
 
-		FOREACH(i, root.mChildren)
+		if (Decompress(out.GetBuffer(), out.GetSize(), in))
 		{
-			const TreeNode& node = root.mChildren[i];
-			url = node.mValue.IsString() ? node.mValue.AsString() : node.mValue.GetString();
-			if (url.IsEmpty()) continue;
-
-			path = node.mTag;
-			if (!path.EndsWith("/")) path << "/";
-
-			if (!System::ReadFolder(path + ".svn", folders, files))
-			{
-				printf("\nChecking out %s\n\n", path.GetBuffer());
-				command = "svn checkout """;
-				command << url;
-				command << """ """;
-				command << path;
-				command << """";
-			}
-			else
-			{
-				printf("\nUpdating %s\n", path.GetBuffer());
-				command = "svn up """;
-				command << path;
-				command << """";
-			}
-			System::Execute(command.GetBuffer());
+			String text;
+			const byte* buffer = in.GetBuffer();
+			uint size = in.GetSize();
+			Time::Update();
+			printf("[%4u] Decompressed: %u bytes", Time::GetMilliseconds(), in.GetSize());
+			in.Save("c:/temp/out.txt");
+		}
+		else
+		{
+			puts("Failed to decompress");
 		}
 	}
 	else
 	{
-		puts("No configuration file found. Doing an 'svn up'...\n");
-		System::Execute("svn up");
+		puts("Failed to compress");
 	}
-	printf("\nDone!\n");
-
-#ifdef _WINDOWS
 	getchar();
-#endif
 	return 0;
 }

@@ -2,10 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ConfigConverter"
+	Name="FormatConverter"
 	ProjectGUID="{11322B60-D2F0-4337-8933-8C0CB5382D12}"
-	RootNamespace="ConfigConverter"
-	TargetFrameworkVersion="131072"
+	RootNamespace="FormatConverter"
 	>
 	<Platforms>
 		<Platform
@@ -66,8 +65,6 @@
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				ProgramDatabaseFile="$(IntDir)\$(TargetName).pdb"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -86,6 +83,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -136,8 +136,6 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				LinkTimeCodeGeneration="0"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -158,6 +156,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -166,7 +167,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\ConfigConverter.cpp"
+			RelativePath=".\FormatConverter.cpp"
 			>
 		</File>
 	</Files>

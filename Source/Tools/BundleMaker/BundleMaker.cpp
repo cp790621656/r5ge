@@ -26,7 +26,8 @@ int main (int argc, char* argv[])
 	//"Models/Buildings/Barracks.r5c" "Textures/Buildings/Barracks" "Shaders/Deferred/building"
 	bool showUsage = true;
 
-	printf("Working folder: %s\n", System::GetCurrentPath().GetBuffer());
+	String folder (System::GetCurrentPath());
+	printf("Working folder: %s\n", folder.GetBuffer());
 
 	if (argc > 1)
 	{
@@ -49,6 +50,13 @@ int main (int argc, char* argv[])
 		// Get the file's name and the directory from the bundle's filename
 		String name (System::GetFilenameFromPath(bundleFile));
 		String dir  (System::GetPathFromFilename(bundleFile));
+
+		// Remove the folder references
+		FOREACH(i, files)
+		{
+			if (files[i].BeginsWith(folder)) files[i].Erase(0, folder.GetSize());
+		}
+		if (dir.BeginsWith(folder)) dir.Erase(0, folder.GetSize());
 
 		if (bundleFile.IsEmpty())
 		{
@@ -196,16 +204,13 @@ int main (int argc, char* argv[])
 	
 	if (showUsage)
 	{
-		puts("R5 Bundle Maker Tool v.1.0.1 by Michael Lyashenko");
+		puts("R5 Bundle Maker Tool v.1.2.0 by Michael Lyashenko");
 		puts("Usage: BundleMaker [file/folder 1] [file/folder 2] [...]");
 		puts("Example 1: BundleMaker bundle.r5d model.r5c texture0.png texture1.png");
 		puts("Example 2: BundleMaker bundle.r5d");
 		puts("Example 3: BundleMaker bundle.r5d *.jpg *.png");
 		puts("Press Enter to exit...");
-		getchar();
 	}
-#ifdef _DEBUG
 	getchar();
-#endif
 	return 0;
 }

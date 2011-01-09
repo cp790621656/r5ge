@@ -5,7 +5,7 @@
 // ConfigConverter can be used to convert R5A and R5B files into R5C and vice versa
 //============================================================================================================
 
-#include "../../Engine/Serialization/Include/_All.h"
+#include "../../Engine/Image/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -29,44 +29,68 @@ int main (int argc, char* argv[])
 
 	uint errors = 0;
 
+#ifndef _DEBUG
 	if (argc > 1)
+#endif
 	{
+		Memory mem;
 		TreeNode root;
-
+		Image img;
+#ifndef _DEBUG
 		for (int i = 1; i < argc; ++i)
+#endif
 		{
+#ifndef _DEBUG
 			String filename (argv[i]);
+#else
+			String filename ("c:/projects/r5ge/resources/models/shadow test 2.r5c");
+#endif
 
-			if (root.Load(filename))
+			if (mem.Load(filename))
 			{
-				LOAD_DONE;
+				if (mem.GetSize() > 5)
+				{
+					LOAD_DONE;
 
-				if (filename.EndsWith(".r5a"))
-				{
-					filename.Replace(".r5a", ".r5c");
-				}
-				else
-				{
 					String ext (System::GetExtensionFromFilename(filename));
 
-					if (ext.IsValid())
+					const byte* buffer = mem.GetBuffer();
+					byte id = buffer[4];
+					bool isTreeNode = (id == 'A') || (id == 'B') || (id == 'C');
+
+					if (!isTreeNode && img.Load(mem.GetBuffer(), mem.GetSize()))
 					{
-						filename.Replace(ext, "r5a", true);
+						filename.Replace(ext, ext == "r5t" ? "tga" : "r5t");
+
+						if (img.Save(filename))
+						{
+							SAVE_DONE;
+						}
+						else
+						{
+							WRITE_ERROR;
+							++errors;
+						}
+					}
+					else if (root.Load(mem))
+					{
+						filename.Replace(ext, ext == "r5c" ? "r5a" : "r5c");
+
+						if (root.Save(filename.GetBuffer()))
+						{
+							SAVE_DONE;
+						}
+						else
+						{
+							WRITE_ERROR;
+							++errors;
+						}
 					}
 					else
 					{
-						filename << ".r5a";
+						READ_ERROR;
+						++errors;
 					}
-				}
-
-				if (root.Save(filename.GetBuffer()))
-				{
-					SAVE_DONE;
-				}
-				else
-				{
-					WRITE_ERROR;
-					++errors;
 				}
 			}
 			else
@@ -76,15 +100,15 @@ int main (int argc, char* argv[])
 			}
 		}
 	}
+#ifndef _DEBUG
 	else
 	{
 		++errors;
-		puts("R5 Config Converter Tool v.1.0.0 by Michael Lyashenko");
-		puts("Usage: ConfigConverter file0 [file1] [file2] [...]");
-		puts("Example 1: FontConverter HelloWorld.r5a");
-		puts("Example 2: FontConverter HelloWorld.r5b HelloWorld.r5c");
+		puts("R5 Format Converter Tool v.2.0.0 by Michael Lyashenko");
+		puts("Usage: FormatConverter file0 [file1] [file2] [...]");
 		puts("You can also drag the file in question onto this executable in order to convert it.");
 	}
+#endif
 
 	if (errors > 0)
 	{

@@ -297,9 +297,9 @@ Real BilinearTile (const Real* buffer, uint width, uint height, float x, float y
 	float invX = 1.0f - x;
 	float invY = 1.0f - y;
 
-	uint x0  = WrapIndex( ix,	 width );
+	uint x0  = WrapIndex( ix,	  width );
 	uint x1  = WrapIndex( ix + 1, width );
-	uint y0w = WrapIndex( iy,	 height ) * width;
+	uint y0w = WrapIndex( iy,	  height ) * width;
 	uint y1w = WrapIndex( iy + 1, height ) * width;
 	
 	return	(buffer[x0 + y0w] * invX + buffer[x1 + y0w] * x) * invY +
@@ -328,9 +328,9 @@ Real BilinearClamp (const Real* buffer, uint width, uint height, float x, float 
 	float invX = 1.0f - x;
 	float invY = 1.0f - y;
 
-	uint x0  = ClampIndex( ix,	  width  );
+	uint x0  = ClampIndex( ix,	   width  );
 	uint x1  = ClampIndex( ix + 1, width  );
-	uint y0w = ClampIndex( iy,	  height ) * width;
+	uint y0w = ClampIndex( iy,	   height ) * width;
 	uint y1w = ClampIndex( iy + 1, height ) * width;
 	
 	return	(buffer[x0 + y0w] * invX + buffer[x1 + y0w] * x) * invY +
