@@ -503,7 +503,7 @@ void GLTexture::_Create()
 	}
 
 	// Figure out the appropriate bitrate and OpenGL format
-	uint bpp = ITexture::GetBitsPerPixel(mFormat) / 8;
+	uint bpp = ITexture::GetBitsPerPixel(mFormat) >> 3;
 	int outFormat = _GetGLFormat(mFormat);
 	mSizeInMemory = 0;
 
@@ -895,7 +895,7 @@ uint GLTexture::Activate()
 				}
 
 				// Take the number of bytes per pixel into account
-				mSizeInMemory *= ITexture::GetBitsPerPixel(mFormat) / 8;
+				mSizeInMemory *= ITexture::GetBitsPerPixel(mFormat) >> 3;
 			}
 			g_caps.IncreaseTextureMemory(mSizeInMemory);
 		}

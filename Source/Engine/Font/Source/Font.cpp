@@ -65,7 +65,7 @@ void Font::SetGlyphs (byte fontSize, byte padding, byte glyphSize, const Array<G
 void Font::SetBuffer (const void* buffer, uint width, uint format)
 {
 	uint size = width * width;
-	size *= ITexture::GetBitsPerPixel(format) / 8;
+	size *= ITexture::GetBitsPerPixel(format) >> 3;
 	mBuffer.Set(buffer, size);
 	mFormat = format;
 	mWidth = width;

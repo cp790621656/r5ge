@@ -36,7 +36,7 @@ R5_READ_IMAGE_CODEC(TGA)
 			size -= 1;
 
 			// Bytes per pixel
-			uint bpp = bitrate / 8;
+			uint bpp = bitrate >> 3;
 
 			// Allocate a new buffer
 			uint length = bpp * width * height;

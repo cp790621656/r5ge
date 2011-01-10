@@ -114,10 +114,13 @@ bool R5::CompressLZMA (const byte* buffer, uint length, Memory& memOut)
 				memOut.Append(propData, propsSize);
 
 				// Encode the entire memory stream
-				return (SZ_OK == LzmaEnc_Encode(enc,
+				bool retVal = (SZ_OK == LzmaEnc_Encode(enc,
 					(ISeqOutStream*)&outStream,
 					(ISeqInStream*)&inStream,
 					0, &SzAllocForLzma, &SzAllocForLzma));
+
+				ASSERT(retVal, "Failed to compress the stream");
+				return retVal;
 			}
 		}
 
@@ -149,7 +152,7 @@ bool R5::DecompressLZMA (const byte* buffer, uint length, Memory& memOut)
 
 		ELzmaStatus status;
 
-		while (inOffset < length && outOffset < memOut.GetSize())
+		while (inOffset < length)
 		{
 			unsigned inSize  = length - inOffset;
 			unsigned outSize = memOut.GetSize() - outOffset;

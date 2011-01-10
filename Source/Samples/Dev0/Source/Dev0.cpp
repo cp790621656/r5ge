@@ -5,7 +5,7 @@
 // Dev0 is a temporary testing application. Its source code and purpose change frequently.
 //============================================================================================================
 
-#include "../../../Engine/Serialization/Include/_All.h"
+#include "../../../Engine/Image/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -14,38 +14,29 @@ using namespace R5;
 
 int main (int argc, char* argv[])
 {
-	TreeNode root;
-	root.Load("C:/Projects/r5ge/Resources/Models/shadow test.r5a");
+	Memory in;
+	in.Load("C:/Projects/r5ge/Resources/Textures/Stone/rocky_ns.png");
 
-	Memory in, out;
-	root.SerializeTo(in);
+	printf("Original: %u bytes\n", in.GetSize());
 
-	Time::Update();
-	printf("[%4u] Original: %u bytes\n", Time::GetMilliseconds(), in.GetSize());
-
-	if (Compress(in.GetBuffer(), in.GetSize(), out))
+	Image img;
+	
+	if (img.Load(in.GetBuffer(), in.GetSize()))
 	{
-		in.Clear();
-		Time::Update();
-		printf("[%4u] Compressed: %u bytes\n", Time::GetMilliseconds(), out.GetSize());
+		Memory out;
 
-		if (Decompress(out.GetBuffer(), out.GetSize(), in))
+		if (img.Save(out, "R5T")) printf("R5T: %u bytes\n", out.GetSize());
+
+		if (img.Load(out.GetBuffer(), out.GetSize()))
 		{
-			String text;
-			const byte* buffer = in.GetBuffer();
-			uint size = in.GetSize();
-			Time::Update();
-			printf("[%4u] Decompressed: %u bytes", Time::GetMilliseconds(), in.GetSize());
-			in.Save("c:/temp/out.txt");
+			printf("Loaded the image again, saving as TGA\n");
+
+			if (img.Save("c:/temp/test.tga"))
+			{
+				printf("Saved\n");
+			}
 		}
-		else
-		{
-			puts("Failed to decompress");
-		}
-	}
-	else
-	{
-		puts("Failed to compress");
+		else puts("Failed to re-load the image");
 	}
 	getchar();
 	return 0;
