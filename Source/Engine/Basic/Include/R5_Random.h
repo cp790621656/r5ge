@@ -21,7 +21,7 @@ private:
 public:
 
 	Random();
-	Random(uint val) : a(val), b(B), c(C), d(D) {}
+	Random(uint val) { SetSeed(val); }
 
 	// Random uinteger ranging from 0 to 0xFFFFFFFF
 	inline uint GenerateUint()
@@ -60,11 +60,5 @@ public:
 	}
 
 	// Resets the random seed to the specified value
-	inline void SetSeed (uint val)
-	{
-		a = val;
-		b = B;
-		c = C;
-		d = D;
-	}
+	void SetSeed (uint val);
 };
