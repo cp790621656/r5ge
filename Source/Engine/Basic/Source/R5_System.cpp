@@ -231,7 +231,7 @@ String System::GetFilenameFromPath (const String& in, bool extension)
 }
 
 //============================================================================================================
-// "c:\temp\test.abc" becomes "c:\temp\"
+// "c:\temp\test.abc" becomes "c:/temp/"
 //============================================================================================================
 
 String System::GetPathFromFilename (const String& in)
@@ -271,6 +271,57 @@ String System::GetExtensionFromFilename (const String& in)
 		}
 	}
 	return "";
+}
+
+//============================================================================================================
+
+uint GetFileOrFolder (const String& in, String& out, uint offset)
+{
+	while (offset < in.GetSize() && in[offset] == '/') ++offset;
+	uint last = offset;
+	while (last < in.GetSize() && in[last] != '/') ++last;
+	if (offset < last) in.GetString(out, offset, last);
+	else out.Clear();
+	return last;
+}
+
+//============================================================================================================
+// "c:/temp/../test.abc" becomes "c:/test.abc"
+//============================================================================================================
+
+String System::GetNormalizedFilename (const String& file)
+{
+	String out = file;
+	out.Replace("\\", "/", true);
+	out.Replace("//", "/", true);
+
+	String word;
+	Array<String> list;
+
+	for (uint i = 0; i < out.GetLength(); )
+	{
+		i = GetFileOrFolder(out, word, i);
+
+		if ((list.GetSize() > 0) && (word == "..") && (list.Back() != ".."))
+		{
+			list.Shrink();
+		}
+		else
+		{
+			list.Expand() = word;
+		}
+	}
+
+	if (list.IsEmpty()) return file;
+
+	out.Clear();
+
+	FOREACH(i, list)
+	{
+		if (i > 0) out << "/";
+		out << list[i];
+	}
+	return out;
 }
 
 //============================================================================================================

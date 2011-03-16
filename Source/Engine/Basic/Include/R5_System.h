@@ -31,6 +31,7 @@ namespace System
 	String	GetFilenameFromPath		(const String& path, bool extension = true); // "c:/temp/test.abc" becomes "test.abc"
 	String	GetPathFromFilename		(const String& file);		// "c:/temp/test.abc" becomes "c:/temp/"
 	String	GetExtensionFromFilename(const String& file);		// "c:/temp/test.abc" becomes "abc"
+	String	GetNormalizedFilename	(const String& file);		// "c:/temp/../test.abc" becomes "c:/test.abc"
 
 	// Reads the contents of the specified folder, populating file and folder lists
 	bool ReadFolder (const String& dir, Array<String>& folders, Array<String>& files);
