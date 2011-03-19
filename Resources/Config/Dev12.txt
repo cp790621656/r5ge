@@ -13,7 +13,6 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Fog Range = 30.000000 75.000000
 	}
 
 	UI
@@ -25,27 +24,30 @@ Root
 		{
 			UIWindow = "First UIWindow"
 			{
-				Left = 0.000000 51.000000
-				Right = 0.000000 351.000000
-				Top = 0.000000 16.000000
-				Bottom = 0.000000 238.000000
-				Alpha = 1.000000
+				Left = 0.0 51.0
+				Right = 0.0 351.0
+				Top = 0.0 16.0
+				Bottom = 0.0 238.0
+				Alpha = 1.0
 				Titlebar Height = 22
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Back Color = 0xFFFFFFFF
 				Text = "Second Scene: Only the model"
-				Shadow = true
+				Text Color = 0xFFFFFFFF
+				Shadow Color = 0x000000FF
 				Alignment = "Center"
 				Event Handling = "Normal"
 				Layer = 0
 
 				UIPicture = "Scene 2: Color"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Tiled = false
+					Back Color = 0xFFFFFFFF
 					Texture = "Secondary Target"
 					Ignore Alpha = false
 					Event Handling = "Normal"
@@ -56,94 +58,120 @@ Root
 
 			UIStats = "Game UIStats"
 			{
-				Left = 1 -150
-				Bottom = 0 250
+				Left = 1.0 -150.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 0.0 250.0
+				Alpha = 1.0
+				Shadow Color = 0x000000AF
+				Event Handling = "Normal"
+				Layer = 0
 			}
 		}
 	}
 
 	Core
 	{
-		Execute = "Skins/Neon UI Skin.txt"
+		Serialize From = String[]
+		{
+			"Skins/Neon UI Skin.txt"
+		}
 	}
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Debug Camera = "Camera 0"
 		{
-			Position = 0.000000 0.000000 0.600000
+			Position = 0.0 0.0 0.6
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
-			Range = 0.300000 10.000000 90.000000
-			Dolly = 0.000000 1.897729 15.000000
+			Scale = 1.0 1.0 1.0
+			Range = 0.3 10.0 90.0
+			Dolly = 0.0 1.897729 15.0
 
-			Script = "OSDrawForward"
+			Script = "OSDrawDeferred"
 			{
+				Background Color = 0.25 0.25 0.25 1.0
+				Fog Range = 0.5 1.0
+
 				Shadowmap
 				{
 					Texture Size = 1024
-					Cascades = 1
+					Cascade Count = 1
+					Cascade Bias = 0.5
 					Blur Passes = 2
-					Softness = 3.000000
-					Kernel Size = 1.000000
-					Depth Bias = 6.000000
+					Softness = 3.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
 				}
 
-				Bloom = 1.000000
-				Background Color = 0.250000 0.250000 0.250000 1.000000
-				Fog Range = 0.5 1.0
+				Bloom = 1.0
+				Focal Range = 0.0 0.0 0.0
+				AO Quality = 0
+				AO Blur Passes = 2
+				AO Parameters = 1.0 4.0 1.0
 			}
 		}
 
 		Model Instance = "Plane"
 		{
-			Scale = 1.000000
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 			Model = "Models/rect.r5a"
 		}
 
 		Object = "Scene 1"
 		{
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 			Script = "OSSceneRoot"
 
 			Debug Camera = "Camera 1"
 			{
-				Position = 0.000000 0.000000 1.000000
+				Position = 0.0 0.0 1.0
 				Rotation = 0.029436 0.138777 -0.967555 -0.209075
-				Range = 0.100000 5.000000 45.000000
-				Dolly = 0.000000 1.000000 5.000000
+				Scale = 1.0 1.0 1.0
+				Range = 0.1 5.0 45.0
+				Dolly = 0.0 1.0 5.0
 
 				Script = "OSDrawForward"
 				{
+					Background Color = 1.0 0.0 1.0 0.0
+					Fog Range = 0.5 1.0
+
 					Shadowmap
 					{
 						Texture Size = 256
-						Cascades = 1
+						Cascade Count = 1
+						Cascade Bias = 0.5
 						Blur Passes = 0
-						Softness = 1.000000
-						Kernel Size = 1.000000
-						Depth Bias = 6.000000
+						Softness = 1.0
+						Kernel Size = 1.0
+						Depth Bias = 6.0
 					}
-
-					Bloom = 1.000000
-					Background Color = 1 0 1 0
-					Focal Range = 0.000000 0.000000 0.000000
-					AO Quality = 0
-					AO Blur Passes = 2
-					AO Parameters = 0.100000 4.000000 1.000000
 				}
 			}
 
 			Directional Light = "First Light"
 			{
-				Rotation = 0.091038 0.335930 -0.904437 -0.246692
-				Ambient = 0.200000 0.200000 0.200000
-				Diffuse = 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.000000
+				Position = 0.0 0.0 0.0
+				Rotation = 0.091038 0.33593 -0.904437 -0.246692
+				Scale = 1.0 1.0 1.0
+				Ambient = 0.2 0.2 0.2
+				Diffuse = 1.0 1.0 1.0
+				Specular = 1.0 1.0 1.0
+				Brightness = 1.0
 				Shadows = true
 
 				Directional Billboard = "Test 0"
 				{
-					Color = 0xffffffff
+					Position = 0.0 0.0 0.0
+					Rotation = 0.0 0.0 0.0 1.0
+					Scale = 1.0 1.0 1.0
+					Color = 0xFFFFFFFF
 					Texture = "Textures/Billboards/light.jpg"
 					Technique = "Glow"
 				}
@@ -151,6 +179,9 @@ Root
 
 			Model Instance = "Peasant"
 			{
+				Position = 0.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Models/peasant.r5a"
 				Script = "OSPlayIdleAnimations"
 			}

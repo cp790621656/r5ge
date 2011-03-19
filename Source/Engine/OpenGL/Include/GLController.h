@@ -46,7 +46,6 @@ protected:
 	float		mAdt;				// Alpha testing will discard fragments with alpha less than this value
 	float		mThickness;			// Point and line size when drawing those primitives
 	bool		mNormalize;			// Whether to automatically normalize normals
-	uint		mDepthOffset;		// Whether depth offset is currently active
 	Vector2i	mSize;				// Screen size
 	Rect		mScissorRect;		// Scissor rectangle
 	Vector2f	mFogRange;			// Fog range
@@ -98,7 +97,7 @@ public:
 	virtual void SetAlphaCutoff		(float val);
 	virtual void SetThickness		(float val);
 	virtual void SetNormalize		(bool val);
-	virtual void SetDepthOffset		(uint val);
+	virtual void SetDepthOffset		(uint val) { mTrans.SetDepthOffset(val); }
 	virtual void SetViewport		(const Vector2i& size);
 	virtual void SetScissorRect		(const Rect& rect);
 	virtual void SetFogRange		(const Vector2f& range);
@@ -128,7 +127,7 @@ public:
 	virtual float				GetAlphaCutoff()		const	{ return mAdt;			}
 	virtual float				GetThickness()			const	{ return mThickness;	}
 	virtual bool				GetNormalize()			const	{ return mNormalize;	}
-	virtual uint				GetDepthOffset()		const	{ return mDepthOffset;	}
+	virtual uint				GetDepthOffset()		const	{ return mTrans.GetDepthOffset();	}
 	virtual uint				GetDefaultAF()			const	{ return mAf;			}
 	virtual const Vector2i&		GetViewport()			const	{ return mSize;			}
 	virtual const Rect&			GetScissorRect()		const	{ return mScissorRect;	}

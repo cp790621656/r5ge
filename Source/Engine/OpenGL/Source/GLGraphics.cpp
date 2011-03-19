@@ -367,14 +367,14 @@ void GLGraphics::Clear (bool color, bool depth, bool stencil)
 		{
 			flag |= GL_COLOR_BUFFER_BIT;
 
-			SetColorWrite(true);
+			if (!mColorWrite) SetColorWrite(true);
 			glClearColor(mBackground.r, mBackground.g, mBackground.b, mBackground.a);
 		}
 
 		if (depth)
 		{
 			flag |= GL_DEPTH_BUFFER_BIT;
-			SetDepthWrite(true);
+			if (!mDepthWrite) SetDepthWrite(true);
 		}
 
 		if (stencil)

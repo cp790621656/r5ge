@@ -54,17 +54,21 @@ class GLTransform
 		Matrix44 mat;
 		Vector3f range;
 		float aspect;
+		int offset;
 
-		ProjMatrix() : range(1.0f, 100.0f, 90.0f), aspect(1.33333f) {}
+		ProjMatrix() : range(1.0f, 100.0f, 90.0f), aspect(1.33333f), offset(0) {}
 
 		// Manually overrides the projection matrix
 		void Override (const Matrix44& m);
 
+		// Depth offset
+		void SetOffset (int val);
+
 		// Sets the aspect ratio
-		void Set (float asp) { if (Float::IsNotEqual(aspect, asp)) { aspect = asp; update = true; } }
+		void SetAspect (float asp) { if (Float::IsNotEqual(aspect, asp)) { aspect = asp; update = true; } }
 
 		// Sets the projection matrix using the specified near, far, and field of view
-		void Set (const Vector3f& inRange);
+		void SetRange (const Vector3f& inRange);
 
 		// Sets the properties used to calculate the projection matrix
 		void Set (float fov, float asp, float near, float far);
@@ -90,19 +94,19 @@ private:
 	// Allow the controller class to access private members for simplicity's sake
 	friend class GLController;
 
-	bool		mInst;	// Whether instancing is enabled
-	bool		mIs2D;	// Overriding 2D projection mode
-	bool		mReset;	// Manual matrix reset, used by 2D mode
-	Vector2i	mSize;	// Viewport size
-	ModelMatrix	mModel;	// Model matrix
-	ViewMatrix	mView;	// View matrix
-	ProjMatrix	mProj;	// Projection matrix
-	Bounds		mCam;	// Camera bounds
-	Mat43		mMV;	// World * View matrix
-	Mat43		mIMV;	// Inverse ModelView matrix
-	Mat44		mMVP;	// ModelView*Projection matrix
-	Mat44		mIP;	// Inverse Projection matrix
-	Mat44		mIMVP;	// Inverse ModelView*Projection matrix
+	bool		mInst;		// Whether instancing is enabled
+	bool		mIs2D;		// Overriding 2D projection mode
+	bool		mReset;		// Manual matrix reset, used by 2D mode
+	Vector2i	mSize;		// Viewport size
+	ModelMatrix	mModel;		// Model matrix
+	ViewMatrix	mView;		// View matrix
+	ProjMatrix	mProj;		// Projection matrix
+	Bounds		mCam;		// Camera bounds
+	Mat43		mMV;		// World * View matrix
+	Mat43		mIMV;		// Inverse ModelView matrix
+	Mat44		mMVP;		// ModelView*Projection matrix
+	Mat44		mIP;		// Inverse Projection matrix
+	Mat44		mIMVP;		// Inverse ModelView*Projection matrix
 
 public:
 
@@ -115,7 +119,7 @@ public:
 	void SetTargetSize (Vector2i size);
 
 	// Sets the projection matrix
-	void SetProjectionRange (const Vector3f& range) { mProj.Set(range); }
+	void SetProjectionRange (const Vector3f& range) { mProj.SetRange(range); }
 
 	// Sets the projection matrix
 	void SetProjectionMatrix (float fov, float aspect, float near, float far)
@@ -145,6 +149,10 @@ public:
 	// Projection matrix manipulation
 	void OverrideProjectionMatrix (const Matrix44& mat) { mProj.Override(mat); }
 	void CancelProjectionMatrixOverride() { mProj.Reset(); }
+
+	// Depth bias helps avoid Z-fighting
+	int GetDepthOffset() const { return mProj.offset; }
+	void SetDepthOffset (int val) { mProj.SetOffset(val); }
 
 	// Matrix retrieval functions
 	const Matrix43& GetModelMatrix();

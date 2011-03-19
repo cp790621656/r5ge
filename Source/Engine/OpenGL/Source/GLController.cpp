@@ -99,7 +99,7 @@ GLController::GLController() :
 	mColorWrite		(true),
 	mAlphaTest		(false),
 	mStencilTest	(false),
-	mScissorTest		(false),
+	mScissorTest	(false),
 	mWireframe		(false),
 	mLighting		(Lighting::None),
 	mBlending		(Blending::None),
@@ -107,7 +107,6 @@ GLController::GLController() :
 	mAdt			(0.0f),
 	mThickness		(1.0f),
 	mNormalize		(false),
-	mDepthOffset	(false),
 	mAf				(0),
 	mSimpleMaterial	(false),
 	mTarget			(0),
@@ -423,23 +422,6 @@ void GLController::SetNormalize (bool val)
 	{
 		if (mNormalize = val) glEnable(GL_RESCALE_NORMAL);
 		else glDisable(GL_RESCALE_NORMAL);
-	}
-}
-
-//============================================================================================================
-// Whether to offset depth testing of rendered geometry
-//============================================================================================================
-
-void GLController::SetDepthOffset (uint val)
-{
-	if ( mDepthOffset != val )
-	{
-		if (mDepthOffset = val)
-		{
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(0, -(float)val);
-		}
-		else glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 }
 

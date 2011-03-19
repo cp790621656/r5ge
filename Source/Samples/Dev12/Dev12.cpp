@@ -75,32 +75,36 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-    if (*mCore << "Config/Dev12.txt")
+	if (*mCore << "Config/Dev12.txt")
 	{
-		g_offscreenCam = mCore->GetRoot()->FindObject<DebugCamera>("Camera 1");
-
-		if (g_offscreenCam != 0)
+		mCore->Lock();
 		{
-			OSDraw* draw = g_offscreenCam->GetScript<OSDraw>();
-			
-			if (draw != 0)
-			{
-				// Create the second render target
-				// NOTE: If rendering to a deferred target, 'depth' is not required
-				ITexture* color = mGraphics->GetTexture("Secondary Target");
-				ITexture* depth = mGraphics->CreateRenderTexture();
-				IRenderTarget* rt = mGraphics->CreateRenderTarget();
+			g_offscreenCam = mCore->GetRoot()->FindObject<DebugCamera>("Camera 1");
 
-				// Secondary render target will always be 300x200
-				if (rt != 0)
+			if (g_offscreenCam != 0)
+			{
+				OSDraw* draw = g_offscreenCam->GetScript<OSDraw>();
+				
+				if (draw != 0)
 				{
-					rt->AttachColorTexture(0, color, ITexture::Format::RGBA);
-					rt->AttachDepthTexture(depth);
-					rt->SetSize( Vector2i(300, 200) );
+					// Create the second render target
+					// NOTE: If rendering to a deferred target, 'depth' is not required
+					ITexture* color = mGraphics->GetTexture("Secondary Target");
+					ITexture* depth = mGraphics->CreateRenderTexture();
+					IRenderTarget* rt = mGraphics->CreateRenderTarget();
+
+					// Secondary render target will always be 300x200
+					if (rt != 0)
+					{
+						rt->AttachColorTexture(0, color, ITexture::Format::RGBA);
+						rt->AttachDepthTexture(depth);
+						rt->SetSize( Vector2i(300, 200) );
+					}
+					draw->SetRenderTarget(rt);
 				}
-				draw->SetRenderTarget(rt);
 			}
 		}
+		mCore->Unlock();
 
 		while (mCore->Update());
 		//*mCore >> "Config/Dev12.txt";

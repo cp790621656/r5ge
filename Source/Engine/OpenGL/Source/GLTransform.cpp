@@ -73,11 +73,30 @@ void GLTransform::ProjMatrix::Override (const Matrix44& m)
 	mat		= m;
 	set		= true;
 	changed = true;
+
+	// Overwritten matrices get modified right away
+	if (offset) mat[10] *= 1.0f - 0.001f * offset;
 }
 
 //============================================================================================================
 
-void GLTransform::ProjMatrix::Set (const Vector3f& inRange)
+void GLTransform::ProjMatrix::SetOffset (int val)
+{
+	if (offset != val)
+	{
+		// Overwritten matrices get modified right away
+		if (set) mat[10] /= (1.0f - 0.001f * offset);
+
+		offset = val;
+		update = true;
+
+		if (offset) mat[10] *= (1.0f - 0.001f * offset);
+	}
+}
+
+//============================================================================================================
+
+void GLTransform::ProjMatrix::SetRange (const Vector3f& inRange)
 {
 	if (Float::IsNotEqual(range.x, inRange.x))	{ range.x = inRange.x;	update = true; }
 	if (Float::IsNotEqual(range.y, inRange.y))	{ range.y = inRange.y;	update = true; }
@@ -88,8 +107,8 @@ void GLTransform::ProjMatrix::Set (const Vector3f& inRange)
 
 void GLTransform::ProjMatrix::Set (float fov, float asp, float near, float far)
 {
-	Set(Vector3f(near, far, fov));
-	Set(aspect);
+	SetRange(Vector3f(near, far, fov));
+	SetAspect(aspect);
 }
 
 //============================================================================================================
@@ -99,6 +118,7 @@ const Matrix44& GLTransform::ProjMatrix::Get()
 	if (!set && update)
 	{
 		mat.SetToProjection(range.z, aspect, range.x, range.y);
+		if (offset) mat[10] *= 1.0f - 0.001f * offset;
 		update  = false;
 		changed = true;
 	}
@@ -130,7 +150,7 @@ void GLTransform::SetTargetSize (Vector2i size)
 	if (mSize != size)
 	{
 		mSize = size;
-		mProj.Set((float)size.x / size.y);
+		mProj.SetAspect((float)size.x / size.y);
 
 		// Update the OpenGL viewport
 		glViewport(0, 0, size.x, size.y);

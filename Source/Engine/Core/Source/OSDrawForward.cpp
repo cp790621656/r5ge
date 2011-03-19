@@ -51,6 +51,7 @@ void OSDrawForward::OnDraw()
 	// Get all visible lights
 	const DrawQueue::Lights& lights = mScene.GetVisibleLights();
 	Matrix44 imvp;
+	int offset = 0;
 
 	// Save the render target we're supposed to be using
 	IRenderTarget* target = mScene.GetFinalTarget();
@@ -83,7 +84,6 @@ void OSDrawForward::OnDraw()
 					// No depth texture available -- create a new one
 					mDepthTexture = mGraphics->CreateRenderTexture();
 					mDepthTarget->AttachDepthTexture(mDepthTexture);
-					depthWrite = true;
 				}
 				else
 				{
@@ -117,8 +117,8 @@ void OSDrawForward::OnDraw()
 
 		// Draw the shadows and associate the shadow texture with the shadowmap
 		{
-			mShadowmap->SetReplacement( mShadow.Draw(mScene.GetRoot(),
-				lights[i].mLight, light.mDir, imvp, mDepthTexture) );
+			ITexture* shadow = mShadow.Draw(mScene.GetRoot(), lights[i].mLight, light.mDir, imvp, mDepthTexture);
+			mShadowmap->SetReplacement(shadow);
 		}
 
 		// Draw the scene normally but with a shadow texture created above
@@ -135,7 +135,7 @@ void OSDrawForward::OnDraw()
 			mScene.ActivateMatrices();
 
 			// Activate the light and the depth offset
-			mGraphics->SetDepthOffset(depthWrite ? 0 : 1);
+			mGraphics->SetDepthOffset(depthWrite ? 0 : ++offset);
 			mGraphics->SetActiveLight(0, &light);
 
 			// Update the fog parameters
@@ -152,6 +152,9 @@ void OSDrawForward::OnDraw()
 		// Move on to the next pass
 		++pass;
 	}
+
+	// Restore the depth offset
+	mGraphics->SetDepthOffset(0);
 
 	// Update the depth texture
 	mFinalDepth->SetReplacement(mDepthTexture);
