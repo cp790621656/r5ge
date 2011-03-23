@@ -119,11 +119,12 @@ public:
 	virtual bool SetStyle		(uint style);
 	virtual void SetFocus		();
 
-	virtual String		GetTitle()		 const	{ return mTitle; }
-	virtual Vector2i	GetPosition()	 const	{ return (mStyle == Style::FullScreen) ? Vector2i(0, 0) : mPos; }
-	virtual Vector2i	GetSize()		 const	{ return (mStyle == Style::FullScreen) ? mFsSize : mSize; }
-	virtual uint		GetStyle()		 const	{ return (mStyle == Style::Undefined) ? mPrevStyle : mStyle; }
-	virtual bool		IsMinimized()	 const	{ return mIsMinimized; }
+	virtual bool		IsValid()		const	{ return mHWnd != 0; }
+	virtual String		GetTitle()		const	{ return mTitle; }
+	virtual Vector2i	GetPosition()	const	{ return (mStyle == Style::FullScreen) ? Vector2i(0, 0) : mPos; }
+	virtual Vector2i	GetSize()		const	{ return (mStyle == Style::FullScreen) ? mFsSize : mSize; }
+	virtual uint		GetStyle()		const	{ return (mStyle == Style::Undefined) ? mPrevStyle : mStyle; }
+	virtual bool		IsMinimized()	const	{ return mIsMinimized; }
 	virtual void		ShowCursor(bool show);
 	virtual void		Close();
 	virtual bool		Update();

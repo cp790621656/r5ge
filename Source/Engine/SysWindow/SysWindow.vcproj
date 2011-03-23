@@ -157,6 +157,10 @@
 				RelativePath=".\Source\_MSWindow.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Source\SysWindow.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

@@ -47,11 +47,12 @@ struct IWindow
 	virtual void SetFocus		()=0;
 
 	// Various functions
-	virtual String		GetTitle()		 const=0;
-	virtual Vector2i	GetPosition()	 const=0;
-	virtual Vector2i	GetSize()		 const=0;
-	virtual uint		GetStyle()		 const=0;
-	virtual bool		IsMinimized()	 const=0;
+	virtual bool		IsValid()		const=0;
+	virtual String		GetTitle()		const=0;
+	virtual Vector2i	GetPosition()	const=0;
+	virtual Vector2i	GetSize()		const=0;
+	virtual uint		GetStyle()		const=0;
+	virtual bool		IsMinimized()	const=0;
 	virtual void		ShowCursor(bool show)=0;
 	virtual void		Close()=0;
 	virtual bool		Update()=0;
