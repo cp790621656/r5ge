@@ -139,875 +139,875 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C1541F0DA670D600588C73 /* libR5_Basic.a */;
+			remoteGlobalIDString = 14C1541F0DA670D600588C73;
 			remoteInfo = Basic;
 		};
 		147040AC133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154200DA670D600588C73 /* libR5_Math.a */;
+			remoteGlobalIDString = 14C154200DA670D600588C73;
 			remoteInfo = Math;
 		};
 		147040AE133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1412DBFD10ACD24300BBA8F4 /* libR5_Serialization.a */;
+			remoteGlobalIDString = 1412DBFD10ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		147040B0133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 147554D40E0C3DAB00D5641D /* libR5_Network.a */;
+			remoteGlobalIDString = 147554D40E0C3DAB00D5641D;
 			remoteInfo = Network;
 		};
 		147040B2133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154210DA670D600588C73 /* libR5_Core.a */;
+			remoteGlobalIDString = 14C154210DA670D600588C73;
 			remoteInfo = Core;
 		};
 		147040B4133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154220DA670D600588C73 /* libR5_Noise.a */;
+			remoteGlobalIDString = 14C154220DA670D600588C73;
 			remoteInfo = Noise;
 		};
 		147040B6133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154230DA670D600588C73 /* libR5_UI.a */;
+			remoteGlobalIDString = 14C154230DA670D600588C73;
 			remoteInfo = UI;
 		};
 		147040B8133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154240DA670D600588C73 /* libR5_Font.a */;
+			remoteGlobalIDString = 14C154240DA670D600588C73;
 			remoteInfo = Font;
 		};
 		147040BA133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154250DA670D600588C73 /* libR5_Image.a */;
+			remoteGlobalIDString = 14C154250DA670D600588C73;
 			remoteInfo = Image;
 		};
 		147040BC133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154270DA670D600588C73 /* libR5_SysWindow.a */;
+			remoteGlobalIDString = 14C154270DA670D600588C73;
 			remoteInfo = SysWindow;
 		};
 		147040BE133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14C154260DA670D600588C73 /* libR5_OpenGL.a */;
+			remoteGlobalIDString = 14C154260DA670D600588C73;
 			remoteInfo = OpenGL;
 		};
 		147040C0133EEF5200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 14E5FB16115FCC94002EED30 /* libR5_Sound.a */;
+			remoteGlobalIDString = 14E5FB16115FCC94002EED30;
 			remoteInfo = Sound;
 		};
 		147040C2133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		147040C4133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		147040C6133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		147040CA133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		147040CC133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
 			remoteInfo = Noise;
 		};
 		147040CE133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		147040D0133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		147040D2133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		147040D4133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		147040D6133EEF7900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		147040F7133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		147040F9133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		147040FB133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		147040FF133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		14704101133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
 			remoteInfo = Noise;
 		};
 		14704103133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		14704105133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		14704107133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		14704109133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		1470410B133EF09D00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704121133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704123133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704125133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704129133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		1470412B133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
 			remoteInfo = Noise;
 		};
 		1470412D133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470412F133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		14704131133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		14704133133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		14704135133EF0C500657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704150133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704152133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704154133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704156133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		14704158133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470415A133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		1470415C133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		1470415E133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		14704160133EF13100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704173133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704175133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704177133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704179133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		1470417B133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470417D133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		1470417F133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		14704181133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		14704183133EF15900657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704194133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704196133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704198133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		1470419A133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		1470419C133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470419E133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		147041A0133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		147041A2133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		147041A4133EF17B00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		147041B8133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		147041BA133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		147041BC133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		147041BE133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		147041C0133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		147041C2133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		147041C4133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		147041C6133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		147041C8133EF24C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		147041DE133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		147041E0133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		147041E2133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		147041E4133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		147041E6133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		147041E8133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		147041EA133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		147041EC133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		147041EE133EF2AC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		147041FD133EF2CC00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
 			remoteInfo = Noise;
 		};
 		14704213133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704215133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704217133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704219133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		1470421B133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470421D133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		1470421F133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		14704221133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		14704223133EF41C00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704231133EF44100657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A /* Noise */;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
 			remoteInfo = Noise;
 		};
 		1470423C133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		1470423E133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704240133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704242133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		14704244133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		14704246133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		14704248133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		1470424A133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		1470424C133EF4FB00657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704261133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704263133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704265133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704267133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		14704269133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470426B133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		1470426D133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		1470426F133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		14704271133EF52200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 		14704281133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14753BC70D9C12E3000D05A5 /* Basic */;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
 			remoteInfo = Basic;
 		};
 		14704283133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1468B89E0D903E6300E0AE61 /* Math */;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
 			remoteInfo = Math;
 		};
 		14704285133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4 /* Serialization */;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
 		14704287133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A /* Core */;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
 			remoteInfo = Core;
 		};
 		14704289133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A /* UI */;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
 			remoteInfo = UI;
 		};
 		1470428B133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A /* Font */;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
 			remoteInfo = Font;
 		};
 		1470428D133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A /* Image */;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
 			remoteInfo = Image;
 		};
 		1470428F133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A /* SysWindow */;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
 			remoteInfo = SysWindow;
 		};
 		14704291133EF55200657E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14704098133EEF5200657E92 /* Engine.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A /* OpenGL */;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
 			remoteInfo = OpenGL;
 		};
 /* End PBXContainerItemProxy section */

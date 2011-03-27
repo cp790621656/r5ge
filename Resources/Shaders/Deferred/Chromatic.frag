@@ -4,7 +4,6 @@ uniform mat3 R5_inverseViewRotationMatrix;
 
 uniform samplerCube R5_texture0;
 
-varying vec2 _texCoord;
 varying vec3 _eyeDir, _normal;
 
 //============================================================================================================================

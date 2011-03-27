@@ -195,23 +195,40 @@ uint CountMipmapSize (uint width, uint height)
 
 uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, int inFormat, int outFormat, uint dataType)
 {
-	uint pixels = width * height;
-
-	if (dataType == GL_FLOAT)
+	uint pixels = 0;
+	
+	// Compressed textures and Intel cards should always go through manual mipmap generation
+	if (glGenerateMipmap == 0 ||
+		outFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT  ||
+		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
+		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
+		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ||
+		g_caps.mVendor == IGraphics::DeviceInfo::Vendor::Intel)
 	{
-		if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(float, float, 4);
-		else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(float, float, 3);
-		else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(float, float, 2);
-		else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(float, float, 1);
-		else return 0;
+		// Manual mipmap generation
+		pixels = width * height;
+		
+		if (dataType == GL_FLOAT)
+		{
+			if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(float, float, 4);
+			else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(float, float, 3);
+			else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(float, float, 2);
+			else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(float, float, 1);
+		}
+		else
+		{
+			if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(byte, uint, 4);
+			else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(byte, uint, 3);
+			else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(byte, uint, 2);
+			else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(byte, uint, 1);
+		}
 	}
 	else
 	{
-		if		(inFormat == GL_RGBA)				pixels += GEN_2D_MIPMAP(byte, uint, 4);
-		else if (inFormat == GL_RGB)				pixels += GEN_2D_MIPMAP(byte, uint, 3);
-		else if (inFormat == GL_LUMINANCE_ALPHA)	pixels += GEN_2D_MIPMAP(byte, uint, 2);
-		else if (inFormat == GL_INTENSITY)			pixels += GEN_2D_MIPMAP(byte, uint, 1);
-		else return 0;
+		// Hardware-accelerated mipmap generation
+		glGenerateMipmap(glType);
+		CHECK_GL_ERROR;
+		pixels = CountMipmapSize(width, height);
 	}
 	return pixels;
 }
@@ -225,31 +242,8 @@ inline uint Create2DImage (uint glType, const void* buffer, uint width, uint hei
 {
 	// Upload the starting image
 	glTexImage2D(glType, 0, outFormat, width, height, 0, inFormat, dataType, buffer);
-
-	// If no mipmap was requested, just return the base number of pixels
-	if (!mipmap) return width * height;
-
-	uint pixels = 0;
-	
-	// Compressed textures and Intel cards should always go through manual mipmap generation
-	if (outFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT  ||
-		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
-		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
-		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ||
-		glGenerateMipmap == 0 ||
-		g_caps.mVendor == IGraphics::DeviceInfo::Vendor::Intel)
-	{
-		// Manual mipmap generation
-		pixels = Create2DMipmaps(glType, buffer, width, height, inFormat, outFormat, dataType);
-	}
-	
-	if (pixels == 0)
-	{
-		// Hardware-accelerated mipmap generation
-		glGenerateMipmap(glType == GL_TEXTURE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP);
-		return CountMipmapSize(width, height);
-	}
-	return pixels;
+	CHECK_GL_ERROR;
+	return (mipmap) ? Create2DMipmaps(glType, buffer, width, height, inFormat, outFormat, dataType) : width * height;
 }
 
 //============================================================================================================
@@ -565,10 +559,18 @@ void GLTexture::_Create()
 		// Cubemap texture has 6 source images
 		for (uint i = 0; i < 6; ++i)
 		{
-			mSizeInMemory += bpp * Create2DImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mTex[i].GetBuffer(),
-				mSize.x, mSize.y, mInFormat, outFormat, mDataType, (mFilter & Filter::Mipmap) != 0);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, outFormat, mSize.x, mSize.y, 0, mInFormat, mDataType, mTex[i].GetBuffer());
 			CHECK_GL_ERROR;
 		}
+		
+		if ((mFilter & Filter::Mipmap) != 0)
+		{
+			for (uint i = 0; i < 6; ++i)
+			{
+				mSizeInMemory += Create2DMipmaps(GL_TEXTURE_CUBE_MAP, mTex[i].GetBuffer(), mSize.x, mSize.y, mInFormat, outFormat, mDataType);
+			}
+		}
+		else mSizeInMemory += mSize.x * mSize.y * 6;
 	}
 	else if ( mGlType == GL_TEXTURE_3D )
 	{
