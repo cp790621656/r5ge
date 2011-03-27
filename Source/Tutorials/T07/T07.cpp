@@ -80,7 +80,7 @@ void TestApp::Run()
 		IShader* shader = mGraphics->GetShader("Deferred/chromatic");
 
 		// Set the shader that will be used to draw this material
-		method->SetShader(shader);
+		method->mShader = shader;
 
 		// Find and reuse the skybox created in the previous tutorial
 		method->SetTexture(0, mGraphics->GetTexture("Skybox"));

@@ -91,7 +91,7 @@ void TestApp::Run()
 			hm.mTerrainOffset = mOffset;
 			hm.mTerrainScale = mScale;
 
-			// Here's a kicker. Although our height map is extremely highly detailed, let's only use one
+			// Here's the kicker: Although our height map is extremely highly detailed, let's only use one
 			// partition to draw it. You might ask, "but won't that make our entire terrain only
 			// 32 by 32 vertices?" The answer is yes. Yes it will.
 

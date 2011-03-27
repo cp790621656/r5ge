@@ -109,7 +109,7 @@ R5_WRITE_IMAGE_CODEC(R5T)
 	r5x.Append((ushort)height);
 	r5x.Append((ushort)format);
 	
-	uint header = r5t.GetSize();
+	//uint header = r5t.GetSize();
 	byte* temp = r5t.Resize(size);
 
 	// We need to write all reds, followed by all greens, etc

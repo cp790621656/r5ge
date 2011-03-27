@@ -107,7 +107,7 @@ void TestApp::Run()
 		IMaterial::DrawMethod* method = mat->GetDrawMethod(tech);
 
 		// We want to replace whatever shader was there with our chromatic shader loaded above.
-		method->SetShader(shader);
+		method->mShader = shader;
 
 		// We'll use the skybox texture with the shader. If you look inside the shader itself, you
 		// will see that it expects only a single cubemap texture -- the skybox.

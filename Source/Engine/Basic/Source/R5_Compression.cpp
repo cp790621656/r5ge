@@ -58,11 +58,11 @@ typedef struct
 // Stream reading function used by LZMA
 //============================================================================================================
 
-int ReadStream (void* p, void* buf, uint* size)
+int ReadStream (void* p, void* buf, SizeT* size)
 {
 	VectorInStream* stream = (VectorInStream*)p;
 
-	uint remaining = stream->size - stream->offset;
+	SizeT remaining = stream->size - stream->offset;
 	if (remaining < *size) *size = remaining;
 
 	if (*size)
@@ -77,10 +77,10 @@ int ReadStream (void* p, void* buf, uint* size)
 // Stream writing function used by LZMA
 //============================================================================================================
 
-uint WriteToMemory (void* p, const void* buf, uint size)
+SizeT WriteToMemory (void* p, const void* buf, SizeT size)
 {
 	VectorOutStream* ctx = (VectorOutStream*)p;
-	if (size) ctx->mem.Append(buf, size);
+	if (size) ctx->mem.Append(buf, (uint)size);
 	return size;
 }
 
@@ -101,7 +101,7 @@ bool R5::CompressLZMA (const byte* buffer, uint length, Memory& memOut)
 		if (SZ_OK == LzmaEnc_SetProps(enc, &props))
 		{
 			byte propData[LZMA_PROPS_SIZE];
-			unsigned propsSize = LZMA_PROPS_SIZE;
+			SizeT propsSize = LZMA_PROPS_SIZE;
 
 			// Write the header
 			if (SZ_OK == LzmaEnc_WriteProperties(enc, propData, &propsSize) &&
@@ -154,8 +154,8 @@ bool R5::DecompressLZMA (const byte* buffer, uint length, Memory& memOut)
 
 		while (inOffset < length)
 		{
-			unsigned inSize  = length - inOffset;
-			unsigned outSize = memOut.GetSize() - outOffset;
+			SizeT inSize  = length - inOffset;
+			SizeT outSize = memOut.GetSize() - outOffset;
 
 			// Ensure we always have enough space to work with
 			if (outSize < BUFFER_SIZE)

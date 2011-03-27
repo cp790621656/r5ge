@@ -683,8 +683,6 @@ uint String::GetLine (String& out, uint from, uint to) const
 		++from;
 	}
 
-	uint endOfLine = from;
-
 	// Find the end of the line
 	for (uint i = from + 1; i < to; ++i)
 	{
@@ -692,9 +690,6 @@ uint String::GetLine (String& out, uint from, uint to) const
 		{
 			to = i;
 			break;
-		}
-		else if (i+1 < to && buffer[i] == '/' && buffer[i+1] == '/')
-		{
 		}
 	}
 

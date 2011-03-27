@@ -5,7 +5,7 @@ Root
 	Window
 	{
 		Title = "R5 Engine: Noise Test"
-		Position = 0 107
+		Position = 4 107
 		Size = 1264 532
 		Full Screen = false
 	}
@@ -61,7 +61,7 @@ Root
 					Top = 0.0 0.0
 					Bottom = 0.0 16.0
 					Alpha = 1.0
-					Text = "Time: 41"
+					Text = "Time: 7"
 					Text Color = 0xFFFFFFFF
 					Shadow Color = 0x000000FF
 					Alignment = "Center"
@@ -887,7 +887,7 @@ Root
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.0 0.0 3.0
-			Rotation = 0.069032 -0.192421 0.921422 -0.330441
+			Rotation = 0.140047 -0.301845 0.855456 -0.396827
 			Scale = 1.0 1.0 1.0
 			Range = 0.3 100.0 90.0
 			Dolly = 0.0 19.267731 50.0

@@ -175,10 +175,12 @@ typedef struct
 
 #define kNumFullDistances (1 << (kEndPosModelIndex >> 1))
 
+#ifndef CLzmaProb
 #ifdef _LZMA_PROB32
 #define CLzmaProb UInt32
 #else
 #define CLzmaProb UInt16
+#endif
 #endif
 
 #define LZMA_PB_MAX 4

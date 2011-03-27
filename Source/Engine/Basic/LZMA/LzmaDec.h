@@ -14,10 +14,12 @@ extern "C" {
 /* _LZMA_PROB32 can increase the speed on some CPUs,
    but memory usage for CLzmaDec::probs will be doubled in that case */
 
+#ifndef CLzmaProb
 #ifdef _LZMA_PROB32
 #define CLzmaProb UInt32
 #else
 #define CLzmaProb UInt16
+#endif
 #endif
 
 
