@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//					R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//					R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Shadow mapping shader -- this shader is incomplete. This only contains the common component.

@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Network, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//              R5 Network, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Network class implements all the basic functionality dealing with connecting, sending, and receiving data

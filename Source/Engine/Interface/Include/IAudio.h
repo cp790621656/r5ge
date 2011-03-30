@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//           R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko / Philip Cosgrave. All rights reserved.
+//           R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko / Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Basic interface for the Audio controller class

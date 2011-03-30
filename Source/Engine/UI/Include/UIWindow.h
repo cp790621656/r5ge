@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Window is a complex widget based on Animated Frame, using several other widgets

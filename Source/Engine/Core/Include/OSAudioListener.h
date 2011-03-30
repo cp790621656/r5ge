@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//       R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko and Philip Cosgrave. All rights reserved.
+//       R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko and Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Updates the sound listener position every update (attach to your main camera)

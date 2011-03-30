@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//              R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Normal array template, replacement for std::vector -- to be used with anything but pointers
