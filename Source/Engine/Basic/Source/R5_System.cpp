@@ -63,7 +63,7 @@ int System::Execute (const char* command) { return ::system(command); }
 // Changes the local working directory
 //============================================================================================================
 
-bool System::SetCurrentPath(const char* path)
+bool System::SetCurrentPath (const char* path)
 {
 	return (_chdir(path) == 0);
 }
@@ -553,4 +553,49 @@ String System::GetBestMatch (const String& filename)
 		}
 	}
 	return "";
+}
+
+//============================================================================================================
+// Load the specified system library
+//============================================================================================================
+
+bool System::Library::Load (const String& path)
+{
+	if (mHandle) Release();
+#ifdef _WINDOWS
+	mHandle = LoadLibrary(path.GetBuffer());
+#else
+	mHandle = dlopen(path.GetBuffer(), RTLD_NOW);
+#endif
+	return (mHandle != 0);
+}
+
+//============================================================================================================
+// Get the address of the specified function from the library
+//============================================================================================================
+
+void* System::Library::GetFunction (const String& name)
+{
+#ifdef _WINDOWS
+	return (mHandle != 0) ? GetProcAddress((HMODULE)mHandle, name.GetBuffer()) : 0;
+#else
+	return (mHandle != 0) ? dlsym(mHandle, name.GetBuffer()) : 0;
+#endif
+}
+
+//============================================================================================================
+// Release the library
+//============================================================================================================
+
+void System::Library::Release()
+{
+	if (mHandle)
+	{
+#ifdef _WINDOWS
+		FreeLibrary((HMODULE)mHandle);
+#else
+		dlclose(mHandle);
+#endif
+		mHandle = 0;
+	}
 }

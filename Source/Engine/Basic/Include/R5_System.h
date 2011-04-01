@@ -20,6 +20,19 @@ namespace System
 		};
 	};
 
+	class Library
+	{
+		void* mHandle;
+
+	public:
+
+		Library() : mHandle(0) {}
+		~Library() { Release(); }
+		bool Load (const String& path);
+		void* GetFunction (const String& name);
+		void Release();
+	};
+
 	uint	GetOS();											// Returns the current operating system
 	int		Execute					(const char* command);		// Executes the specified command via shell
 	bool	SetCurrentPath			(const char* path);			// _chdir()
