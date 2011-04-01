@@ -303,10 +303,6 @@
 				RelativePath=".\Include\R5_Time.h"
 				>
 			</File>
-			<File
-				RelativePath=".\LZMA\Types.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>
