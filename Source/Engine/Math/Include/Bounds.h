@@ -11,10 +11,10 @@ class Bounds
 {
 	Vector3f			mMin;		// Min point of the bounding box
 	Vector3f			mMax;		// Max point
-	bool				mIsValid;	// Whether the bounds are valid
 	mutable Vector3f	mCenter;	// Calculated center of the bounds for sphere collision checks
 	mutable float		mRadius;	// Calculated radius of the sphere
 	mutable bool		mIsDirty;	// Whether the center and radius need to be updated
+	bool				mIsValid;	// Whether the bounds are valid
 
 private:
 
@@ -27,7 +27,7 @@ private:
 
 public:
 
-	Bounds() : mRadius(0.0f), mIsValid(false), mIsDirty(true) {}
+	Bounds() : mRadius(0.0f), mIsDirty(true), mIsValid(false) {}
 
 	void Set (const Vector3f& min, const Vector3f& max)
 	{

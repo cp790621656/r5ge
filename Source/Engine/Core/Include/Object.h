@@ -44,7 +44,6 @@ protected:
 	void*		mSubParent;			// Optional abstract sub-parent the object belongs to (such as a QuadTree node)
 	Core*		mCore;				// Engine's core that the object was created with
 	IGraphics*	mGraphics;			// Graphics manager, cached for convenience
-	byte		mLayer;				// Draw layer on which this object resides
 
 	Vector3f	mLastPos;			// Saved last relative position (used for velocity)
 	Vector3f	mRelativePos;		// Local space position
@@ -63,6 +62,7 @@ protected:
 	bool		mCalcAbsBounds;		// Whether absolute bounds will be auto-calculated ('true' in most cases)
 	bool		mIncChildBounds;	// Whether to include children when re-calculating the bounds ('true' in most cases)
 
+	byte		mLayer;				// Draw layer on which this object resides
 	bool		mIsDirty;			// Whether the object's absolute coordinates should be recalculated
 	bool		mHasMoved;			// Whether the object has moved since last update
 	bool		mSerializable;		// Whether the object will be serialized out
