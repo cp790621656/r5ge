@@ -140,7 +140,7 @@ bool Core::Update()
 	if (mWin != 0)
 	{
 		// Window update function can return 'false' if the window has been closed
-		if (!mWin->Update()) return false;
+		if (!mWin->IsValid() || !mWin->Update()) return false;
 		bool minimized = mWin->IsMinimized();
 
 		// Handle mouse movement
@@ -561,6 +561,8 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 {
 	ASSERT_IF_SELF_IS_UNLOCKED;
 	IncrementThreadCount();
+
+	bool retVal = true;
 	bool serializable = true;
 
 	for (uint i = 0; i < root.mChildren.GetSize(); ++i)
@@ -573,19 +575,28 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 		{
 			// SerializeFrom only returns 'false' if something important failed
 			if ( !SerializeFrom(node, forceUpdate, createThreads) )
-				return false;
+			{
+				retVal = false;
+				break;
+			}
 		}
 		else if (tag == IWindow::ClassID())
 		{
 			// If window creation fails, let the calling function know
 			if (mWin != 0 && !mWin->SerializeFrom(node))
-				return false;
+			{
+				retVal = false;
+				break;
+			}
 		}
 		else if (tag == IGraphics::ClassID())
 		{
 			// If graphics init fails, let the calling function know
 			if (mGraphics != 0 && !mGraphics->SerializeFrom(node, forceUpdate))
-				return false;
+			{
+				retVal = false;
+				break;
+			}
 		}
 		else if (tag == IUI::ClassID())
 		{
@@ -664,7 +675,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 	// Something may have changed, update the scene
 	mIsDirty = true;
 	DecrementThreadCount();
-	return true;
+	return retVal;
 }
 
 //============================================================================================================

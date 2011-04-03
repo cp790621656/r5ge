@@ -1171,14 +1171,21 @@ bool GLController::_BindTexture (uint glType, uint glID)
 	// If the texture ID is changing...
 	if (tu.mId != glID)
 	{
+		uint oldType = (tu.mType == GL_TEXTURE_2D_MULTISAMPLE) ? GL_TEXTURE_2D : tu.mType;
+		uint newType = (glType == GL_TEXTURE_2D_MULTISAMPLE) ? GL_TEXTURE_2D : glType;
+
 		// If the type is changing, the old type needs to be disabled first (going from CUBE to 2D for example)
-		if (tu.mType != glID && tu.mType != 0)
+		if (oldType != 0 && oldType != newType)
 		{
 			// Unbind the texture
 			_ActivateTextureUnit();
+
 			glBindTexture(tu.mType, 0);
-			glDisable(tu.mType);
 			CHECK_GL_ERROR;
+
+			glDisable(oldType);
+			CHECK_GL_ERROR;
+
 			tu.mType = 0;
 			tu.mId = 0;
 		}
@@ -1189,12 +1196,16 @@ bool GLController::_BindTexture (uint glType, uint glID)
 			_ActivateTextureUnit();
 
 			// Enable the new type if it has changed
-			if (tu.mType != glType) glEnable(tu.mType = glType);
+			if (oldType != newType)
+			{
+				glEnable(newType);
+				CHECK_GL_ERROR;
+			}
 
 			// Bind the new texture
-			glBindTexture(glType, tu.mId = glID);
-
+			glBindTexture(tu.mType = glType, tu.mId = glID);
 			CHECK_GL_ERROR;
+
 			++mStats.mTexSwitches;
 		}
 		else if (mNextTU < 8)

@@ -74,6 +74,7 @@ GLFBO::GLFBO(IGraphics* graphics) :
 	mDepthTex	(0),
 	mStencilTex	(0),
 	mDummyTex	(0),
+	mMSAA		(0),
 	mUsesSkybox	(true),
 	mIsDirty	(true)
 {
@@ -338,11 +339,13 @@ void GLFBO::Activate() const
 		if (!HasColor() && (mDepthTex != 0) && !mGraphics->GetDeviceInfo().mDepthAttachments)
 		{
 			if (mDummyTex == 0) ((GLFBO*)this)->mDummyTex = mGraphics->CreateRenderTexture();
-			((GLFBO*)this)->AttachColorTexture(0, mDummyTex,
-				mGraphics->GetDeviceInfo().mAlphaAttachments ?
+			((GLFBO*)this)->AttachColorTexture(0, mDummyTex, g_caps.mAlphaAttachments ?
 				ITexture::Format::Alpha : ITexture::Format::RGBA);
 		}
-		
+
+		// Attachments are always either 2D textures or multi-sampled 2D textures
+		uint type = (mMSAA && g_caps.mMSAA) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
 		mLock.Lock();
 		{
 			mIsDirty = false;
@@ -382,18 +385,17 @@ void GLFBO::Activate() const
 						// Set the size of the texture to match the render target's size
 						tex->SetFiltering(ITexture::Filter::Linear);
 						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
-						tex->Set(0, mSize.x, mSize.y, 1, format, format);
+						tex->Reserve(mSize.x, mSize.y, 1, format, mMSAA);
 					}
 
 					// Bind the texture as a render target's color attachment
 					mBuffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
-					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i,
-						GL_TEXTURE_2D, tex->Activate(), 0);
+					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, type, tex->Activate(), 0);
 					CHECK_GL_ERROR;
 				}
 				else
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, 0, 0);
+					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, type, 0, 0);
 				}
 			}
 
@@ -417,7 +419,7 @@ void GLFBO::Activate() const
 			// Attach the depth buffer
 			if (depthFormat == ITexture::Format::Invalid)
 			{
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, type, 0, 0);
 			}
 			else
 			{
@@ -430,19 +432,17 @@ void GLFBO::Activate() const
 					clearMask |= GL_DEPTH_BUFFER_BIT;
 					mDepthTex->SetFiltering(ITexture::Filter::Linear);
 					mDepthTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
-					mDepthTex->Set(0, mSize.x, mSize.y, 1, depthFormat, depthFormat);
+					mDepthTex->Reserve(mSize.x, mSize.y, 1, depthFormat, mMSAA);
 				}
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
-					mDepthTex->Activate(), 0);
-
+				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, type, mDepthTex->Activate(), 0);
 				CHECK_GL_ERROR;
 			}
 
 			// Attach the stencil buffer
 			if (stencilFormat == ITexture::Format::Invalid)
 			{
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, type, 0, 0);
 			}
 			else
 			{
@@ -455,12 +455,10 @@ void GLFBO::Activate() const
 					clearMask |= GL_STENCIL_BUFFER_BIT;
 					mStencilTex->SetFiltering(ITexture::Filter::Linear);
 					mStencilTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
-					mStencilTex->Set(0, mSize.x, mSize.y, 1, stencilFormat, stencilFormat);
+					mStencilTex->Reserve(mSize.x, mSize.y, 1, stencilFormat, mMSAA);
 				}
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D,
-					mStencilTex->Activate(), 0);
-
+				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, type, mStencilTex->Activate(), 0);
 				CHECK_GL_ERROR;
 			}
 
@@ -553,8 +551,6 @@ void GLFBO::Deactivate() const
 {
 	if (g_activeBuffer != 0)
 	{
-		//glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,  GL_TEXTURE_2D, 0, 0);
-		//glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, 0, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, g_activeBuffer = 0);
 	}
 }

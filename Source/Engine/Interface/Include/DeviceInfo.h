@@ -34,6 +34,7 @@ struct DeviceInfo
 	bool	mOcclusion;					// Support for occlusion queries
 	bool	mShaders;					// Support for GLSL shaders
 	bool	mGeometryShaders;			// Support for geometry shaders (GeForce 8+)
+	bool	mMSAA;						// Support for render target multi-sampling
 	uint	mMaxTextureUnits_FFP;		// Maximum number of texture units that can be used with the fixed-function pipeline
 	uint	mMaxTextureUnits_Shader;	// Maximum number of texture units that can be used in shaders
 	uint	mMaxTextureCoords;			// Maximum number of texture coordinate arrays
@@ -62,6 +63,7 @@ struct DeviceInfo
 		mOcclusion				(false),
 		mShaders				(false),
 		mGeometryShaders		(false),
+		mMSAA					(false),
 		mMaxTextureUnits_FFP	(0),
 		mMaxTextureUnits_Shader	(0),
 		mMaxTextureCoords		(0),

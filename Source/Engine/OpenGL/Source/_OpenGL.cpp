@@ -260,6 +260,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mDepthStencil	= CheckExtension("GL_EXT_packed_depth_stencil");
 					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
+					g_caps.mMSAA			= false;//CheckExtension("GL_ARB_texture_multisample", false);
 
 					if (supported = g_caps.mBufferObjects)
 					{
@@ -285,7 +286,7 @@ bool InitOpenGL (float requiredVersion)
 								g_caps.mVersion = 2.0f;
 								g_caps.mGeometryShaders = CheckExtension("GL_ARB_geometry_shader4", false);
 
-								if (g_caps.mGeometryShaders)
+								if (g_caps.mGeometryShaders && g_caps.mMSAA)
 								{
 									g_caps.mVersion = 3.2f;
 								}
@@ -310,7 +311,7 @@ bool InitOpenGL (float requiredVersion)
 		}
 
 #ifndef _DEBUG
-		if (!supported || g_caps.mVersion < 2.0f || !full)
+		if (!supported || g_caps.mVersion < requiredVersion || !full)
 #endif
 		{
 			System::Log("[OPENGL]  Device driver information:");

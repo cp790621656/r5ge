@@ -48,7 +48,8 @@ struct ITexture
 			OneDimensional,
 			TwoDimensional,
 			ThreeDimensional,
-			EnvironmentCubeMap
+			EnvironmentCubeMap,
+			TwoDimensionalMSAA,
 		};
 	};
 
@@ -135,6 +136,9 @@ public: //======================================================================
 
 	// Activates the texture and returns its identifier
 	virtual uint Activate()=0;
+
+	// Reserve an internal texture of specified dimensions
+	virtual bool Reserve (uint width, uint height, uint depth = 1, uint format = ITexture::Format::RGBA, uint msaa = 0)=0;
 
 	// Load a single texture from the specified file
 	virtual bool Load( const String& file, uint textureFormat = Format::Optimal )=0;

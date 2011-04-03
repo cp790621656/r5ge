@@ -19,12 +19,15 @@ struct IRenderTarget
 	virtual const Vector2i& GetSize() const=0;
 	virtual bool SetSize (const Vector2i& size)=0;
 
+	virtual uint GetMSAA (uint level) const=0;
+	virtual void SetMSAA (uint level)=0;
+
 	virtual bool IsUsingSkybox() const=0;
 	virtual void UseSkybox (bool val)=0;
 
-	virtual bool AttachColorTexture		(uint bufferIndex, ITexture* tex, uint format = ITexture::Format::RGB)=0;
-	virtual bool AttachDepthTexture		(ITexture* tex)=0;
-	virtual bool AttachStencilTexture	(ITexture* tex)=0;
+	virtual bool AttachColorTexture	(uint bufferIndex, ITexture* tex, uint format = ITexture::Format::RGB)=0;
+	virtual bool AttachDepthTexture (ITexture* tex)=0;
+	virtual bool AttachStencilTexture (ITexture* tex)=0;
 
 	virtual const ITexture* GetColorTexture (uint bufferIndex) const=0;
 	virtual const ITexture* GetDepthTexture () const=0;

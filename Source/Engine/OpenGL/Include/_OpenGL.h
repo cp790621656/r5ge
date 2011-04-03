@@ -13,22 +13,6 @@
  #include "_OSX_OpenGL.h"
 #endif
 
-#ifndef GL_DEPTH24_STENCIL8
-#define GL_DEPTH24_STENCIL8 0x88F0
-#endif
-
-#ifndef GL_UNSIGNED_INT_24_8
-#define GL_UNSIGNED_INT_24_8 0x84FA
-#endif
-
-#ifndef GL_DEPTH_STENCIL
-#define GL_DEPTH_STENCIL 0x84F9
-#endif
-
-#ifndef GL_GEOMETRY_SHADER
-#define GL_GEOMETRY_SHADER 0x8DD9
-#endif
-
 //==========================================================================================================
 // Library-wide global variable
 //==========================================================================================================

@@ -78,6 +78,7 @@ void OSDrawForward::OnDraw()
 			if (mDepthTarget == 0)
 			{
 				mDepthTarget = mGraphics->CreateRenderTarget();
+				if (mDepthTarget == 0) return;
 
 				if (depthWrite)
 				{

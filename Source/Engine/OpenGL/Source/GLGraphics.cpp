@@ -216,17 +216,18 @@ Vector2i GLGraphics::ConvertTo2D (const Vector3f& v)
 // Initializes the graphics manager
 //============================================================================================================
 
-bool GLGraphics::Init()
+bool GLGraphics::Init (float version)
 {
-	if ( mThread == 0 && InitOpenGL(2.0f) )
+	if (mThread == 0)
 	{
 		mThread = Thread::GetID();
+		if (!InitOpenGL(version)) return false;
 
 		// Set the default states
 		SetDepthWrite	(true);
 		SetDepthTest	(true);
 		SetAlphaTest	(true);
-		SetAlphaCutoff			(0.003921568627451f);
+		SetAlphaCutoff	(0.003921568627451f);
 		SetBlending		(true);
 		SetBlending		(Blending::Replace);
 		SetCulling		(Culling::Back);

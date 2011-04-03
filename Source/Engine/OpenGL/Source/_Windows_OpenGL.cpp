@@ -77,7 +77,7 @@ PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteri	= 0;
 PFNGLGETINFOLOGARBPROC				glGetInfoLog			= 0;
 
 //============================================================================================================
-// GLShader interaction
+// Shader interaction
 //============================================================================================================
 
 PFNGLGETUNIFORMLOCATIONARBPROC			glGetUniformLocation		= 0;
@@ -102,6 +102,13 @@ PFNGLGETATTRIBLOCATIONARBPROC			glGetAttribLocation			= 0;
 PFNGLBINDATTRIBLOCATIONARBPROC			glBindAttribLocation		= 0;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC		glEnableVertexAttribArray	= 0;
 PFNGLDISABLEVERTEXATTRIBARRAYARBPROC	glDisableVertexAttribArray	= 0;
+PFNGLBINDFRAGDATALOCATIONPROC			glBindFragDataLocation		= 0;
+
+//============================================================================================================
+// MSAA extensions
+//============================================================================================================
+
+PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample = 0;
 
 //============================================================================================================
 // Windows-specific
@@ -189,6 +196,7 @@ bool _BindFunctionPointers()
 	glBindAttribLocation		= (PFNGLBINDATTRIBLOCATIONARBPROC)		glGetFunction(essential, "glBindAttribLocationARB");
 	glEnableVertexAttribArray	= (PFNGLENABLEVERTEXATTRIBARRAYARBPROC)	glGetFunction(essential, "glEnableVertexAttribArrayARB");
 	glDisableVertexAttribArray	= (PFNGLDISABLEVERTEXATTRIBARRAYARBPROC)glGetFunction(essential, "glDisableVertexAttribArrayARB");
+	glBindFragDataLocation		= (PFNGLBINDFRAGDATALOCATIONPROC)		glGetFunction(essential, "glBindFragDataLocation");
 
 	glGetUniformLocation		= (PFNGLGETUNIFORMLOCATIONARBPROC)		glGetFunction(essential, "glGetUniformLocationARB");
 	glUniform1f					= (PFNGLUNIFORM1FARBPROC)				glGetFunction(essential, "glUniform1fARB");
@@ -206,6 +214,8 @@ bool _BindFunctionPointers()
 	glUniform1iv				= (PFNGLUNIFORM1IVARBPROC)				glGetFunction(essential, "glUniform1ivARB");
 	glUniformMatrix3fv			= (PFNGLUNIFORMMATRIX3FVARBPROC)		glGetFunction(essential, "glUniformMatrix3fvARB");
 	glUniformMatrix4fv			= (PFNGLUNIFORMMATRIX4FVARBPROC)		glGetFunction(essential, "glUniformMatrix4fvARB");
+
+	glTexImage2DMultisample		= (PFNGLTEXIMAGE2DMULTISAMPLEPROC)		glGetFunction(secondary, "glTexImage2DMultisample");
 
 	glSwapInterval				= (PFNWGLSWAPINTERVALEXTPROC)			glGetFunction(secondary, "wglSwapIntervalEXT");
 

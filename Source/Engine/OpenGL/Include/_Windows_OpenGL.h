@@ -115,7 +115,7 @@ extern PFNGLGETOBJECTPARAMETERIVARBPROC		glGetObjectParameteri;
 extern PFNGLGETINFOLOGARBPROC				glGetInfoLog;
 
 //============================================================================================================
-// GLShader interaction
+// Shader interaction
 //============================================================================================================
 
 extern PFNGLGETUNIFORMLOCATIONARBPROC		glGetUniformLocation;
@@ -140,6 +140,13 @@ extern PFNGLGETATTRIBLOCATIONARBPROC		glGetAttribLocation;
 extern PFNGLBINDATTRIBLOCATIONARBPROC		glBindAttribLocation;
 extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC	glEnableVertexAttribArray;
 extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC	glDisableVertexAttribArray;
+extern PFNGLBINDFRAGDATALOCATIONPROC		glBindFragDataLocation;
+
+//============================================================================================================
+// MSAA extensions
+//============================================================================================================
+
+extern PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample;
 
 //============================================================================================================
 // Windows-specific

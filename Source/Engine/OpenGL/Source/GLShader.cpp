@@ -134,6 +134,26 @@ void GLShader::SetUniform_FogRange (const String& name, Uniform& uniform)
 	uniform = range;
 }
 
+
+//============================================================================================================
+// Shader callback function for R5_fogColor
+//============================================================================================================
+
+void GLShader::SetUniform_FogColor (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetBackgroundColor();
+}
+
+
+//============================================================================================================
+// Shader callback for R5_modelViewProjMatrix
+//============================================================================================================
+
+void GLShader::SetUniform_MVP (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetModelViewProjMatrix();
+}
+
 //============================================================================================================
 // Shader callback for R5_projectionMatrix
 //============================================================================================================
@@ -279,6 +299,8 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	_InsertUniform( "R5_pixelSize",					bind(&GLShader::SetUniform_PixelSize,	this) );
 	_InsertUniform( "R5_clipRange",					bind(&GLShader::SetUniform_ClipRange,	this) );
 	_InsertUniform( "R5_fogRange",					bind(&GLShader::SetUniform_FogRange,	this) );
+	_InsertUniform( "R5_fogColor",					bind(&GLShader::SetUniform_FogColor,	this) );
+	_InsertUniform( "R5_modelViewProjMatrix",		bind(&GLShader::SetUniform_MVP,			this) );
 	_InsertUniform( "R5_projectionMatrix",			bind(&GLShader::SetUniform_PM,			this) );
 	_InsertUniform( "R5_inverseViewMatrix",			bind(&GLShader::SetUniform_IVM,			this) );
 	_InsertUniform( "R5_inverseProjMatrix",			bind(&GLShader::SetUniform_IPM,			this) );
@@ -486,6 +508,8 @@ bool GLShader::_Link()
 	glBindAttribLocation(mProgram, IGraphics::Attribute::TexCoord5,		"R5_texCoord5");
 	glBindAttribLocation(mProgram, IGraphics::Attribute::TexCoord6,		"R5_texCoord6");
 	glBindAttribLocation(mProgram, IGraphics::Attribute::TexCoord7,		"R5_texCoord7");
+
+	glBindFragDataLocation(mProgram, 0, "FinalColor");
 	CHECK_GL_ERROR;
 
 	// Link the program

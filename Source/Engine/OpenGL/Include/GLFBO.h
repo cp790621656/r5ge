@@ -15,6 +15,7 @@ class GLFBO : public IRenderTarget
 	{
 		ITexture*	mTex;
 		uint		mFormat;
+		bool		mAntiAlias;
 
 		TextureEntry() : mTex(0), mFormat(ITexture::Format::Invalid) {}
 	};
@@ -31,6 +32,7 @@ protected:
 	ITexture*			mDummyTex;
 	Array<TextureEntry> mAttachments;
 	mutable Array<uint>	mBuffers;
+	uint				mMSAA;
 	Color4f				mBackground;
 	bool				mUsesSkybox;
 	mutable bool		mIsDirty;
@@ -57,6 +59,9 @@ public:
 
 	virtual const Vector2i& GetSize() const					{ return mSize; }
 	virtual bool  SetSize (const Vector2i& size);
+
+	virtual uint GetMSAA (uint level) const					{ return mMSAA; }
+	virtual void SetMSAA (uint level)						{ mMSAA = level; }
 	
 	virtual const Color4f& GetBackgroundColor() const		{ return mBackground; }
 	virtual void  SetBackgroundColor (const Color4f& color)	{ mBackground = color; }
@@ -64,9 +69,9 @@ public:
 	virtual bool  IsUsingSkybox() const						{ return mUsesSkybox; }
 	virtual void  UseSkybox (bool val)						{ mUsesSkybox = val; }
 
-	virtual bool AttachColorTexture		(uint bufferIndex, ITexture* tex, uint format = ITexture::Format::RGB);
-	virtual bool AttachDepthTexture		(ITexture* tex);
-	virtual bool AttachStencilTexture	(ITexture* tex);
+	virtual bool AttachColorTexture (uint bufferIndex, ITexture* tex, uint format = ITexture::Format::RGB);
+	virtual bool AttachDepthTexture	(ITexture* tex);
+	virtual bool AttachStencilTexture (ITexture* tex);
 
 	virtual const ITexture* GetColorTexture (uint bufferIndex) const { return (bufferIndex < mAttachments.GetSize()) ? mAttachments[bufferIndex].mTex : 0; }
 	virtual const ITexture* GetDepthTexture () const { return mDepthTex; }
