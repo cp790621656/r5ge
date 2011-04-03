@@ -523,7 +523,7 @@ void GLTexture::_Create()
 
 	if (mType == ITexture::Type::TwoDimensionalMSAA)
 	{
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, outFormat, mSize.x, mSize.y, 0);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, outFormat, mSize.x, mSize.y, 0);
 		CHECK_GL_ERROR;
 		mSizeInMemory = bpp * mSize.x * mSize.y * 4;
 	}
