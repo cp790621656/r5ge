@@ -1,5 +1,5 @@
 //============================================================================================================
-//           R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko / Philip Cosgrave. All rights reserved.
+//           R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko / Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Dev11: Sound

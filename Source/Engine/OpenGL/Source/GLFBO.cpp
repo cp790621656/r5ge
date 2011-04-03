@@ -78,7 +78,6 @@ GLFBO::GLFBO(IGraphics* graphics) :
 	mUsesSkybox	(true),
 	mIsDirty	(true)
 {
-	mBackground.Set(0, 0, 0, 1);
 	ASSERT( g_caps.mMaxFBOAttachments != 0, "Frame Buffer Objects are not supported?" );
 	mAttachments.ExpandTo(g_caps.mMaxFBOAttachments);
 }
@@ -350,53 +349,65 @@ void GLFBO::Activate() const
 		mLock.Lock();
 		{
 			mIsDirty = false;
-			mBuffers.Clear();
 
 			// Clear mask is passed to glClear()
 			uint clearMask = 0;
 
-			// Run through all attachments and bind their textures
+			mBuffers.Clear();
+
+			// Run through all attachments and prepare their textures
 			FOREACH(i, mAttachments)
 			{
-				ITexture* tex ( mAttachments[i].mTex );
+				const TextureEntry& ent = mAttachments[i];
 
-				if (tex != 0)
+				if (ent.mTex != 0)
 				{
-					uint format = mAttachments[i].mFormat;
+					mBuffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
+
+					uint format = ent.mFormat;
 
 					// Auto-adjust unsupported RGB30A2 textures to be RGBA
 					if (!g_caps.mMixedAttachments)
 					{
 						if (ITexture::Format::RGB30A2 == format &&
-							ITexture::Format::RGBA == tex->GetFormat())
+							ITexture::Format::RGBA == ent.mTex->GetFormat())
 						{
 							format = ITexture::Format::RGBA;
 						}
 					}
 
-					ASSERT(tex->GetFormat() == ITexture::Format::Invalid || tex->GetFormat() == format,
+					ASSERT(ent.mTex->GetFormat() == ITexture::Format::Invalid || ent.mTex->GetFormat() == format,
 						"Changing color attachment's format type... is this intentional?");
 
 					// If the target size has changed, the texture needs to be resized as well
-					if ( mSize != tex->GetSize() )
+					if (mSize != ent.mTex->GetSize())
 					{
 						// We will need to clear the render target to ensure that the new texture is clean
 						clearMask |= GL_COLOR_BUFFER_BIT;
 
+						if (useMSAA)
+						{
+							ent.mTex->SetFiltering(ITexture::Filter::Nearest);
+						}
+						else if (ent.mTex->GetFiltering() > ITexture::Filter::Linear)
+						{
+							ent.mTex->SetFiltering(ITexture::Filter::Linear);
+						}
+						ent.mTex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
+						
 						// Set the size of the texture to match the render target's size
-						tex->SetFiltering(useMSAA ? ITexture::Filter::Nearest : ITexture::Filter::Linear);
-						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
-						tex->Reserve(mSize.x, mSize.y, 1, format, mMSAA);
+						ent.mTex->Reserve(mSize.x, mSize.y, 1, format, mMSAA);
 					}
-
-					// Bind the texture as a render target's color attachment
-					mBuffers.Expand() = GL_COLOR_ATTACHMENT0_EXT + i;
-					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, type, tex->Activate(), 0);
-					CHECK_GL_ERROR;
 				}
-				else
+
+				// If either current or previous attachments were valid we need to update the FBO.
+				// Apparently only updating attachments that change generates a "no attachments" error.
+				if (ent.mTex || ent.mActive)
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, type, 0, 0);
+					ent.mActive = ent.mTex;
+					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, type,
+						ent.mTex ? ent.mTex->Activate() : 0, 0);
+					CHECK_GL_ERROR;
 				}
 			}
 
@@ -431,7 +442,8 @@ void GLFBO::Activate() const
 				if (mDepthTex->GetSize() != mSize || mDepthTex->GetFormat() != depthFormat)
 				{
 					clearMask |= GL_DEPTH_BUFFER_BIT;
-					mDepthTex->SetFiltering(useMSAA ? ITexture::Filter::Nearest : ITexture::Filter::Linear);
+
+					mDepthTex->SetFiltering(ITexture::Filter::Nearest);
 					mDepthTex->SetWrapMode(useMSAA ? ITexture::WrapMode::ClampToEdge : ITexture::WrapMode::ClampToOne);
 					mDepthTex->Reserve(mSize.x, mSize.y, 1, depthFormat, mMSAA);
 				}
@@ -454,7 +466,7 @@ void GLFBO::Activate() const
 				if (mStencilTex->GetSize() != mSize || mStencilTex->GetFormat() != stencilFormat)
 				{
 					clearMask |= GL_STENCIL_BUFFER_BIT;
-					mStencilTex->SetFiltering(useMSAA ? ITexture::Filter::Nearest : ITexture::Filter::Linear);
+					mStencilTex->SetFiltering(ITexture::Filter::Nearest);
 					mStencilTex->SetWrapMode(useMSAA ? ITexture::WrapMode::ClampToEdge : ITexture::WrapMode::ClampToOne);
 					mStencilTex->Reserve(mSize.x, mSize.y, 1, stencilFormat, mMSAA);
 				}
@@ -485,11 +497,10 @@ void GLFBO::Activate() const
 				// Not doing so causes some very odd artifacts -- took me a day to track this down.
 				if (clearMask != 0)
 				{
-					if ((clearMask & GL_COLOR_BUFFER_BIT) != 0)
-					{
-						glClearColor( mBackground.r, mBackground.g, mBackground.b, mBackground.a );
-					}
+					if ((clearMask & GL_COLOR_BUFFER_BIT) != 0) glClearColor(0, 0, 0, 0);
 					glClear(clearMask);
+					const Color4f& c = mGraphics->GetBackgroundColor();
+					glClearColor(c.r, c.g, c.b, c.a);
 					CHECK_GL_ERROR;
 				}
 #ifdef _DEBUG

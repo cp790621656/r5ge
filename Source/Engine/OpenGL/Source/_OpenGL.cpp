@@ -58,7 +58,7 @@ const char* glGetErrorString()
 	{
 		case 0:										return 0;
 		case GL_INVALID_ENUM:						return "An unacceptable value is specified for an enumerated argument";
-		case GL_INVALID_VALUE:						return "A numeric argument is out of range";
+		case GL_INVALID_VALUE:						return "Invalid value specified to the function";
 		case GL_INVALID_OPERATION:					return "The specified operation is not allowed in the current state";
 		case GL_STACK_OVERFLOW:						return "This command would cause a stack overflow";
 		case GL_STACK_UNDERFLOW:					return "This command would cause a stack underflow";
@@ -260,7 +260,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mDepthStencil	= CheckExtension("GL_EXT_packed_depth_stencil");
 					g_caps.mDXTCompression	= CheckExtension("GL_EXT_texture_compression_s3tc", false);
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
-					g_caps.mMSAA			= false;//CheckExtension("GL_ARB_texture_multisample", false);
+					g_caps.mMSAA			= CheckExtension("GL_ARB_texture_multisample", false);
 
 					if (supported = g_caps.mBufferObjects)
 					{

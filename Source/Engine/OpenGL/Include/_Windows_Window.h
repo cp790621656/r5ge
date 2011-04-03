@@ -15,10 +15,11 @@ private:
 
 	Thread::IDType	mGraphicsThread;	// ID of the thread in which the graphics system was instantiated in
 	void*			mHRC;				// Rendering context
+	uint			mMSAA;
 
 public:
 
-	GLWindow() : mGraphicsThread(0), mHRC(0) {}
+	GLWindow (uint msaa = 0) : mGraphicsThread(0), mHRC(0), mMSAA(msaa) {}
 
 protected:
 

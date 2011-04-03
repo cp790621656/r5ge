@@ -13,13 +13,13 @@ class GLFBO : public IRenderTarget
 {
 	struct TextureEntry
 	{
-		ITexture*	mTex;
-		uint		mFormat;
-		bool		mAntiAlias;
+		ITexture*			mTex;
+		mutable ITexture*	mActive;
+		uint				mFormat;
+		bool				mAntiAlias;
 
-		TextureEntry() : mTex(0), mFormat(ITexture::Format::Invalid) {}
+		TextureEntry() : mTex(0), mActive(0), mFormat(ITexture::Format::Invalid) {}
 	};
-
 protected:
 
 	friend class GLController;
@@ -33,10 +33,12 @@ protected:
 	Array<TextureEntry> mAttachments;
 	mutable Array<uint>	mBuffers;
 	uint				mMSAA;
-	Color4f				mBackground;
 	bool				mUsesSkybox;
 	mutable bool		mIsDirty;
 	Thread::Lockable	mLock;
+
+	// Keep track of active textures
+	mutable Array<ITexture*> mActiveTextures;
 
 private:
 
@@ -62,9 +64,6 @@ public:
 
 	virtual uint GetMSAA (uint level) const					{ return mMSAA; }
 	virtual void SetMSAA (uint level)						{ mMSAA = level; }
-	
-	virtual const Color4f& GetBackgroundColor() const		{ return mBackground; }
-	virtual void  SetBackgroundColor (const Color4f& color)	{ mBackground = color; }
 	
 	virtual bool  IsUsingSkybox() const						{ return mUsesSkybox; }
 	virtual void  UseSkybox (bool val)						{ mUsesSkybox = val; }

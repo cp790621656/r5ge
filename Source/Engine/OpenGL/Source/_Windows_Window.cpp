@@ -76,11 +76,13 @@ int ChoosePixelFormat (HDC hDC, const PIXELFORMATDESCRIPTOR* pfd, uint aaLevel)
 		{
 			// Create the OpenGL rendering context
 			HGLRC dummyRC = ::wglCreateContext(dummyDC);
+			CHECK_GL_ERROR;
 
 			if (dummyRC != 0)
 			{
 				// Make it current
 				::wglMakeCurrent(dummyDC, dummyRC);
+				CHECK_GL_ERROR;
 
 				// Find the OpenGL function used to choose a proper pixel format
 				if (wglChoosePixelFormat == 0)
@@ -109,11 +111,13 @@ int ChoosePixelFormat (HDC hDC, const PIXELFORMATDESCRIPTOR* pfd, uint aaLevel)
 
 					// Ask OpenGL to choose a more appropriate pixel format
 					wglChoosePixelFormat( dummyDC, iAttributes, fAttributes, 1, &pf, &count );
+					CHECK_GL_ERROR;
 				}
 
 				// Release the rendering context
 				::wglMakeCurrent(0, 0);
 				::wglDeleteContext(dummyRC);
+				CHECK_GL_ERROR;
 			}
 		}
 
@@ -146,7 +150,7 @@ bool GLWindow::_CreateContext()
 		pfd.cAccumBits		= 0;
 		pfd.cStencilBits	= 8;
 
-		int pf = ::ChoosePixelFormat(mHDC, &pfd, 1);
+		int pf = ::ChoosePixelFormat(mHDC, &pfd, mMSAA);
 		::SetPixelFormat(mHDC, pf, &pfd);
 
 		mGraphicsThread = Thread::GetID();
@@ -160,6 +164,7 @@ bool GLWindow::_CreateContext()
 			System::Log("          - Thread ID: %ld", mGraphicsThread);
 #endif
 			::wglMakeCurrent( mHDC, (HGLRC)mHRC );
+			CHECK_GL_ERROR;
 
 			if ( mGraphics->Init() )
 			{
@@ -197,6 +202,7 @@ void GLWindow::BeginFrame()
 	{
 		Lock();
 		::wglMakeCurrent( mHDC, (HGLRC)mHRC);
+		CHECK_GL_ERROR;
 	}
 }
 

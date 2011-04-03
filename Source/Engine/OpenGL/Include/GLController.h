@@ -129,7 +129,7 @@ public:
 	virtual bool				GetNormalize()			const	{ return mNormalize;	}
 	virtual uint				GetDepthOffset()		const	{ return mTrans.GetDepthOffset();	}
 	virtual uint				GetDefaultAF()			const	{ return mAf;			}
-	virtual const Vector2i&		GetViewport()			const	{ return mSize;			}
+	virtual const Vector2i&		GetViewport()			const	{ return mTarget == 0 ? mSize : mTarget->GetSize();	}
 	virtual const Rect&			GetScissorRect()		const	{ return mScissorRect;	}
 	virtual const Vector2f&		GetFogRange()			const	{ return mFogRange;		}
 	virtual const Color4f&		GetBackgroundColor()	const	{ return mBackground;	}
@@ -194,12 +194,15 @@ public:
 											  uint			elements,		// Number of data type elements, ie "3" for Vector3f
 											  uint			stride );		// Size of each vertex entry in bytes
 
+	// Activate all matrices and bind all textures, preparing to draw
+	virtual void Execute() { _ActivateMatrices(); _BindAllTextures(); }
+
 	// Draw bound vertices
 	virtual uint DrawVertices	( uint primitive, uint vertexCount );
 	virtual uint DrawIndices	( const IVBO* vbo, uint primitive, uint indexCount )		{ return _DrawIndices(vbo, 0, primitive, indexCount); }
 	virtual uint DrawIndices	( const ushort* indices, uint primitive, uint indexCount )	{ return _DrawIndices(0, indices, primitive, indexCount); }
 
-protected:
+public:
 
 	// Allow GLTexture class to access _BindTexture()
 	friend class GLTexture;

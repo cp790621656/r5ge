@@ -206,6 +206,14 @@ public:
 											  uint			elements,		// Number of data type elements, ie "3" for Vector3f
 											  uint			stride )=0;		// Size of each vertex entry in bytes
 
+	// Activate all matrices and bind all textures, preparing to draw
+	virtual void Execute()=0;
+
+	// Draw functions
+	virtual uint DrawVertices	( uint primitive, uint vertexCount )=0;
+	virtual uint DrawIndices	( const IVBO* vbo, uint primitive, uint indexCount )=0;
+	virtual uint DrawIndices	( const ushort* indices, uint primitive, uint indexCount )=0;
+
 public: // Convenience functions
 
 	inline void SetActiveMaterial			( int zero )					{ SetActiveMaterial((const IMaterial*)0); }
@@ -233,10 +241,4 @@ public: // Convenience functions
 	inline void SetActiveVertexAttribute	( uint attribute, const Array<Vector3f>& v )	{ SetActiveVertexAttribute(attribute, (const IVBO*)0, (const void*)v, DataType::Float,  3, sizeof(Vector3f)); }
 	inline void SetActiveVertexAttribute	( uint attribute, const Array<Vector4f>& v )	{ SetActiveVertexAttribute(attribute, (const IVBO*)0, (const void*)v, DataType::Float,  4, sizeof(Vector4f)); }
 	inline void SetActiveVertexAttribute	( uint attribute, const Array<Color4ub>& v )	{ SetActiveVertexAttribute(attribute, (const IVBO*)0, (const void*)v, DataType::Byte,   4, sizeof(Color4ub)); }
-
-public: // Draw functions
-
-	virtual uint DrawVertices	( uint primitive, uint vertexCount )=0;
-	virtual uint DrawIndices	( const IVBO* vbo, uint primitive, uint indexCount )=0;
-	virtual uint DrawIndices	( const ushort* indices, uint primitive, uint indexCount )=0;
 };

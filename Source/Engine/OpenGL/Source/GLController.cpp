@@ -141,6 +141,8 @@ inline uint GLController::_CountImageUnits()
 
 void GLController::Flush()
 {
+	_BindAllTextures();
+	_ActivateMatrices();
 	glFlush();
 }
 
@@ -536,6 +538,9 @@ void GLController::SetActiveRenderTarget (const IRenderTarget* tar)
 {
 	if (mTarget != tar)
 	{
+		// Ensure that all textures are bound prior to switching render targets
+		_BindAllTextures();
+
 		if (tar != 0)
 		{
 			// If the target has been specified, we'll be rendering to an off-screen buffer

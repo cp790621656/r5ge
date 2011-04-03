@@ -49,6 +49,7 @@ PFNGLUNMAPBUFFERPROC				glUnmapBuffer			= 0;
 
 PFNGLGENFRAMEBUFFERSEXTPROC			glGenFramebuffers		= 0;
 PFNGLBINDFRAMEBUFFEREXTPROC			glBindFramebuffer		= 0;
+//PFNGLFRAMEBUFFERTEXTUREEXTPROC	glFramebufferTexture	= 0;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC	glFramebufferTexture2D	= 0;
 PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC	glFramebufferRender		= 0;
 PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC	glCheckFramebufferStatus= 0;
@@ -168,6 +169,7 @@ bool _BindFunctionPointers()
 
 	glGenFramebuffers			= (PFNGLGENFRAMEBUFFERSEXTPROC)			glGetFunction(essential, "glGenFramebuffersEXT");
 	glBindFramebuffer			= (PFNGLBINDFRAMEBUFFEREXTPROC)			glGetFunction(essential, "glBindFramebufferEXT");
+	//glFramebufferTexture		= (PFNGLFRAMEBUFFERTEXTUREEXTPROC)		glGetFunction(essential, "glFramebufferTextureEXT");
 	glFramebufferTexture2D		= (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)	glGetFunction(essential, "glFramebufferTexture2DEXT");
 	glFramebufferRender			= (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) glGetFunction(essential, "glFramebufferRenderbufferEXT");
 	glCheckFramebufferStatus	= (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)	glGetFunction(essential, "glCheckFramebufferStatusEXT");

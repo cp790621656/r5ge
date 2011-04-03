@@ -1,284 +1,124 @@
 #include "../../../Engine/OpenGL/Include/_All.h"
+#include "../../../Engine/OpenGL/Include/_OpenGL.h"
 using namespace R5;
 
-//====================================================================================================
-// Box object
-//====================================================================================================
-
-struct Box 
-{
-	const ITexture*		mTex;
-	Vector3f			mPos;
-	Vector3f			mSize;
-	Array<Vector3f>		mVerts;
-	Array<Vector2f>		mTexcoords;
-	Array<Vector3f>		mNormals;
-
-	Box( const Vector3f pos, const Vector3f& size, const ITexture* tex) { Init( pos, size, tex ); };
-	
-	void SetSize( const Vector3f& size ) { Init( mPos, size, mTex ); }
-
-	void SetPos( const Vector3f& pos) { mPos = pos; }
-
-	void SetTexture( const ITexture* tex ) { mTex = tex; }
-
-	void AddFace(	const Vector3f& p1,
-					const Vector3f& p2,
-					const Vector3f& p3,
-					const Vector3f& p4,
-					const Vector3f& normal	)
-	{
-		mVerts.Expand() = p1;
-		mVerts.Expand() = p2;
-		mVerts.Expand() = p3;
-		mVerts.Expand() = p4;
-
-		mTexcoords.Expand().Set(	0,			0			);
-		mTexcoords.Expand().Set(	0,			mSize.y	);
-		mTexcoords.Expand().Set(	mSize.x,	mSize.y	);
-		mTexcoords.Expand().Set(	mSize.x,	0			);
-
-		for (ushort i = 0; i < 4; ++i)
-			mNormals.Expand() = normal;
-	}
-
-	void Init( const Vector3f& pos, const Vector3f& size, const ITexture* tex)
-	{
-		mPos = pos;
-		mSize = size;
-		mTex = tex;
-
-		// front
-		AddFace(	Vector3f(	0,			0,		mSize.z		),
-					Vector3f(	0,			0,		0			),
-					Vector3f(	mSize.x,	0,		0			),
-					Vector3f(	mSize.x,	0,		mSize.z		),
-					Vector3f(	0,			-1,		0			) );
-
-		// right
-		AddFace(	Vector3f(	mSize.x,	0,			mSize.z	),
-					Vector3f(	mSize.x,	0,			0		),
-					Vector3f(	mSize.x,	mSize.y,	0		),
-					Vector3f(	mSize.x,	mSize.y,	mSize.z	),
-					Vector3f(	1,			0,			0		) );
-
-		// back
-		AddFace(	Vector3f(	mSize.x,	mSize.y,	mSize.z	),
-					Vector3f(	mSize.x,	mSize.y,	0		),
-					Vector3f(	0,			mSize.y,	0		),
-					Vector3f(	0,			mSize.y,	mSize.z	),
-					Vector3f(	0,			1,			0		) );
-		// left
-		AddFace(	Vector3f(	0,			mSize.y,	mSize.z	),
-					Vector3f(	0,			mSize.y,	0		),
-					Vector3f(	0,			0,			0		),
-					Vector3f(	0,			0,			mSize.z	),
-					Vector3f(	-1,			0,			0		) );
-
-		// bottom
-		AddFace(	Vector3f(	mSize.x,	0,			0		),
-					Vector3f(	mSize.x,	mSize.y,	0		),
-					Vector3f(	0,			mSize.y,	0		),
-					Vector3f(	0,			0,			0		),
-					Vector3f(	0,			0,			-1		) );
-
-		// top
-		AddFace(	Vector3f(	0,			mSize.y,	mSize.z	),
-					Vector3f(	0,			0,			mSize.z	),
-					Vector3f(	mSize.x,	0,			mSize.z	),
-					Vector3f(	mSize.x,	mSize.y,	mSize.z	),
-					Vector3f(	0,			0,			1		) );
-	}
-
-	void Draw (IGraphics* graphics)
-	{
-		graphics->SetModelMatrix(mPos);
-		graphics->SetActiveTexture(0, mTex);
-		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,		mVerts );
-		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		mNormals );
-		graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	mTexcoords );
-		graphics->DrawVertices(IGraphicsManager::Primitive::Quad, mVerts.GetSize());		
-		graphics->ResetModelMatrix();
-	}
-};
-
-//====================================================================================================
+//============================================================================================================
+//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
+//											www.nextrevision.com
+//============================================================================================================
+// GL Rendering Test: Application that exposes raw OpenGL functionality to the developer.
+//============================================================================================================
 
 class TestApp : public IEventReceiver
 {
-    IWindow*	mWindow;
-	IGraphics*	mGraphics;
-	Vector2i	mMousePos;
+	IWindow* mWindow;
+	IGraphics* mGraphics;
+
+	ITexture* mColor;
+	IRenderTarget* mTarget;
 
 public:
 
-	TestApp() : mWindow(0), mGraphics(0)
-	{
-		mWindow		= new GLWindow();
-		mGraphics	= new GLGraphics();
+	TestApp();
+	~TestApp();
 
-		mWindow->SetGraphics(mGraphics);
-		mWindow->SetEventHandler( this );
-		mWindow->Create("R5: GL Renderer Test", 100, 100, 1024, 768);
-		mGraphics->SetDefaultAF(8);
-	}
+	// Forward resizing events to the graphics controller
+	virtual void OnResize (const Vector2i& size) { mGraphics->SetViewport(size); }
 
-	~TestApp()
-	{
-		if (mWindow)	mWindow->SetGraphics(0);
-		if (mGraphics)	delete mGraphics;
-		if (mWindow)	delete mWindow;
-	}
+	// If escape gets pressed, close the window
+	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { if (key == Key::Escape) mWindow->Close(); return false; }
 
-    void Run()
-    {
-		short width		= 5;
-		short height	= 5;
-		short offsetx	= 0;//-width / 2;
-		short offsety	= 0;//-height / 2;
-		short endx		= offsetx + width;
-		short endy		= offsety + height;
-
-		mGraphics->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f) );
-		mGraphics->SetCameraOrientation (	Vector3f(2.5f, 2.5f, 7),
-											Vector3f(0, 0, -1),
-											Vector3f(0, 1,  0) );
-
-		Array<Vector3f>	vertices;
-		Array<ushort>	indices;
-		Array<Vector3f>	normals;
-		Array<Vector2f>	texCoords;
-
-		for (short y = offsety; y <= endy; ++y)
-		{
-			for (short x = offsetx; x <= endx; ++x)
-			{
-				vertices.Expand().Set(x, y);
-				normals.Expand().Set(0, 0, 1);
-				texCoords.Expand().Set(x, y);			
-			}
-		}
-
-		short tempWidth = width + 1;
-		for (short y = 0; y < height; ++y)
-		{
-			for (short x = 0; x < width; ++x)
-			{
-				indices.Expand() = ((y + 1) * tempWidth + x);
-				indices.Expand() = (y * tempWidth + x);
-				indices.Expand() = (y * tempWidth + (x + 1));
-				indices.Expand() = ((y + 1) * tempWidth + (x + 1));
-			}
-		}
-
-		mGraphics->SetActiveColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
-
-		ILight light0;
-		light0.mType = ILight::Type::Point;
-		light0.mDiffuse.Set( 1, 0, 0 );
-		light0.mPos.Set(4, 4, 1);
-		light0.mAtten.Set(0, 0.1f, 0.003f);
-		light0.mDiffuse.Set(1.0f, 0.0f, 0.0f);
-
-		ILight light1;
-		light1.mType = ILight::Type::Directional;
-		light1.mDir.Set(3, 3, -1);
-		light1.mAmbient.Set( 0.2f, 0.2f, 0.2f);
-		light1.mDiffuse.Set( 1, 1, 1 );
-		light1.mSpecular.Set(1.0f, 1.0f, 1.0f);
-
-		ITexture* floorTex	= mGraphics->GetTexture("Textures/Stone/brick.jpg");
-		ITexture* hitTex	= mGraphics->GetTexture("Textures/Stone/lime.jpg");
-		ITexture* onTex		= mGraphics->GetTexture("Textures/Sand/wavy.jpg");
-
-		Box boxTest1(	Vector3f( 0, 1, 0 ),
-						Vector3f( 1, 3, 1 ),
-						onTex );
-
-		Box boxTest2(	Vector3f( 1, 2, 0 ),
-						Vector3f( 1, 1, 1 ),
-						onTex );
-
-		Box boxTest3(	Vector3f( 2, 1, 0 ),
-						Vector3f( 1, 3, 1 ),
-						onTex );
-
-		Box boxTest4(	Vector3f( 4, 1, 0 ),
-						Vector3f( 1, 3, 1 ),
-						hitTex );
-
-		while ( mWindow->Update() )
-		{
-			mWindow->BeginFrame();
-			mGraphics->BeginFrame();
-
-			mGraphics->SetActiveRenderTarget(0);
-			mGraphics->SetScreenProjection( false );
-			mGraphics->SetLighting(true);
-			mGraphics->SetActiveLight( 0, &light0 );
-			mGraphics->SetActiveLight( 1, &light1 );
-			mGraphics->Clear();
-
-			mGraphics->SetActiveTexture(0, floorTex);
-			mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,	vertices	);
-			mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		normals		);
-			mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0,	texCoords	);
-			mGraphics->DrawIndices(&indices[0], IGraphicsManager::Primitive::Quad,	indices.GetSize());
-
-			boxTest1.Draw( mGraphics );
-			boxTest2.Draw( mGraphics );
-			boxTest3.Draw( mGraphics );
-			boxTest4.Draw( mGraphics );
-
-			mGraphics->EndFrame();
-			mWindow->EndFrame();
-			Thread::Sleep(1);
-		}
-	}
-
-	virtual void OnResize(const Vector2i& size)
-	{
-		mGraphics->SetViewport( mWindow->GetSize() );
-	}
-
-    virtual bool OnKeyPress(const Vector2i& pos, byte key, bool isDown)
-    {
-		if (isDown)
-		{
-			if ( key == Key::MouseLeft )
-			{
-				Vector3f pos ( mGraphics->ConvertTo3D(mMousePos) );
-				Thread::MessageWindow("%f %f %f", pos.x, pos.y, pos.z);
-			}
-			else if ( key == Key::Escape )
-			{
-				mWindow->Close();
-			}
-			else if ( key == Key::F5 )
-			{
-				if ( mWindow->GetStyle() == IWindow::Style::FullScreen )
-				{
-					mWindow->SetSize( Vector2i(1024, 768) );
-					mWindow->SetStyle( IWindow::Style::Normal );
-				}
-				else
-				{
-					mWindow->SetSize( Vector2i(1680, 1050) );
-					mWindow->SetStyle( IWindow::Style::FullScreen );
-				}
-			}
-		}
-		return true;
-    }
-
-	virtual bool OnMouseMove(const Vector2i& pos, const Vector2i& delta)
-	{
-		mMousePos = pos;
-		return true;
-	}
+	void Run();
+	void DrawTriangle();
 };
 
-//====================================================================================================
+//============================================================================================================
+
+TestApp::TestApp()
+{
+	mWindow = new GLWindow();
+	mGraphics = new GLGraphics();
+
+	mWindow->SetGraphics(mGraphics);
+	mWindow->SetEventHandler(this);
+	mWindow->Create("GL Renderer Test", 100, 100);
+
+	// Create a texture to draw to, instead of the screen
+	mColor = mGraphics->CreateRenderTexture();
+	//mColor->SetFiltering(ITexture::Filter::Linear);
+
+	// Create a render target that will be used to draw to texture
+	mTarget = mGraphics->CreateRenderTarget();
+	mTarget->AttachColorTexture(0, mColor, ITexture::Format::RGBA);
+}
+
+//============================================================================================================
+
+TestApp::~TestApp()
+{
+	delete mGraphics;
+	delete mWindow;
+}
+
+//============================================================================================================
+// Main loop
+//============================================================================================================
+
+void TestApp::Run()
+{
+	while (mWindow->Update())
+	{
+		mWindow->BeginFrame();
+		mGraphics->BeginFrame();
+		{
+			mTarget->SetSize(mWindow->GetSize());
+			mGraphics->SetActiveRenderTarget(mTarget);
+			mGraphics->SetScreenProjection(true);
+			mGraphics->SetBackgroundColor(Color4f(0, 0, 0, 0));
+			mGraphics->Clear();
+
+			DrawTriangle();
+
+			mGraphics->SetActiveRenderTarget(0);
+			mGraphics->SetScreenProjection(true);
+			mGraphics->SetBackgroundColor(Color4f(0.25f, 0.25f, 0.25f, 1));
+			mGraphics->Clear();
+
+			mGraphics->SetActiveTexture(0, mColor);
+			mGraphics->Draw(IGraphics::Drawable::FullscreenQuad);
+			mGraphics->SetActiveTexture(0, 0);
+		}
+		mGraphics->EndFrame();
+		mWindow->EndFrame();
+		Thread::Sleep(1);
+	}
+}
+
+//============================================================================================================
+// Draw a triangle
+//============================================================================================================
+
+void TestApp::DrawTriangle()
+{
+	const Vector2i& size = mGraphics->GetViewport();
+
+	glBegin(GL_TRIANGLES);
+	{
+		glColor4ub(255, 0, 0, 255);
+		glVertex2f(size.x * 0.5f, size.y * 0.15f);
+
+		glColor4ub(0, 255, 0, 255);
+		glVertex2f(size.x * 0.15f, size.y * 0.5f);
+
+		glColor4ub(0, 0, 255, 255);
+		glVertex2f(size.x * 0.85f, size.y * 0.85f);
+	}
+	glEnd();
+
+	glColor4ub(255, 255, 255, 255);
+}
+
+//============================================================================================================
 
 R5_MAIN_FUNCTION
 {

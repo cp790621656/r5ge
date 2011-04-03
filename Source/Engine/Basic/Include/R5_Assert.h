@@ -9,16 +9,17 @@
 
 #ifdef _DEBUG
 
-	#define ASSERT( exp, description )											\
-	{																			\
-		static bool keepChecking = true;										\
-		if ( (((bool)(exp)) == false) && keepChecking )							\
-		{																		\
-			System::Log("[ASSERT]  %s", description);							\
-			System::Log("          - %s (Line: %u)", __FILE__, __LINE__);		\
-			System::FlushLog();													\
-			if ( R5::Thread::AssertWindow( description,	__LINE__, __FILE__, keepChecking) ) { __asm { int 3 } }	\
-		}																		\
+	#define ASSERT( exp, description ) \
+	{ \
+		static bool keepChecking = true; \
+		if ( (((bool)(exp)) == false) && keepChecking ) \
+		{ \
+			System::Log("[ASSERT]  %s", description); \
+			System::Log("          - Function: %s", __FUNCTION__); \
+			System::Log("          - Filename: %s (Line: %u)", __FILE__, __LINE__); \
+			System::FlushLog();	\
+			if ( R5::Thread::AssertWindow(description, __LINE__, __FILE__, keepChecking) ) { __asm { int 3 } }	\
+		} \
 	}
 	#define WARNING(text)	ASSERT(false, text)
 	#define DEBUG(text)		R5::Thread::MessageWindow(text);

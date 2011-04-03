@@ -1,5 +1,5 @@
 //============================================================================================================
-//           R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko / Philip Cosgrave. All rights reserved.
+//           R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko / Philip Cosgrave. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
 // Dev12: Multiple Scenes
@@ -96,6 +96,7 @@ void TestApp::Run()
 					// Secondary render target will always be 300x200
 					if (rt != 0)
 					{
+						//rt->SetMSAA(4);
 						rt->AttachColorTexture(0, color, ITexture::Format::RGBA);
 						rt->AttachDepthTexture(depth);
 						rt->SetSize( Vector2i(300, 200) );
