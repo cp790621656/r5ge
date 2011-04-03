@@ -56,18 +56,19 @@ static const char* g_combineDeferred = {
 "uniform vec4		R5_clipRange;\n"
 "uniform vec2		R5_fogRange;\n"		// X = 0-1 fog's start, Y = 0-1 fog's range.
 "uniform vec4		R5_fogColor;\n"
-"uniform vec2		R5_pixelSize;\n"
 
 "out vec4 FinalColor;\n"
 
 "void main()\n"
 "{\n"
-"	vec2 tc = gl_FragCoord.xy * R5_pixelSize;\n"
-"	float depth		= texture2D(R5_texture0, tc).r;\n"
-"	vec4 matDiff    = texture2D(R5_texture1, tc);\n"
-"	vec4 matMaps    = texture2D(R5_texture2, tc);\n"
-"	vec3 lightDiff  = texture2D(R5_texture3, tc).rgb;\n"
-"	vec3 lightSpec  = texture2D(R5_texture4, tc).rgb;\n"
+"	ivec2 tc = ivec2(int(gl_FragCoord.x), int(gl_FragCoord.y));\n"
+
+"	float depth		= texelFetch(R5_texture0, tc, 0).r;\n"
+"	vec4 matDiff    = texelFetch(R5_texture1, tc, 0);\n"
+"	vec4 matMaps    = texelFetch(R5_texture2, tc, 0);\n"
+"	vec3 lightDiff  = texelFetch(R5_texture3, tc, 0).rgb;\n"
+"	vec3 lightSpec  = texelFetch(R5_texture4, tc, 0).rgb;\n"
+
 "	vec3 specular	= lightSpec * matMaps.r;\n"
 "	vec3 color		= mix(lightDiff * matDiff.rgb, matDiff.rgb, matMaps.b) +\n"
 "					  mix(specular, specular * matDiff.rgb, matMaps.g);\n"
@@ -80,6 +81,6 @@ static const char* g_combineDeferred = {
 
 	// Fog contribution
 "	float fogFactor = clamp((depth - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
-"	fogFactor = 0.5 * (fogFactor + fogFactor * fogFactor);\n"
+"	fogFactor = (fogFactor * fogFactor + fogFactor) * 0.5;\n"
 "	FinalColor = vec4( mix(color, R5_fogColor.rgb, fogFactor), matDiff.a );\n"
 "}\n"};

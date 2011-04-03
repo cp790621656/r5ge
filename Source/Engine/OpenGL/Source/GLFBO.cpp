@@ -344,7 +344,8 @@ void GLFBO::Activate() const
 		}
 
 		// Attachments are always either 2D textures or multi-sampled 2D textures
-		uint type = (mMSAA && g_caps.mMSAA) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+		bool useMSAA = (mMSAA && g_caps.mMSAA);
+		uint type = (useMSAA) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 
 		mLock.Lock();
 		{
@@ -383,7 +384,7 @@ void GLFBO::Activate() const
 						clearMask |= GL_COLOR_BUFFER_BIT;
 
 						// Set the size of the texture to match the render target's size
-						tex->SetFiltering(ITexture::Filter::Linear);
+						tex->SetFiltering(useMSAA ? ITexture::Filter::Nearest : ITexture::Filter::Linear);
 						tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
 						tex->Reserve(mSize.x, mSize.y, 1, format, mMSAA);
 					}
@@ -430,8 +431,8 @@ void GLFBO::Activate() const
 				if (mDepthTex->GetSize() != mSize || mDepthTex->GetFormat() != depthFormat)
 				{
 					clearMask |= GL_DEPTH_BUFFER_BIT;
-					mDepthTex->SetFiltering(ITexture::Filter::Linear);
-					mDepthTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
+					mDepthTex->SetFiltering(useMSAA ? ITexture::Filter::Nearest : ITexture::Filter::Linear);
+					mDepthTex->SetWrapMode(useMSAA ? ITexture::WrapMode::ClampToEdge : ITexture::WrapMode::ClampToOne);
 					mDepthTex->Reserve(mSize.x, mSize.y, 1, depthFormat, mMSAA);
 				}
 
@@ -453,8 +454,8 @@ void GLFBO::Activate() const
 				if (mStencilTex->GetSize() != mSize || mStencilTex->GetFormat() != stencilFormat)
 				{
 					clearMask |= GL_STENCIL_BUFFER_BIT;
-					mStencilTex->SetFiltering(ITexture::Filter::Linear);
-					mStencilTex->SetWrapMode(ITexture::WrapMode::ClampToOne);
+					mStencilTex->SetFiltering(useMSAA ? ITexture::Filter::Nearest : ITexture::Filter::Linear);
+					mStencilTex->SetWrapMode(useMSAA ? ITexture::WrapMode::ClampToEdge : ITexture::WrapMode::ClampToOne);
 					mStencilTex->Reserve(mSize.x, mSize.y, 1, stencilFormat, mMSAA);
 				}
 
