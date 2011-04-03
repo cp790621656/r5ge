@@ -49,6 +49,7 @@ TestApp::TestApp()
 
 	// Create a render target that will be used to draw to texture
 	mTarget = mGraphics->CreateRenderTarget();
+	mTarget->SetMSAA(4);
 	mTarget->AttachColorTexture(0, mColor, ITexture::Format::RGBA);
 }
 
@@ -66,6 +67,8 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
+	IShader* shader = mGraphics->GetShader("Other/TestAA");
+
 	while (mWindow->Update())
 	{
 		mWindow->BeginFrame();
@@ -85,8 +88,9 @@ void TestApp::Run()
 			mGraphics->Clear();
 
 			mGraphics->SetActiveTexture(0, mColor);
+			mGraphics->SetActiveShader(shader);
 			mGraphics->Draw(IGraphics::Drawable::FullscreenQuad);
-			mGraphics->SetActiveTexture(0, 0);
+			mGraphics->SetActiveMaterial(0);
 		}
 		mGraphics->EndFrame();
 		mWindow->EndFrame();

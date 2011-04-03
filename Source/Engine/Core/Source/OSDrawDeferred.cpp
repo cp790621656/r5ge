@@ -77,7 +77,7 @@ void OSDrawDeferred::MaterialStage()
 		mMatParams		= mScene.GetRenderTexture(3);
 
 		// Set up the material render target
-		mMaterialTarget->SetMSAA(4);
+		//mMaterialTarget->SetMSAA(4);
 		mMaterialTarget->AttachDepthTexture(mDepth);
 		mMaterialTarget->AttachStencilTexture(mDepth);
 		mMaterialTarget->AttachColorTexture(0, mMatDiff, HDRFormat);
@@ -144,7 +144,7 @@ void OSDrawDeferred::LightStage()
 		// Additive blending doesn't write to the alpha channel
 		uint format	= mMatDiff->GetFormat() & (~ITexture::Format::Alpha);
 
-		mLightTarget->SetMSAA(4);
+		//mLightTarget->SetMSAA(4);
 		mLightTarget->AttachDepthTexture(mDepth);
 		mLightTarget->AttachStencilTexture(mDepth);
 		mLightTarget->AttachColorTexture(0, mLightDiff, format);
@@ -284,7 +284,7 @@ void OSDrawDeferred::CombineStage()
 		mFinalTarget = mScene.GetRenderTarget(2);
 		mFinal		 = mScene.GetRenderTexture(6);
 
-		mFinalTarget->SetMSAA(4);
+		//mFinalTarget->SetMSAA(4);
 		mFinalTarget->AttachDepthTexture(mDepth);
 		mFinalTarget->AttachStencilTexture(mDepth);
 		mFinalTarget->AttachColorTexture(0, mFinal, mMatDiff->GetFormat());

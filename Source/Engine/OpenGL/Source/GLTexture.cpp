@@ -521,14 +521,13 @@ void GLTexture::_Create()
 	int outFormat = _GetGLFormat(mFormat);
 	mSizeInMemory = 0;
 
-	// Anti-aliased textures need an extra call
 	if (mType == ITexture::Type::TwoDimensionalMSAA)
 	{
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, outFormat, mSize.x, mSize.y, 0);
 		CHECK_GL_ERROR;
+		mSizeInMemory = bpp * mSize.x * mSize.y * 4;
 	}
-
-	if (baseType == GL_TEXTURE_2D)
+	else if (baseType == GL_TEXTURE_2D)
 	{
 		if (mFormat == Format::DXTN)
 		{
