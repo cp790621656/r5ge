@@ -15,7 +15,7 @@ uint g_activeBuffer = 0;
 const char* CheckFBO()
 {
 	// Check the frame buffer's status
-	uint result = glCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
+	uint result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
 	if (result != GL_FRAMEBUFFER_COMPLETE_EXT)
 	{
@@ -59,7 +59,7 @@ void DeleteFBO (IGraphicsManager* graphics, void* ptr)
 
 	if (g_activeBuffer == fbo)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER_EXT, g_activeBuffer = 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, g_activeBuffer = 0);
 	}
 	glDeleteFramebuffers(1, &fbo);
 }
@@ -304,7 +304,7 @@ void GLFBO::Activate() const
 	// If this isn't the currently active buffer, bind it
 	if (g_activeBuffer != mFbo)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER_EXT, g_activeBuffer = mFbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, g_activeBuffer = mFbo);
 		CHECK_GL_ERROR;
 	}
 
@@ -405,7 +405,7 @@ void GLFBO::Activate() const
 				if (ent.mTex || ent.mActive)
 				{
 					ent.mActive = ent.mTex;
-					glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, type,
+					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_EXT + i, type,
 						ent.mTex ? ent.mTex->Activate() : 0, 0);
 					CHECK_GL_ERROR;
 				}
@@ -431,7 +431,7 @@ void GLFBO::Activate() const
 			// Attach the depth buffer
 			if (depthFormat == ITexture::Format::Invalid)
 			{
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, type, 0, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT_EXT, type, 0, 0);
 			}
 			else
 			{
@@ -448,14 +448,14 @@ void GLFBO::Activate() const
 					mDepthTex->Reserve(mSize.x, mSize.y, 1, depthFormat, mMSAA);
 				}
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, type, mDepthTex->Activate(), 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT_EXT, type, mDepthTex->Activate(), 0);
 				CHECK_GL_ERROR;
 			}
 
 			// Attach the stencil buffer
 			if (stencilFormat == ITexture::Format::Invalid)
 			{
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, type, 0, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT_EXT, type, 0, 0);
 			}
 			else
 			{
@@ -471,7 +471,7 @@ void GLFBO::Activate() const
 					mStencilTex->Reserve(mSize.x, mSize.y, 1, stencilFormat, mMSAA);
 				}
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, type, mStencilTex->Activate(), 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT_EXT, type, mStencilTex->Activate(), 0);
 				CHECK_GL_ERROR;
 			}
 
@@ -563,6 +563,44 @@ void GLFBO::Deactivate() const
 {
 	if (g_activeBuffer != 0)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER_EXT, g_activeBuffer = 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, g_activeBuffer = 0);
 	}
+}
+
+//============================================================================================================
+// Copy the render target's content into the destination buffer
+//============================================================================================================
+
+bool GLFBO::CopyTo (const IRenderTarget* destination, bool color, bool depth, bool stencil) const
+{
+	if (destination != 0)
+	{
+		GLFBO* dest = (GLFBO*)destination;
+
+		if (dest->mIsDirty) destination->Activate();
+
+		if (mFbo != 0 && dest->mFbo != 0)
+		{
+			const Vector2i& ds = destination->GetSize();
+
+			uint mask = 0;
+
+			if (color && HasColor())		mask |= GL_COLOR_BUFFER_BIT;
+			if (depth && HasDepth())		mask |= GL_DEPTH_BUFFER_BIT;
+			if (stencil && HasStencil())	mask |= GL_STENCIL_BUFFER_BIT;
+
+			if (mask)
+			{
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, mFbo);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest->mFbo);
+				glBlitFramebuffer(0, 0, mSize.x, mSize.y, 0, 0, ds.x, ds.y, mask, GL_NEAREST);
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				g_activeBuffer = 0;
+				CHECK_GL_ERROR;
+				return true;
+			}
+		}
+	}
+	return false;
 }

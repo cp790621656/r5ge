@@ -14,8 +14,13 @@ class TestApp : public IEventReceiver
 	IWindow* mWindow;
 	IGraphics* mGraphics;
 
-	ITexture* mColor;
-	IRenderTarget* mTarget;
+	ITexture* mMSAAColor;
+	IRenderTarget* mMSAATarget;
+
+	ITexture* mNormalColor;
+	IRenderTarget* mNormalTarget;
+
+	bool mBlit;
 
 public:
 
@@ -26,7 +31,15 @@ public:
 	virtual void OnResize (const Vector2i& size) { mGraphics->SetViewport(size); }
 
 	// If escape gets pressed, close the window
-	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown) { if (key == Key::Escape) mWindow->Close(); return false; }
+	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown)
+	{
+		if (!isDown)
+		{
+			if (key == Key::Escape) mWindow->Close();
+			else if (key == Key::B) mBlit = !mBlit;
+		}
+		return false;
+	}
 
 	void Run();
 	void DrawTriangle();
@@ -36,6 +49,8 @@ public:
 
 TestApp::TestApp()
 {
+	mBlit = true;
+
 	mWindow = new GLWindow();
 	mGraphics = new GLGraphics();
 
@@ -43,14 +58,16 @@ TestApp::TestApp()
 	mWindow->SetEventHandler(this);
 	mWindow->Create("GL Renderer Test", 100, 100);
 
-	// Create a texture to draw to, instead of the screen
-	mColor = mGraphics->CreateRenderTexture();
-	//mColor->SetFiltering(ITexture::Filter::Linear);
-
 	// Create a render target that will be used to draw to texture
-	mTarget = mGraphics->CreateRenderTarget();
-	mTarget->SetMSAA(8);
-	mTarget->AttachColorTexture(0, mColor, ITexture::Format::RGBA);
+	mMSAAColor = mGraphics->CreateRenderTexture();
+	mMSAATarget = mGraphics->CreateRenderTarget();
+	mMSAATarget->SetMSAA(8);
+	mMSAATarget->AttachColorTexture(0, mMSAAColor, ITexture::Format::RGBA);
+
+	// Create the final render target that will contain the blitted result of anti-aliased rendering
+	mNormalColor = mGraphics->CreateRenderTexture();
+	mNormalTarget = mGraphics->CreateRenderTarget();
+	mNormalTarget->AttachColorTexture(0, mNormalColor, ITexture::Format::RGBA);
 }
 
 //============================================================================================================
@@ -85,21 +102,43 @@ void TestApp::Run()
 		mWindow->BeginFrame();
 		mGraphics->BeginFrame();
 		{
-			mTarget->SetSize(mWindow->GetSize());
-			mGraphics->SetActiveRenderTarget(mTarget);
+			const Vector2i& s = mWindow->GetSize();
+
+			// Draw into a multi-sampled render target
+			mMSAATarget->SetSize(s);
+			mGraphics->SetActiveRenderTarget(mMSAATarget);
 			mGraphics->SetScreenProjection(true);
 			mGraphics->SetBackgroundColor(Color4f(0, 0, 0, 0));
 			mGraphics->Clear();
-
 			DrawTriangle();
 
+			// Copy the result into a regular render target
+			mNormalTarget->SetSize(s);
+
+			if (mBlit)
+			{
+				// Approach using a hardware copy
+				mMSAATarget->CopyTo(mNormalTarget);
+			}
+			else
+			{
+				// Approach using a shader -- it's a fair bit slower than blitting (2400 vs 3200 FPS)
+				mGraphics->SetActiveRenderTarget(mNormalTarget);
+				mGraphics->SetScreenProjection(true);
+				mGraphics->SetBackgroundColor(Color4f(0, 0, 0, 0));
+				mGraphics->Clear();
+				mGraphics->SetActiveTexture(0, mMSAAColor);
+				mGraphics->SetActiveShader(shader);
+				mGraphics->Draw(IGraphics::Drawable::FullscreenQuad);
+				mGraphics->SetActiveMaterial(0);
+			}
+
+			// Final step -- render to the screen
 			mGraphics->SetActiveRenderTarget(0);
 			mGraphics->SetScreenProjection(true);
 			mGraphics->SetBackgroundColor(Color4f(0.25f, 0.25f, 0.25f, 1));
 			mGraphics->Clear();
-
-			mGraphics->SetActiveTexture(0, mColor);
-			mGraphics->SetActiveShader(shader);
+			mGraphics->SetActiveTexture(0, mNormalColor);
 			mGraphics->Draw(IGraphics::Drawable::FullscreenQuad);
 			mGraphics->SetActiveMaterial(0);
 		}
@@ -139,6 +178,6 @@ R5_MAIN_FUNCTION
 {
 	System::SetCurrentPath("../../../Resources/");
 	TestApp app;
-    app.Run();
+	app.Run();
 	return 0;
 }

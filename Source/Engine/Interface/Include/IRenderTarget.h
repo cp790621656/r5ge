@@ -4,7 +4,7 @@
 //                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Draw target can be the screen, PBuffer, or a Frame Buffer Object, for example
+// Draw target can be the screen, PBuffer, or a Frame Buffer Object
 //============================================================================================================
 
 struct IRenderTarget
@@ -39,4 +39,7 @@ struct IRenderTarget
 
 	virtual void Activate()		const=0;
 	virtual void Deactivate()	const=0;
+
+	// Copy the render target's content into the destination buffer
+	virtual bool CopyTo (const IRenderTarget* destination, bool color = true, bool depth = true, bool stencil = true) const=0;
 };

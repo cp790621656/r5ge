@@ -98,6 +98,7 @@ extern PFNGLBINDRENDERBUFFEREXTPROC			glBindRenderbuffer;
 extern PFNGLRENDERBUFFERSTORAGEEXTPROC		glRenderbufferStorage;
 extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC	glFramebufferRenderbuffer;
 extern PFNGLDELETERENDERBUFFERSEXTPROC		glDeleteRenderbuffers;
+extern PFNGLBLITFRAMEBUFFERPROC				glBlitFramebuffer;
 
 //============================================================================================================
 // Vertex and pixel shader related functions
@@ -153,7 +154,7 @@ extern PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample;
 // Windows-specific
 //============================================================================================================
 
-extern PFNWGLSWAPINTERVALEXTPROC			glSwapInterval;
+extern PFNWGLSWAPINTERVALEXTPROC glSwapInterval;
 
 //============================================================================================================
 

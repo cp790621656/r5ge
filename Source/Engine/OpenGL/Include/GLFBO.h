@@ -82,4 +82,7 @@ public:
 
 	virtual void Activate()		const;
 	virtual void Deactivate()	const;
+
+	// Copy the render target's content into the destination buffer
+	virtual bool CopyTo (const IRenderTarget* destination, bool color = true, bool depth = true, bool stencil = true) const;
 };

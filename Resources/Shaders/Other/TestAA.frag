@@ -9,9 +9,13 @@ void main()
 	ivec2 itc = ivec2(int(gl_FragCoord.x), int(gl_FragCoord.y));
 
 	vec4 a = texelFetch(R5_texture0, itc, 0);
-	vec4 b = texelFetch(R5_texture0, itc, 1);
-	vec4 c = texelFetch(R5_texture0, itc, 2);
-	vec4 d = texelFetch(R5_texture0, itc, 3);
+	a += texelFetch(R5_texture0, itc, 1);
+	a += texelFetch(R5_texture0, itc, 2);
+	a += texelFetch(R5_texture0, itc, 3);
+	a += texelFetch(R5_texture0, itc, 4);
+	a += texelFetch(R5_texture0, itc, 5);
+	a += texelFetch(R5_texture0, itc, 6);
+	a += texelFetch(R5_texture0, itc, 7);
 
-	FinalColor = (a + b + c + d) * 0.25;
+	FinalColor = a * 0.125;
 }

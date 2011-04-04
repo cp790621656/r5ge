@@ -60,6 +60,7 @@ PFNGLBINDRENDERBUFFEREXTPROC		glBindRenderbuffer		= 0;
 PFNGLRENDERBUFFERSTORAGEEXTPROC		glRenderbufferStorage	= 0;
 PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC	glFramebufferRenderbuffer = 0;
 PFNGLDELETERENDERBUFFERSEXTPROC		glDeleteRenderbuffers	= 0;
+PFNGLBLITFRAMEBUFFERPROC			glBlitFramebuffer		= 0;
 
 //============================================================================================================
 // Vertex and pixel shader related functions
@@ -180,6 +181,7 @@ bool _BindFunctionPointers()
 	glRenderbufferStorage		= (PFNGLRENDERBUFFERSTORAGEEXTPROC)		glGetFunction(essential, "glRenderbufferStorageEXT");
 	glFramebufferRenderbuffer	= (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)	glGetFunction(essential, "glFramebufferRenderbufferEXT");
 	glDeleteRenderbuffers		= (PFNGLDELETERENDERBUFFERSEXTPROC)		glGetFunction(essential, "glDeleteRenderbuffersEXT");
+	glBlitFramebuffer			= (PFNGLBLITFRAMEBUFFERPROC)			glGetFunction(essential, "glBlitFramebufferEXT");
 	
 	glCreateShader				= (PFNGLCREATESHADEROBJECTARBPROC)		glGetFunction(essential, "glCreateShaderObjectARB");
 	glShaderSource				= (PFNGLSHADERSOURCEARBPROC)			glGetFunction(essential, "glShaderSourceARB");
