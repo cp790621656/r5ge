@@ -49,7 +49,6 @@ struct ITexture
 			TwoDimensional,
 			ThreeDimensional,
 			EnvironmentCubeMap,
-			TwoDimensionalMSAA,
 		};
 	};
 

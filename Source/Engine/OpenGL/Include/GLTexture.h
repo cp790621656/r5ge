@@ -16,7 +16,6 @@ protected:
 	GLGraphics*	mGraphics;			// GLGraphics manager that has created this texture
 	GLTexture*	mReplacement;		// Replacement texture that overrides this one
 	Image		mTex[6];			// Up to 6 raw textures
-	bool		mCheckForSource;	// Whether the texture should be checked to see if it has a valid source
 	uint		mType;				// Texture type (ITexture::TwoDimensional, etc)
 	uint		mGlID;				// Associated OpenGL texture ID
 	uint		mGlType;			// Saved OpenGL Texture type (GL_TEXTURE_2D, etc)
@@ -36,9 +35,11 @@ protected:
 
 	int			mInFormat;			// Cached internal GL format
 	uint		mDataType;			// Cached internal data type
+	uint		mActiveAF;			// Active anisotropic filter setting
+	uint		mActiveMSAA;		// Active MSAA setting
 	bool		mMipmapsGenerated;	// Whether mip-maps were generated
 	bool		mRegenMipmap;		// Whether to re-generate the mip-map
-	uint		mActiveAF;			// Active anisotropic filter setting
+	bool		mCheckForSource;	// Whether the texture should be checked to see if it has a valid source
 	bool		mSerializable;		// Whether the texture should be serialized on save (if it comes from a model file, it won't be)
 
 	Thread::Lockable mLock;

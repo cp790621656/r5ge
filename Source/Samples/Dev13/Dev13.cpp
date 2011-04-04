@@ -74,7 +74,7 @@ public:
 
 TestApp::TestApp() : mWin(0), mGraphics(0), mUI(0), mCore(0)
 {
-	mWin		= new GLWindow();
+	mWin		= new GLWindow(8);
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);

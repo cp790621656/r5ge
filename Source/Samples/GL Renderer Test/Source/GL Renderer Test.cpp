@@ -49,7 +49,7 @@ TestApp::TestApp()
 
 	// Create a render target that will be used to draw to texture
 	mTarget = mGraphics->CreateRenderTarget();
-	mTarget->SetMSAA(4);
+	mTarget->SetMSAA(8);
 	mTarget->AttachColorTexture(0, mColor, ITexture::Format::RGBA);
 }
 
@@ -69,8 +69,19 @@ void TestApp::Run()
 {
 	IShader* shader = mGraphics->GetShader("Other/TestAA");
 
+	ulong nextUpdate = 0;
+
 	while (mWindow->Update())
 	{
+		Time::Update();
+		Time::IncrementFPS();
+
+		if (nextUpdate < Time::GetMilliseconds())
+		{
+			nextUpdate = Time::GetMilliseconds() + 250;
+			mWindow->SetTitle(String("FPS: %u", Time::GetFPS()));
+		}
+
 		mWindow->BeginFrame();
 		mGraphics->BeginFrame();
 		{
@@ -94,7 +105,7 @@ void TestApp::Run()
 		}
 		mGraphics->EndFrame();
 		mWindow->EndFrame();
-		Thread::Sleep(1);
+		Thread::Sleep(0);
 	}
 }
 

@@ -46,10 +46,9 @@ PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat = 0;
 
 int ChoosePixelFormat (HDC hDC, const PIXELFORMATDESCRIPTOR* pfd, uint aaLevel)
 {
-	if (aaLevel > 0)
+	if (aaLevel > 1)
 	{
-		// 2xFSAA, 4xFSAA, 8xFSAA, 16xFSAA
-		if (aaLevel > 4) aaLevel = 4;
+		if (aaLevel > 8) aaLevel = 8;
 
 		WNDCLASS dummyClass;
 		memset(&dummyClass, 0, sizeof(WNDCLASS));
@@ -76,7 +75,6 @@ int ChoosePixelFormat (HDC hDC, const PIXELFORMATDESCRIPTOR* pfd, uint aaLevel)
 		{
 			// Create the OpenGL rendering context
 			HGLRC dummyRC = ::wglCreateContext(dummyDC);
-			CHECK_GL_ERROR;
 
 			if (dummyRC != 0)
 			{
@@ -106,7 +104,7 @@ int ChoosePixelFormat (HDC hDC, const PIXELFORMATDESCRIPTOR* pfd, uint aaLevel)
 											WGL_STENCIL_BITS,		pfd->cStencilBits,
 											WGL_DOUBLE_BUFFER,		1,
 											WGL_SAMPLE_BUFFERS,		1,
-											WGL_SAMPLES,			1 << aaLevel,
+											WGL_SAMPLES,			aaLevel,
 											0,						0};
 
 					// Ask OpenGL to choose a more appropriate pixel format
@@ -117,7 +115,6 @@ int ChoosePixelFormat (HDC hDC, const PIXELFORMATDESCRIPTOR* pfd, uint aaLevel)
 				// Release the rendering context
 				::wglMakeCurrent(0, 0);
 				::wglDeleteContext(dummyRC);
-				CHECK_GL_ERROR;
 			}
 		}
 
