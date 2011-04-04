@@ -47,7 +47,6 @@
 
 static const char* g_combineDeferred = {
 "#version 150\n"
-"#extension GL_ARB_separate_shader_objects : enable\n"
 
 "uniform sampler2D	R5_texture0;\n"		// Depth
 "uniform sampler2D	R5_texture1;\n"		// Material Diffuse (RGBA)
@@ -59,7 +58,7 @@ static const char* g_combineDeferred = {
 "uniform vec2		R5_fogRange;\n"		// X = 0-1 fog's start, Y = 0-1 fog's range.
 "uniform vec4		R5_fogColor;\n"
 
-"layout(location = 0) out vec4 FinalColor;\n"
+"out vec4 FinalColor;\n"
 
 "void main()\n"
 "{\n"
