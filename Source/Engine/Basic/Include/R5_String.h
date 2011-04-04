@@ -116,7 +116,7 @@ public:
 	String&	Append		( const char* format, ... );
 	bool	BeginsWith	( const char* text ) const;
 	bool	EndsWith	( const char* text ) const;
-	bool	Contains	( const char* text ) const { return Find(text, false) != mLength; }
+	bool	Contains	( const char* text, bool caseSensitive = false ) const { return Find(text, caseSensitive) != mLength; }
 	uint	Count		( char letter ) const;
 	bool	GetString	( String& out, uint from = 0, uint to = 0xFFFFFFFF ) const;
 	bool	GetTrimmed	( String& out, uint from = 0, uint to = 0xFFFFFFFF ) const;

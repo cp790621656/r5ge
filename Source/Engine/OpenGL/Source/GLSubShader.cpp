@@ -313,44 +313,8 @@ void GLSubShader::_Preprocess (bool deferred, bool shadowed)
 	mFlags.Clear();
 	mDependencies.Clear();
 
-	// Figure out what type of shader this is
-	if (mCode.Contains("EndPrimitive();")) mType = Type::Geometry;
-	else if (mCode.Contains("gl_Position") || mCode.Contains("R5_VERTEX_OUTPUT")) mType = Type::Vertex;
-	else mType = Type::Fragment;
-
-	// Pre-process all macros
-	if (mType == Type::Vertex)
-	{
-		// Pre-processes deprecated GLSL functionality, such as 'gl_MultiTexCoord1',
-		// replacing it appropriate vertex attributes.
-		::PreprocessAttributes(mCode);
-
-		if (::PreprocessSkinning(mCode))		mFlags.Set(IShader::Flag::Skinned,		true);
-		if (::PreprocessInstancing(mCode))		mFlags.Set(IShader::Flag::Instanced,	true);
-		if (::PreprocessBillboarding(mCode))	mFlags.Set(IShader::Flag::Billboarded,	true);
-
-		// Vertex shader output
-		::PreprocessVertexOutput(mCode, deferred);
-	}
-	else
-	{
-		// Fragment shader output
-		mFlags.Set(IShader::Flag::Surface, ::PreprocessFragmentOutput(mCode, deferred, shadowed));
-
-		bool matShader (false);
-		matShader |= mCode.Replace("R5_MATERIAL_SPECULARITY",	"gl_FrontMaterial.specular.r") != 0;
-		matShader |= mCode.Replace("R5_MATERIAL_SPECULAR_HUE",	"gl_FrontMaterial.specular.g") != 0;
-		matShader |= mCode.Replace("R5_MATERIAL_REFLECTIVENESS","gl_FrontMaterial.specular.b") != 0;
-		matShader |= mCode.Replace("R5_MATERIAL_SHININESS",		"gl_FrontMaterial.specular.a") != 0;
-		matShader |= mCode.Replace("R5_MATERIAL_OCCLUSION",		"gl_FrontMaterial.emission.r + gl_FrontMaterial.emission.g") != 0;
-		matShader |= mCode.Replace("R5_MATERIAL_GLOW",			"gl_FrontMaterial.emission.a") != 0;
-
-		mFlags.Set(IShader::Flag::Material, matShader);
-		mFlags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
-	}
-
-	// Common flags
-	if (mCode.Contains("R5_worldScale")) mFlags.Set(IShader::Flag::WorldScale, true);
+	// Preprocess the fragment shader
+	mType = ::PreprocessShader(mCode, mFlags, deferred, shadowed);
 
 	// Preprocess all dependencies
 	Array<String> list;

@@ -9,6 +9,14 @@
 
 class GLShader : public IShader
 {
+public:
+
+	struct UniformRecord
+	{
+		String name;
+		uint elements;
+	};
+
 private:
 
 	struct UniformEntry
@@ -94,7 +102,7 @@ private:
 	bool _UpdateUniform (uint glID, const Uniform& uni) const;
 
 	// INTERNAL: Adds a new registered uniform value without checking to see if it already exists
-	void _InsertUniform (const String& name, const SetUniformDelegate& fnct);
+	void _InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct);
 
 public:
 

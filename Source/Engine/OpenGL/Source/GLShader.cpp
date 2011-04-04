@@ -9,6 +9,13 @@ using namespace R5;
 uint g_activeProgram = 0;
 
 //============================================================================================================
+// For the sake of not duplicating data, all R5 built-ins are stored in a library-accessible list.
+//============================================================================================================
+
+bool g_fillUniformList = true;
+Array<GLShader::UniformRecord> g_uniforms;
+
+//============================================================================================================
 // Sets a uniform integer value in a shader
 //============================================================================================================
 
@@ -107,10 +114,7 @@ void GLShader::SetUniform_PixelSize (const String& name, Uniform& uniform)
 void GLShader::SetUniform_ClipRange (const String& name, Uniform& uniform)
 {
 	const Vector3f& range = mGraphics->GetCameraRange();
-	uniform = Quaternion(range.x,
-						 range.y,
-						 range.x * range.y,
-						 range.y - range.x);
+	uniform = Quaternion(range.x, range.y, range.x * range.y, range.y - range.x);
 }
 
 //============================================================================================================
@@ -246,6 +250,25 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	mGraphics	= graphics;
 	mName		= name;
 
+	// Register common uniforms that remain identical in all shaders
+	_InsertUniform( "R5_time",						3,  &SetUniform_Time );
+	_InsertUniform( "R5_worldEyePosition",			3,  bind(&GLShader::SetUniform_EyePos,		this) );
+	_InsertUniform( "R5_pixelSize",					2,  bind(&GLShader::SetUniform_PixelSize,	this) );
+	_InsertUniform( "R5_clipRange",					4,  bind(&GLShader::SetUniform_ClipRange,	this) );
+	_InsertUniform( "R5_fogRange",					2,  bind(&GLShader::SetUniform_FogRange,	this) );
+	_InsertUniform( "R5_fogColor",					4,  bind(&GLShader::SetUniform_FogColor,	this) );
+	_InsertUniform( "R5_modelViewProjMatrix",		16, bind(&GLShader::SetUniform_MVP,			this) );
+	_InsertUniform( "R5_projectionMatrix",			16, bind(&GLShader::SetUniform_PM,			this) );
+	_InsertUniform( "R5_inverseViewMatrix",			16, bind(&GLShader::SetUniform_IVM,			this) );
+	_InsertUniform( "R5_inverseProjMatrix",			16, bind(&GLShader::SetUniform_IPM,			this) );
+	_InsertUniform( "R5_inverseMVPMatrix",			16, bind(&GLShader::SetUniform_IMVPM,		this) );
+	_InsertUniform( "R5_inverseViewRotationMatrix",	9,  bind(&GLShader::SetUniform_IVRM,		this) );
+	_InsertUniform( "R5_worldTransformMatrix",		16, bind(&GLShader::SetUniform_WTM,			this) );
+	_InsertUniform( "R5_worldRotationMatrix",		9,  bind(&GLShader::SetUniform_WRM,			this) );
+
+	// The list of R5 uniforms should now be complete
+	g_fillUniformList = false;
+
 	// Shaders that begin with [R5] are built-in shaders
 	if (name.BeginsWith("[R5]"))
 	{
@@ -292,22 +315,6 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 			}
 		}
 	}
-
-	// Register common uniforms that remain identical in all shaders
-	_InsertUniform( "R5_time",						&SetUniform_Time );
-	_InsertUniform( "R5_worldEyePosition",			bind(&GLShader::SetUniform_EyePos,		this) );
-	_InsertUniform( "R5_pixelSize",					bind(&GLShader::SetUniform_PixelSize,	this) );
-	_InsertUniform( "R5_clipRange",					bind(&GLShader::SetUniform_ClipRange,	this) );
-	_InsertUniform( "R5_fogRange",					bind(&GLShader::SetUniform_FogRange,	this) );
-	_InsertUniform( "R5_fogColor",					bind(&GLShader::SetUniform_FogColor,	this) );
-	_InsertUniform( "R5_modelViewProjMatrix",		bind(&GLShader::SetUniform_MVP,			this) );
-	_InsertUniform( "R5_projectionMatrix",			bind(&GLShader::SetUniform_PM,			this) );
-	_InsertUniform( "R5_inverseViewMatrix",			bind(&GLShader::SetUniform_IVM,			this) );
-	_InsertUniform( "R5_inverseProjMatrix",			bind(&GLShader::SetUniform_IPM,			this) );
-	_InsertUniform( "R5_inverseMVPMatrix",			bind(&GLShader::SetUniform_IMVPM,		this) );
-	_InsertUniform( "R5_inverseViewRotationMatrix",	bind(&GLShader::SetUniform_IVRM,		this) );
-	_InsertUniform( "R5_worldTransformMatrix",		bind(&GLShader::SetUniform_WTM,			this) );
-	_InsertUniform( "R5_worldRotationMatrix",		bind(&GLShader::SetUniform_WRM,			this) );
 
 	// Whether the shader is actually already valid or not depends on whether it has any sub-shaders
 	return mAdded.IsValid();
@@ -710,11 +717,18 @@ bool GLShader::_UpdateUniform (uint glID, const Uniform& uni) const
 // INTERNAL: Adds a new registered uniform value without checking to see if it already exists
 //============================================================================================================
 
-void GLShader::_InsertUniform (const String& name, const SetUniformDelegate& fnct)
+void GLShader::_InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct)
 {
 	UniformEntry& entry = mUniforms.Expand();
 	entry.mName			= name;
 	entry.mDelegate		= fnct;
+
+	if (g_fillUniformList && elements > 0)
+	{
+		GLShader::UniformRecord& r = g_uniforms.Expand();
+		r.name = name;
+		r.elements = elements;
+	}
 }
 
 //============================================================================================================
@@ -814,5 +828,5 @@ void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fn
 			return;
 		}
 	}
-	_InsertUniform(name, fnct);
+	_InsertUniform(name, 0, fnct);
 }
