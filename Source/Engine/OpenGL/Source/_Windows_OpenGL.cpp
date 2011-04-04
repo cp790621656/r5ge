@@ -104,7 +104,6 @@ PFNGLGETATTRIBLOCATIONARBPROC			glGetAttribLocation			= 0;
 PFNGLBINDATTRIBLOCATIONARBPROC			glBindAttribLocation		= 0;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC		glEnableVertexAttribArray	= 0;
 PFNGLDISABLEVERTEXATTRIBARRAYARBPROC	glDisableVertexAttribArray	= 0;
-PFNGLBINDFRAGDATALOCATIONPROC			glBindFragDataLocation		= 0;
 
 //============================================================================================================
 // MSAA extensions
@@ -200,7 +199,6 @@ bool _BindFunctionPointers()
 	glBindAttribLocation		= (PFNGLBINDATTRIBLOCATIONARBPROC)		glGetFunction(essential, "glBindAttribLocationARB");
 	glEnableVertexAttribArray	= (PFNGLENABLEVERTEXATTRIBARRAYARBPROC)	glGetFunction(essential, "glEnableVertexAttribArrayARB");
 	glDisableVertexAttribArray	= (PFNGLDISABLEVERTEXATTRIBARRAYARBPROC)glGetFunction(essential, "glDisableVertexAttribArrayARB");
-	glBindFragDataLocation		= (PFNGLBINDFRAGDATALOCATIONPROC)		glGetFunction(essential, "glBindFragDataLocation");
 
 	glGetUniformLocation		= (PFNGLGETUNIFORMLOCATIONARBPROC)		glGetFunction(essential, "glGetUniformLocationARB");
 	glUniform1f					= (PFNGLUNIFORM1FARBPROC)				glGetFunction(essential, "glUniform1fARB");

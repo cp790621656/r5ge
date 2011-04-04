@@ -142,7 +142,6 @@ extern PFNGLGETATTRIBLOCATIONARBPROC		glGetAttribLocation;
 extern PFNGLBINDATTRIBLOCATIONARBPROC		glBindAttribLocation;
 extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC	glEnableVertexAttribArray;
 extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC	glDisableVertexAttribArray;
-extern PFNGLBINDFRAGDATALOCATIONPROC		glBindFragDataLocation;
 
 //============================================================================================================
 // MSAA extensions

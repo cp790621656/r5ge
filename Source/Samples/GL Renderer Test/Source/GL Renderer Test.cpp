@@ -20,8 +20,6 @@ class TestApp : public IEventReceiver
 	ITexture* mNormalColor;
 	IRenderTarget* mNormalTarget;
 
-	bool mBlit;
-
 public:
 
 	TestApp();
@@ -33,11 +31,7 @@ public:
 	// If escape gets pressed, close the window
 	virtual bool OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 	{
-		if (!isDown)
-		{
-			if (key == Key::Escape) mWindow->Close();
-			else if (key == Key::B) mBlit = !mBlit;
-		}
+		if (key == Key::Escape) mWindow->Close();
 		return false;
 	}
 
@@ -49,8 +43,6 @@ public:
 
 TestApp::TestApp()
 {
-	mBlit = true;
-
 	mWindow = new GLWindow();
 	mGraphics = new GLGraphics();
 
@@ -84,8 +76,6 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	IShader* shader = mGraphics->GetShader("Other/TestAA");
-
 	ulong nextUpdate = 0;
 
 	while (mWindow->Update())
@@ -114,24 +104,20 @@ void TestApp::Run()
 
 			// Copy the result into a regular render target
 			mNormalTarget->SetSize(s);
+			mMSAATarget->CopyTo(mNormalTarget);
 
-			if (mBlit)
-			{
-				// Approach using a hardware copy
-				mMSAATarget->CopyTo(mNormalTarget);
-			}
-			else
-			{
-				// Approach using a shader -- it's a fair bit slower than blitting (2400 vs 3200 FPS)
-				mGraphics->SetActiveRenderTarget(mNormalTarget);
-				mGraphics->SetScreenProjection(true);
-				mGraphics->SetBackgroundColor(Color4f(0, 0, 0, 0));
-				mGraphics->Clear();
-				mGraphics->SetActiveTexture(0, mMSAAColor);
-				mGraphics->SetActiveShader(shader);
-				mGraphics->Draw(IGraphics::Drawable::FullscreenQuad);
-				mGraphics->SetActiveMaterial(0);
-			}
+			// NOTE: Deferred rendering MSAA process:
+			// - Clear the MSAA target.
+			// - Render the scene's materials into the MSAA target.
+			// - Blit the result into a regular material target.
+			// - Clear the MSAA target.
+			// - Render lighting into the MSAA target.
+			// - Blit the result into a regular lighting target.
+			// - Combine step happens with regular targets.
+
+			// Added cost: 2 blits (color+color+depth, color+color), and the anti-aliasing cost.
+			// NOTE: It might help if I was rendering to a MSAA storage buffer rather than a texture. <-- Implement this.
+			// NOTE: Would it help if the secondary texture was not MSAA'd?
 
 			// Final step -- render to the screen
 			mGraphics->SetActiveRenderTarget(0);

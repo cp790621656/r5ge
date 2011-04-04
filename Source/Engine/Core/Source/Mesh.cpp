@@ -13,7 +13,7 @@ extern bool g_skinToVBO;
 #define IF_TANGENT				if (mFormat.mTangent	!= 0xFFFFFFFF)
 #define IF_TEXCOORD0			if (mFormat.mTexCoord0	!= 0xFFFFFFFF)
 #define IF_TEXCOORD1			if (mFormat.mTexCoord1	!= 0xFFFFFFFF)
-#define IF_COLOR				if (mFormat.mMSAAColor		!= 0xFFFFFFFF)
+#define IF_COLOR				if (mFormat.mColor		!= 0xFFFFFFFF)
 #define IF_BONEINDEX			if (mFormat.mBoneIndex	!= 0xFFFFFFFF)
 #define IF_BONEWEIGHT			if (mFormat.mBoneWeight	!= 0xFFFFFFFF)
 #define IF_TANGENT_AND_NORMAL	if (mFormat.mNormal		!= 0xFFFFFFFF && \
@@ -24,7 +24,7 @@ extern bool g_skinToVBO;
 #define CURRENT_TANGENT		(*((Vector3f*)(current + mFormat.mTangent)))
 #define CURRENT_TEXCOORD0	(*((Vector2f*)(current + mFormat.mTexCoord0)))
 #define CURRENT_TEXCOORD1	(*((Vector2f*)(current + mFormat.mTexCoord1)))
-#define CURRENT_COLOR		(*((Color4ub*)(current + mFormat.mMSAAColor)))
+#define CURRENT_COLOR		(*((Color4ub*)(current + mFormat.mColor)))
 #define CURRENT_BONEINDEX	(*((Color4ub*)(current + mFormat.mBoneIndex)))
 #define CURRENT_BONEWEIGHT	(*((Color4f*)(current + mFormat.mBoneWeight)))
 

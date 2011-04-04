@@ -509,9 +509,6 @@ bool GLShader::_Link()
 	glBindAttribLocation(mProgram, IGraphics::Attribute::TexCoord6,		"R5_texCoord6");
 	glBindAttribLocation(mProgram, IGraphics::Attribute::TexCoord7,		"R5_texCoord7");
 
-	glBindFragDataLocation(mProgram, 0, "FinalColor");
-	CHECK_GL_ERROR;
-
 	// Link the program
 	glLinkProgram(mProgram);
 	CHECK_GL_ERROR;
