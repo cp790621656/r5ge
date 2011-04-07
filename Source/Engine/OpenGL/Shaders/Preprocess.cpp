@@ -82,8 +82,8 @@ void AddReferencedUniforms (String& source)
 
 		if (source.Contains(r.name, true))
 		{
-			if		(r.elements == 16)	prefix << "uniform mat44 ";
-			else if (r.elements == 9)	prefix << "uniform mat33 ";
+			if		(r.elements == 16)	prefix << "uniform mat4 ";
+			else if (r.elements == 9)	prefix << "uniform mat3 ";
 			else if (r.elements == 4)	prefix << "uniform vec4 ";
 			else if (r.elements == 3)	prefix << "uniform vec3 ";
 			else if (r.elements == 2)	prefix << "uniform vec2 ";
