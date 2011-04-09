@@ -694,8 +694,6 @@ bool GLShader::_Link()
 		if (retVal == GL_TRUE)
 		{
 			// List the program's common supported features
-			if (mFlags.Get(IShader::Flag::Billboarded)) System::Log("          - Supports billboarding");
-			if (mFlags.Get(IShader::Flag::Instanced))	System::Log("          - Supports instancing");
 			if (mFlags.Get(IShader::Flag::Skinned))		System::Log("          - Supports skinning");
 		}
 		else

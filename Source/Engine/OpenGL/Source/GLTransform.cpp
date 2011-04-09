@@ -310,7 +310,7 @@ uint GLTransform::Activate (const IShader* shader)
 			++switches;
 		}
 	}
-	else //if (shader == 0 || shader->GetFlag(IShader::Flag::LegacyFormat))
+	else if (shader == 0 || shader->GetFlag(IShader::Flag::LegacyFormat))
 	{
 		if (mReset)
 		{

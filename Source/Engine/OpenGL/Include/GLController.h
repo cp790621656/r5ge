@@ -178,7 +178,7 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false );
 	virtual bool SetActiveMaterial			( const IMaterial* ptr );
 	virtual bool SetActiveMaterial			( const ITexture* ptr );
-	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false );
+	virtual bool SetActiveShader			( const IShader* ptr );
 	virtual void SetActiveSkybox			( const ITexture* ptr ) { mSkybox = ptr; }
 	virtual void SetActiveColor				( const Color& c );
 	virtual void SetScreenProjection		( bool screen ) { mTrans.Set2DMode(screen); }
@@ -195,7 +195,7 @@ public:
 											  uint			stride );		// Size of each vertex entry in bytes
 
 	// Activate all matrices and bind all textures, preparing to draw
-	virtual void Execute() { _ActivateMatrices(); _BindAllTextures(); }
+	virtual void PrepareToDraw();
 
 	// Draw bound vertices
 	virtual uint DrawVertices	( uint primitive, uint vertexCount );
@@ -210,15 +210,12 @@ public:
 	// Draw using an index array
 	uint _DrawIndices ( const IVBO* vbo, const ushort* ptr, uint primitive, uint indexCount );
 
-	// Activate all appropriate matrices
-	void _ActivateMatrices() { mStats.mMatSwitches += mTrans.Activate(mShader); }
-
 	// Updates the currently active texture unit
 	void _ActivateTextureUnit();
 
 	// Binds the specified texture -- mainly called from GLTexture::Activate()
 	bool _BindTexture (uint glType, uint glID);
 
-	// Binds all activated textures
+	// Ensures that all textures are bound
 	void _BindAllTextures();
 };

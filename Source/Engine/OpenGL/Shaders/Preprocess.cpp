@@ -114,10 +114,6 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 	bool skinned = source.Contains("#pragma skinning on", true);
 	flags.Set(IShader::Flag::Skinned, skinned);
 
-	// Billboarded shaders always make the triangles face the camera
-	bool billboard = source.Contains("#pragma billboard on", true);
-	flags.Set(IShader::Flag::Billboarded, billboard);
-
 	// Skinned shaders use an additional set of matrices
 	if (skinned)
 	{
@@ -542,7 +538,7 @@ uint PreprocessMacroCommon (const String& source, const String& match, String& v
 		left << "vec3 offset = gl_MultiTexCoord0.xyz;\n";
 		left << "offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;\n";
 		left << "offset.z *= 0.25;\n";
-		left << "offset *= R5_scale;\n";
+		left << "offset *= R5_modelScale;\n";
 		
 		// Calculate the view-transformed vertex
 		left << vertex;
@@ -572,7 +568,7 @@ uint PreprocessMacroCommon (const String& source, const String& match, String& v
 
 		// Copy the result back into the Source
 		source = "uniform vec3 R5_origin;\n";
-		source << "uniform float R5_scale;\n";
+		source << "uniform float R5_modelScale;\n";
 		source << left;
 		source << right;
 		return true;
@@ -642,6 +638,10 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 
 		// Prepend the prefix
 		source = prefix + source;
+
+		//System::Log("=================================================");
+		//System::Log(source.GetBuffer());
+		//System::Log("=================================================");
 	}
 	else if (source.Contains("R5_vertexPosition", true))
 	{
@@ -654,10 +654,11 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		::ConvertCommonTypes(source);
 
 		source = prefix + source;
-
-		System::Log("=================================================");
-		System::Log(source.GetBuffer());
-		System::Log("=================================================");
+	}
+	else
+	{
+		// This shader uses an outdated format
+		flags.Set(IShader::Flag::LegacyFormat, true);
 	}
 
 	// Unknown shader type -- figure it out
@@ -677,35 +678,7 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		}
 	}
 
-	/*if (type == ISubShader::Type::Vertex)
-	{
-		::PreprocessMacroAttributes(source);
-
-		if (::PreprocessMacroSkinning(source))		flags.Set(IShader::Flag::Skinned,		true);
-		if (::PreprocessMacroInstancing(source))	flags.Set(IShader::Flag::Instanced,		true);
-		if (::PreprocessMacroBillboarding(source))	flags.Set(IShader::Flag::Billboarded,	true);
-
-		// Vertex shader output
-		::PreprocessMacroVertexOutput(source, deferred);
-	}
-	else if (type == ISubShader::Type::Fragment)
-	{
-		// Raw GLSL fragment shader
-		//if (::PreprocessMacroFragmentOutput(source, deferred, shadowed)) flags.Set(IShader::Flag::Surface, true);
-
-		//bool matShader (false);
-		//matShader |= source.Replace("R5_MATERIAL_SPECULARITY",	"gl_FrontMaterial.specular.r", true) != 0;
-		//matShader |= source.Replace("R5_MATERIAL_SPECULAR_HUE",	"gl_FrontMaterial.specular.g", true) != 0;
-		//matShader |= source.Replace("R5_MATERIAL_REFLECTIVENESS",	"gl_FrontMaterial.specular.b", true) != 0;
-		//matShader |= source.Replace("R5_MATERIAL_SHININESS",		"gl_FrontMaterial.specular.a", true) != 0;
-		//matShader |= source.Replace("R5_MATERIAL_OCCLUSION",		"gl_FrontMaterial.emission.r + gl_FrontMaterial.emission.g", true) != 0;
-		//matShader |= source.Replace("R5_MATERIAL_GLOW",			"gl_FrontMaterial.emission.a", true) != 0;
-
-		//flags.Set(IShader::Flag::Material, matShader);
-	}*/
-
-	flags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
 	flags.Set(IShader::Flag::Lit, source.Contains("R5_light", true));
-	flags.Set(IShader::Flag::Material, source.Contains("R5_material", true));
+	flags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
 	return type;
 }
