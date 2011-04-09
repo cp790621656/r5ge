@@ -63,7 +63,7 @@ protected:
 
 	Array<TextureUnit>		mTu;			// Texture units
 	Array<GLTexture*>		mNextTex;		// Textures that will be activated prior to next draw call
-	Array<bool>				mLu;			// Light units
+	mutable Array<ILight>	mLu;			// Light units
 	uint					mActiveTU;		// Active texture unit
 	uint					mNextTU;		// Next texture unit that will be activated on texture bind
 	BufferEntry				mBuffers[16];	// Active buffers
@@ -104,11 +104,6 @@ public:
 	virtual void SetBackgroundColor	(const Color4f& color);
 	virtual void SetDefaultAF		(uint level) { GLTexture::SetDefaultAF(mAf = level); }
 
-protected:
-
-	// Whether active color sets the material color
-	void SetSimpleMaterial	(bool val);
-
 public:
 
 	// Statistics about the current frame
@@ -133,11 +128,17 @@ public:
 	virtual const Rect&			GetScissorRect()		const	{ return mScissorRect;	}
 	virtual const Vector2f&		GetFogRange()			const	{ return mFogRange;		}
 	virtual const Color4f&		GetBackgroundColor()	const	{ return mBackground;	}
+
 	virtual const ITexture*		GetActiveSkybox()		const	{ return mSkybox;		}
 	virtual const ITechnique*	GetActiveTechnique()	const	{ return mTechnique;	}
+	virtual const IMaterial*	GetActiveMaterial()		const	{ return mMaterial;		}
 	virtual const IShader*		GetActiveShader()		const	{ return mShader;		}
 	virtual const Vector2i&		GetActiveViewport()		const	{ return (mTarget == 0) ? mSize : mTarget->GetSize(); }
 	virtual const IRenderTarget* GetActiveRenderTarget() const	{ return mTarget; }
+
+	// Access to lights
+	virtual const ILight& GetActiveLight (uint index) const;
+	virtual void SetActiveLight (uint index, const ILight* ptr);
 
 	// Camera orientation retrieval
 	virtual const Vector3f&		GetCameraPosition()		const	{ return mTrans.mView.pos;		}
@@ -177,13 +178,12 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false );
 	virtual bool SetActiveMaterial			( const IMaterial* ptr );
 	virtual bool SetActiveMaterial			( const ITexture* ptr );
-	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false );
+	virtual bool SetActiveShader			( const IShader* ptr );
 	virtual void SetActiveSkybox			( const ITexture* ptr ) { mSkybox = ptr; }
 	virtual void SetActiveColor				( const Color& c );
 	virtual void SetScreenProjection		( bool screen ) { mTrans.Set2DMode(screen); }
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid );
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr );
-	virtual void SetActiveLight				( uint index, const ILight* ptr );
 	virtual void SetActiveDepthFunction		( uint condition );
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask );
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass );
@@ -195,7 +195,7 @@ public:
 											  uint			stride );		// Size of each vertex entry in bytes
 
 	// Activate all matrices and bind all textures, preparing to draw
-	virtual void Execute() { _ActivateMatrices(); _BindAllTextures(); }
+	virtual void PrepareToDraw();
 
 	// Draw bound vertices
 	virtual uint DrawVertices	( uint primitive, uint vertexCount );
@@ -210,15 +210,12 @@ public:
 	// Draw using an index array
 	uint _DrawIndices ( const IVBO* vbo, const ushort* ptr, uint primitive, uint indexCount );
 
-	// Activate all appropriate matrices
-	void _ActivateMatrices() { mStats.mMatSwitches += mTrans.Activate(mShader); }
-
 	// Updates the currently active texture unit
 	void _ActivateTextureUnit();
 
 	// Binds the specified texture -- mainly called from GLTexture::Activate()
 	bool _BindTexture (uint glType, uint glID);
 
-	// Binds all activated textures
+	// Ensures that all textures are bound
 	void _BindAllTextures();
 };

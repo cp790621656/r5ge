@@ -32,7 +32,7 @@ struct IGraphicsController
 	{
 		enum
 		{
-			Position		= 0,
+			Vertex		= 0,
 			Tangent			= 1,
 			Normal			= 2,
 			Color			= 3,
@@ -131,11 +131,17 @@ public:
 	virtual const Rect&			GetScissorRect()		const=0;
 	virtual const Vector2f&		GetFogRange()			const=0;
 	virtual const Color4f&		GetBackgroundColor()	const=0;
+
 	virtual const ITexture*		GetActiveSkybox()		const=0;
 	virtual const ITechnique*	GetActiveTechnique()	const=0;
+	virtual const IMaterial*	GetActiveMaterial()		const=0;
 	virtual const IShader*		GetActiveShader()		const=0;
 	virtual const Vector2i&		GetActiveViewport()		const=0;
 	virtual const IRenderTarget* GetActiveRenderTarget() const=0;
+
+	// Access to lights
+	virtual const ILight& GetActiveLight (uint index) const=0;
+	virtual void SetActiveLight (uint index, const ILight* ptr)=0;
 
 	// Camera orientation retrieval
 	virtual const Vector3f&		GetCameraPosition()		const=0;
@@ -189,13 +195,12 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false )=0;
 	virtual bool SetActiveMaterial			( const IMaterial* ptr )=0;
 	virtual bool SetActiveMaterial			( const ITexture* ptr )=0;
-	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false )=0;
+	virtual bool SetActiveShader			( const IShader* ptr )=0;
 	virtual void SetActiveSkybox			( const ITexture* ptr )=0;
 	virtual void SetActiveColor				( const Color& c )=0;
 	virtual void SetScreenProjection		( bool screen )=0;
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid )=0;
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr )=0;
-	virtual void SetActiveLight				( uint index, const ILight* ptr )=0;
 	virtual void SetActiveDepthFunction		( uint condition )=0;
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask )=0;
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass )=0;
@@ -207,7 +212,7 @@ public:
 											  uint			stride )=0;		// Size of each vertex entry in bytes
 
 	// Activate all matrices and bind all textures, preparing to draw
-	virtual void Execute()=0;
+	virtual void PrepareToDraw()=0;
 
 	// Draw functions
 	virtual uint DrawVertices	( uint primitive, uint vertexCount )=0;

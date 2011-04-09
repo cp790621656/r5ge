@@ -8,7 +8,6 @@ using namespace R5;
 PointLight::PointLight() :
 	mAmbient	(0.0f),
 	mDiffuse	(1.0f),
-	mSpecular	(1.0f),
 	mBrightness	(1.0f),
 	mRange		(10.0f),
 	mPower		(2.0f),
@@ -28,15 +27,14 @@ inline void PointLight::_UpdateColors()
 {
 	mProperties.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
 	mProperties.mDiffuse  = Color4f(mDiffuse  * mBrightness, mRange * mAbsoluteScale.Average());
-	mProperties.mSpecular = Color4f(mSpecular * mBrightness, mPower);
 }
 
 //============================================================================================================
 
 inline void PointLight::_UpdateAtten()
 {
-	mProperties.mAtten.x = mRange * mAbsoluteScale.Average();
-	mProperties.mAtten.y = mPower;
+	mProperties.mParams.x = mRange * mAbsoluteScale.Average();
+	mProperties.mParams.y = mPower;
 }
 
 //============================================================================================================
@@ -148,7 +146,7 @@ void PointLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 
 		// Enable depth testing as point lights have a definite volume
 		mGraphics->SetDepthTest(true);
-		mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, vbo, 0, IGraphics::DataType::Float, 3, 12 );
+		mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, vbo, 0, IGraphics::DataType::Float, 3, 12 );
 	}
 
 	// Just in case
@@ -165,7 +163,7 @@ void PointLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 	// that 6.5% is based on observation only. For icosahedrons of 2 iterations this
 	// multiplier can be reduced down to 2%.
 
-	float range (properties.mAtten.x * 1.065f);
+	float range (properties.mParams.x * 1.065f);
 
 	// Distance to the light source
 	bool flip = properties.mPos.GetDistanceTo(mGraphics->GetCameraPosition()) <
@@ -224,7 +222,6 @@ void PointLight::OnSerializeTo (TreeNode& root) const
 {
 	root.AddChild("Ambient", mAmbient);
 	root.AddChild("Diffuse", mDiffuse);
-	root.AddChild("Specular", mSpecular);
 	root.AddChild("Brightness", mBrightness);
 	root.AddChild("Range", mRange);
 	root.AddChild("Power", mPower);
@@ -244,7 +241,6 @@ bool PointLight::OnSerializeFrom (const TreeNode& node)
 
 	if		( tag == "Ambient"		&& value >> color ) SetAmbient(color);
 	else if ( tag == "Diffuse" 		&& value >> color ) SetDiffuse(color);
-	else if ( tag == "Specular"		&& value >> color ) SetSpecular(color);
 	else if ( tag == "Brightness"	&& value >> val   )	SetBrightness(val);
 	else if ( tag == "Range"		&& value >> val   )	SetRange(val);
 	else if ( tag == "Power"		&& value >> val   )	SetPower(val);

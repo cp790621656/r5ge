@@ -3,31 +3,217 @@
 using namespace R5;
 
 //============================================================================================================
-// R5 shader format needs to be translated to the appropriate API
+// Adds appropriate surface shader functionality
 //============================================================================================================
 
-void ConvertTypes (String& source)
+bool AddSurfaceFunctions (String& source, bool deferred, bool shadowed)
 {
-	source.Replace("half4", "mediump vec4", true);
-	source.Replace("half3", "mediump vec3", true);
-	source.Replace("half2", "mediump vec2", true);
+	// Remove the last closing bracket
+	uint lastBracket = source.Find("}", true, 0, -1, true);
+	if (lastBracket >= source.GetSize()) return false;
+	source[lastBracket] = '\n';
 
-	source.Replace("int2", "ivec2", true);
-	source.Replace("int3", "ivec3", true);
-	source.Replace("int4", "ivec4", true);
+	// Lighting is on by default for forward rendering shaders.
+	// If you need to have a deferred surface that's not affected by light, specify 1 as Material's Glow.
+	bool lit = deferred || !source.Contains("#pragma lighting off");
 
-	source.Replace("float2", "vec2", true);
-	source.Replace("float3", "vec3", true);
-	source.Replace("float4", "vec4", true);
+	// Standard Surface Color tag
+	if (!source.Contains("R5_surfaceColor", true))
+	{
+		source << "	R5_surfaceColor = R5_vertexColor * R5_materialColor;\n";
+	}
 
-	source.Replace("Sample2D(", "texture2D(R5_texture", true);
+	// Lit shaders need surface and material properties
+	if (lit)
+	{
+		// Standard Surface Properties tag
+		if (!source.Contains("R5_surfaceProps", true))
+		{
+			source << "	R5_surfaceProps = vec4(R5_materialSpecularity, "
+				"R5_materialSpecularHue, R5_materialGlow, 1.0);\n";
+		}
+
+		// Standard Surface Normal tag
+		if (!source.Contains("R5_surfaceNormal", true))
+		{
+			source << "	R5_surfaceNormal = vec4(normalize(R5_vertexNormal), R5_materialShininess);\n";
+		}
+	}
+
+	if (deferred)
+	{
+		// Deferred steps are extremely simple: simply store the values in the 3 output buffers
+		source.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
+		source.Replace("R5_surfaceProps", "R5_finalColor[1]", true);
+		source.Replace("R5_surfaceNormal", "R5_finalColor[2]", true);
+	}
+	else if (!lit)
+	{
+		// Non-lit shaders only use the color output
+		source.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
+		source.Replace("R5_surfaceProps", "//R5_surfaceProps", true);
+		source.Replace("R5_surfaceNormal", "//R5_surfaceNormal", true);
+	}
+	else
+	{
+		// Lit forward rendering involves lighting calculations
+		source.Replace("R5_surfaceColor", "vec4 R5_surfaceColor", true);
+		source.Replace("R5_surfaceProps", "vec4 R5_surfaceProps", true);
+		source.Replace("R5_surfaceNormal", "vec4 R5_surfaceNormal", true);
+
+		source <<
+		"	vec3 eyeDir = normalize(R5_vertexEye);\n"
+		"	vec3 lightDir = normalize(R5_vertexLight.xyz);\n"
+
+		"	float diffuseFactor = max(0.0, dot(lightDir, R5_surfaceNormal.xyz));\n"
+		"	float reflectiveFactor = max(0.0, dot(reflect(lightDir, R5_surfaceNormal.xyz), eyeDir));\n"
+		"	float specularFactor = pow(reflectiveFactor, (R5_surfaceNormal.w * R5_surfaceNormal.w) * 250.0 + 4.0);\n";
+
+		// Add shadows unless they have been purposely turned off
+		if (shadowed && !source.Contains("#pragma shadows off", true)) source <<
+		"	float shadowFactor = texture2D(R5_shadowMap, GetPixelTexCoords()).a;\n"
+		"	diffuseFactor  = min(diffuseFactor, shadowFactor);\n"
+		"	specularFactor = min(diffuseFactor, specularFactor);\n";
+
+		source <<
+		"	vec3 final = R5_lightDiffuse * (diffuseFactor * (R5_surfaceProps.w * 0.25 + 0.75));\n"
+		"	final = (R5_lightAmbient * R5_surfaceProps.w + final) * R5_surfaceColor.rgb * R5_vertexLight.w;\n"
+		"	final = mix(final, R5_surfaceColor.rgb, R5_surfaceProps.z);\n"
+
+		"	vec3 specular = vec3(R5_surfaceProps.x * specularFactor);\n"
+		"	final += mix(specular, specular * R5_surfaceColor.rgb, R5_surfaceProps.y) * R5_vertexLight.w;\n"
+		"	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n"
+
+		"	R5_finalColor[0] = vec4(final, R5_surfaceColor.a);\n";
+	}
+
+	// Restore the final bracket
+	source << "}\n";
+	return true;
 }
 
 //============================================================================================================
-// Adds appropriate R5 functions if the program uses them
+// Adds appropriate vertex shader functionality
 //============================================================================================================
 
-void AddReferencedFunctions (String& source)
+bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
+{
+	// Remove the last closing bracket
+	uint lastBracket = source.Find("}", true, 0, -1, true);
+	if (lastBracket >= source.GetSize()) return false;
+	source[lastBracket] = '\n';
+
+	// Vertex position should be a local variable
+	source.Replace("R5_vertexPosition", "vec4 R5_vertexPosition", true);
+
+	// TODO: If instanced, use Model * ViewProj
+	// Instanced shaders separate model and view matrices in order to allow GPU handle their multiplication
+	//bool instanced = source.Contains("#pragma instancing on", true);
+
+	// Skinned shaders allow GPU skinning
+	bool skinned = source.Contains("#pragma skinning on", true);
+	flags.Set(IShader::Flag::Skinned, skinned);
+
+	// Billboarded shaders always make the triangles face the camera
+	//bool billboard = source.Contains("#pragma billboard on", true);
+	//flags.Set(IShader::Flag::Billboarded, billboard);
+
+	// Skinned shaders use an additional set of matrices
+	if (skinned)
+	{
+		source <<
+		"	mat4 R5_skinMat = R5_boneTransforms[int(R5_boneIndex.x)] * R5_boneWeight.x +\n"
+		"		R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n"
+		"		R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n"
+		"		R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n"
+		"	R5_vertexPosition = R5_skinMat * R5_vertexPosition;\n";
+	}
+
+	// Should support instancing
+	//if (instanced) source << "	R5_vertexPosition = R5_modelMatrix * R5_vertexPosition;\n";
+
+	// Lit forward rendering needs to calculate the directional vector prior to transforms
+	if (!deferred)
+	{
+		// Direction from the eye position to the vertex in view space
+		source << "	R5_vertexEye = (R5_modelViewMatrix * R5_vertexPosition).xyz;\n";
+
+		// Calculate per-vertex fog
+		if (!source.Contains("#pragma fog off", true))
+		{
+			source <<
+			"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_vertexEye.z) / R5_clipRange.w;\n"
+			"	R5_vertexFog = clamp((R5_vertexFog - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
+			"	R5_vertexFog = 0.5 * (R5_vertexFog * R5_vertexFog + R5_vertexFog);\n";
+		}
+
+		if (!source.Contains("#pragma lighting off", true))
+		{
+			source <<
+			"	if (R5_lightPosition.w == 0.0)\n"
+			"	{\n"
+			"		R5_vertexLight.xyz = normalize(R5_lightPosition.xyz);\n"
+			"		R5_vertexLight.w = 1.0;\n"
+			"	}\n"
+			"	else\n"
+			"	{\n"
+			"		vec3 eyeToLight = R5_lightPosition.xyz - R5_vertexEye;\n"
+			"		float dist = length(eyeToLight);\n"
+			"		float atten = 1.0 - clamp(dist / R5_lightParams.x, 0.0, 1.0);\n"
+			"		R5_vertexLight.xyz = normalize(eyeToLight);\n"
+			"		R5_vertexLight.w = pow(atten, R5_lightParams.y);\n"
+			"	}\n";
+		}
+	}
+
+	// Always include the vertex color
+	if (!source.Contains("R5_vertexColor", true)) source << "	R5_vertexColor = R5_color;\n";
+
+	// Transform the normal
+	if (source.Contains("R5_vertexNormal", true))
+	{
+		// Tangent shouldn't exist without the normal
+		if (source.Contains("R5_vertexTangent", true))
+		{
+			source <<
+			"	mat3 R5_rotMat;\n";
+
+			if (skinned) source <<
+			"	R5_rotMat = mat3(R5_skinMat);\n"
+			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
+
+			//if (instanced) source <<
+			//"	R5_rotMat = mat3(R5_modelMatrix);\n"
+			//"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			//"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
+
+			source <<
+			"	R5_rotMat = mat3(R5_modelViewMatrix);\n"
+			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
+		}
+		else
+		{
+			if (skinned)	source << "	R5_vertexNormal = mat3(R5_skinMat) * R5_vertexNormal;\n";
+			//if (instanced)source << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n";
+							source << "	R5_vertexNormal = mat3(R5_modelViewMatrix) * R5_vertexNormal;\n";
+		}
+	}
+
+	// Transform the vertex
+	source << "	gl_Position = R5_modelViewProjMatrix * R5_vertexPosition;\n";
+
+	// Restore the final bracket
+	source << "}\n";
+	return true;
+}
+
+//============================================================================================================
+// Adds appropriate common functions if the program uses them
+//============================================================================================================
+
+void AddCommonFunctions (String& source)
 {
 	String prefix;
 
@@ -51,9 +237,6 @@ void AddReferencedFunctions (String& source)
 		"}\n";
 	}
 
-	source.Replace("GetPixelTexCoords()", "R5_fragCoord.xy * R5_pixelSize", true);
-	source.Replace("GetPixelPosition()", "int2(int(R5_fragCoord.x), int(R5_fragCoord.y))", true);
-
 	if (prefix.IsValid()) source = prefix + source;
 }
 
@@ -63,18 +246,9 @@ void AddReferencedFunctions (String& source)
 
 extern Array<GLShader::UniformRecord> g_uniforms;
 
-void AddReferencedUniforms (String& source)
+void AddReferencedVariables (String& source, bool isFragmentShader)
 {
 	String prefix;
-
-	if (source.Contains("R5_texture0", true)) prefix << "uniform sampler2D R5_texture0;\n";
-	if (source.Contains("R5_texture1", true)) prefix << "uniform sampler2D R5_texture1;\n";
-	if (source.Contains("R5_texture2", true)) prefix << "uniform sampler2D R5_texture2;\n";
-	if (source.Contains("R5_texture3", true)) prefix << "uniform sampler2D R5_texture3;\n";
-	if (source.Contains("R5_texture4", true)) prefix << "uniform sampler2D R5_texture4;\n";
-	if (source.Contains("R5_texture5", true)) prefix << "uniform sampler2D R5_texture5;\n";
-	if (source.Contains("R5_texture6", true)) prefix << "uniform sampler2D R5_texture6;\n";
-	if (source.Contains("R5_texture7", true)) prefix << "uniform sampler2D R5_texture7;\n";
 
 	FOREACH(i, g_uniforms)
 	{
@@ -93,14 +267,88 @@ void AddReferencedUniforms (String& source)
 			prefix << ";\n";
 		}
 	}
+
+	if (isFragmentShader)
+	{
+		if (source.Contains("R5_shadowMap", true)) prefix << "uniform sampler2D R5_shadowMap;\n";
+
+		source.Replace("Sample2D(", "texture2D(R5_texture", true);
+		source.Replace("SampleCube(", "textureCube(R5_texture", true);
+
+		if (source.Contains("texture2D"))
+		{
+			const char* header = "uniform sampler2D R5_texture";
+			if (source.Contains("texture2D(R5_texture0", true)) { prefix << header; prefix << "0;\n"; }
+			if (source.Contains("texture2D(R5_texture1", true)) { prefix << header; prefix << "1;\n"; }
+			if (source.Contains("texture2D(R5_texture2", true)) { prefix << header; prefix << "2;\n"; }
+			if (source.Contains("texture2D(R5_texture3", true)) { prefix << header; prefix << "3;\n"; }
+			if (source.Contains("texture2D(R5_texture4", true)) { prefix << header; prefix << "4;\n"; }
+			if (source.Contains("texture2D(R5_texture5", true)) { prefix << header; prefix << "5;\n"; }
+			if (source.Contains("texture2D(R5_texture6", true)) { prefix << header; prefix << "6;\n"; }
+			if (source.Contains("texture2D(R5_texture7", true)) { prefix << header; prefix << "7;\n"; }
+		}
+
+		if (source.Contains("textureCube", true))
+		{
+			const char* header = "uniform samplerCube ";
+			if (source.Contains("textureCube(R5_texture0", true)) { prefix << header; prefix << "0;\n"; }
+			if (source.Contains("textureCube(R5_texture1", true)) { prefix << header; prefix << "1;\n"; }
+			if (source.Contains("textureCube(R5_texture2", true)) { prefix << header; prefix << "2;\n"; }
+			if (source.Contains("textureCube(R5_texture3", true)) { prefix << header; prefix << "3;\n"; }
+			if (source.Contains("textureCube(R5_texture4", true)) { prefix << header; prefix << "4;\n"; }
+			if (source.Contains("textureCube(R5_texture5", true)) { prefix << header; prefix << "5;\n"; }
+			if (source.Contains("textureCube(R5_texture6", true)) { prefix << header; prefix << "6;\n"; }
+			if (source.Contains("textureCube(R5_texture7", true)) { prefix << header; prefix << "7;\n"; }
+		}
+	}
+	else
+	{
+		if (source.Contains("R5_vertex",		 true)) prefix << "in vec4 R5_vertex;\n";
+		if (source.Contains("R5_tangent",		 true)) prefix << "in vec4 R5_tangent;\n";
+		if (source.Contains("R5_normal",		 true)) prefix << "in vec3 R5_normal;\n";
+		if (source.Contains("R5_color",			 true)) prefix << "in vec4 R5_color;\n";
+		if (source.Contains("R5_boneWeight",	 true)) prefix << "in vec4 R5_boneWeight;\n";
+		if (source.Contains("R5_boneIndex",		 true)) prefix << "in vec4 R5_boneIndex;\n";
+		if (source.Contains("R5_texCoord0",		 true)) prefix << "in vec2 R5_texCoord0;\n";
+		if (source.Contains("R5_texCoord1",		 true)) prefix << "in vec2 R5_texCoord1;\n";
+		if (source.Contains("R5_boneTransforms", true)) prefix << "in mat4 R5_boneTransforms[32];\n";
+	}
+
+	const char* inOut = (isFragmentShader ? "in " : "out ");
+
+	if (source.Contains("R5_vertexColor",	true)) { prefix << inOut; prefix << "vec4 R5_vertexColor;\n"; }
+	if (source.Contains("R5_vertexEye",		true)) { prefix << inOut; prefix << "vec3 R5_vertexEye;\n"; }
+	if (source.Contains("R5_vertexLight",	true)) { prefix << inOut; prefix << "vec4 R5_vertexLight;\n"; }
+	if (source.Contains("R5_vertexNormal",	true)) { prefix << inOut; prefix << "vec3 R5_vertexNormal;\n"; }
+	if (source.Contains("R5_vertexFog",		true)) { prefix << inOut; prefix << "float R5_vertexFog;\n"; }
+
 	if (prefix.IsValid()) source = prefix + source;
+}
+
+//============================================================================================================
+// R5 shader format needs to be translated to the appropriate API
+//============================================================================================================
+
+void ConvertCommonTypes (String& source)
+{
+	source.Replace("half4", "mediump vec4", true);
+	source.Replace("half3", "mediump vec3", true);
+	source.Replace("half2", "mediump vec2", true);
+
+	source.Replace("int2", "ivec2", true);
+	source.Replace("int3", "ivec3", true);
+	source.Replace("int4", "ivec4", true);
+
+	source.Replace("float2", "vec2", true);
+	source.Replace("float3", "vec3", true);
+	source.Replace("float4", "vec4", true);
 }
 
 //============================================================================================================
 // Common preprocessing function that removes the matched value
 //============================================================================================================
 
-uint PreprocessMacroCommon (const String& source, const String& match, Array<String*>& words)
+/*uint PreprocessMacroCommon (const String& source, const String& match, Array<String*>& words)
 {
 	uint length = source.GetLength();
 	uint phrase = source.Find(match);
@@ -152,7 +400,7 @@ uint PreprocessMacroCommon (const String& source, const String& match, String& v
 	words.Expand() = &v1;
 	words.Expand() = &v2;
 	return PreprocessMacroCommon(source, match, words);
-}
+}*/
 
 //============================================================================================================
 // Macro that adds skinning support. Example implementations:
@@ -162,7 +410,7 @@ uint PreprocessMacroCommon (const String& source, const String& match, String& v
 // // R5_IMPLEMENT_SKINNING vertex normal tangent
 //============================================================================================================
 
-bool PreprocessMacroSkinning (String& source)
+/*bool PreprocessMacroSkinning (String& source)
 {
 	String left, right, vertex, normal, tangent;
 
@@ -213,7 +461,7 @@ bool PreprocessMacroSkinning (String& source)
 		return true;
 	}
 	return false;
-}
+}*/
 
 //============================================================================================================
 // Macro that adds pseudo-instancing support. Example implementations:
@@ -223,7 +471,7 @@ bool PreprocessMacroSkinning (String& source)
 // // R5_IMPLEMENT_INSTANCING vertex normal tangent
 //============================================================================================================
 
-bool PreprocessMacroInstancing (String& source)
+/*bool PreprocessMacroInstancing (String& source)
 {
 	String left, right, vertex, normal, tangent;
 
@@ -268,7 +516,7 @@ bool PreprocessMacroInstancing (String& source)
 		return true;
 	}
 	return false;
-}
+}*/
 
 //============================================================================================================
 // Macro that adds billboard cloud transform functionality.
@@ -278,7 +526,7 @@ bool PreprocessMacroInstancing (String& source)
 // // R5_IMPLEMENT_BILLBOARDING vertex normal tangent
 //============================================================================================================
 
-bool PreprocessMacroBillboarding (String& source)
+/*bool PreprocessMacroBillboarding (String& source)
 {
 	String left, right, vertex, normal, tangent;
 
@@ -294,7 +542,7 @@ bool PreprocessMacroBillboarding (String& source)
 		left << "vec3 offset = gl_MultiTexCoord0.xyz;\n";
 		left << "offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;\n";
 		left << "offset.z *= 0.25;\n";
-		left << "offset *= R5_worldScale;\n";
+		left << "offset *= R5_modelScale;\n";
 		
 		// Calculate the view-transformed vertex
 		left << vertex;
@@ -324,283 +572,13 @@ bool PreprocessMacroBillboarding (String& source)
 
 		// Copy the result back into the Source
 		source = "uniform vec3 R5_origin;\n";
-		source << "uniform float R5_worldScale;\n";
+		source << "uniform float R5_modelScale;\n";
 		source << left;
 		source << right;
 		return true;
 	}
 	return false;
-}
-
-//============================================================================================================
-// Preprocess deprecated GLSL vertex shader functionality, replacing such things as 'gl_MultiTexCoord1' with
-// their equivalent vertex attribute names.
-//============================================================================================================
-
-void PreprocessMacroAttributes (String& source)
-{
-	String mtc ("gl_MultiTexCoord");
-	String match0, match1;
-
-	// ATI has an interesting list of features on their drivers... They don't like gl_MultiTexCoord1 because
-	// it has been deprecated in the latest GLSL specs (and I assume all higher gl_MultiTexCoords as well),
-	// and need to have them replaced with vertex attributes instead. Fine, but at the same time ATI drivers
-	// don't like it when gl_MultiTexCoord0 gets replaced with a vertex attribute as well! Sigh.
-
-	for (uint i = 8; i > 1; )
-	{
-		match0 = mtc;
-		match0 << --i;
-		match1 = match0;
-		match1 << ".xyz";
-
-		if (source.Contains(match0))
-		{
-			if (source.Contains(match1))
-			{
-				source.Replace(match1, String("R5_texCoord%u.xyz", i));
-				source = String("attribute vec3 R5_texCoord%u;\n", i) + source;
-			}
-			else
-			{
-				source.Replace(match0, String("R5_texCoord%u", i));
-				source = String("attribute vec2 R5_texCoord%u;\n", i) + source;
-			}
-		}
-	}
-}
-
-//============================================================================================================
-// Macro that implements common vertex output functionality including adding forward rendering lighting code
-//============================================================================================================
-// R5_VERTEX_OUTPUT vertex
-//============================================================================================================
-
-bool PreprocessMacroVertexOutput (String& source, bool deferred)
-{
-	String left, right, vertex, color;
-
-	uint offset = ::PreprocessMacroCommon(source, "R5_VERTEX_OUTPUT", vertex, color);
-
-	if (vertex.IsValid())
-	{
-		source.GetString(left, 0, offset);
-		source.GetString(right, offset);
-
-		left << "\n	gl_Position = gl_ModelViewProjectionMatrix * ";
-		left << vertex;
-
-		if (color.IsValid())
-		{
-			left << ";\n	gl_FrontColor = ";
-			left << color;
-		}
-
-		left << ";\n";
-
-		if (deferred)
-		{
-			source = left;
-			source << right;
-		}
-		else
-		{
-			// Forward rendering needs additional code to calculate per-vertex lighting and fog
-			left << "\n{\n";
-			left << "	_eyeDir = (gl_ModelViewMatrix * ";
-			left << vertex;
-			left << ").xyz;\n";
-			left << "	_fogFactor = 1.0 - (R5_clipRange.y + _eyeDir.z) / R5_clipRange.w;\n";
-			left << "	_fogFactor = clamp((_fogFactor - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n";
-			left << "	_fogFactor = 0.5 * (_fogFactor + _fogFactor * _fogFactor);\n";
-
-   			left << "	if (gl_LightSource[0].position.w == 0.0)\n";
-			left << "	{\n";
-			left << "		_light.xyz = normalize(gl_LightSource[0].position.xyz);\n";
-			left << "		_light.w = 1.0;\n";
-			left << "	}\n";
-			left << "	else\n";
-			left << "	{\n";
-			left << "		vec3 eyeToLight = gl_LightSource[0].position.xyz - _eyeDir;\n";
-			left << "		float dist = length(eyeToLight);\n";
-			left << "		float atten = 1.0 - clamp(dist / gl_LightSource[0].constantAttenuation, 0.0, 1.0);\n";
-
-			left << "		_light.xyz = normalize(eyeToLight);\n";
-			left << "		_light.w = pow(atten, gl_LightSource[0].linearAttenuation);\n";
-			left << "	}\n";
-			left << "}\n";
-
-			// Varyings for eye direction, light properties and fog factor must be defined up top
-			source  = "uniform vec2 R5_fogRange;\n";
-			source << "uniform vec4 R5_clipRange;\n";
-			source << "varying vec3 _eyeDir;\n";
-			source << "varying vec4 _light;\n";
-			source << "varying float _fogFactor;\n";
-			source << left;
-			source << right;
-		}
-		return true;
-	}
-	return false;
-}
-
-//============================================================================================================
-// Macro that implements common fragment shader output functionality used by the engine
-//============================================================================================================
-// R5_FRAGMENT_OUTPUT diffuse maps normal
-// - 'normal' contains the pixel's normal (XYZ) and shininess (W)
-// - 'diffuse' is the pixel's diffuse color (RGBA)
-// - 'maps' contains specularity (R), specular hue (G), glow (B), and occlusion (A)
-//============================================================================================================
-
-bool PreprocessMacroFragmentOutput (String& source, bool deferred, bool shadowed)
-{
-	String left, right, normal, diffuse, maps;
-
-	uint offset = ::PreprocessMacroCommon(source, "R5_FRAGMENT_OUTPUT", diffuse, maps, normal);
-
-	if (normal.IsValid())
-	{
-		source.GetString(left, 0, offset);
-		source.GetString(right, offset);
-
-		if (deferred)
-		{
-			// Deferred rendering output is simple -- it's copied nearly as-is
-			source = left;
-			source << "\n	";
-			source << normal;
-			source << ".xyz = ";
-			source << normal;
-			source << ".xyz * 0.5 + 0.5;";
-			source << "\n	gl_FragData[0] = ";
-			source << diffuse;
-			source << ";\n	gl_FragData[1] = ";
-			source << maps;
-			source << ";\n	gl_FragData[2] = ";
-			source << normal;
-			source << ";\n";
-			source << right;
-		}
-		else
-		{
-			// Forward rendering should add lighting
-			left << "\n	vec3 eyeDir   = normalize(_eyeDir);\n";
-			left << "	vec3 lightDir = normalize(_light.xyz);\n";
-
-			// Shininess
-			left << "	float shininess = ";
-			left << normal;
-			left << ".w;\n";
-			left << "	shininess = 4.0 + shininess * shininess * 250.0;\n";
-
-			// Diffuse factor
-			left << "	float diffuseFactor = max(0.0, dot(";
-			left << normal;
-			left << ".xyz, lightDir));\n";
-
-			// Reflective factor
-			left << "	float reflectiveFactor = max(0.0, dot(reflect(lightDir, ";
-			left << normal;
-			left << ".xyz), eyeDir));\n";
-
-			// Specular factor
-			left << "	float specularFactor = pow(reflectiveFactor, shininess);";
-
-			// Apply the shadow
-			if (shadowed)
-			{
-				uint offset(0), texture(0);
-				String temp;
-
-				// Find all existing used textures and figure out the next unused texture's index
-				for (;;)
-				{
-					offset = source.Find("R5_texture", true, offset) + 10;
-
-					if (offset < source.GetLength())
-					{
-						uint current (0);
-						source.GetWord(temp, offset);
-						if (temp >> current && texture < current + 1) texture = current + 1;
-						++offset;
-					}
-					else break;
-				}
-
-				// Remember whether the shader already used R5_pixelSize or not
-				bool pixelSizeExists = source.Find("R5_pixelSize") < source.GetLength();
-
-				// Append the shadowmap texture sampling, mixing it with diffuse and specular factors
-				left << "	float shadowFactor = texture2D(R5_texture";
-				left << texture;
-				left << ", gl_FragCoord.xy * R5_pixelSize).a;\n";
-				left << "	diffuseFactor  = min(diffuseFactor, shadowFactor);\n";
-				left << "	specularFactor = min(diffuseFactor, specularFactor);\n";
-
-				// Prepend the shadow texture definition
-				source = left;
-				left = "uniform sampler2D R5_texture";
-				left << texture;
-				left << ";\n";
-
-				// Prepend the pixel size if it hasn't been used previously
-				if (!pixelSizeExists) left << "uniform vec2 R5_pixelSize;\n";
-
-				// Append the rest of the current buffer
-				left << source;
-			}
-
-			// Material color attenuated by light
-			left << "	vec3 color = (gl_LightSource[0].ambient.rgb * ";
-			left << maps;
-			left << ".a + gl_LightSource[0].diffuse.rgb * (diffuseFactor * (0.75 + 0.25 * ";
-			left << maps;
-			left << ".a))) *";
-			left << diffuse;
-			left << ".rgb * _light.w;\n";
-
-			// Material color should transition back to its original unlit color as the 'glow' parameter grows
-			left << "	color = mix(color, ";
-			left << diffuse;
-			left << ".rgb, ";
-			left << maps;
-			left << ".b);\n";
-
-			// Specular color should be affected by specularity and the specular factor
-			left << "	vec3 specular = vec3(";
-			left << maps;
-			left << ".r * specularFactor);\n";
-
-			// Add specular component to the material color
-			left << "	color += mix(specular, specular * ";
-			left << diffuse;
-			left << ".rgb, ";
-			left << maps;
-			left << ".g) * _light.w;\n";
-
-			// AO visualization:
-			//left << "	color = vec3(";
-			//left << maps;
-			//left << ".a);\n";
-
-			// Make the material color fade out with fog
-			left << "	color = mix(color, gl_Fog.color.rgb, _fogFactor);\n";
-
-			// Final color
-			left << "	gl_FragColor = vec4(color, diffuse.a);\n";
-
-			// Varyings for eye direction, light properties and fog factor must be defined up top
-			source =  "varying vec3 _eyeDir;\n";
-			source << "varying float _fogFactor;\n";
-			source << "varying vec4 _light;\n";
-			source << left;
-			source << right;
-		}
-		return true;
-	}
-	return false;
-}
+}*/
 
 //============================================================================================================
 // Preprocess all dependencies
@@ -628,27 +606,63 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 {
 	uint type = ISubShader::Type::Invalid;
 
-	if (source.Replace("R5_FRAGMENT_SHADER", "void main()", true))
+	if (source.Contains("R5_surface", true))
 	{
+		flags.Set(IShader::Flag::Surface, true);
+
+		type = ISubShader::Type::Fragment;
 		String prefix ("#version 130\n");
 
-		::ConvertTypes(source);
-		::AddReferencedFunctions(source);
-		::AddReferencedUniforms(source);
+		::AddSurfaceFunctions(source, deferred, shadowed);
+		::AddCommonFunctions(source);
 
+		// Convenience (fake) uniforms
+		source.Replace("R5_materialSpecularity",	"R5_materialParams0.x", true);
+		source.Replace("R5_materialSpecularHue",	"R5_materialParams0.y", true);
+		source.Replace("R5_materialGlow",			"R5_materialParams0.z", true);
+		source.Replace("R5_materialOcclusion",		"R5_materialParams0.w", true);
+		source.Replace("R5_materialShininess",		"R5_materialParams1.x", true);
+		source.Replace("R5_materialReflectiveness", "R5_materialParams1.y", true);
+
+		// Convenience (fake) functions
+		source.Replace("Sample2D(", "texture2D(R5_texture", true);
+		source.Replace("GetPixelTexCoords()", "gl_FragCoord.xy * R5_pixelSize", true);
+		source.Replace("GetPixelPosition()", "int2(int(gl_FragCoord.x), int(gl_FragCoord.y))", true);
+		source.Replace("R5_fragCoord", "gl_FragCoord", true);
+
+		// Fragment shader output values -- support for up to 4 buffers. If you need more, just add them.
 		if		(source.Contains("R5_finalColor[3]", true)) prefix << "out vec4 R5_finalColor[4];\n";
 		else if (source.Contains("R5_finalColor[2]", true)) prefix << "out vec4 R5_finalColor[3];\n";
 		else if (source.Contains("R5_finalColor[1]", true)) prefix << "out vec4 R5_finalColor[2];\n";
 		else if (source.Replace("R5_finalColor[0]", "R5_finalColor", true)) prefix << "out vec4 R5_finalColor;\n";
 
-		source.Replace("R5_fragCoord", "gl_FragCoord", true);
+		// Add all referenced variables and convert common types
+		::AddReferencedVariables(source, true);
+		::ConvertCommonTypes(source);
 
+		// Prepend the prefix
 		source = prefix + source;
-		type = ISubShader::Type::Fragment;
+
+		//System::Log("=================================================");
+		//System::Log(source.GetBuffer());
+		//System::Log("=================================================");
 	}
-	else if (source.Replace("R5_VERTEX_SHADER", "void main()", true))
+	else if (source.Contains("R5_vertexPosition", true))
 	{
 		type = ISubShader::Type::Vertex;
+		String prefix ("#version 130\n");
+
+		::AddVertexFunctions(source, deferred, flags);
+		::AddCommonFunctions(source);
+		::AddReferencedVariables(source, false);
+		::ConvertCommonTypes(source);
+
+		source = prefix + source;
+	}
+	else
+	{
+		// This shader uses an outdated format
+		flags.Set(IShader::Flag::LegacyFormat, true);
 	}
 
 	// Unknown shader type -- figure it out
@@ -668,35 +682,7 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		}
 	}
 
-	if (type == ISubShader::Type::Vertex)
-	{
-		::PreprocessMacroAttributes(source);
-
-		if (::PreprocessMacroSkinning(source))		flags.Set(IShader::Flag::Skinned,		true);
-		if (::PreprocessMacroInstancing(source))	flags.Set(IShader::Flag::Instanced,		true);
-		if (::PreprocessMacroBillboarding(source))	flags.Set(IShader::Flag::Billboarded,	true);
-
-		// Vertex shader output
-		::PreprocessMacroVertexOutput(source, deferred);
-	}
-	else if (type == ISubShader::Type::Fragment)
-	{
-		// Raw GLSL fragment shader
-		flags.Set(IShader::Flag::Surface, ::PreprocessMacroFragmentOutput(source, deferred, shadowed));
-
-		bool matShader (false);
-		matShader |= source.Replace("R5_MATERIAL_SPECULARITY",		"gl_FrontMaterial.specular.r", true) != 0;
-		matShader |= source.Replace("R5_MATERIAL_SPECULAR_HUE",		"gl_FrontMaterial.specular.g", true) != 0;
-		matShader |= source.Replace("R5_MATERIAL_REFLECTIVENESS",	"gl_FrontMaterial.specular.b", true) != 0;
-		matShader |= source.Replace("R5_MATERIAL_SHININESS",		"gl_FrontMaterial.specular.a", true) != 0;
-		matShader |= source.Replace("R5_MATERIAL_OCCLUSION",		"gl_FrontMaterial.emission.r + gl_FrontMaterial.emission.g", true) != 0;
-		matShader |= source.Replace("R5_MATERIAL_GLOW",				"gl_FrontMaterial.emission.a", true) != 0;
-
-		flags.Set(IShader::Flag::Material, matShader);
-		flags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
-	}
-
-	// Common macro
-	if (source.Contains("R5_worldScale", true)) flags.Set(IShader::Flag::WorldScale, true);
+	flags.Set(IShader::Flag::Lit, source.Contains("R5_light", true));
+	flags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
 	return type;
 }

@@ -146,17 +146,17 @@ uint Cloud::Draw (IGraphics* graphics)
 					mVbo, 12, IGraphics::DataType::Float, 3, 24 );
 
 				// Vertex positions
-				graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+				graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex,
 					mVbo, 0, IGraphics::DataType::Float, 3, 24 );
 			}
 			else
 			{
 				float* ptr = &mV[0].x;
 
-				graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, ptr + 3,
+				graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, ptr + 3,
 					IGraphics::DataType::Float, 3, 24 );
 
-				graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, ptr,
+				graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, ptr,
 					IGraphics::DataType::Float, 3, 24 );
 			}
 

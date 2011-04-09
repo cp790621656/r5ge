@@ -387,14 +387,14 @@ FILTER(Fractal)
 		{
 			for (uint i = 0; i < allocated; ++i)
 			{
-				data[i] = Float::Max(data[i], aux[i]);
+				data[i] = Max(data[i], aux[i]);
 			}
 		}
 		else
 		{
 			for (uint i = 0; i < allocated; ++i)
 			{
-				data[i] = Float::Max(data[i], contribution * aux[i]);
+				data[i] = Max(data[i], contribution * aux[i]);
 			}
 		}
 	}
@@ -850,7 +850,7 @@ FILTER(Erode)
 
 	// Only 50% should be transferred as this will even out the 2 pixels.
 	// As such, we can't transfer more than 50%.
-	strength = Float::Min(strength * 0.5f, 0.5f);
+	strength = Min(strength * 0.5f, 0.5f);
 
 	int yw, index, target, idx;
 	float max, diff;

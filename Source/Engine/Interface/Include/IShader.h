@@ -14,13 +14,11 @@ struct IShader
 	{
 		enum
 		{
-			Skinned		= 0x01,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
-			Instanced	= 0x02,	// The shader has a pseudo-instancing component
-			Billboarded	= 0x04,	// The shader is meant for a billboarded quad (or a series of quads)
-			WorldScale	= 0x08,	// The shader has the R5_worldScale parameter.
-			Material	= 0x10,	// Has the R5_material uniform
-			Shadowed	= 0x20,	// The material's last texture must be "R5_Shadowmap"
-			Surface		= 0x40,	// This is a surface shader, usable for both forward and deferred
+			LegacyFormat = 0x0001,	// This shader uses an outdated shader model (before SM 3.0)
+			Skinned		 = 0x0002,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
+			Shadowed	 = 0x0010,	// The material's last texture must be "R5_shadowMap"
+			Surface		 = 0x0020,	// This is a surface shader, usable for both forward and deferred
+			Lit			 = 0x0040,	// This shader has lighting code
 		};
 	};
 
@@ -74,5 +72,5 @@ public:
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const=0;
 
 	// Registers a uniform variable that's updated once per frame
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct)=0;
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, bool setOnDraw = false)=0;
 };

@@ -24,8 +24,9 @@ private:
 		String				mName;		// Name of the uniform variable (ie: "R5_eyePos")
 		SetUniformDelegate	mDelegate;	// Delegate function that will set the data for that uniform
 		int					mGLID;		// OpenGL resource ID in the shader, once found (-2 if not checked, -1 if not found)
+		bool				mSetOnDraw;	// Changes frequently and should be updated prior to every drawing call
 
-		UniformEntry() : mGLID(-2) {}
+		UniformEntry() : mGLID(-2), mSetOnDraw(false) {}
 	};
 
 private:
@@ -52,25 +53,39 @@ private:
 	friend class GLController;
 
 	// Delegate functions for common shader uniforms
-	void SetUniform_EyePos		(const String& name, Uniform& uniform);
-	void SetUniform_PixelSize	(const String& name, Uniform& uniform);
-	void SetUniform_ClipRange	(const String& name, Uniform& uniform);
-	void SetUniform_FogRange	(const String& name, Uniform& uniform);
-	void SetUniform_FogColor	(const String& name, Uniform& uniform);
-	void SetUniform_MVP			(const String& name, Uniform& uniform);
-	void SetUniform_PM			(const String& name, Uniform& uniform);
-	void SetUniform_IVM			(const String& name, Uniform& uniform);
-	void SetUniform_IPM			(const String& name, Uniform& uniform);
-	void SetUniform_IMVPM		(const String& name, Uniform& uniform);
-	void SetUniform_IVRM		(const String& name, Uniform& uniform);
-	void SetUniform_WTM			(const String& name, Uniform& uniform);
-	void SetUniform_WRM			(const String& name, Uniform& uniform);
+	void SetUniform_EyePos			(const String& name, Uniform& uniform);
+	void SetUniform_PixelSize		(const String& name, Uniform& uniform);
+	void SetUniform_ClipRange		(const String& name, Uniform& uniform);
+	void SetUniform_FogRange		(const String& name, Uniform& uniform);
+	void SetUniform_FogColor		(const String& name, Uniform& uniform);
+
+	void SetUniform_LightAmbient	(const String& name, Uniform& uniform);
+	void SetUniform_LightDiffuse	(const String& name, Uniform& uniform);
+	void SetUniform_LightPosition	(const String& name, Uniform& uniform);
+	void SetUniform_LightParams		(const String& name, Uniform& uniform);
+
+	void SetUniform_MatColor		(const String& name, Uniform& uniform);
+	void SetUniform_MatParams0		(const String& name, Uniform& uniform);
+	void SetUniform_MatParams1		(const String& name, Uniform& uniform);
+
+	void SetUniform_MS				(const String& name, Uniform& uniform);
+	void SetUniform_MM				(const String& name, Uniform& uniform);
+	void SetUniform_PM				(const String& name, Uniform& uniform);
+	void SetUniform_MVM				(const String& name, Uniform& uniform);
+	void SetUniform_MVPM			(const String& name, Uniform& uniform);
+	void SetUniform_IVM				(const String& name, Uniform& uniform);
+	void SetUniform_IVRM			(const String& name, Uniform& uniform);
+	void SetUniform_IPM				(const String& name, Uniform& uniform);
+	void SetUniform_IMVPM			(const String& name, Uniform& uniform);
 
 	// Should only be accessible through GLGraphics
 	bool Init (GLGraphics* graphics, const String& name);
 
-	// Activates this shader
-	bool Activate (bool resetUniforms);
+	// Activates this shader for the specified technique
+	bool Activate (const ITechnique* tech);
+
+	// Updates all uniforms
+	uint Update (bool aboutToDraw = true) const;
 
 	// Deactivates the current shader
 	void Deactivate() const;
@@ -102,7 +117,7 @@ private:
 	bool _UpdateUniform (uint glID, const Uniform& uni) const;
 
 	// INTERNAL: Adds a new registered uniform value without checking to see if it already exists
-	void _InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct);
+	void _InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct, bool setOnDraw);
 
 public:
 
@@ -128,5 +143,5 @@ public:
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const;
 
 	// Registers a uniform variable that's updated once per frame
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct);
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, bool setOnDraw);
 };

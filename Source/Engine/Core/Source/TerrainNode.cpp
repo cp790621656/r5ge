@@ -124,7 +124,7 @@ void TerrainNode::OnDraw (uint group, const ITechnique* tech, bool insideOut)
 {
 	IGraphics* graphics = mTree->GetCore()->GetGraphics();
 
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex,
 		mVBO, 0, IGraphics::DataType::Float, 3, 0 );
 
 	graphics->DrawIndices(mIBO, IGraphics::Primitive::Quad, mIndices);
