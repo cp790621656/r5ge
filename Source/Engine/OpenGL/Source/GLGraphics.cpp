@@ -74,7 +74,7 @@ bool GLGraphics::IsPointVisible (const Vector3f& v)
 		if (g_caps.mOcclusion)
 		{
 			// Activate the matrices as the query will need them to be properly set up
-			mStats.mMatSwitches += mTrans.Activate(0);
+			_ActivateMatrices();
 
 			// If the query hasn't been created yet, do that now
 			if (mQuery == 0)
@@ -512,7 +512,9 @@ uint GLGraphics::Draw (uint drawable)
 	if (drawable == Drawable::FullscreenQuad)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
-		GLController::PrepareToDraw();
+
+		_BindAllTextures();
+		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
 		{
@@ -535,7 +537,9 @@ uint GLGraphics::Draw (uint drawable)
 	else if (drawable == Drawable::InvertedQuad)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
-		GLController::PrepareToDraw();
+
+		_BindAllTextures();
+		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
 		{
@@ -558,7 +562,9 @@ uint GLGraphics::Draw (uint drawable)
 	else if (drawable == Drawable::Plane)
 	{
 		ResetModelViewMatrix();
-		GLController::PrepareToDraw();
+
+		_BindAllTextures();
+		_ActivateMatrices();
 
 		glBegin(GL_QUADS);
 		{
@@ -596,7 +602,9 @@ uint GLGraphics::Draw (uint drawable)
 		Flush();
 
 		ResetModelViewMatrix();
-		GLController::PrepareToDraw();
+
+		_BindAllTextures();
+		_ActivateMatrices();
 
 		glBegin(GL_LINES);
 		{
@@ -644,7 +652,9 @@ uint GLGraphics::Draw (uint drawable)
 		SetLighting(Lighting::None);
 		SetBlending(Blending::Replace);
 		SetActiveMaterial((const IMaterial*)0);
-		GLController::PrepareToDraw();
+
+		_BindAllTextures();
+		_ActivateMatrices();
 
 		glBegin(GL_LINES);
 		{

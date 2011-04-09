@@ -195,7 +195,7 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false )=0;
 	virtual bool SetActiveMaterial			( const IMaterial* ptr )=0;
 	virtual bool SetActiveMaterial			( const ITexture* ptr )=0;
-	virtual bool SetActiveShader			( const IShader* ptr )=0;
+	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false )=0;
 	virtual void SetActiveSkybox			( const ITexture* ptr )=0;
 	virtual void SetActiveColor				( const Color& c )=0;
 	virtual void SetScreenProjection		( bool screen )=0;
@@ -212,7 +212,7 @@ public:
 											  uint			stride )=0;		// Size of each vertex entry in bytes
 
 	// Activate all matrices and bind all textures, preparing to draw
-	virtual void PrepareToDraw()=0;
+	virtual void Execute()=0;
 
 	// Draw functions
 	virtual uint DrawVertices	( uint primitive, uint vertexCount )=0;

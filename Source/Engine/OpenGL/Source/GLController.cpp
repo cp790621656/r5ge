@@ -143,6 +143,7 @@ inline uint GLController::_CountImageUnits()
 void GLController::Flush()
 {
 	_BindAllTextures();
+	_ActivateMatrices();
 	glFlush();
 }
 
@@ -518,11 +519,100 @@ void GLController::SetActiveLight (uint index, const ILight* light)
 	if (light)
 	{
 		dest = *light;
+
+		if (index != 0 || light->mType == ILight::Type::Invalid) return;
+		
+		if (mShader != 0 && mShader->GetFlag(IShader::Flag::Lit))
+		{
+			((GLShader*)mShader)->Activate(true);
+		}
 	}
 	else
 	{
 		dest.mType = ILight::Type::Invalid;
 	}
+
+	/*if (mLu.IsEmpty())
+	{
+		ASSERT( g_caps.mMaxLights > 0, "Could not retrieve the maximum number of lights" );
+		mLu.ExpandTo( g_caps.mMaxLights );
+		for (uint i = 0; i < mLu.GetSize(); ++i)
+			mLu[i] = false;
+	}
+
+	if (index < mLu.GetSize())
+	{
+		bool& active (mLu[index]);
+		index += GL_LIGHT0;
+
+		if (ptr == 0)
+		{
+			if (active)
+			{
+				active = false;
+				glDisable(index);
+			}
+		}
+		else
+		{
+			// Activate the matrices as they will affect the lights
+			_ActivateMatrices();
+
+			// Activate the light
+			if (!active)
+			{
+				active = true;
+				glEnable(index);
+			}
+
+			if (ptr->mType == ILight::Type::Directional)
+			{
+				Vector3f dir (ptr->mDir);
+
+				// Automatically adjust the light position to always be in view space
+				if (mTrans.mIs2D) dir %= GetModelViewMatrix();
+
+				// Set the light's position
+				glLightfv(index, GL_POSITION, Quaternion(-dir.x, -dir.y, -dir.z, 0.0f));
+			}
+			else
+			{
+				Vector3f pos (ptr->mPos);
+
+				// Automatically adjust the light position to always be in view space
+				if (mTrans.mIs2D) pos *= GetModelViewMatrix();
+
+				// Set the light's position
+				glLightfv(index, GL_POSITION, Quaternion(pos.x, pos.y, pos.z, 1.0f));
+
+				// Point lights are marked by having a cutoff of 180
+				if (ptr->mType == ILight::Type::Point)
+				{
+					glLightf(index, GL_SPOT_CUTOFF, 180.0f);
+				}
+				//else
+				//{
+				//	glLightfv(index, GL_SPOT_DIRECTION, ptr->mDir);
+				//	glLightf(index, GL_SPOT_EXPONENT, Float::Clamp(ptr->mSpot.x, 0.0f, 128.0f));
+				//	glLightf(index, GL_SPOT_CUTOFF, Float::Clamp(ptr->mSpot.y, 0.0f, 90.0f));
+				//}
+
+				// Shaders perform completely different operations with the attenuation parameters
+				// As such, point lights are not supported using the fixed-function pipeline.
+				glLightf(index, GL_CONSTANT_ATTENUATION,	ptr->mParams.x);
+				glLightf(index, GL_LINEAR_ATTENUATION,		ptr->mParams.y);
+				glLightf(index, GL_QUADRATIC_ATTENUATION,	ptr->mParams.z);
+			}
+
+			// Common light parameters
+			glLightfv(index, GL_AMBIENT,  ptr->mAmbient);
+			glLightfv(index, GL_DIFFUSE,  ptr->mDiffuse);
+			glLightfv(index, GL_SPECULAR, ptr->mSpecular);
+
+			++mStats.mLightSwitches;
+		}
+	}
+	CHECK_GL_ERROR;*/
 }
 
 //============================================================================================================
@@ -717,15 +807,64 @@ bool GLController::SetActiveMaterial (const ITexture* ptr)
 // Changes the currently active shader
 //============================================================================================================
 
-bool GLController::SetActiveShader (const IShader* ptr)
+bool GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms)
 {
 	// "Which shader is currently active" is kept inside the Shader.cpp file,
 	// so we don't check for inequality here.
 	if (ptr != 0)
 	{
 		GLShader* shader = (GLShader*)ptr;
-		if (shader->Activate(mTechnique)) ++mStats.mShaderSwitches;
-		else shader = 0;
+
+		for (;;)
+		{
+			// If this is a surface shader, we might need to activate a different shader
+			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface))
+			{
+				const String& shaderName = shader->GetName();
+
+				if (mTechnique->GetFlag(ITechnique::Flag::Deferred))
+				{
+					if (shader->mDeferred == 0)
+					{
+						// Remember this alternate version of the shader
+						shader->mDeferred = (GLShader*)GetShader(shaderName + " [Deferred]");
+
+						// Copy over registered uniforms
+						FOREACH(i, shader->mUniforms)
+						{
+							GLShader::UniformEntry& ent = shader->mUniforms[i];
+							shader->mDeferred->RegisterUniform(ent.mName, ent.mDelegate);
+						}
+					}
+					shader = shader->mDeferred;
+				}
+				else if (mTechnique->GetFlag(ITechnique::Flag::Shadowed))
+				{
+					if (shader->mShadowed == 0)
+					{
+						shader->mShadowed = (GLShader*)GetShader(shaderName + " [Shadowed]");
+
+						FOREACH(i, shader->mUniforms)
+						{
+							GLShader::UniformEntry& ent = shader->mUniforms[i];
+							shader->mShadowed->RegisterUniform(ent.mName, ent.mDelegate);
+						}
+					}
+					shader = shader->mShadowed;
+				}
+
+				// Activate the shader
+				if (shader->Activate(false)) ++mStats.mShaderSwitches;
+				break;
+			}
+
+			// Activate the shader
+			if (shader->Activate(false)) ++mStats.mShaderSwitches;
+
+			// If this is actually a surface shader, we might need to activate a different one
+			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface)) continue;
+			break;
+		}
 
 		// Remember the shader that we activated
 		mMaterial = (const IMaterial*)(-1);
@@ -875,7 +1014,7 @@ void GLController::SetActiveVertexAttribute(
 		{
 			switch (attribute)
 			{
-				case Attribute::Vertex:		glEnableClientState(GL_VERTEX_ARRAY);			break;
+				case Attribute::Vertex:	glEnableClientState(GL_VERTEX_ARRAY);			break;
 				case Attribute::Normal:		glEnableClientState(GL_NORMAL_ARRAY);			break;
 				case Attribute::TexCoord0:	glEnableClientState(GL_TEXTURE_COORD_ARRAY);	break;
 				case Attribute::Color:		glEnableClientState(GL_COLOR_ARRAY);			break;
@@ -931,17 +1070,6 @@ void GLController::SetActiveVertexAttribute(
 }
 
 //============================================================================================================
-// Activate all matrices and bind all textures, preparing to draw
-//============================================================================================================
-
-void GLController::PrepareToDraw()
-{
-	mStats.mMatSwitches += mTrans.Activate(mShader);
-	if (mShader) mShader->Update(true);
-	_BindAllTextures();
-}
-
-//============================================================================================================
 // Draw the active buffers using an index buffer
 //============================================================================================================
 
@@ -952,8 +1080,11 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 
 	if (triangleCount > 0)
 	{
+		// Activate the matrices
+		_BindAllTextures();
+		_ActivateMatrices();
+
 		// Draw the arrays
-		GLController::PrepareToDraw();
 		glDrawArrays( glPrimitive, 0, vertexCount );
 		mStats.mTriangles += triangleCount;
 		++mStats.mDrawCalls;
@@ -975,8 +1106,11 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 		// Activate the VBO, if any
 		SetActiveVBO( vbo, IVBO::Type::Index );
 
+		// Activate the matrices
+		_BindAllTextures();
+		_ActivateMatrices();
+
 		// Draw the indices
-		GLController::PrepareToDraw();
 		glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr );
 		mStats.mTriangles += triangleCount;
 		++mStats.mDrawCalls;
@@ -1072,7 +1206,7 @@ bool GLController::_BindTexture (uint glType, uint glID)
 }
 
 //============================================================================================================
-// Ensures that all textures are bound
+// Binds all activated textures
 //============================================================================================================
 
 void GLController::_BindAllTextures()
