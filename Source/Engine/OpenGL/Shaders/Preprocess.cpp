@@ -114,6 +114,10 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 	bool skinned = source.Contains("#pragma skinning on", true);
 	flags.Set(IShader::Flag::Skinned, skinned);
 
+	// Billboarded shaders always make the triangles face the camera
+	//bool billboard = source.Contains("#pragma billboard on", true);
+	//flags.Set(IShader::Flag::Billboarded, billboard);
+
 	// Skinned shaders use an additional set of matrices
 	if (skinned)
 	{

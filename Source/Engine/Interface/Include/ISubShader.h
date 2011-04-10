@@ -28,10 +28,10 @@ protected:
 public:
 
 	// All shaders should have flags that can be easily modified
-	bool GetFlag (uint flags) const			{ return mFlags.Get(flags); }
+	bool GetFlag (uint flags) const { return mFlags.Get(flags); }
 
 	// It should also be possible to change the flags
-	void SetFlag (uint flags, bool value)	{ mFlags.Set(flags, value); }
+	void SetFlag (uint flags, bool value) { mFlags.Set(flags, value); }
 
 public:
 

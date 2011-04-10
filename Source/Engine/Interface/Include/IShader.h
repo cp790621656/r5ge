@@ -72,5 +72,5 @@ public:
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const=0;
 
 	// Registers a uniform variable that's updated once per frame
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct)=0;
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, bool setOnDraw = false)=0;
 };

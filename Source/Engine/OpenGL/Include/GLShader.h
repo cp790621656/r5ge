@@ -24,8 +24,9 @@ private:
 		String				mName;		// Name of the uniform variable (ie: "R5_eyePos")
 		SetUniformDelegate	mDelegate;	// Delegate function that will set the data for that uniform
 		int					mGLID;		// OpenGL resource ID in the shader, once found (-2 if not checked, -1 if not found)
+		bool				mSetOnDraw;	// Changes frequently and should be updated prior to every drawing call
 
-		UniformEntry() : mGLID(-2) {}
+		UniformEntry() : mGLID(-2), mSetOnDraw(false) {}
 	};
 
 private:
@@ -67,6 +68,7 @@ private:
 	void SetUniform_MatParams0		(const String& name, Uniform& uniform);
 	void SetUniform_MatParams1		(const String& name, Uniform& uniform);
 
+	void SetUniform_MS				(const String& name, Uniform& uniform);
 	void SetUniform_MM				(const String& name, Uniform& uniform);
 	void SetUniform_PM				(const String& name, Uniform& uniform);
 	void SetUniform_MVM				(const String& name, Uniform& uniform);
@@ -79,13 +81,22 @@ private:
 	// Should only be accessible through GLGraphics
 	bool Init (GLGraphics* graphics, const String& name);
 
-	// Activates this shader
-	bool Activate (bool resetUniforms);
+	// Activates this shader for the specified technique
+	GLShader* Activate (const ITechnique* tech);
+
+	// Updates all uniforms
+	uint Update (bool aboutToDraw = true) const;
 
 	// Deactivates the current shader
 	void Deactivate() const;
 
 private:
+
+	// INTERNAL: Activates this shader
+	bool _Activate();
+
+	// INTERNAL: Rebuild the shader program
+	bool _Rebuild();
 
 	// INTERNAL: Appends the specified shader to the list
 	void _Append (const String& filename);
@@ -112,7 +123,7 @@ private:
 	bool _UpdateUniform (uint glID, const Uniform& uni) const;
 
 	// INTERNAL: Adds a new registered uniform value without checking to see if it already exists
-	void _InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct);
+	void _InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct, bool setOnDraw);
 
 public:
 
@@ -138,5 +149,5 @@ public:
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const;
 
 	// Registers a uniform variable that's updated once per frame
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct);
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, bool setOnDraw);
 };

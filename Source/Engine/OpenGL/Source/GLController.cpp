@@ -724,57 +724,8 @@ bool GLController::SetActiveShader (const IShader* ptr)
 	if (ptr != 0)
 	{
 		GLShader* shader = (GLShader*)ptr;
-
-		for (;;)
-		{
-			// If this is a surface shader, we might need to activate a different shader
-			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface))
-			{
-				const String& shaderName = shader->GetName();
-
-				if (mTechnique->GetFlag(ITechnique::Flag::Deferred))
-				{
-					if (shader->mDeferred == 0)
-					{
-						// Remember this alternate version of the shader
-						shader->mDeferred = (GLShader*)GetShader(shaderName + " [Deferred]");
-
-						// Copy over registered uniforms
-						FOREACH(i, shader->mUniforms)
-						{
-							GLShader::UniformEntry& ent = shader->mUniforms[i];
-							shader->mDeferred->RegisterUniform(ent.mName, ent.mDelegate);
-						}
-					}
-					shader = shader->mDeferred;
-				}
-				else if (mTechnique->GetFlag(ITechnique::Flag::Shadowed))
-				{
-					if (shader->mShadowed == 0)
-					{
-						shader->mShadowed = (GLShader*)GetShader(shaderName + " [Shadowed]");
-
-						FOREACH(i, shader->mUniforms)
-						{
-							GLShader::UniformEntry& ent = shader->mUniforms[i];
-							shader->mShadowed->RegisterUniform(ent.mName, ent.mDelegate);
-						}
-					}
-					shader = shader->mShadowed;
-				}
-
-				// Activate the shader
-				if (shader->Activate(false)) ++mStats.mShaderSwitches;
-				break;
-			}
-
-			// Activate the shader
-			if (shader->Activate(false)) ++mStats.mShaderSwitches;
-
-			// If this is actually a surface shader, we might need to activate a different one
-			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface)) continue;
-			break;
-		}
+		shader = shader->Activate(mTechnique);
+		if (shader != 0) ++mStats.mShaderSwitches;
 
 		// Remember the shader that we activated
 		mMaterial = (const IMaterial*)(-1);
@@ -986,7 +937,7 @@ void GLController::SetActiveVertexAttribute(
 void GLController::PrepareToDraw()
 {
 	mStats.mMatSwitches += mTrans.Activate(mShader);
-	if (mShader) ((GLShader*)mShader)->Activate(true);
+	if (mShader) mShader->Update(true);
 	_BindAllTextures();
 }
 
