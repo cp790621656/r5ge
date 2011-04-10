@@ -70,6 +70,7 @@ private:
 
 	void SetUniform_MS				(const String& name, Uniform& uniform);
 	void SetUniform_MM				(const String& name, Uniform& uniform);
+	void SetUniform_VM				(const String& name, Uniform& uniform);
 	void SetUniform_PM				(const String& name, Uniform& uniform);
 	void SetUniform_MVM				(const String& name, Uniform& uniform);
 	void SetUniform_MVPM			(const String& name, Uniform& uniform);

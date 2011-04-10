@@ -167,7 +167,16 @@ void GLShader::SetUniform_MM (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
-// Shader callback for R5_projectionMatrix
+// Shader callback for R5_viewMatrix
+//============================================================================================================
+
+void GLShader::SetUniform_VM (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetViewMatrix();
+}
+
+//============================================================================================================
+// Shader callback for R5_projMatrix
 //============================================================================================================
 
 void GLShader::SetUniform_PM (const String& name, Uniform& uniform)
@@ -379,7 +388,8 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	// These uniforms will be set on IShader::Update(), which happens just before the drawing operations
 	_InsertUniform( "R5_modelScale",				3,  bind(&GLShader::SetUniform_MS,		this), true );
 	_InsertUniform( "R5_modelMatrix",				16, bind(&GLShader::SetUniform_MM,		this), true );
-	_InsertUniform( "R5_projectionMatrix",			16, bind(&GLShader::SetUniform_PM,		this), true );
+	_InsertUniform( "R5_viewMatrix",				16, bind(&GLShader::SetUniform_VM,		this), true );
+	_InsertUniform( "R5_projMatrix",				16, bind(&GLShader::SetUniform_PM,		this), true );
 	_InsertUniform( "R5_modelViewMatrix",			16, bind(&GLShader::SetUniform_MVM,		this), true );
 	_InsertUniform( "R5_modelViewProjMatrix",		16, bind(&GLShader::SetUniform_MVPM,	this), true );
 	_InsertUniform( "R5_inverseViewMatrix",			16, bind(&GLShader::SetUniform_IVM,		this), true );

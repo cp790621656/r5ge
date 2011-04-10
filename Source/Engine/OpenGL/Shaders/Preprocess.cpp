@@ -106,10 +106,6 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 	// Vertex position should be a local variable
 	source.Replace("R5_vertexPosition", "vec4 R5_vertexPosition", true);
 
-	// TODO: If instanced, use Model * ViewProj
-	// Instanced shaders separate model and view matrices in order to allow GPU handle their multiplication
-	//bool instanced = source.Contains("#pragma instancing on", true);
-
 	// Skinned shaders allow GPU skinning
 	bool skinned = source.Contains("#pragma skinning on", true);
 	flags.Set(IShader::Flag::Skinned, skinned);
@@ -129,14 +125,16 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 		"	R5_vertexPosition = R5_skinMat * R5_vertexPosition;\n";
 	}
 
-	// Should support instancing
-	//if (instanced) source << "	R5_vertexPosition = R5_modelMatrix * R5_vertexPosition;\n";
+	// Calculate the vertex position
+	source <<
+	"	R5_vertexPosition = R5_modelMatrix * R5_vertexPosition;\n"
+	"	R5_vertexPosition = R5_viewMatrix * R5_vertexPosition;\n"
+	"	gl_Position = R5_projMatrix * R5_vertexPosition;\n";
 
 	// Lit forward rendering needs to calculate the directional vector prior to transforms
 	if (!deferred)
 	{
-		// Direction from the eye position to the vertex in view space
-		source << "	R5_vertexEye = (R5_modelViewMatrix * R5_vertexPosition).xyz;\n";
+		source << "	R5_vertexEye = R5_vertexPosition.xyz;\n";
 
 		// Calculate per-vertex fog
 		if (!source.Contains("#pragma fog off", true))
@@ -183,26 +181,24 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
 			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
 
-			//if (instanced) source <<
-			//"	R5_rotMat = mat3(R5_modelMatrix);\n"
-			//"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
-			//"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
+			source <<
+			"	R5_rotMat = mat3(R5_modelMatrix);\n"
+			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
 
 			source <<
-			"	R5_rotMat = mat3(R5_modelViewMatrix);\n"
+			"	R5_rotMat = mat3(R5_viewMatrix);\n"
 			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
 			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
 		}
 		else
 		{
-			if (skinned)	source << "	R5_vertexNormal = mat3(R5_skinMat) * R5_vertexNormal;\n";
-			//if (instanced)source << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n";
-							source << "	R5_vertexNormal = mat3(R5_modelViewMatrix) * R5_vertexNormal;\n";
+			if (skinned)
+			source << "	R5_vertexNormal = mat3(R5_skinMat) * R5_vertexNormal;\n";
+			source << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n";
+			source << "	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";
 		}
 	}
-
-	// Transform the vertex
-	source << "	gl_Position = R5_modelViewProjMatrix * R5_vertexPosition;\n";
 
 	// Restore the final bracket
 	source << "}\n";
@@ -642,10 +638,6 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 
 		// Prepend the prefix
 		source = prefix + source;
-
-		//System::Log("=================================================");
-		//System::Log(source.GetBuffer());
-		//System::Log("=================================================");
 	}
 	else if (source.Contains("R5_vertexPosition", true))
 	{
@@ -658,6 +650,10 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		::ConvertCommonTypes(source);
 
 		source = prefix + source;
+
+		//System::Log("=================================================");
+		//System::Log(source.GetBuffer());
+		//System::Log("=================================================");
 	}
 	else
 	{
