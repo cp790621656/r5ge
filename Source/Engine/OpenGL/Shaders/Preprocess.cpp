@@ -103,16 +103,18 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 	if (lastBracket >= source.GetSize()) return false;
 	source[lastBracket] = '\n';
 
-	// Vertex position should be a local variable
-	source.Replace("R5_vertexPosition", "vec4 R5_vertexPosition", true);
-
 	// Skinned shaders allow GPU skinning
 	bool skinned = source.Contains("#pragma skinning on", true);
 	flags.Set(IShader::Flag::Skinned, skinned);
 
 	// Billboarded shaders always make the triangles face the camera
-	//bool billboard = source.Contains("#pragma billboard on", true);
-	//flags.Set(IShader::Flag::Billboarded, billboard);
+	bool billboard = source.Contains("#pragma billboarding on", true);
+
+	// Vertex position should be a local variable
+	source.Replace("R5_vertexPosition", "vec3 R5_vertexPosition", true);
+
+	// Vertex position we'll be working with is a vec4
+	source << "	vec4 R5_position = vec4(R5_vertexPosition, 1.0);\n";
 
 	// Skinned shaders use an additional set of matrices
 	if (skinned)
@@ -122,19 +124,32 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 		"		R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n"
 		"		R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n"
 		"		R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n"
-		"	R5_vertexPosition = R5_skinMat * R5_vertexPosition;\n";
+		"	R5_position = R5_skinMat * R5_position;\n";
 	}
 
 	// Calculate the vertex position
 	source <<
-	"	R5_vertexPosition = R5_modelMatrix * R5_vertexPosition;\n"
-	"	R5_vertexPosition = R5_viewMatrix * R5_vertexPosition;\n"
-	"	gl_Position = R5_projMatrix * R5_vertexPosition;\n";
+	"	R5_position = R5_modelMatrix * R5_position;\n"
+	"	R5_position = R5_viewMatrix * R5_position;\n";
+
+	if (billboard)
+	{
+		// Billboard calculations are done in view space
+		source <<
+		"vec3 R5_offset = R5_texCoord0.xyz;\n"
+		"R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
+		"R5_offset.z *= 0.25;\n"
+		"R5_position.xyz = R5_offset * R5_modelScale + R5_position.xyz;\n"
+		"R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
+		"R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
+	}
+
+	source << "	gl_Position = R5_projMatrix * R5_position;\n";
 
 	// Lit forward rendering needs to calculate the directional vector prior to transforms
 	if (!deferred)
 	{
-		source << "	R5_vertexEye = R5_vertexPosition.xyz;\n";
+		source << "	R5_vertexEye = R5_position.xyz;\n";
 
 		// Calculate per-vertex fog
 		if (!source.Contains("#pragma fog off", true))
@@ -178,25 +193,25 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 
 			if (skinned) source <<
 			"	R5_rotMat = mat3(R5_skinMat);\n"
-			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n"
 			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
 
 			source <<
 			"	R5_rotMat = mat3(R5_modelMatrix);\n"
-			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n"
 			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
 
 			source <<
 			"	R5_rotMat = mat3(R5_viewMatrix);\n"
-			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n";
+			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n"
 			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
 		}
 		else
 		{
 			if (skinned)
 			source << "	R5_vertexNormal = mat3(R5_skinMat) * R5_vertexNormal;\n";
-			source << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n";
-			source << "	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";
+			source << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n"
+					  "	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";
 		}
 	}
 
@@ -299,8 +314,8 @@ void AddReferencedVariables (String& source, bool isFragmentShader)
 	}
 	else
 	{
-		if (source.Contains("R5_vertex",		 true)) prefix << "in vec4 R5_vertex;\n";
-		if (source.Contains("R5_tangent",		 true)) prefix << "in vec4 R5_tangent;\n";
+		if (source.Contains("R5_vertex",		 true)) prefix << "in vec3 R5_vertex;\n";
+		if (source.Contains("R5_tangent",		 true)) prefix << "in vec3 R5_tangent;\n";
 		if (source.Contains("R5_normal",		 true)) prefix << "in vec3 R5_normal;\n";
 		if (source.Contains("R5_color",			 true)) prefix << "in vec4 R5_color;\n";
 		if (source.Contains("R5_boneWeight",	 true)) prefix << "in vec4 R5_boneWeight;\n";
@@ -312,11 +327,14 @@ void AddReferencedVariables (String& source, bool isFragmentShader)
 
 	const char* inOut = (isFragmentShader ? "in " : "out ");
 
-	if (source.Contains("R5_vertexColor",	true)) { prefix << inOut; prefix << "vec4 R5_vertexColor;\n"; }
-	if (source.Contains("R5_vertexEye",		true)) { prefix << inOut; prefix << "vec3 R5_vertexEye;\n"; }
-	if (source.Contains("R5_vertexLight",	true)) { prefix << inOut; prefix << "vec4 R5_vertexLight;\n"; }
-	if (source.Contains("R5_vertexNormal",	true)) { prefix << inOut; prefix << "vec3 R5_vertexNormal;\n"; }
-	if (source.Contains("R5_vertexFog",		true)) { prefix << inOut; prefix << "float R5_vertexFog;\n"; }
+	if (source.Contains("R5_vertexColor",		true)) { prefix << inOut; prefix << "vec4 R5_vertexColor;\n"; }
+	if (source.Contains("R5_vertexEye",			true)) { prefix << inOut; prefix << "vec3 R5_vertexEye;\n"; }
+	if (source.Contains("R5_vertexLight",		true)) { prefix << inOut; prefix << "vec4 R5_vertexLight;\n"; }
+	if (source.Contains("R5_vertexNormal",		true)) { prefix << inOut; prefix << "vec3 R5_vertexNormal;\n"; }
+	if (source.Contains("R5_vertexTangent",		true)) { prefix << inOut; prefix << "vec3 R5_vertexTangent;\n"; }
+	if (source.Contains("R5_vertexTexCoord0",	true)) { prefix << inOut; prefix << "vec2 R5_vertexTexCoord0;\n"; }
+	if (source.Contains("R5_vertexTexCoord1",	true)) { prefix << inOut; prefix << "vec2 R5_vertexTexCoord1;\n"; }
+	if (source.Contains("R5_vertexFog",			true)) { prefix << inOut; prefix << "float R5_vertexFog;\n"; }
 
 	if (prefix.IsValid()) source = prefix + source;
 }
@@ -339,242 +357,6 @@ void ConvertCommonTypes (String& source)
 	source.Replace("float3", "vec3", true);
 	source.Replace("float4", "vec4", true);
 }
-
-//============================================================================================================
-// Common preprocessing function that removes the matched value
-//============================================================================================================
-
-/*uint PreprocessMacroCommon (const String& source, const String& match, Array<String*>& words)
-{
-	uint length = source.GetLength();
-	uint phrase = source.Find(match);
-
-	if (phrase < length)
-	{
-		String line, vertex, normal, tangent;
-
-		// Extract the entire macroed line
-		uint lineEnd = source.GetLine(line, phrase + match.GetLength());
-
-		// Extract the names of the variables
-		uint offset = 0;
-
-		FOREACH(i, words)
-		{
-			offset = line.GetWord(*words[i], offset);
-		}
-		return lineEnd;
-	}
-	return length;
-}
-
-//============================================================================================================
-
-uint PreprocessMacroCommon (const String& source, const String& match, String& v0)
-{
-	Array<String*> words;
-	words.Expand() = &v0;
-	return PreprocessMacroCommon(source, match, words);
-}
-
-//============================================================================================================
-
-uint PreprocessMacroCommon (const String& source, const String& match, String& v0, String& v1)
-{
-	Array<String*> words;
-	words.Expand() = &v0;
-	words.Expand() = &v1;
-	return PreprocessMacroCommon(source, match, words);
-}
-
-//============================================================================================================
-
-uint PreprocessMacroCommon (const String& source, const String& match, String& v0, String& v1, String& v2)
-{
-	Array<String*> words;
-	words.Expand() = &v0;
-	words.Expand() = &v1;
-	words.Expand() = &v2;
-	return PreprocessMacroCommon(source, match, words);
-}*/
-
-//============================================================================================================
-// Macro that adds skinning support. Example implementations:
-//============================================================================================================
-// // R5_IMPLEMENT_SKINNING vertex
-// // R5_IMPLEMENT_SKINNING vertex normal
-// // R5_IMPLEMENT_SKINNING vertex normal tangent
-//============================================================================================================
-
-/*bool PreprocessMacroSkinning (String& source)
-{
-	String left, right, vertex, normal, tangent;
-
-	uint offset = ::PreprocessMacroCommon(source, "R5_IMPLEMENT_SKINNING", vertex, normal, tangent);
-
-	if (vertex.IsValid())
-	{
-		source.GetString(left, 0, offset);
-		source.GetString(right, offset);
-
-		left << "\n{\n";
-		left << "mat4 transMat = R5_boneTransforms[int(R5_boneIndex.x)] * R5_boneWeight.x +\n";
-		left << "	R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n";
-		left << "	R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n";
-		left << "	R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n";
-		left << "mat3 rotMat = mat3(transMat[0].xyz, transMat[1].xyz, transMat[2].xyz);\n";
-
-		left << vertex;
-		left << " = transMat * ";
-		left << vertex;
-		left << ";\n";
-
-		if (normal.IsValid())
-		{
-			left << normal;
-			left << " = rotMat * ";
-			left << normal;
-			left << ";\n";
-		}
-
-		if (tangent.IsValid())
-		{
-			left << tangent;
-			left << " = rotMat * ";
-			left << tangent;
-			left << ";\n";
-		}
-
-		// Closing bracket
-		left << "}\n";
-
-		// Copy the result back into the Source
-		source = "uniform mat4 R5_boneTransforms[32];\n";
-		source << "attribute vec4 R5_boneWeight;\n";
-		source << "attribute vec4 R5_boneIndex;\n";
-		source << left;
-		source << right;
-		return true;
-	}
-	return false;
-}*/
-
-//============================================================================================================
-// Macro that adds pseudo-instancing support. Example implementations:
-//============================================================================================================
-// // R5_IMPLEMENT_INSTANCING vertex
-// // R5_IMPLEMENT_INSTANCING vertex normal
-// // R5_IMPLEMENT_INSTANCING vertex normal tangent
-//============================================================================================================
-
-/*bool PreprocessMacroInstancing (String& source)
-{
-	String left, right, vertex, normal, tangent;
-
-	uint offset = ::PreprocessMacroCommon(source, "R5_IMPLEMENT_INSTANCING", vertex, normal, tangent);
-
-	if (vertex.IsValid())
-	{
-		source.GetString(left, 0, offset);
-		source.GetString(right, offset);
-
-		left << "\n{\n";
-		left << "mat4 transMat = mat4(gl_MultiTexCoord2, gl_MultiTexCoord3, gl_MultiTexCoord4, gl_MultiTexCoord5);\n";
-		left << "mat3 rotMat = mat3(gl_MultiTexCoord2.xyz, gl_MultiTexCoord3.xyz, gl_MultiTexCoord4.xyz);\n";
-		
-		left << vertex;
-		left << " = transMat * ";
-		left << vertex;
-		left << ";\n";
-		
-		if (normal.IsValid())
-		{
-			left << normal;
-			left << " = rotMat * ";
-			left << normal;
-			left << ";\n";
-		}
-
-		if (tangent.IsValid())
-		{
-			left << tangent;
-			left << " = rotMat * ";
-			left << tangent;
-			left << ";\n";
-		}
-
-		// Closing bracket
-		left << "}\n";
-
-		// Copy the result back into the Source
-		source = left;
-		source << right;
-		return true;
-	}
-	return false;
-}*/
-
-//============================================================================================================
-// Macro that adds billboard cloud transform functionality.
-//============================================================================================================
-// // R5_IMPLEMENT_BILLBOARDING vertex
-// // R5_IMPLEMENT_BILLBOARDING vertex normal
-// // R5_IMPLEMENT_BILLBOARDING vertex normal tangent
-//============================================================================================================
-
-/*bool PreprocessMacroBillboarding (String& source)
-{
-	String left, right, vertex, normal, tangent;
-
-	uint offset = ::PreprocessMacroCommon(source, "R5_IMPLEMENT_BILLBOARDING", vertex, normal, tangent);
-
-	if (vertex.IsValid())
-	{
-		source.GetString(left, 0, offset);
-		source.GetString(right, offset);
-
-		// View-space offset is calculated based on texture coordinates, enlarged by the size (texCoord's Z)
-		left << "\n{\n";
-		left << "vec3 offset = gl_MultiTexCoord0.xyz;\n";
-		left << "offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;\n";
-		left << "offset.z *= 0.25;\n";
-		left << "offset *= R5_modelScale;\n";
-		
-		// Calculate the view-transformed vertex
-		left << vertex;
-		left << " = gl_ModelViewMatrix * ";
-		left << vertex;
-		left << ";\n";
-
-		// Apply the view-space offset
-		left << vertex;
-		left << ".xyz += offset;\n";
-		
-		if (normal.IsValid())
-		{
-			left << "vec3 diff = gl_Vertex.xyz - R5_origin.xyz;\n";
-			left << normal;
-			left << " = normalize(gl_NormalMatrix * diff);\n";
-
-			if (tangent.IsValid())
-			{
-				left << tangent;
-				left << " = normalize(gl_NormalMatrix * vec3(diff.y, -diff.x, 0.0));\n";
-			}
-		}
-
-		// Closing bracket
-		left << "}\n";
-
-		// Copy the result back into the Source
-		source = "uniform vec3 R5_origin;\n";
-		source << "uniform float R5_modelScale;\n";
-		source << left;
-		source << right;
-		return true;
-	}
-	return false;
-}*/
 
 //============================================================================================================
 // Preprocess all dependencies
@@ -638,6 +420,10 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 
 		// Prepend the prefix
 		source = prefix + source;
+
+		System::Log("=================================================");
+		System::Log(source.GetBuffer());
+		System::Log("=================================================");
 	}
 	else if (source.Contains("R5_vertexPosition", true))
 	{
@@ -651,14 +437,15 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 
 		source = prefix + source;
 
-		//System::Log("=================================================");
-		//System::Log(source.GetBuffer());
-		//System::Log("=================================================");
+		System::Log("=================================================");
+		System::Log(source.GetBuffer());
+		System::Log("=================================================");
 	}
 	else
 	{
 		// This shader uses an outdated format
 		flags.Set(IShader::Flag::LegacyFormat, true);
+		ASSERT(!source.Contains("gl_Light", true), "Outdated shader used -- please update");
 	}
 
 	// Unknown shader type -- figure it out

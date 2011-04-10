@@ -101,7 +101,7 @@ static const char* g_ssaoSample = {
 
 "uniform vec2 R5_pixelSize;\n"			// 0-1 factor size of the pixel
 "uniform vec4 R5_clipRange;\n"			// Near/far clipping range
-"uniform mat4 R5_projMatrix;\n"	// Current projection matrix
+"uniform mat4 R5_projMatrix;\n"			// Current projection matrix
 "uniform mat4 R5_inverseProjMatrix;\n"	// Inverse projection matrix
 
 "uniform vec2 properties;\n"			// X = focus range, Y = power
