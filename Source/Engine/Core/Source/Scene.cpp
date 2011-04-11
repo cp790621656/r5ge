@@ -243,6 +243,9 @@ uint Scene::DrawWithTechniques (const Techniques& techniques, bool clearColor, b
 
 			// Draw the scene
 			result += mQueue.Draw(*this, mGraphics, techniques, useLighting, false);
+
+			// Restore the potentially altered default state
+			mGraphics->SetNormalize(false);
 		}
 	}
 	return result;

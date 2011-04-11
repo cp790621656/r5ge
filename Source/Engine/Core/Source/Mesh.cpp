@@ -1269,26 +1269,26 @@ uint Mesh::Draw (IGraphics* graphics)
 				if ( mTv.GetSize() == vertices )
 				{
 					// Transformed vertices present
-					graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, mTv );
+					graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, mTv );
 				}
 				else
 				{
 					if (mTboSize != 0)
 					{
 						// Vertices are in the transformed VBO
-						graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, mTbo,
+						graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, mTbo,
 							mFormat.mVertex, IGraphics::DataType::Float, 3, mFormat.mTransSize );
 					}
 					else if (mVbo != 0)
 					{
 						// Vertices are in the VBO
-						graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, mVbo,
+						graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, mVbo,
 							mFormat.mVertex, IGraphics::DataType::Float, 3, mFormat.mFullSize );
 					}
 					else
 					{
 						// No VBO support
-						graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex, mV );
+						graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position, mV );
 					}
 				}
 			}

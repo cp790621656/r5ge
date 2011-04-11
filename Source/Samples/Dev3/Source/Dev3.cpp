@@ -124,6 +124,7 @@ void TestApp::Init()
 			light->SetPower(1.0f);
 			light->SetAbsolutePosition(pos);
 			light->SetDiffuse(clr);
+			light->SetSpecular(clr);
 
 			Billboard* bb = light->AddObject<Billboard>(String("Glow %u", i));
 			bb->SetColor(clr);

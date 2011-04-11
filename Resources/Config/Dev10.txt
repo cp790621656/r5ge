@@ -13,6 +13,34 @@ Root
 	Graphics
 	{
 		Default AF = 8
+
+		Material = "Peasant"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/Skinned_D"
+				Texture 0 = "Textures/Skins/peasant.jpg"
+			}
+		}
+
+		Material = "Torch"
+		{
+			Diffuse = 1.000000 1.000000 1.000000 1.000000
+			Specular = 0.000000 0.000000 0.000000 0.100000
+			Glow = 0.000000
+			ADT = 0.003922
+
+			Technique = "Deferred"
+			{
+				Shader = "Deferred/DG"
+				Texture 0 = "Textures/Skins/peasant.jpg"
+			}
+		}
 	}
 
 	Core

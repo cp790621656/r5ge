@@ -312,16 +312,14 @@ void GLTexture::_CheckForSource()
 		// As a convenience, if the texture's name contains the format, use it
 		if (mRequestedFormat == Format::Optimal)
 		{
-			if		(source.Contains("_Alpha.") ||
-					 source.Contains("_AO.") ||
-					 source.Contains("_Glow."))			mRequestedFormat = Format::Alpha;
-			else if (source.Contains("_Luminance."))	mRequestedFormat = Format::Luminance;
-			else if (source.Contains("_RGBA.") ||
-					 source.Contains("_NS."))			mRequestedFormat = Format::RGBA;
-			else if (source.Contains("_RGB.") ||
-					 source.Contains("_N."))			mRequestedFormat = Format::RGB;
-			else if (source.Contains("_DXT3."))			mRequestedFormat = Format::DXT3;
-			else if (source.Contains("_DXT5."))			mRequestedFormat = Format::DXT5;
+			if		(source.Contains("_Alpha") ||
+					 source.Contains("_AO") ||
+					 source.Contains("_Glow"))		mRequestedFormat = Format::Alpha;
+			else if (source.Contains("_Luminance"))	mRequestedFormat = Format::Luminance;
+			else if (source.Contains("_RGBA"))		mRequestedFormat = Format::RGBA;
+			else if (source.Contains("_RGB"))		mRequestedFormat = Format::RGB;
+			else if (source.Contains("_DXT3"))		mRequestedFormat = Format::DXT3;
+			else if (source.Contains("_DXT5"))		mRequestedFormat = Format::DXT5;
 			else if (mSize.x > 128 || mSize.y > 128)
 			{
 				// Use DXT compression unless specified otherwise

@@ -11,7 +11,7 @@ void OSDrawForward::OnInit()
 
 	if (mCam != 0)
 	{
-		mShadowmap	= mGraphics->GetTexture("R5_shadowMap");
+		mShadowmap	= mGraphics->GetTexture("R5_Shadowmap");
 		mOpaque		= mGraphics->GetTechnique("Opaque");
 		mShadowed	= mGraphics->GetTechnique("Shadowed Opaque");
 	}

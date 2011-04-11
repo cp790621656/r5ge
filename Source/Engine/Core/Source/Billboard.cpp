@@ -84,7 +84,7 @@ void Billboard::DrawBillboard()
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight, 0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord1,  0 );
 	graphics->SetActiveVertexAttribute( IGraphics::Attribute::TexCoord0, (Vector2f*)texcoords );
-	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex,	 (Vector2f*)vertices );
+	graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,	 (Vector2f*)vertices );
 	graphics->SetActiveColor(mColor);
 
 	// Draw the glow

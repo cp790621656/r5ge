@@ -39,18 +39,19 @@ protected:
 	bool		mStencilTest;		// Whether the stencil test is on
 	bool		mScissorTest;		// Whether the scissor test is on
 	bool		mWireframe;			// Whether the wireframe mode is currently on
-	bool		mMatIsDirty;		// Whether some parts of the material were altered since it was set
 	byte		mLighting;			// Whether the lighting is on
 	byte		mBlending;			// Active blending mode
 	byte		mCulling;			// Active culling mode
 	
 	float		mAdt;				// Alpha testing will discard fragments with alpha less than this value
 	float		mThickness;			// Point and line size when drawing those primitives
+	bool		mNormalize;			// Whether to automatically normalize normals
 	Vector2i	mSize;				// Screen size
 	Rect		mScissorRect;		// Scissor rectangle
 	Vector2f	mFogRange;			// Fog range
 	uint		mAf;				// Current anisotropy level
 	Color4f		mBackground;		// Current window background color
+	bool		mSimpleMaterial;	// Whether current active color defines the material colors
 	Color		mColor;				// Current active vertex color
 
 	const IRenderTarget*	mTarget;		// Active rendering target
@@ -62,7 +63,7 @@ protected:
 
 	Array<TextureUnit>		mTu;			// Texture units
 	Array<GLTexture*>		mNextTex;		// Textures that will be activated prior to next draw call
-	mutable Array<ILight>	mLu;			// Light units
+	Array<bool>				mLu;			// Light units
 	uint					mActiveTU;		// Active texture unit
 	uint					mNextTU;		// Next texture unit that will be activated on texture bind
 	BufferEntry				mBuffers[16];	// Active buffers
@@ -95,12 +96,18 @@ public:
 	virtual void SetCulling			(uint val);
 	virtual void SetAlphaCutoff		(float val);
 	virtual void SetThickness		(float val);
+	virtual void SetNormalize		(bool val);
 	virtual void SetDepthOffset		(uint val) { mTrans.SetDepthOffset(val); }
 	virtual void SetViewport		(const Vector2i& size);
 	virtual void SetScissorRect		(const Rect& rect);
 	virtual void SetFogRange		(const Vector2f& range);
 	virtual void SetBackgroundColor	(const Color4f& color);
 	virtual void SetDefaultAF		(uint level) { GLTexture::SetDefaultAF(mAf = level); }
+
+protected:
+
+	// Whether active color sets the material color
+	void SetSimpleMaterial	(bool val);
 
 public:
 
@@ -119,23 +126,18 @@ public:
 	virtual uint				GetCulling()			const	{ return mCulling;		}
 	virtual float				GetAlphaCutoff()		const	{ return mAdt;			}
 	virtual float				GetThickness()			const	{ return mThickness;	}
+	virtual bool				GetNormalize()			const	{ return mNormalize;	}
 	virtual uint				GetDepthOffset()		const	{ return mTrans.GetDepthOffset();	}
 	virtual uint				GetDefaultAF()			const	{ return mAf;			}
 	virtual const Vector2i&		GetViewport()			const	{ return mTarget == 0 ? mSize : mTarget->GetSize();	}
 	virtual const Rect&			GetScissorRect()		const	{ return mScissorRect;	}
 	virtual const Vector2f&		GetFogRange()			const	{ return mFogRange;		}
 	virtual const Color4f&		GetBackgroundColor()	const	{ return mBackground;	}
-
 	virtual const ITexture*		GetActiveSkybox()		const	{ return mSkybox;		}
 	virtual const ITechnique*	GetActiveTechnique()	const	{ return mTechnique;	}
-	virtual const IMaterial*	GetActiveMaterial()		const	{ return mMaterial;		}
 	virtual const IShader*		GetActiveShader()		const	{ return mShader;		}
 	virtual const Vector2i&		GetActiveViewport()		const	{ return (mTarget == 0) ? mSize : mTarget->GetSize(); }
 	virtual const IRenderTarget* GetActiveRenderTarget() const	{ return mTarget; }
-
-	// Access to lights
-	virtual const ILight& GetActiveLight (uint index) const;
-	virtual void SetActiveLight (uint index, const ILight* ptr);
 
 	// Camera orientation retrieval
 	virtual const Vector3f&		GetCameraPosition()		const	{ return mTrans.mView.pos;		}
@@ -175,12 +177,13 @@ public:
 	virtual void SetActiveTechnique			( const ITechnique* ptr, bool insideOut = false );
 	virtual bool SetActiveMaterial			( const IMaterial* ptr );
 	virtual bool SetActiveMaterial			( const ITexture* ptr );
-	virtual bool SetActiveShader			( const IShader* ptr );
+	virtual bool SetActiveShader			( const IShader* ptr, bool forceUpdateUniforms = false );
 	virtual void SetActiveSkybox			( const ITexture* ptr ) { mSkybox = ptr; }
 	virtual void SetActiveColor				( const Color& c );
 	virtual void SetScreenProjection		( bool screen ) { mTrans.Set2DMode(screen); }
 	virtual void SetActiveVBO				( const IVBO* vbo, uint type = IVBO::Type::Invalid );
 	virtual void SetActiveTexture			( uint textureUnit, const ITexture* ptr );
+	virtual void SetActiveLight				( uint index, const ILight* ptr );
 	virtual void SetActiveDepthFunction		( uint condition );
 	virtual void SetActiveStencilFunction	( uint condition, uint val, uint mask );
 	virtual void SetActiveStencilOperation	( uint testFail, uint depthFail, uint pass );
@@ -192,7 +195,7 @@ public:
 											  uint			stride );		// Size of each vertex entry in bytes
 
 	// Activate all matrices and bind all textures, preparing to draw
-	virtual void PrepareToDraw();
+	virtual void Execute() { _ActivateMatrices(); _BindAllTextures(); }
 
 	// Draw bound vertices
 	virtual uint DrawVertices	( uint primitive, uint vertexCount );
@@ -207,12 +210,15 @@ public:
 	// Draw using an index array
 	uint _DrawIndices ( const IVBO* vbo, const ushort* ptr, uint primitive, uint indexCount );
 
+	// Activate all appropriate matrices
+	void _ActivateMatrices() { mStats.mMatSwitches += mTrans.Activate(mShader); }
+
 	// Updates the currently active texture unit
 	void _ActivateTextureUnit();
 
 	// Binds the specified texture -- mainly called from GLTexture::Activate()
 	bool _BindTexture (uint glType, uint glID);
 
-	// Ensures that all textures are bound
+	// Binds all activated textures
 	void _BindAllTextures();
 };

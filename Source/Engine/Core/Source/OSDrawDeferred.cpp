@@ -68,7 +68,7 @@ void OSDrawDeferred::MaterialStage()
 	// Set up the material render target
 	if (mMaterialTarget == 0)
 	{
-		const uint HDRFormat = (mBackground.a > 0.999f) ? ITexture::Format::RGB16F : ITexture::Format::RGBA16F;
+		const uint HDRFormat = (mBackground.a == 1.0f) ? ITexture::Format::RGB16F : ITexture::Format::RGBA16F;
 
 		mMaterialTarget = mScene.GetRenderTarget(0);
 		mDepth			= mScene.GetRenderTexture(0);
@@ -300,6 +300,7 @@ void OSDrawDeferred::CombineStage()
 	mGraphics->SetActiveRenderTarget(mFinalTarget);
 	mGraphics->SetScreenProjection(false);
 	mGraphics->SetBackgroundColor(mBackground);
+	mGraphics->Clear(true, false, false);
 
 	mGraphics->SetFogRange(mFogRange);
 	mGraphics->SetCulling(IGraphics::Culling::Back);
@@ -335,7 +336,7 @@ void OSDrawDeferred::PostProcessStage()
 	mScene.DrawWithTechniques(mForward, false, false, true);
 
 	// Update the fog color
-	//mGraphics->SetBackgroundColor(mBackground);
+	mGraphics->SetBackgroundColor(mBackground);
 
 	// Apply a post-processing effect
 	if (mBloom != 0.0f && mFocalRange)	mPostProcess.Both(mScene, mBloom, mFocalRange);

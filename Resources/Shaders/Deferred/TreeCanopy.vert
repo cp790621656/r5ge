@@ -2,7 +2,7 @@
 
 uniform vec3 R5_time;
 uniform vec3 R5_origin;
-uniform vec3 R5_modelScale;
+uniform vec3 R5_worldScale;
 
 varying vec2 _texCoord;
 varying vec3 _normal;
@@ -30,7 +30,7 @@ void main()
 	// R5_IMPLEMENT_INSTANCING vertex _normal _tangent
 
 	// Wind offset should take the vertex position into account
-	float vertexOffset 	= dot(vertex.xyz, wind / R5_modelScale) * 0.15;
+	float vertexOffset 	= dot(vertex.xyz, wind / R5_worldScale) * 0.15;
  	float windOffset 	= sin(R5_time.x - vertexOffset);
 
 	// Canopy billboards need to spin around ever-so-slightly
@@ -40,7 +40,7 @@ void main()
 	spin += dot(vertex.xyz, vertex.xyz);
 
 	// Offset the vertex in world space
-	vertex.xyz += R5_modelScale * wind * ((windOffset * 0.025 + 0.025) * windStrength);
+	vertex.xyz += R5_worldScale * wind * ((windOffset * 0.025 + 0.025) * windStrength);
 
 	// Calculate the view-transformed vertex
 	vertex = gl_ModelViewMatrix * vertex;
@@ -49,7 +49,7 @@ void main()
 	offset = gl_MultiTexCoord0.xyz;
 	offset.xy = (offset.xy * 2.0 - 1.0) * offset.z;
 	offset.z *= 0.25;
-	offset *= R5_modelScale;
+	offset *= R5_worldScale;
 
 	// Rotate the particles slightly
 	float s = sin(spin);

@@ -15,29 +15,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Surface/D"
-
-				Textures = String[]
-				{
-					"Textures/Skins/held.jpg"
-				}
-			}
-			
-			Technique = "Depth"
-			
-			Technique = "Opaque"
-			{
-				Shader = "Surface/D"
-
-				Textures = String[]
-				{
-					"Textures/Skins/held.jpg"
-				}
-			}
-			
-			Technique = "Shadowed Opaque"
-			{
-				Shader = "Surface/D"
+				Shader = "Deferred/D"
 
 				Textures = String[]
 				{

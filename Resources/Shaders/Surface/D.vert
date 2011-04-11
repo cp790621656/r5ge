@@ -1,7 +1,10 @@
+varying vec2 _texCoord;
+varying vec3 _normal;
+
 void main()
 {
-	R5_vertexPosition 	= R5_vertex;
-	R5_vertexNormal 	= R5_normal;
-	R5_vertexColor 		= R5_color;
-	R5_vertexTexCoord0 	= R5_texCoord0;
+	_texCoord = gl_MultiTexCoord0.xy;
+	_normal   = gl_NormalMatrix * gl_Normal;
+
+	// R5_VERTEX_OUTPUT gl_Vertex gl_Color
 }

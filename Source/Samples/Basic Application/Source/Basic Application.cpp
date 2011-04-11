@@ -25,7 +25,6 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	mCore->SetSleepDelay(0);
 	if (*mCore << "Config/Basic Application.txt")
 	{
 		while (mCore->Update());

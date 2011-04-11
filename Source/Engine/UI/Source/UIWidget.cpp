@@ -406,8 +406,8 @@ void UIWidget::Adjust (float left, float top, float right, float bottom)
 		// If the movement is identical, match both sides
 		if (left == right)
 		{
-			left = (left < 0.0f) ?	Max(adjustedLeft, adjustedRight) :
-									Min(adjustedLeft, adjustedRight);
+			left = (left < 0.0f) ?	Float::Max(adjustedLeft, adjustedRight) :
+									Float::Min(adjustedLeft, adjustedRight);
 			right = left;
 		}
 		else
@@ -418,8 +418,8 @@ void UIWidget::Adjust (float left, float top, float right, float bottom)
 
 		if (top == bottom)
 		{
-			top = (top < 0.0f) ? Max(adjustedTop, adjustedBottom) :
-								 Min(adjustedTop, adjustedBottom);
+			top = (top < 0.0f) ? Float::Max(adjustedTop, adjustedBottom) :
+								 Float::Min(adjustedTop, adjustedBottom);
 			bottom = top;
 		}
 		else

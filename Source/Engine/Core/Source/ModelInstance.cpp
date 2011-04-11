@@ -127,6 +127,7 @@ uint ModelInstance::OnDraw (TemporaryStorage& storage, uint group, const ITechni
 	if (g_lastModel != this)
 	{
 		g_lastModel = this;
+		graphics->SetNormalize( Float::IsNotEqual(mAbsoluteScale, 1.0f) );
 		graphics->SetModelMatrix( GetMatrix() );
 	}
 

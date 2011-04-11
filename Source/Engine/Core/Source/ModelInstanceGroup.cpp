@@ -340,8 +340,8 @@ uint ModelInstanceGroup::OnDraw (TemporaryStorage& storage, uint group, const IT
 			batch->mVBO, batch->mNormalOffset, IGraphics::DataType::Float, 3, batch->mStride);
 	}
 
-	// Vertex
-	mGraphics->SetActiveVertexAttribute(IGraphics::Attribute::Vertex,
+	// Position
+	mGraphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,
 		batch->mVBO, 0, IGraphics::DataType::Float, 3, batch->mStride);
 
 	// Draw the instance

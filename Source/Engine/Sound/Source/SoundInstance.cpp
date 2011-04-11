@@ -34,7 +34,7 @@ void SoundInstance::Update(ulong time)
 		
 	if (mIs3D)
 	{
-		atten = 1.0f - Min((mPosition - mSound->GetAudio()->GetListener()).Magnitude() / 
+		atten = 1.0f - Float::Min((mPosition - mSound->GetAudio()->GetListener()).Magnitude() / 
 			(mRange.y - mRange.x), 1.0f);
 		atten *= atten;
 	}

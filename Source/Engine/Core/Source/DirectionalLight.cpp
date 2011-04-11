@@ -25,6 +25,7 @@ void DirectionalLight::_UpdateColors()
 {
 	mProperties.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
 	mProperties.mDiffuse  = Color4f(mDiffuse  * mBrightness, 1.0f);
+	mProperties.mSpecular = Color4f(mSpecular * mBrightness, 1.0f);
 }
 
 //============================================================================================================

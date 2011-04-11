@@ -148,58 +148,23 @@ void GLShader::SetUniform_FogColor (const String& name, Uniform& uniform)
 	uniform = mGraphics->GetBackgroundColor();
 }
 
-//============================================================================================================
-// Shader callback for R5_modelScale
-//============================================================================================================
-
-void GLShader::SetUniform_MS (const String& name, Uniform& uniform)
-{
-	uniform = mGraphics->GetModelMatrix().GetScale();
-}
-
-//============================================================================================================
-// Shader callback function for R5_modelMatrix
-//============================================================================================================
-
-void GLShader::SetUniform_MM (const String& name, Uniform& uniform)
-{
-	uniform = mGraphics->GetModelMatrix();
-}
-
-//============================================================================================================
-// Shader callback for R5_viewMatrix
-//============================================================================================================
-
-void GLShader::SetUniform_VM (const String& name, Uniform& uniform)
-{
-	uniform = mGraphics->GetViewMatrix();
-}
-
-//============================================================================================================
-// Shader callback for R5_projMatrix
-//============================================================================================================
-
-void GLShader::SetUniform_PM (const String& name, Uniform& uniform)
-{
-	uniform = mGraphics->GetProjectionMatrix();
-}
-
-//============================================================================================================
-// Shader callback function for R5_modelViewMatrix
-//============================================================================================================
-
-void GLShader::SetUniform_MVM (const String& name, Uniform& uniform)
-{
-	uniform = mGraphics->GetModelViewMatrix();
-}
 
 //============================================================================================================
 // Shader callback for R5_modelViewProjMatrix
 //============================================================================================================
 
-void GLShader::SetUniform_MVPM (const String& name, Uniform& uniform)
+void GLShader::SetUniform_MVP (const String& name, Uniform& uniform)
 {
 	uniform = mGraphics->GetModelViewProjMatrix();
+}
+
+//============================================================================================================
+// Shader callback for R5_projectionMatrix
+//============================================================================================================
+
+void GLShader::SetUniform_PM (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetProjectionMatrix();
 }
 
 //============================================================================================================
@@ -209,6 +174,24 @@ void GLShader::SetUniform_MVPM (const String& name, Uniform& uniform)
 void GLShader::SetUniform_IVM (const String& name, Uniform& uniform)
 {
 	uniform = mGraphics->GetInverseModelViewMatrix();
+}
+
+//============================================================================================================
+// Shader callback for R5_inverseProjMatrix
+//============================================================================================================
+
+void GLShader::SetUniform_IPM (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetInverseProjMatrix();
+}
+
+//============================================================================================================
+// Shader callback for R5_inverseMVPMatrix
+//============================================================================================================
+
+void GLShader::SetUniform_IMVPM (const String& name, Uniform& uniform)
+{
+	uniform = mGraphics->GetInverseMVPMatrix();
 }
 
 //============================================================================================================
@@ -231,134 +214,31 @@ void GLShader::SetUniform_IVRM (const String& name, Uniform& uniform)
 }
 
 //============================================================================================================
-// Shader callback for R5_inverseProjMatrix
+// Shader callback function for R5_worldTransformMatrix
 //============================================================================================================
 
-void GLShader::SetUniform_IPM (const String& name, Uniform& uniform)
+void GLShader::SetUniform_WTM (const String& name, Uniform& uniform)
 {
-	uniform = mGraphics->GetInverseProjMatrix();
+	uniform = mGraphics->GetModelMatrix();
 }
 
 //============================================================================================================
-// Shader callback for R5_inverseMVPMatrix
+// Shader callback function for R5_worldRotationMatrix
 //============================================================================================================
 
-void GLShader::SetUniform_IMVPM (const String& name, Uniform& uniform)
+void GLShader::SetUniform_WRM (const String& name, Uniform& uniform)
 {
-	uniform = mGraphics->GetInverseMVPMatrix();
-}
-
-//============================================================================================================
-// Shader callback function for R5_lightAmbient
-//============================================================================================================
-
-void GLShader::SetUniform_LightAmbient (const String& name, Uniform& uniform)
-{
-	const ILight& light = mGraphics->GetActiveLight(0);
-	uniform = light.mAmbient;
-	uniform.mType = Uniform::Type::Float3;
-}
-
-//============================================================================================================
-// Shader callback function for R5_lightDiffuse
-//============================================================================================================
-
-void GLShader::SetUniform_LightDiffuse (const String& name, Uniform& uniform)
-{
-	const ILight& light = mGraphics->GetActiveLight(0);
-	uniform = light.mDiffuse;
-	uniform.mType = Uniform::Type::Float3;
-}
-
-//============================================================================================================
-// Shader callback function for R5_lightDiffuse
-//============================================================================================================
-
-void GLShader::SetUniform_LightPosition (const String& name, Uniform& uniform)
-{
-	const ILight& light = mGraphics->GetActiveLight(0);
-
-	Vector4f pos;
-
-	if (light.mType == ILight::Type::Directional)
-	{
-		pos.xyz() = -light.mDir % mGraphics->GetModelViewMatrix();
-		pos.w = 0.0f;
-	}
-	else
-	{
-		pos.xyz() = light.mPos * mGraphics->GetModelViewMatrix();
-		pos.w = 1.0f;
-	}
-	uniform = pos;
-}
-
-//============================================================================================================
-// Shader callback function for R5_lightDiffuse
-//============================================================================================================
-
-void GLShader::SetUniform_LightParams (const String& name, Uniform& uniform)
-{
-	const ILight& light = mGraphics->GetActiveLight(0);
-	uniform = light.mParams;
-}
-
-//============================================================================================================
-// Shader callback function for R5_materialColor
-//============================================================================================================
-
-void GLShader::SetUniform_MatColor (const String& name, Uniform& uniform)
-{
-	const IMaterial* mat = mGraphics->GetActiveMaterial();
-
-	if (mat == 0)
-	{
-		uniform = Color4f(1.0f);
-	}
-	else
-	{
-		uniform = mat->GetDiffuse();
-	}
-}
-
-//============================================================================================================
-// Shader callback function for R5_materialParams0
-//============================================================================================================
-
-void GLShader::SetUniform_MatParams0 (const String& name, Uniform& uniform)
-{
-	const IMaterial* mat = mGraphics->GetActiveMaterial();
-
-	if (mat == 0)
-	{
-		uniform = Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
-	}
-	else
-	{
-		uniform = Vector4f(
-			mat->GetSpecularity(),
-			mat->GetSpecularHue(),
-			mat->GetGlow(),
-			mat->GetOcclusion());
-	}
-}
-
-//============================================================================================================
-// Shader callback function for R5_materialParams1
-//============================================================================================================
-
-void GLShader::SetUniform_MatParams1 (const String& name, Uniform& uniform)
-{
-	const IMaterial* mat = mGraphics->GetActiveMaterial();
-
-	if (mat == 0 || mat == ((void*)-1))
-	{
-		uniform = Vector2f(0.25f, 0.0f);
-	}
-	else
-	{
-		uniform = Vector2f(mat->GetShininess(), mat->GetReflectiveness());
-	}
+	const Matrix43& model = mGraphics->GetModelMatrix();
+	uniform.mType = Uniform::Type::Float9;
+	uniform.mVal[0] = model[0];
+	uniform.mVal[1] = model[1];
+	uniform.mVal[2] = model[2];
+	uniform.mVal[3] = model[4];
+	uniform.mVal[4] = model[5];
+	uniform.mVal[5] = model[6];
+	uniform.mVal[6] = model[8];
+	uniform.mVal[7] = model[9];
+	uniform.mVal[8] = model[10];
 }
 
 //============================================================================================================
@@ -370,34 +250,21 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	mGraphics	= graphics;
 	mName		= name;
 
-	// These uniforms will be set on IShader::Activate()
-	_InsertUniform( "R5_time",				3,  &SetUniform_Time, false );
-	_InsertUniform( "R5_eyePosition",		3,  bind(&GLShader::SetUniform_EyePos,			this), false );
-	_InsertUniform( "R5_pixelSize",			2,  bind(&GLShader::SetUniform_PixelSize,		this), false );
-	_InsertUniform( "R5_clipRange",			4,  bind(&GLShader::SetUniform_ClipRange,		this), false );
-	_InsertUniform( "R5_fogRange",			2,  bind(&GLShader::SetUniform_FogRange,		this), false );
-	_InsertUniform( "R5_fogColor",			4,  bind(&GLShader::SetUniform_FogColor,		this), false );
-
-	// These uniforms will be set on IShader::Update(), which happens just before the drawing operations
-	_InsertUniform( "R5_materialColor",		4,  bind(&GLShader::SetUniform_MatColor,		this), true );
-	_InsertUniform( "R5_materialParams0",	4,  bind(&GLShader::SetUniform_MatParams0,		this), true );
-	_InsertUniform( "R5_materialParams1",	2,  bind(&GLShader::SetUniform_MatParams1,		this), true );
-	_InsertUniform( "R5_lightAmbient",		3,  bind(&GLShader::SetUniform_LightAmbient,	this), true );
-	_InsertUniform( "R5_lightDiffuse",		3,  bind(&GLShader::SetUniform_LightDiffuse,	this), true );
-	_InsertUniform( "R5_lightPosition",		4,  bind(&GLShader::SetUniform_LightPosition,	this), true );
-	_InsertUniform( "R5_lightParams",		3,  bind(&GLShader::SetUniform_LightParams,		this), true );
-
-	// All matrices must be updated prior to each draw call as well
-	_InsertUniform( "R5_modelScale",				3,  bind(&GLShader::SetUniform_MS,		this), true );
-	_InsertUniform( "R5_modelMatrix",				16, bind(&GLShader::SetUniform_MM,		this), true );
-	_InsertUniform( "R5_viewMatrix",				16, bind(&GLShader::SetUniform_VM,		this), true );
-	_InsertUniform( "R5_projMatrix",				16, bind(&GLShader::SetUniform_PM,		this), true );
-	_InsertUniform( "R5_modelViewMatrix",			16, bind(&GLShader::SetUniform_MVM,		this), true );
-	_InsertUniform( "R5_modelViewProjMatrix",		16, bind(&GLShader::SetUniform_MVPM,	this), true );
-	_InsertUniform( "R5_inverseViewMatrix",			16, bind(&GLShader::SetUniform_IVM,		this), true );
-	_InsertUniform( "R5_inverseProjMatrix",			16, bind(&GLShader::SetUniform_IPM,		this), true );
-	_InsertUniform( "R5_inverseMVPMatrix",			16, bind(&GLShader::SetUniform_IMVPM,	this), true );
-	_InsertUniform( "R5_inverseViewRotationMatrix",	9,  bind(&GLShader::SetUniform_IVRM,	this), true );
+	// Register common uniforms that remain identical in all shaders
+	_InsertUniform( "R5_time",						3,  &SetUniform_Time );
+	_InsertUniform( "R5_worldEyePosition",			3,  bind(&GLShader::SetUniform_EyePos,		this) );
+	_InsertUniform( "R5_pixelSize",					2,  bind(&GLShader::SetUniform_PixelSize,	this) );
+	_InsertUniform( "R5_clipRange",					4,  bind(&GLShader::SetUniform_ClipRange,	this) );
+	_InsertUniform( "R5_fogRange",					2,  bind(&GLShader::SetUniform_FogRange,	this) );
+	_InsertUniform( "R5_fogColor",					4,  bind(&GLShader::SetUniform_FogColor,	this) );
+	_InsertUniform( "R5_modelViewProjMatrix",		16, bind(&GLShader::SetUniform_MVP,			this) );
+	_InsertUniform( "R5_projectionMatrix",			16, bind(&GLShader::SetUniform_PM,			this) );
+	_InsertUniform( "R5_inverseViewMatrix",			16, bind(&GLShader::SetUniform_IVM,			this) );
+	_InsertUniform( "R5_inverseProjMatrix",			16, bind(&GLShader::SetUniform_IPM,			this) );
+	_InsertUniform( "R5_inverseMVPMatrix",			16, bind(&GLShader::SetUniform_IMVPM,		this) );
+	_InsertUniform( "R5_inverseViewRotationMatrix",	9,  bind(&GLShader::SetUniform_IVRM,		this) );
+	_InsertUniform( "R5_worldTransformMatrix",		16, bind(&GLShader::SetUniform_WTM,			this) );
+	_InsertUniform( "R5_worldRotationMatrix",		9,  bind(&GLShader::SetUniform_WRM,			this) );
 
 	// The list of R5 uniforms should now be complete
 	g_fillUniformList = false;
@@ -457,142 +324,45 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 // Only GLGraphics should be activating shaders
 //============================================================================================================
 
-GLShader* GLShader::Activate (const ITechnique* tech)
+bool GLShader::Activate (bool resetUniforms)
 {
-	// If the shader is marked as dirty, rebuild it (this also sets all flags)
-	if (mIsDirty) _Rebuild();
-
-	// If this is a surface shader, we might need to activate a different shader
-	if (tech != 0 && GetFlag(IShader::Flag::Surface))
+	if (mIsDirty)
 	{
-		const String& shaderName = GetName();
+		mIsDirty = false;
+		_Detach();
 
-		if (tech->GetFlag(ITechnique::Flag::Deferred))
+		if (mAdded.IsValid())
 		{
-			if (mDeferred == 0)
+			for (uint i = mAdded.GetSize(); i > 0; )
 			{
-				// Remember this alternate version of the shader
-				mDeferred = (GLShader*)mGraphics->GetShader(shaderName + " [Deferred]");
-
-				// Copy over registered uniforms
-				FOREACH(i, mUniforms)
-				{
-					GLShader::UniformEntry& ent = mUniforms[i];
-					mDeferred->RegisterUniform(ent.mName, ent.mDelegate, ent.mSetOnDraw);
-				}
+				GLSubShader* sub = mAdded[--i];
+				sub->AppendDependenciesTo(mDepended);
 			}
-			mDeferred->_Activate();
-			return mDeferred;
+			return _Link();
 		}
-		else if (tech->GetFlag(ITechnique::Flag::Shadowed))
+	}
+
+	if (mAdded.IsEmpty())
+	{
+		if (g_activeProgram != 0) glUseProgram(g_activeProgram = 0);
+		return false;
+	}
+
+	if (mProgram != 0)
+	{
+		if (g_activeProgram != mProgram)
 		{
-			if (mShadowed == 0)
-			{
-				mShadowed = (GLShader*)mGraphics->GetShader(shaderName + " [Shadowed]");
-
-				FOREACH(i, mUniforms)
-				{
-					GLShader::UniformEntry& ent = mUniforms[i];
-					mShadowed->RegisterUniform(ent.mName, ent.mDelegate, ent.mSetOnDraw);
-				}
-			}
-			mShadowed->_Activate();
-			return mShadowed;
+			glUseProgram(g_activeProgram = mProgram);
+			_UpdateUniforms();
+			return true;
 		}
-	}
-
-	// No special technique -- activate this shader
-	_Activate();
-	return this;
-}
-
-//============================================================================================================
-// Activate this program
-//============================================================================================================
-
-inline bool GLShader::_Activate()
-{
-	if (mIsDirty) _Rebuild();
-	else if (g_activeProgram == mProgram) return (g_activeProgram != 0);
-
-	// Activate this program
-	glUseProgram(g_activeProgram = mProgram);
-	CHECK_GL_ERROR;
-
-	// If this is a valid program, update its uniforms
-	if (g_activeProgram != 0)
-	{
-		Update(false);
-		return true;
-	}
-	return false;
-}
-
-//============================================================================================================
-// Rebuild the shader program
-//============================================================================================================
-
-bool GLShader::_Rebuild()
-{
-	mIsDirty = false;
-	_Detach();
-
-	if (mAdded.IsValid())
-	{
-		for (uint i = mAdded.GetSize(); i > 0; )
+		else if (resetUniforms)
 		{
-			GLSubShader* sub = mAdded[--i];
-			sub->AppendDependenciesTo(mDepended);
+			_UpdateUniforms();
 		}
-		return _Link();
+		return false;
 	}
-	return false;
-}
-
-//============================================================================================================
-// Updates all uniforms
-//============================================================================================================
-
-uint GLShader::Update (bool aboutToDraw) const
-{
-	if (mDeferred != 0 && g_activeProgram == mDeferred->mProgram)
-	{
-		return mDeferred->Update(aboutToDraw);
-	}
-	else if (mShadowed != 0 && g_activeProgram == mShadowed->mProgram)
-	{
-		return mShadowed->Update(aboutToDraw);
-	}
-	else if (g_activeProgram != 0)
-	{
-		ASSERT(g_activeProgram == mProgram, "Wrong shader active?");
-
-		uint count (0);
-		Uniform uni;
-
-		for (uint u = mUniforms.GetSize(); u > 0; )
-		{
-			UniformEntry& entry = mUniforms[--u];
-
-			if (entry.mGLID != -1 && entry.mDelegate && entry.mSetOnDraw == aboutToDraw)
-			{
-				// Find the uniform if we have not yet tried to find it
-				if (entry.mGLID == -2) entry.mGLID = ::GetUniformID(entry.mName);
-
-				// If the uniform has been found, update it
-				if (entry.mGLID != -1)
-				{
-					++count;
-					uni.mType = Uniform::Type::Invalid;
-					entry.mDelegate(entry.mName, uni);
-					_UpdateUniform(entry.mGLID, uni);
-					CHECK_GL_ERROR;
-				}
-			}
-		}
-		return count;
-	}
-	return 0;
+	return _Link();
 }
 
 //============================================================================================================
@@ -729,7 +499,7 @@ bool GLShader::_Link()
 	CHECK_GL_ERROR;
 
 	// Bind all one-time attributes prior to linking the program
-	glBindAttribLocation(mProgram, IGraphics::Attribute::Vertex,		"R5_vertex");
+	glBindAttribLocation(mProgram, IGraphics::Attribute::Position,		"R5_position");
 	glBindAttribLocation(mProgram, IGraphics::Attribute::Tangent,		"R5_tangent");
 	glBindAttribLocation(mProgram, IGraphics::Attribute::Normal,		"R5_normal");
 	glBindAttribLocation(mProgram, IGraphics::Attribute::Color,			"R5_color");
@@ -814,6 +584,8 @@ bool GLShader::_Link()
 		if (retVal == GL_TRUE)
 		{
 			// List the program's common supported features
+			if (mFlags.Get(IShader::Flag::Billboarded)) System::Log("          - Supports billboarding");
+			if (mFlags.Get(IShader::Flag::Instanced))	System::Log("          - Supports instancing");
 			if (mFlags.Get(IShader::Flag::Skinned))		System::Log("          - Supports skinning");
 		}
 		else
@@ -849,9 +621,40 @@ bool GLShader::_Link()
 	::SetUniform1i(mProgram, "R5_texture4", 4);
 	::SetUniform1i(mProgram, "R5_texture5", 5);
 	::SetUniform1i(mProgram, "R5_texture6", 6);
-	::SetUniform1i(mProgram, "R5_shadowMap", 7);
+	::SetUniform1i(mProgram, "R5_texture7", 7);
 	CHECK_GL_ERROR;
+
+	// Update the uniforms
+	_UpdateUniforms();
 	return true;
+}
+
+//============================================================================================================
+// INTERNAL: Updates registered uniforms bound to the shader
+//============================================================================================================
+
+void GLShader::_UpdateUniforms()
+{
+	Uniform uni;
+
+	for (uint u = mUniforms.GetSize(); u > 0; )
+	{
+		UniformEntry& entry = mUniforms[--u];
+
+		if (entry.mGLID != -1 && entry.mDelegate)
+		{
+			// Find the uniform if we have not yet tried to find it
+			if (entry.mGLID == -2) entry.mGLID = ::GetUniformID(entry.mName);
+
+			// If the uniform has been found, update it
+			if (entry.mGLID != -1)
+			{
+				uni.mType = Uniform::Type::Invalid;
+				entry.mDelegate(entry.mName, uni);
+				_UpdateUniform(entry.mGLID, uni);
+			}
+		}
+	}
 }
 
 //============================================================================================================
@@ -914,12 +717,11 @@ bool GLShader::_UpdateUniform (uint glID, const Uniform& uni) const
 // INTERNAL: Adds a new registered uniform value without checking to see if it already exists
 //============================================================================================================
 
-void GLShader::_InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct, bool setOnDraw)
+void GLShader::_InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct)
 {
 	UniformEntry& entry = mUniforms.Expand();
 	entry.mName			= name;
 	entry.mDelegate		= fnct;
-	entry.mSetOnDraw	= setOnDraw;
 
 	if (g_fillUniformList && elements > 0)
 	{
@@ -1014,10 +816,8 @@ bool GLShader::SetUniform (const String& name, const Uniform& uniform) const
 // Registers a uniform variable that's updated once per frame
 //============================================================================================================
 
-void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fnct, bool setOnDraw)
+void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fnct)
 {
-	bool found = false;
-
 	for (uint i = 0; i < mUniforms.GetSize(); ++i)
 	{
 		UniformEntry& entry = mUniforms[i];
@@ -1025,16 +825,8 @@ void GLShader::RegisterUniform (const String& name, const SetUniformDelegate& fn
 		if (entry.mName == name)
 		{
 			entry.mDelegate = fnct;
-			entry.mSetOnDraw = setOnDraw;
-			found = true;
-			break;
+			return;
 		}
 	}
-
-	// This is a new value
-	if (!found) _InsertUniform(name, 0, fnct, setOnDraw);
-
-	// Ensure that associated shaders are also kept up to date
-	if (mDeferred) mDeferred->RegisterUniform(name, fnct, setOnDraw);
-	if (mShadowed) mShadowed->RegisterUniform(name, fnct, setOnDraw);
+	_InsertUniform(name, 0, fnct);
 }

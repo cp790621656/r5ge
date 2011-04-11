@@ -429,7 +429,7 @@ uint Object::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 		graphics->SetActiveVertexAttribute(IGraphics::Attribute::TexCoord1,	 0);
 		graphics->SetActiveVertexAttribute(IGraphics::Attribute::BoneWeight, 0);
 		graphics->SetActiveVertexAttribute(IGraphics::Attribute::BoneIndex,	 0);
-		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Vertex,	 v);
+		graphics->SetActiveVertexAttribute(IGraphics::Attribute::Position,	 v);
 		graphics->SetActiveColor( Color4f(factor, 1.0f - factor, 0.0f, 1.0f) );
 
 		result += graphics->DrawVertices( IGraphics::Primitive::Line, v.GetSize() );
