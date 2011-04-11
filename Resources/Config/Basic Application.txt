@@ -59,10 +59,10 @@ Root
 			Position = 0.0 0.0 2.0
 			Rotation = -0.300696 0.169002 -0.461229 0.817489
 			Scale = 1.0 1.0 1.0
-			Range = 0.3 25.0 90.0
+			Range = 0.3 100.0 90.0
 			Dolly = 0.0 13.001741 50.0
 
-			Script = "OSDrawForward"
+			Script = "OSDrawDeferred"
 			{
 				Background Color = 0.25 0.25 0.25 1.0
 				Fog Range = 10.0 25.0
@@ -86,12 +86,14 @@ Root
 			}
 		}
 
-		Directional Light = "Main Light"
+		Point Light = "Main Light"
 		{
-			Rotation = 1 1 -1
+			Position = 2 0 8
 			Ambient = 0.2 0.2 0.2
 			Diffuse = 1 1 1
 			Shadows = true
+			Brightness = 2
+			Range = 15
 		}
 
 		Model Instance = "Teapot"
@@ -103,7 +105,7 @@ Root
 			
 			//Script = "OSRotate"
 			//{
-			//	Rate = 0.1
+			//	Rate = -0.1
 			//}
 		}
 	}

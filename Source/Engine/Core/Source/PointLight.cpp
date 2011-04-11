@@ -25,8 +25,8 @@ PointLight::PointLight() :
 
 inline void PointLight::_UpdateColors()
 {
-	mProperties.mAmbient  = Color4f(mAmbient  * mBrightness, mBrightness);
-	mProperties.mDiffuse  = Color4f(mDiffuse  * mBrightness, mRange * mAbsoluteScale.Average());
+	mProperties.mAmbient  = Color4f(mAmbient * mBrightness, mBrightness);
+	mProperties.mDiffuse  = Color4f(mDiffuse * mBrightness, mRange * mAbsoluteScale.Average());
 }
 
 //============================================================================================================
@@ -177,10 +177,11 @@ void PointLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 	// Set the matrix that will be used to transform this light and to draw it at the correct position
 	mGraphics->SetModelViewMatrix(mat);
 
-	// Reset the light's position as it will be transformed by the matrix we set above.
-	// This is done in order to avoid an extra matrix switch, taking advantage of the
-	// fact that OpenGL transforms light coordinates by the current ModelView matrix.
+	// Light's view space position is the origin point of the geometry we're about to draw
 	properties.mPos = Vector3f();
+
+	// Activate the light at the matrix-transformed origin
+	mGraphics->SetActiveLight(0, &properties);
 
 	// First light activates the shader
 	if (setStates)
@@ -190,21 +191,18 @@ void PointLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 			mShader0 = mGraphics->GetShader("[R5] Light/Point");
 			mShader1 = mGraphics->GetShader("[R5] Light/PointAO");
 		}
-		mGraphics->SetActiveShader( (storage.GetAO() == 0) ? mShader0 : mShader1);
+		mGraphics->SetActiveShader((storage.GetAO() == 0) ? mShader0 : mShader1);
 	}
-
-	// Activate the light at the matrix-transformed origin
-	mGraphics->SetActiveLight(0, &properties);
 
 	if (flip)
 	{
 		// The camera is inside the sphere -- draw the inner side, and only
 		// on pixels that are closer to the camera than the light's range.
 
-		mGraphics->SetCulling( IGraphics::Culling::Front );
-		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Greater );
+		mGraphics->SetCulling(IGraphics::Culling::Front);
+		mGraphics->SetActiveDepthFunction(IGraphics::Condition::Greater);
 		mGraphics->DrawIndices(ibo, IGraphics::Primitive::Triangle, indexCount);
-		mGraphics->SetActiveDepthFunction( IGraphics::Condition::Less );
+		mGraphics->SetActiveDepthFunction(IGraphics::Condition::Less);
 		mGraphics->SetCulling(IGraphics::Culling::Back);
 	}
 	else

@@ -15,7 +15,7 @@ Root
 			
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D"
+				Shader = "Surface/D"
 				
 				Textures = String[]
 				{
@@ -25,7 +25,7 @@ Root
 			
 			Technique = "Opaque"
 			{
-				Shader = "Forward/D"
+				Shader = "Surface/D"
 				
 				Textures = String[]
 				{
@@ -35,11 +35,10 @@ Root
 			
 			Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_D"
+				Shader = "Surface/D"
 				
 				Textures = String[]
 				{
-					"R5_Shadowmap"
 					"Textures/sand/beach.jpg"
 				}
 			}

@@ -155,10 +155,6 @@ void GLSubShader::_Init()
 			bool ao = mName.Contains("AO");
 			bool shadow = mName.Contains("Shadow");
 
-			if (ao && shadow)		mCode = g_lightPrefix4;
-			else if (ao || shadow)	mCode = g_lightPrefix3;
-			else					mCode = g_lightPrefix2;
-
 			mCode << g_lightCommon;
 
 			// Light-specific code

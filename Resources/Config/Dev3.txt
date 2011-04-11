@@ -25,7 +25,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_NS"
+				Shader = "Surface/D_N"
 
 				Textures = String[]
 				{
@@ -63,7 +63,7 @@ Root
 
 		Model = "Teapot"
 		{
-			Source = "Models/teapot.r5b"
+			Source = "Models/teapot.r5c"
 
 			Limb = "Teapot"
 			{

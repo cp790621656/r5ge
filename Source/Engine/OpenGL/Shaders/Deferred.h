@@ -8,7 +8,7 @@
 //============================================================================================================
 
 static const char* g_combineDeferred = {
-"R5_FRAGMENT_SHADER\n"
+"void main()\n"
 "{\n"
 "	float2 tc = GetPixelTexCoords();\n"
 
@@ -26,5 +26,5 @@ static const char* g_combineDeferred = {
 //"	color = half3(matMaps.a, matMaps.a, matMaps.a);\n"
 
 "	float fogFactor = GetFogFactor(depth);\n"
-"	R5_finalColor[0] = half4( mix(color, R5_fogColor.rgb, fogFactor), matDiff.a );\n"
+"	R5_finalColor[0] = half4( color, matDiff.a );\n"
 "}\n"};

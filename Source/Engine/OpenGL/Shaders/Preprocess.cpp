@@ -3,6 +3,20 @@
 using namespace R5;
 
 //============================================================================================================
+// Convenience (fake) uniforms
+//============================================================================================================
+
+void ProcessMaterials (String& source)
+{
+	source.Replace("R5_materialSpecularity",	"R5_materialParams0.x", true);
+	source.Replace("R5_materialSpecularHue",	"R5_materialParams0.y", true);
+	source.Replace("R5_materialGlow",			"R5_materialParams0.z", true);
+	source.Replace("R5_materialOcclusion",		"R5_materialParams0.w", true);
+	source.Replace("R5_materialShininess",		"R5_materialParams1.x", true);
+	source.Replace("R5_materialReflectiveness", "R5_materialParams1.y", true);
+}
+
+//============================================================================================================
 // Adds appropriate surface shader functionality
 //============================================================================================================
 
@@ -45,7 +59,10 @@ bool AddSurfaceFunctions (String& source, bool deferred, bool shadowed)
 		// Deferred steps are extremely simple: simply store the values in the 3 output buffers
 		source.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
 		source.Replace("R5_surfaceProps", "R5_finalColor[1]", true);
-		source.Replace("R5_surfaceNormal", "R5_finalColor[2]", true);
+		source.Replace("R5_surfaceNormal", "vec4 R5_surfaceNormal", true);
+		source <<
+		"R5_surfaceNormal.xyz = R5_surfaceNormal.xyz * 0.5 + 0.5;\n"
+		"R5_finalColor[2] = R5_surfaceNormal;\n";
 	}
 	else if (!lit)
 	{
@@ -221,6 +238,56 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 }
 
 //============================================================================================================
+// Helper function that attempts to fix legacy shaders (pre-OpenGL 3.0)
+//============================================================================================================
+
+void FixLegacyShader (String& source)
+{
+	source.Replace("\r\n", "\n");
+
+	// Remove the last closing bracket
+	uint lastBracket = source.Find("}", true, 0, -1, true);
+	if (lastBracket >= source.GetSize()) return;
+	source[lastBracket] = '\n';
+
+	uint lightPos = source.Replace("gl_LightSource[0].position", "R5_lightPosition", true);
+	uint ambient =	source.Replace("gl_LightSource[0].ambient", "R5_lightAmbient", true);
+	uint diffuse =	source.Replace("gl_LightSource[0].diffuse", "R5_lightDiffuse", true) |
+					source.Replace("gl_LightSource[0].specular", "R5_lightDiffuse", true);
+
+	uint material = source.Replace("R5_MATERIAL_SPECULARITY", "R5_materialSpecularity", true) |
+					source.Replace("R5_MATERIAL_SPECULAR_HUE", "R5_materialSpecularHue", true) |
+					source.Replace("R5_MATERIAL_GLOW", "R5_materialGlow", true) |
+					source.Replace("R5_MATERIAL_REFLECTIVENESS", "R5_materialReflectiveness", true) |
+					source.Replace("R5_MATERIAL_SHININESS", "R5_materialShininess", true) |
+					source.Replace("R5_MATERIAL_OCCLUSION", "R5_materialOcclusion", true) |
+					source.Replace("gl_FrontLightProduct[0].ambient", "R5_materialColor", true) |
+					source.Replace("gl_FrontLightProduct[0].diffuse", "R5_materialColor", true) |
+					source.Replace("gl_FrontLightProduct[0].specular", "R5_materialColor", true);
+
+	uint texCoord0 = source.Replace("gl_MultiTexCoord0", "R5_texCoord0", true);
+	uint texCoord1 = source.Replace("gl_MultiTexCoord1", "R5_texCoord1", true);
+
+	String prefix;
+
+	if (texCoord0)	prefix << "attribute vec2 R5_texCoord0;\n";
+	if (texCoord1)	prefix << "attribute vec2 R5_texCoord1;\n";
+	if (lightPos)	prefix << "uniform vec4 R5_lightPosition;\n";
+	if (ambient)	prefix << "uniform vec3 R5_lightAmbient;\n";
+	if (diffuse)	prefix << "uniform vec3 R5_lightDiffuse;\n";
+	if (material)	prefix << "uniform vec4 R5_materialColor;\n"
+							  "uniform vec4 R5_materialParams0;\n"
+							  "uniform vec2 R5_materialParams1;\n";
+
+	if (prefix.IsValid()) source = prefix + source;
+
+	::ProcessMaterials(source);
+
+	// Restore the final bracket
+	source << "}\n";
+}
+
+//============================================================================================================
 // Adds appropriate common functions if the program uses them
 //============================================================================================================
 
@@ -245,6 +312,18 @@ void AddCommonFunctions (String& source)
 		"float GetLinearDepth (in float depth)\n"
 		"{\n"
 		"	return (R5_clipRange.z / (R5_clipRange.y - depth * R5_clipRange.w) - R5_clipRange.x) / R5_clipRange.w;\n"
+		"}\n";
+	}
+
+	if (source.Contains("GetViewPosition", true))
+	{
+		prefix <<
+		"vec3 GetViewPosition (in vec2 texCoord, in float depth)\n"
+		"{\n"
+		"	vec4 view = vec4(texCoord.x, texCoord.y, depth, 1.0);\n"
+		"	view.xyz = view.xyz * 2.0 - 1.0;\n"
+		"	view = R5_inverseProjMatrix * view;\n"
+		"	return view.xyz / view.w;\n"
 		"}\n";
 	}
 
@@ -383,24 +462,19 @@ void R5::PreprocessDependencies (String& source, Array<String>& dependencies)
 uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool shadowed)
 {
 	uint type = ISubShader::Type::Invalid;
+	bool surface = source.Contains("R5_surface", true);
 
-	if (source.Contains("R5_surface", true))
+	if (surface || source.Contains("R5_finalColor", true))
 	{
-		flags.Set(IShader::Flag::Surface, true);
+		flags.Set(IShader::Flag::Surface, surface);
+		flags.Set(IShader::Flag::Fragment, true);
 
 		type = ISubShader::Type::Fragment;
 		String prefix ("#version 130\n");
 
-		::AddSurfaceFunctions(source, deferred, shadowed);
+		if (surface) ::AddSurfaceFunctions(source, deferred, shadowed);
 		::AddCommonFunctions(source);
-
-		// Convenience (fake) uniforms
-		source.Replace("R5_materialSpecularity",	"R5_materialParams0.x", true);
-		source.Replace("R5_materialSpecularHue",	"R5_materialParams0.y", true);
-		source.Replace("R5_materialGlow",			"R5_materialParams0.z", true);
-		source.Replace("R5_materialOcclusion",		"R5_materialParams0.w", true);
-		source.Replace("R5_materialShininess",		"R5_materialParams1.x", true);
-		source.Replace("R5_materialReflectiveness", "R5_materialParams1.y", true);
+		::ProcessMaterials(source);
 
 		// Convenience (fake) functions
 		source.Replace("Sample2D(", "texture2D(R5_texture", true);
@@ -420,13 +494,10 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 
 		// Prepend the prefix
 		source = prefix + source;
-
-		System::Log("=================================================");
-		System::Log(source.GetBuffer());
-		System::Log("=================================================");
 	}
 	else if (source.Contains("R5_vertexPosition", true))
 	{
+		flags.Set(IShader::Flag::Vertex, true);
 		type = ISubShader::Type::Vertex;
 		String prefix ("#version 130\n");
 
@@ -436,16 +507,18 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		::ConvertCommonTypes(source);
 
 		source = prefix + source;
-
-		System::Log("=================================================");
-		System::Log(source.GetBuffer());
-		System::Log("=================================================");
 	}
 	else
 	{
 		// This shader uses an outdated format
 		flags.Set(IShader::Flag::LegacyFormat, true);
-		ASSERT(!source.Contains("gl_Light", true), "Outdated shader used -- please update");
+		::FixLegacyShader(source);
+
+		flags.Set( (source.Contains("gl_Position")) ? IShader::Flag::Vertex : IShader::Flag::Fragment );
+
+		//System::Log("=================================================");
+		//System::Log(source.GetBuffer());
+		//System::Log("=================================================");
 	}
 
 	// Unknown shader type -- figure it out
@@ -465,7 +538,6 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		}
 	}
 
-	flags.Set(IShader::Flag::Lit, source.Contains("R5_light", true));
 	flags.Set(IShader::Flag::Shadowed, shadowed && !deferred);
 	return type;
 }

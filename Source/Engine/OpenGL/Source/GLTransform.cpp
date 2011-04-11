@@ -310,7 +310,8 @@ uint GLTransform::Activate (const IShader* shader)
 			++switches;
 		}
 	}
-	else if (shader == 0 || shader->GetFlag(IShader::Flag::LegacyFormat))
+	// We should only activate matrices if there is no vertex shader present
+	else if (shader == 0 || !shader->GetFlag(IShader::Flag::Vertex | IShader::Flag::LegacyFormat))
 	{
 		if (mReset)
 		{
@@ -337,13 +338,13 @@ uint GLTransform::Activate (const IShader* shader)
 			// Always end with ModelView
 			glMatrixMode(GL_MODELVIEW);
 		}
-	}
 
-	// Reset the 'changed' flags on all matrices
-	mModel.changed  = false;
-	mView.changed   = false;
-	mProj.changed   = false;
-	mReset			= false;
+		// Reset the 'changed' flags on all matrices
+		mModel.changed  = false;
+		mView.changed   = false;
+		mProj.changed   = false;
+		mReset			= false;
+	}
 
 	// Return the number of matrix switches
 	return switches;

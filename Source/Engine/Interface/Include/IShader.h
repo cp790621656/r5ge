@@ -15,10 +15,11 @@ struct IShader
 		enum
 		{
 			LegacyFormat = 0x0001,	// This shader uses an outdated shader model (before SM 3.0)
-			Skinned		 = 0x0002,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
+			Vertex		 = 0x0002,	// This shader has a vertex component
+			Fragment	 = 0x0004,	// This shader has a fragment component
+			Skinned		 = 0x0008,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
 			Shadowed	 = 0x0010,	// The material's last texture must be "R5_shadowMap"
 			Surface		 = 0x0020,	// This is a surface shader, usable for both forward and deferred
-			Lit			 = 0x0040,	// This shader has lighting code
 		};
 	};
 

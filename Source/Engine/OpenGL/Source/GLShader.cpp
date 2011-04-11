@@ -377,15 +377,17 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	_InsertUniform( "R5_clipRange",			4,  bind(&GLShader::SetUniform_ClipRange,		this), false );
 	_InsertUniform( "R5_fogRange",			2,  bind(&GLShader::SetUniform_FogRange,		this), false );
 	_InsertUniform( "R5_fogColor",			4,  bind(&GLShader::SetUniform_FogColor,		this), false );
-	_InsertUniform( "R5_lightAmbient",		3,  bind(&GLShader::SetUniform_LightAmbient,	this), false );
-	_InsertUniform( "R5_lightDiffuse",		3,  bind(&GLShader::SetUniform_LightDiffuse,	this), false );
-	_InsertUniform( "R5_lightPosition",		4,  bind(&GLShader::SetUniform_LightPosition,	this), false );
-	_InsertUniform( "R5_lightParams",		3,  bind(&GLShader::SetUniform_LightParams,		this), false );
 	_InsertUniform( "R5_materialColor",		4,  bind(&GLShader::SetUniform_MatColor,		this), false );
 	_InsertUniform( "R5_materialParams0",	4,  bind(&GLShader::SetUniform_MatParams0,		this), false );
 	_InsertUniform( "R5_materialParams1",	2,  bind(&GLShader::SetUniform_MatParams1,		this), false );
 
 	// These uniforms will be set on IShader::Update(), which happens just before the drawing operations
+	_InsertUniform( "R5_lightAmbient",		3,  bind(&GLShader::SetUniform_LightAmbient,	this), true );
+	_InsertUniform( "R5_lightDiffuse",		3,  bind(&GLShader::SetUniform_LightDiffuse,	this), true );
+	_InsertUniform( "R5_lightPosition",		4,  bind(&GLShader::SetUniform_LightPosition,	this), true );
+	_InsertUniform( "R5_lightParams",		3,  bind(&GLShader::SetUniform_LightParams,		this), true );
+
+	// All matrices must be updated prior to each draw call as well
 	_InsertUniform( "R5_modelScale",				3,  bind(&GLShader::SetUniform_MS,		this), true );
 	_InsertUniform( "R5_modelMatrix",				16, bind(&GLShader::SetUniform_MM,		this), true );
 	_InsertUniform( "R5_viewMatrix",				16, bind(&GLShader::SetUniform_VM,		this), true );
@@ -542,12 +544,7 @@ bool GLShader::_Rebuild()
 			GLSubShader* sub = mAdded[--i];
 			sub->AppendDependenciesTo(mDepended);
 		}
-
-		if (_Link())
-		{
-			Update(false);
-			return true;
-		}
+		return _Link();
 	}
 	return false;
 }
