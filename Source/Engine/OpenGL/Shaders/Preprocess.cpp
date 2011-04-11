@@ -515,6 +515,7 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		::FixLegacyShader(source);
 
 		flags.Set( (source.Contains("gl_Position")) ? IShader::Flag::Vertex : IShader::Flag::Fragment );
+		type = flags.Get(IShader::Flag::Vertex) ? ISubShader::Type::Vertex : ISubShader::Type::Fragment;
 
 		//System::Log("=================================================");
 		//System::Log(source.GetBuffer());
