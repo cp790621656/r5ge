@@ -510,6 +510,12 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 	}
 	else
 	{
+		// Lights are no longer supported
+		if (source.Contains("gl_Light", true) || source.Contains("gl_FrontLight", true))
+		{
+			WARNING("Legacy shader format, please upgrade");
+		}
+
 		// This shader uses an outdated format
 		flags.Set(IShader::Flag::LegacyFormat, true);
 		::FixLegacyShader(source);

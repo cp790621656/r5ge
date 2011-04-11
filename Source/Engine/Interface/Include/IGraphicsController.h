@@ -101,7 +101,6 @@ public:
 	virtual void SetCulling			(uint val)=0;
 	virtual void SetAlphaCutoff		(float val = 0.003921568627451f)=0;
 	virtual void SetThickness		(float val)=0;
-	virtual void SetNormalize		(bool val)=0;
 	virtual void SetDepthOffset		(uint val)=0;
 	virtual void SetViewport		(const Vector2i& size)=0;
 	virtual void SetScissorRect		(const Rect& rect)=0;
@@ -124,7 +123,6 @@ public:
 	virtual uint				GetCulling()			const=0;
 	virtual float				GetAlphaCutoff()		const=0;
 	virtual float				GetThickness()			const=0;
-	virtual bool				GetNormalize()			const=0;
 	virtual uint				GetDepthOffset()		const=0;
 	virtual uint				GetDefaultAF()			const=0;
 	virtual const Vector2i&		GetViewport()			const=0;

@@ -111,7 +111,6 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 
 	// Set the color and world matrix
 	mGraphics->SetActiveColor(mColor);
-	mGraphics->SetNormalize(false);
 	mGraphics->SetModelMatrix(mMatrix);
 
 	// Activate the shader, force-updating the uniforms

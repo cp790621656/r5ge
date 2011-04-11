@@ -377,11 +377,11 @@ bool GLShader::Init (GLGraphics* graphics, const String& name)
 	_InsertUniform( "R5_clipRange",			4,  bind(&GLShader::SetUniform_ClipRange,		this), false );
 	_InsertUniform( "R5_fogRange",			2,  bind(&GLShader::SetUniform_FogRange,		this), false );
 	_InsertUniform( "R5_fogColor",			4,  bind(&GLShader::SetUniform_FogColor,		this), false );
-	_InsertUniform( "R5_materialColor",		4,  bind(&GLShader::SetUniform_MatColor,		this), false );
-	_InsertUniform( "R5_materialParams0",	4,  bind(&GLShader::SetUniform_MatParams0,		this), false );
-	_InsertUniform( "R5_materialParams1",	2,  bind(&GLShader::SetUniform_MatParams1,		this), false );
 
 	// These uniforms will be set on IShader::Update(), which happens just before the drawing operations
+	_InsertUniform( "R5_materialColor",		4,  bind(&GLShader::SetUniform_MatColor,		this), true );
+	_InsertUniform( "R5_materialParams0",	4,  bind(&GLShader::SetUniform_MatParams0,		this), true );
+	_InsertUniform( "R5_materialParams1",	2,  bind(&GLShader::SetUniform_MatParams1,		this), true );
 	_InsertUniform( "R5_lightAmbient",		3,  bind(&GLShader::SetUniform_LightAmbient,	this), true );
 	_InsertUniform( "R5_lightDiffuse",		3,  bind(&GLShader::SetUniform_LightDiffuse,	this), true );
 	_InsertUniform( "R5_lightPosition",		4,  bind(&GLShader::SetUniform_LightPosition,	this), true );

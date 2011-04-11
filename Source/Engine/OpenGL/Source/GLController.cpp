@@ -101,14 +101,13 @@ GLController::GLController() :
 	mStencilTest	(false),
 	mScissorTest	(false),
 	mWireframe		(false),
+	mMatIsDirty		(true),
 	mLighting		(Lighting::None),
 	mBlending		(Blending::None),
 	mCulling		(Culling::None),
 	mAdt			(0.0f),
 	mThickness		(1.0f),
-	mNormalize		(false),
 	mAf				(0),
-	mSimpleMaterial	(false),
 	mTarget			(0),
 	mTechnique		(0),
 	mMaterial		(0),
@@ -381,7 +380,7 @@ void GLController::SetAlphaCutoff (float val)
 {
 	if (mAlphaTest && Float::IsNotEqual(mAdt, val))
 	{
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
 		glAlphaFunc(GL_GREATER, mAdt = val);
 	}
 }
@@ -411,19 +410,6 @@ void GLController::SetThickness (float val)
 			glEnable(GL_POINT_SMOOTH);
 			glEnable(GL_LINE_SMOOTH);
 		}
-	}
-}
-
-//============================================================================================================
-// Whether to automatically normalize normals
-//============================================================================================================
-
-void GLController::SetNormalize (bool val)
-{
-	if ( mNormalize != val )
-	{
-		if (mNormalize = val) glEnable(GL_RESCALE_NORMAL);
-		else glDisable(GL_RESCALE_NORMAL);
 	}
 }
 
@@ -618,7 +604,7 @@ void GLController::SetActiveTechnique (const ITechnique* ptr, bool insideOut)
 			SetCulling		( culling				);
 
 			// Invalidate any active material
-			mMaterial = (const IMaterial*)(-1);
+			mMatIsDirty = true;
 			++mStats.mTechSwitches;
 		}
 	}
@@ -631,8 +617,9 @@ void GLController::SetActiveTechnique (const ITechnique* ptr, bool insideOut)
 
 bool GLController::SetActiveMaterial (const IMaterial* ptr)
 {
-	if (mMaterial != ptr)
+	if (mMaterial != ptr || mMatIsDirty)
 	{
+		mMatIsDirty = false;
 		static uint maxIU = _CountImageUnits();
 
 		// If the material is invisible under the current technique, consider options to be invalid
@@ -709,7 +696,7 @@ bool GLController::SetActiveMaterial (const ITexture* ptr)
 		SetActiveTexture(--i, 0);
 
 	SetActiveTexture(0, ptr);
-	mMaterial = (const IMaterial*)(-1);
+	mMatIsDirty = true;
 	return (ptr != 0 && ptr->IsValid());
 }
 
@@ -728,15 +715,19 @@ bool GLController::SetActiveShader (const IShader* ptr)
 		if (shader != 0) ++mStats.mShaderSwitches;
 
 		// Remember the shader that we activated
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
 		mShader = shader;
+
+		//glDisable(GL_RESCALE_NORMAL);
 		return true;
 	}
 	else if (mShader != 0)
 	{
 		mShader->Deactivate();
 		mShader = 0;
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
+
+		//glEnable(GL_RESCALE_NORMAL);
 		return true;
 	}
 	return false;
@@ -782,7 +773,7 @@ void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 	if (textureUnit < maxIU)
 	{
 		mNextTex[textureUnit] = (GLTexture*)tex;
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
 	}
 }
 

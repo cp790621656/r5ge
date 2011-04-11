@@ -65,7 +65,6 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 
 	// Set the color and world matrix
 	mGraphics->SetActiveColor(mColor);
-	mGraphics->SetNormalize(false);
 	mGraphics->SetBlending(mBlending);
 	mGraphics->SetModelMatrix(mMatrix);
 
