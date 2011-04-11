@@ -59,13 +59,13 @@ Root
 			Position = 0.0 0.0 2.0
 			Rotation = -0.300696 0.169002 -0.461229 0.817489
 			Scale = 1.0 1.0 1.0
-			Range = 0.3 100.0 90.0
+			Range = 0.3 50.0 90.0
 			Dolly = 0.0 13.001741 50.0
 
 			Script = "OSDrawDeferred"
 			{
 				Background Color = 0.25 0.25 0.25 1.0
-				Fog Range = 10.0 25.0
+				Fog Range = 0.5 1.0
 
 				Shadowmap
 				{
