@@ -311,7 +311,7 @@ void GLShader::SetUniform_MatColor (const String& name, Uniform& uniform)
 {
 	const IMaterial* mat = mGraphics->GetActiveMaterial();
 
-	if (mat == 0 || mat == ((void*)-1))
+	if (mat == 0)
 	{
 		uniform = Color4f(1.0f);
 	}
@@ -329,7 +329,7 @@ void GLShader::SetUniform_MatParams0 (const String& name, Uniform& uniform)
 {
 	const IMaterial* mat = mGraphics->GetActiveMaterial();
 
-	if (mat == 0 || mat == ((void*)-1))
+	if (mat == 0)
 	{
 		uniform = Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
 	}

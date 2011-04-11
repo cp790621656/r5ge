@@ -244,6 +244,7 @@ bool AddVertexFunctions (String& source, bool deferred, Flags& flags)
 void FixLegacyShader (String& source)
 {
 	source.Replace("\r\n", "\n");
+	source.Replace("#version 110", "", true);
 
 	// Remove the last closing bracket
 	uint lastBracket = source.Find("}", true, 0, -1, true);
@@ -523,9 +524,9 @@ uint R5::PreprocessShader (String& source, Flags& flags, bool deferred, bool sha
 		flags.Set( (source.Contains("gl_Position")) ? IShader::Flag::Vertex : IShader::Flag::Fragment );
 		type = flags.Get(IShader::Flag::Vertex) ? ISubShader::Type::Vertex : ISubShader::Type::Fragment;
 
-		//System::Log("=================================================");
-		//System::Log(source.GetBuffer());
-		//System::Log("=================================================");
+		System::Log("=================================================");
+		System::Log(source.GetBuffer());
+		System::Log("=================================================");
 	}
 
 	// Unknown shader type -- figure it out

@@ -148,7 +148,7 @@ Root
 						Texture Size = 256
 						Cascade Count = 1
 						Cascade Bias = 0.5
-						Blur Passes = 0
+						Blur Passes = 2
 						Softness = 1.0
 						Kernel Size = 1.0
 						Depth Bias = 6.0
@@ -165,7 +165,7 @@ Root
 				Diffuse = 1.0 1.0 1.0
 				Specular = 1.0 1.0 1.0
 				Brightness = 1.0
-				Shadows = false
+				Shadows = true
 
 				Directional Billboard = "Test 0"
 				{

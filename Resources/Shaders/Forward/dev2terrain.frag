@@ -1,5 +1,3 @@
-#version 110
-
 uniform sampler2D	R5_texture0; // Normal map (RGB) and height (A)
 uniform sampler2D	R5_texture1; // Gradient mix texture
 uniform sampler2D	R5_texture2; // Rocky texture
