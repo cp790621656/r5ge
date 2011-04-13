@@ -11,6 +11,8 @@
  #include "_Windows_OpenGL.h"
 #elif defined (_MACOS)
  #include "_OSX_OpenGL.h"
+#elif defined (_LINUX)
+ #include "_X11_OpenGL.h"
 #endif
 
 //==========================================================================================================

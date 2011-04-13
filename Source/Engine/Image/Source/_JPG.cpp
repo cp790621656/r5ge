@@ -117,7 +117,7 @@ R5_READ_IMAGE_CODEC(JPG)
 			source.fill_input_buffer = OnFillBuffer;
 			source.skip_input_data	 = OnSkipData;
 			source.resync_to_restart = jpeg_resync_to_restart;
-			source.termSource		 = OnCloseSource;
+			source.term_source		 = OnCloseSource;
 			source.next_input_byte	 = buff;
 			source.bytes_in_buffer	 = size;
 
@@ -138,11 +138,11 @@ R5_READ_IMAGE_CODEC(JPG)
 			// Decompress the file
 			jpeg_start_decompress(&jpgInfo);
 
-			uint rowLength = jpgInfo.image_width * jpgInfo.numComponents;
+			uint rowLength = jpgInfo.image_width * jpgInfo.num_components;
 
-			if		(jpgInfo.numComponents == 3)	out.mFormat = ITexture::Format::RGB;
-			else if (jpgInfo.numComponents == 2)	out.mFormat = ITexture::Format::Luminance;
-			else if (jpgInfo.numComponents == 1)	out.mFormat = ITexture::Format::Alpha;
+			if		(jpgInfo.num_components == 3)	out.mFormat = ITexture::Format::RGB;
+			else if (jpgInfo.num_components == 2)	out.mFormat = ITexture::Format::Luminance;
+			else if (jpgInfo.num_components == 1)	out.mFormat = ITexture::Format::Alpha;
 			else									out.mFormat = ITexture::Format::Invalid;
 
 			out.mWidth  = jpgInfo.image_width;

@@ -14,6 +14,8 @@
 	#include "_MSWindow.h"
 #elif defined (_MACOS)
 	#include "_CocoaWindow.h"
+#elif defined (_LINUX)
+	#include "_X11Window.h"
 #else
 	#error "Unsupported system configuration"
 #endif // _WINDOWS

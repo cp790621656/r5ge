@@ -173,7 +173,7 @@ void Thread::MessageWindow(const char *format, ...)
 bool Thread::AssertWindow( const char* description, int line, const char* filename, bool& keepChecking )
 {
 	const char* format = "File: '%s'\nLine: %u\n\n%s\n\nBreak into code?";
-	char text[1024];
+	char text[1024]; spin lock
 	
 	sprintf(text, format, filename, line, description);
 

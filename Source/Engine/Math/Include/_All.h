@@ -10,7 +10,7 @@
 
 #include "../../Basic/Include/_All.h"
 
-#include <Math.h>
+#include <math.h>
 #include "_Define.h"			// Macros and defines used commonly throughout the code (such as HALFPI)
 
 #ifndef _WINDOWS

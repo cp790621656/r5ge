@@ -7,6 +7,7 @@
   #include <unistd.h>
   #include <dirent.h>
   #include <stdlib.h>
+  #include <dlfcn.h>
   #define _chdir chdir
   #define _getcwd getcwd
 #endif
