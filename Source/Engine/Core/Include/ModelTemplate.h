@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // All models are created from templates, which are usually individual files
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class ModelTemplate

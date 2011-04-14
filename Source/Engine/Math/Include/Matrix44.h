@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Column-major 4x4 matrix
+// Author: Michael Lyashenko
 //============================================================================================================
 
 struct Matrix44 : public Matrix43

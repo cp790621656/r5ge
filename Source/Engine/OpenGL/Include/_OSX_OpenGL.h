@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c)2008 Michael Lyashenko. All rights reserved.
+//											R5 Game Engine
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // Mac OSX header file for the OpenGL related functionality
+// Author: Michael Lyashenko
 //============================================================================================================
 
 #ifdef _MACOS

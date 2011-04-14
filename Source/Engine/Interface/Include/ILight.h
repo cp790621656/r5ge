@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2009 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Basic light information
+// Author: Michael Lyashenko
 //============================================================================================================
 
 struct ILight

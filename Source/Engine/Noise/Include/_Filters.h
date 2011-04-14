@@ -12,6 +12,7 @@
 //					Parameter 0: Number of octaves
 //					Parameter 1: Upper mirror threshold during noise combination for ridged noise (default: 1)
 //					Parameter 2: Contribution smoothness between octaves (default: 1.0 [100%])
+// Author: Michael Lyashenko
 //============================================================================================================
 // Built-in essential filters
 //============================================================================================================

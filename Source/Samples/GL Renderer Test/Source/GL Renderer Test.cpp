@@ -3,8 +3,8 @@
 using namespace R5;
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // GL Rendering Test: Application that exposes raw OpenGL functionality to the developer.
 //============================================================================================================

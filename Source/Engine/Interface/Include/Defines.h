@@ -1,11 +1,12 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Macros for standarized class creation and traversal. They eliminate the need for the 'dynamic_cast'
 // functionality and provide a quick way of comparing class types.
+// Author: Michael Lyashenko
 //============================================================================================================
 
 // Stand-alone class

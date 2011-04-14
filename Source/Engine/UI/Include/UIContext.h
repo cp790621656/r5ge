@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Simple context menu
+// Author: Michael Lyashenko
 //============================================================================================================
 // Note that the context menu class is not a standard UI widget. It's not serialized, and it's rebuilt only
 // when it's shown. It's meant to be used for quick menus, not as a full-fledged UI widget.

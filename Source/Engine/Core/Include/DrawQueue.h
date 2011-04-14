@@ -1,8 +1,8 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // All drawable objects are separated by layers into different draw sets.
 //------------------------------------------------------------------------------------------------------------
@@ -16,6 +16,7 @@
 //   This allows batching of similar objects together -- instanced models, particles, etc.
 // - Each DrawGroup contains a list of objects that belong to it along with their distance to the camera.
 //   Distance allows objects to be drawn back-to-front or front-to-back as needed.
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class LightSource;

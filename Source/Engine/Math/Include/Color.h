@@ -1,12 +1,13 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Unified color, stored in both 32-bit as well as 128-bit formats.
 // This is an optimization class mainly -- seeing as equality/nonequality operations are much faster with
 // 32-bit colors, but the videocard often expects them to be in floating-point format.
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class Color

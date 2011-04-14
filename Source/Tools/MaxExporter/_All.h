@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
+//											R5 Game Engine
 //                                  Contact: arenmook@gmail.com
 //============================================================================================================
 // NOTE: You must add your 3ds Max 9 SDK folders to the configuration lists! Example:
+// Author: Michael Lyashenko
 //============================================================================================================
 // Tools -> Options -> Projects & Solutions -> VC++ Directories
 // Include files: C:\Program Files (x86)\Autodesk\3ds Max 9 SDK\maxsdk\include

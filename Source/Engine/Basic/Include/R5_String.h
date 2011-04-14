@@ -1,12 +1,13 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 
 //#define _STRING_DEBUG_MODE_
 #define _CRT_SECURE_NO_DEPRECATE
+// Author: Michael Lyashenko
 
 //============================================================================================================
 // The string should be 64-byte aligned

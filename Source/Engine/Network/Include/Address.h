@@ -2,9 +2,10 @@
 
 //============================================================================================================
 //              R5 Network, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Network::Address contains the IP and Port of the remote host
+// Author: Michael Lyashenko
 //============================================================================================================
 
 struct Address

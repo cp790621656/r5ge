@@ -1,11 +1,12 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//											R5 Game Engine
+//									http://code.google.com/p/r5ge/
 //============================================================================================================
 // Model Viewer -- Legacy application that keeps getting "patched", but not rewritten. As such its code is
 // crap, but it does what it's supposed to do -- allows viewing and modification of basic model properties.
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class ModelViewer

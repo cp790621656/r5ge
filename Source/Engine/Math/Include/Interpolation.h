@@ -1,11 +1,12 @@
 #pragma once
 
 //============================================================================================================
-//              R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Functions for various interpolations
 // http://www.gamedev.net/reference/articles/article1497.asp
+// Author: Michael Lyashenko
 //============================================================================================================
 
 namespace Interpolation

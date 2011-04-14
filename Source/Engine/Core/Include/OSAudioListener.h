@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//       R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko and Philip Cosgrave. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Updates the sound listener position every update (attach to your main camera)
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class OSAudioListener : public Script

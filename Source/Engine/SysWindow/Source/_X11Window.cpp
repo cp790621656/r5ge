@@ -16,33 +16,36 @@ using namespace R5;
 
 Atom wmDeleteMessage;
 
-//==========================================================================================================
+//============================================================================================================
 // Converts X11 key codes to R5 key codes
-//==========================================================================================================
-byte ConvertKeyCode(byte key)
+//============================================================================================================
+
+inline byte ConvertKeyCode (byte key)
 {
 	// It appears that simple, although needs to be tested on other keyboards
 	return key - 9;
 }
 
-//==========================================================================================================
+//============================================================================================================
 // Set up the default values for everything
-//==========================================================================================================
+//============================================================================================================
 
 SysWindow::SysWindow() :
-	mDisplay			(0),
-	mWin				(0),
+	mDisplay		(0),
+	mWin			(0),
 	mWindowThread	(0),
 	mStyle			(Style::Undefined),
 	mPrevStyle		(Style::Undefined),
 	mIsMinimized	(false),
 	mIgnoreResize	(false),
-	mPos				(0),
-	mSize				(0),
-	mHandler			(0),
+	mPos			(0),
+	mSize			(0),
+	mHandler		(0),
 	mGraphics		(0)
 {
 }
+
+//============================================================================================================
 
 SysWindow::~SysWindow()
 {
@@ -50,32 +53,36 @@ SysWindow::~SysWindow()
 	::XCloseDisplay(mDisplay);
 }
 
+//============================================================================================================
+
 bool SysWindow::_CreateContext()
 {
 	::glXMakeCurrent(mDisplay, mWin, mGLXContext);
-	return mGraphics->Init();
+	return (mGraphics == 0) || mGraphics->Init();
 }
+
+//============================================================================================================
 
 void SysWindow::_ReleaseContext()
 {
 	::glXMakeCurrent(mDisplay, None, NULL);
 }
 
-//==========================================================================================================
+//============================================================================================================
 // Creates a window of specified name, width, and height
-// hParent, iconID and cursorID are ignored, if style is Style::Child - the program aborts
-//==========================================================================================================
+// hParent, iconID and cursorID are ignored, if style is Style::Child, the program aborts
+//============================================================================================================
 
 bool SysWindow::Create(
-	const		String& title,
-	short		x,
-	short		y,
+	const	String& title,
+	short	x,
+	short	y,
 	ushort	width,
 	ushort	height,
-	uint		style,
+	uint	style,
 	ushort	iconID,
 	ushort	cursorID,
-	void*		hParent)
+	void*	hParent)
 {
 	Lock();
 
@@ -118,23 +125,15 @@ bool SysWindow::Create(
 		mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
 
 		XSetWindowAttributes swa;
-		swa.colormap			=	::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
-		swa.event_mask 		=	PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
-										KeyPressMask | KeyReleaseMask |
-										StructureNotifyMask;
+		swa.colormap	=	::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
+		swa.event_mask 	=	PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
+							KeyPressMask | KeyReleaseMask | StructureNotifyMask;
+
 		swa.background_pixel = 	WhitePixel(mDisplay, screen);
 
-		mWin = ::XCreateWindow(	mDisplay, 
-										root, 
-										x, y,
-										width, height, 
-										0,
-										vi->depth, 
-										InputOutput, 
-										vi->visual, 
-										CWColormap | CWEventMask | CWBackPixel, 
-										&swa);
-
+		mWin = ::XCreateWindow(	mDisplay, root, x, y, width, height,
+								0, vi->depth, InputOutput, vi->visual,
+								CWColormap | CWEventMask | CWBackPixel, &swa );
 		SetTitle(title);
 
 		mSize.Set(width, height);
@@ -180,98 +179,105 @@ bool SysWindow::Update()
 	if (mWindowThread == Thread::GetID())
 	{
 		while (XPending(mDisplay))
-      {
-      	XEvent xev;
+		{
+      		XEvent xev;
 			::XNextEvent(mDisplay, &xev);
 
 			switch (xev.type)
 			{
 				case KeyPress:
-					{
-						KeySym xk = XLookupKeysym(&xev.xkey, 0);
+				{
+					KeySym xk = XLookupKeysym(&xev.xkey, 0);
 
-						if (xk < 128) mHandler->OnChar((char)xk);
-						if (!KeyRepeat)
-							mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(xk), true);
+					if (xk < 128)
+					{
+						mHandler->OnChar((char)xk);
 					}
-					break;
+
+					if (!KeyRepeat)
+					{
+						mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(xk), true);
+					}
+				}
+				break;
 
 				case KeyRelease:
+				{
+					if (XEventsQueued(mDisplay, QueuedAfterReading))
 					{
-						if (XEventsQueued(mDisplay, QueuedAfterReading))
+						XEvent nev;
+						XPeekEvent(mDisplay, &nev);
+
+						if (nev.type == KeyPress && 
+							nev.xkey.time == xev.xkey.time &&
+							nev.xkey.keycode == xev.xkey.keycode)
 						{
-							XEvent nev;
-							XPeekEvent(mDisplay, &nev);
-
-							if (	nev.type == KeyPress && 
-									nev.xkey.time == xev.xkey.time &&
-									nev.xkey.keycode == xev.xkey.keycode)
-							{
-								KeyRepeat = true;
-								break;
-							}
+							KeyRepeat = true;
+							break;
 						}
-
-						// If we got to here, then this is not a key repeat
-						KeyRepeat = false;
-						mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(XLookupKeysym(&xev.xkey, 0)), false);
 					}
-					break;
+
+					// If we got to here, then this is not a key repeat
+					KeyRepeat = false;
+					mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(XLookupKeysym(&xev.xkey, 0)), false);
+				}
+				break;
 
 				case ButtonPress:
+				{
+					switch (xev.xbutton.button)
 					{
-						switch (xev.xbutton.button)
-						{
-							case Button1: 
-								mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseLeft, true); 
-								break;
-						
-							case Button2:
-								mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseMiddle, true); 
-								break;
-						
-							case Button3: 
-								mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseRight, true); 
-								break;
-						
-							case Button4:
-								mHandler->OnScroll(Vector2i(xev.xbutton.x, xev.xbutton.y), 1.0f); 
-								break;
-						
-							case Button5: 
-								mHandler->OnScroll(Vector2i(xev.xbutton.x, xev.xbutton.y), -1.0f); 
-								break;	 
-						}
+						case Button1: 
+							mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseLeft, true); 
+							break;
+					
+						case Button2:
+							mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseMiddle, true); 
+							break;
+					
+						case Button3: 
+							mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseRight, true); 
+							break;
+					
+						case Button4:
+							mHandler->OnScroll(Vector2i(xev.xbutton.x, xev.xbutton.y), 1.0f); 
+							break;
+					
+						case Button5: 
+							mHandler->OnScroll(Vector2i(xev.xbutton.x, xev.xbutton.y), -1.0f); 
+							break;	 
 					}
-					break;
+				}
+				break;
 
 				case ButtonRelease:
+				{
+					switch (xev.xbutton.button)
 					{
-						switch (xev.xbutton.button)
-						{
-							case Button1: 
-								mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseLeft, false);
-								break;
-						
-							case Button2:
-								mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseMiddle, false);
-								break;
-						
-							case Button3: 
-								mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseRight, false);
-								break;
-						}
+						case Button1: 
+							mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseLeft, false);
+							break;
+					
+						case Button2:
+							mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseMiddle, false);
+							break;
+					
+						case Button3: 
+							mHandler->OnKeyPress(Vector2i(xev.xbutton.x, xev.xbutton.y), Key::MouseRight, false);
+							break;
 					}
-					break;
+				}
+				break;
+
 				case MotionNotify:
-					{
-						static Vector2i prevPos(0,0);
-						static Vector2i mousePos(xev.xmotion.x, xev.xmotion.y);
-						mHandler->OnMouseMove(mousePos, mousePos - prevPos);
-						prevPos = mousePos;
-					}
-					break;
-			
+				{
+					static Vector2i prevPos(0,0);
+					static Vector2i mousePos(xev.xmotion.x, xev.xmotion.y);
+					mHandler->OnMouseMove(mousePos, mousePos - prevPos);
+					prevPos = mousePos;
+				}
+				break;
+
 				case ClientMessage:
 					if (xev.xclient.data.l[0] == (long)wmDeleteMessage)
 						Close();
@@ -279,63 +285,64 @@ bool SysWindow::Update()
 				case MapNotify:
 					mIsMinimized = false;
 					break;
-				
+
 				case UnmapNotify:
 					mIsMinimized = true;
 					break;
-				
+
 				case ConfigureNotify:
-					{
-						mPos.Set(xev.xconfigure.x, xev.xconfigure.y);
-						mSize.Set(xev.xconfigure.width, xev.xconfigure.height);
-						mHandler->OnResize(mSize);
-					}
-					break;
+				{
+					mPos.Set(xev.xconfigure.x, xev.xconfigure.y);
+					mSize.Set(xev.xconfigure.width, xev.xconfigure.height);
+					mHandler->OnResize(mSize);
+				}
+				break;
+
 				case SelectionRequest:
+				{
+					XSelectionEvent select;
+					select.type = SelectionNotify;
+					select.display = xev.xselection.display;
+					select.requestor = xev.xselection.requestor;
+					select.selection = xev.xselection.selection;
+					select.target = xev.xselection.target;
+					select.time = xev.xselection.time;
+					select.property = None;
+
+					Atom targets = XInternAtom (mDisplay, "TARGETS", False);
+
+					if (xev.xselection.target == targets)
 					{
-						XSelectionEvent select;
-						select.type = SelectionNotify;
-						select.display = xev.xselection.display;
-						select.requestor = xev.xselection.requestor;
-						select.selection = xev.xselection.selection;
-						select.target = xev.xselection.target;
-						select.time = xev.xselection.time;
-						select.property = None;
-
-						Atom targets = XInternAtom (mDisplay, "TARGETS", False);
-
-						if (xev.xselection.target == targets)
-						{
-							unsigned int target_list[] = {XA_STRING};
-							XChangeProperty(	xev.xselection.display, 
-													xev.xselection.requestor, 
-													xev.xselection.property, 
-													XA_ATOM, 
-													32, 
-													PropModeReplace, 
-													(unsigned char *)target_list,
-							        				sizeof(target_list)/sizeof(int));
-						}
-						else if (xev.xselection.target == XA_STRING)
-						{
-							XChangeProperty(	xev.xselection.display, 
-													xev.xselection.requestor, 
-													xev.xselection.property, 
-													XA_STRING, 
-													8, 
-													PropModeReplace, 
-													(unsigned char *)mClipboard.GetBuffer(), 
-													mClipboard.GetLength());
-						}
-						select.property = xev.xselection.property;
-
-						XSendEvent(	xev.xselection.display, 
+						unsigned int target_list[] = {XA_STRING};
+						XChangeProperty(xev.xselection.display, 
 										xev.xselection.requestor, 
-										False, 
-										0, 
-										(XEvent*)&select);
+										xev.xselection.property, 
+										XA_ATOM, 
+										32, 
+										PropModeReplace, 
+										(unsigned char *)target_list,
+						        		sizeof(target_list)/sizeof(int));
 					}
-         }
+					else if (xev.xselection.target == XA_STRING)
+					{
+						XChangeProperty(xev.xselection.display, 
+										xev.xselection.requestor, 
+										xev.xselection.property, 
+										XA_STRING, 
+										8, 
+										PropModeReplace, 
+										(unsigned char *)mClipboard.GetBuffer(), 
+										mClipboard.GetLength());
+					}
+					select.property = xev.xselection.property;
+
+					XSendEvent(	xev.xselection.display, 
+								xev.xselection.requestor, 
+								False, 
+								0, 
+								(XEvent*)&select);
+				}
+			}
       }
 		
 		if (mIsMinimized) ::usleep(5000);
@@ -377,7 +384,9 @@ bool SysWindow::SetSize(const Vector2i& size)
 void SysWindow::SetFocus()
 {
 	if (mWin != 0 && mDisplay != NULL)
+	{
 		::XSetInputFocus(mDisplay, mWin, RevertToParent, CurrentTime);
+	}
 }
 
 //==========================================================================================================
@@ -404,7 +413,7 @@ void SysWindow::Close()
 	{
 		mPrevStyle	= mStyle;
 		mStyle		= Style::Undefined;
-		mHandler		= 0;
+		mHandler	= 0;
 
 		::XFreeCursor(mDisplay, mInvisibleCursor);
 		_ReleaseContext();
@@ -420,6 +429,7 @@ void SysWindow::Close()
 void SysWindow::ShowCursor(bool show)
 {
 	static bool hidden = false;
+
 	if (show && hidden)	
 	{
 		::XUndefineCursor(mDisplay, mWin);
@@ -461,10 +471,9 @@ bool SysWindow::SetGraphics (IGraphics* ptr)
 
 bool SysWindow::SetStyle (uint style)
 {
-	if (mStyle == style)
-		return true;
+	if (mStyle == style) return true;
 
-	ASSERT(style != IWindow::Style::Child, "Child windows not supported!");
+	ASSERT(style != IWindow::Style::Child, "Child windows are not supported on X11!");
 
 	mStyle = style;
 
@@ -526,14 +535,12 @@ void SysWindow::EndFrame()
 	Unlock();
 }
 
-
 //==========================================================================================================
 // Retrieves a string from the clipboard
 //==========================================================================================================
 
 String SysWindow::GetClipboardText() const
 {
-
 	// TODO: Currently this function does not request the TARGETS atom, to see if XA_STRING is a supported target
 	// instead it just assumes XA_STRING is supported. 
 	// As soon as the engine supports UTF8 strings, this should probably be changed
@@ -548,49 +555,29 @@ String SysWindow::GetClipboardText() const
 		// Request the selection as XA_STRING
 		XConvertSelection(mDisplay, clipboard, XA_STRING, clipboard, mWin, CurrentTime);
 		XFlush (mDisplay);
-	
 		XEvent e;
 
 		// Wait until the selection owner sends us a SelectionNotify event, confirming it has sent us the selection
 		while (!XCheckTypedWindowEvent(mDisplay, mWin, SelectionNotify, &e));
 
-		if (e.xselection.property == None)
-			return String();
-	
-		Atom type;
-		int format;
-		unsigned long dummy, bytes, length;
-		unsigned char *data;
-		XGetWindowProperty(	mDisplay, 
-									mWin, 
-									clipboard, 
-									0, 
-									0, 
-									False, 
-									AnyPropertyType, 
-									&type, 
-									&format, 
-									&length, 
-									&bytes, 
-									&data);
+		if (e.xselection.property != None)
+		{
+			Atom type;
+			int format;
+			unsigned long dummy, bytes, length;
+			unsigned char *data;
 
-		if (bytes)
-			XGetWindowProperty(	mDisplay, 
-										mWin, 
-										clipboard, 
-										0, 
-										bytes, 
-										False, 
-										AnyPropertyType, 
-										&type, 
-										&format, 
-										&length, 
-										&dummy, 
-										&data);
+			XGetWindowProperty(	mDisplay, mWin, clipboard, 0, 0, False, AnyPropertyType,
+				&type, &format, &length, &bytes, &data);
 
-		return String((const char*)data);
+			if (bytes)
+			{
+				XGetWindowProperty(mDisplay, mWin, clipboard, 0, bytes, False,
+					AnyPropertyType, &type, &format, &length, &dummy, &data);
+			}
+			return String((const char*)data);
+		}
 	}
-
 	return String();
 }
 
@@ -604,6 +591,5 @@ void SysWindow::SetClipboardText (const String& text)
 	XSetSelectionOwner(mDisplay, clipboard, mWin, CurrentTime);
 	mClipboard = text;
 }
-
 
 #endif

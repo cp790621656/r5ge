@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//          R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko / Philip Cosgrave. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Instanced sound object
+// Authors: Philip Cosgrave and Michael Lyashenko
 //============================================================================================================
 
 class SoundInstance : public ISoundInstance

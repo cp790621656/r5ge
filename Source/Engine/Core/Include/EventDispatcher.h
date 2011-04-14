@@ -1,12 +1,13 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Event dispatcher has the ability to register event handling callbacks and is used by the Core class.
 // Note that for the R5 user interface it's a better idea to use the built-in event functionality.
 // These functions are here for object scripts, allowing them to register and unregister listeners.
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class EventDispatcher

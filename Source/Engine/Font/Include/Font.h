@@ -1,11 +1,12 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2011 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // FreeType-generated texture mapped font class. This is a stand-alone class that does not depend on the
 // Graphics class. It can be used to load font textures for the purpose of saving them out as files.
+// Author: Michael Lyashenko
 //============================================================================================================
 
 class Font

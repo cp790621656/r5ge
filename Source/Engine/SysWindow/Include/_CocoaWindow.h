@@ -1,10 +1,11 @@
 #pragma once
 
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2008 Michael Lyashenko. All rights reserved.
-//                                  Contact: arenmook@gmail.com
+//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Objective-C Class prototypes, declared here in order to avoid including <Cocoa/Cocoa.h> in the header file
+// Author: Michael Lyashenko
 //============================================================================================================
 
 #ifdef _MACOS
