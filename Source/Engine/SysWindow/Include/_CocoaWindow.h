@@ -64,7 +64,7 @@ protected:
 	// Overwritten by the OpenGL window implementation
 	virtual bool _CreateContext() { return true; }
 	virtual void _UpdateContext() {}
-	virtual void _ReleaseContext() {}
+	virtual void _ReleaseContext() { if (mGraphics != 0) mGraphics->Release(); }
 
 public:
 

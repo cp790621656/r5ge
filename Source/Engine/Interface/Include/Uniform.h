@@ -32,6 +32,16 @@ struct Uniform
 		};
 	};
 
+	struct Group
+	{
+		enum
+		{
+			SetWhenActivated,
+			SetWhenDrawing,
+			SetManually,
+		};
+	};
+
 	float		mVal[16];
 	byte		mType;
 	const void*	mPtr;

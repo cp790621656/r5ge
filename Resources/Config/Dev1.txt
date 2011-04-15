@@ -13,38 +13,6 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.0 0.0 0.0 1.0
-		Fog Range = 50.0 100.0
-
-		Material = "Test Material"
-		{
-			Diffuse = 1.0 1.0 1.0 1.0
-			Specular = 0.0 0.0 0.0 0.002
-			Glow = 0.0
-			ADT = 0.003922
-
-			Technique = "Opaque"
-			{
-				Shader = "Forward/D_NS"
-				Texture 0 = "Textures/Sand/beach.jpg"
-				Texture 1 = "Textures/Sand/beach_ns.png"
-			}
-		}
-
-		Material = "Teapot"
-		{
-			Diffuse = 1.0 1.0 1.0 1.0
-			Specular = 1.0 1.0 1.0 0.99
-			Glow = 0.0
-			ADT = 0.003922
-
-			Technique = "Opaque"
-			{
-				Shader = "Forward/D_NS"
-				Texture 0 = "Textures/Stone/lime.jpg"
-				Texture 1 = "Textures/Stone/lime_ns.png"
-			}
-		}
 	}
 
 	Core
@@ -99,7 +67,11 @@ Root
 			Layer = 10
 			Range = 0.3 100.0 90.0
 			Dolly = 0.0 18.896914 50.0
+
 			Script = "OSDrawForward"
+			{
+				Background Color = 0.25 0.25 0.25 1.0
+			}
 		}
 	}
 }

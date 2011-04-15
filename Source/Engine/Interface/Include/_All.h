@@ -28,7 +28,6 @@ namespace R5
 	#include "IFont.h"					// Basic interface for the Font class
 	#include "Uniform.h"				// Uniform is a constant value in the shader that is set by the program
 	#include "ILight.h"					// Basic light source-related data class
-	#include "ISubShader.h"				// Single shader -- vertex, fragment, or geometry
 	#include "IShader.h"				// Complete shader program
 	#include "IMaterial.h"				// Base class for the material
 	#include "IRenderTarget.h"			// Draw target can be the screen, PBuffer, or a Frame Buffer Object, for example

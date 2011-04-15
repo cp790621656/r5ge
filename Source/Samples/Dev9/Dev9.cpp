@@ -282,10 +282,10 @@ void TestApp::Fill (Mesh::Vertices& verts, Mesh::Normals& normals, Mesh::TexCoor
 	float invBias = 1.1f - bias;
 
 	// Number of particles -- 1 to 500
-	uint count = (mCount != 0 ? (uint)Float::Max(1.0f, mCount->GetValue() * 500.0f) : 100);
+	uint count = (mCount != 0 ? (uint)Max(1.0f, mCount->GetValue() * 500.0f) : 100);
 
 	// Maximum distance a particle can be spawned at without getting clipped
-	float range = Float::Max(0.0f, 1.0f - size * 1.145f);
+	float range = Max(0.0f, 1.0f - size * 1.145f);
 
 	Vector3f pos, axis, normal;
 	Quaternion rot;

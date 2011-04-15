@@ -8,43 +8,28 @@ Root
 
 		Material = "Test Material"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
-			
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/D"
-				
-				Textures = String[]
-				{
-					"Textures/sand/beach.jpg"
-				}
-			}
-			
+			Color = 1.0 1.0 1.0 1.0
+			Specular Hue = 0
+			Specularity = 0
+			Shininess = 0.4
+			Glow = 0
+			Alpha Cutoff = 0.003922
+			Technique = "Depth"
+
 			Technique = "Opaque"
 			{
-				Shader = "Forward/D"
-				
-				Textures = String[]
-				{
-					"Textures/sand/beach.jpg"
-				}
+				Shader = "Surface/Material"
 			}
-			
+
 			Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/Shadowed_D"
-				
-				Textures = String[]
-				{
-					"R5_Shadowmap"
-					"Textures/sand/beach.jpg"
-				}
+				Shader = "Surface/Material"
 			}
-			
-			Technique = "Depth"
+
+			Technique = "Deferred"
+			{
+				Shader = "Surface/Material"
+			}
 		}
 	}
 

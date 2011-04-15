@@ -158,6 +158,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\_X11Window.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\SysWindow.cpp"
 				>
 			</File>
@@ -181,6 +185,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\_MSWindow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\_X11Window.h"
 				>
 			</File>
 		</Filter>

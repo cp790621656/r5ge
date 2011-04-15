@@ -144,11 +144,11 @@ void GetMinMax (const Vector3f corners[8], const Quaternion& invRot, float from,
 	const Vector3f& projMin (bounds.GetMin());
 	const Vector3f& projMax (bounds.GetMax());
 
-	min.x = Float::Max(projMin.x, min.x);
-	min.z = Float::Max(projMin.z, min.z);
-	max.x = Float::Min(projMax.x, max.x);
-	max.y = Float::Min(projMax.y, max.y);
-	max.z = Float::Min(projMax.z, max.z);
+	min.x = Max(projMin.x, min.x);
+	min.z = Max(projMin.z, min.z);
+	max.x = Min(projMax.x, max.x);
+	max.y = Min(projMax.y, max.y);
+	max.z = Min(projMax.z, max.z);
 }
 
 //============================================================================================================
@@ -219,7 +219,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 	camIMVP.GetCorners(corners);
 
 	// Depth bias used to eliminate z-fighting
-	float bias = -(mDepthBias * Float::Max(1.0f, mKernelSize)) / mTextureSize;
+	float bias = -(mDepthBias * Max(1.0f, mKernelSize)) / mTextureSize;
 
 	// 30 degree rotated kernel
 	g_shadowOffset.x = mKernelSize * 0.866f / mTextureSize;

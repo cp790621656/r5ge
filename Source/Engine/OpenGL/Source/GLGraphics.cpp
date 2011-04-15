@@ -21,7 +21,6 @@ GLGraphics::~GLGraphics()
 	System::Log("          - VBOs:       %u",	mVbos.GetSize());
 	System::Log("          - FBOs:       %u",	mFbos.GetSize());
 	System::Log("          - Textures:   %u",	mTextures.GetSize());
-	System::Log("          - SubShaders: %u",	mSubShaders.GetSize());
 	System::Log("          - Shaders:    %u",	mShaders.GetSize());
 	System::Log("          - Fonts:      %u",	mFonts.GetSize());
 	System::Log("          - Materials:  %u",	mMaterials.GetSize());
@@ -29,30 +28,7 @@ GLGraphics::~GLGraphics()
 
 	Release();
 
-	// Not sure why, but deleting this query in release mode causes a violation
-	//if (mQuery != 0) glDeleteQueries(1, &mQuery);
-}
-
-//============================================================================================================
-// Gets the specified sub-shader entry
-//============================================================================================================
-
-GLSubShader* GLGraphics::GetGLSubShader (const String& filename, bool createIfMissing, byte type)
-{
-	GLSubShader* sub = (GLSubShader*)mSubShaders.Find(filename, false);
-
-	if (sub == 0 && createIfMissing)
-	{
-		// Create a new sub-shader entry
-		sub	= new GLSubShader(this, filename, type);
-
-		// Add this shader to the managed list
-		mSubShaders.Expand() = sub;
-
-		// Initialize the shader
-		sub->_Init();
-	}
-	return sub;
+	if (mQuery != 0) glDeleteQueries(1, &mQuery);
 }
 
 //============================================================================================================
@@ -74,7 +50,7 @@ bool GLGraphics::IsPointVisible (const Vector3f& v)
 		if (g_caps.mOcclusion)
 		{
 			// Activate the matrices as the query will need them to be properly set up
-			_ActivateMatrices();
+			mStats.mMatSwitches += mTrans.Activate(0);
 
 			// If the query hasn't been created yet, do that now
 			if (mQuery == 0)
@@ -273,7 +249,6 @@ void GLGraphics::Release()
 
 		mFonts.Release();
 		mShaders.Release();
-		mSubShaders.Release();
 		mTextures.Release();
 		mMaterials.Release();
 		mTechs.Release();
@@ -482,8 +457,8 @@ uint GLGraphics::Draw (uint drawable)
 		SetLighting(Lighting::None);
 		SetBlending(Blending::Replace);
 
+		glEnable(GL_COLOR_MATERIAL);
 		SetActiveMaterial(mSkybox);
-		SetSimpleMaterial(true);
 		SetActiveShader(0);
 		glColor3ub(255, 255, 255);
 
@@ -496,7 +471,7 @@ uint GLGraphics::Draw (uint drawable)
 
 		// Set all active vertex attributes
 		SetActiveVertexAttribute( Attribute::TexCoord0, mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
-		SetActiveVertexAttribute( Attribute::Position,	mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
+		SetActiveVertexAttribute( Attribute::Vertex,	mSkyboxVBO, 0, DataType::Float, 3, sizeof(Vector3f) );
 
 		// Draw the skybox
 		result = DrawIndices( mSkyboxIBO, Primitive::Triangle, 36 );
@@ -512,9 +487,7 @@ uint GLGraphics::Draw (uint drawable)
 	if (drawable == Drawable::FullscreenQuad)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
-
-		_BindAllTextures();
-		_ActivateMatrices();
+		GLController::PrepareToDraw();
 
 		glBegin(GL_QUADS);
 		{
@@ -537,9 +510,7 @@ uint GLGraphics::Draw (uint drawable)
 	else if (drawable == Drawable::InvertedQuad)
 	{
 		Vector2i size ( mTarget ? mTarget->GetSize() : mSize );
-
-		_BindAllTextures();
-		_ActivateMatrices();
+		GLController::PrepareToDraw();
 
 		glBegin(GL_QUADS);
 		{
@@ -562,9 +533,7 @@ uint GLGraphics::Draw (uint drawable)
 	else if (drawable == Drawable::Plane)
 	{
 		ResetModelViewMatrix();
-
-		_BindAllTextures();
-		_ActivateMatrices();
+		GLController::PrepareToDraw();
 
 		glBegin(GL_QUADS);
 		{
@@ -602,9 +571,7 @@ uint GLGraphics::Draw (uint drawable)
 		Flush();
 
 		ResetModelViewMatrix();
-
-		_BindAllTextures();
-		_ActivateMatrices();
+		GLController::PrepareToDraw();
 
 		glBegin(GL_LINES);
 		{
@@ -652,9 +619,7 @@ uint GLGraphics::Draw (uint drawable)
 		SetLighting(Lighting::None);
 		SetBlending(Blending::Replace);
 		SetActiveMaterial((const IMaterial*)0);
-
-		_BindAllTextures();
-		_ActivateMatrices();
+		GLController::PrepareToDraw();
 
 		glBegin(GL_LINES);
 		{
@@ -1072,7 +1037,7 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 			{
 				// Add this new shader and initialize it
 				mShaders.Expand() = (shader = new GLShader());
-				shader->Init(this, name);
+				shader->_Init(this, name);
 			}
 			else shader = 0;
 		}

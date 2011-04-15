@@ -43,21 +43,6 @@ Root
 			Culling = "Back"
 			Sorting = "None"
 		}
-
-		Material = "White"
-		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.990000
-			Glow = 0.000000
-			ADT = 0.003922
-			Technique = "Depth"
-			Technique = "Opaque"
-
-			Technique = "Deferred"
-			{
-				Shader = "Deferred/Material"
-			}
-		}
 	}
 
 	UI

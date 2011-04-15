@@ -195,10 +195,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Include\ISubShader.h"
-			>
-		</File>
-		<File
 			RelativePath=".\Include\ITechnique.h"
 			>
 		</File>

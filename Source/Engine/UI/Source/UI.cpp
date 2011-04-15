@@ -103,7 +103,7 @@ uint UI::DrawQueue (UIQueue* queue)
 		mGraphics->SetActiveTexture			( 0, q->mTex );
 		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord0,	q->mVbo, 8,  IGraphics::DataType::Float, 2, sizeof(Vertex) );
 		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Color,		q->mVbo, 16, IGraphics::DataType::Byte,  4, sizeof(Vertex) );
-		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Position,	q->mVbo, 0,  IGraphics::DataType::Float, 2, sizeof(Vertex) );
+		mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Vertex,	q->mVbo, 0,  IGraphics::DataType::Float, 2, sizeof(Vertex) );
 
 		if (q->mWidget == 0)
 		{
@@ -150,6 +150,6 @@ void UI::OnPostDraw() const
 	mGraphics->SetActiveShader			( 0 );
 	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord0, 0 );
 	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Color,	   0 );
-	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Position,  0 );
+	mGraphics->SetActiveVertexAttribute	( IGraphics::Attribute::Vertex,  0 );
 	mGraphics->SetActiveShader			( 0 );
 }

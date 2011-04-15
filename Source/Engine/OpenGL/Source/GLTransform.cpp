@@ -310,9 +310,9 @@ uint GLTransform::Activate (const IShader* shader)
 			++switches;
 		}
 	}
-	else
+	// We should only activate matrices if there is no vertex shader present
+	else if (shader == 0 || !shader->GetFlag(IShader::Flag::Vertex | IShader::Flag::LegacyFormat))
 	{
-		// If the mode has been recently changed we should consider all matrices changed
 		if (mReset)
 		{
 			mModel.changed  = true;
@@ -320,67 +320,31 @@ uint GLTransform::Activate (const IShader* shader)
 			mProj.changed   = true;
 		}
 
-		const Matrix43& m = GetModelMatrix();
-		const Matrix43& v = GetViewMatrix();
-		const Matrix44& p = GetProjectionMatrix();
-
 		if (mProj.changed)
 		{
 			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(p.mF);
+			glLoadMatrixf(GetProjectionMatrix().mF);
 			++switches;
 		}
 
 		if (mModel.changed || mView.changed)
 		{
-			// Scale parameter needs to be updated each time the model matrix changes
-			if (shader != 0 && shader->GetFlag(IShader::Flag::WorldScale))
-			{
-				Vector3f scale (m.GetScale());
-				shader->SetUniform("R5_worldScale", scale);
-			}
-
-			// If the active shader supports pseudo-instancing, take advantage of that
-			if (shader != 0 && shader->GetFlag(IShader::Flag::Instanced))
-			{
-				// When a shader supporting instancing is enabled, feed it the world matrix
-				glMultiTexCoord4fv(GL_TEXTURE2, m.mColumn0);
-				glMultiTexCoord4fv(GL_TEXTURE3, m.mColumn1);
-				glMultiTexCoord4fv(GL_TEXTURE4, m.mColumn2);
-				glMultiTexCoord4fv(GL_TEXTURE5, m.mColumn3);
-
-				if (mView.changed || !mInst)
-				{
-					// If the view has changed, or we haven't been using instancing before, set the view matrix
-					glMatrixMode(GL_MODELVIEW);
-					glLoadMatrixf(v.mF);
-
-					++switches;
-					mInst = true;
-				}
-			}
-			else
-			{
-				// No pseudo-instancing support -- just use the ModelView matrix
-				glMatrixMode(GL_MODELVIEW);
-				glLoadMatrixf(GetModelViewMatrix().mF);
-
-				++switches;
-				mInst = false;
-			}
+			glMatrixMode(GL_MODELVIEW);
+			glLoadMatrixf(GetModelViewMatrix().mF);
+			++switches;
 		}
 		else if (mProj.changed)
 		{
 			// Always end with ModelView
 			glMatrixMode(GL_MODELVIEW);
 		}
-	}
 
-	// Reset the 'changed' flags on all matrices
-	mModel.changed  = false;
-	mView.changed   = false;
-	mProj.changed   = false;
-	mReset			= false;
+		// Reset the 'changed' flags on all matrices
+		mModel.changed  = false;
+		mView.changed   = false;
+		mProj.changed   = false;
+		mReset			= false;
+	}
 
 	// Return the number of matrix switches
 	return switches;

@@ -2,29 +2,55 @@
 
 Root
 {
-	Core
+	Graphics
 	{
 		Serializable = false
-	
-		Model = Teapot
+
+		Material = "Test Material"
 		{
-			Source = Models/teapot
-			Layer = 0
-	
-			Limb = Teapot
+			Color = 1.0 1.0 1.0 1.0
+			Specular Hue = 0
+			Specularity = 0
+			Shininess = 0.4
+			Glow = 0
+			Alpha Cutoff = 0.003922
+			Technique = "Depth"
+
+			Technique = "Opaque"
 			{
-				Mesh = Teapot
-				Material = Teapot
+				Shader = "Surface/D_N"
+				
+				Textures = String[]
+				{
+					"Textures/Sand/wavy.jpg"
+					"Textures/Sand/wavy_ns.png"
+				}
+			}
+
+			Technique = "Shadowed Opaque"
+			{
+				Shader = "Surface/D_N"
+				
+				Textures = String[]
+				{
+					"Textures/Sand/wavy.jpg"
+					"Textures/Sand/wavy_ns.png"
+				}
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Surface/D_N"
+				
+				Textures = String[]
+				{
+					"Textures/Sand/wavy.jpg"
+					"Textures/Sand/wavy_ns.png"
+				}
 			}
 		}
-	
-		Model = Plane
-		{
-			Source = Models/rect.r5a
-			Layer = 0
-		}
 	}
-	
+
 	Scene
 	{
 		Model Instance = Teapot 7
@@ -32,7 +58,7 @@ Root
 			Position = 0.0 10.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
 			Scale = 1.0
-			Model = Teapot
+			Model = "Models/teapot.r5a"
 			Serializable = false
 		}
 
@@ -41,7 +67,7 @@ Root
 			Position = 0.0 20.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
 			Scale = 1.0
-			Model = Teapot
+			Model = "Models/teapot.r5a"
 			Serializable = false
 		}
 
@@ -50,7 +76,7 @@ Root
 			Position = 0.0 30.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
 			Scale = 1.0
-			Model = Teapot
+			Model = "Models/teapot.r5a"
 			Serializable = false
 		}
 
@@ -59,7 +85,7 @@ Root
 			Position = 0.0 40.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
 			Scale = 1.0
-			Model = Teapot
+			Model = "Models/teapot.r5a"
 			Serializable = false
 		}
 
@@ -68,7 +94,7 @@ Root
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
 			Scale = 30.0
-			Model = Plane
+			Model = "Models/rect.r5a"
 			Serializable = false
 		}
 	}

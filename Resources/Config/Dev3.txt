@@ -25,7 +25,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_NS"
+				Shader = "Surface/D_N"
 
 				Textures = String[]
 				{
@@ -63,7 +63,7 @@ Root
 
 		Model = "Teapot"
 		{
-			Source = "Models/teapot.r5b"
+			Source = "Models/teapot.r5c"
 
 			Limb = "Teapot"
 			{
@@ -152,11 +152,7 @@ Root
 
 		Model Instance = "Plane"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 30.000000
-			Min = -2.000000 -2.000000 0.000000
-			Max = 2.000000 2.000000 0.000000
+			Scale = 30.0
 			Layer = 10
 			Model = "Plane"
 		}

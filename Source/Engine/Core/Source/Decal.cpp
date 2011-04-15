@@ -111,7 +111,6 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 
 	// Set the color and world matrix
 	mGraphics->SetActiveColor(mColor);
-	mGraphics->SetNormalize(false);
 	mGraphics->SetModelMatrix(mMatrix);
 
 	// Activate the shader, force-updating the uniforms
@@ -171,7 +170,7 @@ uint Decal::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* tec
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex,
 		vbo, 0, IGraphics::DataType::Float, 3, 12 );
 
 	// Draw the decal

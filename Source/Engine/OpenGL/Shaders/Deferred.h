@@ -9,7 +9,7 @@
 //============================================================================================================
 
 static const char* g_combineDeferred = {
-"R5_FRAGMENT_SHADER\n"
+"void main()\n"
 "{\n"
 "	float2 tc = GetPixelTexCoords();\n"
 

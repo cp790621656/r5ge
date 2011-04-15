@@ -101,14 +101,13 @@ GLController::GLController() :
 	mStencilTest	(false),
 	mScissorTest	(false),
 	mWireframe		(false),
+	mMatIsDirty		(true),
 	mLighting		(Lighting::None),
 	mBlending		(Blending::None),
 	mCulling		(Culling::None),
 	mAdt			(0.0f),
 	mThickness		(1.0f),
-	mNormalize		(false),
 	mAf				(0),
-	mSimpleMaterial	(false),
 	mTarget			(0),
 	mTechnique		(0),
 	mMaterial		(0),
@@ -132,7 +131,8 @@ inline uint GLController::_CountImageUnits()
 		mNextTex.ExpandTo(maxIU);
 		mNextTex.MemsetZero();
 	}
-	return mTu.GetSize();
+	// For performance reasons lets limit the number of textures to 8.
+	return (8 < mTu.GetSize()) ? 8 : mTu.GetSize();
 }
 
 //============================================================================================================
@@ -142,7 +142,6 @@ inline uint GLController::_CountImageUnits()
 void GLController::Flush()
 {
 	_BindAllTextures();
-	_ActivateMatrices();
 	glFlush();
 }
 
@@ -381,7 +380,7 @@ void GLController::SetAlphaCutoff (float val)
 {
 	if (mAlphaTest && Float::IsNotEqual(mAdt, val))
 	{
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
 		glAlphaFunc(GL_GREATER, mAdt = val);
 	}
 }
@@ -411,19 +410,6 @@ void GLController::SetThickness (float val)
 			glEnable(GL_POINT_SMOOTH);
 			glEnable(GL_LINE_SMOOTH);
 		}
-	}
-}
-
-//============================================================================================================
-// Whether to automatically normalize normals
-//============================================================================================================
-
-void GLController::SetNormalize (bool val)
-{
-	if ( mNormalize != val )
-	{
-		if (mNormalize = val) glEnable(GL_RESCALE_NORMAL);
-		else glDisable(GL_RESCALE_NORMAL);
 	}
 }
 
@@ -488,25 +474,53 @@ void GLController::SetBackgroundColor (const Color4f& color)
 }
 
 //============================================================================================================
-// Whether current active color defines the material colors
-//============================================================================================================
-
-inline void GLController::SetSimpleMaterial (bool val)
-{
-	if ( mSimpleMaterial != val )
-	{
-		if (mSimpleMaterial = val) glEnable(GL_COLOR_MATERIAL);
-		else glDisable(GL_COLOR_MATERIAL);
-	}
-}
-
-//============================================================================================================
 // GPU device information
 //============================================================================================================
 
 const IGraphics::DeviceInfo& GLController::GetDeviceInfo() const
 {
 	return g_caps;
+}
+
+//============================================================================================================
+// Retrieves the current light's properties
+//============================================================================================================
+
+const ILight& GLController::GetActiveLight (uint index) const
+{
+	if (mLu.IsEmpty()) mLu.ExpandTo( g_caps.mMaxLights );
+	return (index < mLu.GetSize()) ? mLu[index] : mLu[0];
+}
+
+//============================================================================================================
+// Activates and/or changes light properties for the specified light
+//============================================================================================================
+
+void GLController::SetActiveLight (uint index, const ILight* light)
+{
+	if (mLu.IsEmpty()) mLu.ExpandTo( g_caps.mMaxLights );
+	ILight& dest = (index < mLu.GetSize()) ? mLu[index] : mLu[0];
+
+	if (light)
+	{
+		dest = *light;
+
+		if (dest.mType != ILight::Type::Point)
+		{
+			dest.mDir %= GetModelMatrix();
+			dest.mDir %= GetViewMatrix();
+		}
+
+		if (dest.mType != ILight::Type::Directional)
+		{
+			dest.mPos *= GetModelMatrix();
+			dest.mPos *= GetViewMatrix();
+		}
+	}
+	else
+	{
+		dest.mType = ILight::Type::Invalid;
+	}
 }
 
 //============================================================================================================
@@ -602,7 +616,7 @@ void GLController::SetActiveTechnique (const ITechnique* ptr, bool insideOut)
 			SetCulling		( culling				);
 
 			// Invalidate any active material
-			mMaterial = (const IMaterial*)(-1);
+			mMatIsDirty = true;
 			++mStats.mTechSwitches;
 		}
 	}
@@ -615,8 +629,9 @@ void GLController::SetActiveTechnique (const ITechnique* ptr, bool insideOut)
 
 bool GLController::SetActiveMaterial (const IMaterial* ptr)
 {
-	if (mMaterial != ptr)
+	if (mMaterial != ptr || mMatIsDirty)
 	{
+		mMatIsDirty = false;
 		static uint maxIU = _CountImageUnits();
 
 		// If the material is invisible under the current technique, consider options to be invalid
@@ -630,61 +645,18 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 
 			SetAlphaCutoff(0.003921568627451f);
 			SetActiveShader(0);
-			SetSimpleMaterial(true);
 			SetActiveColor( Color4f(1.0f, 1.0f, 1.0f, 1.0f) );
 			CHECK_GL_ERROR;
 			return false;
 		}
 		else
 		{
-			const Color4f diff (ptr->GetDiffuse());
-			const float glow (ptr->GetGlow());
-
-			Color4f spec, emis;
-
-			if (ren->mShader != 0 && ren->mShader->GetFlag(IShader::Flag::Material))
-			{
-				// Shader with R5_MATERIAL tags used -- specular channel holds special values
-				spec.r = ptr->GetSpecularity();
-				spec.g = ptr->GetSpecularHue();
-				spec.b = ptr->GetReflectiveness();
-				spec.a = ptr->GetShininess();
-				emis.g = ptr->GetOcclusion();
-				emis.r = 1.0f - emis.g;
-				emis.a = glow;
-			}
-			else
-			{
-				spec   = diff;
-				spec  *= ptr->GetSpecularity();
-				spec.a = ptr->GetShininess();
-
-				emis   = diff;
-				emis  *= glow;
-				emis.a = glow;
-			}
-
-			// Shininess should be clamped between 1 and 128
-			int shininess = Float::RoundToInt(ptr->GetShininess() * 128.0f);
-			if		(shininess < 1)		shininess = 1;
-			else if (shininess > 128)	shininess = 128;
-
-			// Disable the simple material
-			SetSimpleMaterial(false);
-
-			// Set all material properties
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diff);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emis);
-			glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+			// Remember the currently active material
+			mMaterial = ptr;
 
 			// Materials have their own AlphaCutoff
-			SetAlphaCutoff( ptr->GetAlphaCutoff() * diff.a );
+			SetAlphaCutoff( ptr->GetAlphaCutoff() * ptr->GetDiffuse().a );
 			CHECK_GL_ERROR;
-
-			// Retrieve all textures used by the material
-			uint lastTex = ren->mTextures.GetSize();
-			if (lastTex > maxIU) lastTex = maxIU;
 
 			// Activate the appropriate shader
 			SetActiveShader(ren->mShader);
@@ -692,29 +664,34 @@ bool GLController::SetActiveMaterial (const IMaterial* ptr)
 			// Activate all textures
 			ren->mTextures.Lock();
 			{
-				bool bindShadow = (mShader != 0 && mShader->GetFlag(IShader::Flag::Shadowed));
+				// For performance reasons, the shadow map is always on texture unit 7 (8th texture).
+				// This is done because according to OpenGL specs it costs nothing to keep textures
+				// bound to a certain texture unit if they're not actually being used by shaders.
 
-				// Bind all of the material's textures
-				for (uint i = maxIU; i > 0; )
+				uint shadowIndex = 7;
+
+				if (mShader != 0 && mShader->GetFlag(IShader::Flag::Shadowed))
+				{
+					if (mShadowmap == 0) mShadowmap = GetTexture("R5_shadowMap");
+					SetActiveTexture(shadowIndex, mShadowmap);
+				}
+				else
+				{
+					SetActiveTexture(shadowIndex, 0);
+				}
+
+				uint lastTex = ren->mTextures.GetSize();
+				if (lastTex > maxIU) lastTex = maxIU;
+
+				// Bind all of the material's textures in reverse order, ending with index 0
+				for (uint i = Min(shadowIndex, maxIU); i > 0; )
 				{
 					const ITexture* tex = (--i < lastTex) ? ren->mTextures[i] : 0;
-
-					// Automatically bind the shadowmap texture after the last texture
-					if (i == lastTex && bindShadow)
-					{
-						if (mShadowmap == 0) mShadowmap = GetTexture("R5_Shadowmap");
-						tex = mShadowmap;
-					}
-
-					// Bind the material's texture
 					SetActiveTexture(i, tex);
 				}
 			}
 			ren->mTextures.Unlock();
 		}
-
-		// Remember the currently active material
-		mMaterial = ptr;
 	}
 	return true;
 }
@@ -731,7 +708,7 @@ bool GLController::SetActiveMaterial (const ITexture* ptr)
 		SetActiveTexture(--i, 0);
 
 	SetActiveTexture(0, ptr);
-	mMaterial = (const IMaterial*)(-1);
+	mMatIsDirty = true;
 	return (ptr != 0 && ptr->IsValid());
 }
 
@@ -739,75 +716,36 @@ bool GLController::SetActiveMaterial (const ITexture* ptr)
 // Changes the currently active shader
 //============================================================================================================
 
-bool GLController::SetActiveShader (const IShader* ptr, bool forceUpdateUniforms)
+bool GLController::SetActiveShader (const IShader* ptr)
 {
 	// "Which shader is currently active" is kept inside the Shader.cpp file,
 	// so we don't check for inequality here.
 	if (ptr != 0)
 	{
 		GLShader* shader = (GLShader*)ptr;
+		shader = shader->_Activate(mTechnique);
 
-		for (;;)
+		if (shader != mShader)
 		{
-			// If this is a surface shader, we might need to activate a different shader
-			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface))
-			{
-				const String& shaderName = shader->GetName();
+			// Update the shader's uniforms
+			shader->_Update(Uniform::Group::SetWhenActivated);
+			mMatIsDirty = true;
+			mShader = shader;
 
-				if (mTechnique->GetFlag(ITechnique::Flag::Deferred))
-				{
-					if (shader->mDeferred == 0)
-					{
-						// Remember this alternate version of the shader
-						shader->mDeferred = (GLShader*)GetShader(shaderName + " [Deferred]");
-
-						// Copy over registered uniforms
-						FOREACH(i, shader->mUniforms)
-						{
-							GLShader::UniformEntry& ent = shader->mUniforms[i];
-							shader->mDeferred->RegisterUniform(ent.mName, ent.mDelegate);
-						}
-					}
-					shader = shader->mDeferred;
-				}
-				else if (mTechnique->GetFlag(ITechnique::Flag::Shadowed))
-				{
-					if (shader->mShadowed == 0)
-					{
-						shader->mShadowed = (GLShader*)GetShader(shaderName + " [Shadowed]");
-
-						FOREACH(i, shader->mUniforms)
-						{
-							GLShader::UniformEntry& ent = shader->mUniforms[i];
-							shader->mShadowed->RegisterUniform(ent.mName, ent.mDelegate);
-						}
-					}
-					shader = shader->mShadowed;
-				}
-
-				// Activate the shader
-				if (shader->Activate(false)) ++mStats.mShaderSwitches;
-				break;
-			}
-
-			// Activate the shader
-			if (shader->Activate(false)) ++mStats.mShaderSwitches;
-
-			// If this is actually a surface shader, we might need to activate a different one
-			if (mTechnique != 0 && shader->GetFlag(IShader::Flag::Surface)) continue;
-			break;
+			// Keep track of how many shader switches occur
+			++mStats.mShaderSwitches;
 		}
 
-		// Remember the shader that we activated
-		mMaterial = (const IMaterial*)(-1);
-		mShader = shader;
+		//glDisable(GL_RESCALE_NORMAL);
 		return true;
 	}
 	else if (mShader != 0)
 	{
-		mShader->Deactivate();
+		mShader->_Deactivate();
 		mShader = 0;
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
+
+		//glEnable(GL_RESCALE_NORMAL);
 		return true;
 	}
 	return false;
@@ -853,99 +791,8 @@ void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 	if (textureUnit < maxIU)
 	{
 		mNextTex[textureUnit] = (GLTexture*)tex;
-		mMaterial = (const IMaterial*)(-1);
+		mMatIsDirty = true;
 	}
-}
-
-//============================================================================================================
-// Activates and/or changes light properties for the specified light
-//============================================================================================================
-
-void GLController::SetActiveLight (uint index, const ILight* ptr)
-{
-	CHECK_GL_ERROR;
-
-	if (mLu.IsEmpty())
-	{
-		ASSERT( g_caps.mMaxLights > 0, "Could not retrieve the maximum number of lights" );
-		mLu.ExpandTo( g_caps.mMaxLights );
-		for (uint i = 0; i < mLu.GetSize(); ++i)
-			mLu[i] = false;
-	}
-
-	if (index < mLu.GetSize())
-	{
-		bool& active (mLu[index]);
-		index += GL_LIGHT0;
-
-		if (ptr == 0)
-		{
-			if (active)
-			{
-				active = false;
-				glDisable(index);
-			}
-		}
-		else
-		{
-			// Activate the matrices as they will affect the lights
-			_ActivateMatrices();
-
-			// Activate the light
-			if (!active)
-			{
-				active = true;
-				glEnable(index);
-			}
-
-			if (ptr->mType == ILight::Type::Directional)
-			{
-				Vector3f dir (ptr->mDir);
-
-				// Automatically adjust the light position to always be in view space
-				if (mTrans.mIs2D) dir %= GetModelViewMatrix();
-
-				// Set the light's position
-				glLightfv(index, GL_POSITION, Quaternion(-dir.x, -dir.y, -dir.z, 0.0f));
-			}
-			else
-			{
-				Vector3f pos (ptr->mPos);
-
-				// Automatically adjust the light position to always be in view space
-				if (mTrans.mIs2D) pos *= GetModelViewMatrix();
-
-				// Set the light's position
-				glLightfv(index, GL_POSITION, Quaternion(pos.x, pos.y, pos.z, 1.0f));
-
-				// Point lights are marked by having a cutoff of 180
-				if (ptr->mType == ILight::Type::Point)
-				{
-					glLightf(index, GL_SPOT_CUTOFF, 180.0f);
-				}
-				//else
-				//{
-				//	glLightfv(index, GL_SPOT_DIRECTION, ptr->mDir);
-				//	glLightf(index, GL_SPOT_EXPONENT, Float::Clamp(ptr->mSpot.x, 0.0f, 128.0f));
-				//	glLightf(index, GL_SPOT_CUTOFF, Float::Clamp(ptr->mSpot.y, 0.0f, 90.0f));
-				//}
-
-				// Shaders perform completely different operations with the attenuation parameters
-				// As such, point lights are not supported using the fixed-function pipeline.
-				glLightf(index, GL_CONSTANT_ATTENUATION,	ptr->mAtten.x);
-				glLightf(index, GL_LINEAR_ATTENUATION,		ptr->mAtten.y);
-				glLightf(index, GL_QUADRATIC_ATTENUATION,	ptr->mAtten.z);
-			}
-
-			// Common light parameters
-			glLightfv(index, GL_AMBIENT,  ptr->mAmbient);
-			glLightfv(index, GL_DIFFUSE,  ptr->mDiffuse);
-			glLightfv(index, GL_SPECULAR, ptr->mSpecular);
-
-			++mStats.mLightSwitches;
-		}
-	}
-	CHECK_GL_ERROR;
 }
 
 //============================================================================================================
@@ -1037,7 +884,7 @@ void GLController::SetActiveVertexAttribute(
 		{
 			switch (attribute)
 			{
-				case Attribute::Position:	glEnableClientState(GL_VERTEX_ARRAY);			break;
+				case Attribute::Vertex:		glEnableClientState(GL_VERTEX_ARRAY);			break;
 				case Attribute::Normal:		glEnableClientState(GL_NORMAL_ARRAY);			break;
 				case Attribute::TexCoord0:	glEnableClientState(GL_TEXTURE_COORD_ARRAY);	break;
 				case Attribute::Color:		glEnableClientState(GL_COLOR_ARRAY);			break;
@@ -1059,10 +906,6 @@ void GLController::SetActiveVertexAttribute(
 			changed = (buffer.mVbo != vbo) || (buffer.mPtr != ptr);
 		}
 
-		// Using color arrays means we need to disable complex material properties,
-		// or the fixed-function pipeline will not be using the color array.
-		if (attribute == Attribute::Color && mShader == 0) SetSimpleMaterial(true);
-
 		if (changed)
 		{
 			buffer.mEnabled = true;
@@ -1071,7 +914,7 @@ void GLController::SetActiveVertexAttribute(
 
 			switch (attribute)
 			{
-				case Attribute::Position:	glVertexPointer			(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
+				case Attribute::Vertex:		glVertexPointer			(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
 				case Attribute::Normal:		glNormalPointer			(						dataType,    stride, buffer.mPtr = ptr);	break;
 				case Attribute::Color:		glColorPointer			(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
 				case Attribute::TexCoord0:	glTexCoordPointer		(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
@@ -1086,7 +929,7 @@ void GLController::SetActiveVertexAttribute(
 
 		switch (attribute)
 		{
-			case Attribute::Position:	glDisableClientState(GL_VERTEX_ARRAY);			break;
+			case Attribute::Vertex:		glDisableClientState(GL_VERTEX_ARRAY);			break;
 			case Attribute::Normal:		glDisableClientState(GL_NORMAL_ARRAY);			break;
 			case Attribute::Color:		glDisableClientState(GL_COLOR_ARRAY);			break;
 			case Attribute::TexCoord0:	glDisableClientState(GL_TEXTURE_COORD_ARRAY);	break;
@@ -1094,6 +937,17 @@ void GLController::SetActiveVertexAttribute(
 		};
 		CHECK_GL_ERROR;
 	}
+}
+
+//============================================================================================================
+// Activate all matrices and bind all textures, preparing to draw
+//============================================================================================================
+
+void GLController::PrepareToDraw()
+{
+	mStats.mMatSwitches += mTrans.Activate(mShader);
+	if (mShader) mShader->_Update(Uniform::Group::SetWhenDrawing);
+	_BindAllTextures();
 }
 
 //============================================================================================================
@@ -1107,11 +961,8 @@ uint GLController::DrawVertices(uint primitive, uint vertexCount)
 
 	if (triangleCount > 0)
 	{
-		// Activate the matrices
-		_BindAllTextures();
-		_ActivateMatrices();
-
 		// Draw the arrays
+		GLController::PrepareToDraw();
 		glDrawArrays( glPrimitive, 0, vertexCount );
 		mStats.mTriangles += triangleCount;
 		++mStats.mDrawCalls;
@@ -1133,11 +984,8 @@ uint GLController::_DrawIndices(const IVBO* vbo, const ushort* ptr, uint primiti
 		// Activate the VBO, if any
 		SetActiveVBO( vbo, IVBO::Type::Index );
 
-		// Activate the matrices
-		_BindAllTextures();
-		_ActivateMatrices();
-
 		// Draw the indices
+		GLController::PrepareToDraw();
 		glDrawElements( glPrimitive, indexCount, GL_UNSIGNED_SHORT, ptr );
 		mStats.mTriangles += triangleCount;
 		++mStats.mDrawCalls;
@@ -1233,7 +1081,7 @@ bool GLController::_BindTexture (uint glType, uint glID)
 }
 
 //============================================================================================================
-// Binds all activated textures
+// Ensures that all textures are bound
 //============================================================================================================
 
 void GLController::_BindAllTextures()

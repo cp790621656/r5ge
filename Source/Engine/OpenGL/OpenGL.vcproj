@@ -316,15 +316,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\Internal.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\Lights.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Shaders\Preprocess.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Shaders\Preprocess.h"
 				>
 			</File>
 			<File

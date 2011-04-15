@@ -13,86 +13,111 @@ Root
 	Graphics
 	{
 		Default AF = 4
-		Background Color = 1.000000 1.000000 1.000000 1.000000
-		Fog Range = 25.000000 50.000000
 
 		Material = "Mountains"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 1.0
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.85
+			Alpha Cutoff = 0.003922
 
 			Technique = "Opaque"
 			{
 				Shader = "Forward/dev2terrain"
-				Texture 0 = "Terrain Normal Map"
-				Texture 1 = "Terrain Gradient Map"
-				Texture 2 = "Textures/Stone/grey.jpg"
-				Texture 3 = "Textures/Stone/grey_ns.png"
-				Texture 4 = "Textures/Other/snow.jpg"
-				Texture 5 = "Textures/Other/snow_ns.png"
+
+				Textures = String[]
+				{
+					"Terrain Normal Map"
+					"Terrain Gradient Map"
+					"Textures/Stone/grey.jpg"
+					"Textures/Stone/grey_ns.png"
+					"Textures/Other/snow.jpg"
+					"Textures/Other/snow_ns.png"
+				}
 			}
 		}
 
 		Material = "Test"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 0.9500000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 1.0
+			Shininess = 0.95
+			Reflectiveness = 0.0
+			Occlusion = 0.85
+			Alpha Cutoff = 0.003922
 
 			Technique = "Opaque"
 			{
 				Shader = "Forward/dev2terrain"
-				Texture 0 = "Terrain Normal Map"
-				Texture 1 = "Terrain Gradient Map"
-				Texture 2 = "Textures/Sand/beach.jpg"
-				Texture 3 = "Textures/Sand/beach_ns.png"
-				Texture 4 = "Textures/Grass/wild.jpg"
-				Texture 5 = "Textures/Grass/wild_ns.png"
+
+				Textures = String[]
+				{
+					"Terrain Normal Map"
+					"Terrain Gradient Map"
+					"Textures/Sand/beach.jpg"
+					"Textures/Sand/beach_ns.png"
+					"Textures/Grass/wild.jpg"
+					"Textures/Grass/wild_ns.png"
+				}
 			}
 		}
 	}
 
-	UI
-	{
-		Default Skin
-		Default Font
-		Tooltip Delay = 1.000000
-	}
-
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Debug Camera = "Default Camera"
 		{
-			Position = -4.983280 5.764418 5.024240
+			Position = -4.98328 5.764418 5.02424
 			Rotation = -0.048338 0.158947 -0.943439 0.286919
-			Scale = 1.000000
-			Layer = 10
-			Range = 0.300000 100.000000 90.000000
-			Dolly = 0.000000 14.000118 30.000000
+			Scale = 1.0 1.0 1.0
+			Range = 0.3 100.0 90.0
+			Dolly = 0.0 14.000118 30.0
+
 			Script = "OSDrawForward"
+			{
+				Background Color = 0.25 0.25 0.25 1.0
+				Fog Range = 0.5 1.0
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascade Count = 3
+					Cascade Bias = 0.5
+					Blur Passes = 2
+					Softness = 2.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
+				}
+			}
 		}
 
 		Directional Light = "First Light"
 		{
-			Position = 0.000000 0.000000 0.000000
+			Position = 0.0 0.0 0.0
 			Rotation = -0.240526 0.154892 -0.518793 0.805611
-			Scale = 1.000000
-			Layer = 10
-			Ambient = 0.250000 0.250000 0.250000
-			Diffuse = 1.250000 1.250000 1.250000
-			Specular = 1.000000 1.000000 1.000000
-			Brightness = 1.000000
+			Scale = 1.0 1.0 1.0
+			Ambient = 0.25 0.25 0.25
+			Diffuse = 1.25 1.25 1.25
+			Specular = 1.0 1.0 1.0
+			Brightness = 1.0
+			Shadows = false
 		}
 
 		Terrain = "First Terrain"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 			Layer = 0
+			Material = "Mountains"
 		}
 	}
 }

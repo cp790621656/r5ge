@@ -102,7 +102,7 @@ static const char* g_ssaoSample = {
 
 "uniform vec2 R5_pixelSize;\n"			// 0-1 factor size of the pixel
 "uniform vec4 R5_clipRange;\n"			// Near/far clipping range
-"uniform mat4 R5_projectionMatrix;\n"	// Current projection matrix
+"uniform mat4 R5_projMatrix;\n"			// Current projection matrix
 "uniform mat4 R5_inverseProjMatrix;\n"	// Inverse projection matrix
 
 "uniform vec2 properties;\n"			// X = focus range, Y = power
@@ -159,7 +159,7 @@ static const char* g_ssaoSample = {
 "		viewPos.xyz = random.xyz * (properties.x * random.w) + pos;\n"
 
 		// Calculate the randomly offset position's screen space coordinates -- second most expensive operation
-"		screenPos = R5_projectionMatrix * viewPos;\n"
+"		screenPos = R5_projMatrix * viewPos;\n"
 
 		// Convert screen space coordinates to 0-1 range and get the depth underneath (most expensive operation)
 		// This used to be: (screenPos.xy / screenPos.w * 0.5 + 0.5)

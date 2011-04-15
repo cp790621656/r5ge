@@ -65,6 +65,7 @@ bool SysWindow::_CreateContext()
 
 void SysWindow::_ReleaseContext()
 {
+	if (mGraphics != 0) mGraphics->Release();
 	::glXMakeCurrent(mDisplay, None, NULL);
 }
 

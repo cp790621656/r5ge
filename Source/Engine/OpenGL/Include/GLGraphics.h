@@ -36,8 +36,8 @@ protected:
 	Textures			mTextures;
 	Textures			mTempTex;
 	Shaders				mShaders;
+	Shaders				mSpecial;	// Array of special shaders that's not exposed outside this library
 	Fonts				mFonts;
-	SubShaders			mSubShaders;
 
 public:
 
@@ -46,9 +46,6 @@ public:
 
 	// ID of the thread the graphics class was initialized in
 	Thread::IDType GetThreadID() const { return mThread; }
-
-	// Gets the specified sub-shader entry
-	GLSubShader* GetGLSubShader (const String& filename, bool createIfMissing, byte type);
 
 	// Returns whether the specified point would be visible if rendered
 	virtual bool IsPointVisible (const Vector3f& v);
@@ -85,7 +82,6 @@ public:
 	virtual Techniques&	GetAllTechniques()	{ return mTechs;		}
 	virtual Materials&	GetAllMaterials()	{ return mMaterials;	}
 	virtual Textures&	GetAllTextures()	{ return mTextures;		}
-	virtual SubShaders&	GetAllSubShaders()	{ return mSubShaders;	}
 	virtual Shaders&	GetAllShaders()		{ return mShaders;		}
 	virtual Fonts&		GetAllFonts()		{ return mFonts;		}
 
@@ -103,7 +99,6 @@ public:
 	virtual ITechnique*		GetTechnique	(const String& name, bool createIfMissing = true);
 	virtual IMaterial*		GetMaterial		(const String& name, bool createIfMissing = true);
 	virtual ITexture*		GetTexture		(const String& name, bool createIfMissing = true);
-	virtual ISubShader*		GetSubShader	(const String& name, bool createIfMissing = true) { return GetGLSubShader(name, createIfMissing, ISubShader::Type::Invalid); }
 	virtual IShader*		GetShader		(const String& name, bool createIfMissing = true);
 	virtual IFont*			GetFont			(const String& name, bool createIfMissing = true);
 

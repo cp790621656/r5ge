@@ -119,8 +119,7 @@ public: // Advanced serialization functions
 	}
 
 	// Loads the tree structure from a previously loaded string.
-	// Note that the specified string should not have any comments inside.
-	// Also note that the binary serialization is *significantly* faster.
+	// Also that the binary serialization is *significantly* faster.
 	bool SerializeFrom (const String& s);
 
 private:

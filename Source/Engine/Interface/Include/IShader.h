@@ -15,13 +15,19 @@ struct IShader
 	{
 		enum
 		{
-			Skinned		= 0x01,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
-			Instanced	= 0x02,	// The shader has a pseudo-instancing component
-			Billboarded	= 0x04,	// The shader is meant for a billboarded quad (or a series of quads)
-			WorldScale	= 0x08,	// The shader has the R5_worldScale parameter.
-			Material	= 0x10,	// Has the R5_material uniform
-			Shadowed	= 0x20,	// The material's last texture must be "R5_Shadowmap"
-			Surface		= 0x40,	// This is a surface shader, usable for both forward and deferred
+			LegacyFormat = 0x0001,	// This shader uses an outdated shader model (before SM 3.0)
+			Vertex		 = 0x0002,	// This shader has a vertex component
+			Fragment	 = 0x0004,	// This shader has a fragment component
+			Surface		 = 0x0008,	// This is a surface shader, usable for both forward and deferred
+			Skinned		 = 0x0010,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
+			Billboard	 = 0x0020,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
+			Shadowed	 = 0x0040,	// The material's last texture must be "R5_shadowMap"
+			Fog			 = 0x0080,	// The shader will automatically add fog for forward rendering
+			Deferred	 = 0x0100,	// Deferred rendering shader -- won't have any lighting
+			DirLight	 = 0x0200,	// The shader expects a directional light
+			PointLight	 = 0x0400,	// The shader expects a point light
+			SpotLight	 = 0x0800,	// The shader expects a spot light
+			Lit			 = 0x0E00,	// The shader expects some light (to be used as a convenience mask)
 		};
 	};
 
@@ -30,7 +36,8 @@ struct IShader
 
 protected:
 
-	Flags	mFlags;
+	Flags	mDesired;
+	Flags	mFinal;
 	String	mName;
 	uint	mUID;
 
@@ -39,10 +46,10 @@ protected:
 public:
 
 	// All shaders should have flags that can be easily modified
-	bool GetFlag (uint flags) const			{ return mFlags.Get(flags); }
+	bool GetFlag (uint flags) const			{ return mFinal.Get(flags); }
 
 	// It should also be possible to change the flags
-	void SetFlag (uint flags, bool value)	{ mFlags.Set(flags, value); }
+	void SetFlag (uint flags, bool value)	{ mFinal.Set(flags, value); }
 
 public:
 
@@ -62,12 +69,6 @@ public:
 	// Marks the shader as needing to be relinked
 	virtual void SetDirty()=0;
 
-	// Adds the specified sub-shader to this program
-	virtual void AddSubShader (ISubShader* sub)=0;
-
-	// Returns whether this shader program is using the specified shader
-	virtual bool IsUsingSubShader (const ISubShader* sub) const=0;
-
 	// Returns whether the shader is in a usable state
 	virtual bool IsValid() const=0;
 
@@ -75,5 +76,5 @@ public:
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const=0;
 
 	// Registers a uniform variable that's updated once per frame
-	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct)=0;
+	virtual void RegisterUniform (const String& name, const SetUniformDelegate& fnct, uint group = Uniform::Group::SetWhenActivated)=0;
 };

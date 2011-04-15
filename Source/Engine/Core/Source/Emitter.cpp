@@ -260,8 +260,8 @@ uint Emitter::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* t
 		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Color,
 			&mColors[0], IGraphics::DataType::Byte, 4, sizeof(Color4ub) );
 
-		// Position array
-		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+		// Vertex array
+		graphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex,
 			&mPositions[0], IGraphics::DataType::Float, 3, sizeof(Vector3f) );
 
 		// Draw the particles

@@ -182,6 +182,8 @@ void GLWindow::_ReleaseContext()
 		ASSERT(mGraphicsThread == Thread::GetID(),
 			"You must call IWindow::SetGraphics from the same thread you called it the first time");
 
+		if (mGraphics != 0) mGraphics->Release();
+
 		::wglMakeCurrent(0, 0);
 		::wglDeleteContext((HGLRC)mHRC);
 

@@ -86,7 +86,7 @@ protected:
 
 	// Create / destroy the rendering context
 	virtual bool _CreateContext() { return true; }
-	virtual void _ReleaseContext() {}
+	virtual void _ReleaseContext() { if (mGraphics != 0) mGraphics->Release(); }
 
 	// INTERNAL: Changes position, size and/or goes into full screen mode
 	bool _Set (const Vector2i& pos, const Vector2i& size, uint style);

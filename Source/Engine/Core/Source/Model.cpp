@@ -313,7 +313,7 @@ uint Model::_DrawOutline (IGraphics* graphics, const ITechnique* tech)
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::TexCoord1,	0 );
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneIndex,	0 );
 			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::BoneWeight,	0 );
-			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Position,	points );
+			graphics->SetActiveVertexAttribute	( IGraphics::Attribute::Vertex,	points );
 			graphics->DrawVertices				( IGraphics::Primitive::Line, points.GetSize() );
 		}
 
@@ -688,7 +688,7 @@ uint Model::PlayAnimation (const Animation* anim, float strength, const Animatio
 
 	// Animation's combined length includes fade in and fade out times
 	float fadeLength		= fadeInDuration + fadeOutDuration;
-	float totalDuration		= Float::Max(playDuration, fadeLength);
+	float totalDuration		= Max(playDuration, fadeLength);
 
 	// Activate the animation
 	activeAnim->Activate((totalDuration == 0.0f) ? 0.0f : (fadeInDuration	/ totalDuration),

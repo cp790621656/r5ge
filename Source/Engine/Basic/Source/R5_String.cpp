@@ -36,7 +36,7 @@ inline bool IsNumeric (char c)
 inline bool IsWordChar (char c)
 {
 	if (c < '!') return false;
-	if (c < '{') return true;
+	if (c < '~') return true;
 	return false;
 }
 

@@ -45,7 +45,6 @@ struct IGraphicsManager
 	typedef ResourceArray<ITechnique>	Techniques;
 	typedef ResourceArray<IMaterial>	Materials;
 	typedef ResourceArray<ITexture>		Textures;
-	typedef ResourceArray<ISubShader>	SubShaders;
 	typedef ResourceArray<IShader>		Shaders;
 	typedef ResourceArray<IFont>		Fonts;
 
@@ -80,7 +79,6 @@ struct IGraphicsManager
 	virtual Techniques&	GetAllTechniques()=0;
 	virtual Materials&	GetAllMaterials()=0;
 	virtual Textures&	GetAllTextures()=0;
-	virtual SubShaders&	GetAllSubShaders()=0;
 	virtual Shaders&	GetAllShaders()=0;
 	virtual Fonts&		GetAllFonts()=0;
 
@@ -98,7 +96,6 @@ struct IGraphicsManager
 	virtual ITechnique*		GetTechnique	(const String& name, bool createIfMissing = true)=0;
 	virtual IMaterial*		GetMaterial		(const String& name, bool createIfMissing = true)=0;
 	virtual ITexture*		GetTexture		(const String& name, bool createIfMissing = true)=0;
-	virtual ISubShader*		GetSubShader	(const String& name, bool createIfMissing = true)=0;
 	virtual IShader*		GetShader		(const String& name, bool createIfMissing = true)=0;
 	virtual IFont*			GetFont			(const String& name, bool createIfMissing = true)=0;
 };

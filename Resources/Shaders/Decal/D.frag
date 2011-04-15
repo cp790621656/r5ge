@@ -5,7 +5,7 @@ uniform sampler2D R5_texture3;	// View-space specular texture
 uniform sampler2D R5_texture4;	// Projected diffuse texture
 
 uniform vec2 R5_pixelSize;		// 0-1 factor size of the pixel
-uniform mat4 g_mat;				// Inverse world-view-projection matrix
+uniform mat4 g_mat;				// Inverse model-view-projection matrix
 uniform vec3 g_forward;			// Decal's forward vector in view space
 uniform vec3 g_right;			// Decal's right vector in view space
 uniform vec3 g_up;				// Decal's up vector in view space

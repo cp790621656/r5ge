@@ -8,35 +8,42 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
-class GLSubShader : public ISubShader
+class GLSubShader
 {
 	friend class GLShader;
 	friend class GLGraphics;
 
+public:
+
+	struct Type
+	{
+		enum
+		{
+			Invalid		= 0,
+			Vertex		= 1,
+			Fragment	= 2,
+			Geometry	= 3,
+		};
+	};
+
 protected:
 
 	GLGraphics*	mGraphics;		// Graphics manager this shader belongs to
+	GLShader*	mShader;		// Shader program this subshader belongs to
+	String		mName;			// This shader's name
+	Flags		mFlags;			// Flags associated with this shader
 	byte		mType;			// Type of shader this happens to be
 	uint		mGLID;			// OpenGL ID of the compiled shader
 	String		mCode;			// Loaded GLSL code the shader was compiled from
 	bool		mIsDirty;		// Whether the shader should be recompiled
 
-	// List of dependencies, built on Preprocess()
-	Array<GLSubShader*>	mDependencies;
-
 	// Only the GLGraphics class should be creating new shaders
-	GLSubShader (GLGraphics* graphics, const String& name, byte type);
+	GLSubShader (GLGraphics* graphics, GLShader* shader, const String& name);
 
 private:
 
-	// INTERNAL: Initialize the sub-shader, try to load its source code if possible
-	void _Init();
-
 	// INTERNAL: Releases the shader
 	void _Release();
-
-	// INTERNAL: Preprocess the shader's source code
-	void _Preprocess (bool deferred = false, bool shadowed = false);
 
 	// INTERNAL: Compile the shader
 	bool _Compile();
@@ -44,24 +51,19 @@ private:
 public:
 
 	// Release the associated OpenGL shader when this class gets destroyed
-	virtual ~GLSubShader() { _Release(); }
+	~GLSubShader() { _Release(); }
 
 	// Retrieves the source code used to compile this shader
-	virtual const String& GetCode() const { return mCode; }
+	const String& GetCode() const { return mCode; }
 
 	// Changes the code for the current shader
-	virtual void SetCode (const String& code, bool notifyShaders = true);
+	void SetCode (const String& code, const Flags& flags = Flags());
 
 	// Marks the shader as needing to be recompiled
-	virtual void SetDirty() { mIsDirty = true; }
+	void SetDirty() { mIsDirty = true; }
 
 	// Validates the shader, compiling it if necessary
-	virtual bool IsValid();
-
-public:
-
-	// Adds its own dependencies and dependencies of dependencies to the list
-	void AppendDependenciesTo (Array<GLSubShader*>& list);
+	bool IsValid();
 };
 
 // This function is used in both GLSubShader as well as GLShader

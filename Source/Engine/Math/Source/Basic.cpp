@@ -4,7 +4,7 @@
 // Rounds the float down to a specific precision, so 0.39 with precision of 0.25 becomes 0.5
 //============================================================================================================
 
-float R5::Float::Round (float val, float precision)
+float R5::Float::Round (float val, const float& precision)
 {
 	bool sign = Float::IsPositive(val);
 	val = Float::Abs(val);

@@ -13,38 +13,27 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 1.000000 1.000000 1.000000 1.000000
-		Fog Range = 100.000000 100.000000
 
 		Material = "Teapot"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 0.990000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 1.0
+			Shininess = 0.99
+			Reflectiveness = 0.0
+			Occlusion = 0.85
+			Alpha Cutoff = 0.003922
 
 			Technique = "Deferred"
 			{
-				Shader = "Deferred/D_NS"
-				Texture 0 = "Textures/Stone/brick2.jpg"
-				Texture 1 = "Textures/Stone/brick2_ns.png"
-			}
-		}
-	}
+				Shader = "Surface/D_N"
 
-	Execute = "Config/Default UI Skin.txt"
-
-	Core
-	{
-		Model = "Teapot"
-		{
-			Source = "Models/teapot.r5b"
-			Layer = 0
-
-			Limb = "Teapot"
-			{
-				Mesh = "Teapot"
-				Material = "Teapot"
+				Textures = String[]
+				{
+					"Textures/Stone/brick2.jpg"
+					"Textures/Stone/brick2_ns.png"
+				}
 			}
 		}
 	}
@@ -53,89 +42,140 @@ Root
 	{
 		Default Skin = "Default"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
 
 		Layout
 		{
 			UIStats = "Game UIStats"
 			{
-				Bottom = 0 142
-				Left = 1 -150
-				Font = "Arial 15"
-				Receives Events = false
+				Left = 1.0 -150.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 0.0 142.0
+				Alpha = 1.0
+				Shadow Color = 0x000000AF
+				Event Handling = "None"
 				Layer = 1
 
 				UIHighlight = "Backdrop"
 				{
-					Top Color = 0 0 0 0.7
-					Bottom Color = 0 0 0 0.3
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Top Color = 0x000000B2
+					Bottom Color = 0x0000004C
+					Event Handling = "Normal"
+					Layer = 0
 				}
 			}
 		}
 	}
 
+	Core
+	{
+		Serialize From = String[]
+		{
+			"Config/Default UI Skin.txt"
+		}
+
+		Model = "Teapot"
+		{
+			Source = "Models/teapot.r5b"
+		}
+	}
+
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Debug Camera = "Default Camera"
 		{
 			Position = -0.901637 -0.396084 3.309464
 			Rotation = -0.250021 0.144458 -0.478978 0.828976
-			Scale = 1.000000
-			Range = 1.000000 100.000000 90.000000
-			Dolly = 0.000000 16.752741 50.000000
+			Scale = 1.0 1.0 1.0
+			Range = 1.0 100.0 90.0
+			Dolly = 0.0 16.752741 50.0
+
 			Script = "OSDrawDeferred"
+			{
+				Background Color = 0.0 0.0 0.0 1.0
+				Fog Range = 0.5 1.0
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascade Count = 3
+					Cascade Bias = 0.5
+					Blur Passes = 2
+					Softness = 2.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
+				}
+
+				Bloom = 1.0
+				Focal Range = 0.0 0.0 0.0
+				AO Quality = 0
+				AO Blur Passes = 2
+				AO Parameters = 1.0 4.0 1.0
+			}
 		}
 
 		Directional Light = "First Light"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = -0.388141 0.160773 -0.347273 0.838391
-			Scale = 1.000000
-			Ambient = 0.15 0.15 0.15 0.0
-			Diffuse = 1.0 1.0 1.0 1.0
-			Specular = 1.0 1.0 1.0 1.0
-			Brightness = 1.000000
+			Position = 0.0 0.0 0.0
+			Rotation = -0.230009 0.077978 -0.311459 0.9187
+			Scale = 1.0 1.0 1.0
+			Ambient = 0.15 0.15 0.15
+			Diffuse = 1.0 1.0 1.0
+			Specular = 1.0 1.0 1.0
+			Brightness = 1.0
+			Shadows = false
 			Script = "Slight Rotation"
 		}
 
 		Model Instance = "Test Scene"
 		{
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 			Layer = 0
-			Model = "Models/test scene.r5b"
+			Model = "Models/test scene.r5a"
 		}
 
 		Model Instance = "Teapot"
 		{
-			Position = 0 0 0
-			Rotation = 0 0 0 1
-			Scale = 0.5
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 0.5 0.5 0.5
 			Model = "Teapot"
-			Layer = 10
 		}
 
 		Decal = "First Decal"
 		{
-			Position = 2 0 3
-			Rotation = -0.388141 0.160773 -0.347273 0.838391
-			Scale = 4.0
-			Script = "Slow Twirl"
+			Position = 2.0 0.0 3.0
+			Rotation = -0.358507 0.228658 -0.377792 0.822477
+			Scale = 4.0 4.0 4.0
+			Layer = 5
 			Shader = "Decal/Fade_D_N"
+			Color = 1.0 1.0 1.0 1.0
 
 			Textures = String[]
 			{
 				"Textures/Stone/brick.jpg"
 				"Textures/Stone/brick_ns.png"
 			}
+
+			Script = "Slow Twirl"
 		}
 
 		Projected Texture = "First Projected Texture"
 		{
-			Position = -2 0 3
-			Rotation = -0.388141 0.160773 -0.347273 0.838391
-			Scale = 4.0
+			Position = -2.0 0.0 3.0
+			Rotation = -0.358507 0.228658 -0.377792 0.822477
+			Scale = 4.0 4.0 4.0
+			Layer = 5
+			Color = 1.0 1.0 1.0 1.0
 			Texture = "Textures/Billboards/leaf3.png"
 			Blending = "Modulate"
 			Script = "Slow Twirl"

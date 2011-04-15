@@ -65,7 +65,6 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 
 	// Set the color and world matrix
 	mGraphics->SetActiveColor(mColor);
-	mGraphics->SetNormalize(false);
 	mGraphics->SetBlending(mBlending);
 	mGraphics->SetModelMatrix(mMatrix);
 
@@ -129,7 +128,7 @@ uint ProjectedTexture::OnDraw (TemporaryStorage& storage, uint group, const ITec
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Normal,		0 );
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneIndex,	0 );
 	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::BoneWeight,	0 );
-	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Position,
+	mGraphics->SetActiveVertexAttribute( IGraphics::Attribute::Vertex,
 		vbo, 0, IGraphics::DataType::Float, 3, 12 );
 
 	// Draw the projected texture

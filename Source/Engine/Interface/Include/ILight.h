@@ -15,8 +15,9 @@ struct ILight
 	{
 		enum
 		{
-			Directional	= 1,
-			Point		= 2,
+			Invalid = 0,
+			Directional,
+			Point,
 		};
 	};
 
@@ -25,10 +26,9 @@ struct ILight
 	Vector3f	mDir;		// This light's direction
 	Color4f		mAmbient;	// Ambient color
 	Color4f		mDiffuse;	// Diffuse color
-	Color4f		mSpecular;	// Specular color
-	Vector3f	mAtten;		// ILight's attenuation for point lights and spot lights
+	Vector3f	mParams;	// X = range, Y = falloff, Z = unused
 	Vector3f	mSpot;		// Additional spotlight-only parameters
 	bool		mShadows;	// Whether the light casts shadows
 
-	ILight() : mType(Type::Directional), mShadows(false) {}
+	ILight() : mType(Type::Invalid), mShadows(false) {}
 };
