@@ -11,7 +11,7 @@ using namespace R5;
 //============================================================================================================
 
 PFNGLACTIVETEXTUREARBPROC			glActiveTexture			= 0;
-PFNGLCLIENTACTIVETEXTUREARBPROC		glActiveClientTexture	= 0;
+PFNGLCLIENTACTIVETEXTUREARBPROC		glClientActiveTexture	= 0;
 PFNGLLOCKARRAYSEXTPROC				glLockArrays			= 0;
 PFNGLUNLOCKARRAYSEXTPROC			glUnlockArrays			= 0;
 PFNGLMULTITEXCOORD1FARBPROC			glMultiTexCoord1f		= 0;
@@ -143,7 +143,7 @@ bool _BindFunctionPointers()
 	bool essential (true), secondary (true);
 
 	glActiveTexture				= (PFNGLACTIVETEXTUREARBPROC)			glGetFunction(essential, "glActiveTextureARB");
-	glActiveClientTexture		= (PFNGLCLIENTACTIVETEXTUREARBPROC)		glGetFunction(essential, "glClientActiveTextureARB");
+	glClientActiveTexture		= (PFNGLCLIENTACTIVETEXTUREARBPROC)		glGetFunction(essential, "glClientActiveTextureARB");
 	glLockArrays				= (PFNGLLOCKARRAYSEXTPROC)				glGetFunction(essential, "glLockArraysEXT");
 	glUnlockArrays				= (PFNGLUNLOCKARRAYSEXTPROC)			glGetFunction(essential, "glUnlockArraysEXT");
 	glMultiTexCoord1f			= (PFNGLMULTITEXCOORD1FARBPROC)			glGetFunction(essential, "glMultiTexCoord1fARB");

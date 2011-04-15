@@ -517,7 +517,6 @@ void ConvertCommonTypes (String& code)
 
 void GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 {
-	uint type = GLSubShader::Type::Invalid;
 	bool surface = code.Contains("R5_surface", true);
 
 	if (surface || code.Contains("R5_finalColor", true))

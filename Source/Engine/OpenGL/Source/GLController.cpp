@@ -1007,7 +1007,7 @@ void GLController::_ActivateTextureUnit()
 	{
 		mActiveTU = mNextTU;
 		glActiveTexture(GL_TEXTURE0 + mActiveTU);
-		if (mActiveTU < maxTU) glActiveClientTexture(GL_TEXTURE0 + mActiveTU);
+		if (mActiveTU < maxTU) glClientActiveTexture(GL_TEXTURE0 + mActiveTU);
 	}
 }
 
@@ -1102,6 +1102,6 @@ void GLController::_BindAllTextures()
 	{
 		mActiveTU = 0;
 		glActiveTexture(GL_TEXTURE0);
-		glActiveClientTexture(GL_TEXTURE0);
+		glClientActiveTexture(GL_TEXTURE0);
 	}
 }

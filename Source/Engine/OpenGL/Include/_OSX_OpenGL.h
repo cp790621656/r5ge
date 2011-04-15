@@ -29,7 +29,6 @@
 #define glDeleteRenderbuffers		glDeleteRenderbuffersEXT
 #define glGenerateMipmap			glGenerateMipmapEXT
 
-#define glActiveClientTexture		glClientActiveTexture
 #define glGetObjectParameteri		glGetShaderiv
 #define glGetInfoLog				glGetShaderInfoLog
 

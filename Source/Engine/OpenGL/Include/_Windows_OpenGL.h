@@ -50,7 +50,7 @@ typedef int (WINAPI *PFNWGLSWAPINTERVALEXTPROC) (int interval);
 //============================================================================================================
 
 extern PFNGLACTIVETEXTUREARBPROC			glActiveTexture;
-extern PFNGLCLIENTACTIVETEXTUREARBPROC		glActiveClientTexture;
+extern PFNGLCLIENTACTIVETEXTUREARBPROC		glClientActiveTexture;
 extern PFNGLLOCKARRAYSEXTPROC				glLockArrays;
 extern PFNGLUNLOCKARRAYSEXTPROC				glUnlockArrays;
 extern PFNGLMULTITEXCOORD1FARBPROC			glMultiTexCoord1f;
