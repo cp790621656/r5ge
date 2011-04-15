@@ -8,9 +8,9 @@
   #endif
 #endif
 
-#include "../LZMA/LzFind.h"
-#include "../LZMA/LzmaEnc.h"
-#include "../LZMA/LzmaDec.h"
+#include "../LZMA/LzFind.c"
+#include "../LZMA/LzmaEnc.c"
+#include "../LZMA/LzmaDec.c"
 
 using namespace R5;
 
