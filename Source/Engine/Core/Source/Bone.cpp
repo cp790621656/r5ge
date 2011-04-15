@@ -286,7 +286,7 @@ bool Bone::SerializeTo (TreeNode& node) const
 {
 	ASSERT(node.mTag == Bone::ClassID(), "Missing 'Bone = ID' tag!");
 
-	if (mParent != -1) node.AddChild("Parent", mParent);
+	if (mParent != INVALID_VAL) node.AddChild("Parent", mParent);
 	node.AddChild("Name", mName);
 
 	TreeNode& pos = node.AddChild("Position", mPos);

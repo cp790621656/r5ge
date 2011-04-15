@@ -8,6 +8,8 @@
   #endif
 #endif
 
+// The following C files are added for precompiled headers
+
 #include "../LZMA/LzFind.c"
 #include "../LZMA/LzmaEnc.c"
 #include "../LZMA/LzmaDec.c"

@@ -106,7 +106,7 @@ void Animation::Fill (const Bones& bones)
 					animBone.mSmoothQ = bone->GetRotationInterpolation();
 
 					// If we have a root bone for this animation and this bone is not attached to it, skip it
-					if (mRootIndex != -1 && !IsLinkedTo(i, mRootIndex, bones)) continue;
+					if (mRootIndex != INVALID_VAL && !IsLinkedTo(i, mRootIndex, bones)) continue;
 
 					// Add all bone position keys to the animatable node's spline
 					for (uint b = 0; b < posKeys.GetSize(); ++b)

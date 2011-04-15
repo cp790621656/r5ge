@@ -136,4 +136,6 @@ void Swap(Real& val0, Real& val1)
 	val1 = temp;
 }
 
+#define INVALID_VAL (uint)-1
+
 #endif // _BASIC_TYPES_DEFINE_H

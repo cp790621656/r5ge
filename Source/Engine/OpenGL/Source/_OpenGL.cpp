@@ -262,7 +262,7 @@ bool InitOpenGL (float requiredVersion)
 					g_caps.mOcclusion		= CheckExtension("GL_ARB_occlusion", false);
 					g_caps.mMSAA			= CheckExtension("GL_ARB_texture_multisample", false);
 
-					if (supported = g_caps.mBufferObjects)
+					if ( (supported = g_caps.mBufferObjects) )
 					{
 						g_caps.mVersion = 1.5f;
 						full &= (g_caps.mFloat16Format && g_caps.mFloat32Format && g_caps.mDrawBuffers && g_caps.mOcclusion);
@@ -281,7 +281,7 @@ bool InitOpenGL (float requiredVersion)
 							g_caps.mShaders = CheckExtension("GL_ARB_vertex_shader")	&& g_caps.mShaders;
 							g_caps.mShaders = (shaderVersion >= 1.1f)					&& g_caps.mShaders;
 
-							if (supported = g_caps.mShaders)
+							if ( (supported = g_caps.mShaders) )
 							{
 								g_caps.mVersion = 2.0f;
 								g_caps.mGeometryShaders = CheckExtension("GL_ARB_geometry_shader4", false);

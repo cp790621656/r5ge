@@ -2,24 +2,30 @@ build = Debug
 
 ifeq ($(build), Debug)
 	cflags = -g -Wall
-	outdir = Debug
+	outdir = ../Debug/Linux
 else ifeq ($(build), Release)
 	cflags = -O3
-	outdir = Release
+	outdir = ../Release/Linux
 endif
 
-all: Make
-	cd Make &&\
-	g++ -c $(cflags) ../Engine/*/Source/*.cpp -I../Engine/Sound/Include -I../Engine/Font/Include &&\
-	g++ -c $(cflags) ../Engine/OpenGL/Shaders/Preprocess.cpp &&\
-	gcc -c $(cflags) ../Engine/Basic/LZMA/*.c &&\
-	ar -rcs ../../$(outdir)/Linux/r5ge.a *.o
+all: $(outdir)
+	cd $(outdir) &&\
+	g++ -c $(cflags) \
+		-I../../Source/Engine/Sound/Include \
+		-I../../Source/Engine/Font/Include \
+		../../Source/Engine/*/Source/*.cpp &&\
+	g++ -c $(cflags) \
+		../../Source/Engine/OpenGL/Shaders/Preprocess.cpp &&\
+	ar -rcs r5ge.a *.o
 
-Make:
-	mkdir Make
+$(outdir):
+	mkdir $(outdir)
 
 .PHONY: clean
 .IGNORE: clean
 
 clean:
-	rm -r Make
+	rm 	../Debug/Linux/*.o \
+		../Debug/Linux/r5ge.a \
+		../Release/Linux/*.o \
+		../Release/Linux/r5ge.a

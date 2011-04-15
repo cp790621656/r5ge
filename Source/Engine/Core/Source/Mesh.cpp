@@ -1412,7 +1412,7 @@ bool Mesh::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			{
 				uint primitive = ::GetPrimitive(tag);
 
-				if (primitive != -1)
+				if (primitive != INVALID_VAL)
 				{
 					mPrimitive = primitive;
 

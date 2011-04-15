@@ -32,7 +32,7 @@ void Emitter::OnUpdate()
 	if ( (mActiveTime == 0 && mActiveParts == 0) || mMaxParticles == 0 || mTex == 0 ) return;
 
 	// If the particle emitter is endless, hasn't moved, and hasn't been visible in a while, don't update it
-	if (mActiveTime == -1 && !mIsDirty && (Time::GetMilliseconds() - mLastVisible > 500) ) return;
+	if (mActiveTime == INVALID_VAL && !mIsDirty && (Time::GetMilliseconds() - mLastVisible > 500) ) return;
 
 	// Delay since last frame
 	ulong delta = Time::GetDeltaMS();
@@ -48,7 +48,7 @@ void Emitter::OnUpdate()
 	mAccumulated += delta;
 
 	// Update the active time if we can
-	if (mActiveTime != -1)
+	if (mActiveTime != INVALID_VAL)
 	{
 		mActiveTime = (mActiveTime > delta) ? mActiveTime - delta : 0;
 	}

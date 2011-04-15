@@ -1073,8 +1073,8 @@ bool GLTexture::Load (	const String&	up,
 			for (uint i = 1; i < 6; ++i)
 			{
 				// If the values don't match, the cube map isn't usable
-				if ( mTex[i].GetWidth()  != mSize.x ||
-					 mTex[i].GetHeight() != mSize.y ||
+				if ( mTex[i].GetWidth()  != (ushort)mSize.x ||
+					 mTex[i].GetHeight() != (ushort)mSize.y ||
 					 mTex[i].GetDepth()  != 1 )
 				{
 					// Width and height don't match, and it isn't the first texture... so nothing to do.

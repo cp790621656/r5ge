@@ -61,7 +61,7 @@ public:
 		ASSERT(edge < mList.GetSize(), "Invalid edge");
 		uint& mp (mList[edge].mp);
 		
-		if (mp == -1)
+		if (mp == INVALID_VAL)
 		{
 			uint i0 (mList[edge].i0);
 			uint i1 (mList[edge].i1);

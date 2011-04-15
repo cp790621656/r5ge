@@ -629,8 +629,8 @@ void Network::_Update()
 		// Sleep a bit, letting other threads do their work
 		if (!mTerminate)
 		{
-			if (active)	{ if (mActiveSleep != -1) Thread::Sleep(mActiveSleep); }
-			else		{ if (mIdleSleep   != -1) Thread::Sleep(mIdleSleep);	}
+			if (active)	{ if (mActiveSleep != INVALID_VAL) Thread::Sleep(mActiveSleep); }
+			else		{ if (mIdleSleep   != INVALID_VAL) Thread::Sleep(mIdleSleep);	}
 		}
 	}
 

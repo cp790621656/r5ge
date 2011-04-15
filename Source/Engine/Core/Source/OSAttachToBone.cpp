@@ -16,7 +16,7 @@ void OSAttachToBone::OnUpdate()
 	if (model == 0) return;
 
 	// If we haven't found the bone yet, find it
-	if (mBoneIndex == -1) mBoneIndex = model->GetBoneIndex(mName);
+	if (mBoneIndex == INVALID_VAL) mBoneIndex = model->GetBoneIndex(mName);
 
 	// Retrieve the bone transform
 	const BoneTransform* tm = model->GetBoneTransform(mBoneIndex);
