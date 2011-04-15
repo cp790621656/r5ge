@@ -14,7 +14,6 @@ struct Vector2i
 	union
 	{
 		struct { short x, y; };
-		struct { ushort width, height; };
 		uint mVal;
 	};
 

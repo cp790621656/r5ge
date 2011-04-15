@@ -8,7 +8,9 @@
   #endif
 #endif
 
-// The following C files are added for precompiled headers
+//============================================================================================================
+// LZMA Compression library is written in C, so it can't use s precompiled header properly.
+//============================================================================================================
 
 #include "../LZMA/LzFind.c"
 #include "../LZMA/LzmaEnc.c"

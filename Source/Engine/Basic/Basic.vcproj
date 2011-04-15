@@ -170,10 +170,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\MemMgr\mmgr.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\R5_Bundle.cpp"
 				>
 			</File>
@@ -301,6 +297,18 @@
 			</File>
 			<File
 				RelativePath=".\Include\R5_Time.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="MemMgr"
+			>
+			<File
+				RelativePath=".\MemMgr\mmgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MemMgr\mmgr.h"
 				>
 			</File>
 		</Filter>
