@@ -627,7 +627,7 @@ public:
 		return right.IsLess(*this);
 	}
 	DelegateMemento (const DelegateMemento &right)  : 
-		mPFunction(right.mPFunction), mPthis(right.mPthis)
+		mPthis(right.mPthis), mPFunction(right.mPFunction)
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 		, mPStaticFunction (right.mPStaticFunction)
 #endif

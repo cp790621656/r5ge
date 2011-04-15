@@ -69,7 +69,7 @@ bool ReadCompressed (const byte*	buffer,
 		if (index + 4 >= size) break;
 
 		// Scanline must begin with '22' and must have its width match the image's width
-		if ( buffer[index] != 2 || buffer[index+1] != 2 || (((int)buffer[index+2]) << 8 | buffer[index+3]) != width )
+		if ( buffer[index] != 2 || buffer[index+1] != 2 || (((uint)buffer[index+2]) << 8 | buffer[index+3]) != width )
 		{
 			ASSERT(false, "Compressed Radiance file format read error");
 			if (line)	delete [] line;

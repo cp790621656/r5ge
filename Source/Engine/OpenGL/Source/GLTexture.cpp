@@ -209,7 +209,10 @@ uint Create2DMipmaps (uint glType, const void* buffer, uint width, uint height, 
 	uint pixels = 0;
 	
 	// Compressed textures and Intel cards should always go through manual mipmap generation
-	if (glGenerateMipmap == 0 ||
+	if (
+#ifdef _WINDOWS
+		glGenerateMipmap == 0 ||
+#endif
 		outFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT  ||
 		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
 		outFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
@@ -274,8 +277,8 @@ GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mSizeInMemory		(0),
 	mTimestamp			(Time::GetMilliseconds()),
 	mWrapMode			(WrapMode::Default),
-	mFilter				(Filter::Default),
 	mCompareMode		(CompareMode::Default),
+	mFilter				(Filter::Default),
 	mActiveWrapMode		(WrapMode::Default),
 	mActiveFilter		(Filter::Default),
 	mActiveCompareMode	(CompareMode::Default),

@@ -510,7 +510,7 @@ bool UIManager::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 		{
 			mFocus->OnKeyPress(pos, key, isDown);
 
-			if (mFocus == 0 || key > Key::MouseFirst && key < Key::MouseLast)
+			if (mFocus == 0 || (key > Key::MouseFirst && key < Key::MouseLast))
 			{
 				// Mouse events always get intercepted by widgets
 				retVal = true;

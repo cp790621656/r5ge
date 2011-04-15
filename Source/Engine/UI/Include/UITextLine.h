@@ -20,7 +20,7 @@ protected:
 
 public:
 
-	UITextLine() : mTextColor(1.0f), mFont(0), mTags( IFont::Tags::Process ) {}
+	UITextLine() : mFont(0), mTextColor(1.0f), mTags( IFont::Tags::Process ) {}
 
 	const ITexture* GetTexture()	const;
 	const String&	GetText()		const	{ return mText;	}

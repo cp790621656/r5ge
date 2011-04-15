@@ -12,9 +12,9 @@ ActiveAnimation::ActiveAnimation() :
 	mAnimStart			(0.0f),
 	mDurationFactor		(1.0f),
 	mFadeOutStart		(1.0f),
+	mPlaybackDuration	(0.0f),
 	mOverrideDuration	(0.0f),
 	mOverrideFactor		(0.0f),
-	mPlaybackDuration	(0.0f),
 	mCurrentAlpha		(0.0f),
 	mStrength			(1.0f),
 	mIsActive			(false)

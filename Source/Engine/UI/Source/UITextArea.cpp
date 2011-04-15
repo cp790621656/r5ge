@@ -158,7 +158,7 @@ void UITextArea::_Rebuild (uint offset)
 			Color4ub textColor (par.mTextColor);
 
 			// Count the number of characters that would fit if we rendered this line
-			while (count = par.mFont->CountChars(par.mText, width, offset))
+			while ((count = par.mFont->CountChars(par.mText, width, offset)))
 			{
 				// Read one line from the current paragraph
 				uint blockEnd = par.mText.GetPhrase(currentText, offset, offset + count);

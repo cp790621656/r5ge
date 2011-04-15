@@ -8,9 +8,9 @@
   #endif
 #endif
 
-#include "../LZMA/LzFind.c"
-#include "../LZMA/LzmaEnc.c"
-#include "../LZMA/LzmaDec.c"
+#include "../LZMA/LzFind.h"
+#include "../LZMA/LzmaEnc.h"
+#include "../LZMA/LzmaDec.h"
 
 using namespace R5;
 
@@ -107,8 +107,8 @@ bool R5::CompressLZMA (const byte* buffer, uint length, Memory& memOut)
 			if (SZ_OK == LzmaEnc_WriteProperties(enc, propData, &propsSize) &&
 				propsSize == LZMA_PROPS_SIZE)
 			{
-				VectorInStream inStream = { &ReadStream, buffer, length, 0 };
-				VectorOutStream outStream = { &WriteToMemory, memOut };
+				VectorInStream inStream = { {&ReadStream}, buffer, length, 0 };
+				VectorOutStream outStream = { {&WriteToMemory}, memOut };
 
 				// Append the header
 				memOut.Append(propData, propsSize);

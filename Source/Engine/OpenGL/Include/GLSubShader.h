@@ -8,6 +8,8 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
+class GLShader;
+
 class GLSubShader
 {
 	friend class GLShader;

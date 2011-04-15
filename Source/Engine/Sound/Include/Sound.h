@@ -29,8 +29,8 @@ public:
 
 	Sound (const String& name) :
 			mName	(name),
-			mAudio	(0), 
-			mSource (0) {}
+			mSource (0),
+			mAudio	(0) {}
 
 	virtual ~Sound();
 

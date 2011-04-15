@@ -309,7 +309,7 @@ bool Network::_Send (const void* data, uint length, const Socket& s, const Addre
 	while (sent < length)
 	{
 		// According to documentation, address portion is ignored for TCP sockets. It's only used for UDP sockets.
-		uint current = ::sendto(s.mSocket, ((const char*)data) + sent, length - sent, 0,
+		int current = ::sendto(s.mSocket, ((const char*)data) + sent, length - sent, 0,
 			(sockaddr*)&addr, sizeof(sockaddr_in));
 
 		// Return value of '-1' means an error has occured

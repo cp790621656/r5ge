@@ -188,7 +188,7 @@ void GLController::SetDepthWrite (bool val)
 		}
 
 		mTechnique = 0;
-		glDepthMask( (mDepthWrite = val) ? 1 : 0 );
+		glDepthMask( (mDepthWrite == val) ? 1 : 0 );
 	}
 }
 
@@ -201,7 +201,7 @@ void GLController::SetDepthTest (bool val)
 	if ( mDepthTest != val )
 	{
 		mTechnique = 0;
-		if (mDepthTest = val) glEnable(GL_DEPTH_TEST);
+		if ( (mDepthTest = val) ) glEnable(GL_DEPTH_TEST);
 		else glDisable(GL_DEPTH_TEST);
 	}
 }
@@ -221,7 +221,7 @@ void GLController::SetColorWrite (bool val)
 		}
 
 		mTechnique = 0;
-		if (mColorWrite = val) glColorMask(true, true, true, true);
+		if ( (mColorWrite = val) ) glColorMask(true, true, true, true);
 		else glColorMask(false, false, false, false);
 	}
 }
@@ -235,7 +235,7 @@ void GLController::SetAlphaTest (bool val)
 	if ( mAlphaTest != val )
 	{
 		mTechnique = 0;
-		if (mAlphaTest = val) glEnable(GL_ALPHA_TEST);
+		if ( (mAlphaTest = val) ) glEnable(GL_ALPHA_TEST);
 		else glDisable(GL_ALPHA_TEST);
 	}
 }
@@ -248,7 +248,7 @@ void GLController::SetStencilTest (bool val)
 {
 	if ( mStencilTest != val )
 	{
-		if (mStencilTest = val) glEnable(GL_STENCIL_TEST);
+		if ( (mStencilTest = val) ) glEnable(GL_STENCIL_TEST);
 		else glDisable(GL_STENCIL_TEST);
 	}
 }
@@ -261,7 +261,7 @@ void GLController::SetScissorTest (bool val)
 {
 	if ( mScissorTest != val )
 	{
-		if (mScissorTest = val) glEnable(GL_SCISSOR_TEST);
+		if ( (mScissorTest = val) ) glEnable(GL_SCISSOR_TEST);
 		else glDisable(GL_SCISSOR_TEST);
 	}
 }
@@ -275,8 +275,8 @@ void GLController::SetWireframe (bool  val)
 	if (mWireframe != val)
 	{
 		mTechnique = 0;
-		if (mWireframe = val)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		if ( (mWireframe = val) )	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
@@ -890,7 +890,9 @@ void GLController::SetActiveVertexAttribute(
 				case Attribute::Color:		glEnableClientState(GL_COLOR_ARRAY);			break;
 				default:
 				{
+#ifdef _WINDOWS
 					if (glEnableVertexAttribArray != 0 && glVertexAttribPointer != 0)
+#endif
 					{
 						glEnableVertexAttribArray(attribute);
 						break;

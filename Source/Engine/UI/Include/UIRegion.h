@@ -36,9 +36,9 @@ public:
 				mRelativeAlpha	(1.0f),
 				mParentAlpha	(1.0f),
 				mDimsChanged	(true),
+				mUnscheduled	(false),
 				mAlpha			(1.0f),
-				mIsVisible		(false),
-				mUnscheduled	(false) {}
+				mIsVisible		(false) {}
 
 public:
 

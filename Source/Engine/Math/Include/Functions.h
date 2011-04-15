@@ -87,12 +87,12 @@ inline Vector3f Reflect (const Vector3f& v, const Vector3f& normal)
 }
 
 //============================================================================================================
-//    v0 (+y)
-//    +
-//    |\     The triangle's normal is towards you.
-//	  | \    Vertices must be provided counter-clockwise.
-//	  |  \
-// v1 +---+ v2 (+x)
+//    v0 (+y)       
+//    +             
+//    |\              The triangle's normal is towards you.
+//	   | \             Vertices must be provided counter-clockwise.
+//	   |  \            .
+// v1 +---+ v2 (+x) 
 //============================================================================================================
 
 inline Vector3f GetNormal (const Vector3f& v0, const Vector3f& v1, const Vector3f& v2)

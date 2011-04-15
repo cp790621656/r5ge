@@ -41,7 +41,7 @@ void Animation::SetFrames (const Vector2i& val)
 bool IsLinkedTo (uint index, uint parent, const Animation::Bones& bones)
 {
 	if (index == parent) return true;
-	if (index == -1 || bones.GetSize() < index || bones[index] == 0) return false;
+	if (bones.GetSize() < index || bones[index] == 0) return false;
 	index = bones[index]->GetParent();
 	return IsLinkedTo(index, parent, bones);
 }

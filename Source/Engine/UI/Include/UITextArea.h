@@ -72,8 +72,8 @@ protected:
 public:
 
 	UITextArea() :
-		mScroll			(0.0f),
 		mNeedsRebuild	(false),
+		mScroll			(0.0f),
 		mStyle			(Style::Normal),
 		mHeight			(0),
 		mMaxParagraphs	(255),

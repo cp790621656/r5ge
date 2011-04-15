@@ -168,7 +168,7 @@ const Object* Object::_FindObject (const String& name, bool recursive) const
 		if ( node == 0 && recursive )
 		{
 			for (uint i = 0; i < mChildren.GetSize(); ++i)
-				if ( node = mChildren[i]->_FindObject(name, recursive) )
+				if ( (node = mChildren[i]->_FindObject(name, recursive)) )
 					break;
 		}
 	}

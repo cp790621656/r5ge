@@ -264,6 +264,6 @@ Thread::IDType Thread::GetID()
 //------------------------------------------------------------------------------------------------------------
 
 void Thread::MessageWindow(const char *format, ...) {}
-bool Thread::AssertWindow(const char* description, int line, const char* filename, bool& keepChecking) {}
+bool Thread::AssertWindow(const char* description, int line, const char* filename, bool& keepChecking) {return false;}
 
 #endif

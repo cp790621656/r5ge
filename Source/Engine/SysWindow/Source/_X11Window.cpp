@@ -31,9 +31,9 @@ inline byte ConvertKeyCode (byte key)
 //============================================================================================================
 
 SysWindow::SysWindow() :
+	mWindowThread	(0),
 	mDisplay		(0),
 	mWin			(0),
-	mWindowThread	(0),
 	mStyle			(Style::Undefined),
 	mPrevStyle		(Style::Undefined),
 	mIsMinimized	(false),

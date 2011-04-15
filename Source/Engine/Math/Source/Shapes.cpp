@@ -28,7 +28,7 @@ public:
 
 	void Add (uint i0, uint i1, uint& edge, bool& flipped)
 	{
-		if (flipped = (i0 > i1))
+		if ((flipped = (i0 > i1)))
 			Swap(i0, i1);
 
 		for (uint i = 0; i < mList.GetSize(); ++i)

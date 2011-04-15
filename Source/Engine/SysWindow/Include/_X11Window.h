@@ -27,17 +27,17 @@ private:
 	Thread::Lockable	mLock;
 	Display*			mDisplay;
 	Window				mWin;
-	Cursor				mInvisibleCursor;	// Invisible cursor for ShowCursor(false)
-	GLXContext			mGLXContext;
 	uint				mStyle;
 	uint				mPrevStyle;			// For serialization
-	IEventReceiver*		mHandler;			// Event notifier
-	IGraphics*			mGraphics;			// Associated graphics controller
-	String				mTitle;				// Window title
-	Vector2i			mSize;				// Window size
-	Vector2i			mPos;				// Position
 	bool				mIsMinimized;
 	bool				mIgnoreResize;
+	Vector2i			mPos;				// Position
+	Vector2i			mSize;				// Window size
+	String				mTitle;				// Window title
+	IEventReceiver*		mHandler;			// Event notifier
+	IGraphics*			mGraphics;			// Associated graphics controller
+	Cursor				mInvisibleCursor;	// Invisible cursor for ShowCursor(false)
+	GLXContext			mGLXContext;
 	String				mClipboard;
 
 public:

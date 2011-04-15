@@ -72,7 +72,7 @@ void GenerateFractal (Random& r, float* out, uint width, uint height, float thre
 		// Generate all mid-points (square)
 		for (uint y = half; y < size; y += current)
 		{
-			yw = yw = y * size;
+			yw = y * size;
 
 			for (uint x = half; x < size; x += current)
 			{
