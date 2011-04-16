@@ -74,10 +74,10 @@ void R5::CreateDebugLog (Array<String>& out, const String& log, const String& co
 // Only the GLGraphics class should be creating new shaders
 //============================================================================================================
 
-GLSubShader::GLSubShader (IShader* shader, const String& name) :
+GLShaderComponent::GLShaderComponent (IShader* shader, const String& name) :
 	mShader		(shader),
 	mName		(name),
-	mType		(GLSubShader::Type::Invalid),
+	mType		(IShader::Type::Unknown),
 	mGLID		(0),
 	mIsDirty	(false) {}
 
@@ -85,9 +85,9 @@ GLSubShader::GLSubShader (IShader* shader, const String& name) :
 // Release the shader
 //============================================================================================================
 
-void GLSubShader::_Release()
+void GLShaderComponent::_Release()
 {
-	mType = Type::Invalid;
+	mType = IShader::Type::Unknown;
 
 	if (mGLID != 0)
 	{
@@ -101,15 +101,15 @@ void GLSubShader::_Release()
 // Compile the shader
 //============================================================================================================
 
-bool GLSubShader::_Compile()
+bool GLShaderComponent::_Compile()
 {
-	ASSERT(mType != Type::Invalid, "Compiling an invalid shader type?");
+	ASSERT(mType != IShader::Type::Unknown, "Compiling an invalid shader type?");
 
-	if (mType == Type::Invalid) return false;
+	if (mType == IShader::Type::Unknown) return false;
 
 	uint type = GL_VERTEX_SHADER;
-	if		(mType == Type::Fragment) type = GL_FRAGMENT_SHADER;
-	else if (mType == Type::Geometry) type = GL_GEOMETRY_SHADER;
+	if		(mType == IShader::Type::Fragment) type = GL_FRAGMENT_SHADER;
+	else if (mType == IShader::Type::Geometry) type = GL_GEOMETRY_SHADER;
 
 	// Create the shader
 	if (mGLID == 0) mGLID = glCreateShader(type);
@@ -211,26 +211,27 @@ bool GLSubShader::_Compile()
 // Changes the code for the current shader
 //============================================================================================================
 
-void GLSubShader::SetCode (const String& code, const Flags& flags)
+void GLShaderComponent::SetCode (const String& code, uint type, const Flags& flags)
 {
 	if (mCode != code)
 	{
 		mIsDirty = true;
 		mCode	 = code;
 		mFlags	 = flags;
+		mType	 = type;
 
-		if (code.Contains("EmitVertex", true))
-		{
-			mType = GLSubShader::Type::Geometry;
-		}
-		else if (code.Contains("gl_Frag", true) || code.Contains("R5_final", true))
-		{
-			mType = GLSubShader::Type::Fragment;
-		}
-		else
-		{
-			mType = GLSubShader::Type::Vertex;
-		}
+		//if (code.Contains("EmitVertex", true))
+		//{
+		//	mType = IShader::Type::Geometry;
+		//}
+		//else if (code.Contains("gl_Frag", true) || code.Contains("R5_final", true))
+		//{
+		//	mType = IShader::Type::Fragment;
+		//}
+		//else
+		//{
+		//	mType = IShader::Type::Vertex;
+		//}
 		mShader->SetDirty();
 	}
 }
@@ -239,7 +240,7 @@ void GLSubShader::SetCode (const String& code, const Flags& flags)
 // Validates the shader, compiling it if necessary
 //============================================================================================================
 
-bool GLSubShader::IsValid()
+bool GLShaderComponent::IsValid()
 {
 	if (!mIsDirty)
 	{

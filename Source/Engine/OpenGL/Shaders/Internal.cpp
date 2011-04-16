@@ -19,7 +19,7 @@ using namespace R5;
 // Preprocess an internal shader
 //============================================================================================================
 
-void GLGetInternalShaderCode (const String& name, String& code)
+uint GLGetInternalShaderCode (const String& name, String& code)
 {
 	if (name.BeginsWith("[R5] Projected Texture"))
 	{
@@ -167,4 +167,5 @@ void GLGetInternalShaderCode (const String& name, String& code)
 #ifdef _DEBUG
 	else ASSERT(false, "Unrecognized internal shader request");
 #endif
+	return code.IsValid() ? IShader::Type::Fragment : IShader::Type::Unknown;
 }

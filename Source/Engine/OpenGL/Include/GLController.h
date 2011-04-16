@@ -57,7 +57,7 @@ protected:
 	const IRenderTarget*	mTarget;		// Active rendering target
 	const ITechnique*		mTechnique;		// Active rendering technique
 	const IMaterial*		mMaterial;		// Active material
-	const GLShader*			mShader;		// Active shader
+	const GLShaderProgram*			mShader;		// Active shader
 	const ITexture*			mSkybox;		// Active skybox cubemap texture
 	const ITexture*			mShadowmap;		// Shadowmap texture, cached once it's retrieved
 

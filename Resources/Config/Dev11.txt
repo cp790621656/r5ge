@@ -399,7 +399,7 @@ Root
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
 			Scale = 1.000000
-			Model = "Models/teapot.r5b"
+			Model = "Models/teapot.r5c"
 
 			Script = "OSSound"
 			{
@@ -425,7 +425,7 @@ Root
 			Range = 0.300000 100.000000 90.000000
 			Dolly = 0.000000 27.999767 30.000000
 			Script = "OSAudioListener"
-			Script = "OSDrawDeferred"
+			Script = "OSDrawForward"
 		}
 	}
 }

@@ -408,7 +408,7 @@ void AddCommonFunctions (String& code)
 // Add appropriate uniforms
 //============================================================================================================
 
-extern Array<GLShader::UniformRecord> g_uniforms;
+extern Array<GLShaderProgram::UniformRecord> g_uniforms;
 
 void AddReferencedVariables (String& code, bool isFragmentShader)
 {
@@ -416,7 +416,7 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 
 	FOREACH(i, g_uniforms)
 	{
-		const GLShader::UniformRecord& r = g_uniforms[i];
+		const GLShaderProgram::UniformRecord& r = g_uniforms[i];
 
 		if (code.Contains(r.name, true))
 		{
@@ -515,7 +515,7 @@ void ConvertCommonTypes (String& code)
 // Preprocess a new shader format
 //============================================================================================================
 
-void GLPreprocessShader (String& code, const Flags& desired, Flags& final)
+uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 {
 	bool surface = code.Contains("R5_surface", true);
 
@@ -552,6 +552,7 @@ void GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 
 		// Prepend the prefix
 		code = prefix + code;
+		return IShader::Type::Fragment;
 	}
 	else if (code.Contains("R5_vertexPosition", true))
 	{
@@ -563,6 +564,7 @@ void GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		::ConvertCommonTypes(code);
 
 		code = "#version 130\n" + code;
+		return IShader::Type::Vertex;
 	}
 	else
 	{
@@ -578,6 +580,15 @@ void GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		::TrimSource(code);
 		::FixLegacyShader(code);
 
-		final.Set( (code.Contains("gl_Position")) ? IShader::Flag::Vertex : IShader::Flag::Fragment );
+		if (code.Contains("gl_Position"))
+		{
+			final.Set(IShader::Flag::Vertex);
+			return IShader::Type::Vertex;
+		}
+		else
+		{
+			final.Set(IShader::Flag::Fragment);
+			return IShader::Type::Fragment;
+		}
 	}
 }

@@ -722,31 +722,35 @@ bool GLController::SetActiveShader (const IShader* ptr)
 	// so we don't check for inequality here.
 	if (ptr != 0)
 	{
-		GLShader* shader = (GLShader*)ptr;
-		shader = shader->_Activate(mTechnique);
+		GLShaderProgram* shader = ((GLShaderProgram*)ptr)->_Activate(mTechnique);
 
-		if (shader != mShader)
+		// Activation function can return '0' if the shader is not valid
+		if (shader != 0)
 		{
-			// Update the shader's uniforms
-			shader->_Update(Uniform::Group::SetWhenActivated);
-			mMatIsDirty = true;
-			mShader = shader;
+			if (shader != mShader)
+			{
+				// Update the shader's uniforms
+				shader->_Update(Uniform::Group::SetWhenActivated);
+				mMatIsDirty = true;
+				mShader = shader;
 
-			// Keep track of how many shader switches occur
-			++mStats.mShaderSwitches;
+				// Keep track of how many shader switches occur
+				++mStats.mShaderSwitches;
+			}
+
+			//glDisable(GL_RESCALE_NORMAL);
+			return true;
 		}
-
-		//glDisable(GL_RESCALE_NORMAL);
-		return true;
 	}
-	else if (mShader != 0)
+
+	if (mShader != 0)
 	{
 		mShader->_Deactivate();
 		mShader = 0;
 		mMatIsDirty = true;
 
 		//glEnable(GL_RESCALE_NORMAL);
-		return true;
+		return (ptr == 0);
 	}
 	return false;
 }

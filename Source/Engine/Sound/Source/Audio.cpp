@@ -205,8 +205,7 @@ ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime,
 }
 
 //============================================================================================================
-// Returns a newly created 3D sound source. Needs to return void* as irrklang is not defined outside this
-// class and the SoundInstance class
+// Returns a newly created 3D sound source.
 //============================================================================================================
 
 ISoundInstance* Audio::Instantiate (ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat, void* data)

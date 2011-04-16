@@ -8,22 +8,9 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
-class GLSubShader
+class GLShaderComponent
 {
-	friend class GLShader;
-
-public:
-
-	struct Type
-	{
-		enum
-		{
-			Invalid		= 0,
-			Vertex		= 1,
-			Fragment	= 2,
-			Geometry	= 3,
-		};
-	};
+	friend class GLShaderProgram;
 
 protected:
 
@@ -36,8 +23,8 @@ protected:
 	String		mCode;			// Loaded GLSL code the shader was compiled from
 	bool		mIsDirty;		// Whether the shader should be recompiled
 
-	// Only GLShader should be creating SubShaders
-	GLSubShader (IShader* shader, const String& name);
+	// Only GLShaderProgram should be creating SubShaders
+	GLShaderComponent (IShader* shader, const String& name);
 
 private:
 
@@ -50,13 +37,13 @@ private:
 public:
 
 	// Release the associated OpenGL shader when this class gets destroyed
-	~GLSubShader() { _Release(); }
+	~GLShaderComponent() { _Release(); }
 
 	// Retrieves the source code used to compile this shader
 	const String& GetCode() const { return mCode; }
 
 	// Changes the code for the current shader
-	void SetCode (const String& code, const Flags& flags = Flags());
+	void SetCode (const String& code, uint type, const Flags& flags = Flags());
 
 	// Marks the shader as needing to be recompiled
 	void SetDirty() { mIsDirty = true; }
@@ -65,5 +52,5 @@ public:
 	bool IsValid();
 };
 
-// This function is used in both GLSubShader as well as GLShader
+// This function is used in both GLShaderComponent as well as GLShaderProgram
 void CreateDebugLog (Array<String>& lines, const String& log, const String& code);

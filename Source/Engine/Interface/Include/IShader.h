@@ -10,6 +10,18 @@
 
 struct IShader
 {
+	struct Type
+	{
+		enum
+		{
+			Unknown		= 0,
+			Vertex		= 1,
+			Fragment	= 2,
+			Geometry	= 4,
+			Surface		= 7,
+		};
+	};
+
 	// Flags used by this class
 	struct Flag
 	{
@@ -69,8 +81,12 @@ public:
 	// Marks the shader as needing to be relinked
 	virtual void SetDirty()=0;
 
-	// Returns whether the shader is in a usable state
-	virtual bool IsValid() const=0;
+	// Sets the shader source code
+	// NOTE: Setting a fragment shader followed by a vertex shader will not replace them, but will instead use both.
+	virtual uint SetComponentCode (const String& code)=0;
+
+	// Retrieves the source code of the specified shader component
+	virtual const String& GetComponentCode (uint type) const=0;
 
 	// Force-updates the value of the specified uniform
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const=0;

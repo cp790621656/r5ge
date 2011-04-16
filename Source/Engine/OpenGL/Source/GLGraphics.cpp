@@ -1016,7 +1016,7 @@ ITexture* GLGraphics::GetTexture (const String& name, bool createIfMissing)
 
 IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 {
-	GLShader* shader = 0;
+	GLShaderProgram* shader = 0;
 
 	if (name.IsValid())
 	{
@@ -1024,7 +1024,7 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 		{
 			for (uint i = 0; i < mShaders.GetSize(); ++i)
 			{
-				shader = (GLShader*)mShaders[i];
+				shader = (GLShaderProgram*)mShaders[i];
 
 				if (shader != 0 && shader->mName == name)
 				{
@@ -1036,8 +1036,8 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 			if (createIfMissing)
 			{
 				// Add this new shader and initialize it
-				mShaders.Expand() = (shader = new GLShader());
-				shader->_Init(this, name);
+				mShaders.Expand() = (shader = new GLShaderProgram());
+				shader->_Init(this, 0, name);
 			}
 			else shader = 0;
 		}
