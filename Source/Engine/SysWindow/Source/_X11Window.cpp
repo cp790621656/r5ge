@@ -101,20 +101,18 @@ bool SysWindow::Create(
 
 			static int visual_attribs[] =
 			{
-			   GLX_X_RENDERABLE    , True,
-			   GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
-			   GLX_RENDER_TYPE     , GLX_RGBA_BIT,
-			   GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
-			   GLX_RED_SIZE        , 8,
-			   GLX_GREEN_SIZE      , 8,
-			   GLX_BLUE_SIZE       , 8,
-			   GLX_ALPHA_SIZE      , 8,
-			   GLX_DEPTH_SIZE      , 24,
-			   GLX_STENCIL_SIZE    , 8,
-			   GLX_DOUBLEBUFFER    , True,
-			   GLX_SAMPLE_BUFFERS  , 1,
-			   GLX_SAMPLES         , ((mMSAA > 2) ? 2 : mMSAA)<<1,
-			   None
+				GLX_X_RENDERABLE,	True,
+				GLX_DRAWABLE_TYPE,	GLX_WINDOW_BIT,
+				GLX_RENDER_TYPE,	GLX_RGBA_BIT,
+				GLX_X_VISUAL_TYPE,	GLX_TRUE_COLOR,
+				GLX_RED_SIZE,		8,
+				GLX_GREEN_SIZE,		8,
+				GLX_BLUE_SIZE,		8,
+				GLX_ALPHA_SIZE,		8,
+				GLX_DEPTH_SIZE,		24,
+				GLX_STENCIL_SIZE,	8,
+				GLX_DOUBLEBUFFER,	True,
+				None
 			};
 			int nelements;
 
@@ -122,7 +120,49 @@ bool SysWindow::Create(
 
 			if (fbc)
 			{
-				XVisualInfo *vi = ::glXGetVisualFromFBConfig(mDisplay, fbc[0]);
+				// Correct mMSAA if it's not a power of 2
+				uint bits = 0;
+				do 
+				{
+					bits += 1;
+					mMSAA = (mMSAA>>1);
+				}
+				while (mMSAA > 1);
+
+				mMSAA = (mMSAA<<bits);
+
+				// Look for a GLXFBConfig that has as many samples as possible and correct mMSAA accordingly
+				uint bestvalue = 0;
+				uint n = 0;
+				for (uint i = 0; i < (uint)nelements; i++)
+				{
+					uint value;
+
+					if (glXGetFBConfigAttrib(mDisplay, fbc[i], GLX_SAMPLE_BUFFERS, (int*)&value) != Success || value != True)
+						continue;
+
+					if (glXGetFBConfigAttrib(mDisplay, fbc[i], GLX_SAMPLES, (int*)&value) == Success)
+					{
+						if ( value == mMSAA ) 
+						{
+							bestvalue = mMSAA;
+							n = i; 
+							break;
+						}
+
+						if ( value > bestvalue && value < mMSAA ) 
+						{
+							bestvalue = value;
+							n = i;
+						}
+					}
+				}
+
+				mMSAA = bestvalue;
+
+				XVisualInfo *vi = ::glXGetVisualFromFBConfig(mDisplay, fbc[n]);
+
+				XFree(fbc);
 
 				mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
 
@@ -289,7 +329,11 @@ bool SysWindow::Update()
 
 				case ClientMessage:
 					if (xev.xclient.data.l[0] == (long)wmDeleteMessage)
+					{
 						Close();
+						return mStyle != Style::Undefined;
+					}
+					break;
 
 				case MapNotify:
 					mIsMinimized = false;
@@ -352,16 +396,9 @@ bool SysWindow::Update()
 								(XEvent*)&select);
 				}
 				break;
-
-				case DestroyNotify:
-				{
-					// This bit of code should not call any other X11 functions
-					::XCloseDisplay(mDisplay);
-					mDisplay = 0;
-				}
 			}
-      }
-		
+		}
+
 		if (mIsMinimized) ::usleep(5000);
 	}
 
@@ -437,7 +474,9 @@ void SysWindow::Close()
 
 		::XFreeCursor(mDisplay, mInvisibleCursor);
 		::XDestroyWindow(mDisplay, mWin);
+		::XCloseDisplay(mDisplay);
 
+		mDisplay = 0;
 		mInvisibleCursor = 0;
 		mWin = 0;
 	}
