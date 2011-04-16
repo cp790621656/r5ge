@@ -188,7 +188,7 @@ void GLController::SetDepthWrite (bool val)
 		}
 
 		mTechnique = 0;
-		glDepthMask( (mDepthWrite == val) ? 1 : 0 );
+		glDepthMask( ((mDepthWrite = val)) ? 1 : 0 );
 	}
 }
 

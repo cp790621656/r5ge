@@ -352,9 +352,9 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 				Limb* ptr = mLimbs[i];
 
 				// Remember the matching limb
-				if (ptr  != 0 &&
+				if ( (ptr  != 0) &&
 					((mesh != 0 && ptr->mMesh == mesh) ||
-					 (bm   != 0 && ptr->mCloud == bm)))
+					 (bm   != 0 && ptr->mCloud == bm)) )
 				{
 					limb = ptr;
 					break;
