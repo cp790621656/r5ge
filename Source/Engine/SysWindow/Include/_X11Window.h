@@ -39,9 +39,10 @@ private:
 	Cursor				mInvisibleCursor;	// Invisible cursor for ShowCursor(false)
 	GLXContext			mGLXContext;
 	String				mClipboard;
+	uint				mMSAA;
 
 public:
-	SysWindow();
+	SysWindow(uint MSAA = 0);
 	virtual ~SysWindow();
 
 protected:

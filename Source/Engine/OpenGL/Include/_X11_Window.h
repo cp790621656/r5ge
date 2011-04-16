@@ -12,7 +12,9 @@
 
 class GLWindow : public SysWindow
 {
+public:
 
+	GLWindow(uint MSAA = 0): SysWindow(MSAA) { }
 };
 
 #endif

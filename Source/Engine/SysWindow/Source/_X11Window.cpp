@@ -30,7 +30,7 @@ inline byte ConvertKeyCode (byte key)
 // Set up the default values for everything
 //============================================================================================================
 
-SysWindow::SysWindow() :
+SysWindow::SysWindow(uint MSAA) :
 	mWindowThread	(0),
 	mDisplay		(0),
 	mWin			(0),
@@ -41,7 +41,8 @@ SysWindow::SysWindow() :
 	mPos			(0),
 	mSize			(0),
 	mHandler		(0),
-	mGraphics		(0)
+	mGraphics		(0),
+	mMSAA			(MSAA)
 {
 }
 
@@ -91,70 +92,82 @@ bool SysWindow::Create(
 	if (!mWin)
 	{
 		mDisplay = ::XOpenDisplay(NULL);
-		Window root;
-		root = ::XDefaultRootWindow(mDisplay);
-		int screen = ::XDefaultScreen(mDisplay);
 
-		static int visual_attribs[] =
+		if (mDisplay)
 		{
-		   GLX_X_RENDERABLE    , True,
-		   GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
-		   GLX_RENDER_TYPE     , GLX_RGBA_BIT,
-		   GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
-		   GLX_RED_SIZE        , 8,
-		   GLX_GREEN_SIZE      , 8,
-		   GLX_BLUE_SIZE       , 8,
-		   GLX_ALPHA_SIZE      , 8,
-		   GLX_DEPTH_SIZE      , 24,
-		   GLX_STENCIL_SIZE    , 8,
-		   GLX_DOUBLEBUFFER    , True,
-		   GLX_SAMPLE_BUFFERS  , 1,
-		   GLX_SAMPLES         , 4,
-		   None
-		};
-		int nelements;
+			Window root;
+			root = ::XDefaultRootWindow(mDisplay);
+			int screen = ::XDefaultScreen(mDisplay);
 
-		GLXFBConfig *fbc = ::glXChooseFBConfig(mDisplay, screen, visual_attribs, &nelements);
+			static int visual_attribs[] =
+			{
+			   GLX_X_RENDERABLE    , True,
+			   GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+			   GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+			   GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
+			   GLX_RED_SIZE        , 8,
+			   GLX_GREEN_SIZE      , 8,
+			   GLX_BLUE_SIZE       , 8,
+			   GLX_ALPHA_SIZE      , 8,
+			   GLX_DEPTH_SIZE      , 24,
+			   GLX_STENCIL_SIZE    , 8,
+			   GLX_DOUBLEBUFFER    , True,
+			   GLX_SAMPLE_BUFFERS  , 1,
+			   GLX_SAMPLES         , ((mMSAA > 2) ? 2 : mMSAA)<<1,
+			   None
+			};
+			int nelements;
 
-		XVisualInfo *vi = ::glXGetVisualFromFBConfig(mDisplay, fbc[0]);
+			GLXFBConfig *fbc = ::glXChooseFBConfig(mDisplay, screen, visual_attribs, &nelements);
 
-		mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
+			if (fbc)
+			{
+				XVisualInfo *vi = ::glXGetVisualFromFBConfig(mDisplay, fbc[0]);
 
-		XSetWindowAttributes swa;
-		swa.colormap	=	::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
-		swa.event_mask 	=	PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
-							KeyPressMask | KeyReleaseMask | StructureNotifyMask;
+				mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
 
-		swa.background_pixel = 	WhitePixel(mDisplay, screen);
+				XSetWindowAttributes swa;
+				swa.colormap	=	::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
+				swa.event_mask 	=	PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
+									KeyPressMask | KeyReleaseMask | StructureNotifyMask;
 
-		mWin = ::XCreateWindow(	mDisplay, root, x, y, width, height,
-								0, vi->depth, InputOutput, vi->visual,
-								CWColormap | CWEventMask | CWBackPixel, &swa );
-		SetTitle(title);
+				swa.background_pixel = 	WhitePixel(mDisplay, screen);
 
-		mSize.Set(width, height);
-		mPos.Set(x, y);
+				mWin = ::XCreateWindow(	mDisplay, root, x, y, width, height,
+										0, vi->depth, InputOutput, vi->visual,
+										CWColormap | CWEventMask | CWBackPixel, &swa );
+				if (mWin != None)
+				{
+					SetTitle(title);
+
+					mSize.Set(width, height);
+					mPos.Set(x, y);
 	
-		SetStyle(style);
+					SetStyle(style);
 	
-		if (style != IWindow::Style::Hidden)
-			::XMapWindow(mDisplay, mWin);
+					if (style != IWindow::Style::Hidden)
+						::XMapWindow(mDisplay, mWin);
 
-		// Create an invisible cursor for ShowCursor(false)
-		XColor black;
-		static char pixel = 0;
-		black.red = black.green = black.blue = 0;
+					// Create an invisible cursor for ShowCursor(false)
+					XColor black;
+					static char pixel = 0;
+					black.red = black.green = black.blue = 0;
 
-		Pixmap bitmap = XCreateBitmapFromData(mDisplay, mWin, &pixel, 1, 1);
-		mInvisibleCursor = XCreatePixmapCursor(mDisplay, bitmap, bitmap, &black, &black, 0, 0);
+					Pixmap bitmap = XCreateBitmapFromData(mDisplay, mWin, &pixel, 1, 1);
+					mInvisibleCursor = XCreatePixmapCursor(mDisplay, bitmap, bitmap, &black, &black, 0, 0);
 
-		// WM_DELETE_WINDOW notification is received when a window is being closed. Register interest in it.
-		wmDeleteMessage = ::XInternAtom(mDisplay, "WM_DELETE_WINDOW", False);
-		::XSetWMProtocols(mDisplay, mWin, &wmDeleteMessage, 1);
+					// WM_DELETE_WINDOW notification is received when a window is being closed. Register interest in it.
+					wmDeleteMessage = ::XInternAtom(mDisplay, "WM_DELETE_WINDOW", False);
+					::XSetWMProtocols(mDisplay, mWin, &wmDeleteMessage, 1);
 
-		mWindowThread = Thread::GetID();
+					mWindowThread = Thread::GetID();
 		
-		retval = _CreateContext();
+					retval = _CreateContext();
+				}
+				else ::XCloseDisplay(mDisplay);
+			}
+			else ::XCloseDisplay(mDisplay);
+		}
 	}
 	
 	Unlock();
