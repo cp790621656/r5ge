@@ -29,7 +29,7 @@ static const char* g_lightCommon = {
 
 static const char* g_lightDirectional = {
 	// Light direction
-"	vec3 light = R5_lightPosition.xyz;\n"
+"	vec3 light = R5_lightDirection;\n"
 };
 
 //============================================================================================================
@@ -38,7 +38,7 @@ static const char* g_lightDirectional = {
 
 static const char* g_lightPoint = {
 	// Determine this pixel's distance to the light source
-"	vec3 light = R5_lightPosition.xyz - view;\n"
+"	vec3 light = R5_lightPosition - view;\n"
 "	float dist = length(light);\n"
 
 	// If the pixel is out of range, discard it
@@ -80,16 +80,7 @@ static const char* g_lightAO = {
 //============================================================================================================
 
 static const char* g_lightShadow = {
-"	float shadowFactor 	= Sample2D(2, gl_FragCoord.xy * R5_pixelSize).a;\n"
-"	diffuseFactor  		= min(diffuseFactor, shadowFactor);\n"
-"	specularFactor 		= min(diffuseFactor, specularFactor);\n"
-};
-
-//============================================================================================================
-
-static const char* g_lightShadowAO = {
-"	float lightmap		= Sample2D(2, texCoord).a;\n"
-"	float shadowFactor 	= Sample2D(3, gl_FragCoord.xy * R5_pixelSize).a;\n"
+"	float shadowFactor 	= SampleShadow(gl_FragCoord.xy * R5_pixelSize).a;\n"
 "	diffuseFactor  		= min(diffuseFactor, shadowFactor);\n"
 "	specularFactor 		= min(diffuseFactor, specularFactor);\n"
 };

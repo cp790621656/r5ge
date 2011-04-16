@@ -80,9 +80,8 @@ uint GLGetInternalShaderCode (const String& name, String& code)
 			code << g_lightDirectional;
 			code << g_lightBody;
 
-			if (ao && shadow)	code << g_lightShadowAO;
-			else if (ao)		code << g_lightAO;
-			else if (shadow)	code << g_lightShadow;
+			if (ao)		code << g_lightAO;
+			if (shadow)	code << g_lightShadow;
 
 			code << (ao ? g_lightDirAOEnd : g_lightDirEnd);
 		}
@@ -91,9 +90,8 @@ uint GLGetInternalShaderCode (const String& name, String& code)
 			code << g_lightPoint;
 			code << g_lightBody;
 
-			if (ao && shadow)	code << g_lightShadowAO;
-			else if (ao)		code << g_lightAO;
-			else if (shadow)	code << g_lightShadow;
+			if (ao)		code << g_lightAO;
+			if (shadow)	code << g_lightShadow;
 
 			code << (ao ? g_lightPointAOEnd : g_lightPointEnd);
 		}

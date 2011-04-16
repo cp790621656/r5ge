@@ -86,9 +86,8 @@ void DirectionalLight::OnDrawLight (TemporaryStorage& storage, bool setStates)
 		mGraphics->SetActiveTexture(0, storage.GetDepth());
 		mGraphics->SetActiveTexture(1, storage.GetNormal());
 
-		uint index (2);
-		if (storage.GetAO()		!= 0) mGraphics->SetActiveTexture(index++, storage.GetAO());
-		if (storage.GetShadow() != 0) mGraphics->SetActiveTexture(index++, storage.GetShadow());
+		if (storage.GetAO()		!= 0) mGraphics->SetActiveTexture(2, storage.GetAO());
+		if (storage.GetShadow() != 0) mGraphics->SetActiveTexture(7, storage.GetShadow());
 
 		// No depth test as directional light has no volume
 		mGraphics->SetDepthTest(false);

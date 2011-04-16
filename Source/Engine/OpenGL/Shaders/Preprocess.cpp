@@ -173,7 +173,7 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		{
 			final.Set(IShader::Flag::Shadowed, true);
 			code <<
-			"	float shadowFactor = texture2D(R5_shadowMap, GetPixelTexCoords()).a;\n"
+			"	float shadowFactor = SampleShadow(GetPixelTexCoords()).a;\n"
 			"	diffuseFactor  = min(diffuseFactor, shadowFactor);\n"
 			"	specularFactor = min(diffuseFactor, specularFactor);\n";
 		}
@@ -434,10 +434,11 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 
 	if (isFragmentShader)
 	{
-		if (code.Contains("R5_shadowMap", true)) prefix << "uniform sampler2D R5_shadowMap;\n";
-
 		code.Replace("Sample2D(", "texture2D(R5_texture", true);
 		code.Replace("SampleCube(", "textureCube(R5_texture", true);
+		code.Replace("SampleShadow(", "texture2D(R5_shadowMap, ", true);
+
+		if (code.Contains("R5_shadowMap", true)) prefix << "uniform sampler2D R5_shadowMap;\n";
 
 		if (code.Contains("texture2D"))
 		{
