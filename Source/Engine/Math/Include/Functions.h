@@ -91,7 +91,7 @@ inline Vector3f Reflect (const Vector3f& v, const Vector3f& normal)
 //    +             
 //    |\              The triangle's normal is towards you.
 //    | \             Vertices must be provided counter-clockwise.
-//    |  \
+//    |  \            .
 // v1 +---+ v2 (+x) 
 //============================================================================================================
 

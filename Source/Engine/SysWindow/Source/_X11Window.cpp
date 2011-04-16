@@ -23,7 +23,7 @@ Atom wmDeleteMessage;
 inline byte ConvertKeyCode (byte key)
 {
 	// It appears that simple, although needs to be tested on other keyboards
-	return key - 9;
+	return key - 8;
 }
 
 //============================================================================================================
@@ -50,7 +50,6 @@ SysWindow::SysWindow() :
 SysWindow::~SysWindow()
 {
 	Close();
-	::XCloseDisplay(mDisplay);
 }
 
 //============================================================================================================
@@ -66,7 +65,7 @@ bool SysWindow::_CreateContext()
 void SysWindow::_ReleaseContext()
 {
 	if (mGraphics != 0) mGraphics->Release();
-	::glXMakeCurrent(mDisplay, None, NULL);
+	if (mDisplay) ::glXMakeCurrent(mDisplay, None, NULL);
 }
 
 //============================================================================================================
@@ -86,16 +85,12 @@ bool SysWindow::Create(
 	void*	hParent)
 {
 	Lock();
-
-	if (!mDisplay)
-	{
-		mDisplay = ::XOpenDisplay(NULL);
-	}
 	
 	bool retval = false;
 	
 	if (!mWin)
 	{
+		mDisplay = ::XOpenDisplay(NULL);
 		Window root;
 		root = ::XDefaultRootWindow(mDisplay);
 		int screen = ::XDefaultScreen(mDisplay);
@@ -197,7 +192,7 @@ bool SysWindow::Update()
 
 					if (!KeyRepeat)
 					{
-						mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(xk), true);
+						mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(xev.xkey.keycode), true);
 					}
 				}
 				break;
@@ -220,7 +215,7 @@ bool SysWindow::Update()
 
 					// If we got to here, then this is not a key repeat
 					KeyRepeat = false;
-					mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(XLookupKeysym(&xev.xkey, 0)), false);
+					mHandler->OnKeyPress(Vector2i(xev.xkey.x, xev.xkey.y), ConvertKeyCode(xev.xkey.keycode), false);
 				}
 				break;
 
@@ -273,7 +268,7 @@ bool SysWindow::Update()
 				case MotionNotify:
 				{
 					static Vector2i prevPos(0,0);
-					static Vector2i mousePos(xev.xmotion.x, xev.xmotion.y);
+					Vector2i mousePos(xev.xmotion.x, xev.xmotion.y);
 					mHandler->OnMouseMove(mousePos, mousePos - prevPos);
 					prevPos = mousePos;
 				}
@@ -343,11 +338,20 @@ bool SysWindow::Update()
 								0, 
 								(XEvent*)&select);
 				}
+				break;
+
+				case DestroyNotify:
+				{
+					// This bit of code should not call any other X11 functions
+					::XCloseDisplay(mDisplay);
+					mDisplay = 0;
+				}
 			}
       }
 		
 		if (mIsMinimized) ::usleep(5000);
 	}
+
 	return mStyle != Style::Undefined;
 }
 
@@ -416,9 +420,12 @@ void SysWindow::Close()
 		mStyle		= Style::Undefined;
 		mHandler	= 0;
 
-		::XFreeCursor(mDisplay, mInvisibleCursor);
 		_ReleaseContext();
+
+		::XFreeCursor(mDisplay, mInvisibleCursor);
 		::XDestroyWindow(mDisplay, mWin);
+
+		mInvisibleCursor = 0;
 		mWin = 0;
 	}
 }

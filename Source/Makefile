@@ -15,7 +15,7 @@ all: $(outdir)
 		-I../../Source/Engine/Font/Include \
 		../../Source/Engine/*/Source/*.cpp &&\
 	g++ -c $(cflags) \
-		../../Source/Engine/OpenGL/Shaders/Preprocess.cpp &&\
+		../../Source/Engine/OpenGL/Shaders/*.cpp &&\
 	ar -rcs r5ge.a *.o
 
 $(outdir):

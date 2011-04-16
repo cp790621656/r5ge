@@ -15,7 +15,7 @@ using namespace R5;
 int main (int argc, char* argv[])
 {
 	Memory in;
-	in.Load("C:/Projects/r5ge/Resources/Textures/Stone/rocky_ns.png");
+	in.Load("../../../Resources/Textures/Stone/rocky_ns.png");
 
 	printf("Original: %u bytes\n", in.GetSize());
 
@@ -31,7 +31,7 @@ int main (int argc, char* argv[])
 		{
 			printf("Loaded the image again, saving as TGA\n");
 
-			if (img.Save("c:/temp/test.tga"))
+			if (img.Save("test.tga"))
 			{
 				printf("Saved\n");
 			}
