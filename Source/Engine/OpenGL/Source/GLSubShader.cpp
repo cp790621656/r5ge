@@ -74,8 +74,7 @@ void R5::CreateDebugLog (Array<String>& out, const String& log, const String& co
 // Only the GLGraphics class should be creating new shaders
 //============================================================================================================
 
-GLSubShader::GLSubShader (GLGraphics* graphics, GLShader* shader, const String& name) :
-	mGraphics	(graphics),
+GLSubShader::GLSubShader (IShader* shader, const String& name) :
 	mShader		(shader),
 	mName		(name),
 	mType		(GLSubShader::Type::Invalid),

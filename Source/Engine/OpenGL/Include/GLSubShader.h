@@ -8,11 +8,9 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
-class GLShader;
 class GLSubShader
 {
 	friend class GLShader;
-	friend class GLGraphics;
 
 public:
 
@@ -30,7 +28,7 @@ public:
 protected:
 
 	GLGraphics*	mGraphics;		// Graphics manager this shader belongs to
-	GLShader*	mShader;		// Shader program this subshader belongs to
+	IShader*	mShader;		// Shader program this subshader belongs to
 	String		mName;			// This shader's name
 	Flags		mFlags;			// Flags associated with this shader
 	byte		mType;			// Type of shader this happens to be
@@ -38,8 +36,8 @@ protected:
 	String		mCode;			// Loaded GLSL code the shader was compiled from
 	bool		mIsDirty;		// Whether the shader should be recompiled
 
-	// Only the GLGraphics class should be creating new shaders
-	GLSubShader (GLGraphics* graphics, GLShader* shader, const String& name);
+	// Only GLShader should be creating SubShaders
+	GLSubShader (IShader* shader, const String& name);
 
 private:
 

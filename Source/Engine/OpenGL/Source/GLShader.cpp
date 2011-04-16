@@ -663,7 +663,7 @@ void GLShader::_Append (const String& filename)
 			::GLPreprocessShader(code, mDesired, final);
 
 			// Create a new sub-shader entry
-			GLSubShader* sub = new GLSubShader(mGraphics, this, filename);
+			GLSubShader* sub = new GLSubShader(this, filename);
 			sub->SetCode(code, final);
 			mAdded.Expand() = sub;
 			mIsDirty = true;

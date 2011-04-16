@@ -8,7 +8,6 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
-class GLSubShader;
 class GLShader : public IShader
 {
 public:
