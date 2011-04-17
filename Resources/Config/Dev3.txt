@@ -13,19 +13,19 @@ Root
 	Graphics
 	{
 		Default AF = 8
-		Background Color = 0.000000 0.000000 0.000000 1.000000
-		Fog Range = 100.000000 200.000000
+		Background Color = 0.0 0.0 0.0 1.0
+		Fog Range = 100.0 200.0
 
 		Material = "DNS"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 1.000000 1.000000 1.000000 0.990000
-			Glow = 0.000000
+			Diffuse = 1.0 1.0 1.0 1.0
+			Specular = 1.0 1.0 1.0 0.990000
+			Glow = 0.0
 			ADT = 0.003922
 
 			Technique = "Deferred"
 			{
-				Shader = "Surface/D_N"
+				Shader = "Surface/Diffuse + Normal"
 
 				Textures = String[]
 				{
@@ -40,17 +40,17 @@ Root
 	{
 		Default Skin = "Default"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
+		Tooltip Delay = 1.0
 
 		Layout
 		{
 			UIStats = "Game"
 			{
-				Left = 0.000000 5.000000
-				Right = 0.000000 200.000000
-				Top = 0.000000 5.000000
-				Bottom = 1.000000 0.000000
-				Alpha = 1.000000
+				Left = 0.0 5.0
+				Right = 0.0 200.0
+				Top = 0.0 5.0
+				Bottom = 1.0 0.0
+				Alpha = 1.0
 				Event Handling = "None"
 				Layer = 0
 			}
@@ -93,12 +93,12 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.000000 0.000000 0.000000
+			Position = 0.0 0.0 0.0
 			Rotation = -0.303034 -0.196358 0.507058 0.782627
-			Scale = 1.000000
+			Scale = 1.0
 			Layer = 10
-			Range = 1.000000 200.000000 90.000000
-			Dolly = 0.000000 28.000000 50.000000
+			Range = 1.0 200.0 90.0
+			Dolly = 0.0 28.0 50.0
 
 			Script = "OSDrawDeferred"
 			{
@@ -108,9 +108,9 @@ Root
 
 		Model Instance = "Teapot 7"
 		{
-			Position = 0.000000 10.000000 -2.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Position = 0.0 10.0 -2.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0
 			Min = -4.231425 -6.347139 -0.175709
 			Max = 4.231425 7.265358 6.488787
 			Layer = 10
@@ -119,9 +119,9 @@ Root
 
 		Model Instance = "Teapot 14"
 		{
-			Position = 0.000000 20.000000 -2.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Position = 0.0 20.0 -2.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0
 			Min = -4.231425 -6.347139 -0.175709
 			Max = 4.231425 7.265358 6.488787
 			Layer = 10
@@ -130,9 +130,9 @@ Root
 
 		Model Instance = "Teapot 21"
 		{
-			Position = 0.000000 -10.000000 -2.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Position = 0.0 -10.0 -2.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0
 			Min = -4.231425 -6.347139 -0.175709
 			Max = 4.231425 7.265358 6.488787
 			Layer = 10
@@ -141,9 +141,9 @@ Root
 
 		Model Instance = "Teapot 28"
 		{
-			Position = 0.000000 -20.000000 -2.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
+			Position = 0.0 -20.0 -2.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0
 			Min = -4.231425 -6.347139 -0.175709
 			Max = 4.231425 7.265358 6.488787
 			Layer = 10

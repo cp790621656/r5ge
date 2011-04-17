@@ -14,29 +14,37 @@ using namespace R5;
 
 int main (int argc, char* argv[])
 {
-	Memory in;
-	in.Load("../../../Resources/Textures/Stone/rocky_ns.png");
+	String in;
+	in.Load("../../../Resources/Shaders/Surface/Lightmap.shader");
 
 	printf("Original: %u bytes\n", in.GetSize());
 
-	Image img;
+	CodeNode code;
+	code.Load(in);
 	
-	if (img.Load(in.GetBuffer(), in.GetSize()))
+	String out;
+
+	FOREACH(i, code.mChildren)
 	{
-		Memory out;
+		CodeNode& c = code.mChildren[i];
 
-		if (img.Save(out, "R5T")) printf("R5T: %u bytes\n", out.GetSize());
-
-		if (img.Load(out.GetBuffer(), out.GetSize()))
+		if (c.mLine.Replace("void Vertex()", "void main()", true))
 		{
-			printf("Loaded the image again, saving as TGA\n");
-
-			if (img.Save("test.tga"))
-			{
-				printf("Saved\n");
-			}
+			c.Save(out);
+			printf("==========VERTEX==============\n");
+			printf("%s\n", out.GetBuffer());
+			printf("==============================\n");
+			out.Clear();
 		}
-		else puts("Failed to re-load the image");
+		else if (c.mLine.Replace("void Fragment()", "void main()", true))
+		{
+			c.Save(out);
+			printf("==========FRAGMENT============\n");
+			printf("%s\n", out.GetBuffer());
+			printf("==============================\n");
+			out.Clear();
+		}
+		else c.Save(out);
 	}
 	getchar();
 	return 0;

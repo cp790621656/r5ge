@@ -168,6 +168,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\CodeNode.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Conversion.cpp"
 				>
 			</File>
@@ -185,6 +189,10 @@
 			>
 			<File
 				RelativePath=".\Include\_All.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\CodeNode.h"
 				>
 			</File>
 			<File

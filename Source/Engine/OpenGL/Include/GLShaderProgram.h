@@ -37,6 +37,17 @@ private:
 		CodeEntry() : mType(0) {}
 	};
 
+	// Each shader can actually result in several different versions compiled for specific tasks.
+	// Deferred rendering is a variation of a surface shader for example. Forward rendered shader
+	// with shadows is another. Each variation is meant to handle a specific task.
+
+	struct Variation
+	{
+		Flags flags;
+		GLShaderProgram* shader;
+		Variation() : shader(0) {}
+	};
+
 private:
 
 	GLGraphics*			mGraphics;
@@ -50,22 +61,11 @@ private:
 	Array<GLShaderComponent*>		mAttached;	// Array of shaders currently attached to the program
 	Array<CodeEntry>				mCode;		// Original source code
 
+	// Alternate versions of this shader (for surface shaders)
+	Array<Variation> mVariations;
+
 	// Registered values
 	mutable Array<UniformEntry> mUniforms;
-
-	// Each shader can actually result in several different versions compiled for specific tasks.
-	// Deferred rendering is a variation of a surface shader for example. Forward rendered shader
-	// with shadows is another. Each variation is meant to handle a specific task.
-
-	struct Variation
-	{
-		Flags flags;
-		GLShaderProgram* shader;
-		Variation() : shader(0) {}
-	};
-
-	// Alternate versions of this shader (for surface shaders)
-	mutable Array<Variation> mVariations;
 
 private:
 

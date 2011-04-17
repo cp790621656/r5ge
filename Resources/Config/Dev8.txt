@@ -27,7 +27,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Surface/D_N"
+				Shader = "Surface/Diffuse + Normal"
 
 				Textures = String[]
 				{

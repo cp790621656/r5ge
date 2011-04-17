@@ -62,7 +62,7 @@ Root
 				Range = 1.0 50.0 60.0
 				Dolly = 0.0 24.000051 150.0
 
-				Script = "OSDrawDeferred"
+				Script = "OSDrawForward"
 				{
 					Background Color = 1 1 1 1
 					Fog Range = 0.5 1.0

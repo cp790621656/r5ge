@@ -156,25 +156,6 @@ bool GLShaderComponent::_Compile()
 			System::Log( "[SHADER]  '%s' has FAILED to compile!", mName.GetBuffer() );
 		}
 
-		// Print the debug log if there is something to print
-		if (lines.IsValid())
-		{
-			FOREACH(i, lines)
-			{
-				if (lines[i].Contains("Warning"))
-				{
-					WARNING(lines[i].GetBuffer());
-				}
-#ifdef _DEBUG
-				else
-				{
-					System::Log("          - %s", lines[i].GetBuffer());
-				}
-#endif
-			}
-			System::FlushLog();
-		}
-
 		if (retVal != GL_TRUE)
 		{
 #ifdef _DEBUG
@@ -201,6 +182,25 @@ bool GLShaderComponent::_Compile()
 			mGLID = 0;
 			mCode.Clear();
 			CHECK_GL_ERROR;
+		}
+
+		// Print the debug log if there is something to print
+		if (lines.IsValid())
+		{
+			FOREACH(i, lines)
+			{
+				if (lines[i].Contains("Warning"))
+				{
+					WARNING(lines[i].GetBuffer());
+				}
+#ifdef _DEBUG
+				else
+				{
+					System::Log("          - %s", lines[i].GetBuffer());
+				}
+#endif
+			}
+			System::FlushLog();
 		}
 		//System::Log(mCode);
 	}

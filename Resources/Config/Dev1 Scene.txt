@@ -18,7 +18,7 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Surface/D_N"
+				Shader = "Surface/Diffuse + Normal"
 				
 				Textures = String[]
 				{
@@ -29,7 +29,7 @@ Root
 
 			Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/D_N"
+				Shader = "Surface/Diffuse + Normal"
 				
 				Textures = String[]
 				{
@@ -40,7 +40,7 @@ Root
 
 			Technique = "Deferred"
 			{
-				Shader = "Surface/D_N"
+				Shader = "Surface/Diffuse + Normal"
 				
 				Textures = String[]
 				{

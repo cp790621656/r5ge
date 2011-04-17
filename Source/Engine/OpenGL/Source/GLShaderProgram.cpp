@@ -432,7 +432,7 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 	if (mNeedsLinking) _ReLink();
 
 	// If this is a surface shader, we might need to activate a different shader
-	if (tech != 0 && GetFlag(IShader::Flag::Surface))
+	if (mParent == 0 && tech != 0 && GetFlag(IShader::Flag::Surface))
 	{
 		Flags desired;
 
@@ -649,7 +649,7 @@ uint GLShaderProgram::_Update (uint group) const
 	{
 		FOREACH(i, mVariations)
 		{
-			Variation& v = mVariations[i];
+			const Variation& v = mVariations[i];
 
 			if (g_activeProgram == v.shader->mProgram)
 			{
@@ -1040,23 +1040,49 @@ uint GLShaderProgram::SetComponentCode (const String& code)
 {
 	if (code.IsEmpty()) return Type::Unknown;
 
-	// First, pre-process the shader, converting provided code into GLSL
-	// TODO: What if 'code' is a surface shader?
-	Flags final;
-	String modified (code);
-	uint type = ::GLPreprocessShader(modified, mDesired, final);
+	CodeNode node;
+	node.Load(code);
 
-	// If this is the original shader, save the source code
-	if (mParent == 0) _GetCodeEntry(type).mCode = code;
+	String segment, modified;
+	Flags flags;
+	uint finalType (0);
 
-	// Update the shader component code
-	GLShaderComponent* comp = _GetComponent(type);
-	comp->SetCode(modified, type, final);
-	mNeedsLinking = 1;
+	FOREACH(i, node.mChildren)
+	{
+		CodeNode& c = node.mChildren[i];
 
-	// All special shaders must also be invalidated
-	FOREACH(i, mSpecial) mSpecial[i]->mCheckForSource = 1;
-	return type;
+		// R5 doesn't need these. They exist only for clarity's sake within the surface shaders.
+		c.mLine.Replace("void Vertex()", "void main()", true);
+		c.mLine.Replace("void Fragment()", "void main()", true);
+		c.mLine.Replace("void Geometry()", "void main()", true);
+
+		c.Save(segment);
+
+		if (c.mLine.BeginsWith("void main()", true))
+		{
+			// First, pre-process the shader, converting provided code into GLSL
+			modified = segment;
+			uint type = ::GLPreprocessShader(modified, mDesired, flags);
+			finalType |= type;
+
+			// If this is the original shader, save the source code
+			if (mParent == 0) _GetCodeEntry(type).mCode = segment;
+
+			// Update the shader component code
+			GLShaderComponent* comp = _GetComponent(type);
+			comp->SetCode(modified, type, flags);
+			mNeedsLinking = 1;
+
+			//System::Log("==================== %s ==========================", mName.GetBuffer());
+			//System::Log("%s", modified.GetBuffer());
+			//System::Log("==================================================");
+
+			// All special shaders must also be invalidated
+			FOREACH(i, mSpecial) mSpecial[i]->mCheckForSource = 1;
+			segment.Clear();
+		}
+	}
+	return finalType;
 }
 
 //============================================================================================================
@@ -1120,7 +1146,7 @@ bool GLShaderProgram::SetUniform (const String& name, const Uniform& uniform) co
 	{
 		FOREACH(i, mVariations)
 		{
-			Variation& v = mVariations[i];
+			const Variation& v = mVariations[i];
 
 			if (g_activeProgram == v.shader->mProgram)
 			{

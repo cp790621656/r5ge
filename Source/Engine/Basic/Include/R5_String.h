@@ -4,10 +4,11 @@
 //					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
 //									http://r5ge.googlecode.com/
 //============================================================================================================
+// Author: Michael Lyashenko
+//============================================================================================================
 
 //#define _STRING_DEBUG_MODE_
 #define _CRT_SECURE_NO_DEPRECATE
-// Author: Michael Lyashenko
 
 //============================================================================================================
 // The string should be 64-byte aligned
@@ -115,8 +116,8 @@ public:
 	char*	Resize		( uint newSize );
 	String&	Set			( const char* format, ... );
 	String&	Append		( const char* format, ... );
-	bool	BeginsWith	( const char* text ) const;
-	bool	EndsWith	( const char* text ) const;
+	bool	BeginsWith	( const char* text, bool caseSensitive = false ) const;
+	bool	EndsWith	( const char* text, bool caseSensitive = false ) const;
 	bool	Contains	( const char* text, bool caseSensitive = false ) const { return Find(text, caseSensitive) != mLength; }
 	uint	Count		( char letter ) const;
 	bool	GetString	( String& out, uint from = 0, uint to = 0xFFFFFFFF ) const;
@@ -150,6 +151,9 @@ public:
 
 	// Removes trailing zeros in a floating-point value so 1.230000 becomes 1.23
 	void TrimFloat();
+
+	// Removes extra spaces and C++ style comments from the string (designed to clean up C++ code)
+	void TrimCode();
 
 	// Returns a formatted number in ###,###,### format
 	static String GetFormattedSize(ulong size);

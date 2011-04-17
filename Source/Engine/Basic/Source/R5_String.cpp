@@ -507,21 +507,28 @@ String& String::Append(const char* format, ...)
 // Returns whether the string begins with the specified text
 //======================================================================================================
 
-bool String::BeginsWith (const char* text) const
+bool String::BeginsWith (const char* text, bool caseSensitive) const
 {
 	if (IsEmpty() || text == 0 || text[0] == 0) return false;
 
 	const char* buffer = GetBuffer();
 	uint i = 0;
 
-	for ( ; i < mLength; ++i )
+	if (caseSensitive)
 	{
-		// String ends -- if we got here then the strings match
-		if (text[i] == 0) return true;
-
-		// If the letters don't match, we're done
-		if (LowerCase(text[i]) != LowerCase(buffer[i]))
-			return false;
+		for ( ; i < mLength; ++i )
+		{
+			if (text[i] == 0) return true;
+			if (text[i] != buffer[i]) return false;
+		}
+	}
+	else
+	{
+		for ( ; i < mLength; ++i )
+		{
+			if (text[i] == 0) return true;
+			if (LowerCase(text[i]) != LowerCase(buffer[i])) return false;
+		}
 	}
 
 	// Only a match if both strings end here
@@ -532,7 +539,7 @@ bool String::BeginsWith (const char* text) const
 // Returns whether the string begins with the specified text
 //======================================================================================================
 
-bool String::EndsWith (const char* text) const
+bool String::EndsWith (const char* text, bool caseSensitive) const
 {
 	if (IsEmpty() || text == 0 || text[0] == 0) return false;
 
@@ -540,11 +547,18 @@ bool String::EndsWith (const char* text) const
 
 	if (mLength < len) return false;
 	const char* buffer = GetBuffer();
-	
-	for (uint i = mLength - len; i < mLength; ++i, ++text)
+
+	if (caseSensitive)
 	{
-		if (LowerCase(*text) != LowerCase(buffer[i]))
-			return false;
+		for (uint i = mLength - len; i < mLength; ++i, ++text)
+			if (*text != buffer[i])
+				return false;
+	}
+	else
+	{
+		for (uint i = mLength - len; i < mLength; ++i, ++text)
+			if (LowerCase(*text) != LowerCase(buffer[i]))
+				return false;
 	}
 	return true;
 }
@@ -857,6 +871,59 @@ void String::TrimFloat()
 			if (ch < '0' || ch > '9') break;
 			buffer[--mLength] = 0;
 		}
+	}
+}
+
+//======================================================================================================
+// Removes extra spaces and C++ style comments from the string (designed to clean up C++ code)
+//======================================================================================================
+
+void String::TrimCode()
+{
+	if (mLength)
+	{
+		char* buffer = GetBuffer();
+		bool slash = false;
+
+		// Replace all C++ style comments with spaces
+		for (uint i = 0; i < mLength; ++i)
+		{
+			if (buffer[i] == '/')
+			{
+				if (!slash)
+				{
+					slash = true;
+					continue;
+				}
+
+				uint b = i - 1;
+				while (b < mLength && buffer[b] > 31) buffer[b++] = ' ';
+				while (b < mLength && buffer[b] < 32) buffer[b++] = ' ';
+				i = b;
+			}
+			slash = false;
+		}
+
+		// Convert all tabs and new line characters to spaces
+		for (uint i = 0; i < mLength; ++i) if (buffer[i] < ' ') buffer[i] = ' ';
+
+		uint a(0), b(0);
+
+		// Skip all initial spaces
+		while (b < mLength && buffer[b] < 33) ++b;
+
+		// Skip all trailing spaces
+		while (mLength > 0 && buffer[mLength-1] < 33) --mLength;
+
+		// Copy the characters over one at a time
+		for (; b < mLength; ++a, ++b)
+		{
+			// Skip extra spacing
+			while (buffer[b] == ' ' && buffer[b + 1] == ' ') ++b;
+			buffer[a] = buffer[b];
+		}
+		buffer[a] = 0;
+		mLength = a;
 	}
 }
 

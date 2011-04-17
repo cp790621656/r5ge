@@ -18,17 +18,17 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Surface/Material"
+				Shader = "Surface/Simple"
 			}
 
 			Technique = "Shadowed Opaque"
 			{
-				Shader = "Surface/Material"
+				Shader = "Surface/Simple"
 			}
 
 			Technique = "Deferred"
 			{
-				Shader = "Surface/Material"
+				Shader = "Surface/Simple"
 			}
 		}
 	}
@@ -41,26 +41,26 @@ Root
 		{
 			Vertices = Float3[]
 			{
-				-2.000000 -2.000000 0.000000
-				2.000000 -2.000000 0.000000
-				2.000000 2.000000 0.000000
-				-2.000000 2.000000 0.000000
+				-2.0 -2.0 0.0
+				2.0 -2.0 0.0
+				2.0 2.0 0.0
+				-2.0 2.0 0.0
 			}
 
 			Normals = Float3[]
 			{
-				0.000000 0.000000 1.000000
-				0.000000 0.000000 1.000000
-				0.000000 0.000000 1.000000
-				0.000000 0.000000 1.000000
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
 			}
 
 			TexCoords 0 = Float2[]
 			{
-				0.000000 0.000000
-				20.000000 0.000000
-				20.000000 20.000000
-				0.000000 20.000000
+				0.0 0.0
+				20.0 0.0
+				20.0 20.0
+				0.0 20.0
 			}
 
 			Triangles = UShort[]

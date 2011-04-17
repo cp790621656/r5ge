@@ -53,13 +53,13 @@ Root
 
 			Technique = "CPU"
 			{
-				Shader = "Surface/D"
+				Shader = "Surface/Diffuse"
 				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 
 			Technique = "GPU"
 			{
-				Shader = "Surface/D"
+				Shader = "Surface/Diffuse"
 				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 		}

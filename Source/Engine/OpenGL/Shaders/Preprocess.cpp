@@ -2,67 +2,6 @@
 using namespace R5;
 
 //============================================================================================================
-// Helper function that cleans up the code code, eliminating extra lines, comments, spaces, etc.
-//============================================================================================================
-
-void TrimSource (String& code)
-{
-	code.Replace("\r\n", "\n", true);
-	code.Replace("\t", " ", true);
-	while (code.Replace("  ", " ", true)) {}
-
-	String s, line, temp;
-	uint offset (0);
-	uint ident (0);
-
-	for (;;)
-	{
-		uint end = code.GetLine(line, offset);
-
-		// Skip comments
-		for (uint i = 2; i < line.GetSize(); ++i)
-		{
-			if (line[i-2] == '/' && line[i-1] == '/')
-			{
-				line.GetTrimmed(temp, 0, i - 2);
-				line = temp;
-				break;
-			}
-		}
-
-		// Empty line? Skip it.
-		if (line.GetSize() > 0)
-		{
-			// Automatic indentation for easier readability
-			for (uint i = (line == "}") ? 1 : 0; i < ident; ++i) s << "\t";
-
-			// Calculate indentation adjustments
-			for (uint i = 0; i < line.GetSize(); ++i)
-			{
-				char ch = line[i];
-				if (ch == '{') ++ident;
-				else if (ch == '}') --ident;
-			}
-
-			s << line;
-			s << "\n";
-		}
-
-		// If we've reached the end, break out
-		if (end >= code.GetSize()) break;
-
-		// Adjust the offset and continue
-		offset = end;
-	}
-
-	//System::Log("=================================================");
-	//System::Log(s.GetBuffer());
-	//System::Log("=================================================");
-
-	code = s;
-}
-
-//============================================================================================================
 // Convenience (fake) uniforms
 //============================================================================================================
 
@@ -95,9 +34,12 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 	final.Set(IShader::Flag::Deferred, deferred);
 
 	// Remove the last closing bracket
-	uint lastBracket = code.Find("}", true, 0, -1, true);
+	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
 	if (lastBracket >= code.GetSize()) return false;
-	code[lastBracket] = '\n';
+
+	// Skip trailing spaces
+	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
+	code.Resize(lastBracket+1);
 
 	// Lit shaders need surface and material properties
 	if (lit || deferred)
@@ -123,8 +65,8 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		code.Replace("R5_surfaceProps", "R5_finalColor[1]", true);
 		code.Replace("R5_surfaceNormal", "vec4 R5_surfaceNormal", true);
 		code <<
-		"R5_surfaceNormal.xyz = R5_surfaceNormal.xyz * 0.5 + 0.5;\n"
-		"R5_finalColor[2] = R5_surfaceNormal;\n";
+		"	R5_surfaceNormal.xyz = R5_surfaceNormal.xyz * 0.5 + 0.5;\n"
+		"	R5_finalColor[2] = R5_surfaceNormal;\n";
 	}
 	else if (!lit)
 	{
@@ -207,9 +149,12 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 {
 	// Remove the last closing bracket
-	uint lastBracket = code.Find("}", true, 0, -1, true);
+	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
 	if (lastBracket >= code.GetSize()) return false;
-	code[lastBracket] = '\n';
+
+	// Skip trailing spaces
+	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
+	code.Resize(lastBracket+1);
 
 	// Vertex position should be a local variable
 	code.Replace("R5_vertexPosition", "vec3 R5_vertexPosition", true);
@@ -319,9 +264,13 @@ void FixLegacyShader (String& code)
 	code.Replace("#version 110", "", true);
 
 	// Remove the last closing bracket
-	uint lastBracket = code.Find("}", true, 0, -1, true);
+	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
 	if (lastBracket >= code.GetSize()) return;
 	code[lastBracket] = '\n';
+
+	// Skip trailing spaces
+	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
+	code.Resize(lastBracket+1);
 
 	uint lightPos = code.Replace("gl_LightSource[0].position", "R5_lightPosition", true);
 	uint ambient =	code.Replace("gl_LightSource[0].ambient", "R5_lightAmbient", true);
@@ -578,7 +527,6 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		// This shader uses an outdated format
 		final.Set(IShader::Flag::LegacyFormat, true);
 
-		::TrimSource(code);
 		::FixLegacyShader(code);
 
 		if (code.Contains("gl_Position"))

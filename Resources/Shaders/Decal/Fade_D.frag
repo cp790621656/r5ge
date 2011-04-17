@@ -10,10 +10,6 @@ uniform vec3 g_forward;				// Decal's forward vector in view space
 uniform vec3 g_right;				// Decal's right vector in view space
 uniform vec3 g_up;					// Decal's up vector in view space
 
-//============================================================================================================
-// Gets the view space position at the specified texture coordinates
-//============================================================================================================
-
 vec3 GetWorldPos (in vec2 screenTC)
 {
 	float depth = texture2D(R5_texture0, screenTC).r;
@@ -22,8 +18,6 @@ vec3 GetWorldPos (in vec2 screenTC)
     pos = g_mat * pos;
     return pos.xyz / pos.w;
 }
-
-//============================================================================================================
 
 void main()
 {
@@ -36,10 +30,7 @@ void main()
     if (alpha > 1.0) discard;
     vec2 tc = pos.xz * 0.5 + 0.5;
 
-	//-----------------------------------------------------------------------------------------------------------
     // Determine if the pixel underneath should even be affected by the projector by considering its normal
-    //-----------------------------------------------------------------------------------------------------------
-
 	vec4 originalNormal = texture2D(R5_texture1, screenTC);
 
 	vec3 viewNormal;
@@ -61,8 +52,6 @@ void main()
 		// Alpha should choose the smallest of the two contribution values
 		alpha = min(alpha, 1.0 - dotVal * dotVal);
 	}
-
-    //-----------------------------------------------------------------------------------------------------------
 
 	// Retrieve the screen diffuse and specular textures in addition to the projected diffuse texture
 	vec4 originalDiffuse  	= texture2D(R5_texture2, screenTC);
