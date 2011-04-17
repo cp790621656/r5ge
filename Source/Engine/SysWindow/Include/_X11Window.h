@@ -21,7 +21,7 @@ namespace R5
 {
 class SysWindow : public IWindow
 {
-private:
+protected:
 
 	Thread::IDType		mWindowThread;
 	Thread::Lockable	mLock;
@@ -53,6 +53,9 @@ protected:
 	// Create / destroy the rendering context
 	virtual bool _CreateContext();
 	virtual void _ReleaseContext();
+	
+	bool _CreateDisplayConnection();
+	void _DestroyDisplayConnection();
 
 public:
 	// Creates a window of specified name, style, width, and height
@@ -61,10 +64,7 @@ public:
 						 short			y			= 0,
 						 ushort			width		= 1024,
 						 ushort			height		= 768,
-						 uint			style		= Style::Normal,
-						 ushort			iconID		= 0,
-						 ushort			cursorID	= 0,
-						 void*			hParent		= 0);
+						 uint			style		= Style::Normal);
 
 	virtual void SetTitle			(const String& title);
 	virtual void SetEventHandler	(IEventReceiver* ptr) { mHandler  = ptr; }

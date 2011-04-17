@@ -32,7 +32,6 @@ inline byte ConvertKeyCode (byte key)
 
 SysWindow::SysWindow(uint MSAA) :
 	mWindowThread	(0),
-	mDisplay		(0),
 	mWin			(0),
 	mStyle			(Style::Undefined),
 	mPrevStyle		(Style::Undefined),
@@ -44,13 +43,16 @@ SysWindow::SysWindow(uint MSAA) :
 	mGraphics		(0),
 	mMSAA			(MSAA)
 {
+	mDisplay = XOpenDisplay(0);
 }
 
 //============================================================================================================
 
 SysWindow::~SysWindow()
 {
-	Close();
+	if (mWin != None) Close();
+
+	::XCloseDisplay(mDisplay);
 }
 
 //============================================================================================================
@@ -69,9 +71,109 @@ void SysWindow::_ReleaseContext()
 	if (mDisplay) ::glXMakeCurrent(mDisplay, None, NULL);
 }
 
+XVisualInfo* _GetCompatibleVisual(Display *display, uint *msaa)
+{
+	ASSERT(display != NULL, "display must not be NULL");
+
+	XVisualInfo *vi = NULL;
+
+	int screen;
+	screen = ::XDefaultScreen(display);
+
+	int depth;
+	depth = DefaultDepth(display, screen);
+
+	int numElements;
+
+	GLXFBConfig *fbConfigs = ::glXGetFBConfigs(display, screen, &numElements);
+
+	if (fbConfigs)
+	{
+		// Correct msaa if it's not a power of 2
+		uint bits = 0;
+		do 
+		{
+			bits += 1;
+			*msaa = (*msaa>>1);
+		}
+		while (*msaa > 1);
+
+		*msaa = (*msaa<<bits);
+
+		// Look for a GLXFBConfig with the needed attributes that has as many samples as possible 
+		// and correct msaa accordingly
+		int bestVal = -1;
+		XVisualInfo *tmpVi;
+		for (uint i = 0; i < (uint)numElements; i++)
+		{
+			int val;
+			
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_X_RENDERABLE, &val);
+			if (val != True) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_DRAWABLE_TYPE, &val);
+			if ( !(val & GLX_WINDOW_BIT) ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_RENDER_TYPE, &val);
+			if ( !(val & GLX_RGBA_BIT) ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_X_VISUAL_TYPE, &val);
+			if ( val != GLX_TRUE_COLOR ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_RED_SIZE, &val);
+			if ( val != 8 ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_GREEN_SIZE, &val);
+			if ( val != 8 ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_BLUE_SIZE, &val);
+			if ( val != 8 ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_ALPHA_SIZE, &val);
+			if ( val != 8 ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_DEPTH_SIZE, &val);
+			if ( val != 24 ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_STENCIL_SIZE, &val);
+			if ( val != 8 ) continue;
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_DOUBLEBUFFER, &val);
+			if ( val != True ) continue;
+
+
+			glXGetFBConfigAttrib(display, fbConfigs[i], GLX_SAMPLES, &val);
+			if ( val > bestVal && val <= (int)*msaa ) 
+			{
+				tmpVi = ::glXGetVisualFromFBConfig(display, fbConfigs[i]);
+
+				if ( tmpVi->depth != depth )
+				{
+					XFree(tmpVi);
+					continue;
+				}
+				else
+				{
+					if ( vi != NULL ) XFree(vi);
+
+					vi = tmpVi;
+					bestVal = val;
+
+					if ( val == (int)*msaa ) break;
+				}
+			}
+		}
+
+		*msaa = (uint)bestVal;
+
+		XFree(fbConfigs);
+	}
+
+	return vi;
+}
+
 //============================================================================================================
 // Creates a window of specified name, width, and height
-// hParent, iconID and cursorID are ignored, if style is Style::Child, the program aborts
 //============================================================================================================
 
 bool SysWindow::Create(
@@ -80,111 +182,51 @@ bool SysWindow::Create(
 	short	y,
 	ushort	width,
 	ushort	height,
-	uint	style,
-	ushort	iconID,
-	ushort	cursorID,
-	void*	hParent)
+	uint	style)
 {
 	Lock();
-	
-	bool retval = false;
-	
-	if (!mWin)
+
+	bool retVal = false;
+
+	if ( mDisplay )
 	{
-		mDisplay = ::XOpenDisplay(NULL);
 
-		if (mDisplay)
+		if ( mWin == None )
 		{
-			Window root;
-			root = ::XDefaultRootWindow(mDisplay);
-			int screen = ::XDefaultScreen(mDisplay);
+			XVisualInfo *vi = _GetCompatibleVisual(mDisplay, &mMSAA);
 
-			static int visual_attribs[] =
+			if ( vi )
 			{
-				GLX_X_RENDERABLE,	True,
-				GLX_DRAWABLE_TYPE,	GLX_WINDOW_BIT,
-				GLX_RENDER_TYPE,	GLX_RGBA_BIT,
-				GLX_X_VISUAL_TYPE,	GLX_TRUE_COLOR,
-				GLX_RED_SIZE,		8,
-				GLX_GREEN_SIZE,		8,
-				GLX_BLUE_SIZE,		8,
-				GLX_ALPHA_SIZE,		8,
-				GLX_DEPTH_SIZE,		24,
-				GLX_STENCIL_SIZE,	8,
-				GLX_DOUBLEBUFFER,	True,
-				None
-			};
-			int nelements;
+				int screen;
+				screen = ::XDefaultScreen(mDisplay);
 
-			GLXFBConfig *fbc = ::glXChooseFBConfig(mDisplay, screen, visual_attribs, &nelements);
+				Window root;
+				root = ::XDefaultRootWindow(mDisplay);
 
-			if (fbc)
-			{
-				// Correct mMSAA if it's not a power of 2
-				uint bits = 0;
-				do 
-				{
-					bits += 1;
-					mMSAA = (mMSAA>>1);
-				}
-				while (mMSAA > 1);
-
-				mMSAA = (mMSAA<<bits);
-
-				// Look for a GLXFBConfig that has as many samples as possible and correct mMSAA accordingly
-				uint bestvalue = 0;
-				uint n = 0;
-				for (uint i = 0; i < (uint)nelements; i++)
-				{
-					uint value;
-
-					if (glXGetFBConfigAttrib(mDisplay, fbc[i], GLX_SAMPLE_BUFFERS, (int*)&value) != Success || value != True)
-						continue;
-
-					if (glXGetFBConfigAttrib(mDisplay, fbc[i], GLX_SAMPLES, (int*)&value) == Success)
-					{
-						if ( value == mMSAA ) 
-						{
-							bestvalue = mMSAA;
-							n = i; 
-							break;
-						}
-
-						if ( value > bestvalue && value < mMSAA ) 
-						{
-							bestvalue = value;
-							n = i;
-						}
-					}
-				}
-
-				mMSAA = bestvalue;
-
-				XVisualInfo *vi = ::glXGetVisualFromFBConfig(mDisplay, fbc[n]);
-
-				XFree(fbc);
 
 				mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
 
 				XSetWindowAttributes swa;
-				swa.colormap	=	::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
-				swa.event_mask 	=	PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
-									KeyPressMask | KeyReleaseMask | StructureNotifyMask;
-
-				swa.background_pixel = 	WhitePixel(mDisplay, screen);
+				swa.colormap			= ::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
+				swa.event_mask		 	= PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
+											KeyPressMask | KeyReleaseMask | StructureNotifyMask;
+				swa.background_pixel	= BlackPixel(mDisplay, screen);
 
 				mWin = ::XCreateWindow(	mDisplay, root, x, y, width, height,
 										0, vi->depth, InputOutput, vi->visual,
 										CWColormap | CWEventMask | CWBackPixel, &swa );
-				if (mWin != None)
+
+				XFree(vi);
+
+				if ( mWin != None )
 				{
 					SetTitle(title);
 
 					mSize.Set(width, height);
 					mPos.Set(x, y);
-	
+
 					SetStyle(style);
-	
+
 					if (style != IWindow::Style::Hidden)
 						::XMapWindow(mDisplay, mWin);
 
@@ -201,18 +243,18 @@ bool SysWindow::Create(
 					::XSetWMProtocols(mDisplay, mWin, &wmDeleteMessage, 1);
 
 					mWindowThread = Thread::GetID();
-		
-					retval = _CreateContext();
+
+					retVal = _CreateContext();
 				}
-				else ::XCloseDisplay(mDisplay);
+				else retVal = false;
 			}
-			else ::XCloseDisplay(mDisplay);
 		}
-	}
 	
-	Unlock();
-	return retval;	
+	}
+	Unlock();	
+	return retVal;
 }
+
 
 //==========================================================================================================
 // Processes events and returns whether the application needs to exit
@@ -474,9 +516,6 @@ void SysWindow::Close()
 
 		::XFreeCursor(mDisplay, mInvisibleCursor);
 		::XDestroyWindow(mDisplay, mWin);
-		::XCloseDisplay(mDisplay);
-
-		mDisplay = 0;
 		mInvisibleCursor = 0;
 		mWin = 0;
 	}
@@ -533,8 +572,6 @@ bool SysWindow::SetStyle (uint style)
 {
 	if (mStyle == style) return true;
 
-	ASSERT(style != IWindow::Style::Child, "Child windows are not supported on X11!");
-
 	mStyle = style;
 
 	if (mWindowThread == Thread::GetID())
@@ -572,6 +609,7 @@ bool SysWindow::SetStyle (uint style)
 			mIgnoreResize = false;
 		}
 		Unlock();
+
 		if (mHandler) mHandler->OnResize( GetSize() );
 		return retVal;
 	}

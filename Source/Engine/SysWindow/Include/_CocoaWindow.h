@@ -77,10 +77,7 @@ public:
 						short			y			= 0,
 						ushort			width		= 1024,
 						ushort			height		= 768,
-						uint			style		= Style::Normal,
-						ushort			iconID		= 0,
-						ushort			cursorID	= 0,
-						void*			pParent		= 0);
+						uint			style		= Style::Normal);
 
 	virtual void SetTitle		( const String& title );
 	virtual void SetEventHandler( IEventReceiver* ptr );

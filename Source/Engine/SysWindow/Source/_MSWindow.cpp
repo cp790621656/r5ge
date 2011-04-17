@@ -255,21 +255,16 @@ void SysWindow::Close()
 // Registers the window class -- must only be called internally
 //==========================================================================================================
 
-void SysWindow::_Register( USHORT iconID, USHORT cursorID )
+void SysWindow::_Register()
 {
 	WNDCLASS pWindow;
 	memset(&pWindow, 0, sizeof(WNDCLASS));
 
-	HICON icon = (iconID == 0) ? 0 : LoadIcon( mHInstance, MAKEINTRESOURCE(iconID) );
-
-	HCURSOR cursor = (cursorID == 0) ? LoadCursor(0, IDC_ARROW) :
-		LoadCursor(mHInstance, MAKEINTRESOURCE(cursorID));
-
 	pWindow.style			= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	pWindow.lpfnWndProc		= (WNDPROC)GlobalEventHandler;
 	pWindow.hInstance		= mHInstance;
-	pWindow.hIcon			= icon;
-	pWindow.hCursor			= cursor;
+	pWindow.hIcon			= 0;
+	pWindow.hCursor			= 0;
 	pWindow.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
 	pWindow.lpszClassName	= mTitle.GetBuffer();
 
@@ -439,21 +434,16 @@ bool SysWindow::Create(
 	short			y,			// 0
 	ushort			width,		// 1024
 	ushort			height,		// 768
-	uint			style,		// Style::Normal
-	ushort			iconID,		// 0
-	ushort			cursorID,	// 0
-	void*			pParent)	// 0
+	uint			style)		// Style::Normal
 {
-	HWND hParent = (HWND)pParent;
+	ASSERT(style != Style::Child, "Child windows can not be created by Create, use CreateEx instead");
 
 	if ( mStyle != Style::Undefined || !title ) return false;
-	if ( style == Style::Child && !IsWindow(hParent) ) return false;
 
 	Lock();
 
 	bool retVal		= true;
 	mIgnoreResize	= true;
-	mHParent		= hParent;
 	mTitle			= title;
 	mStyle			= style;
 
@@ -461,7 +451,7 @@ bool SysWindow::Create(
 	mSize.Set(width, height);
 
 	// Register the window class
-	_Register( iconID, cursorID );
+	_Register();
 
 	// Create the window
 	if ( !_CreateHandles() )

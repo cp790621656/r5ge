@@ -202,6 +202,8 @@ bool Thread::AssertWindow( const char* description, int line, const char* filena
 #else // Linux
 //============================================================================================================
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -264,6 +266,10 @@ Thread::IDType Thread::GetID()
 //------------------------------------------------------------------------------------------------------------
 
 void Thread::MessageWindow(const char *format, ...) {}
-bool Thread::AssertWindow(const char* description, int line, const char* filename, bool& keepChecking) {return false;}
+bool Thread::AssertWindow(const char* description, int line, const char* filename, bool& keepChecking) 
+{
+	fprintf(stderr, "Assert Failed: %s at %d in %s\n", description, line, filename);
+	return true;
+}
 
 #endif

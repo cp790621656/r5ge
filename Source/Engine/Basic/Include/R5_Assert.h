@@ -10,6 +10,12 @@
 
 #ifdef _DEBUG
 
+#ifdef _WINDOWS
+#define INT3 __asm { int 3 }
+#else
+#define INT3 asm ( "int $3\t\n" );
+#endif
+
 	#define ASSERT( exp, description ) \
 	{ \
 		static bool keepChecking = true; \
@@ -19,7 +25,7 @@
 			System::Log("          - Function: %s", __FUNCTION__); \
 			System::Log("          - Filename: %s (Line: %u)", __FILE__, __LINE__); \
 			System::FlushLog();	\
-			if ( R5::Thread::AssertWindow(description, __LINE__, __FILE__, keepChecking) ) { __asm { int 3 } }	\
+			if ( R5::Thread::AssertWindow(description, __LINE__, __FILE__, keepChecking) ) { INT3 }	\
 		} \
 	}
 	#define WARNING(text)	ASSERT(false, text)

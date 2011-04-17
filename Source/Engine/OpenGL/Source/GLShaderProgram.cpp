@@ -54,7 +54,7 @@ uint GetUniformID (const String& name)
 	CHECK_GL_ERROR;
 
 #ifdef _DEBUG
-	if (glID != -1) System::Log("          - Found uniform '%s' [%u]", name.GetBuffer(), glID);
+	if (glID != INVALID_VAL) System::Log("          - Found uniform '%s' [%u]", name.GetBuffer(), glID);
 #endif
 	return glID;
 }

@@ -1,7 +1,7 @@
 build = Debug
 
 ifeq ($(build), Debug)
-	cflags = -g -Wall
+	cflags = -g -Wall #-D_DEBUG
 	outdir = ../Debug/Linux
 else ifeq ($(build), Release)
 	cflags = -O3

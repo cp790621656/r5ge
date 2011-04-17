@@ -558,14 +558,11 @@ bool SysWindow::Create (const String&	title,
 						short			y,
 						unsigned short	w,
 						unsigned short	h,
-						unsigned int	style,
-						unsigned short	iconID,
-						unsigned short	cursorID,
-						void*			pParent)
+						unsigned int	style)
 {
 	if (mWin == nil && style != Style::Undefined)
 	{
-		ASSERT(pParent == 0, "Child windows are not yet supported");
+		ASSERT(style != Style::Child, "Child windows not supported");
 
 #ifdef TOP_LEFT_ORIGIN
 		NSRect screen = [[NSScreen mainScreen] frame];

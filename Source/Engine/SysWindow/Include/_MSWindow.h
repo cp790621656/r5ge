@@ -78,7 +78,7 @@ protected:
 	void Unlock()	const	{ mLock.Unlock();	}
 
 	// Registers the window class
-	void _Register(  USHORT iconID, USHORT cursorID );
+	void _Register();
 
 	// Create / destroy window handles
 	bool _CreateHandles();
@@ -106,10 +106,7 @@ public:
 						short			y			= 0,
 						ushort			width		= 1024,
 						ushort			height		= 768,
-						uint			style		= Style::Normal,
-						ushort			iconID		= 0,
-						ushort			cursorID	= 0,
-						void*			pParent		= 0);
+						uint			style		= Style::Normal);
 
 	// IWindow functions
 	virtual void SetTitle		( const String& title );

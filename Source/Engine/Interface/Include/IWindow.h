@@ -34,10 +34,7 @@ struct IWindow
 						short			y			= 0,
 						ushort			width		= 1024,
 						ushort			height		= 768,
-						uint			style		= Style::Normal,
-						ushort			iconID		= 0,
-						ushort			cursorID	= 0,
-						void*			hParent		= 0)=0;
+						uint			style		= Style::Normal)=0;
 
 	virtual void SetTitle		( const String& title  )=0;
 	virtual void SetEventHandler( IEventReceiver* ptr   )=0;
