@@ -32,6 +32,49 @@ inline void Replace (String& code, const char* match, const char* replacementTex
 }
 
 //============================================================================================================
+// Helper function that extracts the value of the specified variable
+//============================================================================================================
+
+void ExtractValue (String& code, String& out, const String& var, const char* def = 0)
+{
+	uint start = code.Find(var);
+	uint length = code.GetLength();
+
+	if (start < length)
+	{
+		uint offset = start + var.GetLength();
+
+		// Skip up to the equals sign
+		while (offset < length && code[offset] != '=') ++offset;
+
+		if (offset < length)
+		{
+			++offset;
+			uint end = offset;
+			while (end < length && code[end] != ';') ++end;
+
+			if (end < length)
+			{
+				// Get the value of this variable
+				code.GetTrimmed(out, offset, end);
+
+				// Skip the ';' character
+				++end;
+
+				// Trim the line so it can be removed cleanly
+				//while (start > 0 && code[start-1] == '\t') --start;
+				while (end < length && code[end] < 33) ++end;
+
+				// Erase this segment
+				code.Erase(start, end);
+				return;
+			}
+		}
+	}
+	out = def;
+}
+
+//============================================================================================================
 // Adds appropriate surface shader functionality
 //============================================================================================================
 
@@ -42,12 +85,23 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 	ASSERT(code.Contains("R5_surfaceColor", true), "Surface shader must always contain R5_surfaceColor output");
 
 	// Shadows and lights are automatically turned off when deferred rendering is requested
-	bool deferred = desired.Get(IShader::Flag::Deferred);
-	bool shadowed = !deferred && desired.Get(IShader::Flag::Shadowed);
-	bool lit = !deferred && desired.Get(IShader::Flag::DirLight | IShader::Flag::PointLight | IShader::Flag::SpotLight);
+	bool depthOnly	= desired.Get(IShader::Flag::DepthOnly);
+	bool deferred	= desired.Get(IShader::Flag::Deferred);
+	bool shadowed	= desired.Get(IShader::Flag::Shadowed);
+	bool lit		= desired.Get(IShader::Flag::DirLight | IShader::Flag::PointLight | IShader::Flag::SpotLight);
 
-	// Deferred rendering will be either on or off
-	final.Set(IShader::Flag::Deferred, deferred);
+	if (depthOnly)
+	{
+		final.Set(IShader::Flag::DepthOnly, true);
+		deferred = false;
+		shadowed = false;
+		lit = false;
+	}
+	else if (deferred)
+	{
+		shadowed = false;
+		lit = false;
+	}
 
 	// Remove the last closing bracket
 	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
@@ -59,36 +113,54 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 
 	if (deferred)
 	{
+		final.Set(IShader::Flag::Deferred, true);
+
 		// Deferred steps are extremely simple: simply store the values in the 3 output buffers
 		code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
 
-		Replace(code, "R5_surfaceNormal",		"vec3 R5_surfaceNormal",		"normalize(R5_vertexNormal)");
-		Replace(code, "R5_surfaceSpecularity",	"float R5_surfaceSpecularity",	"R5_materialSpecularity");
-		Replace(code, "R5_surfaceSpecularHue",	"float R5_surfaceSpecularHue",	"R5_materialSpecularHue");
-		Replace(code, "R5_surfaceGlow",			"float R5_surfaceGlow",			"R5_materialGlow");
-		Replace(code, "R5_surfaceOcclusion",	"float R5_surfaceOcclusion",	"R5_materialOcclusion");
-		Replace(code, "R5_surfaceShininess",	"float R5_surfaceShininess",	"R5_materialShininess");
+		String spec, hue, glow, occ, norm, shin;
 
-		code <<
-		"	R5_finalColor[1] = vec4(R5_surfaceSpecularity, R5_surfaceSpecularHue, R5_surfaceGlow, R5_surfaceOcclusion);\n"
-		"	R5_finalColor[2] = vec4(R5_surfaceNormal * 0.5 + 0.5, R5_surfaceShininess);\n";
+		ExtractValue(code, norm, "R5_surfaceNormal",		"normalize(R5_vertexNormal)");
+		ExtractValue(code, spec, "R5_surfaceSpecularity",	"R5_materialSpecularity");
+		ExtractValue(code, hue,  "R5_surfaceSpecularHue",	"R5_materialSpecularHue");
+		ExtractValue(code, glow, "R5_surfaceGlow",			"R5_materialGlow");
+		ExtractValue(code, occ,  "R5_surfaceOcclusion",		"R5_materialOcclusion");
+		ExtractValue(code, shin, "R5_surfaceShininess",		"R5_materialShininess");
+
+		code << "	R5_finalColor[1] = vec4(";
+		code << spec;
+		code << ", ";
+		code << hue;
+		code << ", ";
+		code << glow;
+		code << ", ";
+		code << occ;
+		code << ");\n\tR5_finalColor[2] = vec4(";
+		code << norm;
+		code << " * 0.5 + 0.5, ";
+		code << shin;
+		code << ");\n";
 	}
 	else if (!lit)
 	{
 		// Non-lit shaders only use the color output
-		code.Replace("R5_surfaceColor",			"R5_finalColor[0]",			true);
-		code.Replace("R5_surfaceNormal",		"// R5_surfaceNormal",		true);
-		code.Replace("R5_surfaceSpecularity",	"// R5_surfaceSpecularity",	true);
-		code.Replace("R5_surfaceSpecularHue",	"// R5_surfaceSpecularHue",	true);
-		code.Replace("R5_surfaceGlow",			"// R5_surfaceGlow",		true);
-		code.Replace("R5_surfaceOcclusion",		"// R5_surfaceOcclusion",	true);
-		code.Replace("R5_surfaceShininess",		"// R5_surfaceShininess",	true);
+		code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
+
+		// Remove all other values
+		String temp;
+		ExtractValue(code, temp, "R5_surfaceNormal");
+		ExtractValue(code, temp, "R5_surfaceSpecularity");
+		ExtractValue(code, temp, "R5_surfaceSpecularHue");
+		ExtractValue(code, temp, "R5_surfaceGlow");
+		ExtractValue(code, temp, "R5_surfaceOcclusion");
+		ExtractValue(code, temp, "R5_surfaceShininess");
 	}
 	else // Lit forward rendering shader
 	{
 		// Lit forward rendering involves lighting calculations
-		code.Replace("R5_surfaceColor",			"vec4 R5_surfaceColor",			true);
+		code.Replace("R5_surfaceColor", "vec4 R5_surfaceColor", true);
 
+		// Create temporary variables in place of surface properties
 		Replace(code, "R5_surfaceNormal",		"vec3 R5_surfaceNormal",		"normalize(R5_vertexNormal)");
 		Replace(code, "R5_surfaceSpecularity",	"float R5_surfaceSpecularity",	"R5_materialSpecularity");
 		Replace(code, "R5_surfaceSpecularHue",	"float R5_surfaceSpecularHue",	"R5_materialSpecularHue");
@@ -96,17 +168,13 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		Replace(code, "R5_surfaceOcclusion",	"float R5_surfaceOcclusion",	"R5_materialOcclusion");
 		Replace(code, "R5_surfaceShininess",	"float R5_surfaceShininess",	"R5_materialShininess");
 
-		//code.Replace("R5_surfaceSpecularity", "R5_surfaceProps.x", true);
-
+		// Direction from the camera to the fragment
 		code << "	vec3 eyeDir = normalize(R5_vertexEye);\n";
 
 		if (desired.Get(IShader::Flag::DirLight))
 		{
 			final.Set(IShader::Flag::DirLight, true);
-
-			// Directional light code is simple
-			code <<
-			"	vec3 lightDir = normalize(R5_lightDirection);\n";
+			code << "	vec3 lightDir = normalize(R5_lightDirection);\n";
 		}
 		else
 		{
@@ -153,8 +221,20 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		"	R5_finalColor[0] = vec4(final, R5_surfaceColor.a);\n";
 	}
 
-	// Restore the final bracket
-	code << "}\n";
+	uint lastChar = code.GetLength() - 1;
+
+	// For readability purposes
+	if (code[lastChar] == '\t')
+	{
+		code[lastChar] = '}';
+		code << "\n";
+	}
+	else
+	{
+		// Restore the final bracket
+		code << "}\n";
+	}
+	//System::Log("==========================\n%s\n==========================", code.GetBuffer());
 	return true;
 }
 
@@ -168,18 +248,44 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
 	if (lastBracket >= code.GetSize()) return false;
 
+	bool depthOnly	= desired.Get(IShader::Flag::DepthOnly);
+	bool deferred	= desired.Get(IShader::Flag::Deferred);
+	bool lit		= desired.Get(IShader::Flag::Lit);
+	bool fog		= desired.Get(IShader::Flag::Fog);
+	bool skin		= desired.Get(IShader::Flag::Skinned)	|| code.Contains("#pragma skinned", true);
+	bool billboard	= desired.Get(IShader::Flag::Billboard) || code.Contains("#pragma billboard", true);
+
 	// Skip trailing spaces
 	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
 	code.Resize(lastBracket+1);
 
-	// Vertex position should be a local variable
-	code.Replace("R5_vertexPosition", "vec3 R5_vertexPosition", true);
+	// Depth-only rendering should simplify the shader quite a bit
+	if (depthOnly)
+	{
+		deferred = false;
+		lit		 = false;
+		fog		 = false;
+
+		final.Set(IShader::Flag::DepthOnly, true);
+
+		String temp;
+		ExtractValue(code, temp, "R5_vertexNormal");
+		ExtractValue(code, temp, "R5_vertexTangent");
+		ExtractValue(code, temp, "R5_vertexColor");
+		ExtractValue(code, temp, "R5_vertexFog");
+	}
 
 	// Vertex position we'll be working with is a vec4
-	code << "	vec4 R5_position = vec4(R5_vertexPosition, 1.0);\n";
+	{
+		String vertexName;
+		ExtractValue(code, vertexName, "R5_vertexPosition", "R5_vertex");
+		code << "	vec4 R5_position = vec4(";
+		code << vertexName;
+		code << ", 1.0);\n";
+	}
 
 	// Skinned shaders use an additional set of matrices
-	if (desired.Get(IShader::Flag::Skinned))
+	if (skin)
 	{
 		final.Set(IShader::Flag::Skinned, true);
 
@@ -196,7 +302,8 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	"	R5_position = R5_modelMatrix * R5_position;\n"
 	"	R5_position = R5_viewMatrix * R5_position;\n";
 
-	if (desired.Get(IShader::Flag::Billboard))
+	// Billboarding section
+	if (billboard)
 	{
 		final.Set(IShader::Flag::Billboard, true);
 
@@ -205,22 +312,26 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		"vec3 R5_offset = R5_texCoord0.xyz;\n"
 		"R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
 		"R5_offset.z *= 0.25;\n"
-		"R5_position.xyz = R5_offset * R5_modelScale + R5_position.xyz;\n"
-		"R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
-		"R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
+		"R5_position.xyz = R5_offset * R5_modelScale + R5_position.xyz;\n";
+
+		if (lit)
+		{
+			"R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
+			"R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
+		}
 	}
 
+	// Final transformed vertex position
 	code << "	gl_Position = R5_projMatrix * R5_position;\n";
 
-	uint light = IShader::Flag::DirLight | IShader::Flag::PointLight | IShader::Flag::SpotLight;
-
-	if (!desired.Get(IShader::Flag::Deferred) && desired.Get(light))
+	// Vertex fog is only necessary for forward rendering
+	if (!depthOnly && !deferred)
 	{
 		code << "	R5_vertexEye = R5_position.xyz;\n";
-		final.Set(desired.Get() & light);
+		final.Set(desired.Get() & IShader::Flag::Lit);
 
 		// Calculate per-vertex fog
-		if (desired.Get(IShader::Flag::Fog))
+		if (fog)
 		{
 			final.Set(IShader::Flag::Fog, true);
 			code <<
@@ -231,10 +342,10 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	}
 
 	// Always include the vertex color
-	if (!code.Contains("R5_vertexColor", true)) code << "	R5_vertexColor = R5_color;\n";
+	if (!depthOnly && !code.Contains("R5_vertexColor", true)) code << "	R5_vertexColor = R5_color;\n";
 
 	// Transform the normal
-	if (code.Contains("R5_vertexNormal", true))
+	if ((lit || deferred) && code.Contains("R5_vertexNormal", true))
 	{
 		// Tangent shouldn't exist without the normal
 		if (code.Contains("R5_vertexTangent", true))
@@ -242,7 +353,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 			code <<
 			"	mat3 R5_rotMat;\n";
 
-			if (desired.Get(IShader::Flag::Skinned)) code <<
+			if (skin) code <<
 			"	R5_rotMat = mat3(R5_skinMat);\n"
 			"	R5_vertexNormal = R5_rotMat * R5_vertexNormal;\n"
 			"	R5_vertexTangent = R5_rotMat * R5_vertexTangent;\n";
@@ -259,7 +370,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		}
 		else
 		{
-			if (desired.Get(IShader::Flag::Skinned))
+			if (skin)
 			code << "	R5_vertexNormal = mat3(R5_skinMat) * R5_vertexNormal;\n";
 			code << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n"
 					  "	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";

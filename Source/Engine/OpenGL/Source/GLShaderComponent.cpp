@@ -149,7 +149,10 @@ bool GLShaderComponent::_Compile()
 
 		if (retVal == GL_TRUE)
 		{
-			System::Log( "[SHADER]  '%s' has compiled successfully", mName.GetBuffer() );
+			const char* desc = "Vertex";
+			if (mType == IShader::Type::Fragment) desc = "Fragment";
+			else if (mType == IShader::Type::Geometry) desc = "Geometry";
+			System::Log( "[SHADER]  '%s' has compiled successfully (%s)", mName.GetBuffer(), desc);
 		}
 		else
 		{
@@ -202,7 +205,6 @@ bool GLShaderComponent::_Compile()
 			}
 			System::FlushLog();
 		}
-		//System::Log(mCode);
 	}
 	return (retVal == GL_TRUE);
 }
@@ -219,19 +221,6 @@ void GLShaderComponent::SetCode (const String& code, uint type, const Flags& fla
 		mCode	 = code;
 		mFlags	 = flags;
 		mType	 = type;
-
-		//if (code.Contains("EmitVertex", true))
-		//{
-		//	mType = IShader::Type::Geometry;
-		//}
-		//else if (code.Contains("gl_Frag", true) || code.Contains("R5_final", true))
-		//{
-		//	mType = IShader::Type::Fragment;
-		//}
-		//else
-		//{
-		//	mType = IShader::Type::Vertex;
-		//}
 		mShader->SetDirty();
 	}
 }

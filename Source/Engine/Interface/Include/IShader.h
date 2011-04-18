@@ -40,6 +40,7 @@ struct IShader
 			PointLight	 = 0x0400,	// The shader expects a point light
 			SpotLight	 = 0x0800,	// The shader expects a spot light
 			Lit			 = 0x0E00,	// The shader expects some light (to be used as a convenience mask)
+			DepthOnly	 = 0x1000,	// Only depth output is desired
 		};
 	};
 

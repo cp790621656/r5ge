@@ -443,26 +443,36 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 		}
 		else
 		{
-			// If a light is active, automatically request the appropriate variation
-			const ILight& light = mGraphics->GetActiveLight(0);
+			const IRenderTarget* target = mGraphics->GetActiveRenderTarget();
 
-			if (light.mType == ILight::Type::Directional)
+			if (!tech->GetColorWrite() || (target != 0 && !target->HasColor()))
 			{
-				desired.Set(IShader::Flag::DirLight, true);
+				// Color write is turned off -- render only to depth
+				desired.Set(IShader::Flag::DepthOnly, true);
+			}
+			else
+			{
+				// If a light is active, automatically request the appropriate variation
+				const ILight& light = mGraphics->GetActiveLight(0);
 
-				if (tech->GetFlag(ITechnique::Flag::Shadowed))
+				if (light.mType == ILight::Type::Directional)
 				{
-					desired.Set(IShader::Flag::Shadowed, true);
+					desired.Set(IShader::Flag::DirLight, true);
+
+					if (tech->GetFlag(ITechnique::Flag::Shadowed))
+					{
+						desired.Set(IShader::Flag::Shadowed, true);
+					}
 				}
+				else if (light.mType == ILight::Type::Point)
+				{
+					desired.Set(IShader::Flag::PointLight, true);
+				}
+				//else if (light.mType == ILight::Type::Spot)
+				//{
+				//	desired.Set(IShader::Flag::SpotLight, true);
+				//}
 			}
-			else if (light.mType == ILight::Type::Point)
-			{
-				desired.Set(IShader::Flag::PointLight, true);
-			}
-			//else if (light.mType == ILight::Type::Spot)
-			//{
-			//	desired.Set(IShader::Flag::SpotLight, true);
-			//}
 		}
 
 		// Call the appropriate variation
@@ -828,15 +838,6 @@ bool GLShaderProgram::_Link()
 			System::Log("[SHADER]  '%s' has FAILED to link!", mName.GetBuffer());
 		}
 
-		// List all the shaders used by this GLSL program
-		for (uint i = 0; i < mAttached.GetSize(); ++i)
-		{
-			GLShaderComponent* sub = mAttached[i];
-			const char* type = (sub->mType == IShader::Type::Vertex) ? "Vertex" : "Fragment";
-			if (sub->mType == IShader::Type::Geometry) type = "Geometry";
-			System::Log("          - Using '%s' (%s)", sub->mName.GetBuffer(), type);
-		}
-
 		Array<String> lines;
 		R5::CreateDebugLog(lines, log, "");
 
@@ -1072,10 +1073,6 @@ uint GLShaderProgram::SetComponentCode (const String& code)
 			GLShaderComponent* comp = _GetComponent(type);
 			comp->SetCode(modified, type, flags);
 			mNeedsLinking = 1;
-
-			//System::Log("==================== %s ==========================", mName.GetBuffer());
-			//System::Log("%s", modified.GetBuffer());
-			//System::Log("==================================================");
 
 			// All special shaders must also be invalidated
 			FOREACH(i, mSpecial) mSpecial[i]->mCheckForSource = 1;
