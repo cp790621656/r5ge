@@ -16,6 +16,22 @@ void ProcessMaterials (String& code)
 }
 
 //============================================================================================================
+// Helper function
+//============================================================================================================
+
+inline void Replace (String& code, const char* match, const char* replacementText, const char* absentText)
+{
+	if (!code.Replace(match, replacementText, true))
+	{
+		code << "\t";
+		code << replacementText;
+		code << " = ";
+		code << absentText;
+		code << ";\n";
+	}
+}
+
+//============================================================================================================
 // Adds appropriate surface shader functionality
 //============================================================================================================
 
@@ -41,46 +57,46 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
 	code.Resize(lastBracket+1);
 
-	// Lit shaders need surface and material properties
-	if (lit || deferred)
-	{
-		// Standard Surface Properties tag
-		if (!code.Contains("R5_surfaceProps", true))
-		{
-			code << "	R5_surfaceProps = vec4(R5_materialSpecularity, "
-				"R5_materialSpecularHue, R5_materialGlow, 1.0);\n";
-		}
-
-		// Standard Surface Normal tag
-		if (!code.Contains("R5_surfaceNormal", true))
-		{
-			code << "	R5_surfaceNormal = vec4(normalize(R5_vertexNormal), R5_materialShininess);\n";
-		}
-	}
-
 	if (deferred)
 	{
 		// Deferred steps are extremely simple: simply store the values in the 3 output buffers
 		code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
-		code.Replace("R5_surfaceProps", "R5_finalColor[1]", true);
-		code.Replace("R5_surfaceNormal", "vec4 R5_surfaceNormal", true);
+
+		Replace(code, "R5_surfaceNormal",		"vec3 R5_surfaceNormal",		"normalize(R5_vertexNormal)");
+		Replace(code, "R5_surfaceSpecularity",	"float R5_surfaceSpecularity",	"R5_materialSpecularity");
+		Replace(code, "R5_surfaceSpecularHue",	"float R5_surfaceSpecularHue",	"R5_materialSpecularHue");
+		Replace(code, "R5_surfaceGlow",			"float R5_surfaceGlow",			"R5_materialGlow");
+		Replace(code, "R5_surfaceOcclusion",	"float R5_surfaceOcclusion",	"R5_materialOcclusion");
+		Replace(code, "R5_surfaceShininess",	"float R5_surfaceShininess",	"R5_materialShininess");
+
 		code <<
-		"	R5_surfaceNormal.xyz = R5_surfaceNormal.xyz * 0.5 + 0.5;\n"
-		"	R5_finalColor[2] = R5_surfaceNormal;\n";
+		"	R5_finalColor[1] = vec4(R5_surfaceSpecularity, R5_surfaceSpecularHue, R5_surfaceGlow, R5_surfaceOcclusion);\n"
+		"	R5_finalColor[2] = vec4(R5_surfaceNormal * 0.5 + 0.5, R5_surfaceShininess);\n";
 	}
 	else if (!lit)
 	{
 		// Non-lit shaders only use the color output
-		code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
-		code.Replace("R5_surfaceProps", "//R5_surfaceProps", true);
-		code.Replace("R5_surfaceNormal", "//R5_surfaceNormal", true);
+		code.Replace("R5_surfaceColor",			"R5_finalColor[0]",			true);
+		code.Replace("R5_surfaceNormal",		"// R5_surfaceNormal",		true);
+		code.Replace("R5_surfaceSpecularity",	"// R5_surfaceSpecularity",	true);
+		code.Replace("R5_surfaceSpecularHue",	"// R5_surfaceSpecularHue",	true);
+		code.Replace("R5_surfaceGlow",			"// R5_surfaceGlow",		true);
+		code.Replace("R5_surfaceOcclusion",		"// R5_surfaceOcclusion",	true);
+		code.Replace("R5_surfaceShininess",		"// R5_surfaceShininess",	true);
 	}
 	else // Lit forward rendering shader
 	{
 		// Lit forward rendering involves lighting calculations
-		code.Replace("R5_surfaceColor", "vec4 R5_surfaceColor", true);
-		code.Replace("R5_surfaceProps", "vec4 R5_surfaceProps", true);
-		code.Replace("R5_surfaceNormal", "vec4 R5_surfaceNormal", true);
+		code.Replace("R5_surfaceColor",			"vec4 R5_surfaceColor",			true);
+
+		Replace(code, "R5_surfaceNormal",		"vec3 R5_surfaceNormal",		"normalize(R5_vertexNormal)");
+		Replace(code, "R5_surfaceSpecularity",	"float R5_surfaceSpecularity",	"R5_materialSpecularity");
+		Replace(code, "R5_surfaceSpecularHue",	"float R5_surfaceSpecularHue",	"R5_materialSpecularHue");
+		Replace(code, "R5_surfaceGlow",			"float R5_surfaceGlow",			"R5_materialGlow");
+		Replace(code, "R5_surfaceOcclusion",	"float R5_surfaceOcclusion",	"R5_materialOcclusion");
+		Replace(code, "R5_surfaceShininess",	"float R5_surfaceShininess",	"R5_materialShininess");
+
+		//code.Replace("R5_surfaceSpecularity", "R5_surfaceProps.x", true);
 
 		code << "	vec3 eyeDir = normalize(R5_vertexEye);\n";
 
@@ -107,9 +123,9 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		}
 
 		code <<
-		"	float diffuseFactor = max(0.0, dot(lightDir, R5_surfaceNormal.xyz));\n"
-		"	float reflectiveFactor = max(0.0, dot(reflect(lightDir, R5_surfaceNormal.xyz), eyeDir));\n"
-		"	float specularFactor = pow(reflectiveFactor, (R5_surfaceNormal.w * R5_surfaceNormal.w) * 250.0 + 4.0);\n";
+		"	float diffuseFactor = max(0.0, dot(lightDir, R5_surfaceNormal));\n"
+		"	float reflectiveFactor = max(0.0, dot(reflect(lightDir, R5_surfaceNormal), eyeDir));\n"
+		"	float specularFactor = pow(reflectiveFactor, (R5_surfaceShininess * R5_surfaceShininess) * 250.0 + 4.0);\n";
 
 		if (shadowed)
 		{
@@ -121,15 +137,15 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		}
 
 		code <<
-		"	vec3 final = R5_lightDiffuse * (diffuseFactor * (R5_surfaceProps.w * 0.25 + 0.75));\n"
-		"	final = (R5_lightAmbient * R5_surfaceProps.w + final) * R5_surfaceColor.rgb";
+		"	vec3 final = R5_lightDiffuse * (diffuseFactor * (R5_surfaceOcclusion * 0.25 + 0.75));\n"
+		"	final = (R5_lightAmbient * R5_surfaceOcclusion + final) * R5_surfaceColor.rgb";
 
 		code << (desired.Get(IShader::Flag::DirLight) ? ";\n" : " * atten;\n");
 
 		code <<
-		"	final = mix(final, R5_surfaceColor.rgb, R5_surfaceProps.z);\n"
-		"	vec3 specular = vec3(R5_surfaceProps.x * specularFactor);\n"
-		"	final += mix(specular, specular * R5_surfaceColor.rgb, R5_surfaceProps.y)";
+		"	final = mix(final, R5_surfaceColor.rgb, R5_surfaceGlow);\n"
+		"	vec3 specular = vec3(R5_surfaceSpecularity * specularFactor);\n"
+		"	final += mix(specular, specular * R5_surfaceColor.rgb, R5_surfaceSpecularHue)";
 
 		code << (desired.Get(IShader::Flag::DirLight) ? ";\n" : " * atten;\n");
 		code <<
@@ -272,24 +288,12 @@ void FixLegacyShader (String& code)
 	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
 	code.Resize(lastBracket+1);
 
-	uint lightPos = code.Replace("gl_LightSource[0].position", "R5_lightPosition", true);
-	uint ambient =	code.Replace("gl_LightSource[0].ambient", "R5_lightAmbient", true);
-	uint diffuse =	code.Replace("gl_LightSource[0].diffuse", "R5_lightDiffuse", true) |
-					code.Replace("gl_LightSource[0].specular", "R5_lightDiffuse", true);
-
-	// Previous generation surface shader support
-	//uint material = code.Replace("R5_MATERIAL_SPECULARITY", "R5_materialSpecularity", true) |
-	//				code.Replace("R5_MATERIAL_SPECULAR_HUE", "R5_materialSpecularHue", true) |
-	//				code.Replace("R5_MATERIAL_GLOW", "R5_materialGlow", true) |
-	//				code.Replace("R5_MATERIAL_REFLECTIVENESS", "R5_materialReflectiveness", true) |
-	//				code.Replace("R5_MATERIAL_SHININESS", "R5_materialShininess", true) |
-	//				code.Replace("R5_MATERIAL_OCCLUSION", "R5_materialOcclusion", true) |
-	//				code.Replace("gl_FrontLightProduct[0].ambient", "R5_materialColor", true) |
-	//				code.Replace("gl_FrontLightProduct[0].diffuse", "R5_materialColor", true) |
-	//				code.Replace("gl_FrontLightProduct[0].specular", "R5_materialColor", true);
-
-	uint texCoord0 = code.Replace("gl_MultiTexCoord0", "R5_texCoord0", true);
-	uint texCoord1 = code.Replace("gl_MultiTexCoord1", "R5_texCoord1", true);
+	uint lightPos	= code.Replace("gl_LightSource[0].position", "R5_lightPosition", true);
+	uint ambient	= code.Replace("gl_LightSource[0].ambient", "R5_lightAmbient", true);
+	uint diffuse	= code.Replace("gl_LightSource[0].diffuse", "R5_lightDiffuse", true) |
+					  code.Replace("gl_LightSource[0].specular", "R5_lightDiffuse", true);
+	uint texCoord0	= code.Replace("gl_MultiTexCoord0", "R5_texCoord0", true);
+	uint texCoord1	= code.Replace("gl_MultiTexCoord1", "R5_texCoord1", true);
 
 	String prefix;
 
@@ -298,9 +302,6 @@ void FixLegacyShader (String& code)
 	if (lightPos)	prefix << "uniform vec3 R5_lightPosition;\n";
 	if (ambient)	prefix << "uniform vec3 R5_lightAmbient;\n";
 	if (diffuse)	prefix << "uniform vec3 R5_lightDiffuse;\n";
-	//if (material)	prefix << "uniform vec4 R5_materialColor;\n"
-	//						  "uniform vec4 R5_materialParams0;\n"
-	//						  "uniform vec2 R5_materialParams1;\n";
 
 	if (prefix.IsValid()) code = prefix + code;
 

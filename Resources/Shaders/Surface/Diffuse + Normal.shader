@@ -18,5 +18,5 @@ void Fragment()
 	normal = normalize(TBN * normal);
 
 	R5_surfaceColor = R5_vertexColor * R5_materialColor * Sample2D(0, R5_vertexTexCoord0);
-	R5_surfaceNormal = vec4(normal, R5_materialShininess);
+	R5_surfaceNormal = normal;
 }
