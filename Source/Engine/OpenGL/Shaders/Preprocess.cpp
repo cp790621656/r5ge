@@ -316,6 +316,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 
 		if (lit)
 		{
+			code <<
 			"R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
 			"R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
 		}

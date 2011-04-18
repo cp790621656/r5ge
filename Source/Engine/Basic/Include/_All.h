@@ -31,6 +31,7 @@ using fastdelegate::bind;
 
 #if defined(_LINUX)
 #include <pthread.h>
+#include <errno.h>
 #endif
 
 // Fluid Studios memory manager to test for possible memory leaks -- see the header file for more information

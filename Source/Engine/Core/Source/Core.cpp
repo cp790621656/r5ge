@@ -3,7 +3,7 @@ using namespace R5;
 
 #ifdef _DEBUG
 #define ASSERT_IF_SELF_IS_UNLOCKED ASSERT(IsLocked() || \
-	(GetNumberOfThreads() == 0 && GetThreadID() == Thread::GetID()), \
+	((GetNumberOfThreads() == 0 && GetThreadID() == Thread::GetID())), \
 	"You must lock the core before you work with objects!");
 #else
 #define ASSERT_IF_SELF_IS_UNLOCKED

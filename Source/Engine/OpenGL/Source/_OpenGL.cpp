@@ -315,7 +315,7 @@ bool InitOpenGL (float requiredVersion)
 #endif
 		{
 			const char* sup = "Supported";
-			const char* not = "Not supported";
+			const char* not_sup = "Not supported";
 
 			System::Log("[OPENGL]  Device driver information:");
 			System::Log("          - Videocard:             %s", renderer);
@@ -329,10 +329,10 @@ bool InitOpenGL (float requiredVersion)
 			System::Log("          - Texture Coordinates:   %u", g_caps.mMaxTextureCoords);
 			System::Log("          - Hardware Lights:       %u", g_caps.mMaxLights);
 			System::Log("          - FBO Attachments:       %u", g_caps.mMaxFBOAttachments);
-			System::Log("          - FBO Depth Attachments: %s", g_caps.mDepthAttachments ? sup : not);
-			System::Log("          - FBO Alpha Attachments: %s", g_caps.mAlphaAttachments ? sup : not);
-			System::Log("          - FBO Mixed Formats:     %s", g_caps.mMixedAttachments ? sup : not);
-			System::Log("          - FBO Packed Stencil:    %s", g_caps.mDepthStencil ? sup : not);
+			System::Log("          - FBO Depth Attachments: %s", g_caps.mDepthAttachments ? sup : not_sup);
+			System::Log("          - FBO Alpha Attachments: %s", g_caps.mAlphaAttachments ? sup : not_sup);
+			System::Log("          - FBO Mixed Formats:     %s", g_caps.mMixedAttachments ? sup : not_sup);
+			System::Log("          - FBO Packed Stencil:    %s", g_caps.mDepthStencil ? sup : not_sup);
 		}
 
 		if (!supported)

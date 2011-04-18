@@ -33,19 +33,25 @@ namespace Thread
 	IDType	GetID();
 
 #ifdef _LINUX
-	
 	class Lockable
 	{
 	protected:
-		mutable pthread_spinlock_t	mLock;
+		mutable pthread_spinlock_t mLock;
 		
 	public:
 		Lockable() { pthread_spin_init(&mLock, 0); }
 		~Lockable() { pthread_spin_destroy(&mLock);}
 	public:
 		inline void Lock()		const	{ pthread_spin_lock(&mLock); }
-		inline bool IsLocked()	const	{ return mLock != 0; }
 		inline void Unlock()	const	{ pthread_spin_unlock(&mLock); }
+		inline bool IsLocked()	const	
+		{
+			if (int retval = pthread_spin_trylock(&mLock))
+				if (retval == EDEADLK || retval == EBUSY) return true;
+			else
+				pthread_spin_unlock(&mLock);
+			return false;
+		}
 	};
 
 #else
