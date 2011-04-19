@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
 //									http://r5ge.googlecode.com/
 //============================================================================================================
 // Distant screen-aligned billboard -- always relative to the camera on the farthest edge of the horizon

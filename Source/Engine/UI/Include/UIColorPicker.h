@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
 //									http://r5ge.googlecode.com/
 //============================================================================================================
 // UIPicture containing a color gradient and 2 sliders (luminance, alpha)

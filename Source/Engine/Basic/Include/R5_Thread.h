@@ -1,7 +1,7 @@
 #pragma once
 
 //============================================================================================================
-//					R5 Game Engine, Copyright (c) 2007-2011 Tasharen Entertainment
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
 //									http://r5ge.googlecode.com/
 //============================================================================================================
 
@@ -41,15 +41,15 @@ namespace Thread
 	public:
 		Lockable() { pthread_spin_init(&mLock, 0); }
 		~Lockable() { pthread_spin_destroy(&mLock);}
+
 	public:
 		inline void Lock()		const	{ pthread_spin_lock(&mLock); }
 		inline void Unlock()	const	{ pthread_spin_unlock(&mLock); }
 		inline bool IsLocked()	const	
 		{
-			if (int retval = pthread_spin_trylock(&mLock))
-				if (retval == EDEADLK || retval == EBUSY) return true;
-			else
-				pthread_spin_unlock(&mLock);
+			int retval = pthread_spin_trylock(&mLock);
+			if (retval == EDEADLK || retval == EBUSY) return true;
+			pthread_spin_unlock(&mLock);
 			return false;
 		}
 	};
