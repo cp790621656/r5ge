@@ -6,6 +6,7 @@
 //============================================================================================================
 // Dev6 - Skeletal Animation
 // Author: Michael Lyashenko
+// NOTE: CPU skinning will be faster with a lot of repeating meshes. Run in Release mode.
 //============================================================================================================
 
 #include "../../../Engine/OpenGL/Include/_All.h"

@@ -21,42 +21,46 @@ void CodeNode::Load (const String& source)
 
 uint CodeNode::Load (const String& source, uint start, uint end)
 {
-	if (end > source.GetSize()) end = source.GetSize();
-	while (start < end && source[start] < 33) ++start;
-
-	uint lineStart (start);
-
-	for (; start < end; ++start)
+	if (start < end)
 	{
-		if (source[start] == ';')
-		{
-			source.GetTrimmed(mLine, lineStart, start++);
-			mLine.TrimCode();
-			return start;
-		}
+		if (end > source.GetSize()) end = source.GetSize();
+		while (start < end && source[start] < 33) ++start;
 
-		if (source[start] == '{')
-		{
-			source.GetTrimmed(mLine, lineStart, start++);
-			mLine.TrimCode();
+		uint lineStart (start);
+		char endChar = ((source[start] == '#') ? '\n' : ';');
 
-			while (start < end)
+		for (; start < end; ++start)
+		{
+			if (source[start] == endChar)
 			{
-				CodeNode& code = mChildren.Expand();
-				start = code.Load(source, start, end);
-
-				if (code.mLine.IsEmpty())
-				{
-					mChildren.Shrink();
-					break;
-				}
+				source.GetTrimmed(mLine, lineStart, start++);
+				mLine.TrimCode();
+				return start;
 			}
-			return start;
-		}
 
-		if (start < end && source[start] == '}')
-		{
-			return ++start;
+			if (source[start] == '{')
+			{
+				source.GetTrimmed(mLine, lineStart, start++);
+				mLine.TrimCode();
+
+				while (start < end)
+				{
+					CodeNode& code = mChildren.Expand();
+					start = code.Load(source, start, end);
+
+					if (code.mLine.IsEmpty())
+					{
+						mChildren.Shrink();
+						break;
+					}
+				}
+				return start;
+			}
+
+			if (start < end && source[start] == '}')
+			{
+				return ++start;
+			}
 		}
 	}
 	return end;
@@ -79,7 +83,7 @@ void CodeNode::Save (String& out, uint tabs)
 		for (uint i = 0; i < tabs; ++i) out << "\t";
 
 		out << mLine;
-		out << (mChildren.IsEmpty() ? ";\n" : "\n");
+		out << ((mLine[0] == '#' || mChildren.IsValid()) ? "\n" : ";\n");
 	}
 
 	if (mChildren.IsValid())

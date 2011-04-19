@@ -329,7 +329,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	if (!depthOnly && !deferred)
 	{
 		code << "	R5_vertexEye = R5_position.xyz;\n";
-		final.Set(desired.Get() & IShader::Flag::Lit);
+		final.Set(desired.Get() & IShader::Flag::Lit, true);
 
 		// Calculate per-vertex fog
 		if (fog)
@@ -538,7 +538,7 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 		if (code.Contains("R5_boneIndex",		true)) prefix << "in vec4 R5_boneIndex;\n";
 		if (code.Contains("R5_texCoord0",		true)) prefix << "in vec2 R5_texCoord0;\n";
 		if (code.Contains("R5_texCoord1",		true)) prefix << "in vec2 R5_texCoord1;\n";
-		if (code.Contains("R5_boneTransforms",	true)) prefix << "in mat4 R5_boneTransforms[32];\n";
+		if (code.Contains("R5_boneTransforms",	true)) prefix << "uniform mat4 R5_boneTransforms[32];\n";
 	}
 
 	const char* inOut = (isFragmentShader ? "in " : "out ");

@@ -59,7 +59,7 @@ Root
 
 			Technique = "GPU"
 			{
-				Shader = "Surface/Diffuse"
+				Shader = "Surface/Skinned"
 				Texture 0 = "Textures/Skins/peasant.jpg"
 			}
 		}
@@ -83,7 +83,7 @@ Root
 			UICheckbox = "Technique"
 			{
 				Left = 0.0 1.0
-				Right = 1.0 -1.0
+				Right = 0.0 150.0
 				Top = 0.0 1.0
 				Bottom = 0.0 20.0
 				Alpha = 1.0
@@ -103,7 +103,6 @@ Root
 	Core
 	{
 		Execute = "Config/Leo UI Skin.txt"
-		Execute = "Models/human skeleton.r5a"
 
 		Model = "First Model"
 		{

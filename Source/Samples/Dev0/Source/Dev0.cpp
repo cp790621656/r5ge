@@ -15,7 +15,7 @@ using namespace R5;
 int main (int argc, char* argv[])
 {
 	String in;
-	in.Load("../../../Resources/Shaders/Surface/Lightmap.shader");
+	in.Load("../../../Resources/Shaders/Surface/Skinned.shader");
 
 	printf("Original: %u bytes\n", in.GetSize());
 
