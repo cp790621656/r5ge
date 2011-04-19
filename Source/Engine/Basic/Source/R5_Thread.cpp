@@ -146,7 +146,7 @@ Thread::IDType Thread::GetID()
 
 //------------------------------------------------------------------------------------------------------------
 
-void Thread::MessageWindow(const char *format, ...)
+void Thread::MessageWindow (const char *format, ...)
 {
 	va_list args;
 	char text[512] = {0};
@@ -170,10 +170,10 @@ void Thread::MessageWindow(const char *format, ...)
 
 //------------------------------------------------------------------------------------------------------------
 
-bool Thread::AssertWindow( const char* description, int line, const char* filename, bool& keepChecking )
+bool Thread::AssertWindow (const char* description, int line, const char* filename, bool& keepChecking)
 {
 	const char* format = "File: '%s'\nLine: %u\n\n%s\n\nBreak into code?";
-	char text[1024]; spin lock
+	char text[1024];
 	
 	sprintf(text, format, filename, line, description);
 

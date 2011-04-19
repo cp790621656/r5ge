@@ -234,7 +234,6 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		// Restore the final bracket
 		code << "}\n";
 	}
-	//System::Log("==========================\n%s\n==========================", code.GetBuffer());
 	return true;
 }
 

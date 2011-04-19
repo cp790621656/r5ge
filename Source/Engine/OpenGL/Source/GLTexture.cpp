@@ -439,7 +439,11 @@ void GLTexture::_Create()
 	mGlType = convertTextureTypeToGL[mType];
 
 	// Bind the texture
+#ifdef GL_ARB_texture_multisample
 	mGraphics->_BindTexture(mActiveMSAA ? GL_TEXTURE_2D_MULTISAMPLE : mGlType, mGlID);
+#else
+	mGraphics->_BindTexture(mGlType, mGlID);
+#endif
 
 	// Anti-aliased textures should be a bit more restrictive
 	if (mActiveMSAA > 1)
@@ -527,13 +531,16 @@ void GLTexture::_Create()
 	int outFormat = _GetGLFormat(mFormat);
 	mSizeInMemory = 0;
 
+#ifdef GL_ARB_texture_multisample
 	if (mActiveMSAA > 1)
 	{
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, mActiveMSAA, outFormat, mSize.x, mSize.y, 0);
 		CHECK_GL_ERROR;
 		mSizeInMemory = bpp * mSize.x * mSize.y * mActiveMSAA;
 	}
-	else if (mGlType == GL_TEXTURE_2D)
+	else
+#endif
+	if (mGlType == GL_TEXTURE_2D)
 	{
 		if (mFormat == Format::DXTN)
 		{
@@ -794,7 +801,11 @@ uint GLTexture::Activate()
 
 	// If OpenGL texture hasn't been created yet, and there's data present, let's create it
 	if (mGlID == 0 && IsValid()) _Create();
+#ifdef GL_ARB_texture_multisample
 	else mGraphics->_BindTexture(mActiveMSAA ? GL_TEXTURE_2D_MULTISAMPLE : mGlType, mGlID);
+#else
+	else mGraphics->_BindTexture(mGlType, mGlID);
+#endif
 
 	if (mGlID != 0)
 	{

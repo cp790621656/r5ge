@@ -1030,8 +1030,13 @@ bool GLController::_BindTexture (uint glType, uint glID)
 	// If the texture ID is changing...
 	if (tu.mId != glID)
 	{
+#ifdef GL_ARB_texture_multisample
 		uint oldType = (tu.mType == GL_TEXTURE_2D_MULTISAMPLE) ? GL_TEXTURE_2D : tu.mType;
 		uint newType = (glType == GL_TEXTURE_2D_MULTISAMPLE) ? GL_TEXTURE_2D : glType;
+#else
+		uint oldType = tu.mType;
+		uint newType = glType;
+#endif
 
 		// If the type is changing, the old type needs to be disabled first (going from CUBE to 2D for example)
 		if (tu.mType != 0 && tu.mType != glType)

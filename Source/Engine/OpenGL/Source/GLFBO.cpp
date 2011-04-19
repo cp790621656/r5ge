@@ -342,9 +342,14 @@ void GLFBO::Activate() const
 				ITexture::Format::Alpha : ITexture::Format::RGBA);
 		}
 
+#ifdef GL_ARB_texture_multisample
 		// Attachments are always either 2D textures or multi-sampled 2D textures
 		bool useMSAA = (mMSAA && g_caps.mMSAA);
 		uint type = (useMSAA) ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+#else
+		bool useMSAA = false;
+		uint type = GL_TEXTURE_2D;
+#endif
 
 		mLock.Lock();
 		{

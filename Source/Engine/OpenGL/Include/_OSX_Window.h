@@ -1,8 +1,8 @@
 #pragma once
 
 //============================================================================================================
-//											R5 Game Engine
-//                                  Contact: arenmook@gmail.com
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // OpenGL Window creation
 // Author: Michael Lyashenko

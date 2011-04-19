@@ -9,7 +9,10 @@
 //============================================================================================================
 
 #ifdef _MACOS
-@class NSAutoreleasePool, NSOpenGLContext, MyView, MyWindow;
+@class NSAutoreleasePool;
+@class NSOpenGLContext;
+@class MyView;
+@class MyWindow;
 
 //============================================================================================================
 // Cocoa managed memory pool
