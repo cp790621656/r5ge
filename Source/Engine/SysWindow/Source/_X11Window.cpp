@@ -12,6 +12,7 @@
 #include <GL/glx.h>
 #include <GL/glxext.h>
 
+
 using namespace R5;
 
 Atom wmDeleteMessage;
@@ -71,11 +72,9 @@ void SysWindow::_ReleaseContext()
 	if (mDisplay) ::glXMakeCurrent(mDisplay, None, NULL);
 }
 
-XVisualInfo* _GetCompatibleVisual(Display *display, uint *msaa)
+bool _GetCompatibleVisual(Display *display, XVisualInfo *vi, GLXFBConfig *fbConfig, uint *msaa)
 {
 	ASSERT(display != NULL, "display must not be NULL");
-
-	XVisualInfo *vi = NULL;
 
 	int screen;
 	screen = ::XDefaultScreen(display);
@@ -104,7 +103,9 @@ XVisualInfo* _GetCompatibleVisual(Display *display, uint *msaa)
 		// and correct msaa accordingly
 		int bestVal = -1;
 		XVisualInfo *tmpVi;
-		for (uint i = 0; i < (uint)numElements; i++)
+		XVisualInfo *bestVi = NULL;
+		int n = -1;
+		for (int i = 0; i < numElements; i++)
 		{
 			int val;
 			
@@ -154,22 +155,30 @@ XVisualInfo* _GetCompatibleVisual(Display *display, uint *msaa)
 				}
 				else
 				{
-					if ( vi != NULL ) XFree(vi);
+					if ( bestVi != NULL ) XFree(bestVi);
 
-					vi = tmpVi;
+					bestVi = tmpVi;
 					bestVal = val;
+					n = i;
 
 					if ( val == (int)*msaa ) break;
 				}
 			}
 		}
 
+		if (n == -1) return false;
+
+		*vi = *bestVi;
+		*fbConfig = fbConfigs[n];
 		*msaa = (uint)bestVal;
 
+		XFree(bestVi);
 		XFree(fbConfigs);
+
+		return true;
 	}
 
-	return vi;
+	return false;
 }
 
 //============================================================================================================
@@ -193,9 +202,10 @@ bool SysWindow::Create(
 
 		if ( mWin == None )
 		{
-			XVisualInfo *vi = _GetCompatibleVisual(mDisplay, &mMSAA);
+			XVisualInfo vi;
+			GLXFBConfig fbConfig;
 
-			if ( vi )
+			if ( _GetCompatibleVisual(mDisplay, &vi, &fbConfig, &mMSAA) )
 			{
 				int screen;
 				screen = ::XDefaultScreen(mDisplay);
@@ -203,20 +213,28 @@ bool SysWindow::Create(
 				Window root;
 				root = ::XDefaultRootWindow(mDisplay);
 
+#ifdef GLX_ARB_create_context
+				const int attribList[] = {
+					GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+					GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+					None
+				};
 
+				mGLXContext = ::glXCreateContextAttribsARB(mDisplay, fbConfig, 0, True, attribList);
+#else
+#warning "OpenGL 3.0 can't be used, using older version"
 				mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
+#endif
 
 				XSetWindowAttributes swa;
-				swa.colormap			= ::XCreateColormap(mDisplay, root, vi->visual, AllocNone);
+				swa.colormap			= ::XCreateColormap(mDisplay, root, vi.visual, AllocNone);
 				swa.event_mask		 	= PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
 											KeyPressMask | KeyReleaseMask | StructureNotifyMask;
 				swa.background_pixel	= BlackPixel(mDisplay, screen);
 
 				mWin = ::XCreateWindow(	mDisplay, root, x, y, width, height,
-										0, vi->depth, InputOutput, vi->visual,
+										0, vi.depth, InputOutput, vi.visual,
 										CWColormap | CWEventMask | CWBackPixel, &swa );
-
-				XFree(vi);
 
 				if ( mWin != None )
 				{
@@ -246,7 +264,6 @@ bool SysWindow::Create(
 
 					retVal = _CreateContext();
 				}
-				else retVal = false;
 			}
 		}
 	
