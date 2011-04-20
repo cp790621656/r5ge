@@ -1,41 +1,87 @@
 #include "../Include/_All.h"
-#include <vorbis/vorbisfile.h>
-//#include <IrrKlang/Include/irrKlang.h>
-
-//============================================================================================================
-// Audio Library
-//============================================================================================================
-
-#ifdef _WINDOWS
-//  #pragma comment(lib, "irrKlang.lib")
-#endif
-
+#include "../Include/AL/al.h"
+#include "../Include/AL/alc.h"
+#include "../Include/vorbis/vorbisfile.h"
 using namespace R5;
 
 //============================================================================================================
-// In order to abstract cAudio and make it invisible to the outside projects we keep it as a void*
+// OpenAL reads data using callbacks. We need to specify those callbacks.
 //============================================================================================================
 
-//#define IRRKLANG ((irrklang::ISoundEngine*)mAudioLib)
-//#define SOURCE(source) ((irrklang::ISoundSource*)source)
-#define SOUND(sound) ((Sound*)sound)
-
-//============================================================================================================
-// Initialize the cAudio library
-//============================================================================================================
-
-Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
+struct MemData
 {
-//	mAudioLib = irrklang::createIrrKlangDevice();
-//	ASSERT(mAudioLib != 0, "Failed to start the Audio engine!\n");
-	ALCdevice *device = alcOpenDevice(NULL);
-	ASSERT(device, "Couldn't open default OpenAL device");
+	ConstBytePtr mBuffer;
+	uint mRemaining;
+	uint mOffset;
+	uint mTotal;
+};
+
+//============================================================================================================
+
+size_t MemReadFunc (void* dataOut, size_t dataOutSize, size_t nmemb, void* dataIn)
+{
+	MemData* data = (MemData*)dataIn;
+	if (data->mRemaining < dataOutSize) dataOutSize = data->mRemaining;
+	Memory::Extract(data->mBuffer, data->mRemaining, dataOut, dataOutSize);
+	return dataOutSize;
+}
+
+//============================================================================================================
+
+long MemTellFunc (void* dataIn)
+{
+	MemData* data = (MemData*)dataIn;
+	return data->mOffset;
+}
+
+//============================================================================================================
+
+int MemSeekFunc (void* dataIn, ogg_int64_t offset, int whence)
+{
+	MemData* data = (MemData*)dataIn;
+
+	if (whence == SEEK_SET)
+	{
+		data->mOffset = (uint)Clamp((int)offset, 0, (int)data->mTotal);
+	}
+	else if (whence == SEEK_END)
+	{
+		data->mOffset = (uint)Clamp((int)data->mTotal + (int)offset, 0, (int)data->mTotal);
+	}
+	else
+	{
+		data->mOffset = (uint)Clamp((int)data->mOffset + (int)offset, 0, (int)data->mTotal);
+	}
+	data->mRemaining = data->mTotal - data->mOffset;
+	return 0;
+}
+
+//============================================================================================================
+
+int MemCloseFunc (void* dataIn)
+{
+	MemData* data = (MemData*)dataIn;
+	data->mBuffer = 0;
+	data->mRemaining = 0;
+	data->mOffset = 0;
+	data->mTotal = 0;
+	return 0;
+}
+
+//============================================================================================================
+// Initialize the Audio library
+//============================================================================================================
+
+Audio::Audio() : mAudioLib(0)
+{
+	ALCdevice* device = alcOpenDevice(NULL);
+	ASSERT(device != 0, "Couldn't open the default OpenAL device");
 	
-	ALCcontext *context = alcCreateContext(device, NULL);
-	ASSERT(context, "Couldn't create default context");
+	ALCcontext* context = alcCreateContext(device, NULL);
+	ASSERT(context != 0, "Couldn't create the default context");
 
 	ALCboolean retval = alcMakeContextCurrent(context);
-	ASSERT(retval, "Couldn't make the context current");
+	ASSERT(retval != 0, "Couldn't make the context current");
 	
 	alDistanceModel(AL_NONE);
 	ASSERT(alGetError() == AL_NO_ERROR, "error");
@@ -46,12 +92,11 @@ Audio::Audio() : mAudioLib(0), mPos (0.0f, 0.0f, 0.0f)
 Audio::~Audio()
 {
 	Release();
-	ALCcontext *context = alcGetCurrentContext();
-	ALCdevice *device = alcGetContextsDevice(context);
+	ALCcontext* context = alcGetCurrentContext();
+	ALCdevice* device = alcGetContextsDevice(context);
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
-//	IRRKLANG->drop();
 }
 
 //============================================================================================================
@@ -62,7 +107,6 @@ void Audio::Release()
 {
 	Lock();
 	{
-//		IRRKLANG->stopAllSounds();
 		mLayers.Release();
 		mLibrary.Release();
 	}
@@ -114,14 +158,6 @@ void Audio::Release (ISound* sound)
 void Audio::SetListener (const Vector3f& position, const Vector3f& dir, const Vector3f& up)
 {
 	mPos = position;
-/*
-	irrklang::vec3df p (position.x, position.z, position.y);
-	irrklang::vec3df d (dir.x, dir.z, dir.y);
-	irrklang::vec3df v (0.0f, 0.0f, 0.0f);
-	irrklang::vec3df u (up.x, up.z, up.y);
-
-	IRRKLANG->setListenerPosition(p, d, v, u);
-*/
 	alListenerfv(AL_POSITION, position);
 
 	ALfloat orient[] = {dir.x, dir.y, dir.z, up.x, up.y, up.z};
@@ -182,47 +218,59 @@ const float Audio::GetLayerVolume (uint layer) const
 R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 {
 	SoundPtr sound = mLibrary.Find(name);
+
 	if (sound == 0 && createIfMissing)
 	{
-		Lock();
+		Memory mem;
+
+		if (mem.Load(name))
 		{
-			sound = mLibrary.AddUnique(name);
-			sound->SetAudio(this);
-
-			ALuint buffer;
-			alGenBuffers(1, &buffer);
-
-			//read the audio file
-			FILE *f = fopen(name, "rb");
-			OggVorbis_File ogg;
-			ov_open_callbacks(f, &ogg, NULL, 0, OV_CALLBACKS_DEFAULT);
-
-			vorbis_info *vorbisInfo;
-			vorbisInfo = ov_info(&ogg, -1);
-
-			ALenum format;
-			if (vorbisInfo->channels == 1)
-				format = AL_FORMAT_MONO16;
-			else
-				format = AL_FORMAT_STEREO16;
-
-			Memory oggData;
-			long bytesRead;
-			int bitStream = 0;
-			do
+			Lock();
 			{
+				sound = mLibrary.AddUnique(name);
+				sound->SetAudio(this);
+
+				uint buffer;
+				alGenBuffers(1, &buffer);
+
+				ov_callbacks cb;
+				cb.read_func  = &MemReadFunc;
+				cb.tell_func  = &MemTellFunc;
+				cb.seek_func  = &MemSeekFunc;
+				cb.close_func = &MemCloseFunc;
+
+				MemData memData;
+				memData.mBuffer		= mem.GetBuffer();
+				memData.mOffset		= 0;
+				memData.mTotal		= mem.GetSize();
+				memData.mRemaining	= memData.mTotal;
+
+				OggVorbis_File ogg;
+				ov_open_callbacks(&memData, &ogg, NULL, 0, cb);
+
+				vorbis_info* vorbisInfo;
+				vorbisInfo = ov_info(&ogg, -1);
+
+				Memory decoded;
+				long bytesRead;
+				int bitStream = 0;
 				char data[4096];
-				bytesRead = ov_read(&ogg, data, sizeof(data), 0, 2, 1, &bitStream);
-				oggData.Append((void*)data, (uint)bytesRead);
-			} while(bytesRead > 0);
 
+				do
+				{
+					bytesRead = ov_read(&ogg, data, sizeof(data), 0, 2, 1, &bitStream);
+					decoded.Append((const void*)data, (uint)bytesRead);
+				}
+				while (bytesRead > 0);
 
-			alBufferData(buffer, format, oggData.GetBuffer(), oggData.GetSize(), (ALsizei)vorbisInfo->rate);
-//			sound->SetSource(IRRKLANG->addSoundSourceFromFile(name));
-			sound->SetSource(buffer);
+				ALenum format;
+				format = (vorbisInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+				alBufferData(buffer, format, decoded.GetBuffer(), decoded.GetSize(), (uint)vorbisInfo->rate);
+				sound->SetSource(buffer);
+			}
+			Unlock();
 		}
-		Unlock();
-		
 	}
 	return sound;
 }
@@ -250,14 +298,12 @@ void Audio::ReleaseInstance(ISoundInstance* sound)
 
 ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat)
 {
-	SoundInstance* soundInst = _Instantiate(SOUND(sound), layer, fadeInTime, repeat);
-//	irrklang::ISound* soundval = IRRKLANG->play2D(SOURCE(sound->GetSource()), repeat, false, true, true);
-//	soundInst->mAudioSource = soundval;
-//	SOUND(soundval)->setVolume(0.0f);
-	ALuint source;
+	SoundInstance* soundInst = _Instantiate((Sound*)sound, layer, fadeInTime, repeat);
+
+	uint source;
 	alGenSources(1, &source);
-	alSourcei( source, AL_BUFFER, SOUND(sound)->GetBuffer() );
-	alSourcei( source, AL_LOOPING, (ALuint)repeat);
+	alSourcei( source, AL_BUFFER, ((Sound*)sound)->mBuffer );
+	alSourcei( source, AL_LOOPING, (uint)repeat);
 	alSourcef( source, AL_GAIN, 0.0f );
 	alSourcei( source, AL_SOURCE_RELATIVE, 1 );
 	alSourcePlay(source);
@@ -271,19 +317,13 @@ ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime,
 
 ISoundInstance* Audio::Instantiate (ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat)
 {
-	SoundInstance* soundInst = _Instantiate(SOUND(sound), layer, fadeInTime, repeat);
-//	irrklang::vec3df pos (position.x, position.y, position.z);
-//	irrklang::ISoundSource* soundSource = SOURCE(sound->GetSource());
-//	irrklang::ISound* soundval = IRRKLANG->play3D(soundSource, pos, repeat, false, true, true);
-//	soundInst->mAudioSource = soundval;
-//	SOUND(soundval)->setMinDistance(1000.0f);
-//	SOUND(soundval)->setMaxDistance(1000.0f);
-//	SOUND(soundval)->setVolume(0.0f);
-	ALuint source;
+	SoundInstance* soundInst = _Instantiate((Sound*)sound, layer, fadeInTime, repeat);
+
+	uint source;
 	alGenSources(1, &source);
 	alSourcefv( source, AL_POSITION, position );
-	alSourcei( source, AL_BUFFER, SOUND(sound)->GetBuffer() );
-	alSourcei( source, AL_LOOPING, (ALuint)repeat);
+	alSourcei( source, AL_BUFFER, ((Sound*)sound)->mBuffer );
+	alSourcei( source, AL_LOOPING, (uint)repeat);
 	alSourcef( source, AL_GAIN,	0.0f );
 	alSourcePlay(source);
 	soundInst->mSource = source;
@@ -320,7 +360,6 @@ Audio::AudioLayer* Audio::_GetAudioLayer (uint layer, float volume)
 
 SoundInstance* Audio::_Instantiate (Sound* sound, uint layer, float fadeInTime, bool repeat)
 {
-	// Load the data
 	String name = sound->GetName();
 	SoundInstance* soundInst = new SoundInstance();
 	

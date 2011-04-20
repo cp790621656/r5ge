@@ -13,18 +13,16 @@ class Sound : public ISound
 private:
 
 	String				mName;		// File that is being referenced
-	ALuint				mBuffer;	// The memory from which the instance is created
+	uint				mBuffer;	// The memory from which the instance is created
 	IAudio*				mAudio;		// Audio instance which created this Sound
 	Thread::Lockable	mLock;		// Makes the sound thread safe
 
 	// Only the Audio class should be able to access SetAudio
 	friend class Audio;
 
-	void SetAudio  (IAudio* audio) { mAudio = audio;   }
-	void SetSource (ALuint buffer)  { mBuffer = buffer; }
+	void SetAudio  (IAudio* audio) { mAudio = audio; }
+	void SetSource (uint buffer) { mBuffer = buffer; }
 
-	// Get the sound buffer.
-	ALuint GetBuffer() { return mBuffer; }
 public:
 
 	R5_DECLARE_ABSTRACT_CLASS("Sound", ISound);

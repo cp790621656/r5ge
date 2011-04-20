@@ -1,17 +1,14 @@
 #include "../Include/_All.h"
-//#include <IrrKlang/Include/irrKlang.h>
+#include "../Include/AL/al.h"
+#include "../Include/AL/alc.h"
+using namespace R5;
 
 //============================================================================================================
 // Sound Library
 //============================================================================================================
 
-using namespace R5;
-
-//#define SOURCE(source) ((irrklang::ISoundSource*)source)
-
 Sound::~Sound()
 {
-	//mAudioSource = 0;
 	alDeleteBuffers(1, &mBuffer);
 }
 

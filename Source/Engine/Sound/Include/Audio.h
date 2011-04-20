@@ -4,8 +4,7 @@
 //			R5 Game Engine, individual file copyright belongs to their respective authors.
 //									http://r5ge.googlecode.com/
 //============================================================================================================
-// cAudio-based audio manager
-// Authors: Philip Cosgrave and Michael Lyashenko
+// Authors: Philip Cosgrave, Michael Lyashenko, and Eugene Gorodinsky
 //============================================================================================================
 
 class SoundInstance;

@@ -1,5 +1,7 @@
 #include "../Include/_All.h"
-//#include <IrrKlang/Include/irrKlang.h>
+#include "../Include/AL/al.h"
+#include "../Include/AL/alc.h"
+using namespace R5;
 
 //============================================================================================================
 // Sound Instance library
@@ -8,16 +10,10 @@
 using namespace R5;
 
 //============================================================================================================
-// In order to abstract cAudio and make it invisible to the outside projects we keep it as a void*
-//============================================================================================================
-
-//#define SOUND(source) ((irrklang::ISound*)source)
 
 SoundInstance::~SoundInstance()
 {
-//	SOUND(mAudioSource)->drop();
 	alDeleteSources(1, &mSource);
-//	mAudioSource = 0;
 }
 
 //============================================================================================================
@@ -39,9 +35,6 @@ void SoundInstance::Update(ulong time)
 			(mRange.y - mRange.x), 1.0f);
 		atten *= atten;
 	}
-
-	//irrklang::ISound* source = SOUND(mAudioSource);
-
 
 	// Only continue if the sound is actually playing
 	if (mSource != 0 && mIsPlaying)
@@ -86,19 +79,11 @@ void SoundInstance::Update(ulong time)
 
 		if (mIs3D)
 		{
-			Vector3f velocity = (mPosition - mLastPosition) * Time::GetDelta();
-			//irrklang::vec3df pos (mPosition.x, mPosition.z, mPosition.y);
-			//irrklang::vec3df vel (velocity.x, velocity.z, velocity.y);
-			//source->setPosition(pos);
-			//source->setVelocity(vel);
 			alSourcefv(mSource, AL_POSITION, mPosition);
-			alSourcefv(mSource, AL_VELOCITY, velocity);
+			alSourcefv(mSource, AL_VELOCITY, (mPosition - mLastPosition) * Time::GetDelta());
 		}
-
-		//source->setVolume(mVolume.y * atten);
 		alSourcef(mSource, AL_GAIN, mVolume.y * atten);
 	}
-
 }
 
 //============================================================================================================
@@ -107,7 +92,8 @@ void SoundInstance::Update(ulong time)
 
 void SoundInstance::DestroySelf()
 {
-	((Audio*)mSound->GetAudio())->ReleaseInstance(this);
+	IAudio* aud = mSound->GetAudio();
+	((Audio*)aud)->ReleaseInstance(this);
 }
 
 //============================================================================================================
@@ -118,14 +104,10 @@ void SoundInstance::Play()
 {
 	if (mSource !=0)
 	{
-//		irrklang::ISound* source = SOUND(mAudioSource);
-//		source->setPlayPosition(mDuration);
-//		source->setVolume(0.0f);
 		alSourcef(mSource, AL_GAIN, 0.0f);
 
 		if (!mIsPlaying)
 		{
-//			source->setIsPaused(false);
 			alSourcePlay(mSource);
 			SetVolume(mVolume.w, 0.0f);
 		}
@@ -199,7 +181,6 @@ void SoundInstance::SetRepeat (bool repeat)
 	if (mSource != 0)
 	{
 		alSourcei(mSource, AL_LOOPING, repeat);
-//		SOUND(mAudioSource)->setIsLooped(repeat);
 	}
 }
 
@@ -218,27 +199,19 @@ void SoundInstance::SetRange (const Vector2f& range)
 
 void SoundInstance::SetEffect (byte effect)
 {
-#ifndef _MACOS
-	if (mEffect != effect)
-	{
-		mEffect = effect;
-
-		if (effect != 0)
-		{
-//			irrklang::ISoundEffectControl* fx = SOUND(mAudioSource)->getSoundEffectControl();
-
-			if (effect == Effect::Auditorium)
-			{
-//				fx->enableI3DL2ReverbSoundEffect(-1000, -476, 0, 4.32f, 0.59f, -789,
-//					0.020f, -789, 0.020f, 100.0f, 100.0f, 5000.0f);
-				return;
-			}
-		}
-
-//		irrklang::ISoundEffectControl* fx = SOUND(mAudioSource)->getSoundEffectControl();
-//		fx->disableI3DL2ReverbSoundEffect();
-	}
-#endif
+// TODO: Implement this
+//	if (mEffect != effect)
+//	{
+//		mEffect = effect;
+//
+//		if (effect != 0)
+//		{
+//			if (effect == Effect::Auditorium)
+//			{
+//				return;
+//			}
+//		}
+//	}
 }
 
 //============================================================================================================
