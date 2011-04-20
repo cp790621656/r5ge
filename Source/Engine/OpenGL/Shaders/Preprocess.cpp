@@ -637,11 +637,11 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		else
 		{
 			// Older GLSL syntax: output to a built-in value
-			code.Replace("R5_finalColor", "gl_FragColor", true);
+			code.Replace("R5_finalColor", "gl_FragData", true);
 
-			if (!code.Contains("gl_FragColor[1]"))
+			if (!code.Contains("gl_FragData[1]"))
 			{
-				code.Replace("gl_FragColor[0]", "gl_FragColor", true);
+				code.Replace("gl_FragData[0]", "gl_FragColor", true);
 			}
 		}
 
