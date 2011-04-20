@@ -13,7 +13,7 @@ class Sound : public ISound
 private:
 
 	String				mName;		// File that is being referenced
-	void*				mSource;	// The memory from which the instance is created
+	ALuint				mBuffer;	// The memory from which the instance is created
 	IAudio*				mAudio;		// Audio instance which created this Sound
 	Thread::Lockable	mLock;		// Makes the sound thread safe
 
@@ -21,15 +21,17 @@ private:
 	friend class Audio;
 
 	void SetAudio  (IAudio* audio) { mAudio = audio;   }
-	void SetSource (void* source)  { mSource = source; }
+	void SetSource (ALuint buffer)  { mBuffer = buffer; }
 
+	// Get the sound buffer.
+	ALuint GetBuffer() { return mBuffer; }
 public:
 
 	R5_DECLARE_ABSTRACT_CLASS("Sound", ISound);
 
 	Sound (const String& name) :
 			mName	(name),
-			mSource (0),
+			mBuffer (0),
 			mAudio	(0) {}
 
 	virtual ~Sound();
@@ -40,8 +42,6 @@ public:
 	// Get the associated Audio class
 	virtual IAudio* GetAudio() { return mAudio; }
 
-	// Get the source for the sound.
-	virtual void* GetSource() { return mSource; }
 
 	// Play the sound in 2D
 	virtual ISoundInstance* Play (uint layer = 0, float fadeInTime = 0.0f, bool repeat = false);

@@ -1,5 +1,5 @@
 #include "../Include/_All.h"
-#include <IrrKlang/Include/irrKlang.h>
+//#include <IrrKlang/Include/irrKlang.h>
 
 //============================================================================================================
 // Sound Library
@@ -7,11 +7,12 @@
 
 using namespace R5;
 
-#define SOURCE(source) ((irrklang::ISoundSource*)source)
+//#define SOURCE(source) ((irrklang::ISoundSource*)source)
 
 Sound::~Sound()
 {
-	mSource = 0;
+	//mAudioSource = 0;
+	alDeleteBuffers(1, &mBuffer);
 }
 
 //============================================================================================================
@@ -20,7 +21,7 @@ Sound::~Sound()
 
 ISoundInstance* Sound::Play (uint layer, float fadeInTime, bool repeat)
 {
-	return mAudio->Instantiate (this, layer, fadeInTime, repeat, mSource);
+	return mAudio->Instantiate (this, layer, fadeInTime, repeat);
 }
 
 //============================================================================================================
@@ -29,5 +30,5 @@ ISoundInstance* Sound::Play (uint layer, float fadeInTime, bool repeat)
 
 ISoundInstance* Sound::Play (const Vector3f& position, uint layer , float fadeInTime, bool repeat)
 {
-	return mAudio->Instantiate (this, position, layer, fadeInTime, repeat, mSource);
+	return mAudio->Instantiate (this, position, layer, fadeInTime, repeat);
 }

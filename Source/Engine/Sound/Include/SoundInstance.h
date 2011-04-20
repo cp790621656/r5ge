@@ -32,7 +32,8 @@ protected:
 	Vector4f	mVolume;		// Volume the sound is at. X = start, Y = current, Z = end, W = volume unmodified
 	bool		mRepeat;		// If this sound will repeat
 	uint		mLayer;			// Layer this sound belongs to
-	void*		mAudioSource;	// Pointer to the IAudioSource provided by cAudio
+//	void*		mAudioSource;	// Pointer to the IAudioSource provided by cAudio
+	ALuint		mSource;
 	float		mFadeDuration;	// Fade duration
 	ulong		mFadeStart;		// The start time of the fade
 	byte		mAction;		// What action will be executed when the fade completes
@@ -51,7 +52,8 @@ public:
 			mLastPosition	(0.0f, 0.0f, 0.0f),
 			mVolume			(0.0f, 0.0f, 1.0f, 1.0f), 
 			mLayer			(0),
-			mAudioSource	(0), 
+//			mAudioSource	(0), 
+			mSource			(0),
 			mFadeDuration	(0.0f),
 			mFadeStart		(0),
 			mAction			(TargetAction::None),

@@ -295,7 +295,10 @@ bool SysWindow::Update()
 			{
 				case KeyPress:
 				{
-					KeySym xk = XLookupKeysym(&xev.xkey, 0);
+					KeySym xk;
+					// = XLookupKeysym(&xev.xkey, 0);
+					char buffer[4];
+					XLookupString(&xev.xkey, buffer, sizeof(buffer), &xk, NULL);
 
 					if (xk < 128)
 					{
