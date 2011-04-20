@@ -283,7 +283,7 @@ bool InitOpenGL (uint requiredVersion)
 
 							if ( (supported = g_caps.mShaders) )
 							{
-								g_caps.mVersion = 200;
+								g_caps.mVersion = (glslVersion >= 1.2f) ? 210 : 200;
 								g_caps.mGeometryShaders = CheckExtension("GL_ARB_geometry_shader4", false);
 
 								if (g_caps.mGeometryShaders && g_caps.mMSAA)
