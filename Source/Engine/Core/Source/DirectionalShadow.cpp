@@ -184,6 +184,7 @@ void DirectionalShadow::DrawLightDepth (Object* root, const Object* eye, const V
 				if (mDummyColorTex == 0)
 				{
 					mDummyColorTex = mGraphics->CreateRenderTexture("Dummy Shadow Color");
+					mDummyColorTex->SetFiltering(ITexture::Filter::Nearest);
 				}
 
 				// Attach it to the render target

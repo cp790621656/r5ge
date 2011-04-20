@@ -278,7 +278,7 @@ GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mTimestamp			(Time::GetMilliseconds()),
 	mWrapMode			(WrapMode::Default),
 	mCompareMode		(CompareMode::Default),
-	mFilter				(Filter::Default),
+	mFilter				(Filter::Nearest),
 	mActiveWrapMode		(WrapMode::Default),
 	mActiveFilter		(Filter::Default),
 	mActiveCompareMode	(CompareMode::Default),
@@ -455,9 +455,32 @@ void GLTexture::_Create()
 	bool isDepth = ((mFormat & ITexture::Format::Depth) != 0);
 	bool is3D = (mGlType == GL_TEXTURE_3D);
 
-	// Depth and 3D textures should not be mip-mapped
-	if ( mFilter > Filter::Linear && (is3D || isDepth) )
-		 mFilter = Filter::Linear;
+	// If the filtering has not been specified, choose whatever seems appropriate
+	if (mFilter == Filter::Default)
+	{
+		bool isPowerOfTwo = IsPowerOfTwo(mSize.x) && IsPowerOfTwo(mSize.y);
+
+		if (!isPowerOfTwo)
+		{
+			// Non-power-of-two textures are not filtered at all by default
+			mFilter = Filter::Nearest;
+		}
+		else if (mFormat & Format::HDR)
+		{
+			// HDR textures are only linear-filtered
+			mFilter = Filter::Linear;
+		}
+		else
+		{
+			// All other cases use anisotropic filtering
+			mFilter = Filter::Anisotropic;
+		}
+	}
+	else if ( mFilter > Filter::Linear && (is3D || isDepth) )
+	{
+		// Depth and 3D textures should not be mip-mapped
+		mFilter = Filter::Linear;
+	}
 
 	// ATI drivers seem to like it when the texture filtering is set prior to texture data
 	mActiveFilter = mFilter;
@@ -502,28 +525,6 @@ void GLTexture::_Create()
 				ASSERT(false, "Invalid texture format");
 				break;
 		};
-	}
-
-	// If the filtering has not been specified, choose whatever seems appropriate
-	if (mFilter == Filter::Default)
-	{
-		bool isPowerOfTwo = IsPowerOfTwo(mSize.x) && IsPowerOfTwo(mSize.y);
-
-		if (!isPowerOfTwo)
-		{
-			// Non-power-of-two textures are not filtered at all by default
-			mFilter = Filter::Nearest;
-		}
-		else if (mFormat & Format::HDR)
-		{
-			// HDR textures are only linear-filtered
-			mFilter = Filter::Linear;
-		}
-		else
-		{
-			// All other cases use anisotropic filtering
-			mFilter = Filter::Anisotropic;
-		}
 	}
 
 	// Figure out the appropriate bitrate and OpenGL format
