@@ -452,6 +452,9 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 			}
 			else
 			{
+				// Whether we want fog
+				if (tech->GetFog()) desired.Set(IShader::Flag::Fog, true);
+
 				// If a light is active, automatically request the appropriate variation
 				const ILight& light = mGraphics->GetActiveLight(0);
 
