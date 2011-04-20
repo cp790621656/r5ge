@@ -192,7 +192,7 @@ Vector2i GLGraphics::ConvertTo2D (const Vector3f& v)
 // Initializes the graphics manager
 //============================================================================================================
 
-bool GLGraphics::Init (float version)
+bool GLGraphics::Init (uint version)
 {
 	if (mThread == 0)
 	{

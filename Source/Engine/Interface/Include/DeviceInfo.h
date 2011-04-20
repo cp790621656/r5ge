@@ -21,7 +21,7 @@ struct DeviceInfo
 		};
 	};
 
-	float	mVersion;					// Detected OpenGL version
+	uint	mVersion;					// Detected OpenGL version
 	byte	mVendor;					// Videocard vendor
 	bool	mFloat16Format;				// Support for 16-bit floating point textures (half precision)
 	bool	mFloat32Format;				// Support for 32-bit floating point textures (full precision)
@@ -50,7 +50,7 @@ struct DeviceInfo
 	uint	mMaxMemory;					// Maximum amount of combined memory used
 
 	DeviceInfo() :
-		mVersion				(1.0f),
+		mVersion				(100),
 		mVendor					(Vendor::Unknown),
 		mFloat16Format			(false),
 		mFloat32Format			(false),

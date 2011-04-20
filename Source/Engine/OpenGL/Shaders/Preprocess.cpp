@@ -1,4 +1,5 @@
 #include "../Include/_All.h"
+#include "../Include/_OpenGL.h"
 using namespace R5;
 
 //============================================================================================================
@@ -388,7 +389,14 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 
 void FixLegacyShader (String& code)
 {
-	code.Replace("#version 110", "", true);
+	// Remove the #version tag as we'll be pre-pending data
+	uint vers = code.Find("#version ", true);
+
+	if (vers < code.GetSize())
+	{
+		code[vers] = '/';
+		code[vers+1] = '/';
+	}
 
 	// Remove the last closing bracket
 	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
@@ -493,6 +501,9 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 		}
 	}
 
+	// OpenGL 2.1 and earlier versions used an 'attribute' keyword
+	const char* inOut = "attribute ";
+
 	if (isFragmentShader)
 	{
 		code.Replace("Sample2D(", "texture2D(R5_texture", true);
@@ -529,18 +540,20 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 	}
 	else
 	{
-		if (code.Contains("R5_vertex",			true)) prefix << "in vec3 R5_vertex;\n";
-		if (code.Contains("R5_tangent",			true)) prefix << "in vec3 R5_tangent;\n";
-		if (code.Contains("R5_normal",			true)) prefix << "in vec3 R5_normal;\n";
-		if (code.Contains("R5_color",			true)) prefix << "in vec4 R5_color;\n";
-		if (code.Contains("R5_boneWeight",		true)) prefix << "in vec4 R5_boneWeight;\n";
-		if (code.Contains("R5_boneIndex",		true)) prefix << "in vec4 R5_boneIndex;\n";
-		if (code.Contains("R5_texCoord0",		true)) prefix << "in vec2 R5_texCoord0;\n";
-		if (code.Contains("R5_texCoord1",		true)) prefix << "in vec2 R5_texCoord1;\n";
+		if (g_caps.mVersion >= 300) inOut = "in ";
+		if (code.Contains("R5_vertex",			true)) { prefix << inOut; prefix << "vec3 R5_vertex;\n"; }
+		if (code.Contains("R5_tangent",			true)) { prefix << inOut; prefix << "vec3 R5_tangent;\n"; }
+		if (code.Contains("R5_normal",			true)) { prefix << inOut; prefix << "vec3 R5_normal;\n"; }
+		if (code.Contains("R5_color",			true)) { prefix << inOut; prefix << "vec4 R5_color;\n"; }
+		if (code.Contains("R5_boneWeight",		true)) { prefix << inOut; prefix << "vec4 R5_boneWeight;\n"; }
+		if (code.Contains("R5_boneIndex",		true)) { prefix << inOut; prefix << "vec4 R5_boneIndex;\n"; }
+		if (code.Contains("R5_texCoord0",		true)) { prefix << inOut; prefix << "vec2 R5_texCoord0;\n"; }
+		if (code.Contains("R5_texCoord1",		true)) { prefix << inOut; prefix << "vec2 R5_texCoord1;\n"; }
 		if (code.Contains("R5_boneTransforms",	true)) prefix << "uniform mat4 R5_boneTransforms[32];\n";
 	}
 
-	const char* inOut = (isFragmentShader ? "in " : "out ");
+	if (g_caps.mVersion < 300) inOut = "varying ";
+	else inOut = (isFragmentShader ? "in " : "out ");
 
 	if (code.Contains("R5_vertexColor",		true)) { prefix << inOut; prefix << "vec4 R5_vertexColor;\n"; }
 	if (code.Contains("R5_vertexEye",		true)) { prefix << inOut; prefix << "vec3 R5_vertexEye;\n"; }
@@ -560,9 +573,18 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 
 void ConvertCommonTypes (String& code)
 {
-	code.Replace("half4", "mediump vec4", true);
-	code.Replace("half3", "mediump vec3", true);
-	code.Replace("half2", "mediump vec2", true);
+	if (g_caps.mVersion < 300)
+	{
+		code.Replace("half4", "vec4", true);
+		code.Replace("half3", "vec3", true);
+		code.Replace("half2", "vec2", true);
+	}
+	else
+	{
+		code.Replace("half4", "mediump vec4", true);
+		code.Replace("half3", "mediump vec3", true);
+		code.Replace("half2", "mediump vec2", true);
+	}
 
 	code.Replace("int2", "ivec2", true);
 	code.Replace("int3", "ivec3", true);
@@ -600,13 +622,28 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		code.Replace("GetPixelPosition()", "int2(int(gl_FragCoord.x), int(gl_FragCoord.y))", true);
 		code.Replace("R5_fragCoord", "gl_FragCoord", true);
 
-		String prefix ("#version 130\n");
+		String prefix;
 
-		// Fragment shader output values -- support for up to 4 buffers. If you need more, just add them.
-		if		(code.Contains("R5_finalColor[3]", true)) prefix << "out vec4 R5_finalColor[4];\n";
-		else if (code.Contains("R5_finalColor[2]", true)) prefix << "out vec4 R5_finalColor[3];\n";
-		else if (code.Contains("R5_finalColor[1]", true)) prefix << "out vec4 R5_finalColor[2];\n";
-		else if (code.Replace("R5_finalColor[0]", "R5_finalColor", true)) prefix << "out vec4 R5_finalColor;\n";
+		if (g_caps.mVersion >= 300)
+		{
+			prefix = "#version 130\n";
+
+			// Fragment shader output values -- support for up to 4 buffers. If you need more, just add them.
+			if		(code.Contains("R5_finalColor[3]", true)) prefix << "out vec4 R5_finalColor[4];\n";
+			else if (code.Contains("R5_finalColor[2]", true)) prefix << "out vec4 R5_finalColor[3];\n";
+			else if (code.Contains("R5_finalColor[1]", true)) prefix << "out vec4 R5_finalColor[2];\n";
+			else if (code.Replace("R5_finalColor[0]", "R5_finalColor", true)) prefix << "out vec4 R5_finalColor;\n";
+		}
+		else
+		{
+			// Older GLSL syntax: output to a built-in value
+			code.Replace("R5_finalColor", "gl_FragColor", true);
+
+			if (!code.Contains("gl_FragColor[1]"))
+			{
+				code.Replace("gl_FragColor[0]", "gl_FragColor", true);
+			}
+		}
 
 		// Add all referenced variables and convert common types
 		::AddReferencedVariables(code, true);
@@ -614,6 +651,7 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 
 		// Prepend the prefix
 		code = prefix + code;
+		System::Log("[Fragment]\n%s", code.GetBuffer());
 		return IShader::Type::Fragment;
 	}
 	else if (code.Contains("R5_vertexPosition", true))
@@ -625,7 +663,20 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		::AddReferencedVariables(code, false);
 		::ConvertCommonTypes(code);
 
-		code = "#version 130\n" + code;
+		if (g_caps.mVersion >= 300)
+		{
+			// Latest syntax: built-in uniforms are no longer present and 'varying' is replaced by 'in'/'out'.
+			code = "#version 130\n" + code;
+		}
+		else if (g_caps.mVersion >= 210)
+		{
+			code = "#version 120\n" + code;
+		}
+		else if (g_caps.mVersion >= 200)
+		{
+			code = "#version 110\n" + code;
+		}
+		System::Log("[Vertex]\n%s", code.GetBuffer());
 		return IShader::Type::Vertex;
 	}
 	else
@@ -640,6 +691,7 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		final.Set(IShader::Flag::LegacyFormat, true);
 
 		::FixLegacyShader(code);
+		System::Log("[Legacy]\n%s", code.GetBuffer());
 
 		if (code.Contains("gl_Position"))
 		{

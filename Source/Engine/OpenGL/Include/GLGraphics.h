@@ -62,7 +62,7 @@ public:
 	//virtual float GetDistanceToDepthAt (const Vector3f& v);
 
 	// Initialize/release the graphics manager
-	virtual bool Init (float version = 2.0f);
+	virtual bool Init (uint version = 200);
 	virtual void Release();
 
 	// Adds a delayed callback function that should be executed on the next frame (at BeginFrame)

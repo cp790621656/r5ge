@@ -208,7 +208,7 @@ bool CheckMixedAttachmentSupport()
 // Calls the function to bind all important OpenGL functions and validates the output
 //===============================================================================================================
 
-bool InitOpenGL (float requiredVersion)
+bool InitOpenGL (uint requiredVersion)
 {
 	if (!g_caps.mInitialized)
 	{
@@ -234,23 +234,23 @@ bool InitOpenGL (float requiredVersion)
 		g_caps.mMaxAnisotropicLevel		= CheckExtension("GL_EXT_texture_filter_anisotropic", false) ?
 										  glGetInteger(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT) : 0;
 
-		float reportedVersion (0.0f), shaderVersion (0.0f);
-		if (versionStr != 0) sscanf(versionStr, "%f", &reportedVersion);
-		if (shaderStr  != 0) sscanf(shaderStr,  "%f", &shaderVersion);
+		float reportedVersion (0), glslVersion (0);
+		if (versionStr != 0) { sscanf(versionStr, "%f", &reportedVersion); }
+		if (shaderStr  != 0) { sscanf(shaderStr,  "%f", &glslVersion); }
 
 #ifdef _WINDOWS
 		supported = _BindFunctionPointers() && supported;
 #endif
 
-		if (requiredVersion >= 1.3f)
+		if (requiredVersion >= 130)
 		{
 			supported = CheckExtension("GL_ARB_depth_texture") && supported;
 
 			if (supported)
 			{
-				g_caps.mVersion = 1.3f;
+				g_caps.mVersion = 130;
 
-				if (requiredVersion >= 1.5f)
+				if (requiredVersion >= 150)
 				{
 					g_caps.mFloat16Format	= CheckExtension("GL_ARB_half_float_pixel", false);
 					g_caps.mFloat32Format	= CheckExtension("GL_ARB_texture_float", false);
@@ -264,7 +264,7 @@ bool InitOpenGL (float requiredVersion)
 
 					if ( (supported = g_caps.mBufferObjects) )
 					{
-						g_caps.mVersion = 1.5f;
+						g_caps.mVersion = 150;
 						full &= (g_caps.mFloat16Format && g_caps.mFloat32Format && g_caps.mDrawBuffers && g_caps.mOcclusion);
 
 						if (g_caps.mDrawBuffers)
@@ -274,21 +274,21 @@ bool InitOpenGL (float requiredVersion)
 							g_caps.mMixedAttachments = CheckMixedAttachmentSupport();
 						}
 
-						if (requiredVersion >= 2.0f)
+						if (requiredVersion >= 200)
 						{
 							g_caps.mShaders = CheckExtension("GL_ARB_shader_objects");
 							g_caps.mShaders = CheckExtension("GL_ARB_fragment_shader")	&& g_caps.mShaders;
 							g_caps.mShaders = CheckExtension("GL_ARB_vertex_shader")	&& g_caps.mShaders;
-							g_caps.mShaders = (shaderVersion >= 1.1f)					&& g_caps.mShaders;
+							g_caps.mShaders = (glslVersion >= 1.1f)						&& g_caps.mShaders;
 
 							if ( (supported = g_caps.mShaders) )
 							{
-								g_caps.mVersion = 2.0f;
+								g_caps.mVersion = 200;
 								g_caps.mGeometryShaders = CheckExtension("GL_ARB_geometry_shader4", false);
 
 								if (g_caps.mGeometryShaders && g_caps.mMSAA)
 								{
-									g_caps.mVersion = 3.2f;
+									g_caps.mVersion = 320;
 								}
 							}
 						}
@@ -315,24 +315,30 @@ bool InitOpenGL (float requiredVersion)
 #endif
 		{
 			const char* sup = "Supported";
-			const char* not_sup = "Not supported";
+			const char* nsp = "Not supported";
+			const char* comment = full ? "full" : "partial";
+
+			if (full && g_caps.mVersion >= 320) comment = "or better";
+
+			uint major = g_caps.mVersion / 100;
+			uint minor = (g_caps.mVersion / 10) - major * 10;
 
 			System::Log("[OPENGL]  Device driver information:");
 			System::Log("          - Videocard:             %s", renderer);
 			System::Log("          - Vendor Brand:          %s", brand);
 			System::Log("          - Reported Version:      %.1f (%s)", reportedVersion, versionStr);
-			System::Log("          - Detected Version:      %.1f (%s)", g_caps.mVersion, full ? "full" : "partial");
-			System::Log("          - Shader Version:        %.1f", shaderVersion);
+			System::Log("          - Detected Version:      %u.%u (%s)", major, minor, comment);
+			System::Log("          - Shader Version:        %.1f", glslVersion);
 			System::Log("          - FFP Texture Units:     %u", g_caps.mMaxTextureUnits_FFP);
 			System::Log("          - Shader Texture Units:  %u", g_caps.mMaxTextureUnits_Shader);
 			System::Log("          - Texture Width Limit:   %u", g_caps.mMaxTextureSize);
 			System::Log("          - Texture Coordinates:   %u", g_caps.mMaxTextureCoords);
 			System::Log("          - Hardware Lights:       %u", g_caps.mMaxLights);
 			System::Log("          - FBO Attachments:       %u", g_caps.mMaxFBOAttachments);
-			System::Log("          - FBO Depth Attachments: %s", g_caps.mDepthAttachments ? sup : not_sup);
-			System::Log("          - FBO Alpha Attachments: %s", g_caps.mAlphaAttachments ? sup : not_sup);
-			System::Log("          - FBO Mixed Formats:     %s", g_caps.mMixedAttachments ? sup : not_sup);
-			System::Log("          - FBO Packed Stencil:    %s", g_caps.mDepthStencil ? sup : not_sup);
+			System::Log("          - FBO Depth Attachments: %s", g_caps.mDepthAttachments ? sup : nsp);
+			System::Log("          - FBO Alpha Attachments: %s", g_caps.mAlphaAttachments ? sup : nsp);
+			System::Log("          - FBO Mixed Formats:     %s", g_caps.mMixedAttachments ? sup : nsp);
+			System::Log("          - FBO Packed Stencil:    %s", g_caps.mDepthStencil ? sup : nsp);
 		}
 
 		if (!supported)

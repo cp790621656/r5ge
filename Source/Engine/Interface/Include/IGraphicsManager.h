@@ -59,7 +59,7 @@ struct IGraphicsManager
 	virtual Vector2i  ConvertTo2D (const Vector3f& pos)=0;
 
 	// Initialize/release the graphics manager
-	virtual bool Init (float version = 2.0f)=0;
+	virtual bool Init (uint version = 200)=0;
 	virtual void Release()=0;
 
 	// Adds a delayed callback function that should be executed on the next frame (at BeginFrame)

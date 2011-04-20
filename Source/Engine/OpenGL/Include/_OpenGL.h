@@ -47,7 +47,7 @@ uint glGetInteger(uint id);
 // One function to bind all function pointers
 //==========================================================================================================
 
-bool InitOpenGL (float requiredVersion);
+bool InitOpenGL (uint requiredVersion);
 
 //==========================================================================================================
 // Handy macro to check for an OpenGL error
