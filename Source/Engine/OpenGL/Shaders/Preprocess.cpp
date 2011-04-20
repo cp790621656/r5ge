@@ -258,7 +258,7 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		code << (desired.Get(IShader::Flag::DirLight) ? ";\n" : " * atten;\n");
 
 		if (desired.Get(IShader::Flag::Fog))
-		code << "	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n"
+		code << "	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n";
 		code << "	R5_finalColor[0] = vec4(final, R5_surfaceColor.a);\n";
 	}
 
