@@ -443,9 +443,7 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 		}
 		else
 		{
-			const IRenderTarget* target = mGraphics->GetActiveRenderTarget();
-
-			if (!tech->GetColorWrite() || (target != 0 && !target->HasColor()))
+			if (!tech->GetColorWrite())
 			{
 				// Color write is turned off -- render only to depth
 				desired.Set(IShader::Flag::DepthOnly, true);

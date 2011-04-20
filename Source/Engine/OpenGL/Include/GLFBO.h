@@ -30,7 +30,7 @@ protected:
 	Vector2i			mSize;
 	ITexture*			mDepthTex;
 	ITexture*			mStencilTex;
-	ITexture*			mDummyTex;
+	mutable ITexture*	mDummyTex;
 	Array<TextureEntry> mAttachments;
 	mutable Array<uint>	mBuffers;
 	uint				mMSAA;

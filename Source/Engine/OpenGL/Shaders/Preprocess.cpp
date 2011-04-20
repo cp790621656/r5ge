@@ -76,6 +76,45 @@ void ExtractValue (String& code, String& out, const String& var, const char* def
 }
 
 //============================================================================================================
+// Helper function that removes everything that follows the R5_surfaceColor stagement
+//============================================================================================================
+
+void RemoveEverythingAfterSurfaceColor (String& code)
+{
+	// Find where the color begins
+	uint index = code.Find("R5_surfaceColor", true);
+	uint size = code.GetSize();
+
+	if (index < size)
+	{
+		index += 15;
+
+		// Find where the line ends
+		while (index < size)
+		{
+			if (code[index++] == ';')
+			{
+				int bracket (0);
+
+				// Figure out how many brackets are needed
+				for (uint i = index; i < size; ++i)
+				{
+					if		(code[i] == '{') --bracket;
+					else if (code[i] == '}') ++bracket;
+				}
+
+				// Erase everything that follows
+				code.Erase(index);
+
+				// Restore the brackets
+				for (int i = 0; i < bracket; ++i) code << "\n}\n";
+				return;
+			}
+		}
+	}
+}
+
+//============================================================================================================
 // Adds appropriate surface shader functionality
 //============================================================================================================
 
@@ -446,6 +485,18 @@ void AddCommonFunctions (String& code)
 {
 	String prefix;
 
+	if (code.Contains("NormalMapToNormal"))
+	{
+		prefix <<
+		"vec3 NormalMapToNormal (in vec4 val)\n"
+		"{\n"
+		"	vec3 tangent = normalize(R5_vertexTangent);\n"
+		"	vec3 normal = normalize(R5_vertexNormal);\n"
+		"	mat3 TBN = mat3(tangent, cross(normal.xyz, tangent), normal);\n"
+		"	return normalize(TBN * (val.xyz * 2.0 - 1.0));\n"
+		"}\n";
+	}
+
 	if (code.Contains("GetFogFactor", true))
 	{
 		prefix <<
@@ -517,6 +568,7 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 		code.Replace("Sample2D(", "texture2D(R5_texture", true);
 		code.Replace("SampleCube(", "textureCube(R5_texture", true);
 		code.Replace("SampleShadow(", "texture2D(R5_shadowMap, ", true);
+		code.Replace("SampleNormal(", "SampleNormal(R5_texture", true);
 
 		if (code.Contains("R5_shadowMap", true)) prefix << "uniform sampler2D R5_shadowMap;\n";
 
@@ -618,6 +670,12 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		if (surface)
 		{
 			final.Set(IShader::Flag::Surface, true);
+
+			// If this is an unlit shader, we don't need anything aside from the surface color
+			if (desired.Get(IShader::Flag::DepthOnly) || !desired.Get(IShader::Flag::Lit | IShader::Flag::Deferred))
+			{
+				::RemoveEverythingAfterSurfaceColor(code);
+			}
 			::ProcessSurfaceShader(code, desired, final);
 		}
 
@@ -659,6 +717,9 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 
 		// Prepend the prefix
 		code = prefix + code;
+
+		// For shader code debugging:
+		while (code.Replace("\t\t", "\t", true)) {}
 		System::Log("[Fragment]\n%s", code.GetBuffer());
 		return IShader::Type::Fragment;
 	}
@@ -684,6 +745,9 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		{
 			code = "#version 110\n" + code;
 		}
+
+		// For shader code debugging:
+		while (code.Replace("\t\t", "\t", true)) {}
 		System::Log("[Vertex]\n%s", code.GetBuffer());
 		return IShader::Type::Vertex;
 	}
@@ -699,6 +763,8 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		final.Set(IShader::Flag::LegacyFormat, true);
 
 		::FixLegacyShader(code);
+
+		// For shader code debugging:
 		System::Log("[Legacy]\n%s", code.GetBuffer());
 
 		if (code.Contains("gl_Position"))

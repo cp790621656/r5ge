@@ -278,7 +278,7 @@ GLTexture::GLTexture (const String& name, IGraphics* graphics) :
 	mTimestamp			(Time::GetMilliseconds()),
 	mWrapMode			(WrapMode::Default),
 	mCompareMode		(CompareMode::Default),
-	mFilter				(Filter::Nearest),
+	mFilter				(Filter::Default),
 	mActiveWrapMode		(WrapMode::Default),
 	mActiveFilter		(Filter::Default),
 	mActiveCompareMode	(CompareMode::Default),

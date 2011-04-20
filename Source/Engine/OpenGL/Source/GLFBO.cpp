@@ -337,7 +337,11 @@ void GLFBO::Activate() const
 		
 		if (!HasColor() && (mDepthTex != 0) && !mGraphics->GetDeviceInfo().mDepthAttachments)
 		{
-			if (mDummyTex == 0) ((GLFBO*)this)->mDummyTex = mGraphics->CreateRenderTexture();
+			if (mDummyTex == 0)
+			{
+				mDummyTex = mGraphics->CreateRenderTexture("Dummy Color Texture");
+				mDummyTex->SetFiltering(ITexture::Filter::Nearest);
+			}
 			((GLFBO*)this)->AttachColorTexture(0, mDummyTex, g_caps.mAlphaAttachments ?
 				ITexture::Format::Alpha : ITexture::Format::RGBA);
 		}
