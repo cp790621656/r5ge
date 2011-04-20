@@ -258,6 +258,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	// Skip trailing spaces
 	while (lastBracket > 0 && code[lastBracket-1] < 33) --lastBracket;
 	code.Resize(lastBracket+1);
+	String temp;
 
 	// Depth-only rendering should simplify the shader quite a bit
 	if (depthOnly)
@@ -265,14 +266,21 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		deferred = false;
 		lit		 = false;
 		fog		 = false;
-
 		final.Set(IShader::Flag::DepthOnly, true);
+	}
 
-		String temp;
+	// Deferred rendering doesn't need lighting or fog
+	if (deferred)
+	{
+		lit = false;
+		fog = false;
+	}
+
+	// Remove the normal and tangent if lighting calculations aren't needed
+	if (!lit && !deferred)
+	{
 		ExtractValue(code, temp, "R5_vertexNormal");
 		ExtractValue(code, temp, "R5_vertexTangent");
-		ExtractValue(code, temp, "R5_vertexColor");
-		ExtractValue(code, temp, "R5_vertexFog");
 	}
 
 	// Vertex position we'll be working with is a vec4
@@ -314,7 +322,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		"R5_offset.z *= 0.25;\n"
 		"R5_position.xyz = R5_offset * R5_modelScale + R5_position.xyz;\n";
 
-		if (lit)
+		if (lit || deferred)
 		{
 			code <<
 			"R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
@@ -325,25 +333,25 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	// Final transformed vertex position
 	code << "	gl_Position = R5_projMatrix * R5_position;\n";
 
-	// Vertex fog is only necessary for forward rendering
-	if (!depthOnly && !deferred)
+	// Vertex-eye vector is only needed for forward rendering
+	if (lit && !deferred)
 	{
 		code << "	R5_vertexEye = R5_position.xyz;\n";
 		final.Set(desired.Get() & IShader::Flag::Lit, true);
+	}
 
-		// Calculate per-vertex fog
-		if (fog)
-		{
-			final.Set(IShader::Flag::Fog, true);
-			code <<
-			"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_vertexEye.z) / R5_clipRange.w;\n"
-			"	R5_vertexFog = clamp((R5_vertexFog - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
-			"	R5_vertexFog = 0.5 * (R5_vertexFog * R5_vertexFog + R5_vertexFog);\n";
-		}
+	// Calculate per-vertex fog
+	if (fog)
+	{
+		final.Set(IShader::Flag::Fog, true);
+		code <<
+		"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_vertexEye.z) / R5_clipRange.w;\n"
+		"	R5_vertexFog = clamp((R5_vertexFog - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
+		"	R5_vertexFog = 0.5 * (R5_vertexFog * R5_vertexFog + R5_vertexFog);\n";
 	}
 
 	// Always include the vertex color
-	if (!depthOnly && !code.Contains("R5_vertexColor", true)) code << "	R5_vertexColor = R5_color;\n";
+	if (!code.Contains("R5_vertexColor", true)) code << "	R5_vertexColor = R5_color;\n";
 
 	// Transform the normal
 	if ((lit || deferred) && code.Contains("R5_vertexNormal", true))

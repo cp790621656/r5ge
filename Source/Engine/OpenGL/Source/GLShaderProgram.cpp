@@ -689,7 +689,7 @@ void GLShaderProgram::_Detach()
 	{
 		GLShaderComponent* sub = mAttached[--i];
 
-		if (sub->mGLID != -1)
+		if (sub->mGLID >= 0)
 		{
 			glDetachShader(mProgram, sub->mGLID);
 			CHECK_GL_ERROR;
