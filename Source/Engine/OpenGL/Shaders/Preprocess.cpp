@@ -256,9 +256,10 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		"	final += mix(specular, specular * R5_surfaceColor.rgb, R5_surfaceSpecularHue)";
 
 		code << (desired.Get(IShader::Flag::DirLight) ? ";\n" : " * atten;\n");
-		code <<
-		"	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n"
-		"	R5_finalColor[0] = vec4(final, R5_surfaceColor.a);\n";
+
+		if (desired.Get(IShader::Flag::Fog))
+		code << "	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n"
+		code << "	R5_finalColor[0] = vec4(final, R5_surfaceColor.a);\n";
 	}
 
 	uint lastChar = code.GetLength() - 1;

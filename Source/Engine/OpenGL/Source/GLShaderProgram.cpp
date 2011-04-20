@@ -847,7 +847,8 @@ bool GLShaderProgram::_Link()
 		{
 			FOREACH(i, lines)
 			{
-				if (lines[i].Contains("BindAttributeLocation")) continue;
+				if (lines[i].Contains("BindAttributeLocation") ||
+					lines[i].Contains("unused")) continue;
 
 				if (lines[i].Contains("Warning"))
 				{
