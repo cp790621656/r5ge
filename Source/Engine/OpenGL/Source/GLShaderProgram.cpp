@@ -50,13 +50,13 @@ bool SetUniform1i (uint program, const char* name, int val)
 
 uint GetUniformID (const String& name)
 {
-	uint glID = glGetUniformLocation(g_activeProgram, name.GetBuffer());
+	int glID = glGetUniformLocation(g_activeProgram, name.GetBuffer());
 	CHECK_GL_ERROR;
 
 #ifdef _DEBUG
-	if (glID != INVALID_VAL) System::Log("          - Found uniform '%s' [%u]", name.GetBuffer(), glID);
+	if (glID != -1) System::Log("          - Found uniform '%s' [%d]", name.GetBuffer(), glID);
 #endif
-	return glID;
+	return (uint)glID;
 }
 
 //============================================================================================================
@@ -689,7 +689,7 @@ void GLShaderProgram::_Detach()
 	{
 		GLShaderComponent* sub = mAttached[--i];
 
-		if (sub->mGLID != INVALID_VAL)
+		if (sub->mGLID != -1)
 		{
 			glDetachShader(mProgram, sub->mGLID);
 			CHECK_GL_ERROR;
