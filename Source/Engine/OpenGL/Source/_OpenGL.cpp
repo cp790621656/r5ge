@@ -288,7 +288,7 @@ bool InitOpenGL (uint requiredVersion)
 
 								if (g_caps.mGeometryShaders && g_caps.mMSAA)
 								{
-									g_caps.mVersion = 210;
+									g_caps.mVersion = 320;
 								}
 							}
 						}
