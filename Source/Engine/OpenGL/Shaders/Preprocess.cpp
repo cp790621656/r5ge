@@ -76,45 +76,6 @@ void ExtractValue (String& code, String& out, const String& var, const char* def
 }
 
 //============================================================================================================
-// Helper function that removes everything that follows the R5_surfaceColor stagement
-//============================================================================================================
-
-void RemoveEverythingAfterSurfaceColor (String& code)
-{
-	// Find where the color begins
-	uint index = code.Find("R5_surfaceColor", true);
-	uint size = code.GetSize();
-
-	if (index < size)
-	{
-		index += 15;
-
-		// Find where the line ends
-		while (index < size)
-		{
-			if (code[index++] == ';')
-			{
-				int bracket (0);
-
-				// Figure out how many brackets are needed
-				for (uint i = index; i < size; ++i)
-				{
-					if		(code[i] == '{') --bracket;
-					else if (code[i] == '}') ++bracket;
-				}
-
-				// Erase everything that follows
-				code.Erase(index);
-
-				// Restore the brackets
-				for (int i = 0; i < bracket; ++i) code << "\n}\n";
-				return;
-			}
-		}
-	}
-}
-
-//============================================================================================================
 // Adds appropriate surface shader functionality
 //============================================================================================================
 
@@ -673,10 +634,10 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 			final.Set(IShader::Flag::Surface, true);
 
 			// If this is an unlit shader, we don't need anything aside from the surface color
-			if (desired.Get(IShader::Flag::DepthOnly) || !desired.Get(IShader::Flag::Lit | IShader::Flag::Deferred))
-			{
-				::RemoveEverythingAfterSurfaceColor(code);
-			}
+			//if (desired.Get(IShader::Flag::DepthOnly) || !desired.Get(IShader::Flag::Lit | IShader::Flag::Deferred))
+			//{
+			//	::RemoveEverythingAfterSurfaceColor(code);
+			//}
 			::ProcessSurfaceShader(code, desired, final);
 		}
 

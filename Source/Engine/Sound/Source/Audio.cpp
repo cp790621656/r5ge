@@ -5,15 +5,22 @@
 using namespace R5;
 
 //============================================================================================================
+
+#ifdef _WINDOWS
+  #pragma comment(lib, "ogg.lib")
+  #pragma comment(lib, "vorbis.lib")
+  #pragma comment(lib, "OpenAL32.lib")
+#endif
+
+//============================================================================================================
 // OpenAL reads data using callbacks. We need to specify those callbacks.
 //============================================================================================================
 
 struct MemData
 {
 	ConstBytePtr mBuffer;
-	uint mRemaining;
+	uint mSize;
 	uint mOffset;
-	uint mTotal;
 };
 
 //============================================================================================================
@@ -21,9 +28,15 @@ struct MemData
 size_t MemReadFunc (void* dataOut, size_t dataOutSize, size_t nmemb, void* dataIn)
 {
 	MemData* data = (MemData*)dataIn;
-	if (data->mRemaining < dataOutSize) dataOutSize = data->mRemaining;
-	Memory::Extract(data->mBuffer, data->mRemaining, dataOut, dataOutSize);
-	return dataOutSize;
+
+	uint outSize = dataOutSize * nmemb;
+	uint remain = data->mSize - data->mOffset;
+	if (remain < outSize) outSize = remain;
+
+	ConstBytePtr buffer = data->mBuffer + data->mOffset;
+	Memory::Extract(buffer, remain, dataOut, outSize);
+	data->mOffset += outSize;
+	return outSize;
 }
 
 //============================================================================================================
@@ -42,17 +55,16 @@ int MemSeekFunc (void* dataIn, ogg_int64_t offset, int whence)
 
 	if (whence == SEEK_SET)
 	{
-		data->mOffset = (uint)Clamp((int)offset, 0, (int)data->mTotal);
+		data->mOffset = (uint)Clamp((int)offset, 0, (int)data->mSize);
 	}
 	else if (whence == SEEK_END)
 	{
-		data->mOffset = (uint)Clamp((int)data->mTotal + (int)offset, 0, (int)data->mTotal);
+		data->mOffset = (uint)Clamp((int)data->mSize + (int)offset, 0, (int)data->mSize);
 	}
 	else
 	{
-		data->mOffset = (uint)Clamp((int)data->mOffset + (int)offset, 0, (int)data->mTotal);
+		data->mOffset = (uint)Clamp((int)data->mOffset + (int)offset, 0, (int)data->mSize);
 	}
-	data->mRemaining = data->mTotal - data->mOffset;
 	return 0;
 }
 
@@ -62,9 +74,8 @@ int MemCloseFunc (void* dataIn)
 {
 	MemData* data = (MemData*)dataIn;
 	data->mBuffer = 0;
-	data->mRemaining = 0;
 	data->mOffset = 0;
-	data->mTotal = 0;
+	data->mSize = 0;
 	return 0;
 }
 
@@ -72,8 +83,12 @@ int MemCloseFunc (void* dataIn)
 // Initialize the Audio library
 //============================================================================================================
 
+uint g_refCount = 0;
+
 Audio::Audio() : mAudioLib(0)
 {
+	if (++g_refCount == 1) alcInit();
+
 	ALCdevice* device = alcOpenDevice(NULL);
 	ASSERT(device != 0, "Couldn't open the default OpenAL device");
 	
@@ -97,6 +112,8 @@ Audio::~Audio()
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
+
+	if (--g_refCount == 0) alcRelease();
 }
 
 //============================================================================================================
@@ -227,12 +244,6 @@ R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 		{
 			Lock();
 			{
-				sound = mLibrary.AddUnique(name);
-				sound->SetAudio(this);
-
-				uint buffer;
-				alGenBuffers(1, &buffer);
-
 				ov_callbacks cb;
 				cb.read_func  = &MemReadFunc;
 				cb.tell_func  = &MemTellFunc;
@@ -242,32 +253,42 @@ R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 				MemData memData;
 				memData.mBuffer		= mem.GetBuffer();
 				memData.mOffset		= 0;
-				memData.mTotal		= mem.GetSize();
-				memData.mRemaining	= memData.mTotal;
+				memData.mSize		= mem.GetSize();
 
 				OggVorbis_File ogg;
-				ov_open_callbacks(&memData, &ogg, NULL, 0, cb);
+				int retVal = ov_open_callbacks(&memData, &ogg, NULL, 0, cb);
+				ASSERT(retVal == 0, "ov_open_callbacks call failed");
 
-				vorbis_info* vorbisInfo;
-				vorbisInfo = ov_info(&ogg, -1);
-
-				Memory decoded;
-				long bytesRead;
-				int bitStream = 0;
-				char data[4096];
-
-				do
+				if (!retVal)
 				{
-					bytesRead = ov_read(&ogg, data, sizeof(data), 0, 2, 1, &bitStream);
-					decoded.Append((const void*)data, (uint)bytesRead);
+					uint buffer;
+					alGenBuffers(1, &buffer);
+
+					vorbis_info* vorbisInfo;
+					vorbisInfo = ov_info(&ogg, -1);
+
+					Memory decoded;
+					long bytesRead (0);
+					int bitStream (0);
+					char data[4096] = {0};
+
+					do
+					{
+						bytesRead = ov_read(&ogg, data, sizeof(data), 0, 2, 1, &bitStream);
+						ASSERT(bytesRead >= 0, "ov_read returned an error code");
+						decoded.Append((const void*)data, (uint)bytesRead);
+					}
+					while (bytesRead > 0);
+
+					ALenum format;
+					format = (vorbisInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+					alBufferData(buffer, format, decoded.GetBuffer(), decoded.GetSize(), (uint)vorbisInfo->rate);
+
+					sound = mLibrary.AddUnique(name);
+					sound->SetAudio(this);
+					sound->SetSource(buffer);
 				}
-				while (bytesRead > 0);
-
-				ALenum format;
-				format = (vorbisInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-
-				alBufferData(buffer, format, decoded.GetBuffer(), decoded.GetSize(), (uint)vorbisInfo->rate);
-				sound->SetSource(buffer);
 			}
 			Unlock();
 		}

@@ -1,6 +1,11 @@
 #ifndef AL_AL_H
 #define AL_AL_H
 
+// Force the library to be static
+#ifndef AL_LIBTYPE_STATIC
+#define AL_LIBTYPE_STATIC
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -359,6 +364,12 @@ typedef void ALvoid;
 #define AL_LINEAR_DISTANCE_CLAMPED                0xD004
 #define AL_EXPONENT_DISTANCE                      0xD005
 #define AL_EXPONENT_DISTANCE_CLAMPED              0xD006
+
+/*
+ * Static libraries will need to manage their own library initialization
+ */
+AL_API void alcInit(void);
+AL_API void alcRelease(void);
 
 /*
  * Renderer State management
