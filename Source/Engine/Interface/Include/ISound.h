@@ -21,6 +21,12 @@ struct ISound
 	// Get the associated Audio class
 	virtual IAudio* GetAudio()=0;
 
+	// Whether this is a playable sound
+	virtual bool IsValid() const=0;
+
+	// Set the source data from which the sound gets created
+	virtual bool SetSourceData (const byte* buffer, uint size)=0;
+
 	// Play the sound in 2D
 	virtual ISoundInstance* Play (uint layer = 0, float fadeInTime = 0.0f, bool repeat = false)=0;
 

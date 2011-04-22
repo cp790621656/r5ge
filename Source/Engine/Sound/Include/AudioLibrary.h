@@ -4,13 +4,13 @@
 //			R5 Game Engine, individual file copyright belongs to their respective authors.
 //									http://r5ge.googlecode.com/
 //============================================================================================================
+// Author: Michael Lyashenko
+//============================================================================================================
 
-#include "../../Interface/Include/_All.h"
-
-namespace R5
+class AudioLibrary : public Thread::Lockable
 {
-	#include "AudioLibrary.h"
-	#include "Audio.h"
-	#include "Sound.h"
-	#include "SoundInstance.h"
+public:
+
+	AudioLibrary();
+	~AudioLibrary();
 };

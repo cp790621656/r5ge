@@ -1,94 +1,16 @@
 #include "../Include/_All.h"
 #include "../Include/AL/al.h"
 #include "../Include/AL/alc.h"
-#include "../Include/vorbis/vorbisfile.h"
 using namespace R5;
 
-//============================================================================================================
-
-#ifdef _WINDOWS
-  #pragma comment(lib, "ogg.lib")
-  #pragma comment(lib, "vorbis.lib")
-  #pragma comment(lib, "OpenAL32.lib")
-#endif
-
-//============================================================================================================
-// OpenAL reads data using callbacks. We need to specify those callbacks.
-//============================================================================================================
-
-struct MemData
-{
-	ConstBytePtr mBuffer;
-	uint mSize;
-	uint mOffset;
-};
-
-//============================================================================================================
-
-size_t MemReadFunc (void* dataOut, size_t dataOutSize, size_t nmemb, void* dataIn)
-{
-	MemData* data = (MemData*)dataIn;
-
-	uint outSize = dataOutSize * nmemb;
-	uint remain = data->mSize - data->mOffset;
-	if (remain < outSize) outSize = remain;
-
-	ConstBytePtr buffer = data->mBuffer + data->mOffset;
-	Memory::Extract(buffer, remain, dataOut, outSize);
-	data->mOffset += outSize;
-	return outSize;
-}
-
-//============================================================================================================
-
-long MemTellFunc (void* dataIn)
-{
-	MemData* data = (MemData*)dataIn;
-	return data->mOffset;
-}
-
-//============================================================================================================
-
-int MemSeekFunc (void* dataIn, ogg_int64_t offset, int whence)
-{
-	MemData* data = (MemData*)dataIn;
-
-	if (whence == SEEK_SET)
-	{
-		data->mOffset = (uint)Clamp((int)offset, 0, (int)data->mSize);
-	}
-	else if (whence == SEEK_END)
-	{
-		data->mOffset = (uint)Clamp((int)data->mSize + (int)offset, 0, (int)data->mSize);
-	}
-	else
-	{
-		data->mOffset = (uint)Clamp((int)data->mOffset + (int)offset, 0, (int)data->mSize);
-	}
-	return 0;
-}
-
-//============================================================================================================
-
-int MemCloseFunc (void* dataIn)
-{
-	MemData* data = (MemData*)dataIn;
-	data->mBuffer = 0;
-	data->mOffset = 0;
-	data->mSize = 0;
-	return 0;
-}
+AudioLibrary g_audioLibrary;
 
 //============================================================================================================
 // Initialize the Audio library
 //============================================================================================================
 
-uint g_refCount = 0;
-
-Audio::Audio() : mAudioLib(0)
+Audio::Audio()
 {
-	if (++g_refCount == 1) alcInit();
-
 	ALCdevice* device = alcOpenDevice(NULL);
 	ASSERT(device != 0, "Couldn't open the default OpenAL device");
 	
@@ -112,8 +34,6 @@ Audio::~Audio()
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
-
-	if (--g_refCount == 0) alcRelease();
 }
 
 //============================================================================================================
@@ -122,12 +42,12 @@ Audio::~Audio()
 
 void Audio::Release()
 {
-	Lock();
+	g_audioLibrary.Lock();
 	{
 		mLayers.Release();
 		mLibrary.Release();
 	}
-	Unlock();
+	g_audioLibrary.Unlock();
 }
 
 //============================================================================================================
@@ -136,7 +56,7 @@ void Audio::Release()
 
 void Audio::Update()
 {
-	Lock();
+	g_audioLibrary.Lock();
 	{
 		ulong currentTime = Time::GetMilliseconds();
 		PointerArray<AudioLayer>& values = mLayers.GetAllValues();
@@ -152,7 +72,7 @@ void Audio::Update()
 			}
 		}
 	}
-	Unlock();
+	g_audioLibrary.Unlock();
 }
 
 //============================================================================================================
@@ -161,11 +81,9 @@ void Audio::Update()
 
 void Audio::Release (ISound* sound)
 {
-	Lock();
-	{
-		if (sound != 0) _Release(sound);
-	}
-	Unlock();
+	g_audioLibrary.Lock();
+	if (sound != 0) mLibrary.Delete((Sound*)sound);
+	g_audioLibrary.Unlock();
 }
 
 //============================================================================================================
@@ -187,7 +105,7 @@ void Audio::SetListener (const Vector3f& position, const Vector3f& dir, const Ve
 
 void Audio::SetLayerVolume (uint layer, float volume, float duration)
 {
-	Lock();
+	g_audioLibrary.Lock();
 	{
 		AudioLayer* audioLayer = mLayers.GetIfExists(layer);
 		
@@ -213,11 +131,11 @@ void Audio::SetLayerVolume (uint layer, float volume, float duration)
 			}
 		}
 	}
-	Unlock();
+	g_audioLibrary.Unlock();
 }
 
 //============================================================================================================
-// Get the volume of a layer if the layer exists
+// Gets the volume of the specified layer
 //============================================================================================================
 
 const float Audio::GetLayerVolume (uint layer) const
@@ -229,148 +147,114 @@ const float Audio::GetLayerVolume (uint layer) const
 }
 
 //============================================================================================================
-// Creates a AudioSource
+// Adds a new sound to the library
 //============================================================================================================
 
 R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 {
-	SoundPtr sound = mLibrary.Find(name);
-
-	if (sound == 0 && createIfMissing)
-	{
-		Memory mem;
-
-		if (mem.Load(name))
-		{
-			Lock();
-			{
-				ov_callbacks cb;
-				cb.read_func  = &MemReadFunc;
-				cb.tell_func  = &MemTellFunc;
-				cb.seek_func  = &MemSeekFunc;
-				cb.close_func = &MemCloseFunc;
-
-				MemData memData;
-				memData.mBuffer		= mem.GetBuffer();
-				memData.mOffset		= 0;
-				memData.mSize		= mem.GetSize();
-
-				OggVorbis_File ogg;
-				int retVal = ov_open_callbacks(&memData, &ogg, NULL, 0, cb);
-				ASSERT(retVal == 0, "ov_open_callbacks call failed");
-
-				if (!retVal)
-				{
-					uint buffer;
-					alGenBuffers(1, &buffer);
-
-					vorbis_info* vorbisInfo;
-					vorbisInfo = ov_info(&ogg, -1);
-
-					Memory decoded;
-					long bytesRead (0);
-					int bitStream (0);
-					char data[4096] = {0};
-
-					do
-					{
-						bytesRead = ov_read(&ogg, data, sizeof(data), 0, 2, 1, &bitStream);
-						ASSERT(bytesRead >= 0, "ov_read returned an error code");
-						decoded.Append((const void*)data, (uint)bytesRead);
-					}
-					while (bytesRead > 0);
-
-					ALenum format;
-					format = (vorbisInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-
-					alBufferData(buffer, format, decoded.GetBuffer(), decoded.GetSize(), (uint)vorbisInfo->rate);
-
-					ov_clear(&ogg);
-
-					sound = mLibrary.AddUnique(name);
-					sound->SetAudio(this);
-					sound->SetSource(buffer);
-				}
-			}
-			Unlock();
-		}
-	}
+	Sound* sound (0);
+	g_audioLibrary.Lock();
+	sound = _GetOrCreate(name, createIfMissing);
+	g_audioLibrary.Unlock();
 	return sound;
 }
 
 //============================================================================================================
-// Releases the cAudio Sound source.
+// Release the specified sound instance
 //============================================================================================================
 
 void Audio::ReleaseInstance(ISoundInstance* sound)
 {
-	Lock();
+	g_audioLibrary.Lock();
 	{
 		SoundInstance* inst = (SoundInstance*)sound;
 		AudioLayer* audioLayer = _GetAudioLayer(inst->mLayer, 1.0f);
 		audioLayer->mSounds.Remove(sound);
 		delete sound;
 	}
-	Unlock();
+	g_audioLibrary.Unlock();
 }
 
 //============================================================================================================
-// Returns a newly created 2D sound source. Needs to return void* as irrklang is not defined outside this
-// class and the SoundInstance class
+// Create a new instance of the specified 2D sound
 //============================================================================================================
 
 ISoundInstance* Audio::Instantiate (ISound* sound, uint layer, float fadeInTime, bool repeat)
 {
-	SoundInstance* soundInst = _Instantiate((Sound*)sound, layer, fadeInTime, repeat);
+	if (sound != 0)
+	{
+		SoundInstance* soundInst = _Instantiate((Sound*)sound, layer, fadeInTime, repeat);
 
-	uint source;
-	alGenSources(1, &source);
-	alSourcei( source, AL_BUFFER, ((Sound*)sound)->mBuffer );
-	alSourcei( source, AL_LOOPING, (uint)repeat);
-	alSourcef( source, AL_GAIN, 0.0f );
-	alSourcei( source, AL_SOURCE_RELATIVE, 1 );
-	alSourcePlay(source);
-	soundInst->mSource = source;
-	return soundInst;
+		if (sound->IsValid())
+		{
+			uint source;
+			alGenSources(1, &source);
+			alSourcei( source, AL_BUFFER, ((Sound*)sound)->mBuffer );
+			alSourcei( source, AL_LOOPING, (uint)repeat);
+			alSourcef( source, AL_GAIN, 0.0f );
+			alSourcei( source, AL_SOURCE_RELATIVE, 1 );
+			alSourcePlay(source);
+			soundInst->mSource = source;
+		}
+		return soundInst;
+	}
+	return 0;
 }
 
 //============================================================================================================
-// Returns a newly created 3D sound source.
+// Create a new instance of the specified 3D sound
 //============================================================================================================
 
 ISoundInstance* Audio::Instantiate (ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat)
 {
-	SoundInstance* soundInst = _Instantiate((Sound*)sound, layer, fadeInTime, repeat);
+	if (sound != 0)
+	{
+		SoundInstance* soundInst = _Instantiate((Sound*)sound, layer, fadeInTime, repeat);
 
-	uint source;
-	alGenSources(1, &source);
-	alSourcefv( source, AL_POSITION, position );
-	alSourcei( source, AL_BUFFER, ((Sound*)sound)->mBuffer );
-	alSourcei( source, AL_LOOPING, (uint)repeat);
-	alSourcef( source, AL_GAIN,	0.0f );
-	alSourcePlay(source);
-	soundInst->mSource = source;
-	soundInst->mIs3D = true;
-	return soundInst;
+		if (sound->IsValid())
+		{
+			uint source;
+			alGenSources(1, &source);
+			alSourcefv( source, AL_POSITION, position );
+			alSourcei( source, AL_BUFFER, ((Sound*)sound)->mBuffer );
+			alSourcei( source, AL_LOOPING, (uint)repeat);
+			alSourcef( source, AL_GAIN,	0.0f );
+			alSourcePlay(source);
+			soundInst->mSource = source;
+		}
+
+		soundInst->mIs3D = true;
+		return soundInst;
+	}
+	return 0;
 }
 
 //============================================================================================================
-// INTERNAL: Release the specified sound
+// INTERNAL: Gets or creates the specified sound
 //============================================================================================================
 
-void Audio::_Release (ISound* sound)
+inline Sound* Audio::_GetOrCreate (const String& name, bool createIfMissing)
 {
-	if (sound != 0)
+	FOREACH(i, mLibrary)
 	{
-		mLibrary.Delete(R5_CAST(Sound, sound));
+		Sound* s = mLibrary[i];
+		if (s != 0 && s->GetName() == name) return s;
 	}
+
+	if (createIfMissing)
+	{
+		Sound* s = new Sound(this, name);
+		mLibrary.Expand() = s;
+		return s;
+	}
+	return 0;
 }
 
 //============================================================================================================
 // INTERNAL: Retrieves the specified audio layer
 //============================================================================================================
 
-Audio::AudioLayer* Audio::_GetAudioLayer (uint layer, float volume)
+inline Audio::AudioLayer* Audio::_GetAudioLayer (uint layer, float volume)
 {
 	AudioLayerPtr& ptr = mLayers[layer];
 	if (ptr == 0) ptr = new AudioLayer(layer, volume);
@@ -391,7 +275,7 @@ SoundInstance* Audio::_Instantiate (Sound* sound, uint layer, float fadeInTime, 
 	soundInst->mIsPlaying = true;
 	soundInst->mIsPaused = false;
 
-	Lock();
+	g_audioLibrary.Lock();
 	{
 		AudioLayer* audioLayer = _GetAudioLayer(layer, 1.0f);
 		PlayingSounds& playing = audioLayer->mSounds;
@@ -399,6 +283,6 @@ SoundInstance* Audio::_Instantiate (Sound* sound, uint layer, float fadeInTime, 
 		soundInst->SetRepeat(repeat);
 		playing.Expand() = soundInst;
 	}
-	Unlock();
+	g_audioLibrary.Unlock();
 	return soundInst;
 }

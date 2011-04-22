@@ -160,6 +160,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\AudioLibrary.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Sound.cpp"
 				>
 			</File>
@@ -179,6 +183,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\Audio.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\AudioLibrary.h"
 				>
 			</File>
 			<File

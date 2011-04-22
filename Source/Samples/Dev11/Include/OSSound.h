@@ -10,48 +10,53 @@
 
 class OSSound : public Script
 {
+	IAudio*			mAudio;
+	ISound*			mSound;
 	ISoundInstance* mInst;
-	String			mName;
 	uint			mLayer;
 
 public:
 
 	R5_DECLARE_INHERITED_CLASS("OSSound", OSSound, Script, Script);
 
-	OSSound() : mInst (0), mLayer(0) {}
+	OSSound() : mAudio(0), mSound(0), mInst(0), mLayer(0) {}
+
+	virtual void OnInit()
+	{
+		mAudio = mObject->GetCore()->GetAudio();
+		ASSERT(mAudio != 0, "Missing the audio");
+	}
 
 	// Update the sound's position
 	virtual void OnUpdate()
 	{
-		if (mInst == 0)
+		if (!mInst)
 		{
-			if (mName.IsEmpty()) return;
-			const Vector3f& pos = mObject->GetAbsolutePosition();
-			ISound* sound = mObject->GetCore()->GetAudio()->GetSound(mName);
-			mInst = sound->Play(pos, mLayer, 0.1f, true);
-			mInst->SetEffect(ISoundInstance::Effect::Auditorium);
+			if (mSound != 0 && mSound->IsValid())
+			{
+				mInst = mSound->Play(mObject->GetAbsolutePosition(), mLayer, 0.1f, true);
+				mInst->SetEffect(ISoundInstance::Effect::Auditorium);
+			}
 		}
-
-		if (mInst != 0)
+		else
 		{
-			const Vector3f& pos = mObject->GetAbsolutePosition();
-			mInst->SetPosition(pos);
+			mInst->SetPosition(mObject->GetAbsolutePosition());
 		}
 	}
 
-	// Serilization -- Save
+	// Serialization -- Save
 	virtual void OnSerializeTo(TreeNode& node) const
 	{
-		node.AddChild("Sound", mName);
+		if (mSound != 0) node.AddChild("Sound", mSound->GetName());
 		node.AddChild("Layer", mLayer);
 	}
 
-	// Serilization -- Load
+	// Serialization -- Load
 	virtual void OnSerializeFrom(const TreeNode& node)
 	{
 		if (node.mTag == "Sound")
 		{
-			mName = node.mValue.AsString();
+			mSound = mAudio->GetSound(node.mValue.AsString());
 		}
 		else if (node.mTag == "Layer")
 		{

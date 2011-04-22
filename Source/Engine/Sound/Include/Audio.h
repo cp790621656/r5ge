@@ -34,9 +34,8 @@ private:
 
 private:
 
-	void*					mAudioLib;
 	PointerHash<AudioLayer>	mLayers;
-	ResourceArray<Sound>	mLibrary;
+	PointerArray<Sound>		mLibrary;
 	Vector3f				mPos;
 	Thread::Lockable		mLock;
 
@@ -82,11 +81,7 @@ public:
 
 private:
 
-	void		_Release		(ISound* sound);
+	Sound* _GetOrCreate (const String& name, bool createIfMissing);
 	AudioLayer* _GetAudioLayer  (uint layer, float volume);
 	SoundInstance* _Instantiate (Sound* sound, uint layer, float fadeInTime, bool repeat);
-	
-	// Thread-safe functionality
-	void Lock()		const { mLock.Lock(); }
-	void Unlock()	const { mLock.Unlock(); }
 };
