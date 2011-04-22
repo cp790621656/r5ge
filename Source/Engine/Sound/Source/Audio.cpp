@@ -285,6 +285,8 @@ R5::ISound* Audio::GetSound (const String& name, bool createIfMissing)
 
 					alBufferData(buffer, format, decoded.GetBuffer(), decoded.GetSize(), (uint)vorbisInfo->rate);
 
+					ov_clear(&ogg);
+
 					sound = mLibrary.AddUnique(name);
 					sound->SetAudio(this);
 					sound->SetSource(buffer);
