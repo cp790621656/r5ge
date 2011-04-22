@@ -12,11 +12,10 @@ class Sound : public ISound
 {
 private:
 
-	String				mName;				// File that is being referenced
-	uint				mBuffer;			// The memory from which the instance is created
-	IAudio*				mAudio;				// Audio instance which created this Sound
-	Thread::Lockable	mLock;				// Makes the sound thread safe
-	mutable bool		mCheckForSource;	// Whether we should try to load the sound
+	String			mName;				// File that is being referenced
+	uint			mBuffer;			// The memory from which the instance is created
+	IAudio*			mAudio;				// Audio instance which created this Sound
+	mutable bool	mCheckForSource;	// Whether we should try to load the sound
 
 	// Only the Audio class should be able to create sounds
 	friend class Audio;

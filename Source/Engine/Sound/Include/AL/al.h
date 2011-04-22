@@ -1,9 +1,11 @@
 #ifndef AL_AL_H
 #define AL_AL_H
 
-// Force the library to be static
-#ifndef AL_LIBTYPE_STATIC
-#define AL_LIBTYPE_STATIC
+// Force the library to be static on Windows
+#ifdef _WINDOWS
+ #ifndef AL_LIBTYPE_STATIC
+  #define AL_LIBTYPE_STATIC
+ #endif
 #endif
 
 #if defined(__cplusplus)
