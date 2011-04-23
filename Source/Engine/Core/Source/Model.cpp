@@ -221,8 +221,10 @@ uint Model::_Draw (uint group, IGraphics* graphics, const ITechnique* tech, Limb
 			{
 				if (updateSkin)
 				{
+					const IShader* shader = graphics->GetActiveShader();
+
 					// If we're skinning on the GPU and we have a shader active
-					if (g_skinOnGPU && method->mShader != 0 && method->mShader->GetFlag(IShader::Flag::Skinned))
+					if (g_skinOnGPU && shader != 0 && shader->GetFlag(IShader::Flag::Skinned))
 					{
 						Uniform uniform;
 						uniform.mType		= Uniform::Type::ArrayFloat16;

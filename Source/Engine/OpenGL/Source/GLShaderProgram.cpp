@@ -428,11 +428,10 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 	// Check for the shader's source code if needed
 	if (mCheckForSource) _CheckForSource();
 
-	// If the shader is marked as dirty, rebuild it (this also sets all flags)
-	if (mNeedsLinking) _ReLink();
+	const Flags& flags = mUnified.GetBasicFlags();
 
 	// If this is a surface shader, we might need to activate a different shader
-	if (mParent == 0 && tech != 0 && GetFlag(IShader::Flag::Surface))
+	if (mParent == 0 && tech != 0 && flags.Get(IShader::Flag::Surface))
 	{
 		Flags desired;
 
@@ -495,9 +494,9 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 
 			// Find or create this special shader
 			{
-				FOREACH(i, mSpecial)
+				FOREACH(i, mInternal)
 				{
-					GLShaderProgram* shd = mSpecial[i];
+					GLShaderProgram* shd = mInternal[i];
 
 					if (shd->mDesired == desired)
 					{
@@ -510,7 +509,7 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 				{
 					v.shader = new GLShaderProgram();
 					v.shader->_Init(mGraphics, this, mName, desired);
-					mSpecial.Expand() = v.shader;
+					mInternal.Expand() = v.shader;
 
 					// Copy over registered uniforms
 					FOREACH(i, mUniforms)
@@ -532,12 +531,38 @@ GLShaderProgram* GLShaderProgram::_Activate (const ITechnique* tech)
 }
 
 //============================================================================================================
+// Updates the code for all components
+//============================================================================================================
+
+void GLShaderProgram::_UpdateComponents()
+{
+	mUpdateComponents = false;
+	_Release();
+
+	const GLUnifiedShader& uni = (mParent == 0) ? mUnified : mParent->mUnified;
+	const Flags& flags = uni.GetBasicFlags();
+	String out;
+
+	for (uint i = 0; i < 3; ++i)
+	{
+		uint myType = (IShader::Flag::Vertex << i);
+
+		if (flags.Get(myType))
+		{
+			mFinal = mFinal.Get() | uni.GetVariation(out, mDesired | myType);
+			_GetComponent(myType)->SetCode(out, mDesired | myType);
+			mNeedsLinking = true;
+		}
+	}
+}
+
+//============================================================================================================
 // INTERNAL: Sets the shader's source code by either using the parent's, or finding it
 //============================================================================================================
 
 void GLShaderProgram::_CheckForSource()
 {
-	mCheckForSource = 0;
+	mCheckForSource = false;
 
 	if (mParent == 0)
 	{
@@ -547,7 +572,7 @@ void GLShaderProgram::_CheckForSource()
 			// Shaders with names that begin with [R5] are internal shaders
 			String code;
 			::GLGetInternalShaderCode(mName, code);
-			if (code.IsValid()) SetComponentCode(code);
+			if (code.IsValid()) SetCode(code);
 		}
 		else
 		{
@@ -555,42 +580,18 @@ void GLShaderProgram::_CheckForSource()
 			String path (System::GetPathFromFilename(mName));
 			path << System::GetFilenameFromPath(mName, true);
 
-			// Collect the files matching the specified path
-			Array<String> files;
-			System::GetFiles(path, files, true);
-			System::GetFiles("Shaders/" + path, files, true);
-
 			// This is the expected filename
-			String code, expectedName (System::GetFilenameFromPath(mName, false));
+			String code, expectedName (System::GetBestMatch(path));
+			if (expectedName.IsEmpty()) expectedName = System::GetBestMatch("Shaders/" + path);
 
-			// Run through all located files and use shaders with filenames matching the expected value
-			FOREACH(i, files)
-			{
-				const String& file = files[i];
-				String filename (System::GetFilenameFromPath(file, false));
-
-				if (filename == expectedName && code.Load(file))
-				{
-					SetComponentCode(code);
-				}
-			}
-		}
-
-		if (mAdded.IsEmpty())
-		{
-			WARNING((mName + " is missing it source code").GetBuffer());
+			// Load the file
+			if (expectedName.IsValid() && code.Load(expectedName)) SetCode(code);
 		}
 	}
 	else
 	{
-		ASSERT(mParent->mCode.IsValid(), "Missing source code in the parent?");
-		mAdded.Release();
-
-		FOREACH(i, mParent->mCode)
-		{
-			CodeEntry& ent = mParent->mCode[i];
-			SetComponentCode(ent.mCode);
-		}
+		// It's a child shader -- the parent will take care of source updates
+		mUpdateComponents = true;
 	}
 }
 
@@ -601,6 +602,7 @@ void GLShaderProgram::_CheckForSource()
 inline bool GLShaderProgram::_Activate()
 {
 	if (mCheckForSource) _CheckForSource();
+	if (mUpdateComponents) _UpdateComponents();
 	if (mNeedsLinking) _ReLink();
 	else if (g_activeProgram == mProgram) return (g_activeProgram != 0);
 
@@ -616,7 +618,7 @@ inline bool GLShaderProgram::_Activate()
 
 inline bool GLShaderProgram::_ReLink()
 {
-	mNeedsLinking = 0;
+	mNeedsLinking = false;
 	_Detach();
 	return (mAdded.IsValid()) ? _Link() : false;
 }
@@ -705,6 +707,7 @@ void GLShaderProgram::_Detach()
 
 void GLShaderProgram::_Release()
 {
+	mFinal.Clear();
 	mNeedsLinking = 0;
 	mAdded.Release();
 
@@ -756,7 +759,6 @@ void GLShaderProgram::_Attach (PointerArray<GLShaderComponent>& list)
 	{
 		GLShaderComponent* sub = list[--i];
 		glAttachShader(mProgram, sub->mGLID);
-		mFinal.Include(sub->mFlags);
 		mAttached.Expand() = sub;
 	}
 }
@@ -987,44 +989,18 @@ void GLShaderProgram::_InsertUniform (const String& name, uint elements, const S
 }
 
 //============================================================================================================
-// INTERNAL: Gets or creates a shader code entry of specified type
-//============================================================================================================
-
-GLShaderProgram::CodeEntry& GLShaderProgram::_GetCodeEntry (uint type)
-{
-	ASSERT(type != IShader::Type::Unknown, "Invalid shader type specified");
-
-	// Surface shaders replace all shader types
-	if (type == IShader::Type::Surface) mCode.Clear();
-
-	// Locate the previous entry for a shader component of this type
-	FOREACH(i, mCode)
-	{
-		CodeEntry& ent = mCode[i];
-		if (ent.mType == type) return ent;
-	}
-
-	// Create a new shader code entry
-	{
-		CodeEntry& ent = mCode.Expand();
-		ent.mType = type;
-		return ent;
-	}
-}
-
-//============================================================================================================
 // INTERNAL: Gets or creates a shader component of specified type
 //============================================================================================================
 
 GLShaderComponent* GLShaderProgram::_GetComponent (uint type)
 {
-	ASSERT(type != IShader::Type::Unknown, "Invalid shader type specified");
+	ASSERT(type != 0, "Invalid shader type specified");
 
 	// Find an existing component entry for this shader
 	FOREACH(i, mAdded)
 	{
 		GLShaderComponent* comp = mAdded[i];
-		if (comp != 0 && comp->mType == type) return comp;
+		if (comp != 0 && comp->mFlags.Get(type)) return comp;
 	}
 
 	// Create a new shader component entry
@@ -1036,68 +1012,15 @@ GLShaderComponent* GLShaderProgram::_GetComponent (uint type)
 }
 
 //============================================================================================================
-// Sets the shader source code, hinting that the code if of specified type
+// Sets the shader's source code
 //============================================================================================================
 
-uint GLShaderProgram::SetComponentCode (const String& code)
+void GLShaderProgram::SetCode (const String& code)
 {
-	if (code.IsEmpty()) return Type::Unknown;
-
-	CodeNode node;
-	node.Load(code);
-
-	String segment, modified;
-	Flags flags;
-	uint finalType (0);
-
-	FOREACH(i, node.mChildren)
-	{
-		CodeNode& c = node.mChildren[i];
-
-		// R5 doesn't need these. They exist only for clarity's sake within the surface shaders.
-		c.mLine.Replace("void Vertex()", "void main()", true);
-		c.mLine.Replace("void Fragment()", "void main()", true);
-		c.mLine.Replace("void Geometry()", "void main()", true);
-
-		c.Save(segment);
-
-		if (c.mLine.BeginsWith("void main()", true))
-		{
-			// First, pre-process the shader, converting provided code into GLSL
-			modified = segment;
-			uint type = ::GLPreprocessShader(modified, mDesired, flags);
-			finalType |= type;
-
-			// If this is the original shader, save the source code
-			if (mParent == 0) _GetCodeEntry(type).mCode = segment;
-
-			// Update the shader component code
-			GLShaderComponent* comp = _GetComponent(type);
-			comp->SetCode(modified, type, flags);
-			mNeedsLinking = 1;
-
-			// All special shaders must also be invalidated
-			FOREACH(i, mSpecial) mSpecial[i]->mCheckForSource = 1;
-			segment.Clear();
-		}
-	}
-	return finalType;
-}
-
-//============================================================================================================
-// Retrieves the source code of the specified shader component
-//============================================================================================================
-
-const String& GLShaderProgram::GetComponentCode (uint type) const
-{
-	static String empty;
-
-	FOREACH(i, mCode)
-	{
-		const CodeEntry& ent = mCode[i];
-		if (ent.mType == type) return ent.mCode;
-	}
-	return empty;
+	if (mParent) mParent->SetCode(code);
+	else mUnified.SerializeFrom(code);
+	mUpdateComponents = true;
+	mCheckForSource = false;
 }
 
 //============================================================================================================

@@ -621,8 +621,9 @@ void ConvertCommonTypes (String& code)
 // Preprocess a new shader format
 //============================================================================================================
 
-uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
+Flags PreprocessShader (String& code, const Flags& desired)
 {
+	Flags final;
 	bool surface = code.Contains("R5_surface", true);
 
 	if (surface || code.Contains("R5_finalColor", true))
@@ -632,12 +633,6 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		if (surface)
 		{
 			final.Set(IShader::Flag::Surface, true);
-
-			// If this is an unlit shader, we don't need anything aside from the surface color
-			//if (desired.Get(IShader::Flag::DepthOnly) || !desired.Get(IShader::Flag::Lit | IShader::Flag::Deferred))
-			//{
-			//	::RemoveEverythingAfterSurfaceColor(code);
-			//}
 			::ProcessSurfaceShader(code, desired, final);
 		}
 
@@ -683,7 +678,6 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
 		System::Log("[Fragment]\n%s", code.GetBuffer());
-		return IShader::Type::Fragment;
 	}
 	else if (code.Contains("R5_vertexPosition", true))
 	{
@@ -711,7 +705,6 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
 		System::Log("[Vertex]\n%s", code.GetBuffer());
-		return IShader::Type::Vertex;
 	}
 	else
 	{
@@ -723,21 +716,84 @@ uint GLPreprocessShader (String& code, const Flags& desired, Flags& final)
 
 		// This shader uses an outdated format
 		final.Set(IShader::Flag::LegacyFormat, true);
-
 		::FixLegacyShader(code);
-
-		// For shader code debugging:
+		final.Set(code.Contains("gl_Position") ? IShader::Flag::Vertex : IShader::Flag::Fragment);
 		System::Log("[Legacy]\n%s", code.GetBuffer());
+	}
+	return final;
+}
 
-		if (code.Contains("gl_Position"))
+//============================================================================================================
+// Load the specified code and return its shader type
+//============================================================================================================
+
+void GLUnifiedShader::SerializeFrom (const String& code)
+{
+	mFlags.Clear();
+	mCode.Release();
+
+	if (code.IsValid())
+	{
+		mCode.SerializeFrom(code);
+
+		if (code.Contains("R5_surface", true))
 		{
-			final.Set(IShader::Flag::Vertex);
-			return IShader::Type::Vertex;
+			mFlags.Set(IShader::Flag::Surface, true);
+			mFlags.Set(IShader::Flag::Fragment, true);
 		}
-		else
+
+		if (code.Contains("R5_finalColor", true) ||
+			code.Contains("gl_FragColor", true) ||
+			code.Contains("gl_FragData", true))
 		{
-			final.Set(IShader::Flag::Fragment);
-			return IShader::Type::Fragment;
+			mFlags.Set(IShader::Flag::Fragment, true);
+		}
+
+		if (code.Contains("R5_vertexPosition", true) || code.Contains("gl_Position", true))
+		{
+			mFlags.Set(IShader::Flag::Vertex, true);
+		}
+
+		if (code.Contains("EmitVertex", true))
+		{
+			mFlags.Set(IShader::Flag::Geometry, true);
 		}
 	}
+}
+
+//============================================================================================================
+// Save a variation of the shader into the specified string
+//============================================================================================================
+
+Flags GLUnifiedShader::GetVariation (String& out, const Flags& flags) const
+{
+	out.Clear();
+
+	if (flags == 0)
+	{
+		mCode.SerializeTo(out);
+	}
+	else
+	{
+		Array<String> defines;
+
+		if (flags.Get(IShader::Flag::Vertex))		defines.Expand() = "Vertex";
+		if (flags.Get(IShader::Flag::Fragment))		defines.Expand() = "Fragment";
+		if (flags.Get(IShader::Flag::Geometry))		defines.Expand() = "Geometry";
+		if (flags.Get(IShader::Flag::LegacyFormat)) defines.Expand() = "LegacyFormat";
+		if (flags.Get(IShader::Flag::Skinned))		defines.Expand() = "Skinned";
+		if (flags.Get(IShader::Flag::Billboard))	defines.Expand() = "Billboard";
+		if (flags.Get(IShader::Flag::Shadowed))		defines.Expand() = "Shadowed";
+		if (flags.Get(IShader::Flag::Fog))			defines.Expand() = "Fog";
+		if (flags.Get(IShader::Flag::Deferred))		defines.Expand() = "Deferred";
+		if (flags.Get(IShader::Flag::DirLight))		defines.Expand() = "DirLight";
+		if (flags.Get(IShader::Flag::PointLight))	defines.Expand() = "PointLight";
+		if (flags.Get(IShader::Flag::SpotLight))	defines.Expand() = "SpotLight";
+		if (flags.Get(IShader::Flag::Lit))			defines.Expand() = "Lit";
+		if (flags.Get(IShader::Flag::Surface))		defines.Expand() = "Surface";
+		if (flags.Get(IShader::Flag::DepthOnly))	defines.Expand() = "DepthOnly";
+
+		mCode.SerializeTo(out, defines);
+	}
+	return PreprocessShader(out, flags);
 }

@@ -15,37 +15,25 @@ using namespace R5;
 int main (int argc, char* argv[])
 {
 	String in;
-	in.Load("../../../Resources/Shaders/Surface/Skinned.shader");
+	in.Load("../../../Resources/Shaders/Surface/Diffuse + Normal.shader");
 
 	printf("Original: %u bytes\n", in.GetSize());
 
-	CodeNode code;
-	code.Load(in);
+	GLUnifiedShader shader;
+	shader.SerializeFrom(in);
 	
 	String out;
 
-	FOREACH(i, code.mChildren)
-	{
-		CodeNode& c = code.mChildren[i];
+	Flags flags;
+	flags.Set(IShader::Flag::Vertex, true);
+	shader.SerializeTo(out, flags);
+	printf("================= VERTEX\n%s=================\n", out.GetBuffer());
 
-		if (c.mLine.Replace("void Vertex()", "void main()", true))
-		{
-			c.Save(out);
-			printf("==========VERTEX==============\n");
-			printf("%s\n", out.GetBuffer());
-			printf("==============================\n");
-			out.Clear();
-		}
-		else if (c.mLine.Replace("void Fragment()", "void main()", true))
-		{
-			c.Save(out);
-			printf("==========FRAGMENT============\n");
-			printf("%s\n", out.GetBuffer());
-			printf("==============================\n");
-			out.Clear();
-		}
-		else c.Save(out);
-	}
+	flags.Clear();
+	flags.Set(IShader::Flag::Fragment, true);
+	shader.SerializeTo(out, flags);
+	printf("================= FRAGMENT\n%s=================\n", out.GetBuffer());
+
 	getchar();
 	return 0;
 }

@@ -10,27 +10,15 @@
 
 struct IShader
 {
-	struct Type
-	{
-		enum
-		{
-			Unknown		= 0,
-			Vertex		= 1,
-			Fragment	= 2,
-			Geometry	= 4,
-			Surface		= 7,
-		};
-	};
-
 	// Flags used by this class
 	struct Flag
 	{
 		enum
 		{
-			LegacyFormat = 0x0001,	// This shader uses an outdated shader model (before SM 3.0)
-			Vertex		 = 0x0002,	// This shader has a vertex component
-			Fragment	 = 0x0004,	// This shader has a fragment component
-			Surface		 = 0x0008,	// This is a surface shader, usable for both forward and deferred
+			Vertex		 = 0x0001,	// This shader has a vertex component
+			Fragment	 = 0x0002,	// This shader has a fragment component
+			Geometry	 = 0x0004,	// This shader has a geometry component
+			LegacyFormat = 0x0008,	// This shader uses an outdated shader model (before SM 3.0)
 			Skinned		 = 0x0010,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
 			Billboard	 = 0x0020,	// The shader has a skinning component, has 'R5_boneTransforms' uniform
 			Shadowed	 = 0x0040,	// The material's last texture must be "R5_shadowMap"
@@ -40,7 +28,8 @@ struct IShader
 			PointLight	 = 0x0400,	// The shader expects a point light
 			SpotLight	 = 0x0800,	// The shader expects a spot light
 			Lit			 = 0x0E00,	// The shader expects some light (to be used as a convenience mask)
-			DepthOnly	 = 0x1000,	// Only depth output is desired
+			Surface		 = 0x1000,	// This is a surface shader, usable for both forward and deferred
+			DepthOnly	 = 0x2000,	// Only depth output is desired
 		};
 	};
 
@@ -82,12 +71,11 @@ public:
 	// Marks the shader as needing to be relinked
 	virtual void SetDirty()=0;
 
-	// Sets the shader source code
-	// NOTE: Setting a fragment shader followed by a vertex shader will not replace them, but will instead use both.
-	virtual uint SetComponentCode (const String& code)=0;
+	// Sets the shader's source code
+	virtual void SetCode (const String& code)=0;
 
-	// Retrieves the source code of the specified shader component
-	virtual const String& GetComponentCode (uint type) const=0;
+	// Retrieves the shader's source code
+	virtual void GetCode (String& out) const=0;
 
 	// Force-updates the value of the specified uniform
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const=0;

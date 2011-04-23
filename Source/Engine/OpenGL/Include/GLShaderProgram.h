@@ -30,13 +30,6 @@ private:
 		UniformEntry() : mGLID(-2), mGroup(Uniform::Group::SetWhenActivated) {}
 	};
 
-	struct CodeEntry
-	{
-		String mCode;					// The original source code
-		uint mType;						// Determined type of this code (surface, vertex, fragment, geometry)
-		CodeEntry() : mType(0) {}
-	};
-
 	// Each shader can actually result in several different versions compiled for specific tasks.
 	// Deferred rendering is a variation of a surface shader for example. Forward rendered shader
 	// with shadows is another. Each variation is meant to handle a specific task.
@@ -53,19 +46,24 @@ private:
 	GLGraphics*			mGraphics;
 	GLShaderProgram*	mParent;
 	uint				mProgram;
-	uint				mNeedsLinking;
-	uint				mCheckForSource;
 
-	PointerArray<GLShaderProgram>	mSpecial;	// Array of specially compiled shaders
+	PointerArray<GLShaderProgram>	mInternal;	// Array of shaders that will be activated instead of this one
 	PointerArray<GLShaderComponent> mAdded;		// Array of shaders that will be attached on the next _Activate()
 	Array<GLShaderComponent*>		mAttached;	// Array of shaders currently attached to the program
-	Array<CodeEntry>				mCode;		// Original source code
+
+	// Unified shader's source code
+	GLUnifiedShader mUnified;
 
 	// Alternate versions of this shader (for surface shaders)
 	Array<Variation> mVariations;
 
 	// Registered values
 	mutable Array<UniformEntry> mUniforms;
+
+	// Internal flags
+	bool mNeedsLinking;
+	bool mCheckForSource;
+	bool mUpdateComponents;
 
 private:
 
@@ -120,6 +118,9 @@ private:
 
 private:
 
+	// Updates the source code of internal shader components
+	void _UpdateComponents();
+
 	// INTERNAL: Sets the shader's source code by either using the parent's, or finding it
 	void _CheckForSource();
 
@@ -153,15 +154,12 @@ private:
 	// INTERNAL: Adds a new registered uniform value without checking to see if it already exists
 	void _InsertUniform (const String& name, uint elements, const SetUniformDelegate& fnct, uint group);
 
-	// INTERNAL: Gets or creates a shader code entry of specified type
-	CodeEntry& _GetCodeEntry (uint type);
-
 	// INTERNAL: Gets or creates a shader component of specified type
 	GLShaderComponent* _GetComponent (uint type);
 
 public:
 
-	GLShaderProgram() : mGraphics(0), mParent(0), mProgram(0), mNeedsLinking(0), mCheckForSource(1) {}
+	GLShaderProgram() : mGraphics(0), mParent(0), mProgram(0), mNeedsLinking(false), mCheckForSource(true), mUpdateComponents(false) {}
 	virtual ~GLShaderProgram() {}
 
 	// Clears the shader, making it invalid
@@ -170,11 +168,11 @@ public:
 	// Marks the shader as needing to be relinked
 	virtual void SetDirty() { mNeedsLinking = true; }
 
-	// Sets the shader source code, hinting that the code if of specified type
-	virtual uint SetComponentCode (const String& code);
+	// Sets the shader's source code
+	virtual void SetCode (const String& code);
 
-	// Retrieves the source code of the specified shader component
-	virtual const String& GetComponentCode (uint type) const;
+	// Retrieves the shader's source code
+	virtual void GetCode (String& out) const { if (mParent) mParent->GetCode(out); else mUnified.SerializeTo(out); }
 
 	// Force-updates the value of the specified uniform
 	virtual bool SetUniform (const String& name, const Uniform& uniform) const;

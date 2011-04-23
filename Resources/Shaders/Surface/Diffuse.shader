@@ -1,4 +1,6 @@
-void Vertex()
+#if Vertex
+
+void main()
 {
 	R5_vertexPosition 	= R5_vertex;
 	R5_vertexNormal 	= R5_normal;
@@ -6,7 +8,11 @@ void Vertex()
 	R5_vertexTexCoord0 	= R5_texCoord0;
 }
 
-void Fragment()
+#else if Fragment
+
+void main()
 {
 	R5_surfaceColor = R5_vertexColor * R5_materialColor * Sample2D(0, R5_vertexTexCoord0);
 }
+
+#endif

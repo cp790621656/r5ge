@@ -18,7 +18,6 @@ protected:
 	IShader*	mShader;		// Shader program this subshader belongs to
 	String		mName;			// This shader's name
 	Flags		mFlags;			// Flags associated with this shader
-	byte		mType;			// Type of shader this happens to be
 	uint		mGLID;			// OpenGL ID of the compiled shader
 	String		mCode;			// Loaded GLSL code the shader was compiled from
 	bool		mIsDirty;		// Whether the shader should be recompiled
@@ -43,7 +42,7 @@ public:
 	const String& GetCode() const { return mCode; }
 
 	// Changes the code for the current shader
-	void SetCode (const String& code, uint type, const Flags& flags = Flags());
+	void SetCode (const String& code, const Flags& flags);
 
 	// Marks the shader as needing to be recompiled
 	void SetDirty() { mIsDirty = true; }

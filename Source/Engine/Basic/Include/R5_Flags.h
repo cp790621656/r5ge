@@ -16,6 +16,7 @@ protected:
 
 public:
 	Flags() : mVal(0) {}
+	Flags (uint val) : mVal(val) {}
 
 	void Set (uint flags)				{ mVal = flags; }
 	void Set (uint flags, bool value)	{ if (value) mVal |= flags; else mVal &= ~flags; }
@@ -28,4 +29,13 @@ public:
 	bool operator != (const Flags& f) const		{ return mVal != f.mVal; }
 	bool operator == (const uint& val) const	{ return mVal == val; }
 	bool operator != (const uint& val) const	{ return mVal != val; }
+	bool operator == (const int& val) const		{ return mVal == (uint)val; }
+	bool operator != (const int& val) const		{ return mVal != (uint)val; }
+
+	uint operator | (uint val) const { return mVal | val; }
+	uint operator & (uint val) const { return mVal & val; }
+	uint operator | (int val)  const { return mVal | (uint)val; }
+	uint operator & (int val)  const { return mVal & (uint)val; }
+
+	operator uint() const { return mVal; }
 };

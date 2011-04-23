@@ -77,7 +77,6 @@ void R5::CreateDebugLog (Array<String>& out, const String& log, const String& co
 GLShaderComponent::GLShaderComponent (IShader* shader, const String& name) :
 	mShader		(shader),
 	mName		(name),
-	mType		(IShader::Type::Unknown),
 	mGLID		(0),
 	mIsDirty	(false) {}
 
@@ -87,7 +86,7 @@ GLShaderComponent::GLShaderComponent (IShader* shader, const String& name) :
 
 void GLShaderComponent::_Release()
 {
-	mType = IShader::Type::Unknown;
+	mFlags.Clear();
 
 	if (mGLID != 0)
 	{
@@ -103,13 +102,15 @@ void GLShaderComponent::_Release()
 
 bool GLShaderComponent::_Compile()
 {
-	ASSERT(mType != IShader::Type::Unknown, "Compiling an invalid shader type?");
-
-	if (mType == IShader::Type::Unknown) return false;
+	if (!mFlags.Get(IShader::Flag::Vertex | IShader::Flag::Fragment | IShader::Flag::Geometry))
+	{
+		ASSERT(false, "Compiling an invalid shader?");
+		return false;
+	}
 
 	uint type = GL_VERTEX_SHADER;
-	if		(mType == IShader::Type::Fragment) type = GL_FRAGMENT_SHADER;
-	else if (mType == IShader::Type::Geometry) type = GL_GEOMETRY_SHADER;
+	if		(mFlags.Get(IShader::Flag::Fragment)) type = GL_FRAGMENT_SHADER;
+	else if (mFlags.Get(IShader::Flag::Geometry)) type = GL_GEOMETRY_SHADER;
 
 	// Create the shader
 	if (mGLID == 0) mGLID = glCreateShader(type);
@@ -150,8 +151,8 @@ bool GLShaderComponent::_Compile()
 		if (retVal == GL_TRUE)
 		{
 			const char* desc = "Vertex";
-			if (mType == IShader::Type::Fragment) desc = "Fragment";
-			else if (mType == IShader::Type::Geometry) desc = "Geometry";
+			if (mFlags.Get(IShader::Flag::Fragment)) desc = "Fragment";
+			else if (mFlags.Get(IShader::Flag::Geometry)) desc = "Geometry";
 			System::Log( "[SHADER]  '%s' has compiled successfully (%s)", mName.GetBuffer(), desc);
 		}
 		else
@@ -213,14 +214,13 @@ bool GLShaderComponent::_Compile()
 // Changes the code for the current shader
 //============================================================================================================
 
-void GLShaderComponent::SetCode (const String& code, uint type, const Flags& flags)
+void GLShaderComponent::SetCode (const String& code, const Flags& flags)
 {
 	if (mCode != code)
 	{
 		mIsDirty = true;
 		mCode	 = code;
 		mFlags	 = flags;
-		mType	 = type;
 		mShader->SetDirty();
 	}
 }

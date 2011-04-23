@@ -165,5 +165,5 @@ uint GLGetInternalShaderCode (const String& name, String& code)
 #ifdef _DEBUG
 	else ASSERT(false, "Unrecognized internal shader request");
 #endif
-	return code.IsValid() ? IShader::Type::Fragment : IShader::Type::Unknown;
+	return code.IsValid() ? IShader::Flag::Fragment : 0;
 }

@@ -13,12 +13,21 @@ struct CodeNode
 	String mLine;
 	Array<CodeNode> mChildren;
 
+	// Release the code stored in the class
+	void Release() { mLine.Clear(); mChildren.Release(); }
+
 	// Load the contents of the specified string into memory, stripping out C++ comments and extra spaces
-	void Load (const String& source);
+	void SerializeFrom (const String& source);
 
 	// Load the specified segment
-	uint Load (const String& source, uint start, uint end);
+	uint SerializeFrom (const String& source, uint start, uint end);
 
 	// Save the structure's contents out into the specified string
-	void Save (String& out, uint tabs = 0);
+	void SerializeTo (String& out, uint tabs = 0) const;
+
+	// Save the structure's contents out into the specified string, using the specified list of #defines
+	void SerializeTo (String& out, const Array<String>& defines) const;
+
+	// Save the structure's contents into the specified node using the specified list of #defines
+	void SerializeTo (CodeNode& out, const Array<String>& defines) const;
 };

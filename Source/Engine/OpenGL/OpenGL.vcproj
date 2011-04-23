@@ -226,6 +226,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\GLUnifiedShader.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\GLVBO.cpp"
 				>
 			</File>
@@ -292,6 +296,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\GLUnifiedShader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\GLVBO.h"
 				>
 			</File>
@@ -321,10 +329,6 @@
 			</File>
 			<File
 				RelativePath=".\Shaders\Lights.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Shaders\Preprocess.cpp"
 				>
 			</File>
 			<File
