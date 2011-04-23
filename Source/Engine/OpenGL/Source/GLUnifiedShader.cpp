@@ -677,7 +677,7 @@ Flags PreprocessShader (String& code, const Flags& desired)
 
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
-		System::Log("[Fragment]\n%s", code.GetBuffer());
+		//System::Log("[Fragment]\n%s", code.GetBuffer());
 	}
 	else if (code.Contains("R5_vertexPosition", true))
 	{
@@ -704,7 +704,7 @@ Flags PreprocessShader (String& code, const Flags& desired)
 
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
-		System::Log("[Vertex]\n%s", code.GetBuffer());
+		//System::Log("[Vertex]\n%s", code.GetBuffer());
 	}
 	else
 	{
@@ -718,7 +718,7 @@ Flags PreprocessShader (String& code, const Flags& desired)
 		final.Set(IShader::Flag::LegacyFormat, true);
 		::FixLegacyShader(code);
 		final.Set(code.Contains("gl_Position") ? IShader::Flag::Vertex : IShader::Flag::Fragment);
-		System::Log("[Legacy]\n%s", code.GetBuffer());
+		//System::Log("[Legacy]\n%s", code.GetBuffer());
 	}
 	return final;
 }

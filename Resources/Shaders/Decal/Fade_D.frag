@@ -33,25 +33,22 @@ void main()
     // Determine if the pixel underneath should even be affected by the projector by considering its normal
 	vec4 originalNormal = texture2D(R5_texture1, screenTC);
 
-	vec3 viewNormal;
-	{
-		// Get the encoded view space normal
-		viewNormal = normalize(originalNormal.xyz * 2.0 - 1.0);
-	
-		// If it's at an angle of more than 90 degrees, discard it
-		float dotVal = dot(viewNormal, -g_forward);
-		if (dotVal < 0.0) discard;
-	
-		// Make alpha more focused in the center
-		alpha = 1.0 - pow(alpha, 4.0);
-	
-	    // Flip the value so it can be brought to the power of 2 (sharpens contrast)
-		// The reason I don't just do a 'sqrt' is because this performs faster.
-		dotVal = 1.0 - dotVal;
+	// Get the encoded view space normal
+	vec3 viewNormal = normalize(originalNormal.xyz * 2.0 - 1.0);
 
-		// Alpha should choose the smallest of the two contribution values
-		alpha = min(alpha, 1.0 - dotVal * dotVal);
-	}
+	// If it's at an angle of more than 90 degrees, discard it
+	float dotVal = dot(viewNormal, -g_forward);
+	if (dotVal < 0.0) discard;
+
+	// Make alpha more focused in the center
+	alpha = 1.0 - pow(alpha, 4.0);
+
+    // Flip the value so it can be brought to the power of 2 (sharpens contrast)
+	// The reason I don't just do a 'sqrt' is because this performs faster.
+	dotVal = 1.0 - dotVal;
+
+	// Alpha should choose the smallest of the two contribution values
+	alpha = min(alpha, 1.0 - dotVal * dotVal);
 
 	// Retrieve the screen diffuse and specular textures in addition to the projected diffuse texture
 	vec4 originalDiffuse  	= texture2D(R5_texture2, screenTC);

@@ -5,7 +5,7 @@
 // Dev0 is a temporary testing application. Its source code and purpose change frequently.
 //============================================================================================================
 
-#include "../../../Engine/Image/Include/_All.h"
+#include "../../../Engine/OpenGL/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -14,8 +14,9 @@ using namespace R5;
 
 int main (int argc, char* argv[])
 {
+	System::SetCurrentPath("../../../Resources");
 	String in;
-	in.Load("../../../Resources/Shaders/Surface/Diffuse + Normal.shader");
+	in.Load("Shaders/Decal/Fade_D_N.frag");
 
 	printf("Original: %u bytes\n", in.GetSize());
 
@@ -25,13 +26,13 @@ int main (int argc, char* argv[])
 	String out;
 
 	Flags flags;
-	flags.Set(IShader::Flag::Vertex, true);
-	shader.SerializeTo(out, flags);
-	printf("================= VERTEX\n%s=================\n", out.GetBuffer());
+	//flags.Set(IShader::Flag::Vertex, true);
+	//shader.GetVariation(out, flags);
+	//printf("================= VERTEX\n%s=================\n", out.GetBuffer());
 
 	flags.Clear();
 	flags.Set(IShader::Flag::Fragment, true);
-	shader.SerializeTo(out, flags);
+	shader.GetVariation(out, flags);
 	printf("================= FRAGMENT\n%s=================\n", out.GetBuffer());
 
 	getchar();

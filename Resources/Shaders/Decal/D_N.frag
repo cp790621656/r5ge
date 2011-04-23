@@ -33,25 +33,22 @@ void main()
 	vec2 tc = pos.xz * 0.5 + 0.5;
 
 	// Determine if the pixel underneath should even be affected by the projector by considering its normal
-	vec3 viewNormal;
-	{
-		// Get the encoded view space normal
-		viewNormal = normalize(texture2D(R5_texture1, screenTC).xyz * 2.0 - 1.0);
+	// Get the encoded view space normal
+	vec3 viewNormal = normalize(texture2D(R5_texture1, screenTC).xyz * 2.0 - 1.0);
 
-		// If it's at an angle of more than 90 degrees, discard it
-		float dotVal = dot(viewNormal, -g_forward);
-		if (dotVal < 0.0) discard;
+	// If it's at an angle of more than 90 degrees, discard it
+	float dotVal = dot(viewNormal, -g_forward);
+	if (dotVal < 0.0) discard;
 
-		// Make alpha more focused in the center
-		alpha = 1.0 - pow(py, 4.0);
+	// Make alpha more focused in the center
+	alpha = 1.0 - pow(py, 4.0);
 
-		// Flip the value so it can be brought to the power of 2 (sharpens contrast)
-		// The reason I don't just do a 'sqrt' is because this performs faster.
-		dotVal = 1.0 - dotVal;
+	// Flip the value so it can be brought to the power of 2 (sharpens contrast)
+	// The reason I don't just do a 'sqrt' is because this performs faster.
+	dotVal = 1.0 - dotVal;
 
-		// Alpha should choose the smallest of the two contribution values
-		alpha = min(alpha, 1.0 - dotVal * dotVal);
-	}
+	// Alpha should choose the smallest of the two contribution values
+	alpha = min(alpha, 1.0 - dotVal * dotVal);
 
 	// Retrieve the screen diffuse and specular textures in addition to the projected diffuse texture
 	vec4 originalDiffuse  	= texture2D(R5_texture2, screenTC);
@@ -59,31 +56,28 @@ void main()
 	vec4 projDiffuse 		= texture2D(R5_texture4, tc) * gl_FrontMaterial.diffuse;
 
 	// Transform the projected normal into normal map texture space
-	vec3 normal;
+	vec3 normal, tangent, up;
+
+	// Determine the up and tangent vectors
+	if (dot(viewNormal, g_right) < 0.99)
 	{
-		vec3 tangent, up;
-	
-		// Determine the up and tangent vectors
-		if (dot(viewNormal, g_right) < 0.99)
-		{
-			up = cross(viewNormal, g_right);
-			tangent = cross(up, viewNormal);
-		}
-		else
-		{
-			tangent = cross(g_up, viewNormal);
-			up = cross(viewNormal, tangent);
-		}
-	
-		// Calculate the rotation matrix that will convert our projected normal into normal map's texture space
-		mat3 TBN = mat3(tangent, up, viewNormal);
-	
-		// Retrieve and transform the projected normal
-		normal = TBN * (texture2D(R5_texture5, tc).xyz * 2.0 - 1.0);
-	
-		// Mix the normals together using the calculated alpha
-		normal = normalize( mix(viewNormal, normal, alpha) );
+		up = cross(viewNormal, g_right);
+		tangent = cross(up, viewNormal);
 	}
+	else
+	{
+		tangent = cross(g_up, viewNormal);
+		up = cross(viewNormal, tangent);
+	}
+
+	// Calculate the rotation matrix that will convert our projected normal into normal map's texture space
+	mat3 TBN = mat3(tangent, up, viewNormal);
+
+	// Retrieve and transform the projected normal
+	normal = TBN * (texture2D(R5_texture5, tc).xyz * 2.0 - 1.0);
+
+	// Mix the normals together using the calculated alpha
+	normal = normalize( mix(viewNormal, normal, alpha) );
 
 	// Mix the two diffuse textures using the combined alpha
 	projDiffuse = mix(originalDiffuse, projDiffuse, alpha * projDiffuse.a);

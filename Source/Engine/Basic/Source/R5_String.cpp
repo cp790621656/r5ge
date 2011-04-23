@@ -886,22 +886,29 @@ void String::TrimCode()
 		bool slash = false;
 
 		// Replace all C++ style comments with spaces
-		for (uint i = 0; i < mLength; ++i)
+		for (uint i = 0; i < mLength; )
 		{
 			if (buffer[i] == '/')
 			{
 				if (!slash)
 				{
 					slash = true;
+				}
+				else
+				{
+					uint b = i - 1;
+					while (b < mLength && buffer[b] > 31) buffer[b++] = ' ';
+					while (b < mLength && buffer[b] < 32) buffer[b++] = ' ';
+					i = b;
+					slash = false;
 					continue;
 				}
-
-				uint b = i - 1;
-				while (b < mLength && buffer[b] > 31) buffer[b++] = ' ';
-				while (b < mLength && buffer[b] < 32) buffer[b++] = ' ';
-				i = b;
 			}
-			slash = false;
+			else
+			{
+				slash = false;
+			}
+			++i;
 		}
 
 		// Convert all tabs and new line characters to spaces

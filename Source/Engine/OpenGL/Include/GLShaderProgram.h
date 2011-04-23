@@ -118,7 +118,7 @@ private:
 
 private:
 
-	// Updates the source code of internal shader components
+	// INTERNAL: Updates the source code of internal shader components
 	void _UpdateComponents();
 
 	// INTERNAL: Sets the shader's source code by either using the parent's, or finding it
