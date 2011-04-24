@@ -144,7 +144,8 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 	bool depthOnly	= desired.Get(IShader::Flag::DepthOnly);
 	bool deferred	= desired.Get(IShader::Flag::Deferred);
 	bool shadowed	= desired.Get(IShader::Flag::Shadowed);
-	bool lit		= desired.Get(IShader::Flag::DirLight | IShader::Flag::PointLight | IShader::Flag::SpotLight);
+	bool lit		= desired.Get(IShader::Flag::Lit) && !code.Contains("#pragma lighting off", true);
+	bool fog		= desired.Get(IShader::Flag::Fog) && !code.Contains("#pragma fog off", true);
 
 	if (depthOnly)
 	{
@@ -199,8 +200,20 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 	}
 	else if (!lit)
 	{
-		// Non-lit shaders only use the color output
-		code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
+		if (fog)
+		{
+			final.Set(IShader::Flag::Fog, true);
+
+			// Lit forward rendering involves lighting calculations
+			code.Replace("R5_surfaceColor", "vec4 R5_surfaceColor", true);
+			code <<
+			"	R5_surfaceColor.rgb = mix(R5_surfaceColor.rgb, R5_fogColor.rgb, R5_vertexFog);\n"
+			"	R5_finalColor[0] = R5_surfaceColor;\n";
+		}
+		else
+		{
+			code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
+		}
 
 		// Remove all other values
 		String temp;
@@ -273,8 +286,11 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 
 		code << (desired.Get(IShader::Flag::DirLight) ? ";\n" : " * atten;\n");
 
-		if (desired.Get(IShader::Flag::Fog))
-		code << "	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n";
+		if (fog)
+		{
+			final.Set(IShader::Flag::Fog, true);
+			code << "	final = mix(final, R5_fogColor.rgb, R5_vertexFog);\n";
+		}
 		code << "	R5_finalColor[0] = vec4(final, R5_surfaceColor.a);\n";
 	}
 
@@ -306,8 +322,8 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 
 	bool depthOnly	= desired.Get(IShader::Flag::DepthOnly);
 	bool deferred	= desired.Get(IShader::Flag::Deferred);
-	bool lit		= desired.Get(IShader::Flag::Lit);
-	bool fog		= desired.Get(IShader::Flag::Fog);
+	bool lit		= desired.Get(IShader::Flag::Lit) && !code.Contains("#pragma lighting off", true);
+	bool fog		= desired.Get(IShader::Flag::Fog) && !code.Contains("#pragma fog off", true);
 	bool skin		= desired.Get(IShader::Flag::Skinned)	|| code.Contains("#pragma skinned", true);
 	bool billboard	= desired.Get(IShader::Flag::Billboard) || code.Contains("#pragma billboard", true);
 
@@ -404,7 +420,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	{
 		final.Set(IShader::Flag::Fog, true);
 		code <<
-		"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_vertexEye.z) / R5_clipRange.w;\n"
+		"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_finalPos.z) / R5_clipRange.w;\n"
 		"	R5_vertexFog = clamp((R5_vertexFog - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
 		"	R5_vertexFog = 0.5 * (R5_vertexFog * R5_vertexFog + R5_vertexFog);\n";
 	}
