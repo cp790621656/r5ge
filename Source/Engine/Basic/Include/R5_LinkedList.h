@@ -36,13 +36,9 @@ protected:
 	Entry*	mFirst;
 	Entry*	mUnused;
 
-private:
-
-	mutable Thread::ValType	mLock;
-
 public:
 
-	LinkedList() : mFirst(0), mUnused(0), mLock(0) {}
+	LinkedList() : mFirst(0), mUnused(0) {}
 	~LinkedList() { Release(); }
 
 	bool IsValid() const { return mFirst != 0; }
