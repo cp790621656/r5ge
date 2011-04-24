@@ -405,7 +405,7 @@ void GLShaderUniforms::RegisterBuiltInUniforms()
 
 void GLShaderUniforms::BindAttributes (uint program, const String& code)
 {
-	::BindAttribute(code, program, IGraphics::Attribute::Vertex,			"R5_vertex");
+	::BindAttribute(code, program, IGraphics::Attribute::Vertex,			"R5_position");
 	::BindAttribute(code, program, IGraphics::Attribute::Tangent,			"R5_tangent");
 	::BindAttribute(code, program, IGraphics::Attribute::Normal,			"R5_normal");
 	::BindAttribute(code, program, IGraphics::Attribute::Color,				"R5_color");

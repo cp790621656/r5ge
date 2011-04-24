@@ -342,10 +342,13 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	// Vertex position we'll be working with is a vec4
 	{
 		String vertexName;
-		ExtractValue(code, vertexName, "R5_vertexPosition", "R5_vertex");
-		code << "	vec4 R5_position = vec4(";
+		ExtractValue(code, vertexName, "R5_vertexPosition", "R5_position");
+		code << "	vec4 R5_finalPos = vec4(";
 		code << vertexName;
 		code << ", 1.0);\n";
+
+		// Earlier versions of GLSL may not like the vertex position being an attribute
+		if (g_caps.mVersion < 210) code.Replace("R5_position", "gl_Vertex.xyz", true);
 	}
 
 	// Skinned shaders use an additional set of matrices
@@ -358,13 +361,13 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		"		R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n"
 		"		R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n"
 		"		R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n"
-		"	R5_position = R5_skinMat * R5_position;\n";
+		"	R5_finalPos = R5_skinMat * R5_finalPos;\n";
 	}
 
 	// Calculate the vertex position
 	code <<
-	"	R5_position = R5_modelMatrix * R5_position;\n"
-	"	R5_position = R5_viewMatrix * R5_position;\n";
+	"	R5_finalPos = R5_modelMatrix * R5_finalPos;\n"
+	"	R5_finalPos = R5_viewMatrix * R5_finalPos;\n";
 
 	// Billboarding section
 	if (billboard)
@@ -376,7 +379,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		"vec3 R5_offset = R5_texCoord0.xyz;\n"
 		"R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
 		"R5_offset.z *= 0.25;\n"
-		"R5_position.xyz = R5_offset * R5_modelScale + R5_position.xyz;\n";
+		"R5_finalPos.xyz = R5_offset * R5_modelScale + R5_finalPos.xyz;\n";
 
 		if (lit || deferred)
 		{
@@ -387,12 +390,12 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	}
 
 	// Final transformed vertex position
-	code << "	gl_Position = R5_projMatrix * R5_position;\n";
+	code << "	gl_Position = R5_projMatrix * R5_finalPos;\n";
 
 	// Vertex-eye vector is only needed for forward rendering
 	if (lit && !deferred)
 	{
-		code << "	R5_vertexEye = R5_position.xyz;\n";
+		code << "	R5_vertexEye = R5_finalPos.xyz;\n";
 		final.Set(desired.Get() & IShader::Flag::Lit, true);
 	}
 
@@ -619,7 +622,7 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 	else
 	{
 		if (g_caps.mVersion >= 300) inOut = "in ";
-		if (code.Contains("R5_vertex",			true)) { prefix << inOut; prefix << "vec3 R5_vertex;\n"; }
+		if (code.Contains("R5_position",		true)) { prefix << inOut; prefix << "vec3 R5_position;\n"; }
 		if (code.Contains("R5_tangent",			true)) { prefix << inOut; prefix << "vec3 R5_tangent;\n"; }
 		if (code.Contains("R5_normal",			true)) { prefix << inOut; prefix << "vec3 R5_normal;\n"; }
 		if (code.Contains("R5_color",			true)) { prefix << inOut; prefix << "vec4 R5_color;\n"; }
@@ -733,7 +736,6 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
-		//System::Log("[Fragment]\n%s", code.GetBuffer());
 	}
 	else if (code.Contains("R5_vertexPosition", true))
 	{
@@ -760,7 +762,6 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
-		//System::Log("[Vertex]\n%s", code.GetBuffer());
 	}
 	else
 	{
@@ -774,7 +775,6 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 		final.Set(IShader::Flag::LegacyFormat, true);
 		::FixLegacyShader(code);
 		final.Set(code.Contains("gl_Position") ? IShader::Flag::Vertex : IShader::Flag::Fragment);
-		//System::Log("[Legacy]\n%s", code.GetBuffer());
 	}
 	return final;
 }

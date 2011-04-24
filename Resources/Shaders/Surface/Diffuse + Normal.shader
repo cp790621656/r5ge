@@ -2,7 +2,7 @@
 
 void main()
 {
-	R5_vertexPosition 	= R5_vertex;
+	R5_vertexPosition 	= R5_position;
 	R5_vertexTexCoord0 	= R5_texCoord0;
 	R5_vertexColor 		= R5_color;
 

@@ -104,8 +104,8 @@ bool GLShaderProgram::Attach()
 		CHECK_GL_ERROR;
 	}
 
-	// Bind all attributes
-	mUniforms.BindAttributes(mGLID, (mVert != 0) ? mVert->GetCode() : String());
+	// Bind all vertex shader attributes
+	if (mVert != 0) mUniforms.BindAttributes(mGLID, mVert->GetCode());
 
 	// Link the program
 	glLinkProgram(mGLID);
@@ -151,6 +151,10 @@ bool GLShaderProgram::Attach()
 
 void GLShaderProgram::LogLinkerStatus (bool success)
 {
+	if (mVert != 0) System::Log("[Vertex]\n%s", mVert->GetCode().GetBuffer());
+	if (mFrag != 0) System::Log("[Fragment]\n%s", mFrag->GetCode().GetBuffer());
+	if (mGeom != 0) System::Log("[Geometry]\n%s", mGeom->GetCode().GetBuffer());
+
 	String log;
 	int logLength (0);
 	glGetProgramiv(mGLID, GL_INFO_LOG_LENGTH, &logLength);

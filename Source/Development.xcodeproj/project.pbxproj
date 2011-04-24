@@ -8,6 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		1436F67510FAFF8900580BF8 /* Dev9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1436F67410FAFF8900580BF8 /* Dev9.cpp */; };
+		1447EA821364B190004DE38E /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14666999133EE5F50012FCB4 /* libR5_Basic.a */; };
+		1447EA831364B190004DE38E /* libR5_Math.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699B133EE5F50012FCB4 /* libR5_Math.a */; };
+		1447EA841364B190004DE38E /* libR5_Serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699D133EE5F50012FCB4 /* libR5_Serialization.a */; };
+		1447EA851364B190004DE38E /* libR5_Network.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699F133EE5F50012FCB4 /* libR5_Network.a */; };
+		1447EA861364B190004DE38E /* libR5_Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A1133EE5F50012FCB4 /* libR5_Core.a */; };
+		1447EA871364B190004DE38E /* libR5_Noise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A3133EE5F50012FCB4 /* libR5_Noise.a */; };
+		1447EA881364B190004DE38E /* libR5_UI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A5133EE5F50012FCB4 /* libR5_UI.a */; };
+		1447EA891364B190004DE38E /* libR5_Font.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A7133EE5F50012FCB4 /* libR5_Font.a */; };
+		1447EA8A1364B190004DE38E /* libR5_Image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A9133EE5F50012FCB4 /* libR5_Image.a */; };
+		1447EA8B1364B190004DE38E /* libR5_SysWindow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AB133EE5F50012FCB4 /* libR5_SysWindow.a */; };
+		1447EA8C1364B190004DE38E /* libR5_OpenGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AD133EE5F50012FCB4 /* libR5_OpenGL.a */; };
+		1447EA8D1364B190004DE38E /* libR5_Sound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AF133EE5F50012FCB4 /* libR5_Sound.a */; };
+		1447EA951364B1D4004DE38E /* Basic Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1447EA941364B1D4004DE38E /* Basic Application.cpp */; };
 		144F1B010EF9CDD700284312 /* Dev4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 144F1AFF0EF9CDD700284312 /* Dev4.cpp */; };
 		144F733011DAB869008EF73F /* Dev13.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 144F732F11DAB869008EF73F /* Dev13.cpp */; };
 		146669D8133EE6930012FCB4 /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14666999133EE5F50012FCB4 /* libR5_Basic.a */; };
@@ -233,6 +246,90 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1447EA671364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14753BC70D9C12E3000D05A5;
+			remoteInfo = Basic;
+		};
+		1447EA691364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1468B89E0D903E6300E0AE61;
+			remoteInfo = Math;
+		};
+		1447EA6B1364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
+			remoteInfo = Serialization;
+		};
+		1447EA6D1364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 147553910E0C2A2B00D5641D;
+			remoteInfo = Network;
+		};
+		1447EA6F1364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
+			remoteInfo = Core;
+		};
+		1447EA711364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
+			remoteInfo = Noise;
+		};
+		1447EA731364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
+			remoteInfo = UI;
+		};
+		1447EA751364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F600D904D700027155A;
+			remoteInfo = Font;
+		};
+		1447EA771364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
+			remoteInfo = Image;
+		};
+		1447EA791364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F780D904DA10027155A;
+			remoteInfo = SysWindow;
+		};
+		1447EA7B1364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14CE0F700D904D940027155A;
+			remoteInfo = OpenGL;
+		};
+		1447EA7D1364B190004DE38E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14E5FB0A115FCC94002EED30;
+			remoteInfo = Sound;
+		};
 		14666998133EE5F50012FCB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
@@ -1713,6 +1810,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1447EA8E1364B190004DE38E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Users/michaell/Projects/r5ge/Debug/Mac/lib/R5GE.framework;
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1451CE13133EDE09006F1020 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1729,6 +1835,10 @@
 		140E403C0F38655E00F3CF52 /* Dev5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dev5.h; path = Samples/Dev5/Include/Dev5.h; sourceTree = SOURCE_ROOT; };
 		1410ACB70F453F640099D80E /* Model Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Model Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1436F67410FAFF8900580BF8 /* Dev9.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dev9.cpp; path = Samples/Dev9/Dev9.cpp; sourceTree = SOURCE_ROOT; };
+		1447EA921364B190004DE38E /* Basic Application.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Basic Application.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1447EA941364B1D4004DE38E /* Basic Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "Basic Application.cpp"; path = "Samples/Basic Application/Source/Basic Application.cpp"; sourceTree = "<group>"; };
+		1447EA961364B1ED004DE38E /* Basic Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Basic Application.h"; path = "Samples/Basic Application/Include/Basic Application.h"; sourceTree = "<group>"; };
+		1447EA971364B207004DE38E /* Basic Application.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Basic Application.txt"; path = "../Resources/Config/Basic Application.txt"; sourceTree = SOURCE_ROOT; };
 		144F1AF90EF9CD8C00284312 /* Dev4.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dev4.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		144F1AFC0EF9CDD700284312 /* Dev4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dev4.h; sourceTree = "<group>"; };
 		144F1AFF0EF9CDD700284312 /* Dev4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dev4.cpp; sourceTree = "<group>"; };
@@ -1824,6 +1934,25 @@
 				14666CA4133EEDDF0012FCB4 /* libR5_SysWindow.a in Frameworks */,
 				14666CA5133EEDDF0012FCB4 /* libR5_OpenGL.a in Frameworks */,
 				14666CA6133EEDDF0012FCB4 /* libR5_Sound.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1447EA811364B190004DE38E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1447EA821364B190004DE38E /* libR5_Basic.a in Frameworks */,
+				1447EA831364B190004DE38E /* libR5_Math.a in Frameworks */,
+				1447EA841364B190004DE38E /* libR5_Serialization.a in Frameworks */,
+				1447EA851364B190004DE38E /* libR5_Network.a in Frameworks */,
+				1447EA861364B190004DE38E /* libR5_Core.a in Frameworks */,
+				1447EA871364B190004DE38E /* libR5_Noise.a in Frameworks */,
+				1447EA881364B190004DE38E /* libR5_UI.a in Frameworks */,
+				1447EA891364B190004DE38E /* libR5_Font.a in Frameworks */,
+				1447EA8A1364B190004DE38E /* libR5_Image.a in Frameworks */,
+				1447EA8B1364B190004DE38E /* libR5_SysWindow.a in Frameworks */,
+				1447EA8C1364B190004DE38E /* libR5_OpenGL.a in Frameworks */,
+				1447EA8D1364B190004DE38E /* libR5_Sound.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2189,6 +2318,16 @@
 			name = Dev9;
 			sourceTree = "<group>";
 		};
+		1447EA641364B173004DE38E /* Basic Application */ = {
+			isa = PBXGroup;
+			children = (
+				1447EA971364B207004DE38E /* Basic Application.txt */,
+				1447EA961364B1ED004DE38E /* Basic Application.h */,
+				1447EA941364B1D4004DE38E /* Basic Application.cpp */,
+			);
+			name = "Basic Application";
+			sourceTree = "<group>";
+		};
 		144F1AFB0EF9CDD700284312 /* Include */ = {
 			isa = PBXGroup;
 			children = (
@@ -2423,6 +2562,7 @@
 		14CE0F1D0D9049530027155A /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				1447EA641364B173004DE38E /* Basic Application */,
 				14DDF1B70E0CBB110015264B /* Noise Test */,
 				147554010E0C3AFA00D5641D /* Network Test */,
 				14C63742120B0656005B0735 /* Dev0 */,
@@ -2503,6 +2643,7 @@
 				BB3F331D11798CD000D1F593 /* Dev12.app */,
 				144F732611DAB7CF008EF73F /* Dev13.app */,
 				14C63740120B049D005B0735 /* Dev0 */,
+				1447EA921364B190004DE38E /* Basic Application.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2574,6 +2715,36 @@
 			name = "Model Viewer";
 			productName = "Cocoa Window";
 			productReference = 1410ACB70F453F640099D80E /* Model Viewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1447EA651364B190004DE38E /* Basic Application */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1447EA8F1364B190004DE38E /* Build configuration list for PBXNativeTarget "Basic Application" */;
+			buildPhases = (
+				1447EA7E1364B190004DE38E /* Resources */,
+				1447EA7F1364B190004DE38E /* Sources */,
+				1447EA811364B190004DE38E /* Frameworks */,
+				1447EA8E1364B190004DE38E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1447EA661364B190004DE38E /* PBXTargetDependency */,
+				1447EA681364B190004DE38E /* PBXTargetDependency */,
+				1447EA6A1364B190004DE38E /* PBXTargetDependency */,
+				1447EA6C1364B190004DE38E /* PBXTargetDependency */,
+				1447EA6E1364B190004DE38E /* PBXTargetDependency */,
+				1447EA701364B190004DE38E /* PBXTargetDependency */,
+				1447EA721364B190004DE38E /* PBXTargetDependency */,
+				1447EA741364B190004DE38E /* PBXTargetDependency */,
+				1447EA761364B190004DE38E /* PBXTargetDependency */,
+				1447EA781364B190004DE38E /* PBXTargetDependency */,
+				1447EA7A1364B190004DE38E /* PBXTargetDependency */,
+				1447EA7C1364B190004DE38E /* PBXTargetDependency */,
+			);
+			name = "Basic Application";
+			productName = "Cocoa Window";
+			productReference = 1447EA921364B190004DE38E /* Basic Application.app */;
 			productType = "com.apple.product-type.application";
 		};
 		144F1ADE0EF9CD8C00284312 /* Dev4 */ = {
@@ -3069,6 +3240,7 @@
 				144F730A11DAB7CE008EF73F /* Dev13 */,
 				14DDF18A0E0CBA9A0015264B /* Noise Test */,
 				1410AC9E0F453F630099D80E /* Model Viewer */,
+				1447EA651364B190004DE38E /* Basic Application */,
 			);
 		};
 /* End PBXProject section */
@@ -3169,6 +3341,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1410ACAF0F453F630099D80E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1447EA7E1364B190004DE38E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3310,6 +3489,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1447EA7F1364B190004DE38E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1447EA951364B1D4004DE38E /* Basic Application.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		144F1AF00EF9CD8C00284312 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3445,6 +3632,66 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1447EA661364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Basic;
+			targetProxy = 1447EA671364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA681364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Math;
+			targetProxy = 1447EA691364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA6A1364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Serialization;
+			targetProxy = 1447EA6B1364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA6C1364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Network;
+			targetProxy = 1447EA6D1364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA6E1364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Core;
+			targetProxy = 1447EA6F1364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA701364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Noise;
+			targetProxy = 1447EA711364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA721364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UI;
+			targetProxy = 1447EA731364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA741364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Font;
+			targetProxy = 1447EA751364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA761364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Image;
+			targetProxy = 1447EA771364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA781364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SysWindow;
+			targetProxy = 1447EA791364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA7A1364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = OpenGL;
+			targetProxy = 1447EA7B1364B190004DE38E /* PBXContainerItemProxy */;
+		};
+		1447EA7C1364B190004DE38E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Sound;
+			targetProxy = 1447EA7D1364B190004DE38E /* PBXContainerItemProxy */;
+		};
 		146669B5133EE6400012FCB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Basic;
@@ -4543,6 +4790,58 @@
 			};
 			name = Release;
 		};
+		1447EA901364B190004DE38E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_32_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				MACH_O_TYPE = mh_execute;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					OpenGL,
+					"-framework",
+					AppKit,
+					"-lz",
+					"-lpng",
+					"-ljpeg",
+				);
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		1447EA911364B190004DE38E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/bin";
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				MACH_O_TYPE = mh_execute;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					OpenGL,
+					"-framework",
+					AppKit,
+					"-lz",
+					"-lpng",
+					"-ljpeg",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 		144F1AF70EF9CD8C00284312 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -5442,6 +5741,15 @@
 			buildConfigurations = (
 				1410ACB50F453F630099D80E /* Debug */,
 				1410ACB60F453F630099D80E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1447EA8F1364B190004DE38E /* Build configuration list for PBXNativeTarget "Basic Application" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1447EA901364B190004DE38E /* Debug */,
+				1447EA911364B190004DE38E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
