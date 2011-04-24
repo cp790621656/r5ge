@@ -23,8 +23,8 @@ struct GLShaderProgram
 	Flags mFlags;
 	bool mIsDirty;
 
-	GLShaderProgram (GLGraphics* graphics) : mGraphics(graphics), mVert(0), mFrag(0), mGeom(0),
-		mGLID(0), mIsDirty(true), mUniforms(graphics) {}
+	GLShaderProgram (GLGraphics* graphics) : mGraphics(graphics), mVert(0), mFrag(0), mGeom(0), 
+		mUniforms(graphics), mGLID(0), mIsDirty(true) {}
 
 	~GLShaderProgram();
 

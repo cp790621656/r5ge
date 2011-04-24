@@ -1,6 +1,11 @@
 #include "../Include/_All.h"
 #include "../Include/AL/al.h"
 #include "../Include/AL/alc.h"
+
+// Since we're not using any of the default callbacks
+// define this to disable "defined but not used" warnings
+#define OV_EXCLUDE_STATIC_CALLBACKS
+
 #include "../Include/vorbis/vorbisfile.h"
 using namespace R5;
 
