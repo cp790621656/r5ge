@@ -9,7 +9,7 @@
 //============================================================================================================
 
 template <typename Type>
-class LinkedList
+class LinkedList : Thread::Lockable
 {
 public:
 
@@ -44,10 +44,6 @@ public:
 
 	LinkedList() : mFirst(0), mUnused(0), mLock(0) {}
 	~LinkedList() { Release(); }
-
-	// Thread sync functions
-	void Lock()		const	{ Thread::WaitFor(mLock); }
-	void Unlock()	const	{ mLock = 0; }
 
 	bool IsValid() const { return mFirst != 0; }
 	bool IsEmpty() const { return mFirst == 0; }
