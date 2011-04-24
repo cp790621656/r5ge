@@ -4,7 +4,7 @@ ifeq ($(build), Debug)
 	cflags = -g -Wall -D_DEBUG
 	outdir = ../Debug/Linux
 else ifeq ($(build), Release)
-	cflags = -O3
+	cflags = -O3 -Wno-unused-result
 	outdir = ../Release/Linux
 endif
 
