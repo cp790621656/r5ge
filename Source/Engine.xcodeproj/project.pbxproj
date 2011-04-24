@@ -82,12 +82,15 @@
 		1468B8B60D903F1300E0AE61 /* Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1468B88E0D903DE300E0AE61 /* Quaternion.cpp */; };
 		1468B8B80D903F1300E0AE61 /* Vector2i.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1468B8900D903DE300E0AE61 /* Vector2i.cpp */; };
 		1468B8B90D903F1300E0AE61 /* Vector3f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1468B8910D903DE300E0AE61 /* Vector3f.cpp */; };
+		146C83CA1364A1C9005E0999 /* GLInternalShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 146C83C61364A1C9005E0999 /* GLInternalShaders.cpp */; };
+		146C83CB1364A1C9005E0999 /* GLPreprocessShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 146C83C71364A1C9005E0999 /* GLPreprocessShader.cpp */; };
+		146C83CC1364A1C9005E0999 /* GLShaderUniforms.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 146C83C81364A1C9005E0999 /* GLShaderUniforms.cpp */; };
+		146C83CD1364A1C9005E0999 /* GLSurfaceShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 146C83C91364A1C9005E0999 /* GLSurfaceShader.cpp */; };
 		147124FD123EEDF700A7FBE1 /* R5_Bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 147124FB123EEDF700A7FBE1 /* R5_Bundle.cpp */; };
 		147124FE123EEDF700A7FBE1 /* R5_Compression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 147124FC123EEDF700A7FBE1 /* R5_Compression.cpp */; };
 		14712510123EEE8800A7FBE1 /* UITreeView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471250D123EEE8800A7FBE1 /* UITreeView.cpp */; };
 		14712511123EEE8800A7FBE1 /* USFadeIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471250E123EEE8800A7FBE1 /* USFadeIn.cpp */; };
 		14712512123EEE8800A7FBE1 /* USFadeOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471250F123EEE8800A7FBE1 /* USFadeOut.cpp */; };
-		1471251E123EEFB200A7FBE1 /* Preprocess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1471251A123EEFB200A7FBE1 /* Preprocess.cpp */; };
 		14712520123EEFB200A7FBE1 /* ProjectedTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = 1471251C123EEFB200A7FBE1 /* ProjectedTexture.h */; };
 		14712521123EEFB200A7FBE1 /* Shadow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1471251D123EEFB200A7FBE1 /* Shadow.h */; };
 		14726B9B0ED7C87A0005A1B2 /* R5_Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14726B9A0ED7C87A0005A1B2 /* R5_Thread.cpp */; };
@@ -160,7 +163,6 @@
 		14D619A310FAF3E800C41C13 /* QuadNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199510FAF3E800C41C13 /* QuadNode.cpp */; };
 		14D619A510FAF3E800C41C13 /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199710FAF3E800C41C13 /* Terrain.cpp */; };
 		14D619A610FAF3E800C41C13 /* TerrainNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D6199810FAF3E800C41C13 /* TerrainNode.cpp */; };
-		14D9F5ED135D26B7006C08B2 /* Internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D9F5EC135D26B7006C08B2 /* Internal.cpp */; };
 		14D9F5F2135D2728006C08B2 /* GLShaderComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D9F5F0135D2728006C08B2 /* GLShaderComponent.cpp */; };
 		14D9F5F3135D2728006C08B2 /* GLShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14D9F5F1135D2728006C08B2 /* GLShaderProgram.cpp */; };
 		14DDF2E30E100C000015264B /* Filters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14DDF2E20E100C000015264B /* Filters.cpp */; };
@@ -449,6 +451,12 @@
 		1468B88E0D903DE300E0AE61 /* Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Quaternion.cpp; path = Engine/Math/Source/Quaternion.cpp; sourceTree = "<group>"; };
 		1468B8900D903DE300E0AE61 /* Vector2i.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector2i.cpp; path = Engine/Math/Source/Vector2i.cpp; sourceTree = "<group>"; };
 		1468B8910D903DE300E0AE61 /* Vector3f.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector3f.cpp; path = Engine/Math/Source/Vector3f.cpp; sourceTree = "<group>"; };
+		146C83C41364A19F005E0999 /* GLShaderUniforms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLShaderUniforms.h; path = Engine/OpenGL/Include/GLShaderUniforms.h; sourceTree = "<group>"; };
+		146C83C51364A19F005E0999 /* GLSurfaceShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLSurfaceShader.h; path = Engine/OpenGL/Include/GLSurfaceShader.h; sourceTree = "<group>"; };
+		146C83C61364A1C9005E0999 /* GLInternalShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLInternalShaders.cpp; path = Engine/OpenGL/Source/GLInternalShaders.cpp; sourceTree = "<group>"; };
+		146C83C71364A1C9005E0999 /* GLPreprocessShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLPreprocessShader.cpp; path = Engine/OpenGL/Source/GLPreprocessShader.cpp; sourceTree = "<group>"; };
+		146C83C81364A1C9005E0999 /* GLShaderUniforms.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLShaderUniforms.cpp; path = Engine/OpenGL/Source/GLShaderUniforms.cpp; sourceTree = "<group>"; };
+		146C83C91364A1C9005E0999 /* GLSurfaceShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLSurfaceShader.cpp; path = Engine/OpenGL/Source/GLSurfaceShader.cpp; sourceTree = "<group>"; };
 		147124E8123EED5700A7FBE1 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = Engine/Basic/Include/zlib.h; sourceTree = "<group>"; };
 		147124E9123EED8A00A7FBE1 /* R5_Bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = R5_Bundle.h; path = Engine/Basic/Include/R5_Bundle.h; sourceTree = "<group>"; };
 		147124EA123EED8A00A7FBE1 /* R5_Compression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = R5_Compression.h; path = Engine/Basic/Include/R5_Compression.h; sourceTree = "<group>"; };
@@ -467,7 +475,6 @@
 		1471250D123EEE8800A7FBE1 /* UITreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITreeView.cpp; path = Engine/UI/Source/UITreeView.cpp; sourceTree = "<group>"; };
 		1471250E123EEE8800A7FBE1 /* USFadeIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = USFadeIn.cpp; path = Engine/UI/Source/USFadeIn.cpp; sourceTree = "<group>"; };
 		1471250F123EEE8800A7FBE1 /* USFadeOut.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = USFadeOut.cpp; path = Engine/UI/Source/USFadeOut.cpp; sourceTree = "<group>"; };
-		1471251A123EEFB200A7FBE1 /* Preprocess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Preprocess.cpp; path = Engine/OpenGL/Shaders/Preprocess.cpp; sourceTree = "<group>"; };
 		1471251C123EEFB200A7FBE1 /* ProjectedTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectedTexture.h; path = Engine/OpenGL/Shaders/ProjectedTexture.h; sourceTree = "<group>"; };
 		1471251D123EEFB200A7FBE1 /* Shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shadow.h; path = Engine/OpenGL/Shaders/Shadow.h; sourceTree = "<group>"; };
 		1471252B123EF0E900A7FBE1 /* functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = functions.h; path = Engine/Math/Include/functions.h; sourceTree = "<group>"; };
@@ -641,7 +648,6 @@
 		14D6199710FAF3E800C41C13 /* Terrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Terrain.cpp; path = Engine/Core/Source/Terrain.cpp; sourceTree = "<group>"; };
 		14D6199810FAF3E800C41C13 /* TerrainNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TerrainNode.cpp; path = Engine/Core/Source/TerrainNode.cpp; sourceTree = "<group>"; };
 		14D9F5E7135D2675006C08B2 /* CodeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CodeNode.h; path = Engine/Serialization/Include/CodeNode.h; sourceTree = "<group>"; };
-		14D9F5EC135D26B7006C08B2 /* Internal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Internal.cpp; path = Engine/OpenGL/Shaders/Internal.cpp; sourceTree = "<group>"; };
 		14D9F5EE135D2709006C08B2 /* GLShaderComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLShaderComponent.h; path = Engine/OpenGL/Include/GLShaderComponent.h; sourceTree = "<group>"; };
 		14D9F5EF135D2709006C08B2 /* GLShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLShaderProgram.h; path = Engine/OpenGL/Include/GLShaderProgram.h; sourceTree = "<group>"; };
 		14D9F5F0135D2728006C08B2 /* GLShaderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLShaderComponent.cpp; path = Engine/OpenGL/Source/GLShaderComponent.cpp; sourceTree = "<group>"; };
@@ -698,7 +704,6 @@
 		14F82D2A111A897E001DDF69 /* UIStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIStats.cpp; path = Engine/UI/Source/UIStats.cpp; sourceTree = "<group>"; };
 		14F8E6860F89D875005431C6 /* ModelTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModelTemplate.h; path = Engine/Core/Include/ModelTemplate.h; sourceTree = "<group>"; };
 		14F8E6870F89D889005431C6 /* ModelTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelTemplate.cpp; path = Engine/Core/Source/ModelTemplate.cpp; sourceTree = "<group>"; };
-		B399CFAD1161828E00E8710D /* libirrklang.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libirrklang.dylib; path = ../Debug/Mac/bin/libirrklang.dylib; sourceTree = SOURCE_ROOT; };
 		BB3F32471179872100D1F593 /* FillParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FillParams.h; path = Engine/Core/Include/FillParams.h; sourceTree = "<group>"; };
 		BB3F32491179872100D1F593 /* OSAttachToBone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSAttachToBone.h; path = Engine/Core/Include/OSAttachToBone.h; sourceTree = "<group>"; };
 		BB3F324A1179872100D1F593 /* OSPlayAnimations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSPlayAnimations.h; path = Engine/Core/Include/OSPlayAnimations.h; sourceTree = "<group>"; };
@@ -804,7 +809,6 @@
 		08FB7794FE84155DC02AAC07 /* R5 */ = {
 			isa = PBXGroup;
 			children = (
-				B399CFAD1161828E00E8710D /* libirrklang.dylib */,
 				14CE0EFB0D9046B70027155A /* 1. Stand-Alone Components */,
 				14CE0F020D9047D30027155A /* 2. Interface */,
 				14CE0F1A0D90487B0027155A /* 3. Stand-alone Libraries */,
@@ -1013,8 +1017,12 @@
 				141712D010FAF9F700BA7643 /* GLFont.cpp */,
 				141712D110FAF9F700BA7643 /* GLGraphics.cpp */,
 				141712D210FAF9F700BA7643 /* GLMaterial.cpp */,
+				146C83C61364A1C9005E0999 /* GLInternalShaders.cpp */,
+				146C83C71364A1C9005E0999 /* GLPreprocessShader.cpp */,
 				14D9F5F0135D2728006C08B2 /* GLShaderComponent.cpp */,
 				14D9F5F1135D2728006C08B2 /* GLShaderProgram.cpp */,
+				146C83C81364A1C9005E0999 /* GLShaderUniforms.cpp */,
+				146C83C91364A1C9005E0999 /* GLSurfaceShader.cpp */,
 				141712D410FAF9F700BA7643 /* GLTechnique.cpp */,
 				141712D510FAF9F700BA7643 /* GLTexture.cpp */,
 				144F727811DAB704008EF73F /* GLTransform.cpp */,
@@ -1035,8 +1043,10 @@
 				141712BC10FAF9DE00BA7643 /* GLFont.h */,
 				141712BD10FAF9DE00BA7643 /* GLGraphics.h */,
 				141712BE10FAF9DE00BA7643 /* GLMaterial.h */,
+				146C83C41364A19F005E0999 /* GLShaderUniforms.h */,
 				14D9F5EE135D2709006C08B2 /* GLShaderComponent.h */,
 				14D9F5EF135D2709006C08B2 /* GLShaderProgram.h */,
+				146C83C51364A19F005E0999 /* GLSurfaceShader.h */,
 				141712C010FAF9DE00BA7643 /* GLTechnique.h */,
 				141712C110FAF9DE00BA7643 /* GLTexture.h */,
 				144F727711DAB6E4008EF73F /* GLTransform.h */,
@@ -1666,8 +1676,6 @@
 		14F82D22111A891F001DDF69 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				14D9F5EC135D26B7006C08B2 /* Internal.cpp */,
-				1471251A123EEFB200A7FBE1 /* Preprocess.cpp */,
 				1471251C123EEFB200A7FBE1 /* ProjectedTexture.h */,
 				1471251D123EEFB200A7FBE1 /* Shadow.h */,
 				14F82D23111A8938001DDF69 /* Bloom.h */,
@@ -2354,10 +2362,12 @@
 				141712DE10FAF9F700BA7643 /* GLTexture.cpp in Sources */,
 				141712DF10FAF9F700BA7643 /* GLVBO.cpp in Sources */,
 				144F727911DAB704008EF73F /* GLTransform.cpp in Sources */,
-				1471251E123EEFB200A7FBE1 /* Preprocess.cpp in Sources */,
-				14D9F5ED135D26B7006C08B2 /* Internal.cpp in Sources */,
 				14D9F5F2135D2728006C08B2 /* GLShaderComponent.cpp in Sources */,
 				14D9F5F3135D2728006C08B2 /* GLShaderProgram.cpp in Sources */,
+				146C83CA1364A1C9005E0999 /* GLInternalShaders.cpp in Sources */,
+				146C83CB1364A1C9005E0999 /* GLPreprocessShader.cpp in Sources */,
+				146C83CC1364A1C9005E0999 /* GLShaderUniforms.cpp in Sources */,
+				146C83CD1364A1C9005E0999 /* GLSurfaceShader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
