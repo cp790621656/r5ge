@@ -12,7 +12,6 @@ class DirectionalShadow
 {
 protected:
 
-	Core*			mCore;
 	IGraphics*		mGraphics;
 	uint			mTextureSize;		// Size of each of the shadowmap textures
 	uint			mCascadeCount;		// Number of cascades for PSSM

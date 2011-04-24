@@ -74,8 +74,7 @@ void R5::CreateDebugLog (Array<String>& out, const String& log, const String& co
 // Only the GLGraphics class should be creating new shaders
 //============================================================================================================
 
-GLShaderComponent::GLShaderComponent (IShader* shader, const String& name) :
-	mShader		(shader),
+GLShaderComponent::GLShaderComponent (const String& name) :
 	mName		(name),
 	mGLID		(0),
 	mIsDirty	(false) {}
@@ -221,7 +220,6 @@ void GLShaderComponent::SetCode (const String& code, const Flags& flags)
 		mIsDirty = true;
 		mCode	 = code;
 		mFlags	 = flags;
-		mShader->SetDirty();
 	}
 }
 

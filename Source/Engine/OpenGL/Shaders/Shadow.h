@@ -23,6 +23,7 @@ static const char* g_shadow = {
 "	return shadowFactor;\n"
 "}\n"
 
+// Version that doesn't use a shadow texture:
 //"float Sample (sampler2D tex, vec3 pos)\n"
 //"{\n"
 //"	float shadowFactor = texture2D(tex, pos.xy).r;\n"

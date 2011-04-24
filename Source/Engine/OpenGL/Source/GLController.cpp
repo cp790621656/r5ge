@@ -722,15 +722,14 @@ bool GLController::SetActiveShader (const IShader* ptr)
 	// so we don't check for inequality here.
 	if (ptr != 0)
 	{
-		GLShaderProgram* shader = ((GLShaderProgram*)ptr)->_Activate(mTechnique);
+		GLSurfaceShader* shader = (GLSurfaceShader*)ptr;
 
-		// Activation function can return '0' if the shader is not valid
-		if (shader != 0)
+		if (shader->Activate(mTechnique))
 		{
 			if (shader != mShader)
 			{
 				// Update the shader's uniforms
-				shader->_Update(Uniform::Group::SetWhenActivated);
+				shader->UpdateUniforms(Uniform::Group::SetWhenActivated);
 				mMatIsDirty = true;
 				mShader = shader;
 
@@ -745,7 +744,7 @@ bool GLController::SetActiveShader (const IShader* ptr)
 
 	if (mShader != 0)
 	{
-		mShader->_Deactivate();
+		mShader->Deactivate();
 		mShader = 0;
 		mMatIsDirty = true;
 
@@ -952,7 +951,7 @@ void GLController::SetActiveVertexAttribute(
 void GLController::PrepareToDraw()
 {
 	mStats.mMatSwitches += mTrans.Activate(mShader);
-	if (mShader) mShader->_Update(Uniform::Group::SetWhenDrawing);
+	if (mShader) mShader->UpdateUniforms(Uniform::Group::SetWhenDrawing);
 	_BindAllTextures();
 }
 

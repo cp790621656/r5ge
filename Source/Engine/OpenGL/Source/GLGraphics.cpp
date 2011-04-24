@@ -13,25 +13,6 @@ GLGraphics::GLGraphics() :
 }
 
 //============================================================================================================
-
-GLGraphics::~GLGraphics()
-{
-#ifdef _DEBUG
-	System::Log("[OPENGL]  Shutting down. Summary of all managed resources:");
-	System::Log("          - VBOs:       %u",	mVbos.GetSize());
-	System::Log("          - FBOs:       %u",	mFbos.GetSize());
-	System::Log("          - Textures:   %u",	mTextures.GetSize());
-	System::Log("          - Shaders:    %u",	mShaders.GetSize());
-	System::Log("          - Fonts:      %u",	mFonts.GetSize());
-	System::Log("          - Materials:  %u",	mMaterials.GetSize());
-#endif
-
-	Release();
-
-	if (mQuery != 0) glDeleteQueries(1, &mQuery);
-}
-
-//============================================================================================================
 // Returns whether the specified point would be visible if rendered
 //============================================================================================================
 
@@ -243,9 +224,25 @@ void GLGraphics::Release()
 		ASSERT(mThread == Thread::GetID(),
 			"R5::IGraphics::Release() must be called from the same thread as R5::IGraphics::Init()");
 
+#ifdef _DEBUG
+		System::Log("[OPENGL]  Shutting down. Summary of all managed resources:");
+		System::Log("          - VBOs:       %u",	mVbos.GetSize());
+		System::Log("          - FBOs:       %u",	mFbos.GetSize());
+		System::Log("          - Textures:   %u",	mTextures.GetSize());
+		System::Log("          - Shaders:    %u",	mShaders.GetSize());
+		System::Log("          - Fonts:      %u",	mFonts.GetSize());
+		System::Log("          - Materials:  %u",	mMaterials.GetSize());
+#endif
+
 		mThread = 0;
 		mSkyboxVBO = 0;
 		mSkyboxIBO = 0;
+
+		if (mQuery != 0)
+		{
+			glDeleteQueries(1, &mQuery);
+			mQuery = 0;
+		}
 
 		mFonts.Release();
 		mShaders.Release();
@@ -1016,7 +1013,7 @@ ITexture* GLGraphics::GetTexture (const String& name, bool createIfMissing)
 
 IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 {
-	GLShaderProgram* shader = 0;
+	GLSurfaceShader* shader = 0;
 
 	if (name.IsValid())
 	{
@@ -1024,9 +1021,9 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 		{
 			for (uint i = 0; i < mShaders.GetSize(); ++i)
 			{
-				shader = (GLShaderProgram*)mShaders[i];
+				shader = (GLSurfaceShader*)mShaders[i];
 
-				if (shader != 0 && shader->mName == name)
+				if (shader != 0 && shader->GetName() == name)
 				{
 					mShaders.Unlock();
 					return shader;
@@ -1035,9 +1032,8 @@ IShader* GLGraphics::GetShader (const String& name, bool createIfMissing)
 
 			if (createIfMissing)
 			{
-				// Add this new shader and initialize it
-				mShaders.Expand() = (shader = new GLShaderProgram());
-				shader->_Init(this, 0, name);
+				// Add a new shader
+				mShaders.Expand() = (shader = new GLSurfaceShader(this, name));
 			}
 			else shader = 0;
 		}

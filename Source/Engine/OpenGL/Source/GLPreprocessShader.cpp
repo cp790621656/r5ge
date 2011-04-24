@@ -3,6 +3,61 @@
 using namespace R5;
 
 //============================================================================================================
+// Keep a record of built-in uniforms so the shader post-processing is able ot reference them automatically
+//============================================================================================================
+
+struct Record
+{
+	String name;
+	uint elements;
+};
+
+Array<Record> g_uniforms;
+
+//============================================================================================================
+// Insert the specified uniform
+//============================================================================================================
+
+inline void InsertRecord (const String& name, uint elements)
+{
+	Record& r = g_uniforms.Expand();
+	r.name = name;
+	r.elements = elements;
+}
+
+//============================================================================================================
+// Initialize uniforms -- should only be called once
+//============================================================================================================
+
+void RegisterBuiltInUniforms()
+{
+	InsertRecord("R5_time",							3);
+	InsertRecord("R5_eyePosition",					3);
+	InsertRecord("R5_pixelSize",					2);
+	InsertRecord("R5_clipRange",					4);
+	InsertRecord("R5_fogRange",						2);
+	InsertRecord("R5_fogColor",						4);
+	InsertRecord("R5_materialColor",				4);
+	InsertRecord("R5_materialParams0",				4);
+	InsertRecord("R5_materialParams1",				2);
+	InsertRecord("R5_lightAmbient",					3);
+	InsertRecord("R5_lightDiffuse",					3);
+	InsertRecord("R5_lightPosition",				3);
+	InsertRecord("R5_lightDirection",				3);
+	InsertRecord("R5_lightParams",					3);
+	InsertRecord("R5_modelScale",					3);
+	InsertRecord("R5_modelMatrix",					16);
+	InsertRecord("R5_viewMatrix",					16);
+	InsertRecord("R5_projMatrix",					16);
+	InsertRecord("R5_modelViewMatrix",				16);
+	InsertRecord("R5_modelViewProjMatrix",			16);
+	InsertRecord("R5_inverseViewMatrix",			16);
+	InsertRecord("R5_inverseProjMatrix",			16);
+	InsertRecord("R5_inverseMVPMatrix",				16);
+	InsertRecord("R5_inverseViewRotationMatrix",	9);
+}
+
+//============================================================================================================
 // Convenience (fake) uniforms
 //============================================================================================================
 
@@ -498,15 +553,16 @@ void AddCommonFunctions (String& code)
 // Add appropriate uniforms
 //============================================================================================================
 
-extern Array<GLShaderProgram::UniformRecord> g_uniforms;
-
 void AddReferencedVariables (String& code, bool isFragmentShader)
 {
+	// If we have no uniform records to work with, create them
+	if (g_uniforms.IsEmpty()) RegisterBuiltInUniforms();
+
 	String prefix;
 
 	FOREACH(i, g_uniforms)
 	{
-		const GLShaderProgram::UniformRecord& r = g_uniforms[i];
+		const Record& r = g_uniforms[i];
 
 		if (code.Contains(r.name, true))
 		{
@@ -621,7 +677,7 @@ void ConvertCommonTypes (String& code)
 // Preprocess a new shader format
 //============================================================================================================
 
-Flags PreprocessShader (String& code, const Flags& desired)
+Flags GLPreprocessShader (String& code, const Flags& desired)
 {
 	Flags final;
 	bool surface = code.Contains("R5_surface", true);
@@ -721,79 +777,4 @@ Flags PreprocessShader (String& code, const Flags& desired)
 		//System::Log("[Legacy]\n%s", code.GetBuffer());
 	}
 	return final;
-}
-
-//============================================================================================================
-// Load the specified code and return its shader type
-//============================================================================================================
-
-void GLUnifiedShader::SerializeFrom (const String& code)
-{
-	mFlags.Clear();
-	mCode.Release();
-
-	if (code.IsValid())
-	{
-		mCode.SerializeFrom(code);
-
-		if (code.Contains("R5_surface", true))
-		{
-			mFlags.Set(IShader::Flag::Surface, true);
-			mFlags.Set(IShader::Flag::Fragment, true);
-		}
-
-		if (code.Contains("R5_finalColor", true) ||
-			code.Contains("gl_FragColor", true) ||
-			code.Contains("gl_FragData", true))
-		{
-			mFlags.Set(IShader::Flag::Fragment, true);
-		}
-
-		if (code.Contains("R5_vertexPosition", true) || code.Contains("gl_Position", true))
-		{
-			mFlags.Set(IShader::Flag::Vertex, true);
-		}
-
-		if (code.Contains("EmitVertex", true))
-		{
-			mFlags.Set(IShader::Flag::Geometry, true);
-		}
-	}
-}
-
-//============================================================================================================
-// Save a variation of the shader into the specified string
-//============================================================================================================
-
-Flags GLUnifiedShader::GetVariation (String& out, const Flags& flags) const
-{
-	out.Clear();
-
-	if (flags == 0)
-	{
-		mCode.SerializeTo(out);
-	}
-	else
-	{
-		Array<String> defines;
-
-		if (flags.Get(IShader::Flag::Vertex))		defines.Expand() = "Vertex";
-		if (flags.Get(IShader::Flag::Fragment))		defines.Expand() = "Fragment";
-		if (flags.Get(IShader::Flag::Geometry))		defines.Expand() = "Geometry";
-		if (flags.Get(IShader::Flag::LegacyFormat)) defines.Expand() = "LegacyFormat";
-		if (flags.Get(IShader::Flag::Skinned))		defines.Expand() = "Skinned";
-		if (flags.Get(IShader::Flag::Billboard))	defines.Expand() = "Billboard";
-		if (flags.Get(IShader::Flag::Shadowed))		defines.Expand() = "Shadowed";
-		if (flags.Get(IShader::Flag::Fog))			defines.Expand() = "Fog";
-		if (flags.Get(IShader::Flag::Deferred))		defines.Expand() = "Deferred";
-		if (flags.Get(IShader::Flag::DirLight))		defines.Expand() = "DirLight";
-		if (flags.Get(IShader::Flag::PointLight))	defines.Expand() = "PointLight";
-		if (flags.Get(IShader::Flag::SpotLight))	defines.Expand() = "SpotLight";
-		if (flags.Get(IShader::Flag::Lit))			defines.Expand() = "Lit";
-		if (flags.Get(IShader::Flag::Surface))		defines.Expand() = "Surface";
-		if (flags.Get(IShader::Flag::DepthOnly))	defines.Expand() = "DepthOnly";
-
-		mCode.SerializeTo(out, defines);
-	}
-	return PreprocessShader(out, flags);
 }

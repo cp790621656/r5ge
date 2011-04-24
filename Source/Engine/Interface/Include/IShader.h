@@ -38,20 +38,10 @@ struct IShader
 
 protected:
 
-	Flags	mDesired;
-	Flags	mFinal;
 	String	mName;
 	uint	mUID;
 
 	IShader() : mUID(GenerateUID()) {}
-
-public:
-
-	// All shaders should have flags that can be easily modified
-	bool GetFlag (uint flags) const			{ return mFinal.Get(flags); }
-
-	// It should also be possible to change the flags
-	void SetFlag (uint flags, bool value)	{ mFinal.Set(flags, value); }
 
 public:
 
@@ -64,6 +54,9 @@ public:
 
 	// All shaders should have unique names
 	const String& GetName() const { return mName; }
+
+	// Should match against the active shader's flags
+	virtual bool GetFlag (uint val) const=0;
 
 	// Clears the shader, making it invalid
 	virtual void Clear()=0;

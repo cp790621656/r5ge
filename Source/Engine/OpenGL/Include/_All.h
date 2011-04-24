@@ -19,9 +19,10 @@ namespace R5
 	#include "GLFBO.h"				// Frame Buffer Object
 	#include "GLTexture.h"			// Regular 2D texture
 	#include "GLFont.h"				// OpenGL implementation of the font class
-	#include "GLUnifiedShader.h"	// Unified shader program
+	#include "GLShaderUniforms.h"			// Built-in shader uniforms
 	#include "GLShaderComponent.h"	// Single vertex or fragment shader, part of a GLSL program
-	#include "GLShaderProgram.h"	// GLSL shader program using one or more SubShaders
+	#include "GLShaderProgram.h"	// GLSL shader program using one or more Shader Components
+	#include "GLSurfaceShader.h"	// Surface shader is a combination of different shader programs
 	#include "GLTechnique.h"		// Material rendering technique
 	#include "GLMaterial.h"			// Material management
 	#include "GLController.h"		// Low-level graphics controller -- closest level of interaction with the renderer API

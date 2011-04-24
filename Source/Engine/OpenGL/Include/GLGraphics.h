@@ -42,7 +42,7 @@ protected:
 public:
 
 	GLGraphics();
-	virtual ~GLGraphics();
+	virtual ~GLGraphics() { Release(); }
 
 	// ID of the thread the graphics class was initialized in
 	Thread::IDType GetThreadID() const { return mThread; }

@@ -8,22 +8,14 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
-class GLShaderComponent
+struct GLShaderComponent
 {
-	friend class GLShaderProgram;
-
-protected:
-
 	GLGraphics*	mGraphics;		// Graphics manager this shader belongs to
-	IShader*	mShader;		// Shader program this subshader belongs to
 	String		mName;			// This shader's name
 	Flags		mFlags;			// Flags associated with this shader
 	uint		mGLID;			// OpenGL ID of the compiled shader
 	String		mCode;			// Loaded GLSL code the shader was compiled from
 	bool		mIsDirty;		// Whether the shader should be recompiled
-
-	// Only GLShaderProgram should be creating SubShaders
-	GLShaderComponent (IShader* shader, const String& name);
 
 private:
 
@@ -34,6 +26,9 @@ private:
 	bool _Compile();
 
 public:
+
+	// Create a new shader component
+	GLShaderComponent (const String& name);
 
 	// Release the associated OpenGL shader when this class gets destroyed
 	~GLShaderComponent() { _Release(); }
@@ -51,5 +46,5 @@ public:
 	bool IsValid();
 };
 
-// This function is used in both GLShaderComponent as well as GLShaderProgram
+// This function is used in both GLSurfaceShader as well as GLShaderComponent
 void CreateDebugLog (Array<String>& lines, const String& log, const String& code);
