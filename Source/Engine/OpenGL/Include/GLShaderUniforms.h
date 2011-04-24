@@ -8,9 +8,13 @@
 // Author: Michael Lyashenko
 //============================================================================================================
 
-struct GLShaderUniforms
+class GLShaderUniforms
 {
+public:
+
 	typedef IShader::SetUniformDelegate SetUniformDelegate;
+
+private:
 
 	struct Entry
 	{
@@ -65,11 +69,12 @@ public:
 	// Register all built-in uniforms
 	void RegisterBuiltInUniforms();
 
-	// Bind all one-time attributes prior to linking the program
-	void PreLink (uint program);
+	// Bind all one-time attributes prior to linking the program.
+	// The 'code' parameter is used to check if the attribute exists first in order to avoid warnings.
+	void BindAttributes (uint program, const String& code);
 
 	// Set the constant values of texture units in the shader
-	void PostLink (uint program);
+	void BindTextureUnits (uint program);
 
 	// Set the value of the specified uniform
 	bool Set (uint program, const String& name, const Uniform& uniform);

@@ -36,6 +36,15 @@ inline void SetUniform1i (uint program, const char* name, int val)
 }
 
 //============================================================================================================
+// Helper function used in GLShaderUniforms::BindAttributes below
+//============================================================================================================
+
+inline void BindAttribute (const String& code, const uint& program, const uint& index, const char* name)
+{
+	if (code.Contains(name)) glBindAttribLocation(program, index, name);
+}
+
+//============================================================================================================
 // Shader callback function for R5_time uniform
 //------------------------------------------------------------------------------------------------------------
 // R5_time.x = Current time in seconds
@@ -394,31 +403,31 @@ void GLShaderUniforms::RegisterBuiltInUniforms()
 // Bind all one-time attributes prior to linking the program
 //============================================================================================================
 
-void GLShaderUniforms::PreLink (uint program)
+void GLShaderUniforms::BindAttributes (uint program, const String& code)
 {
-	glBindAttribLocation(program, IGraphics::Attribute::Vertex,			"R5_vertex");
-	glBindAttribLocation(program, IGraphics::Attribute::Tangent,		"R5_tangent");
-	glBindAttribLocation(program, IGraphics::Attribute::Normal,			"R5_normal");
-	glBindAttribLocation(program, IGraphics::Attribute::Color,			"R5_color");
-	glBindAttribLocation(program, IGraphics::Attribute::SecondaryColor,	"R5_secondaryColor");
-	glBindAttribLocation(program, IGraphics::Attribute::FogCoord,		"R5_fogCoord");
-	glBindAttribLocation(program, IGraphics::Attribute::BoneWeight,		"R5_boneWeight");
-	glBindAttribLocation(program, IGraphics::Attribute::BoneIndex,		"R5_boneIndex");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord0,		"R5_texCoord0");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord1,		"R5_texCoord1");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord2,		"R5_texCoord2");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord3,		"R5_texCoord3");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord4,		"R5_texCoord4");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord5,		"R5_texCoord5");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord6,		"R5_texCoord6");
-	glBindAttribLocation(program, IGraphics::Attribute::TexCoord7,		"R5_texCoord7");
+	::BindAttribute(code, program, IGraphics::Attribute::Vertex,			"R5_vertex");
+	::BindAttribute(code, program, IGraphics::Attribute::Tangent,			"R5_tangent");
+	::BindAttribute(code, program, IGraphics::Attribute::Normal,			"R5_normal");
+	::BindAttribute(code, program, IGraphics::Attribute::Color,				"R5_color");
+	::BindAttribute(code, program, IGraphics::Attribute::SecondaryColor,	"R5_secondaryColor");
+	::BindAttribute(code, program, IGraphics::Attribute::FogCoord,			"R5_fogCoord");
+	::BindAttribute(code, program, IGraphics::Attribute::BoneWeight,		"R5_boneWeight");
+	::BindAttribute(code, program, IGraphics::Attribute::BoneIndex,			"R5_boneIndex");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord0,			"R5_texCoord0");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord1,			"R5_texCoord1");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord2,			"R5_texCoord2");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord3,			"R5_texCoord3");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord4,			"R5_texCoord4");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord5,			"R5_texCoord5");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord6,			"R5_texCoord6");
+	::BindAttribute(code, program, IGraphics::Attribute::TexCoord7,			"R5_texCoord7");
 }
 
 //============================================================================================================
 // Set the constant values of texture units in the shader
 //============================================================================================================
 
-void GLShaderUniforms::PostLink (uint program)
+void GLShaderUniforms::BindTextureUnits (uint program)
 {
 	::SetUniform1i(program, "R5_texture0",  0);
 	::SetUniform1i(program, "R5_texture1",  1);

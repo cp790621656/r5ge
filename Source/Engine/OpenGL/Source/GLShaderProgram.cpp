@@ -105,7 +105,7 @@ bool GLShaderProgram::Attach()
 	}
 
 	// Bind all attributes
-	mUniforms.PreLink(mGLID);
+	mUniforms.BindAttributes(mGLID, (mVert != 0) ? mVert->GetCode() : String());
 
 	// Link the program
 	glLinkProgram(mGLID);
@@ -121,7 +121,7 @@ bool GLShaderProgram::Attach()
 		LogLinkerStatus(true);
 #endif
 		glUseProgram(g_activeProgramID = mGLID);
-		mUniforms.PostLink(mGLID);
+		mUniforms.BindTextureUnits(mGLID);
 		CHECK_GL_ERROR;
 		return true;
 	}
@@ -210,4 +210,16 @@ void GLShaderProgram::LogLinkerStatus (bool success)
 #endif
 	}
 	System::FlushLog();
+}
+
+//============================================================================================================
+// Checks the source code of attached shader components to see if the specified text exists
+//============================================================================================================
+
+bool GLShaderProgram::Contains (const String& text) const
+{
+	if (mVert != 0 && mVert->mCode.Contains(text)) return true;
+	if (mFrag != 0 && mFrag->mCode.Contains(text)) return true;
+	if (mGeom != 0 && mGeom->mCode.Contains(text)) return true;
+	return false;
 }

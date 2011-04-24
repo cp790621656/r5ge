@@ -51,4 +51,7 @@ struct GLShaderProgram
 
 	// Update all the registered uniforms belonging to the specified group
 	uint UpdateUniforms (uint group) const { return mUniforms.Update(mGLID, group); }
+
+	// Checks the source code of attached shader components to see if the specified text exists
+	bool Contains (const String& text) const;
 };
