@@ -64,7 +64,7 @@ inline void GetGLPrimitive (uint	primitive,
 // Helper conversion arrays
 //============================================================================================================
 
-uint ConvertCondition[] =
+const uint g_conditionToGL[] =
 {
 	GL_NEVER,
 	GL_LESS,
@@ -76,9 +76,9 @@ uint ConvertCondition[] =
 	GL_ALWAYS,
 };
 
-//------------------------------------------------------------------------------------------------------------
+//============================================================================================================
 
-uint ConvertOperation[] =
+const uint g_operationToGL[] =
 {
 	GL_KEEP,
 	GL_ZERO,
@@ -86,6 +86,28 @@ uint ConvertOperation[] =
 	GL_INCR,
 	GL_DECR,
 	GL_INVERT,
+};
+
+//============================================================================================================
+
+const uint g_attributeToClientState[] =
+{
+	GL_VERTEX_ARRAY,		// Vertex
+	0,						// Tangent
+	GL_NORMAL_ARRAY,		// Normal
+	GL_COLOR_ARRAY,			// Color
+	0,						// SecondaryColor
+	0,						// FogCoord
+	0,						// BoneWeight
+	0,						// BoneIndex
+	GL_TEXTURE_COORD_ARRAY,	// TexCoord0
+	0,						// TexCoord1
+	0,						// TexCoord2
+	0,						// TexCoord3
+	0,						// TexCoord4
+	0,						// TexCoord5
+	0,						// TexCoord6
+	0,						// TexCoord7
 };
 
 //============================================================================================================
@@ -760,11 +782,7 @@ bool GLController::SetActiveShader (const IShader* ptr)
 
 void GLController::SetActiveColor (const Color& color)
 {
-	if (mColor != color)
-	{
-		mColor = color;
-		glColor4fv(color.GetColor4f());
-	}
+	glColor4fv(color.GetColor4f());
 }
 
 //============================================================================================================
@@ -776,6 +794,7 @@ void GLController::SetActiveVBO (const IVBO* ptr, uint type)
 	if (ptr != 0)
 	{
 		GLVBO::Activate( ptr->GetID(), ptr->GetType() );
+		++mStats.mBufferBinds;
 	}
 	else
 	{
@@ -805,11 +824,11 @@ void GLController::SetActiveTexture (uint textureUnit, const ITexture* tex)
 void GLController::SetActiveDepthFunction (uint condition)
 {
 #ifdef _DEBUG
-	if (condition < 8) glDepthFunc(ConvertCondition[condition]);
+	if (condition < 8) glDepthFunc(g_conditionToGL[condition]);
 	else ASSERT(false, "Invalid condition -- use the IGraphics::Condition values");
 	CHECK_GL_ERROR;
 #else
-	glDepthFunc(ConvertCondition[condition]);
+	glDepthFunc(g_conditionToGL[condition]);
 #endif
 }
 
@@ -820,11 +839,11 @@ void GLController::SetActiveDepthFunction (uint condition)
 void GLController::SetActiveStencilFunction (uint condition, uint val, uint mask)
 {
 #ifdef _DEBUG
-	if (condition < 8) glStencilFunc(ConvertCondition[condition], val, mask);
+	if (condition < 8) glStencilFunc(g_conditionToGL[condition], val, mask);
 	else ASSERT(false, "Invalid condition -- use the IGraphics::Condition values");
 	CHECK_GL_ERROR;
 #else
-	glStencilFunc(ConvertCondition[condition], val, mask);
+	glStencilFunc(g_conditionToGL[condition], val, mask);
 #endif
 }
 
@@ -836,7 +855,7 @@ void GLController::SetActiveStencilOperation (uint testFail, uint depthFail, uin
 {
 	if (testFail < 6 && depthFail < 6 && pass < 6)
 	{
-		glStencilOp(ConvertOperation[testFail], ConvertOperation[depthFail], ConvertOperation[pass]);
+		glStencilOp(g_operationToGL[testFail], g_operationToGL[depthFail], g_operationToGL[pass]);
 	}
 #ifdef _DEBUG
 	else ASSERT(false, "Invalid argument -- use the IGraphics::Operation values");
@@ -846,11 +865,6 @@ void GLController::SetActiveStencilOperation (uint testFail, uint depthFail, uin
 
 //============================================================================================================
 // Sets the currently active vertex buffer
-//============================================================================================================
-// Short note about this function: Attribute arrays can be used everywhere instead of Client State calls
-// if the shaders are used. If they are not however, position must be specified via glVertexPointer.
-// Attribute array calls also happen to require OpenGL 2.0, so for the sake of compatibility client state
-// calls are used instead of attribute arrays whenever possible.
 //============================================================================================================
 
 void GLController::SetActiveVertexAttribute(
@@ -863,84 +877,113 @@ void GLController::SetActiveVertexAttribute(
 {
 	ASSERT(attribute < 16, "Invalid attribute");
 	BufferEntry& buffer = mBuffers[attribute];
+	bool shouldBeEnabled = (ptr != 0 || (vbo != 0 && vbo->IsValid()));
 
-	bool changed = false;
-	bool isEnabled = (ptr != 0 || (vbo != 0 && vbo->IsValid()));
+	// Convert the specified attribute to an OpenGL client state index
+	uint clientState = g_attributeToClientState[attribute];
+	bool useClientState = (clientState != 0);
 
-	if (attribute == Attribute::Color)
+	// If a GLSL 1.2+ shader is active, always use attribute arrays instead of client state
+	if (g_caps.mVersion >= 210 && mShader != 0 && !mShader->GetFlag(IShader::Flag::LegacyFormat)) useClientState = false;
+
+	if (!useClientState)
 	{
-		if (isEnabled)
+		// Need OpenGL 2.0 support to use vertex attributes
+		if (g_caps.mVersion < 200) return;
+
+		// If client state is enabled, disable it
+		if (buffer.mEnabled == 1)
 		{
-			// Invalidate the local color -- we'll be using an array
-			mColor = Color4f(-1.0f);
+			glDisableClientState(clientState);
+			buffer.mEnabled = 0;
+			buffer.mPtr = 0;
+			CHECK_GL_ERROR;
 		}
-		else
+
+		if (shouldBeEnabled)
 		{
-			// Reset the color back to white
-			SetActiveColor( Color4f(1.0f) );
+			if (buffer.mEnabled)
+			{
+				// If the buffer doesn't change, there is no sense in continuing
+				if (buffer.mVbo == vbo && buffer.mPtr == ptr) return;
+			}
+			else
+			{
+				glEnableVertexAttribArray(attribute);
+				buffer.mEnabled = 2;
+				CHECK_GL_ERROR;
+			}
+
+			// Activate the VBO and bind the attribute
+			GLController::SetActiveVBO( buffer.mVbo = vbo, IVBO::Type::Vertex );
+			glVertexAttribPointer(attribute, elements, dataType, 0, stride, buffer.mPtr = ptr);
+			CHECK_GL_ERROR;
+		}
+		else if (buffer.mEnabled)
+		{
+			// The attribute should be disabled -- deactivate it
+			glDisableVertexAttribArray(attribute);
+			buffer.mEnabled = 0;
+			CHECK_GL_ERROR;
+		}
+	}
+	else // Can't use attributes
+	{
+		if (buffer.mEnabled == 2)
+		{
+			glDisableVertexAttribArray(attribute);
+			buffer.mEnabled = 0;
+			buffer.mPtr = 0;
+			CHECK_GL_ERROR;
+		}
+
+		if (shouldBeEnabled)
+		{
+			if (buffer.mEnabled)
+			{
+				if (buffer.mVbo == vbo && buffer.mPtr == ptr) return;
+			}
+			else
+			{
+				glEnableClientState(clientState);
+				buffer.mEnabled = 1;
+				CHECK_GL_ERROR;
+			}
+
+			GLController::SetActiveVBO( buffer.mVbo = vbo, IVBO::Type::Vertex );
+
+			switch (attribute)
+			{
+				case Attribute::Vertex:		glVertexPointer	 (elements,	dataType,    stride, buffer.mPtr = ptr);	break;
+				case Attribute::Normal:		glNormalPointer	 (			dataType,    stride, buffer.mPtr = ptr);	break;
+				case Attribute::Color:		glColorPointer	 (elements,	dataType,    stride, buffer.mPtr = ptr);	break;
+				case Attribute::TexCoord0:	glTexCoordPointer(elements,	dataType,    stride, buffer.mPtr = ptr);	break;
+			};
+			CHECK_GL_ERROR;
+		}
+		else if (buffer.mEnabled)
+		{
+			glDisableClientState(clientState);
+			buffer.mEnabled = 0;
+			CHECK_GL_ERROR;
 		}
 	}
 
-	if (isEnabled)
+	// Reset the color back to white if the color arrays are off
+	if (attribute == Attribute::Color && !shouldBeEnabled)
 	{
-		if ( !buffer.mEnabled )
+		if (useClientState)
 		{
-			switch (attribute)
-			{
-				case Attribute::Vertex:		glEnableClientState(GL_VERTEX_ARRAY);			break;
-				case Attribute::Normal:		glEnableClientState(GL_NORMAL_ARRAY);			break;
-				case Attribute::TexCoord0:	glEnableClientState(GL_TEXTURE_COORD_ARRAY);	break;
-				case Attribute::Color:		glEnableClientState(GL_COLOR_ARRAY);			break;
-				default:
-				{
-#ifdef _WINDOWS
-					if (glEnableVertexAttribArray != 0 && glVertexAttribPointer != 0)
-#endif
-					{
-						glEnableVertexAttribArray(attribute);
-						break;
-					}
-					return;
-				}
-			};
-
-			changed = true;
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 		else
 		{
-			changed = (buffer.mVbo != vbo) || (buffer.mPtr != ptr);
+			// NOTE: Mac OSX's OpenGL 2.1 driver for NVIDIA doesn't seem
+			// to set the color by using glColor() series of functions. 
+			// Setting the attribute directly seems to work fine, however.
+			glVertexAttrib4f(attribute, 1.0f, 1.0f, 1.0f, 1.0f);
+			CHECK_GL_ERROR;
 		}
-
-		if (changed)
-		{
-			buffer.mEnabled = true;
-			SetActiveVBO( buffer.mVbo = vbo, IVBO::Type::Vertex );
-			++mStats.mBufferBinds;
-
-			switch (attribute)
-			{
-				case Attribute::Vertex:		glVertexPointer			(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
-				case Attribute::Normal:		glNormalPointer			(						dataType,    stride, buffer.mPtr = ptr);	break;
-				case Attribute::Color:		glColorPointer			(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
-				case Attribute::TexCoord0:	glTexCoordPointer		(			 elements,	dataType,    stride, buffer.mPtr = ptr);	break;
-				default:					glVertexAttribPointer	(attribute,  elements,	dataType, 0, stride, buffer.mPtr = ptr);	break;
-			};
-		}
-		CHECK_GL_ERROR;
-	}
-	else if ( buffer.mEnabled )
-	{
-		buffer.mEnabled = false;
-
-		switch (attribute)
-		{
-			case Attribute::Vertex:		glDisableClientState(GL_VERTEX_ARRAY);			break;
-			case Attribute::Normal:		glDisableClientState(GL_NORMAL_ARRAY);			break;
-			case Attribute::Color:		glDisableClientState(GL_COLOR_ARRAY);			break;
-			case Attribute::TexCoord0:	glDisableClientState(GL_TEXTURE_COORD_ARRAY);	break;
-			default:					glDisableVertexAttribArray(attribute);			break;
-		};
-		CHECK_GL_ERROR;
 	}
 }
 

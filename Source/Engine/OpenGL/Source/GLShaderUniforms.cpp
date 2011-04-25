@@ -41,7 +41,14 @@ inline void SetUniform1i (uint program, const char* name, int val)
 
 inline void BindAttribute (const String& code, const uint& program, const uint& index, const char* name)
 {
-	if (code.Contains(name)) glBindAttribLocation(program, index, name);
+	if (code.Contains(name))
+	{
+		glBindAttribLocation(program, index, name);
+		CHECK_GL_ERROR;
+#ifdef _DEBUG
+		System::Log("          - Found attribute '%s' [%u]", name, index);
+#endif
+	}
 }
 
 //============================================================================================================

@@ -216,13 +216,13 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		}
 
 		// Remove all other values
-		String temp;
-		ExtractValue(code, temp, "R5_surfaceNormal");
-		ExtractValue(code, temp, "R5_surfaceSpecularity");
-		ExtractValue(code, temp, "R5_surfaceSpecularHue");
-		ExtractValue(code, temp, "R5_surfaceGlow");
-		ExtractValue(code, temp, "R5_surfaceOcclusion");
-		ExtractValue(code, temp, "R5_surfaceShininess");
+		//String temp;
+		//ExtractValue(code, temp, "R5_surfaceNormal");
+		//ExtractValue(code, temp, "R5_surfaceSpecularity");
+		//ExtractValue(code, temp, "R5_surfaceSpecularHue");
+		//ExtractValue(code, temp, "R5_surfaceGlow");
+		//ExtractValue(code, temp, "R5_surfaceOcclusion");
+		//ExtractValue(code, temp, "R5_surfaceShininess");
 	}
 	else // Lit forward rendering shader
 	{
@@ -348,13 +348,6 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		fog = false;
 	}
 
-	// Remove the normal and tangent if lighting calculations aren't needed
-	if (!lit && !deferred)
-	{
-		ExtractValue(code, temp, "R5_vertexNormal");
-		ExtractValue(code, temp, "R5_vertexTangent");
-	}
-
 	// Vertex position we'll be working with is a vec4
 	{
 		String vertexName;
@@ -392,16 +385,16 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 
 		// Billboard calculations are done in view space
 		code <<
-		"vec3 R5_offset = R5_texCoord0.xyz;\n"
-		"R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
-		"R5_offset.z *= 0.25;\n"
-		"R5_finalPos.xyz = R5_offset * R5_modelScale + R5_finalPos.xyz;\n";
+		"	vec3 R5_offset = R5_texCoord0.xyz;\n"
+		"	R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
+		"	R5_offset.z *= 0.25;\n"
+		"	R5_finalPos.xyz = R5_offset * R5_modelScale + R5_finalPos.xyz;\n";
 
 		if (lit || deferred)
 		{
 			code <<
-			"R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
-			"R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
+			"	R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
+			"	R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
 		}
 	}
 
@@ -424,9 +417,6 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		"	R5_vertexFog = clamp((R5_vertexFog - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
 		"	R5_vertexFog = 0.5 * (R5_vertexFog * R5_vertexFog + R5_vertexFog);\n";
 	}
-
-	// Always include the vertex color
-	if (!code.Contains("R5_vertexColor", true)) code << "	R5_vertexColor = R5_color;\n";
 
 	// Transform the normal
 	if ((lit || deferred) && code.Contains("R5_vertexNormal", true))
@@ -457,9 +447,47 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 			if (skin)
 			code << "	R5_vertexNormal = mat3(R5_skinMat) * R5_vertexNormal;\n";
 			code << "	R5_vertexNormal = mat3(R5_modelMatrix) * R5_vertexNormal;\n"
-					  "	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";
+					"	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";
 		}
 	}
+
+#ifdef _MACOS
+	// NOTE: There is a bug in NVIDIA's 2.1 drivers for OSX with mat3(mat4):
+	// it simply doesn't work. It gives completely unpredictable results.
+	// It took me a while to track this one down.
+
+	uint offset (0);
+	String left, val, right;
+
+	for (;;)
+	{
+		offset = code.Find("mat3(", true, offset);
+		if (offset >= code.GetLength()) break;
+		uint end (offset += 5);
+
+		for (; end < code.GetLength(); ++end)
+		{
+			if (code[end] == ')')
+			{
+				code.GetString(left, 0, offset);
+				code.GetString(val, offset, end);
+				code.GetString(right, end);
+
+				code = left;
+				code << val;
+				code << "[0].xyz, ";
+				code << val;
+				code << "[1].xyz, ";
+				code << val;
+				code << "[2].xyz";
+				code << right;
+				offset = end + val.GetLength() * 3 + 26;
+				break;
+			}
+			else if (code[end] == ',') break;
+		}
+	}
+#endif
 
 	// Restore the final bracket
 	code << "}\n";

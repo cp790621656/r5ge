@@ -22,9 +22,9 @@ class GLController : public IGraphics
 	{
 		const IVBO*		mVbo;
 		const void*		mPtr;
-		bool			mEnabled;
+		uint			mEnabled; // Disabled = 0, Client state is active = 1, attribute is active = 2
 
-		BufferEntry() : mVbo(0), mPtr((void*)(-1)), mEnabled(false) {}
+		BufferEntry() : mVbo(0), mPtr((void*)(-1)), mEnabled(0) {}
 	};
 
 protected:
@@ -52,7 +52,6 @@ protected:
 	Vector2f	mFogRange;			// Fog range
 	uint		mAf;				// Current anisotropy level
 	Color4f		mBackground;		// Current window background color
-	Color		mColor;				// Current active vertex color
 
 	const IRenderTarget*	mTarget;		// Active rendering target
 	const ITechnique*		mTechnique;		// Active rendering technique

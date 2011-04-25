@@ -33,7 +33,7 @@ struct IGraphicsController
 	{
 		enum
 		{
-			Vertex		= 0,
+			Vertex			= 0,
 			Tangent			= 1,
 			Normal			= 2,
 			Color			= 3,

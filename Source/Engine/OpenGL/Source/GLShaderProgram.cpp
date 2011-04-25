@@ -151,9 +151,9 @@ bool GLShaderProgram::Attach()
 
 void GLShaderProgram::LogLinkerStatus (bool success)
 {
-	if (mVert != 0) System::Log("[Vertex]\n%s", mVert->GetCode().GetBuffer());
-	if (mFrag != 0) System::Log("[Fragment]\n%s", mFrag->GetCode().GetBuffer());
-	if (mGeom != 0) System::Log("[Geometry]\n%s", mGeom->GetCode().GetBuffer());
+	//if (mVert != 0) System::Log("[Vertex]\n%s", mVert->GetCode().GetBuffer());
+	//if (mFrag != 0) System::Log("[Fragment]\n%s", mFrag->GetCode().GetBuffer());
+	//if (mGeom != 0) System::Log("[Geometry]\n%s", mGeom->GetCode().GetBuffer());
 
 	String log;
 	int logLength (0);
