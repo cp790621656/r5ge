@@ -387,7 +387,7 @@ bool SysWindow::_Set (const Vector2i& pos, const Vector2i& size, uint style)
 			mFsSize.Set(::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
 
 			::SetWindowLong(mHWnd, GWL_STYLE, winStyle);
-			::SetWindowPos(mHWnd, HWND_TOP, 0, 0, mFsSize.x, mFsSize.y, SWP_FRAMECHANGED);
+			::SetWindowPos(mHWnd, HWND_TOP, 0, 0, mFsSize.x, mFsSize.y, 0);
 		}
 		else
 		{

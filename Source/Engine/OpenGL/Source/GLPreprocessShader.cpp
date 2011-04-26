@@ -204,7 +204,6 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		{
 			final.Set(IShader::Flag::Fog, true);
 
-			// Lit forward rendering involves lighting calculations
 			code.Replace("R5_surfaceColor", "vec4 R5_surfaceColor", true);
 			code <<
 			"	R5_surfaceColor.rgb = mix(R5_surfaceColor.rgb, R5_fogColor.rgb, R5_vertexFog);\n"
