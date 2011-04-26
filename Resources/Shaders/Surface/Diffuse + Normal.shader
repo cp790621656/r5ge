@@ -21,7 +21,7 @@ void main()
 #if Lit or Deferred
 	vec4 tex1 = Sample2D(1, R5_vertexTexCoord0);
 	R5_surfaceNormal = NormalMapToNormal(tex1);
-	R5_surfaceSpecularity = tex1.a;
+	R5_surfaceSpecularity = R5_materialSpecularity * tex1.a;
 #endif
 }
 #endif

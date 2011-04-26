@@ -347,63 +347,74 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 		fog = false;
 	}
 
-	// Vertex position we'll be working with is a vec4
+	// If final position is present then the vertex shader has taken care of applying the model and view transforms
+	if (code.Contains("R5_viewPosition", true))
+	{
+		String vertexName;
+		ExtractValue(code, vertexName, "R5_viewPosition");
+		code << "	vec4 R5_viewPosition = ";
+		code << vertexName;
+		code << ";\n";
+	}
+	else
 	{
 		String vertexName;
 		ExtractValue(code, vertexName, "R5_vertexPosition", "R5_position");
-		code << "	vec4 R5_finalPos = vec4(";
+
+		// Vertex position we'll be working with is a vec4
+		code << "	vec4 R5_viewPosition = vec4(";
 		code << vertexName;
 		code << ", 1.0);\n";
 
-		// Earlier versions of GLSL may not like the vertex position being an attribute
-		if (g_caps.mVersion < 210) code.Replace("R5_position", "gl_Vertex.xyz", true);
-	}
-
-	// Skinned shaders use an additional set of matrices
-	if (skin)
-	{
-		final.Set(IShader::Flag::Skinned, true);
-
-		code <<
-		"	mat4 R5_skinMat = R5_boneTransforms[int(R5_boneIndex.x)] * R5_boneWeight.x +\n"
-		"		R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n"
-		"		R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n"
-		"		R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n"
-		"	R5_finalPos = R5_skinMat * R5_finalPos;\n";
-	}
-
-	// Calculate the vertex position
-	code <<
-	"	R5_finalPos = R5_modelMatrix * R5_finalPos;\n"
-	"	R5_finalPos = R5_viewMatrix * R5_finalPos;\n";
-
-	// Billboarding section
-	if (billboard)
-	{
-		final.Set(IShader::Flag::Billboard, true);
-
-		// Billboard calculations are done in view space
-		code <<
-		"	vec3 R5_offset = R5_texCoord0.xyz;\n"
-		"	R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
-		"	R5_offset.z *= 0.25;\n"
-		"	R5_finalPos.xyz = R5_offset * R5_modelScale + R5_finalPos.xyz;\n";
-
-		if (lit || deferred)
+		// Skinned shaders use an additional set of matrices
+		if (skin)
 		{
+			final.Set(IShader::Flag::Skinned, true);
+
 			code <<
-			"	R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
-			"	R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
+			"	mat4 R5_skinMat = R5_boneTransforms[int(R5_boneIndex.x)] * R5_boneWeight.x +\n"
+			"		R5_boneTransforms[int(R5_boneIndex.y)] * R5_boneWeight.y +\n"
+			"		R5_boneTransforms[int(R5_boneIndex.z)] * R5_boneWeight.z +\n"
+			"		R5_boneTransforms[int(R5_boneIndex.w)] * R5_boneWeight.w;\n"
+			"	R5_viewPosition = R5_skinMat * R5_viewPosition;\n";
+		}
+
+		// Calculate the vertex position
+		code <<
+		"	R5_viewPosition = R5_modelMatrix * R5_viewPosition;\n"
+		"	R5_viewPosition = R5_viewMatrix * R5_viewPosition;\n";
+
+		// Billboarding section
+		if (billboard)
+		{
+			final.Set(IShader::Flag::Billboard, true);
+
+			// Billboard calculations are done in view space
+			code <<
+			"	vec3 R5_offset = R5_texCoord0.xyz;\n"
+			"	R5_offset.xy = (R5_offset.xy * 2.0 - 1.0) * R5_offset.z;\n"
+			"	R5_offset.z *= 0.25;\n"
+			"	R5_viewPosition.xyz = R5_offset * R5_modelScale + R5_viewPosition.xyz;\n";
+
+			if (lit || deferred)
+			{
+				code <<
+				"	R5_vertexNormal = R5_vertexPosition.xyz - R5_origin.xyz;\n"
+				"	R5_vertexTangent = vec3(R5_vertexNormal.y, -R5_vertexNormal.z, 0.0);\n";
+			}
 		}
 	}
 
 	// Final transformed vertex position
-	code << "	gl_Position = R5_projMatrix * R5_finalPos;\n";
+	code << "	gl_Position = R5_projMatrix * R5_viewPosition;\n";
+
+	// Earlier versions of GLSL may not like the vertex position being an attribute
+	if (g_caps.mVersion < 210) code.Replace("R5_position", "gl_Vertex.xyz", true);
 
 	// Vertex-eye vector is only needed for forward rendering
 	if (lit && !deferred)
 	{
-		code << "	R5_vertexEye = R5_finalPos.xyz;\n";
+		code << "	R5_vertexEye = R5_viewPosition.xyz;\n";
 		final.Set(desired.Get() & IShader::Flag::Lit, true);
 	}
 
@@ -412,7 +423,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	{
 		final.Set(IShader::Flag::Fog, true);
 		code <<
-		"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_finalPos.z) / R5_clipRange.w;\n"
+		"	R5_vertexFog = 1.0 - (R5_clipRange.y + R5_viewPosition.z) / R5_clipRange.w;\n"
 		"	R5_vertexFog = clamp((R5_vertexFog - R5_fogRange.x) / R5_fogRange.y, 0.0, 1.0);\n"
 		"	R5_vertexFog = 0.5 * (R5_vertexFog * R5_vertexFog + R5_vertexFog);\n";
 	}
@@ -671,9 +682,33 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 		if (code.Contains("R5_color",			true)) { prefix << inOut; prefix << "vec4 R5_color;\n"; }
 		if (code.Contains("R5_boneWeight",		true)) { prefix << inOut; prefix << "vec4 R5_boneWeight;\n"; }
 		if (code.Contains("R5_boneIndex",		true)) { prefix << inOut; prefix << "vec4 R5_boneIndex;\n"; }
-		if (code.Contains("R5_texCoord0",		true)) { prefix << inOut; prefix << "vec2 R5_texCoord0;\n"; }
-		if (code.Contains("R5_texCoord1",		true)) { prefix << inOut; prefix << "vec2 R5_texCoord1;\n"; }
 		if (code.Contains("R5_boneTransforms",	true)) prefix << "uniform mat4 R5_boneTransforms[32];\n";
+		if (code.Contains("R5_texCoord0",		true))
+		{
+			prefix << inOut;
+
+			if (code.Contains("R5_texCoord0.xyz"))
+			{
+				prefix << "vec3 R5_texCoord0;\n";
+			}
+			else
+			{
+				prefix << "vec2 R5_texCoord0;\n";
+			}
+		}
+		if (code.Contains("R5_texCoord1", true))
+		{
+			prefix << inOut;
+
+			if (code.Contains("R5_texCoord1.xyz"))
+			{
+				prefix << "vec3 R5_texCoord1;\n";
+			}
+			else
+			{
+				prefix << "vec2 R5_texCoord1;\n";
+			}
+		}
 	}
 
 	if (g_caps.mVersion < 300) inOut = "varying ";
@@ -768,6 +803,9 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 			{
 				code.Replace("gl_FragData[0]", "gl_FragColor", true);
 			}
+
+			// All instances of 'varying' should be replaced
+			code.Replace("varying", "in", true);
 		}
 
 		// Add all referenced variables and convert common types
@@ -780,7 +818,7 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 		// For shader code debugging:
 		while (code.Replace("\t\t", "\t", true)) {}
 	}
-	else if (code.Contains("R5_vertexPosition", true))
+	else if (code.Contains("R5_vertexPosition", true) || code.Contains("R5_viewPosition", true))
 	{
 		final.Set(IShader::Flag::Vertex, true);
 
@@ -792,6 +830,7 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 		if (g_caps.mVersion >= 300)
 		{
 			// Latest syntax: built-in uniforms are no longer present and 'varying' is replaced by 'in'/'out'.
+			code.Replace("varying", "out", true);
 			code = "#version 130\n" + code;
 		}
 		else if (g_caps.mVersion >= 210)

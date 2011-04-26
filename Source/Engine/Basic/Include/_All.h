@@ -29,6 +29,7 @@ using fastdelegate::bind;
 #include "R5_Defines.h"				// Basic system-dependent preprocessor declarations
 #include "R5_Assert.h"				// Assertion functionality for debugging
 
+// TODO: These should not be exposed out here and should instead be moved into R5_Thread.cpp
 #if defined(_LINUX)
 #include <pthread.h>
 #include <errno.h>
@@ -58,7 +59,7 @@ namespace R5
 	#include "R5_Bundle.h"			// Bundle is a collection of assets packed into a single file
 	#include "R5_Random.h"			// Cross-platform pseudo-random number generator
 	#include "R5_FileDialog.h"		// File dialog window (implemented natively on each system)
-	#include "R5_Compression.h"		// ZLIB-based compression functionality
+	#include "R5_Compression.h"		// ZLIB and LZMA-based compression functionality
 };
 
 #endif

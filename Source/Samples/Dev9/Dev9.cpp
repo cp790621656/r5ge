@@ -135,10 +135,10 @@ void TestApp::Run()
 			Generate();
 		}
 
+		//*mCore >> "Config/Dev9.txt";
+
 		// Enter the game loop
 		while (mCore->Update()) {}
-
-		//*mCore >> "Config/Dev9.txt";
 	}
 }
 
@@ -193,6 +193,7 @@ void TestApp::DrawLeaves (IGraphicsManager* graphics, void* param)
 			mGraphics->SetScreenProjection( true );
 			mGraphics->SetActiveTexture(0, temp0);
 			mGraphics->SetActiveShader( mGraphics->GetShader("Other/RemoveAlpha") );
+			mGraphics->PrepareToDraw();
 			mGraphics->Draw( IGraphics::Drawable::InvertedQuad );
 			mGraphics->Flush();
 		}

@@ -23,7 +23,7 @@ Root
 			Alpha Test = true
 			Wireframe = false
 			Lighting = "None"
-			Blending = "Normal"
+			Blending = "None"
 			Culling = "Back"
 			Sorting = "None"
 		}
@@ -37,7 +37,7 @@ Root
 			Alpha Test = true
 			Wireframe = false
 			Lighting = "None"
-			Blending = "Normal"
+			Blending = "None"
 			Culling = "Back"
 			Sorting = "None"
 		}
@@ -60,51 +60,142 @@ Root
 
 		Material = "Leaf"
 		{
-			Diffuse = 1.000000 0.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.200000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 0.0
+			Specularity = 0.2
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.85
+			Alpha Cutoff = 0.1
 
 			Technique = "Diffuse Map"
 			{
-				Texture 0 = "Leaf Diffuse map"
+				Textures = String[]
+				{
+					"Leaf Diffuse map"
+				}
 			}
 
 			Technique = "Normal Map"
 			{
 				Shader = "Other/NormalMap"
-				Texture 0 = "Leaf Diffuse map"
-				Texture 1 = "Leaf Normal map"
+
+				Textures = String[]
+				{
+					"Leaf Diffuse map"
+					"Leaf Normal map"
+				}
 			}
 		}
 
 		Material = "Trunk"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
-			ADT = 0.003922
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 1.0
+			Specularity = 0.1
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.85
+			Alpha Cutoff = 0.003922
+
+			Technique = "Depth"
+			{
+				Shader = "Surface/Tree Trunk"
+
+				Textures = String[]
+				{
+					"Textures/Plants/bark.jpg"
+				}
+			}
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/TreeTrunk"
-				Texture 0 = "Textures/Plants/bark.jpg"
-				Texture 1 = "Textures/Plants/bark_n.png"
+				Shader = "Surface/Tree Trunk"
+
+				Textures = String[]
+				{
+					"Textures/Plants/bark.jpg"
+					"Textures/Plants/bark_n.png"
+				}
+			}
+
+			Technique = "Shadowed Opaque"
+			{
+				Shader = "Surface/Tree Trunk"
+
+				Textures = String[]
+				{
+					"Textures/Plants/bark.jpg"
+					"Textures/Plants/bark_n.png"
+				}
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Surface/Tree Trunk"
+
+				Textures = String[]
+				{
+					"Textures/Plants/bark.jpg"
+					"Textures/Plants/bark_n.png"
+				}
 			}
 		}
 
 		Material = "Canopy"
 		{
-			Diffuse = 1.000000 1.000000 1.000000 1.000000
-			Specular = 0.000000 0.000000 0.000000 0.100000
-			Glow = 0.000000
-			ADT = 0.900000
+			Diffuse = 1.0 1.0 1.0 1.0
+			Glow = 0.0
+			Specular Hue = 1.0
+			Specularity = 0.1
+			Shininess = 0.2
+			Reflectiveness = 0.0
+			Occlusion = 0.85
+			Alpha Cutoff = 0.9
+
+			Technique = "Depth"
+			{
+				Shader = "Surface/Tree Canopy"
+
+				Textures = String[]
+				{
+					"Generated Diffuse map"
+				}
+			}
 
 			Technique = "Transparent"
 			{
-				Shader = "Forward/TreeCanopy"
-				Texture 0 = "Generated Diffuse map"
-				Texture 1 = "Generated Normal map"
+				Shader = "Surface/Tree Canopy"
+
+				Textures = String[]
+				{
+					"Generated Diffuse map"
+					"Generated Normal map"
+				}
+			}
+
+			Technique = "Shadowed Transparent"
+			{
+				Shader = "Surface/Tree Canopy"
+
+				Textures = String[]
+				{
+					"Generated Diffuse map"
+					"Generated Normal map"
+				}
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Surface/Tree Canopy"
+
+				Textures = String[]
+				{
+					"Generated Diffuse map"
+					"Generated Normal map"
+				}
 			}
 		}
 	}
@@ -113,261 +204,294 @@ Root
 	{
 		Default Skin = "Skins/Neon"
 		Default Font = "Arial 15"
-		Tooltip Delay = 1.000000
 
 		Layout
 		{
 			UIStats = "Game UIStats"
 			{
-				Bottom = 0 142
-				Left = 1 -150
-				Font = "Arial 15"
-				Receives Events = false
+				Left = 1.0 -150.0
+				Right = 1.0 0.0
+				Top = 0.0 0.0
+				Bottom = 0.0 142.0
+				Alpha = 1.0
+				Shadow Color = 0x000000AF
+				Event Handling = "None"
 				Layer = 1
 
 				UIHighlight = "Backdrop"
 				{
-					Top Color = 0 0 0 0.7
-					Bottom Color = 0 0 0 0.3
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Top Color = 0x000000B2
+					Bottom Color = 0x0000004C
+					Event Handling = "Normal"
+					Layer = 0
 				}
 			}
 
 			UIWindow = "Final UIWindow"
 			{
-				Left = 0.000000 230.000000
-				Right = 0.000000 742.000000
-				Top = 0.000000 4.000000
-				Bottom = 0.000000 536.000000
-				Alpha = 0.000000
+				Left = 0.0 230.0
+				Right = 0.0 742.0
+				Top = 0.0 4.0
+				Bottom = 0.0 536.0
+				Alpha = 0.0
 				Titlebar Height = 20
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Back Color = 0xFFFFFFFF
 				Text = "Original Diffuse Map (512x512)"
-				Shadow = true
+				Text Color = 0xFFFFFFFF
+				Shadow Color = 0x000000FF
 				Alignment = "Center"
-				Receives Events = true
+				Event Handling = "Normal"
 				Layer = 0
 
 				UIPicture = "Final"
 				{
-					Left = 0.000000 0.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 0.000000
-					Bottom = 1.000000 0.000000
-					Alpha = 1.000000
+					Left = 0.0 0.0
+					Right = 1.0 0.0
+					Top = 0.0 0.0
+					Bottom = 1.0 0.0
+					Alpha = 1.0
+					Tiled = false
+					Back Color = 0xFFFFFFFF
 					Texture = "Leaf Diffuse map"
 					Ignore Alpha = false
-					Receives Events = false
+					Event Handling = "None"
 					Layer = 1
 				}
 
 				UIButton = "Normal Toggle"
 				{
-					Left = 0.000000 0.000000
-					Right = 0.000000 22.000000
-					Top = 0.000000 0.400000
-					Bottom = 0.000000 24.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 0.0
+					Right = 0.0 22.0
+					Top = 0.0 0.4
+					Bottom = 0.0 24.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text = "N"
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = true
-					Animation Time = 0.150000
-					Receives Events = true
+					Animation Time = 0.15
+					Event Handling = "Normal"
 					Tooltip = "Toggle between the [FF8833]diffuse[FFFFFF] and [FF8833]normal map[FFFFFF] textures"
 					Layer = 2
+					UIScript = "USEventListener"
 				}
 
 				UIButton = "Alpha Toggle"
 				{
-					Left = 0.000000 44.000000
-					Right = 0.000000 66.000000
-					Top = 0.000000 0.400000
-					Bottom = 0.000000 24.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 44.0
+					Right = 0.0 66.0
+					Top = 0.0 0.4
+					Bottom = 0.0 24.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text = "A"
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = true
-					Animation Time = 0.150000
-					Receives Events = true
+					Animation Time = 0.15
+					Event Handling = "Normal"
 					Tooltip = "Ignore the [FF8833]alpha[FFFFFF] channel"
 					Layer = 2
+					UIScript = "USEventListener"
 				}
 
 				UIButton = "Final Toggle"
 				{
-					Left = 0.000000 22.000000
-					Right = 0.000000 44.000000
-					Top = 0.000000 0.400000
-					Bottom = 0.000000 24.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
+					Left = 0.0 22.0
+					Right = 0.0 44.0
+					Top = 0.0 0.4
+					Bottom = 0.0 24.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text = "F"
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = true
-					Animation Time = 0.150000
-					Receives Events = true
+					Animation Time = 0.15
+					Event Handling = "Normal"
 					Tooltip = "Toggle between the [FF8833]original[FFFFFF] and [FF8833]final[FFFFFF] textures"
 					Layer = 2
+					UIScript = "USEventListener"
 				}
 			}
 
 			UIWindow = "Options"
 			{
-				Left = 0.000000 3.000000
-				Right = 0.000000 224.000000
-				Top = 0.000000 4.000000
-				Bottom = 0.000000 111.000000
-				Alpha = 1.000000
+				Left = 0.0 3.0
+				Right = 0.0 224.0
+				Top = 0.0 4.0
+				Bottom = 0.0 111.0
+				Alpha = 1.0
 				Titlebar Height = 20
 				Resizable = true
-				Color = 1.000000 1.000000 1.000000
+				Back Color = 0xFFFFFFFF
 				Text = "Options"
-				Shadow = true
+				Text Color = 0xFFFFFFFF
+				Shadow Color = 0x000000FF
 				Alignment = "Center"
-				Receives Events = true
+				Event Handling = "Normal"
 				Layer = 0
 
 				UISlider = "Tilt"
 				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 23.000000
-					Bottom = 0.000000 40.000000
-					Alpha = 1.000000
+					Left = 0.0 3.0
+					Right = 1.0 -3.0
+					Top = 0.0 23.0
+					Bottom = 0.0 40.0
+					Alpha = 1.0
 					Value = 0.604651
-					Color = 1.000000 1.000000 1.000000
-					Animation Time = 0.000000
-					Receives Events = true
+					Back Color = 0xFFFFFFFF
+					Animation Time = 0.0
+					Event Handling = "Normal"
 					Layer = 0
 
 					UILabel = "Tilt Text"
 					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
+						Left = 0.0 0.0
+						Right = 1.0 0.0
+						Top = 0.0 0.0
+						Bottom = 1.0 0.0
+						Alpha = 1.0
 						Text = "Tilt Factor"
-						Shadow = true
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x000000FF
 						Alignment = "Center"
-						Receives Events = false
+						Event Handling = "None"
 						Layer = 1
 					}
 				}
 
 				UISlider = "Count"
 				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 43.000000
-					Bottom = 0.000000 60.000000
-					Alpha = 1.000000
-					Value = 0.279070
-					Color = 1.000000 1.000000 1.000000
-					Animation Time = 0.000000
-					Receives Events = true
+					Left = 0.0 3.0
+					Right = 1.0 -3.0
+					Top = 0.0 43.0
+					Bottom = 0.0 60.0
+					Alpha = 1.0
+					Value = 0.27907
+					Back Color = 0xFFFFFFFF
+					Animation Time = 0.0
+					Event Handling = "Normal"
 					Layer = 0
 
 					UILabel = "Count Text"
 					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
+						Left = 0.0 0.0
+						Right = 1.0 0.0
+						Top = 0.0 0.0
+						Bottom = 1.0 0.0
+						Alpha = 1.0
 						Text = "Number of Particles"
-						Shadow = true
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x000000FF
 						Alignment = "Center"
-						Receives Events = false
+						Event Handling = "None"
 						Layer = 1
 					}
 				}
 
 				UISlider = "Size"
 				{
-					Left = 0.000000 3.000000
-					Right = 1.000000 -3.000000
-					Top = 0.000000 3.000000
-					Bottom = 0.000000 20.000000
-					Alpha = 1.000000
+					Left = 0.0 3.0
+					Right = 1.0 -3.0
+					Top = 0.0 3.0
+					Bottom = 0.0 20.0
+					Alpha = 1.0
 					Value = 0.269767
-					Color = 1.000000 1.000000 1.000000
-					Animation Time = 0.000000
-					Receives Events = true
+					Back Color = 0xFFFFFFFF
+					Animation Time = 0.0
+					Event Handling = "Normal"
 					Layer = 0
 
 					UILabel = "Size Text"
 					{
-						Left = 0.000000 0.000000
-						Right = 1.000000 0.000000
-						Top = 0.000000 0.000000
-						Bottom = 1.000000 0.000000
-						Alpha = 1.000000
-						Color = 1.000000 1.000000 1.000000
+						Left = 0.0 0.0
+						Right = 1.0 0.0
+						Top = 0.0 0.0
+						Bottom = 1.0 0.0
+						Alpha = 1.0
 						Text = "Particle Size"
-						Shadow = true
+						Text Color = 0xFFFFFFFF
+						Shadow Color = 0x000000FF
 						Alignment = "Center"
-						Receives Events = false
+						Event Handling = "None"
 						Layer = 1
 					}
 				}
 
 				UIButton = "Generate"
 				{
-					Left = 0.000000 2.000000
-					Right = 1.000000 -2.000000
-					Top = 0.000000 63.000000
-					Bottom = 0.000000 85.000000
-					Alpha = 1.000000
-					Color = 0.500000 1.000000 0.250000
+					Left = 0.0 2.0
+					Right = 1.0 -2.0
+					Top = 0.0 63.0
+					Bottom = 0.0 85.0
+					Alpha = 1.0
+					Back Color = 0x80FF40FF
 					Text = "Generate"
-					Shadow = true
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = false
-					Animation Time = 0.150000
-					Receives Events = true
+					Animation Time = 0.15
+					Event Handling = "Normal"
 					Layer = 0
+					UIScript = "USEventListener"
 				}
 
 				UIButton = "Show"
 				{
-					Left = 1.000000 -22.000000
-					Right = 1.000000 0.000000
-					Top = 0.000000 -20.000000
-					Bottom = 0.000000 0.000000
-					Alpha = 1.000000
-					Color = 1.000000 1.000000 1.000000
+					Left = 1.0 -22.0
+					Right = 1.0 0.0
+					Top = 0.0 -20.0
+					Bottom = 0.0 0.0
+					Alpha = 1.0
+					Back Color = 0xFFFFFFFF
 					Text = ">"
-					Shadow = false
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x00000000
 					Alignment = "Center"
 					State = "Enabled"
 					Sticky = true
-					Animation Time = 0.150000
-					Receives Events = true
+					Animation Time = 0.15
+					Event Handling = "Normal"
 					Tooltip = "Shows the texture UIWindow"
 					Layer = 0
+					UIScript = "USEventListener"
 				}
-				
+
 				UIButton = "Save"
 				{
-					Right = 0 50
-					Top = 0 -20
-					Bottom = 0 0
+					Left = 0.0 0.0
+					Right = 0.0 50.0
+					Top = 0.0 -20.0
+					Bottom = 0.0 0.0
+					Alpha = 1.0
+					Back Color = 0x80FF00FF
 					Text = "Save"
+					Text Color = 0xFFFFFFFF
+					Shadow Color = 0x000000FF
+					Alignment = "Center"
+					State = "Enabled"
+					Sticky = false
+					Animation Time = 0.15
+					Event Handling = "Normal"
 					Tooltip = "Save the generated textures"
-					Shadow = true
-					Color = 0.5 1.0 0.0
+					Layer = 0
+					UIScript = "USEventListener"
 				}
 			}
 		}
@@ -375,7 +499,10 @@ Root
 
 	Core
 	{
-		Execute = "Skins/Neon UI Skin.txt"
+		Serialize From = String[]
+		{
+			"Skins/Neon UI Skin.txt"
+		}
 
 		Model = "Tree"
 		{
@@ -387,121 +514,120 @@ Root
 	{
 		Object = "Scene Root"
 		{
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 			Script = "OSSceneRoot"
-		
-			Position = 0.000000 0.000000 0.000000
-			Rotation = 0.000000 0.000000 0.000000 1.000000
-			Scale = 1.000000
-			Layer = 10
 
 			Model Instance = "Tree 0"
 			{
-				Position = 0.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = 0.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 1"
 			{
-				Position = 10.000000 10.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = 10.0 10.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 2"
 			{
-				Position = -10.000000 10.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = -10.0 10.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 3"
 			{
-				Position = 10.000000 -10.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = 10.0 -10.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 4"
 			{
-				Position = -10.000000 -10.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = -10.0 -10.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 5"
 			{
-				Position = 0.000000 10.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = 0.0 10.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 6"
 			{
-				Position = 10.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = 10.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 7"
 			{
-				Position = -10.000000 0.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = -10.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Model Instance = "Tree 8"
 			{
-				Position = 0.000000 -10.000000 0.000000
-				Rotation = 0.000000 0.000000 0.000000 1.000000
-				Scale = 1.000000
-				Layer = 10
+				Position = 0.0 -10.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Model = "Tree"
 			}
 
 			Debug Camera = "Default Camera"
 			{
 				Position = 0.048904 0.235138 7.578767
-				Rotation = -0.226618 0.026254 -0.112052 0.967160
-				Scale = 1.000000
-				Layer = 10
-				Range = 1.000000 100.000000 90.000000
-				Dolly = 0.000000 40.855690 50.000000
+				Rotation = -0.226618 0.026254 -0.112052 0.96716
+				Scale = 1.0 1.0 1.0
+				Range = 1.0 100.0 90.0
+				Dolly = 0.0 40.85569 50.0
 
 				Script = "OSDrawForward"
 				{
+					Background Color = 0.5 0.5 0.5 1.0
+					Fog Range = 25.0 75.0
 					Grid = true
-					Background Color = 1 1 1 1
-					Fog Range = 25.000000 75.000000
+
+					Shadowmap
+					{
+						Texture Size = 1024
+						Cascade Count = 1
+						Cascade Bias = 0.5
+						Blur Passes = 1
+						Softness = 2.0
+						Kernel Size = 1.0
+						Depth Bias = 6.0
+					}
 				}
 			}
 
 			Directional Light = "First Light"
 			{
-				Position = 0.000000 0.000000 0.000000
+				Position = 0.0 0.0 0.0
 				Rotation = -0.294863 -0.209613 0.540152 0.759839
-				Scale = 1.000000
-				Layer = 10
-				Ambient = 0.150000 0.150000 0.150000
-				Diffuse = 1.000000 1.000000 1.000000
-				Specular = 1.000000 1.000000 1.000000
-				Brightness = 1.000000
+				Scale = 1.0 1.0 1.0
+				Ambient = 0.35 0.35 0.4
+				Diffuse = 1.35 1.35 1.25
+				Specular = 1.0 1.0 1.0
+				Brightness = 1.0
+				Shadows = true
 			}
 		}
 	}

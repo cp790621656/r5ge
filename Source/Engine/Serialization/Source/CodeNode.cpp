@@ -162,8 +162,13 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 				}
 				else if (child.mLine.BeginsWith("#else", true))
 				{
-					block.Back() = !block.Back();
-					updateBlock = true;
+					ASSERT(block.IsValid(), "Mismatched '#else'. Did you mean '#else if'?");
+
+					if (block.IsValid())
+					{
+						block.Back() = !block.Back();
+						updateBlock = true;
+					}
 				}
 				else if (child.mLine.BeginsWith("#if ", true))
 				{

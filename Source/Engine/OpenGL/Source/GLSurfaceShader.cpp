@@ -325,7 +325,9 @@ void GLSurfaceShader::SetCode (const String& code)
 			mBasicFlags.Set(IShader::Flag::Fragment, true);
 		}
 
-		if (code.Contains("R5_vertexPosition", true) || code.Contains("gl_Position", true))
+		if (code.Contains("R5_vertexPosition", true) ||
+			code.Contains("R5_viewPosition", true) ||
+			code.Contains("gl_Position", true))
 		{
 			mBasicFlags.Set(IShader::Flag::Vertex, true);
 		}
