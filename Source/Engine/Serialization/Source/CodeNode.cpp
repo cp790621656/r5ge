@@ -119,13 +119,19 @@ void CodeNode::SerializeTo (String& out, const Array<String>& defines) const
 // Save the structure's contents into the specified node using the specified list of #defines
 //============================================================================================================
 
+struct IfDef
+{
+	bool process;
+	bool add;
+};
+
 void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 {
 	out.mLine = mLine;
 
 	if (mChildren.IsValid())
 	{
-		Array<bool> block;
+		Array<IfDef> block;
 		bool save (true);
 
 		FOREACH(i, mChildren)
@@ -157,7 +163,9 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 						}
 					}
 
-					block.Back() = val;
+					IfDef& ifdef = block.Back();
+					ifdef.add = val && ifdef.process;
+					if (val) ifdef.process = false;
 					updateBlock = true;
 				}
 				else if (child.mLine.BeginsWith("#else", true))
@@ -166,7 +174,10 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 
 					if (block.IsValid())
 					{
-						block.Back() = !block.Back();
+						IfDef& ifdef = block.Back();
+						bool val = ifdef.add;
+						ifdef.add = !val && ifdef.process;
+						if (val) ifdef.process = false;
 						updateBlock = true;
 					}
 				}
@@ -185,7 +196,9 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 						}
 					}
 
-					block.Expand() = val;
+					IfDef& ifdef = block.Expand();
+					ifdef.add = val && ifdef.process;
+					if (val) ifdef.process = false;
 					updateBlock = true;
 				}
 
@@ -195,7 +208,7 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 
 					FOREACH(b, block)
 					{
-						if (!block[b])
+						if (!block[b].add)
 						{
 							save = false;
 							break;

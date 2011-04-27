@@ -24,10 +24,15 @@ Root
 			Reflectiveness = 0.0
 			Occlusion = 0.85
 			Alpha Cutoff = 0.003922
+			
+			Technique = "Depth"
+			{
+				Shader = "Surface/Dev2 Terrain"
+			}
 
 			Technique = "Opaque"
 			{
-				Shader = "Forward/dev2terrain"
+				Shader = "Surface/Dev2 Terrain"
 
 				Textures = String[]
 				{
@@ -39,31 +44,19 @@ Root
 					"Textures/Other/snow_ns.png"
 				}
 			}
-		}
-
-		Material = "Test"
-		{
-			Diffuse = 1.0 1.0 1.0 1.0
-			Glow = 0.0
-			Specular Hue = 0.0
-			Specularity = 1.0
-			Shininess = 0.95
-			Reflectiveness = 0.0
-			Occlusion = 0.85
-			Alpha Cutoff = 0.003922
-
-			Technique = "Opaque"
+			
+			Technique = "Shadowed Opaque"
 			{
-				Shader = "Forward/dev2terrain"
+				Shader = "Surface/Dev2 Terrain"
 
 				Textures = String[]
 				{
 					"Terrain Normal Map"
 					"Terrain Gradient Map"
-					"Textures/Sand/beach.jpg"
-					"Textures/Sand/beach_ns.png"
-					"Textures/Grass/wild.jpg"
-					"Textures/Grass/wild_ns.png"
+					"Textures/Stone/grey.jpg"
+					"Textures/Stone/grey_ns.png"
+					"Textures/Other/snow.jpg"
+					"Textures/Other/snow_ns.png"
 				}
 			}
 		}
