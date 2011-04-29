@@ -37,7 +37,7 @@ public:
 
 TestApp::TestApp() : mLabel(0)
 {
-	mWin		= new GLWindow();
+	mWin		= new GLWindow(8);
 	mGraphics	= new GLGraphics();
 	mUI			= new UI(mGraphics, mWin);
 	mCore		= new Core(mWin, mGraphics, mUI);

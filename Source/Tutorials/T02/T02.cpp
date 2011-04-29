@@ -38,7 +38,7 @@ public:
 
 TestApp::TestApp()
 {
-	mWin		= new GLWindow();
+	mWin		= new GLWindow(8);
 	mGraphics	= new GLGraphics();
 	mCore		= new Core(mWin, mGraphics);
 }

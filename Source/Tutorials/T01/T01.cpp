@@ -42,7 +42,7 @@ TestApp::TestApp() : mCam(0)
 	// different (or the same!) parts of the object tree, making it possible to create efficient animated
 	// character thumbnails, object preview windows, and much more.
 
-	mWin		= new GLWindow();
+	mWin		= new GLWindow(8);
 	mGraphics	= new GLGraphics();
 	mCore		= new Core(mWin, mGraphics, 0, 0, mScene);
 }

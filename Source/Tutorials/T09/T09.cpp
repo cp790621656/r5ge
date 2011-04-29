@@ -121,7 +121,7 @@ void TestApp::Run()
 			tex->SetWrapMode(ITexture::WrapMode::ClampToEdge);
 
 			// Last thing we need to do is find the shader that will be used to draw our terrain...
-			IShader* shader = mGraphics->GetShader("Forward/terrain");
+			IShader* shader = mGraphics->GetShader("Surface/Terrain");
 
 			// ...and register our uniforms with it by specifying our callbacks. When the shader gets
 			// activated our registered functions will be called, setting the variables in the shader.

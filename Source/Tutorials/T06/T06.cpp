@@ -33,7 +33,7 @@ public:
 
 TestApp::TestApp()
 {
-	mWin		= new GLWindow();
+	mWin		= new GLWindow(8);
 	mGraphics	= new GLGraphics();
 	mCore		= new Core(mWin, mGraphics);
 }
@@ -99,8 +99,8 @@ void TestApp::Run()
 
 		ITechnique* tech = mGraphics->GetTechnique("Opaque");
 
-		// Not specifying an extension here will load both fragment (.frag) as well as vertex shaders (.vert)
-		IShader* shader = mGraphics->GetShader("Forward/chromatic");
+		// Load the surface shader (it contains both vertex and fragment shaders)
+		IShader* shader = mGraphics->GetShader("Surface/Chromatic");
 
 		// Think of the DrawMethod like this: when rendering this material with the specified
 		// technique, what shader and textures should we use? DrawMethod allows us to specify them.
@@ -124,12 +124,11 @@ void TestApp::Run()
 		limb->SetMaterial(mat);
 
 		// You may not have noticed this, but the shader previously assigned to the material was
-		// called "Skinned_D". "D" stands for "Diffuse Texture", implying it expected one of those.
-		// "Skinned" means it has code that enables animation on the graphics card. R5 will automatically
-		// try to do animation on the GPU if the shader has the appropriate code inside of it. If the
-		// shader used on an animated model doesn't have the code that would enable GPU skinning, R5 will
-		// simply use the CPU instead. Visually there is no difference, but for optimal performance
-		// I recommend adding skinning-enabling macro to all the shaders that will be used by animated models.
+		// called "Surface/Skinned". The skinned shader has a #pragma inside that enables skinning
+		// on the GPU. You could have just as easily used "Surface/Diffuse", and visually there
+		// would be no difference, but the skinning would then be performed on the CPU instead.
+		// When writing your own shaders, if you want to offload skinning operations onto the GPU,
+		// it's as simple as adding "#pragma skinned" to the shader.
 
 		while (mCore->Update());
 

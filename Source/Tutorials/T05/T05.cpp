@@ -33,7 +33,7 @@ public:
 
 TestApp::TestApp()
 {
-	mWin		= new GLWindow();
+	mWin		= new GLWindow(8);
 	mGraphics	= new GLGraphics();
 	mCore		= new Core(mWin, mGraphics);
 }
@@ -55,6 +55,9 @@ void TestApp::Run()
 {
 	// Create the window, Tutorial 1 style
 	mWin->Create("Tutorial 5: Lights, models, and animations", 100, 100, 900, 600);
+
+	// Lock the core before working with objects
+	mCore->Lock();
 
 	// Add and position the camera -- future tutorials will be setting
 	// this up in the resource files, so I hope you understand what's going on!
@@ -100,6 +103,9 @@ void TestApp::Run()
 	ModelInstance* instance = mCore->GetRoot()->AddObject<ModelInstance>("First Instance");
 	instance->SetModel(model);
 	instance->SetRelativeScale(10.0f);
+
+	// Now that we're done, unlock the core
+	mCore->Unlock();
 
 	// And that's all there is to it! You can play additional animations by using the Model::PlayAnimation
 	// function, but keep in mind that "Run" animation we played above is a high layer animation, which
