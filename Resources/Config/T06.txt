@@ -47,10 +47,5 @@ Root
 				Shadows = false
 			}
 		}
-
-		Model Instance = "First Instance"
-		{
-			Model = "Models/teapot.r5a"
-		}
 	}
 }

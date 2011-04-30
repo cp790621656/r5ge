@@ -315,7 +315,8 @@ Model* Core::GetModel (const String& name, bool createIfMissing)
 	{
 		model = mModels.AddUnique(name);
 		model->mCore = this;
-		if (model->Load(name)) model->SetSerializable(false);
+		model->SetSource( GetModelTemplate(name) );
+		model->SetSerializable(false);
 	}
 	return model;
 }

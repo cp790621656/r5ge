@@ -285,7 +285,10 @@ void ModelTemplate::SerializeTo	(TreeNode& root, bool forceSave) const
 
 		if (mTemplate != 0)
 		{
-			node.AddChild("Source", mTemplate->GetName());
+			if (mTemplate->GetName() != mName)
+			{
+				node.AddChild("Source", mTemplate->GetName());
+			}
 		}
 		else if (mFilename.IsValid())
 		{

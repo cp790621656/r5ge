@@ -58,9 +58,6 @@ void TestApp::Run()
 	{
 		mCore->Lock();
 
-		// Find the model (automatically loads it if able)
-		Model* model = mCore->GetModel("Models/teapot.r5a");
-
 		// Create a new material we'll be using
 		IMaterial* mat = mGraphics->GetMaterial("Chromatic");
 
@@ -114,19 +111,50 @@ void TestApp::Run()
 		// will see that it uses only a single cubemap texture -- the skybox.
 		method->SetTexture(0, skybox);
 
+		// Now we need to create a template that we will use to create our model.
+		// Model templates contain generic information such as what skeleton is used, which materials,
+		// which filename or other template this one is based on, etc. Model templates contain all the
+		// information necessary to draw the model, but they don't contain any temporary or real-time
+		// data such as current calculated transforms, animation states, matrices, etc.
+
+		ModelTemplate* temp = mCore->GetModelTemplate("Teapot");
+
+		// Have the template load a teapot. Note that had we named our template "Model/teapot.r5a",
+		// this call wouldn't have been necessary. R5 tries to load resources automatically.
+
+		temp->Load("Models/teapot.r5a");
+
 		// All models are made up of limbs (which are actually just mesh/material pairs). Here our
 		// model only has one limb, but other models may have more than one limb with different meshes
 		// and materials associated with each one. World of Warcraft player models would be made out of
 		// several limbs, as an example: boots, lower body, upper body, gloves, head, shoulders and helm.
 
-		ModelTemplate::Limbs& limbs = model->GetAllLimbs();
+		ModelTemplate::Limbs& limbs = temp->GetAllLimbs();
 
+		// Run through all the limbs
 		FOREACH(i, limbs)
 		{
 			// Associate our newly created material with the limb, replacing the material.
 			Limb* limb = limbs[0];
 			limb->SetMaterial(mat);
 		}
+
+		// Since model templates are generic data storage classes that don't contain any real-time
+		// information, we need to create a Model using our template.
+
+		Model* model = mCore->GetModel("Teapot");
+
+		// Note: Since our model's name matched our template's name, we don't need to do this:
+		//model->SetSource(temp).
+
+		// Since models have real-time information used to draw the model but don't have position,
+		// rotation or scaling information, we need to create an instance of this model somewhere
+		// in the scene. We do this by using a templated function "AddObject" at the scene's root level.
+
+		ModelInstance* ins = mCore->GetRoot()->AddObject<ModelInstance>("Teapot");
+
+		// Note: Since our instance's name matched our model's name, we don't need to do this:
+		//ins->SetModel(model);
 
 		mCore->Unlock();
 		while (mCore->Update());

@@ -47,6 +47,15 @@ void ModelInstance::SetModel (Model* model, bool runOnSerialize)
 }
 
 //============================================================================================================
+// Try to set the model automatically
+//============================================================================================================
+
+void ModelInstance::OnInit()
+{
+	SetModel(mCore->GetModel(mName));
+}
+
+//============================================================================================================
 // Updates the transformation matrix
 //============================================================================================================
 
@@ -140,7 +149,7 @@ uint ModelInstance::OnDraw (TemporaryStorage& storage, uint group, const ITechni
 
 void ModelInstance::OnSerializeTo (TreeNode& node) const
 {
-	if (mModel != 0)
+	if (mModel != 0 && mModel->GetName() != mName)
 	{
 		node.AddChild( mModel->GetClassID(), mModel->GetName() );
 	}
@@ -157,17 +166,7 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& node)
 
 	if ( tag == Model::ClassID() )
 	{
-		String name (value.AsString());
-		Model* model = mCore->GetModel(name, true);
-		ModelTemplate* temp = model->GetSource();
-
-		if (temp == 0)
-		{
-			temp = mCore->GetModelTemplate(name, true);
-			model->SetSource(temp);
-			model->SetSerializable(false);
-		}
-
+		Model* model = mCore->GetModel(value.AsString(), true);
 		SetModel(model, true);
 		return true;
 	}

@@ -2,7 +2,7 @@
 //                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
 //											www.nextrevision.com
 //============================================================================================================
-// Tutorial 07: Deferred Shading, HDR and Post-processing effects
+// Tutorial 07: Deferred Lighting, HDR and Post-processing effects
 //------------------------------------------------------------------------------------------------------------
 // Seventh tutorial shows how to set up R5 to use the deferred shading approach while also adding HDR Bloom.
 //------------------------------------------------------------------------------------------------------------
@@ -58,10 +58,9 @@ void TestApp::Run()
 	{
 		// Since all our data comes from the configuration file, we don't need to change the model's material
 		// here in the code. What we do need to do is change "OSDrawForward" script attached to the camera to
-		// "OSDrawDeferred". That's it! The scene now renders using a deferred lighting approach.
-		// Note, however that the material needs to allow rendering with the "Opaque" technique in the
-		// forward rendering mode, and "Deferred" in deferred. Defining both works just fine.
-		// Try modifying the configuration file and switching "OSDrawDeferred" with "OSDrawForward". :)
+		// "OSDrawDeferred", and to add the "Deferred" technique to the Chromatic material. That's it!
+		// That's all it takes to get your model rendering using the deferred approach. Try modifying the
+		// configuration file and switching "OSDrawDeferred" with "OSDrawForward". :)
 
 		// Enter the message processing loop
 		while (mCore->Update());

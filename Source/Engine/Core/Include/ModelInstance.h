@@ -34,6 +34,9 @@ public:
 
 protected:
 
+	// Try to set the model automatically
+	virtual void OnInit();
+
 	// Updates the transformation matrix
 	virtual void OnUpdate();
 

@@ -4,7 +4,7 @@ Root
 {
 	Window
 	{
-		Title = "Tutorial 7: Deferred shading, HDR and Post-processing effects"
+		Title = "Tutorial 7: Deferred Lighting, HDR and Post-processing effects"
 		Position = 100 100
 		Size = 900 600
 		Full Screen = false
@@ -24,7 +24,7 @@ Root
 			Positive Z = "Textures/Skyboxes/uffizi_pz.hdr"
 			Negative Z = "Textures/Skyboxes/uffizi_nz.hdr"
 			Format = "Default"
-			Filtering = "Anisotropic"
+			Filtering = "Linear"
 			Wrap Mode = "Clamp to Edge"
 		}
 
@@ -36,9 +36,9 @@ Root
 			Specularity = 0.0
 			Shininess = 0.2
 			Reflectiveness = 0.0
-			Occlusion = 0.75
+			Occlusion = 0.85
 			Alpha Cutoff = 0.003922
-			
+
 			Technique = "Opaque"
 			{
 				Shader = "Surface/Chromatic"
@@ -48,7 +48,7 @@ Root
 					"Skybox"
 				}
 			}
-
+			
 			Technique = "Deferred"
 			{
 				Shader = "Surface/Chromatic"
@@ -65,7 +65,7 @@ Root
 	{
 		Model Template = "Teapot"
 		{
-			Source = "Models/teapot.r5a"
+			Source = "Models/teapot.r5c"
 
 			Limb = "Teapot"
 			{
@@ -77,6 +77,8 @@ Root
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Debug Camera = "Default Camera"
 		{
 			Position = 0.0 0.0 2.7
@@ -91,14 +93,13 @@ Root
 				Fog Range = 0.5 1.0
 				Grid = true
 				Bloom = 1.0
-				Focal Range = 0.0 0.0 0.0
-				AO Quality = 0
-				AO Blur Passes = 2
-				AO Parameters = 1.0 4.0 1.0
 			}
 
 			Directional Light = "First Light"
 			{
+				Position = 0.0 0.0 0.0
+				Rotation = 0.0 0.0 0.0 1.0
+				Scale = 1.0 1.0 1.0
 				Ambient = 0.15 0.15 0.15
 				Diffuse = 1.25 1.25 1.25
 				Specular = 1.0 1.0 1.0
@@ -107,9 +108,11 @@ Root
 			}
 		}
 
-		Model Instance = "First Instance"
+		Model Instance = "Teapot"
 		{
-			Model = "Teapot"
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 		}
 	}
 }
