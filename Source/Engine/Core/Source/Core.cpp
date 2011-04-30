@@ -60,14 +60,22 @@ Core::~Core()
 {
 	// Ensure that the core won't be deleted until all worker threads finish
 	while (mThreadCount > 0) Thread::Sleep(1);
-	if (mWin != 0) mWin->SetGraphics(0);
-
-	// We no longer need the improved timer frequency
-	Thread::ImproveTimerFrequency(false);
 
 	// Root has to be released explicitly as it has to be cleared before meshes
 	Lock();
 	mRoot.Release();
+	mResources.Release();
+	mMeshes.Release();
+	mClouds.Release();
+	mSkeletons.Release();
+	mModelTemplates.Release();
+	mModels.Release();
+
+	if (mUI != 0) mUI->Release();
+	if (mWin != 0) mWin->SetGraphics(0);
+
+	// We no longer need the improved timer frequency
+	Thread::ImproveTimerFrequency(false);
 }
 
 //============================================================================================================

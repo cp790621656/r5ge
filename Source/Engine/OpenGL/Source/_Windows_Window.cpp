@@ -184,6 +184,9 @@ void GLWindow::_ReleaseContext()
 
 		if (mGraphics != 0) mGraphics->Release();
 
+#ifdef _DEBUG
+		System::Log("[WINDOW]  Destroying the rendering context");
+#endif
 		::wglMakeCurrent(0, 0);
 		::wglDeleteContext((HGLRC)mHRC);
 

@@ -53,6 +53,13 @@ SysWindow::~SysWindow()
 {
 	if (mWin != None) Close();
 
+	_ReleaseContext();
+
+	::XDestroyWindow(mDisplay, mWin);
+
+	mInvisibleCursor = 0;
+	mWin = 0;
+
 	::XCloseDisplay(mDisplay);
 }
 
@@ -532,12 +539,7 @@ void SysWindow::Close()
 		mStyle		= Style::Undefined;
 		mHandler	= 0;
 
-		_ReleaseContext();
-
 		::XFreeCursor(mDisplay, mInvisibleCursor);
-		::XDestroyWindow(mDisplay, mWin);
-		mInvisibleCursor = 0;
-		mWin = 0;
 	}
 }
 

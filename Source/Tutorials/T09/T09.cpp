@@ -68,6 +68,7 @@ void TestApp::Run()
 	if (*mCore << "Config/T09.txt")
 	{
 		// Find our terrain -- it's now loaded from the resource file
+		mCore->Lock();
 		Terrain* terrain = mCore->GetRoot()->FindObject<Terrain>("First Terrain");
 
 		if (terrain != 0)
@@ -136,6 +137,7 @@ void TestApp::Run()
 			// And now we have a 2048x2048 terrain rendered in only 2048 triangles.
 		}
 
+		mCore->Unlock();
 		while (mCore->Update());
 
 		//*mCore >> "Config/T09.txt";

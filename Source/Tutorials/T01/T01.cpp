@@ -65,6 +65,9 @@ void TestApp::Run()
 	// Create the window that will be used by the application
 	mWin->Create("Tutorial 1: Window Creation", 100, 100, 900, 600);
 
+	// Lock the core before working with objects
+	mCore->Lock();
+
 	// Add a new camera to the scene: it's added at (0, 0, 0)
 	mCam = mScene.AddObject<DebugCamera>("Default Camera");
 
@@ -88,6 +91,9 @@ void TestApp::Run()
 
 	// Let's also change the background color to grey:
 	draw->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f, 1.0f) );
+
+	// Unlock the core before entering the update loop
+	mCore->Unock();
 
 	// Enter the message processing loop
 	while (mCore->Update());

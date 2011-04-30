@@ -66,6 +66,8 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/T08.txt")
 	{
+		mCore->Lock();
+
 		// First we need to create a heightmap we'll use to create the terrain. R5 has a fairly flexible
 		// noise library with a variety of simple filters that we can use for just that purpose.
 
@@ -163,6 +165,7 @@ void TestApp::Run()
 		mCore->AddOnDraw( bind(&TestApp::OnDraw, this) );
 
 		// Enter the message processing loop
+		mCore->Unlock();
 		while (mCore->Update());
 
 		//*mCore >> "Config/T08.txt";

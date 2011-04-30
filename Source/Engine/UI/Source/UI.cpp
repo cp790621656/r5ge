@@ -6,6 +6,22 @@ using namespace R5;
 UI::UI (IGraphics* graphics, IWindow* window) : mGraphics(graphics), mWindow(window)
 {
 	ASSERT(mGraphics != 0, "IGraphics* can't be NULL!");
+#ifdef _DEBUG
+	System::Log("[UI]      Created the UI system");
+#endif
+}
+
+//============================================================================================================
+// We need additional functionality on release
+//============================================================================================================
+
+void UI::Release()
+{
+#ifdef _DEBUG
+	System::Log("[UI]      Releasing the UI system");
+#endif
+	UIManager::Release();
+	mWindow = 0;
 }
 
 //============================================================================================================

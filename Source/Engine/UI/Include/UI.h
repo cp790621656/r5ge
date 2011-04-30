@@ -35,6 +35,9 @@ public:
 	// The window is optional -- it's used to copy/paste to and from the clipboard.
 	UI (IGraphics* graphics, IWindow* window = 0);
 
+	// We need additional functionality on release
+	virtual void Release();
+
 public:
 
 	// Retrieves a string from the clipboard
@@ -55,6 +58,6 @@ protected:
 	virtual void		OnPreDraw() const;					// Prepares to render
 	virtual void		SetClipRect (const Rect& rect);		// Sets the draw region
 	virtual uint		DrawQueue(UIQueue* queue);			// Draws a single queue, returning the number of triangles drawn
-	virtual void		RestoreClipRect();						// Restores the previous draw region
+	virtual void		RestoreClipRect();					// Restores the previous draw region
 	virtual void		OnPostDraw() const;					// Post-render cleanup
 };

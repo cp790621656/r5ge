@@ -715,3 +715,17 @@ uint UIManager::Draw()
 	}
 	return triangles;
 }
+
+//============================================================================================================
+// Release all resources
+//============================================================================================================
+
+void UIManager::Release()
+{
+	Lock();
+	{
+		mRoot.DestroyAllScripts();
+		mRoot.DestroyAllWidgets();
+	}
+	Unlock();
+}

@@ -80,6 +80,8 @@ void TestApp::Run()
 {
 	if (*mCore << "Config/T12.txt")
 	{
+		mCore->Lock();
+
 		// Create a model template
 		ModelTemplate* temp = mCore->GetModelTemplate("Models/peasant.r5a");
 
@@ -88,6 +90,7 @@ void TestApp::Run()
 		CreateNewInstance(temp, "Peasant 1", "Second")->SetRelativePosition(Vector3f(1, -2, 0));
 		CreateNewInstance(temp, "Peasant 2", "Third")->SetRelativePosition(Vector3f(-2, 1, 0));
 
+		mCore->Unlock();
 		while (mCore->Update());
 
 		//*mCore >> "Config/T12.txt";

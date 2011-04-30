@@ -193,6 +193,7 @@ protected:
 	// IUI Functions
 	virtual bool Update();
 	virtual uint Draw();
+	virtual void Release();
 
 public:
 

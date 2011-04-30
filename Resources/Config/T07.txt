@@ -79,10 +79,11 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.0 0.0 2.0
-			Rotation = 1 -1 -1
+			Position = 0.0 0.0 2.7
+			Rotation = 0.001492 -0.001714 -0.754437 0.656368
+			Scale = 1.0 1.0 1.0
 			Range = 0.3 100.0 90.0
-			Dolly = 0.0 16.0 30.0
+			Dolly = 0.0 12.000016 30.0
 
 			Script = "OSDrawDeferred"
 			{

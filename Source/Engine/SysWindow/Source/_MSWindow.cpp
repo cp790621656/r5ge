@@ -222,6 +222,9 @@ SysWindow::~SysWindow()
 {
 	Close();
 
+	_ReleaseContext();
+	_ReleaseHandles();
+
 	if (mHInstance && mTitle.IsValid())
 	{
 #ifdef _DEBUG
@@ -240,14 +243,10 @@ void SysWindow::Close()
 {
 	if (mStyle != Style::Undefined)
 	{
-		mPrevStyle = mStyle;
+		mPrevStyle	= mStyle;
 		mStyle		= Style::Undefined;
 		mHandler	= 0;
-
 		ShowCursor(true);
-
-		_ReleaseContext();
-		_ReleaseHandles();
 	}
 }
 

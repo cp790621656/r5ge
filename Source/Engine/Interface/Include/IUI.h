@@ -37,6 +37,7 @@ struct IUI : public IEventReceiver, public Thread::Lockable
 
 	virtual bool Update()=0;
 	virtual uint Draw()=0;
+	virtual void Release()=0;
 
 	// Serialization
 	virtual bool IsSerializable() const=0;

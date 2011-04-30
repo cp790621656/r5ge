@@ -37,7 +37,7 @@ protected:
 	Skeletons		mSkeletons;			// Managed array of skeletons
 	ModelTemplates	mModelTemplates;	// Managed array of model templates that can be used to create models
 	Models			mModels;			// Managed array of instantiable models
-	Array<String>	mFileResource;			// Executed resources, for serialization purposes
+	Array<String>	mFileResource;		// Executed resources, for serialization purposes
 	uint			mSleepDelay;		// How long the graphics thread will sleep for after each frame
 	uint			mUISleepDelay;		// How long the graphics thread will sleep in UI-only mode
 	uint			mFullDraw;			// How many times in a row the scene has been drawn fully (up to 10)
