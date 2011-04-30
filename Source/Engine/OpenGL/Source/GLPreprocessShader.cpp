@@ -793,6 +793,9 @@ Flags GLPreprocessShader (const String& full, String& code, const Flags& desired
 			else if (code.Contains("R5_finalColor[2]", true)) prefix << "out vec4 R5_finalColor[3];\n";
 			else if (code.Contains("R5_finalColor[1]", true)) prefix << "out vec4 R5_finalColor[2];\n";
 			else if (code.Replace("R5_finalColor[0]", "R5_finalColor", true)) prefix << "out vec4 R5_finalColor;\n";
+
+			// All instances of 'varying' should be replaced
+			code.Replace("varying", "in", true);
 		}
 		else
 		{
@@ -804,8 +807,9 @@ Flags GLPreprocessShader (const String& full, String& code, const Flags& desired
 				code.Replace("gl_FragData[0]", "gl_FragColor", true);
 			}
 
-			// All instances of 'varying' should be replaced
-			code.Replace("varying", "in", true);
+			// All instances of 'in' should be replaced
+			code.Replace("\tin ", "\tvarying ", true);
+			code.Replace(" in ", " varying ", true);
 		}
 
 		// Add all referenced variables and convert common types
@@ -833,13 +837,20 @@ Flags GLPreprocessShader (const String& full, String& code, const Flags& desired
 			code.Replace("varying", "out", true);
 			code = "#version 130\n" + code;
 		}
-		else if (g_caps.mVersion >= 210)
+		else
 		{
-			code = "#version 120\n" + code;
-		}
-		else if (g_caps.mVersion >= 200)
-		{
-			code = "#version 110\n" + code;
+			// All instances of 'out' should be 'varying'
+			code.Replace("\tout ", "\tvarying ", true);
+			code.Replace(" out ", " varying ", true);
+
+			if (g_caps.mVersion >= 210)
+			{
+				code = "#version 120\n" + code;
+			}
+			else if (g_caps.mVersion >= 200)
+			{
+				code = "#version 110\n" + code;
+			}
 		}
 
 		// For shader code debugging:

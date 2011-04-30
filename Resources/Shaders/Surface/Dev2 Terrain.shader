@@ -32,15 +32,13 @@ void main()
 	vec4 tex1		= Sample2D(3, R5_vertexTexCoord1);
 	vec4 tex3		= Sample2D(5, R5_vertexTexCoord1);
 
+    normalMap = mix(tex1, tex3, colorMap.r);
     vec3 normal = normalize(normalMap.xyz * 2.0 - 1.0);
     normal = mat3(R5_viewMatrix) * normal;
 
-	normalMap = mix(tex1, tex3, colorMap.r);
 	R5_surfaceNormal = normal;
 	R5_surfaceSpecularity = R5_materialSpecularity * normalMap.w;
 #endif
 }
-
-#endif
 
 #endif

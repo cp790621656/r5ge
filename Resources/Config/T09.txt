@@ -27,7 +27,7 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Surface/Terrain"
+				Shader = "Surface/T09 Terrain"
 
 				Textures = String[]
 				{
@@ -44,23 +44,39 @@ Root
 
 	Scene
 	{
+		Script = "OSSceneRoot"
+
 		Debug Camera = "Default Camera"
 		{
 			Position = -0.520545 1.009997 -1.8068
-			Rotation = -0.060876 0.282943 -0.935788 0.20134
+			Rotation = -0.314838 0.178396 -0.45958 0.811072
+			Scale = 1.0 1.0 1.0
 			Range = 0.3 100.0 90.0
-			Dolly = 0.0 20.000088 30.0
+			Dolly = 0.0 16.000103 30.0
 
 			Script = "OSDrawForward"
 			{
 				Background Color = 0.25 0.25 0.25 1.0
 				Fog Range = 0.5 1.0
+
+				Shadowmap
+				{
+					Texture Size = 1024
+					Cascade Count = 3
+					Cascade Bias = 0.5
+					Blur Passes = 2
+					Softness = 2.0
+					Kernel Size = 1.0
+					Depth Bias = 6.0
+				}
 			}
 		}
 
 		Directional Light = "First Light"
 		{
+			Position = 0.0 0.0 0.0
 			Rotation = -0.240526 0.154892 -0.518793 0.805611
+			Scale = 1.0 1.0 1.0
 			Ambient = 0.5 0.5 0.5
 			Diffuse = 1.0 1.0 1.0
 			Specular = 1.0 1.0 1.0
@@ -70,6 +86,9 @@ Root
 
 		Terrain = "First Terrain"
 		{
+			Position = 0.0 0.0 0.0
+			Rotation = 0.0 0.0 0.0 1.0
+			Scale = 1.0 1.0 1.0
 			Layer = 0
 			Material = "Terrain"
 		}
