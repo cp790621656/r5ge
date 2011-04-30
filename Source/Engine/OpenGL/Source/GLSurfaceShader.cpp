@@ -4,7 +4,7 @@ using namespace R5;
 
 // External functions
 extern uint GLGetInternalShaderCode (String& code, const String& name);
-extern Flags GLPreprocessShader (String& code, const Flags& desired);
+extern Flags GLPreprocessShader (const String& surface, String& code, const Flags& desired);
 
 GLShaderProgram* g_lastProgram = 0;
 
@@ -175,7 +175,9 @@ Flags GLSurfaceShader::GetVariation (String& out, const Flags& flags) const
 
 		mCode.SerializeTo(out, defines);
 	}
-	return ::GLPreprocessShader(out, flags);
+	String full;
+	mCode.SerializeTo(full);
+	return ::GLPreprocessShader(full, out, flags);
 }
 
 //============================================================================================================

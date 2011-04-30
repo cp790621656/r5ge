@@ -38,10 +38,20 @@ Root
 			Reflectiveness = 0.0
 			Occlusion = 0.75
 			Alpha Cutoff = 0.003922
-
+			
 			Technique = "Opaque"
 			{
-				Shader = "Forward/chromatic"
+				Shader = "Surface/Chromatic"
+
+				Textures = String[]
+				{
+					"Skybox"
+				}
+			}
+
+			Technique = "Deferred"
+			{
+				Shader = "Surface/Chromatic"
 
 				Textures = String[]
 				{
@@ -53,13 +63,13 @@ Root
 
 	Core
 	{
-		Model = "Models/peasant.r5a"
+		Model Template = "Teapot"
 		{
-			Source = "Models/peasant.r5a"
+			Source = "Models/teapot.r5a"
 
-			Limb = "Peasant"
+			Limb = "Teapot"
 			{
-				Mesh = "Peasant"
+				Mesh = "Teapot"
 				Material = "Chromatic"
 			}
 		}
@@ -69,8 +79,8 @@ Root
 	{
 		Debug Camera = "Default Camera"
 		{
-			Position = 0.0 0.0 6.0
-			Rotation = -0.009526 0.096207 -0.990472 0.098076
+			Position = 0.0 0.0 2.0
+			Rotation = 1 -1 -1
 			Range = 0.3 100.0 90.0
 			Dolly = 0.0 16.0 30.0
 
@@ -98,8 +108,7 @@ Root
 
 		Model Instance = "First Instance"
 		{
-			Scale = 10.0
-			Model = "Models/peasant.r5a"
+			Model = "Teapot"
 		}
 	}
 }

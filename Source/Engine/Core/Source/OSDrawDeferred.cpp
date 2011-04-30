@@ -304,6 +304,7 @@ void OSDrawDeferred::CombineStage()
 	mGraphics->SetFogRange(mFogRange);
 	mGraphics->SetCulling(IGraphics::Culling::Back);
 	mGraphics->SetBlending(IGraphics::Blending::Replace);
+	mGraphics->Clear(true, false, false);
 	mGraphics->SetScreenProjection(true);
 	mGraphics->SetActiveMaterial(0);
 	mGraphics->SetActiveShader(mCombine);

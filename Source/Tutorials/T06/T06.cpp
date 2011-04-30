@@ -53,12 +53,13 @@ TestApp::~TestApp()
 
 void TestApp::Run()
 {
-	// Load everything that was in the previous tutorial -- camera, light, model
+	// Load a configuration file similar to the one used in the previous tutorial.
 	if (*mCore << "Config/T06.txt")
 	{
-		// Find the model and play the "Run" animation
-		Model* model = mCore->GetModel("Models/peasant.r5a");
-		model->PlayAnimation("Run");
+		mCore->Lock();
+
+		// Find the model (automatically loads it if able)
+		Model* model = mCore->GetModel("Models/teapot.r5a");
 
 		// Create a new material we'll be using
 		IMaterial* mat = mGraphics->GetMaterial("Chromatic");
@@ -110,7 +111,7 @@ void TestApp::Run()
 		method->mShader = shader;
 
 		// We'll use the skybox texture with the shader. If you look inside the shader itself, you
-		// will see that it expects only a single cubemap texture -- the skybox.
+		// will see that it uses only a single cubemap texture -- the skybox.
 		method->SetTexture(0, skybox);
 
 		// All models are made up of limbs (which are actually just mesh/material pairs). Here our
@@ -118,18 +119,16 @@ void TestApp::Run()
 		// and materials associated with each one. World of Warcraft player models would be made out of
 		// several limbs, as an example: boots, lower body, upper body, gloves, head, shoulders and helm.
 
-		Limb* limb = model->GetLimb("Peasant");
+		ModelTemplate::Limbs& limbs = model->GetAllLimbs();
 
-		// Associate our newly created material with the limb, replacing the material.
-		limb->SetMaterial(mat);
+		FOREACH(i, limbs)
+		{
+			// Associate our newly created material with the limb, replacing the material.
+			Limb* limb = limbs[0];
+			limb->SetMaterial(mat);
+		}
 
-		// You may not have noticed this, but the shader previously assigned to the material was
-		// called "Surface/Skinned". The skinned shader has a #pragma inside that enables skinning
-		// on the GPU. You could have just as easily used "Surface/Diffuse", and visually there
-		// would be no difference, but the skinning would then be performed on the CPU instead.
-		// When writing your own shaders, if you want to offload skinning operations onto the GPU,
-		// it's as simple as adding "#pragma skinned" to the shader.
-
+		mCore->Unlock();
 		while (mCore->Update());
 
 		//*mCore >> "Config/T06.txt";

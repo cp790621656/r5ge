@@ -144,7 +144,8 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 	bool depthOnly	= desired.Get(IShader::Flag::DepthOnly);
 	bool deferred	= desired.Get(IShader::Flag::Deferred);
 	bool shadowed	= desired.Get(IShader::Flag::Shadowed);
-	bool lit		= desired.Get(IShader::Flag::Lit) && !code.Contains("#pragma lighting off", true);
+	bool lightsOff	= code.Contains("#pragma lighting off", true);
+	bool lit		= desired.Get(IShader::Flag::Lit) && !lightsOff;
 	bool fog		= desired.Get(IShader::Flag::Fog) && !code.Contains("#pragma fog off", true);
 
 	if (depthOnly)
@@ -180,7 +181,7 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		ExtractValue(code, norm, "R5_surfaceNormal",		"normalize(R5_vertexNormal)");
 		ExtractValue(code, spec, "R5_surfaceSpecularity",	"R5_materialSpecularity");
 		ExtractValue(code, hue,  "R5_surfaceSpecularHue",	"R5_materialSpecularHue");
-		ExtractValue(code, glow, "R5_surfaceGlow",			"R5_materialGlow");
+		ExtractValue(code, glow, "R5_surfaceGlow",			lightsOff ? "1.0" : "R5_materialGlow");
 		ExtractValue(code, occ,  "R5_surfaceOcclusion",		"R5_materialOcclusion");
 		ExtractValue(code, shin, "R5_surfaceShininess",		"R5_materialShininess");
 
@@ -313,7 +314,7 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 // Adds appropriate vertex shader functionality
 //============================================================================================================
 
-bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
+bool AddVertexFunctions (const String& full, String& code, const Flags& desired, Flags& final)
 {
 	// Remove the last closing bracket
 	uint lastBracket = code.Find("}", true, 0, 0xFFFFFFFF, true);
@@ -411,12 +412,10 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	// Earlier versions of GLSL may not like the vertex position being an attribute
 	if (g_caps.mVersion < 210) code.Replace("R5_position", "gl_Vertex.xyz", true);
 
-	// Vertex-eye vector is only needed for forward rendering
-	if (lit && !deferred)
-	{
-		code << "	R5_vertexEye = R5_viewPosition.xyz;\n";
-		final.Set(desired.Get() & IShader::Flag::Lit, true);
-	}
+	// Vertex eye is needed for forward rendering or if it's referenced
+	bool vertexEye = lit || full.Contains("R5_vertexEye", true);
+	if (vertexEye) code << "	R5_vertexEye = R5_viewPosition.xyz;\n";
+	if (lit) final.Set(desired.Get() & IShader::Flag::Lit, true);
 
 	// Calculate per-vertex fog
 	if (fog)
@@ -429,7 +428,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	}
 
 	// Transform the normal
-	if ((lit || deferred) && code.Contains("R5_vertexNormal", true))
+	if (code.Contains("R5_vertexNormal", true))
 	{
 		// Tangent shouldn't exist without the normal
 		if (code.Contains("R5_vertexTangent", true))
@@ -462,7 +461,7 @@ bool AddVertexFunctions (String& code, const Flags& desired, Flags& final)
 	}
 
 #ifdef _MACOS
-	// NOTE: There is a bug in NVIDIA's 2.1 drivers for OSX with mat3(mat4):
+	// NOTE: There is a bug in NVIDIA's OpenGL 2.1 drivers for OSX with mat3(mat4):
 	// it simply doesn't work. It gives completely unpredictable results.
 	// It took me a while to track this one down.
 
@@ -607,6 +606,37 @@ void AddCommonFunctions (String& code)
 }
 
 //============================================================================================================
+// Helper function used in AddReferencedVariables function below
+//============================================================================================================
+
+void ReplaceSample (String& code, String& prefix, const char* type)
+{
+	String match ("texture"), test, replace;
+	match << type;
+	match << "(";
+
+	for (uint i = 0; i < 7; ++i)
+	{
+		test = match;
+		test << i;
+
+		replace = "texture";
+		if (g_caps.mVersion < 300) replace << type;
+		replace << "(R5_texture";
+		replace << i;
+
+		if (code.Replace(test, replace, true))
+		{
+			prefix << "uniform sampler";
+			prefix << type;
+			prefix << " R5_texture";
+			prefix << i;
+			prefix << ";\n";
+		}
+	}
+}
+
+//============================================================================================================
 // Add appropriate uniforms
 //============================================================================================================
 
@@ -640,38 +670,9 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 
 	if (isFragmentShader)
 	{
-		code.Replace("Sample2D(", "texture2D(R5_texture", true);
-		code.Replace("SampleCube(", "textureCube(R5_texture", true);
-		code.Replace("SampleShadow(", "texture2D(R5_shadowMap, ", true);
-		code.Replace("SampleNormal(", "SampleNormal(R5_texture", true);
-
-		if (code.Contains("R5_shadowMap", true)) prefix << "uniform sampler2D R5_shadowMap;\n";
-
-		if (code.Contains("texture2D"))
-		{
-			const char* header = "uniform sampler2D R5_texture";
-			if (code.Contains("texture2D(R5_texture0", true)) { prefix << header; prefix << "0;\n"; }
-			if (code.Contains("texture2D(R5_texture1", true)) { prefix << header; prefix << "1;\n"; }
-			if (code.Contains("texture2D(R5_texture2", true)) { prefix << header; prefix << "2;\n"; }
-			if (code.Contains("texture2D(R5_texture3", true)) { prefix << header; prefix << "3;\n"; }
-			if (code.Contains("texture2D(R5_texture4", true)) { prefix << header; prefix << "4;\n"; }
-			if (code.Contains("texture2D(R5_texture5", true)) { prefix << header; prefix << "5;\n"; }
-			if (code.Contains("texture2D(R5_texture6", true)) { prefix << header; prefix << "6;\n"; }
-			if (code.Contains("texture2D(R5_texture7", true)) { prefix << header; prefix << "7;\n"; }
-		}
-
-		if (code.Contains("textureCube", true))
-		{
-			const char* header = "uniform samplerCube ";
-			if (code.Contains("textureCube(R5_texture0", true)) { prefix << header; prefix << "0;\n"; }
-			if (code.Contains("textureCube(R5_texture1", true)) { prefix << header; prefix << "1;\n"; }
-			if (code.Contains("textureCube(R5_texture2", true)) { prefix << header; prefix << "2;\n"; }
-			if (code.Contains("textureCube(R5_texture3", true)) { prefix << header; prefix << "3;\n"; }
-			if (code.Contains("textureCube(R5_texture4", true)) { prefix << header; prefix << "4;\n"; }
-			if (code.Contains("textureCube(R5_texture5", true)) { prefix << header; prefix << "5;\n"; }
-			if (code.Contains("textureCube(R5_texture6", true)) { prefix << header; prefix << "6;\n"; }
-			if (code.Contains("textureCube(R5_texture7", true)) { prefix << header; prefix << "7;\n"; }
-		}
+		code.Replace("Sample", "texture", true);
+		ReplaceSample(code, prefix, "2D");
+		ReplaceSample(code, prefix, "Cube");
 	}
 	else
 	{
@@ -758,7 +759,7 @@ void ConvertCommonTypes (String& code)
 // Preprocess a new shader format
 //============================================================================================================
 
-Flags GLPreprocessShader (String& code, const Flags& desired)
+Flags GLPreprocessShader (const String& full, String& code, const Flags& desired)
 {
 	Flags final;
 	bool surface = code.Contains("R5_surface", true);
@@ -777,7 +778,6 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 		::ProcessMaterials(code);
 
 		// Convenience (fake) functions
-		code.Replace("Sample2D(", "texture2D(R5_texture", true);
 		code.Replace("GetPixelTexCoords()", "gl_FragCoord.xy * R5_pixelSize", true);
 		code.Replace("GetPixelPosition()", "int2(int(gl_FragCoord.x), int(gl_FragCoord.y))", true);
 		code.Replace("R5_fragCoord", "gl_FragCoord", true);
@@ -822,7 +822,7 @@ Flags GLPreprocessShader (String& code, const Flags& desired)
 	{
 		final.Set(IShader::Flag::Vertex, true);
 
-		::AddVertexFunctions(code, desired, final);
+		::AddVertexFunctions(full, code, desired, final);
 		::AddCommonFunctions(code);
 		::AddReferencedVariables(code, false);
 		::ConvertCommonTypes(code);
