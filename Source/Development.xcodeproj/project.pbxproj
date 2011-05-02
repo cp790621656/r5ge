@@ -35,7 +35,6 @@
 		146669E1133EE6930012FCB4 /* libR5_SysWindow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AB133EE5F50012FCB4 /* libR5_SysWindow.a */; };
 		146669E2133EE6930012FCB4 /* libR5_OpenGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AD133EE5F50012FCB4 /* libR5_OpenGL.a */; };
 		146669E3133EE6930012FCB4 /* libR5_Sound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AF133EE5F50012FCB4 /* libR5_Sound.a */; };
-		14666A01133EE8F30012FCB4 /* libirrklang.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 14666A00133EE8F30012FCB4 /* libirrklang.dylib */; };
 		14666A2F133EE9DA0012FCB4 /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14666999133EE5F50012FCB4 /* libR5_Basic.a */; };
 		14666A30133EE9DA0012FCB4 /* libR5_Math.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699B133EE5F50012FCB4 /* libR5_Math.a */; };
 		14666A31133EE9DA0012FCB4 /* libR5_Serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699D133EE5F50012FCB4 /* libR5_Serialization.a */; };
@@ -1845,7 +1844,6 @@
 		144F732611DAB7CF008EF73F /* Dev13.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dev13.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		144F732F11DAB869008EF73F /* Dev13.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dev13.cpp; path = Samples/Dev13/Dev13.cpp; sourceTree = "<group>"; };
 		14666986133EE5F50012FCB4 /* Engine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Engine.xcodeproj; sourceTree = "<group>"; };
-		14666A00133EE8F30012FCB4 /* libirrklang.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libirrklang.dylib; path = /Users/michaell/Projects/r5ge/Release/Mac/bin/libirrklang.dylib; sourceTree = "<absolute>"; };
 		14712580123EF79B00A7FBE1 /* Dev13.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Dev13.txt; path = ../Resources/Config/Dev13.txt; sourceTree = SOURCE_ROOT; };
 		147540C80DA2CD7F000D05A5 /* Window Creation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "Window Creation.cpp"; path = "Samples/Window Creation/Source/Window Creation.cpp"; sourceTree = SOURCE_ROOT; };
 		1475540B0E0C3B5700D5641D /* Network Test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "Network Test.cpp"; path = "Samples/Network Test/Source/Network Test.cpp"; sourceTree = SOURCE_ROOT; wrapsLines = 0; };
@@ -2221,7 +2219,6 @@
 				146669E1133EE6930012FCB4 /* libR5_SysWindow.a in Frameworks */,
 				146669E2133EE6930012FCB4 /* libR5_OpenGL.a in Frameworks */,
 				146669E3133EE6930012FCB4 /* libR5_Sound.a in Frameworks */,
-				14666A01133EE8F30012FCB4 /* libirrklang.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2253,7 +2250,6 @@
 				14666986133EE5F50012FCB4 /* Engine.xcodeproj */,
 				14CE0F1D0D9049530027155A /* Source */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				14666A00133EE8F30012FCB4 /* libirrklang.dylib */,
 			);
 			name = R5;
 			sourceTree = "<group>";
@@ -5565,9 +5561,13 @@
 					OpenGL,
 					"-framework",
 					AppKit,
+					"-framework",
+					OpenAL,
 					"-lz",
 					"-lpng",
 					"-ljpeg",
+					"-logg",
+					"-lvorbis",
 				);
 				SKIP_INSTALL = YES;
 			};
@@ -5595,9 +5595,13 @@
 					OpenGL,
 					"-framework",
 					AppKit,
+					"-framework",
+					OpenAL,
 					"-lz",
 					"-lpng",
 					"-ljpeg",
+					"-logg",
+					"-lvorbis",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

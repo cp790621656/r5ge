@@ -140,6 +140,8 @@
 		14B467150F1B9A670085BEFD /* _CocoaWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 14B467130F1B9A670085BEFD /* _CocoaWindow.mm */; };
 		14B467330F1B9C580085BEFD /* Color4ub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14B467320F1B9C580085BEFD /* Color4ub.cpp */; };
 		14BA96500F95C9A800E41525 /* Emitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14BA964F0F95C9A800E41525 /* Emitter.cpp */; };
+		14C3F0E4136E27F100DACF60 /* AudioLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C3F0E3136E27F100DACF60 /* AudioLibrary.cpp */; };
+		14C3F0E6136E280B00DACF60 /* AudioLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C3F0E5136E280B00DACF60 /* AudioLibrary.h */; };
 		14C63711120B021D005B0735 /* ModelInstanceGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C6370F120B021D005B0735 /* ModelInstanceGroup.cpp */; };
 		14C63712120B021D005B0735 /* ProjectedTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C63710120B021D005B0735 /* ProjectedTexture.cpp */; };
 		14C63715120B02A8005B0735 /* UIColorPicker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14C63714120B02A8005B0735 /* UIColorPicker.cpp */; };
@@ -586,6 +588,8 @@
 		14C154250DA670D600588C73 /* libR5_Image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libR5_Image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		14C154260DA670D600588C73 /* libR5_OpenGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libR5_OpenGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		14C154270DA670D600588C73 /* libR5_SysWindow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libR5_SysWindow.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14C3F0E3136E27F100DACF60 /* AudioLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioLibrary.cpp; path = Engine/Sound/Source/AudioLibrary.cpp; sourceTree = "<group>"; };
+		14C3F0E5136E280B00DACF60 /* AudioLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioLibrary.h; path = Engine/Sound/Include/AudioLibrary.h; sourceTree = "<group>"; };
 		14C6370D120B01F7005B0735 /* ModelInstanceGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModelInstanceGroup.h; path = Engine/Core/Include/ModelInstanceGroup.h; sourceTree = "<group>"; };
 		14C6370E120B01F7005B0735 /* ProjectedTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectedTexture.h; path = Engine/Core/Include/ProjectedTexture.h; sourceTree = "<group>"; };
 		14C6370F120B021D005B0735 /* ModelInstanceGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelInstanceGroup.cpp; path = Engine/Core/Source/ModelInstanceGroup.cpp; sourceTree = "<group>"; };
@@ -1657,6 +1661,7 @@
 			children = (
 				14E5FB20115FCDC5002EED30 /* _All.h */,
 				14E5FB21115FCDC5002EED30 /* Audio.h */,
+				14C3F0E5136E280B00DACF60 /* AudioLibrary.h */,
 				14E5FB22115FCDC5002EED30 /* Sound.h */,
 				14E5FB23115FCDC5002EED30 /* SoundInstance.h */,
 			);
@@ -1667,6 +1672,7 @@
 			isa = PBXGroup;
 			children = (
 				14E5FB17115FCD0B002EED30 /* Audio.cpp */,
+				14C3F0E3136E27F100DACF60 /* AudioLibrary.cpp */,
 				14E5FB18115FCD0B002EED30 /* Sound.cpp */,
 				14E5FB19115FCD0B002EED30 /* SoundInstance.cpp */,
 			);
@@ -1883,6 +1889,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14C3F0E6136E280B00DACF60 /* AudioLibrary.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2388,6 +2395,7 @@
 				14E5FB1A115FCD0B002EED30 /* Audio.cpp in Sources */,
 				14E5FB1B115FCD0B002EED30 /* Sound.cpp in Sources */,
 				14E5FB1C115FCD0B002EED30 /* SoundInstance.cpp in Sources */,
+				14C3F0E4136E27F100DACF60 /* AudioLibrary.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

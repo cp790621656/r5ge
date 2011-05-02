@@ -370,8 +370,10 @@ typedef void ALvoid;
 /*
  * Static libraries will need to manage their own library initialization
  */
+#ifdef _WINDOWS
 AL_API void alcInit(void);
 AL_API void alcRelease(void);
+#endif
 
 /*
  * Renderer State management
