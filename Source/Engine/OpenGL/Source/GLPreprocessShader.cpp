@@ -806,10 +806,6 @@ Flags GLPreprocessShader (const String& full, String& code, const Flags& desired
 			{
 				code.Replace("gl_FragData[0]", "gl_FragColor", true);
 			}
-
-			// All instances of 'in' should be replaced
-			code.Replace("\tin ", "\tvarying ", true);
-			code.Replace(" in ", " varying ", true);
 		}
 
 		// Add all referenced variables and convert common types
@@ -837,20 +833,13 @@ Flags GLPreprocessShader (const String& full, String& code, const Flags& desired
 			code.Replace("varying", "out", true);
 			code = "#version 130\n" + code;
 		}
-		else
+		else if (g_caps.mVersion >= 210)
 		{
-			// All instances of 'out' should be 'varying'
-			code.Replace("\tout ", "\tvarying ", true);
-			code.Replace(" out ", " varying ", true);
-
-			if (g_caps.mVersion >= 210)
-			{
-				code = "#version 120\n" + code;
-			}
-			else if (g_caps.mVersion >= 200)
-			{
-				code = "#version 110\n" + code;
-			}
+			code = "#version 120\n" + code;
+		}
+		else if (g_caps.mVersion >= 200)
+		{
+			code = "#version 110\n" + code;
 		}
 
 		// For shader code debugging:
