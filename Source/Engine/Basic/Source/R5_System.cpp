@@ -102,7 +102,7 @@ void System::Log (const char *format, ...)
 			uint iLength = _vscprintf(format, args) + 1;
 			char* text = new char[iLength];
 #else
-			static char text[2048];
+			static char text[4096];
 #endif
 			vsprintf(text, format, args);
 			va_end(args);

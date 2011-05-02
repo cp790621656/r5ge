@@ -214,15 +214,6 @@ bool ProcessSurfaceShader (String& code, const Flags& desired, Flags& final)
 		{
 			code.Replace("R5_surfaceColor", "R5_finalColor[0]", true);
 		}
-
-		// Remove all other values
-		//String temp;
-		//ExtractValue(code, temp, "R5_surfaceNormal");
-		//ExtractValue(code, temp, "R5_surfaceSpecularity");
-		//ExtractValue(code, temp, "R5_surfaceSpecularHue");
-		//ExtractValue(code, temp, "R5_surfaceGlow");
-		//ExtractValue(code, temp, "R5_surfaceOcclusion");
-		//ExtractValue(code, temp, "R5_surfaceShininess");
 	}
 	else // Lit forward rendering shader
 	{
@@ -459,45 +450,6 @@ bool AddVertexFunctions (const String& full, String& code, const Flags& desired,
 					"	R5_vertexNormal = mat3(R5_viewMatrix) * R5_vertexNormal;\n";
 		}
 	}
-
-#ifdef _MACOS
-	// NOTE: There is a bug in NVIDIA's OpenGL 2.1 drivers for OSX with mat3(mat4):
-	// it simply doesn't work. It gives completely unpredictable results.
-	// It took me a while to track this one down.
-
-	uint offset (0);
-	String left, val, right;
-
-	for (;;)
-	{
-		offset = code.Find("mat3(", true, offset);
-		if (offset >= code.GetLength()) break;
-		uint end (offset += 5);
-
-		for (; end < code.GetLength(); ++end)
-		{
-			if (code[end] == ')')
-			{
-				code.GetString(left, 0, offset);
-				code.GetString(val, offset, end);
-				code.GetString(right, end);
-
-				code = left;
-				code << val;
-				code << "[0].xyz, ";
-				code << val;
-				code << "[1].xyz, ";
-				code << val;
-				code << "[2].xyz";
-				code << right;
-				offset = end + val.GetLength() * 3 + 26;
-				break;
-			}
-			else if (code[end] == ',') break;
-		}
-	}
-#endif
-
 	// Restore the final bracket
 	code << "}\n";
 	return true;
@@ -565,7 +517,7 @@ void AddCommonFunctions (String& code)
 		"{\n"
 		"	vec3 tangent = normalize(R5_vertexTangent);\n"
 		"	vec3 normal = normalize(R5_vertexNormal);\n"
-		"	mat3 TBN = mat3(tangent, cross(normal.xyz, tangent), normal);\n"
+		"	mat3 TBN = mat3(tangent, cross(normal, tangent), normal);\n"
 		"	return normalize(TBN * (val.xyz * 2.0 - 1.0));\n"
 		"}\n";
 	}
@@ -760,6 +712,47 @@ void ConvertCommonTypes (String& code)
 }
 
 //============================================================================================================
+// NOTE: There is a bug in NVIDIA's OpenGL 2.1 drivers for OSX with mat3(mat4):
+// it simply doesn't work. It gives completely unpredictable results.
+// It took me a while to track this one down.
+//============================================================================================================
+
+void ExpandMat3 (String& code)
+{
+	uint offset (0);
+	String left, val, right;
+
+	for (;;)
+	{
+		offset = code.Find("mat3(", true, offset);
+		if (offset >= code.GetLength()) break;
+		uint end (offset += 5);
+
+		for (; end < code.GetLength(); ++end)
+		{
+			if (code[end] == ')')
+			{
+				code.GetString(left, 0, offset);
+				code.GetString(val, offset, end);
+				code.GetString(right, end);
+
+				code = left;
+				code << val;
+				code << "[0].xyz, ";
+				code << val;
+				code << "[1].xyz, ";
+				code << val;
+				code << "[2].xyz";
+				code << right;
+				offset = end + val.GetLength() * 3 + 26;
+				break;
+			}
+			else if (code[end] == ',') break;
+		}
+	}
+}
+
+//============================================================================================================
 // Preprocess a new shader format
 //============================================================================================================
 
@@ -862,5 +855,8 @@ Flags GLPreprocessShader (const String& full, String& code, const Flags& desired
 		::FixLegacyShader(code);
 		final.Set(code.Contains("gl_Position") ? IShader::Flag::Vertex : IShader::Flag::Fragment);
 	}
+
+	// Convert mat3(mat4) into mat3(mat4[0].xyz, mat4[1].xyz, mat4[2].xyz)
+	if (g_caps.mVersion < 300) ExpandMat3(code);
 	return final;
 }

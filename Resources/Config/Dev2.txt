@@ -24,7 +24,7 @@ Root
 			Reflectiveness = 0.0
 			Occlusion = 0.85
 			Alpha Cutoff = 0.003922
-			
+
 			Technique = "Depth"
 			{
 				Shader = "Surface/Dev2 Terrain"
@@ -44,8 +44,23 @@ Root
 					"Textures/Other/snow_ns.png"
 				}
 			}
-			
+
 			Technique = "Shadowed Opaque"
+			{
+				Shader = "Surface/Dev2 Terrain"
+
+				Textures = String[]
+				{
+					"Terrain Normal Map"
+					"Terrain Gradient Map"
+					"Textures/Stone/grey.jpg"
+					"Textures/Stone/grey_ns.png"
+					"Textures/Other/snow.jpg"
+					"Textures/Other/snow_ns.png"
+				}
+			}
+
+			Technique = "Deferred"
 			{
 				Shader = "Surface/Dev2 Terrain"
 
@@ -68,11 +83,11 @@ Root
 
 		Debug Camera = "Default Camera"
 		{
-			Position = -4.98328 5.764418 5.02424
-			Rotation = -0.048338 0.158947 -0.943439 0.286919
+			Position = -0.435761 -4.438017 -0.705313
+			Rotation = -0.335147 0.03325 -0.092955 0.936979
 			Scale = 1.0 1.0 1.0
 			Range = 0.3 100.0 90.0
-			Dolly = 0.0 14.000118 30.0
+			Dolly = 0.0 26.00016 30.0
 
 			Script = "OSDrawForward"
 			{
