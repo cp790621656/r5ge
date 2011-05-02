@@ -182,15 +182,6 @@
 		14666C28133EEC610012FCB4 /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14666999133EE5F50012FCB4 /* libR5_Basic.a */; };
 		14666C29133EEC610012FCB4 /* libR5_Math.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699B133EE5F50012FCB4 /* libR5_Math.a */; };
 		14666C2A133EEC610012FCB4 /* libR5_Serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699D133EE5F50012FCB4 /* libR5_Serialization.a */; };
-		14666C2B133EEC610012FCB4 /* libR5_Network.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699F133EE5F50012FCB4 /* libR5_Network.a */; };
-		14666C2C133EEC610012FCB4 /* libR5_Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A1133EE5F50012FCB4 /* libR5_Core.a */; };
-		14666C2D133EEC610012FCB4 /* libR5_Noise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A3133EE5F50012FCB4 /* libR5_Noise.a */; };
-		14666C2E133EEC610012FCB4 /* libR5_UI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A5133EE5F50012FCB4 /* libR5_UI.a */; };
-		14666C2F133EEC610012FCB4 /* libR5_Font.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A7133EE5F50012FCB4 /* libR5_Font.a */; };
-		14666C30133EEC610012FCB4 /* libR5_Image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669A9133EE5F50012FCB4 /* libR5_Image.a */; };
-		14666C31133EEC610012FCB4 /* libR5_SysWindow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AB133EE5F50012FCB4 /* libR5_SysWindow.a */; };
-		14666C32133EEC610012FCB4 /* libR5_OpenGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AD133EE5F50012FCB4 /* libR5_OpenGL.a */; };
-		14666C33133EEC610012FCB4 /* libR5_Sound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146669AF133EE5F50012FCB4 /* libR5_Sound.a */; };
 		14666C3C133EECBF0012FCB4 /* libR5_Basic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14666999133EE5F50012FCB4 /* libR5_Basic.a */; };
 		14666C3D133EECBF0012FCB4 /* libR5_Math.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699B133EE5F50012FCB4 /* libR5_Math.a */; };
 		14666C3E133EECBF0012FCB4 /* libR5_Serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1466699D133EE5F50012FCB4 /* libR5_Serialization.a */; };
@@ -1526,69 +1517,6 @@
 			remoteGlobalIDString = 1412DBE510ACD24300BBA8F4;
 			remoteInfo = Serialization;
 		};
-		14666C16133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 147553910E0C2A2B00D5641D;
-			remoteInfo = Network;
-		};
-		14666C18133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F4D0D904C240027155A;
-			remoteInfo = Core;
-		};
-		14666C1A133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F1F0D904A060027155A;
-			remoteInfo = Noise;
-		};
-		14666C1C133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F580D904D1B0027155A;
-			remoteInfo = UI;
-		};
-		14666C1E133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F600D904D700027155A;
-			remoteInfo = Font;
-		};
-		14666C20133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F680D904D7E0027155A;
-			remoteInfo = Image;
-		};
-		14666C22133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F780D904DA10027155A;
-			remoteInfo = SysWindow;
-		};
-		14666C24133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14CE0F700D904D940027155A;
-			remoteInfo = OpenGL;
-		};
-		14666C26133EEC530012FCB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14E5FB0A115FCC94002EED30;
-			remoteInfo = Sound;
-		};
 		14666C34133EECB30012FCB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14666986133EE5F50012FCB4 /* Engine.xcodeproj */;
@@ -2154,15 +2082,6 @@
 				14666C28133EEC610012FCB4 /* libR5_Basic.a in Frameworks */,
 				14666C29133EEC610012FCB4 /* libR5_Math.a in Frameworks */,
 				14666C2A133EEC610012FCB4 /* libR5_Serialization.a in Frameworks */,
-				14666C2B133EEC610012FCB4 /* libR5_Network.a in Frameworks */,
-				14666C2C133EEC610012FCB4 /* libR5_Core.a in Frameworks */,
-				14666C2D133EEC610012FCB4 /* libR5_Noise.a in Frameworks */,
-				14666C2E133EEC610012FCB4 /* libR5_UI.a in Frameworks */,
-				14666C2F133EEC610012FCB4 /* libR5_Font.a in Frameworks */,
-				14666C30133EEC610012FCB4 /* libR5_Image.a in Frameworks */,
-				14666C31133EEC610012FCB4 /* libR5_SysWindow.a in Frameworks */,
-				14666C32133EEC610012FCB4 /* libR5_OpenGL.a in Frameworks */,
-				14666C33133EEC610012FCB4 /* libR5_Sound.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3059,15 +2978,6 @@
 				14666C11133EEC530012FCB4 /* PBXTargetDependency */,
 				14666C13133EEC530012FCB4 /* PBXTargetDependency */,
 				14666C15133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C17133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C19133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C1B133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C1D133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C1F133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C21133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C23133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C25133EEC530012FCB4 /* PBXTargetDependency */,
-				14666C27133EEC530012FCB4 /* PBXTargetDependency */,
 			);
 			name = Dev0;
 			productName = "Network Test";
@@ -4482,51 +4392,6 @@
 			isa = PBXTargetDependency;
 			name = Serialization;
 			targetProxy = 14666C14133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C17133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Network;
-			targetProxy = 14666C16133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C19133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Core;
-			targetProxy = 14666C18133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C1B133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Noise;
-			targetProxy = 14666C1A133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C1D133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UI;
-			targetProxy = 14666C1C133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C1F133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Font;
-			targetProxy = 14666C1E133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C21133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Image;
-			targetProxy = 14666C20133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C23133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SysWindow;
-			targetProxy = 14666C22133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C25133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = OpenGL;
-			targetProxy = 14666C24133EEC530012FCB4 /* PBXContainerItemProxy */;
-		};
-		14666C27133EEC530012FCB4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Sound;
-			targetProxy = 14666C26133EEC530012FCB4 /* PBXContainerItemProxy */;
 		};
 		14666C35133EECB30012FCB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

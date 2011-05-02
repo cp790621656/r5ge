@@ -5,7 +5,7 @@
 // Dev0 is a temporary testing application. Its source code and purpose change frequently.
 //============================================================================================================
 
-#include "../../../Engine/OpenGL/Include/_All.h"
+#include "../../../Engine/Serialization/Include/_All.h"
 using namespace R5;
 
 //============================================================================================================
@@ -15,6 +15,28 @@ using namespace R5;
 int main (int argc, char* argv[])
 {
 	System::SetCurrentPath("../../../Resources");
+
+	String shader;
+
+	if (shader.Load("Shaders/Surface/Simple.shader"))
+	{
+		CodeNode root;
+		root.SerializeFrom(shader);
+
+		Array<String> defines;
+		defines.Expand() = "Fragment";
+		defines.Expand() = "Lit";
+		//defines.Expand() = "Deferred";
+
+		shader.Clear();
+		root.SerializeTo(shader, defines);
+
+		puts("Shader:");
+		puts(shader.GetBuffer());
+	}
+	else puts("Not found");
+#ifdef _WINDOWS
 	getchar();
+#endif
 	return 0;
 }

@@ -27,18 +27,20 @@ uint CodeNode::SerializeFrom (const String& source, uint start, uint end)
 		while (start < end && source[start] < 33) ++start;
 
 		uint lineStart (start);
-		char endChar = ((source[start] == '#') ? '\n' : ';');
+		bool prag = (source[start] == '#');
 
-		for (; start < end; ++start)
+		for (; start <= end; ++start)
 		{
-			if (source[start] == endChar)
+			char ch = source[start];
+
+			if ((!prag && ch == ';') || (prag && ch < ' ' && ch != '\t'))
 			{
 				source.GetTrimmed(mLine, lineStart, start++);
 				mLine.TrimCode();
 				return start;
 			}
 
-			if (source[start] == '{')
+			if (ch == '{')
 			{
 				source.GetTrimmed(mLine, lineStart, start++);
 				mLine.TrimCode();
@@ -79,11 +81,11 @@ void CodeNode::SerializeTo (String& out, uint tabs) const
 		// Add a new line in front of new scope statements for clarity
 		if (mChildren.IsValid() && out.IsValid()) out << "\n";
 
-		// Add tabs, also for clarity
-		for (uint i = 0; i < tabs; ++i) out << "\t";
+		bool prag = (mLine[0] == '#');
+		if (!prag) for (uint i = 0; i < tabs; ++i) out << "\t";
 
 		out << mLine;
-		out << ((mLine[0] == '#' || mChildren.IsValid()) ? "\n" : ";\n");
+		out << ((prag || mChildren.IsValid()) ? "\n" : ";\n");
 	}
 
 	if (mChildren.IsValid())
@@ -196,9 +198,10 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 						}
 					}
 
+					bool process = block.IsEmpty() || block.Back().process;
 					IfDef& ifdef = block.Expand();
-					ifdef.add = val && ifdef.process;
-					if (val) ifdef.process = false;
+					ifdef.add = val && process;
+					ifdef.process = !val;
 					updateBlock = true;
 				}
 
@@ -218,7 +221,8 @@ void CodeNode::SerializeTo (CodeNode& out, const Array<String>& defines) const
 			}
 			else if (save)
 			{
-				child.SerializeTo(out.mChildren.Expand(), defines);
+				CodeNode& node = out.mChildren.Expand();
+				child.SerializeTo(node, defines);
 			}
 		}
 	}

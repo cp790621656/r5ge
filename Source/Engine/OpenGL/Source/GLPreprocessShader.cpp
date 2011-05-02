@@ -611,7 +611,7 @@ void AddCommonFunctions (String& code)
 
 void ReplaceSample (String& code, String& prefix, const char* type)
 {
-	String match ("texture"), test, replace;
+	String match ("Sample"), test, replace;
 	match << type;
 	match << "(";
 
@@ -670,9 +670,13 @@ void AddReferencedVariables (String& code, bool isFragmentShader)
 
 	if (isFragmentShader)
 	{
-		code.Replace("Sample", "texture", true);
 		ReplaceSample(code, prefix, "2D");
 		ReplaceSample(code, prefix, "Cube");
+
+		if (code.Replace("SampleShadow(", (g_caps.mVersion > 210) ? "texture(R5_shadowMap, " : "texture2D(R5_shadowMap, ", true))
+		{
+			prefix << "uniform sampler2D R5_shadowMap;\n";
+		}
 	}
 	else
 	{
