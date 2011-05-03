@@ -3,7 +3,7 @@ using namespace R5;
 
 //============================================================================================================
 
-UIWindow::UIWindow() : mPrefix(ClassID()), mTitleHeight(20), mMovement(Movement::None), mResizable(true)
+UIWindow::UIWindow() : mPrefix(ClassName()), mTitleHeight(20), mMovement(Movement::None), mResizable(true)
 {
 	mBackground._SetParentPtr(this);
 	mTitlebar._SetParentPtr(this);
@@ -215,7 +215,7 @@ void UIWindow::OnSerializeTo (TreeNode& node) const
 	if (skin != 0 && skin != mUI->GetDefaultSkin())
 		node.AddChild("Skin", skin->GetName());
 
-	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
+	if (mPrefix != ClassName()) node.AddChild("Prefix", mPrefix);
 	node.AddChild("Titlebar Height", mTitleHeight);
 	node.AddChild("Resizable", mResizable);
 	node.AddChild("Back Color", mBackground.GetBackColor());

@@ -23,7 +23,7 @@ protected:
 
 public:
 
-	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(0xFFFFFFFF), mPrefix(ClassID()) {}
+	UISlider() : mSkin(0), mFull(0), mEmpty(0), mKnob(0), mVal(0.0f), mColor(0xFFFFFFFF), mPrefix(ClassName()) {}
 
 	const ITexture* GetTexture()	const;
 	virtual float	GetValue()		const	{ return mVal;   }

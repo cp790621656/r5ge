@@ -10,48 +10,44 @@
 //============================================================================================================
 
 // Stand-alone class
-#ifndef R5_DECLARE_SOLO_CLASS
-#define R5_DECLARE_SOLO_CLASS(ClassName) \
-	static const char*	ClassID()							{ return ClassName;			}
+#ifndef R5_DECLARE_NAMED_CLASS
+#define R5_DECLARE_NAMED_CLASS(className) \
+	static const String&	ClassName()							{ static String name (className); return name; }
 #endif
 
-// Non-creatable root class
+// Non-createable root class
 #ifndef R5_DECLARE_INTERFACE_CLASS
-#define R5_DECLARE_INTERFACE_CLASS(ClassName) \
-	static const char*	ClassID()							{ return ClassName;			}	\
-	virtual const char* GetClassID() const					{ return ClassID();			}	\
-	virtual bool		IsOfClass(const char* id) const		{ return (id == ClassID()); }	\
-	virtual bool		IsOfClass(const String& id) const	{ return (id == ClassID()); }
+#define R5_DECLARE_INTERFACE_CLASS(className) \
+	static const String&	ClassName()							{ static String name (className); return name; }	\
+	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual bool			IsOfClass (const String& s) const	{ return (s == ClassName()); }
 #endif
 
-// Creatable root class
-#ifndef R5_DECLARE_BASE_CLASS
-#define R5_DECLARE_BASE_CLASS(ClassName, MyClass) \
-	static MyClass*		_CreateNew()						{ return new MyClass();		}	\
-	static const char*	ClassID()							{ return ClassName;			}	\
-	virtual const char* GetClassID() const					{ return ClassID();			}	\
-	virtual bool		IsOfClass(const char* id) const		{ return (id == ClassID()); }	\
-	virtual bool		IsOfClass(const String& id) const	{ return (id == ClassID()); }
-#endif
-
-// Non-creatable inherited class
+// Non-createable inherited class
 #ifndef R5_DECLARE_ABSTRACT_CLASS
-#define R5_DECLARE_ABSTRACT_CLASS(ClassName, ParentClass) \
-	static const char*	ClassID()							{ return ClassName;			}	\
-	virtual const char* GetClassID() const					{ return ClassID();			}	\
-	virtual bool		IsOfClass(const char* id) const		{ return ((id == ClassID()) || ParentClass::IsOfClass(id)); }	\
-	virtual bool		IsOfClass(const String& id) const	{ return ((id == ClassID()) || ParentClass::IsOfClass(id)); }
+#define R5_DECLARE_ABSTRACT_CLASS(className, ParentClass) \
+	static const String&	ClassName()							{ static String name (className); return name; }	\
+	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual bool			IsOfClass (const String& s) const	{ return ((s == ClassName()) || ParentClass::IsOfClass(s)); }
 #endif
 
-// Creatable inherited class
+// Createable root class
+#ifndef R5_DECLARE_BASE_CLASS
+#define R5_DECLARE_BASE_CLASS(className, MyClass) \
+	static MyClass*			_CreateNew()						{ return new MyClass();	}							\
+	static const String&	ClassName()							{ static String name (className); return name; }	\
+	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual bool			IsOfClass (const String& s) const	{ return (s == ClassName()); }
+#endif
+
+// Createable inherited class
 #ifndef R5_DECLARE_INHERITED_CLASS
-#define R5_DECLARE_INHERITED_CLASS(ClassName, MyClass, ParentClass, BaseClass) \
-	static BaseClass*	_CreateNew()						{ return new MyClass();		}	\
-	static const char*	ClassID()							{ return ClassName;			}	\
-	virtual const char* GetClassID() const					{ return ClassID();			}	\
-	virtual bool		IsOfClass(const char* id) const		{ return ((id == ClassID()) || ParentClass::IsOfClass(id)); } \
-	virtual bool		IsOfClass(const String& id) const	{ return ((id == ClassID()) || ParentClass::IsOfClass(id)); }
+#define R5_DECLARE_INHERITED_CLASS(className, MyClass, ParentClass, BaseClass) \
+	static BaseClass*		_CreateNew()						{ return new MyClass();	}							\
+	static const String&	ClassName()							{ static String name (className); return name; }	\
+	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual bool			IsOfClass (const String& s) const	{ return ((s == ClassName()) || ParentClass::IsOfClass(s)); }
 #endif
 
 // Faster version of 'dynamic_cast'
-#define R5_CAST(Class, ptr) ( (ptr != 0 && ptr->IsOfClass( Class::ClassID() ) ) ? (Class*)ptr : 0 )
+#define R5_CAST(Class, ptr) ( (ptr != 0 && ptr->IsOfClass( Class::ClassName() ) ) ? (Class*)ptr : 0 )

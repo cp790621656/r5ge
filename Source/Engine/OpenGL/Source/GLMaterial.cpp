@@ -142,7 +142,7 @@ void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if (tag == IShader::ClassID())
+		if (tag == IShader::ClassName())
 		{
 			m.mShader = (value.IsValid()) ? graphics->GetShader(
 				value.AsString()) : 0;
@@ -156,12 +156,12 @@ void SerializeMethodFrom (IMaterial::DrawMethod& m, const TreeNode& root, IGraph
 			}
 		}
 		// LEGACY SUPPORT, WILL BE REMOVED
-		else if (tag.BeginsWith(ITexture::ClassID()))
+		else if (tag.BeginsWith(ITexture::ClassName()))
 		{
 			String left, right;
 			uint textureUnit = 0;
 
-			if ( tag.Split(left, ' ', right) && left == ITexture::ClassID() && right >> textureUnit )
+			if ( tag.Split(left, ' ', right) && left == ITexture::ClassName() && right >> textureUnit )
 			{
 				m.SetTexture( textureUnit, graphics->GetTexture(
 					value.AsString()) );
@@ -178,9 +178,9 @@ void SerializeMethodTo (const IMaterial::DrawMethod& m, TreeNode& root)
 {
 	if (m.mTechnique != 0)
 	{
-		TreeNode& node = root.AddChild( ITechnique::ClassID(), m.mTechnique->GetName() );
+		TreeNode& node = root.AddChild( ITechnique::ClassName(), m.mTechnique->GetName() );
 
-		if (m.mShader != 0) node.AddChild( IShader::ClassID(), m.mShader->GetName() );
+		if (m.mShader != 0) node.AddChild( IShader::ClassName(), m.mShader->GetName() );
 
 		if (m.mTextures.IsValid())
 		{
@@ -238,7 +238,7 @@ bool GLMaterial::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		{
 			value >> mAlphaCutoff;
 		}
-		else if (tag == ITechnique::ClassID())
+		else if (tag == ITechnique::ClassName())
 		{
 			const ITechnique* tech = mGraphics->GetTechnique(value.AsString());
 			DrawMethod* ren = GetDrawMethod(tech, true);
@@ -256,7 +256,7 @@ bool GLMaterial::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
-		TreeNode& node = root.AddChild( ClassID(), mName );
+		TreeNode& node = root.AddChild( ClassName(), mName );
 
 		node.AddChild("Diffuse",		mDiffuse);
 		node.AddChild("Glow",			mGlow);

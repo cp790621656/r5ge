@@ -44,7 +44,7 @@ private:
 
 public:
 
-	R5_DECLARE_SOLO_CLASS("Bone");
+	R5_DECLARE_NAMED_CLASS("Bone");
 
 	Bone() : mParent(-1) {}
 

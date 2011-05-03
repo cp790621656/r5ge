@@ -173,7 +173,7 @@ bool Skeleton::SerializeFrom (const TreeNode& root, bool forceUpdate)
 	{
 		const TreeNode& node = root.mChildren[i];
 
-		if (node.mTag == Bone::ClassID())
+		if (node.mTag == Bone::ClassName())
 		{
 			uint index;
 
@@ -187,7 +187,7 @@ bool Skeleton::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				mBones.Unlock();
 			}
 		}
-		else if (node.mTag == Animation::ClassID())
+		else if (node.mTag == Animation::ClassName())
 		{
 			GetAnimation(node.mValue.GetString(), true)->SerializeFrom(node);
 		}
@@ -211,7 +211,7 @@ bool Skeleton::SerializeTo (TreeNode& root) const
 			{
 				if (mBones[i] != 0)
 				{
-					TreeNode& bone = node.AddChild(Bone::ClassID(), i);
+					TreeNode& bone = node.AddChild(Bone::ClassName(), i);
 					mBones[i]->SerializeTo(bone);
 				}
 			}

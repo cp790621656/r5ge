@@ -277,8 +277,8 @@ uint Emitter::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* t
 
 void Emitter::OnSerializeTo (TreeNode& root) const
 {
-	if (mTex  != 0) root.AddChild(   ITexture::ClassID(),  mTex->GetName() );
-	if (mTech != 0) root.AddChild( ITechnique::ClassID(), mTech->GetName() );
+	if (mTex  != 0) root.AddChild(   ITexture::ClassName(),  mTex->GetName() );
+	if (mTech != 0) root.AddChild( ITechnique::ClassName(), mTech->GetName() );
 	root.AddChild("Lifetime",		mLifetime);
 	root.AddChild("Max Particles",	mMaxParticles);
 	root.AddChild("Frequency",		mFrequency);
@@ -290,13 +290,13 @@ void Emitter::OnSerializeTo (TreeNode& root) const
 
 bool Emitter::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == ITexture::ClassID())
+	if (node.mTag == ITexture::ClassName())
 	{
 		IGraphics* graphics = mCore->GetGraphics();
 		if (graphics != 0) SetTexture( graphics->GetTexture(node.mValue.GetString()) );
 		return true;
 	}
-	else if (node.mTag == ITechnique::ClassID())
+	else if (node.mTag == ITechnique::ClassName())
 	{
 		IGraphics* graphics = mCore->GetGraphics();
 		mTech = graphics->GetTechnique( node.mValue.IsString() ? node.mValue.AsString() :

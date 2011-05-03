@@ -266,7 +266,7 @@ bool Animation::SerializeFrom (const TreeNode& root, bool forceUpdate)
 
 bool Animation::SerializeTo (TreeNode& root) const
 {
-	TreeNode& node = root.AddChild( Animation::ClassID(), mName );
+	TreeNode& node = root.AddChild( Animation::ClassName(), mName );
 	node.AddChild("Frames", mFrames);
 	node.AddChild("Duration", mDuration);
 	node.AddChild("Looping", mLoop);

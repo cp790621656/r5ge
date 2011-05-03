@@ -669,7 +669,7 @@ bool UIManager::SerializeTo (TreeNode& root, bool threadSafe) const
 				for (uint i = 0; i < scripts.GetSize(); ++i)
 				{
 					const UIScript* script = scripts[i];
-					TreeNode& child = layout.AddChild(UIScript::ClassID(), script->GetClassID());
+					TreeNode& child = layout.AddChild(UIScript::ClassName(), script->GetClassName());
 					script->OnSerializeTo(child);
 				}
 

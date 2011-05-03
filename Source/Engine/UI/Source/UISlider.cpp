@@ -248,7 +248,7 @@ void UISlider::OnSerializeTo (TreeNode& node) const
 	node.AddChild("Back Color", mColor);
 
 	// Add the optional prefix if it's different from its default value
-	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
+	if (mPrefix != ClassName()) node.AddChild("Prefix", mPrefix);
 }
 
 //============================================================================================================

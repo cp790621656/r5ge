@@ -69,8 +69,8 @@ protected:
 public:
 
 	// Registers a new script
-	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
-	template <typename Type> static void UnRegister() { _UnRegister( Type::ClassID() ); }
+	template <typename Type> static void Register() { _Register( Type::ClassName(), &Type::_CreateNew ); }
+	template <typename Type> static void UnRegister() { _UnRegister( Type::ClassName() ); }
 
 	// Sets the replacement script type list that should be used instead of the built-in one
 	static void SetTypeList (List* list);

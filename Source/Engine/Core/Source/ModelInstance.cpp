@@ -151,7 +151,7 @@ void ModelInstance::OnSerializeTo (TreeNode& node) const
 {
 	if (mModel != 0 && mModel->GetName() != mName)
 	{
-		node.AddChild( mModel->GetClassID(), mModel->GetName() );
+		node.AddChild( mModel->GetClassName(), mModel->GetName() );
 	}
 }
 
@@ -164,7 +164,7 @@ bool ModelInstance::OnSerializeFrom (const TreeNode& node)
 	const String&	tag   = node.mTag;
 	const Variable&	value = node.mValue;
 
-	if ( tag == Model::ClassID() )
+	if ( tag == Model::ClassName() )
 	{
 		Model* model = mCore->GetModel(value.AsString(), true);
 		SetModel(model, true);

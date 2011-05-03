@@ -167,7 +167,7 @@ void Script::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
-		TreeNode& node = root.AddChild(Script::ClassID(), GetClassID());
+		TreeNode& node = root.AddChild(Script::ClassName(), GetClassName());
 		OnSerializeTo(node);
 	}
 }

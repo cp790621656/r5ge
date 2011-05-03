@@ -65,7 +65,7 @@ private:
 
 public:
 
-	R5_DECLARE_SOLO_CLASS("Core");
+	R5_DECLARE_NAMED_CLASS("Core");
 
 	// It should be possible to retrieve values passed in the constructor
 	IWindow*	GetWindow()		{ return mWin;		}

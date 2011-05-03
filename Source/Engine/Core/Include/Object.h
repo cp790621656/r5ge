@@ -328,54 +328,54 @@ protected:
 public:
 
 	// Registers a new object of the specified type
-	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
+	template <typename Type> static void Register() { _Register( Type::ClassName(), &Type::_CreateNew ); }
 
 	// Finds a child object of the specified name and type
 	template <typename Type> Type* FindObject (const String& name, bool recursive = true)
 	{
 		const Object* obj = _FindObject(name, recursive);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+		return R5_CAST(Type, obj);
 	}
 
 	// Finds a child object of the specified name and type
 	template <typename Type> const Type* FindObject (const String& name, bool recursive = true) const
 	{
 		const Object* obj = _FindObject(name, recursive);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (const Type*)obj : 0;
+		return R5_CAST(Type, obj);
 	}
 
 	// Creates a new child of specified type and name
 	template <typename Type> Type* AddObject (const String& name)
 	{
-		Object* obj = _AddObject(Type::ClassID(), name);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+		Object* obj = _AddObject(Type::ClassName(), name);
+		return R5_CAST(Type, obj);
 	}
 
 	// Retrieves an existing script on the object
 	template <typename Type> Type* GetScript()
 	{
-		const Script* script = _GetScript(Type::ClassID());
-		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+		const Script* script = _GetScript(Type::ClassName());
+		return R5_CAST(Type, script);
 	}
 
 	// Retrieves an existing script on the object
 	template <typename Type> const Type* GetScript() const
 	{
-		const Script* script = _GetScript(Type::ClassID());
-		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (const Type*)script : 0;
+		const Script* script = _GetScript(Type::ClassName());
+		return R5_CAST(Type, script);
 	}
 
 	// Adds a new script to the object (only one script of each type can be active on the object)
 	template <typename Type> Type* AddScript()
 	{
-		Script* script = _AddScript(Type::ClassID());
-		return ( script != 0 && script->IsOfClass(Type::ClassID()) ) ? (Type*)script : 0;
+		Script* script = _AddScript(Type::ClassName());
+		return R5_CAST(Type, script);
 	}
 
 	// Removes the specified script from the game object
 	template <typename Type> void RemoveScript()
 	{
-		Script* script = (Script*)_GetScript(Type::ClassID());
+		Script* script = (Script*)_GetScript(Type::ClassName());
 		if (script != 0) script->DestroySelf();
 	}
 };

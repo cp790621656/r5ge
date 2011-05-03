@@ -181,11 +181,11 @@ void OSDrawDeferred::LightStage()
 				{
 					resetStates = true;
 					offset = i + 1;
-					classID = entry.mLight->GetClassID();
+					classID = entry.mLight->GetClassName();
 				}
 
 				// If the class ID matches, draw this light
-				if (classID == entry.mLight->GetClassID())
+				if (classID == entry.mLight->GetClassName())
 				{
 					const ILight& light = lights[i].mLight->GetProperties();
 					ITexture* shadow = 0;
@@ -193,7 +193,7 @@ void OSDrawDeferred::LightStage()
 					// If the light is supposed to be casting shadows, let's draw them
 					if (light.mShadows)
 					{
-						if (entry.mLight->IsOfClass(DirectionalLight::ClassID()))
+						if (entry.mLight->IsOfClass(DirectionalLight::ClassName()))
 						{
 							// Draw the shadow
 							shadow = mShadow.Draw(mScene.GetRoot(), lights[i].mLight, light.mDir, mIMVP, mDepth);

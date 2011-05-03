@@ -1104,7 +1104,7 @@ bool GLGraphics::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if (tag == ClassID())
+		if (tag == ClassName())
 		{
 			return SerializeFrom(node, forceUpdate);
 		}
@@ -1128,10 +1128,10 @@ bool GLGraphics::SerializeFrom (const TreeNode& root, bool forceUpdate)
 			if (value >> range) SetFogRange(range);
 		}
 		else if (tag == "Skybox") skybox = (value.AsString());
-		else if	(tag == ITechnique::ClassID())	EXECUTE(ITechnique,	GetTechnique)
-		else if (tag == ITexture::ClassID())	EXECUTE(ITexture,	GetTexture)
-		else if (tag == IMaterial::ClassID())	EXECUTE(IMaterial,	GetMaterial)
-		else if (tag == IFont::ClassID())		EXECUTE(IFont,		GetFont)
+		else if	(tag == ITechnique::ClassName())	EXECUTE(ITechnique,	GetTechnique)
+		else if (tag == ITexture::ClassName())	EXECUTE(ITexture,	GetTexture)
+		else if (tag == IMaterial::ClassName())	EXECUTE(IMaterial,	GetMaterial)
+		else if (tag == IFont::ClassName())		EXECUTE(IFont,		GetFont)
 		else if (tag == "DXT")
 		{
 			// Turn off DXT compression if requested
@@ -1158,7 +1158,7 @@ bool GLGraphics::SerializeFrom (const TreeNode& root, bool forceUpdate)
 
 bool GLGraphics::SerializeTo (TreeNode& root) const
 {
-	TreeNode& node = root.AddChild( ClassID() );
+	TreeNode& node = root.AddChild( ClassName() );
 	node.AddChild("Default AF", mAf);
 
 	if ( mSkybox && mSkybox->GetType() == ITexture::Type::EnvironmentCubeMap )

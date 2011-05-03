@@ -6,7 +6,18 @@
 //============================================================================================================
 
 #include "../../../Engine/Serialization/Include/_All.h"
+#include "../../../Engine/Interface/Include/_All.h"
 using namespace R5;
+
+struct Test
+{
+	R5_DECLARE_BASE_CLASS("Test", Test);
+};
+
+struct Hmm : public Test
+{
+	R5_DECLARE_INHERITED_CLASS("Hmm", Hmm, Test, Test);
+};
 
 //============================================================================================================
 // Application entry point
@@ -16,27 +27,7 @@ int main (int argc, char* argv[])
 {
 	System::SetCurrentPath("../../../Resources");
 
-	String shader;
-
-	if (shader.Load("Shaders/Surface/Simple.shader"))
-	{
-		CodeNode root;
-		root.SerializeFrom(shader);
-
-		Array<String> defines;
-		defines.Expand() = "Fragment";
-		defines.Expand() = "Lit";
-		//defines.Expand() = "Deferred";
-
-		shader.Clear();
-		root.SerializeTo(shader, defines);
-
-		puts("Shader:");
-		puts(shader.GetBuffer());
-	}
-	else puts("Not found");
-#ifdef _WINDOWS
+	printf("Name: %s\n", Hmm::ClassName().GetBuffer());
 	getchar();
-#endif
 	return 0;
 }

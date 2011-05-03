@@ -43,7 +43,7 @@ public:
 	R5_DECLARE_INTERFACE_CLASS("UIScript");
 
 	// Registers a new script
-	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
+	template <typename Type> static void Register() { _Register( Type::ClassName(), &Type::_CreateNew ); }
 
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~UIScript();

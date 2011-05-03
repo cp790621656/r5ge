@@ -25,7 +25,7 @@ private:
 public:
 
 	// Static identifier, for consistency
-	R5_DECLARE_SOLO_CLASS("Skeleton");
+	R5_DECLARE_NAMED_CLASS("Skeleton");
 
 	Skeleton(const String& name) : mName(name) {}
 

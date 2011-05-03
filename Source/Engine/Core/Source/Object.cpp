@@ -114,7 +114,7 @@ Object* Object::_AddObject (const String& type, const String& name)
 	{
 		Object* obj = mChildren[--i];
 
-		if ( obj != 0 && name == obj->GetName() && type == obj->GetClassID() )
+		if ( obj != 0 && name == obj->GetName() && type == obj->GetClassName() )
 		{
 			ptr = obj;
 			break;
@@ -197,7 +197,7 @@ Script* Object::_AddScript (const char* type)
 	{
 		Script* script = mScripts[i];
 
-		if ( script != 0 && script->IsOfClass(type) )
+		if (script != 0 && script->IsOfClass(type))
 		{
 			ptr = script;
 			break;
@@ -238,7 +238,7 @@ Script* Object::_AddScript (const String& type)
 	{
 		Script* script = mScripts[i];
 
-		if ( script != 0 && script->IsOfClass(type) )
+		if (script != 0 && script->IsOfClass(type))
 		{
 			ptr = script;
 			break;
@@ -273,7 +273,7 @@ const Script* Object::_GetScript (const char* type) const
 	{
 		const Script* script = mScripts[i];
 
-		if ( script != 0 && script->IsOfClass(type))
+		if (script != 0 && script->IsOfClass(type))
 		{
 			ptr = script;
 			break;
@@ -294,7 +294,7 @@ const Script* Object::_GetScript (const String& type) const
 	{
 		const Script* script = mScripts[i];
 
-		if ( script != 0 && script->IsOfClass(type))
+		if (script != 0 && script->IsOfClass(type))
 		{
 			ptr = script;
 			break;
@@ -1071,7 +1071,7 @@ bool Object::SerializeTo (TreeNode& root) const
 {
 	if (mSerializable)
 	{
-		TreeNode& node = root.AddChild( GetClassID(), mName );
+		TreeNode& node = root.AddChild( GetClassName(), mName );
 
 		node.AddChild("Position", mRelativePos);
 		node.AddChild("Rotation", mRelativeRot);
@@ -1149,7 +1149,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 		{
 			mShowOutline = value.IsBool() ? value.AsBool() : true;
 		}
-		else if (tag == Script::ClassID())
+		else if (tag == Script::ClassName())
 		{
 			// The 'contains' check is here because scripts can self-destruct inside OnInit()
 			Script* ptr = _AddScript(value.AsString());

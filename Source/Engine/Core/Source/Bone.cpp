@@ -284,7 +284,7 @@ bool Bone::SerializeFrom (const TreeNode& root, bool forceUpdate)
 
 bool Bone::SerializeTo (TreeNode& node) const
 {
-	ASSERT(node.mTag == Bone::ClassID(), "Missing 'Bone = ID' tag!");
+	ASSERT(node.mTag == Bone::ClassName(), "Missing 'Bone = ID' tag!");
 
 	if (mParent != INVALID_VAL) node.AddChild("Parent", mParent);
 	node.AddChild("Name", mName);

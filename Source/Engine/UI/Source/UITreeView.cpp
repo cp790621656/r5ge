@@ -28,7 +28,7 @@ UITreeView::UITreeView() :
 	mShadowColor(0),
 	mClickStamp	(0),
 	mSelection	(0),
-	mPrefix		(ClassID())
+	mPrefix		(ClassName())
 {
 }
 
@@ -497,9 +497,9 @@ void UITreeView::OnKeyPress (const Vector2i& pos, byte key, bool isDown)
 
 void UITreeView::OnSerializeTo (TreeNode& root) const
 {
-	if (mPrefix != ClassID())		root.AddChild("Prefix",			mPrefix);
+	if (mPrefix != ClassName())		root.AddChild("Prefix",			mPrefix);
 	if (GetSkin() != 0)				root.AddChild("Skin",			GetSkin()->GetName());
-	if (GetFont() != 0)				root.AddChild(IFont::ClassID(), GetFont()->GetName());
+	if (GetFont() != 0)				root.AddChild(IFont::ClassName(), GetFont()->GetName());
 
 	root.AddChild("Padding",		(int)mPadding);
 	root.AddChild("Back Color",		GetBackColor());

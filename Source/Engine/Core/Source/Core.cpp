@@ -500,7 +500,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	// Save all resources and models
 	if (mResources.IsValid() || mFileResource.IsValid() || mModels.IsValid())
 	{
-		TreeNode& node = root.AddChild( Core::ClassID() );
+		TreeNode& node = root.AddChild( Core::ClassName() );
 
 		if (mFileResource.IsValid())
 		{
@@ -547,7 +547,7 @@ bool Core::SerializeTo (TreeNode& root, bool window, bool graphics, bool ui) con
 	// Save out the scenegraph only if there is something to save
 	if (children.IsValid() || scripts.IsValid())
 	{
-		TreeNode& node = root.AddChild(Scene::ClassID());
+		TreeNode& node = root.AddChild(Scene::ClassName());
 
 		for (uint i = 0; i < scripts.GetSize(); ++i)
 			scripts[i]->SerializeTo(node);
@@ -580,7 +580,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 		const String&	tag		= node.mTag;
 		const Variable&	value	= node.mValue;
 
-		if (tag == Core::ClassID())
+		if (tag == Core::ClassName())
 		{
 			// SerializeFrom only returns 'false' if something important failed
 			if ( !SerializeFrom(node, forceUpdate, createThreads) )
@@ -589,7 +589,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 				break;
 			}
 		}
-		else if (tag == IWindow::ClassID())
+		else if (tag == IWindow::ClassName())
 		{
 			// If window creation fails, let the calling function know
 			if (mWin != 0 && !mWin->SerializeFrom(node))
@@ -598,7 +598,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 				break;
 			}
 		}
-		else if (tag == IGraphics::ClassID())
+		else if (tag == IGraphics::ClassName())
 		{
 			// If graphics init fails, let the calling function know
 			if (mGraphics != 0 && !mGraphics->SerializeFrom(node, forceUpdate))
@@ -607,7 +607,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 				break;
 			}
 		}
-		else if (tag == IUI::ClassID())
+		else if (tag == IUI::ClassName())
 		{
 			if (mUI != 0 && mGraphics != 0)
 			{
@@ -616,26 +616,26 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 				Lock();
 			}
 		}
-		else if (tag == Scene::ClassID())
+		else if (tag == Scene::ClassName())
 		{
 			mRoot.SerializeFrom(node, forceUpdate);
 		}
-		else if (tag == Mesh::ClassID())
+		else if (tag == Mesh::ClassName())
 		{
 			Mesh* mesh = GetMesh(value.AsString(), true);
 			if (mesh != 0) mesh->SerializeFrom(node, forceUpdate);
 		}
-		else if (tag == Cloud::ClassID())
+		else if (tag == Cloud::ClassName())
 		{
 			Cloud* bm = GetCloud(value.AsString(), true);
 			if (bm != 0) bm->SerializeFrom(node, forceUpdate);
 		}
-		else if (tag == Skeleton::ClassID())
+		else if (tag == Skeleton::ClassName())
 		{
 			Skeleton* skel = GetSkeleton(value.AsString(), true);
 			if (skel != 0) skel->SerializeFrom(node, forceUpdate);
 		}
-		else if (tag == ModelTemplate::ClassID())
+		else if (tag == ModelTemplate::ClassName())
 		{
 			ModelTemplate* temp = GetModelTemplate(value.AsString(), true);
 
@@ -645,7 +645,7 @@ bool Core::SerializeFrom (const TreeNode& root, bool forceUpdate, bool createThr
 				if (!serializable) temp->SetSerializable(false);
 			}
 		}
-		else if (tag == Model::ClassID())
+		else if (tag == Model::ClassName())
 		{
 			Model* model = GetModel(value.AsString(), true);
 

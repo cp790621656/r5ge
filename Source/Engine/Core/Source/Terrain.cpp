@@ -31,7 +31,7 @@ uint Terrain::OnDraw (TemporaryStorage& storage, uint group, const ITechnique* t
 
 void Terrain::OnSerializeTo (TreeNode& root) const
 {
-	if (mMat != 0) root.AddChild(IMaterial::ClassID(), mMat->GetName());
+	if (mMat != 0) root.AddChild(IMaterial::ClassName(), mMat->GetName());
 }
 
 //============================================================================================================
@@ -40,7 +40,7 @@ void Terrain::OnSerializeTo (TreeNode& root) const
 
 bool Terrain::OnSerializeFrom (const TreeNode& node)
 {
-	if (node.mTag == IMaterial::ClassID())
+	if (node.mTag == IMaterial::ClassName())
 	{
 		IGraphics* graphics = mCore->GetGraphics();
 

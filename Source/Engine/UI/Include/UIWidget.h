@@ -268,26 +268,26 @@ public:
 public:
 
 	// Registers a new widget type or script
-	template <typename Type> static void Register() { _Register( Type::ClassID(), &Type::_CreateNew ); }
+	template <typename Type> static void Register() { _Register( Type::ClassName(), &Type::_CreateNew ); }
 
 	// Returns an existing script of given type
 	template <typename Type> Type* GetScript()
 	{
-		UIScript* script = _GetScript(Type::ClassID());
+		UIScript* script = _GetScript(Type::ClassName());
 		return (script != 0) ? (Type*)script : 0;
 	}
 
 	// Adds a new or returns an existing script of given type
 	template <typename Type> Type* AddScript()
 	{
-		UIScript* script = _AddScript(Type::ClassID());
+		UIScript* script = _AddScript(Type::ClassName());
 		return (script != 0) ? (Type*)script : 0;
 	}
 
 	// Adds a new or returns an existing script of given type
 	template <typename Type> bool RemoveScript()
 	{
-		UIScript* script = _GetScript(Type::ClassID());
+		UIScript* script = _GetScript(Type::ClassName());
 		if (script == 0) return false;
 		script->DestroySelf();
 		return true;
@@ -297,20 +297,20 @@ public:
 	template <typename Type> Type* FindWidget (const Vector2i& pos)
 	{
 		UIWidget* obj = _FindWidget(pos);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+		return ( obj != 0 && obj->IsOfClass(Type::ClassName()) ) ? (Type*)obj : 0;
 	}
 
 	// Finds a child widget of specified type
 	template <typename Type> Type* FindWidget (const String& name, bool recursive = true)
 	{
 		UIWidget* obj = _FindWidget(name, recursive);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+		return ( obj != 0 && obj->IsOfClass(Type::ClassName()) ) ? (Type*)obj : 0;
 	}
 
 	// Adds a new widget of specified type
 	template <typename Type> Type* AddWidget (const String& name, bool unique = true)
 	{
-		UIWidget* obj = _AddWidget(Type::ClassID(), name, unique);
-		return ( obj != 0 && obj->IsOfClass(Type::ClassID()) ) ? (Type*)obj : 0;
+		UIWidget* obj = _AddWidget(Type::ClassName(), name, unique);
+		return ( obj != 0 && obj->IsOfClass(Type::ClassName()) ) ? (Type*)obj : 0;
 	}
 };

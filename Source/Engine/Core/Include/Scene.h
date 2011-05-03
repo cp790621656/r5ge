@@ -31,7 +31,7 @@ private:
 
 public:
 
-	R5_DECLARE_SOLO_CLASS("Scene");
+	R5_DECLARE_NAMED_CLASS("Scene");
 
 	Scene (Object* root = 0) : mRoot(root) {}
 

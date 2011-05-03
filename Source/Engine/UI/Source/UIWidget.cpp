@@ -219,7 +219,7 @@ UIScript* UIWidget::_GetScript (const String& type)
 		{
 			UIScript* script = mScripts[--i];
 
-			if (script != 0 && type == script->GetClassID())
+			if (script != 0 && type == script->GetClassName())
 			{
 				ptr = script;
 				break;
@@ -241,7 +241,7 @@ UIScript* UIWidget::_AddScript (const String& type)
 	{
 		UIScript* script = mScripts[--i];
 
-		if (script != 0 && type == script->GetClassID())
+		if (script != 0 && type == script->GetClassName())
 		{
 			ptr = script;
 			break;
@@ -556,7 +556,7 @@ bool UIWidget::SerializeTo (TreeNode& root, bool self, bool children) const
 {
 	if (mSerializable)
 	{
-		TreeNode& node = self ? root.AddChild(GetClassID(), GetName()) : root;
+		TreeNode& node = self ? root.AddChild(GetClassName(), GetName()) : root;
 
 		if (self)
 		{
@@ -580,7 +580,7 @@ bool UIWidget::SerializeTo (TreeNode& root, bool self, bool children) const
 		for (uint i = 0; i < mScripts.GetSize(); ++i)
 		{
 			const UIScript* script = mScripts[i];
-			TreeNode& child = node.AddChild(UIScript::ClassID(), script->GetClassID());
+			TreeNode& child = node.AddChild(UIScript::ClassName(), script->GetClassName());
 			script->OnSerializeTo(child);
 		}
 
@@ -651,7 +651,7 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 					mEventHandling = receive ? EventHandling::Normal : EventHandling::None;
 				}
 			}
-			else if (tag == UIScript::ClassID())
+			else if (tag == UIScript::ClassName())
 			{
 				UIScript* script = _AddScript(value.AsString());
 
@@ -720,7 +720,7 @@ void UIWidget::Fill (UIQueue* queue)
 		{
 			UIWidget* child = mChildren[i];
 
-			if (child != 0 && !child->IsOfClass(UIFrame::ClassID()))
+			if (child != 0 && !child->IsOfClass(UIFrame::ClassName()))
 			{
 				child->Fill(queue);
 			}

@@ -1277,7 +1277,7 @@ bool GLTexture::SerializeTo (TreeNode& root) const
 
 	mLock.Lock();
 	{
-		TreeNode& node = root.AddChild(ITexture::ClassID(), mName);
+		TreeNode& node = root.AddChild(ITexture::ClassName(), mName);
 
 		if (mType == Type::EnvironmentCubeMap)
 		{

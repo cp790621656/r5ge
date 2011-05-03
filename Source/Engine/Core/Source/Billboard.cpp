@@ -99,10 +99,10 @@ void Billboard::OnSerializeTo (TreeNode& root) const
 {
 	root.AddChild("Color", mColor);
 
-	TreeNode& tex = root.AddChild(ITexture::ClassID());
+	TreeNode& tex = root.AddChild(ITexture::ClassName());
 	if (mTex != 0) tex.mValue = mTex->GetName();
 
-	TreeNode& tech = root.AddChild(ITechnique::ClassID());
+	TreeNode& tech = root.AddChild(ITechnique::ClassName());
 	if (mTech != 0) tech.mValue = mTech->GetName();
 }
 
@@ -120,12 +120,12 @@ bool Billboard::OnSerializeFrom (const TreeNode& node)
 		value >> mColor;
 		return true;
 	}
-	else if (tag == ITexture::ClassID())
+	else if (tag == ITexture::ClassName())
 	{
 		mTex = mCore->GetGraphics()->GetTexture( value.AsString() );
 		return true;
 	}
-	else if (tag == ITechnique::ClassID())
+	else if (tag == ITechnique::ClassName())
 	{
 		mTech = mCore->GetGraphics()->GetTechnique( value.AsString() );
 		return true;

@@ -24,7 +24,7 @@ protected:
 
 public:
 
-	R5_DECLARE_SOLO_CLASS("Limb");
+	R5_DECLARE_NAMED_CLASS("Limb");
 
 	Limb (const String& name) : mName(name), mMesh(0), mCloud(0), mMat(0), mIsVisible(false), mSerializable(false) {}
 

@@ -236,7 +236,7 @@ bool UIInput::OnUpdate (bool dimensionsChanged)
 	if (GetSkin() == 0 && mUI->GetDefaultSkin() != 0)
 	{
 		SetSkin(mUI->GetDefaultSkin());
-		SetFace(String("%s: Background", GetClassID()));
+		SetFace(String("%s: Background", GetClassName()));
 	}
 
 	dimensionsChanged |= mImage.Update(mRegion, dimensionsChanged, true);

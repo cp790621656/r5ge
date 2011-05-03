@@ -176,7 +176,7 @@ bool Cloud::SerializeTo (TreeNode& root) const
 {
 	if (IsValid())
 	{
-		TreeNode& node = root.AddChild(ClassID(), mName);
+		TreeNode& node = root.AddChild(ClassName(), mName);
 		node.AddChild("Origin", mOrigin);
 		node.AddChild("Instances", mInstances);
 		return true;

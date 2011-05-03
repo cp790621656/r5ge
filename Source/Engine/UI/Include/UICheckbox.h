@@ -25,7 +25,7 @@ public:
 public:
 
 	// Checkbox is essentially a sticky button
-	UICheckbox() { mPrefix = ClassID(); SetSticky(true); SetAlignment(UILabel::Alignment::Left); }
+	UICheckbox() { mPrefix = ClassName(); SetSticky(true); SetAlignment(UILabel::Alignment::Left); }
 
 	// Area creation
 	R5_DECLARE_INHERITED_CLASS("UICheckbox", UICheckbox, UIButton, UIWidget);

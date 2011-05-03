@@ -57,7 +57,7 @@ UIContext* UIMenu::_ShowMenu()
 				menu->AddEntry( mEntries[i] );
 
 			menu->SetSkin( GetSkin() );
-			menu->SetFace( (mMenuFace.IsValid() ? mMenuFace : String(UIButton::ClassID()) + ": Pressed") );
+			menu->SetFace( (mMenuFace.IsValid() ? mMenuFace : String(UIButton::ClassName()) + ": Pressed") );
 			menu->SetFont( GetFont() );
 			menu->SetTextColor( GetTextColor() );
 			menu->SetBackColor( GetBackColor() );

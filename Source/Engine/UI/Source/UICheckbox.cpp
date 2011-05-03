@@ -145,7 +145,7 @@ void UICheckbox::OnSerializeTo (TreeNode& node) const
 		node.AddChild("Skin", skin->GetName());
 
 	// Add the optional prefix if it's different from its default value
-	if (mPrefix != ClassID()) node.AddChild("Prefix", mPrefix);
+	if (mPrefix != ClassName()) node.AddChild("Prefix", mPrefix);
 
 	// Save the background color
 	node.AddChild("Back Color", mImage.GetBackColor());

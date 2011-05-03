@@ -247,11 +247,11 @@ bool ModelTemplate::SerializeFrom ( const TreeNode& root, bool forceUpdate )
 		const String&	tag   = node.mTag;
 		const Variable&	value = node.mValue;
 
-		if (tag == Limb::ClassID())
+		if (tag == Limb::ClassName())
 		{
 			_LoadLimb( node, true );
 		}
-		else if (tag == Skeleton::ClassID())
+		else if (tag == Skeleton::ClassName())
 		{
 			SetSkeleton( mCore->GetSkeleton(value.AsString(), true) );
 		}
@@ -278,7 +278,7 @@ void ModelTemplate::SerializeTo	(TreeNode& root, bool forceSave) const
 
 	if ( forceSave || mFilename.IsValid() || (mTemplate != 0 && mTemplate->GetName() != GetName()) )
 	{
-		TreeNode& node = root.AddChild( GetClassID() );
+		TreeNode& node = root.AddChild( GetClassName() );
 		GetName() >> node.mValue;
 
 		if (!mSerializable) node.AddChild("Serializable", false);
@@ -326,15 +326,15 @@ bool ModelTemplate::_LoadLimb (const TreeNode& root, bool forceUpdate)
 		const String&	tag		( node.mTag	);
 		const Variable&	value	( node.mValue );
 
-		if ( tag == Mesh::ClassID() )
+		if ( tag == Mesh::ClassName() )
 		{
 			mesh = mCore->GetMesh(value.AsString());
 		}
-		else if (tag == Cloud::ClassID())
+		else if (tag == Cloud::ClassName())
 		{
 			bm = mCore->GetCloud(value.AsString());
 		}
-		else if ( tag == IMaterial::ClassID() )
+		else if ( tag == IMaterial::ClassName() )
 		{
 			mat = graphics->GetMaterial(value.AsString());
 		}
@@ -398,17 +398,17 @@ void ModelTemplate::_SaveLimbs (TreeNode& node, bool forceSave) const
 
 		if ( limb != 0 && (forceSave || limb->mSerializable) && limb->IsValid() )
 		{
-			TreeNode& child = node.AddChild( Limb::ClassID(), limb->GetName() );
+			TreeNode& child = node.AddChild( Limb::ClassName(), limb->GetName() );
 
 			if (limb->mMesh != 0) 
 			{
-				child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+				child.AddChild( Mesh::ClassName(), limb->mMesh->GetName() );
 			}
 			else if (limb->mCloud != 0)
 			{
-				child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
+				child.AddChild( Cloud::ClassName(), limb->mCloud->GetName() );
 			}
-			child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
+			child.AddChild( IMaterial::ClassName(), limb->mMat->GetName() );
 		}
 	}
 }
@@ -519,8 +519,8 @@ bool ModelTemplate::Save (TreeNode& root) const
 	Array<Cloud*> mBMs;
 	Array<IMaterial*> materials;
 
-	TreeNode& graphics	= root.AddUnique(IGraphics::ClassID());
-	TreeNode& core		= root.AddUnique(Core::ClassID());
+	TreeNode& graphics	= root.AddUnique(IGraphics::ClassName());
+	TreeNode& core		= root.AddUnique(Core::ClassName());
 
 	bool isFirst = true;
 
@@ -534,7 +534,7 @@ bool ModelTemplate::Save (TreeNode& root) const
 	}
 
 	// First model template gets saved into an unnamed "Template" tag, others into their own
-	TreeNode& model = isFirst ? root.AddChild("Template") : core.AddChild(ModelTemplate::ClassID(), mName);
+	TreeNode& model = isFirst ? root.AddChild("Template") : core.AddChild(ModelTemplate::ClassName(), mName);
 
 	// Disable serialization for all sections
 	graphics.AddUnique("Serializable").mValue = false;
@@ -544,7 +544,7 @@ bool ModelTemplate::Save (TreeNode& root) const
 	if (mSkeleton != 0)
 	{
 		mSkeleton->SerializeTo(core);
-		model.AddChild( Skeleton::ClassID(), mSkeleton->GetName() );
+		model.AddChild( Skeleton::ClassName(), mSkeleton->GetName() );
 	}
 
 	// Collect all unique meshes and materials
@@ -561,17 +561,17 @@ bool ModelTemplate::Save (TreeNode& root) const
 			// If the limb is valid, save it right away
 			if (limb->IsValid())
 			{
-				TreeNode& child ( model.AddChild( Limb::ClassID(), limb->GetName() ) );
+				TreeNode& child ( model.AddChild( Limb::ClassName(), limb->GetName() ) );
 
 				if (limb->mMesh != 0)
 				{
-					child.AddChild( Mesh::ClassID(), limb->mMesh->GetName() );
+					child.AddChild( Mesh::ClassName(), limb->mMesh->GetName() );
 				}
 				else if (limb->mCloud != 0)
 				{
-					child.AddChild( Cloud::ClassID(), limb->mCloud->GetName() );
+					child.AddChild( Cloud::ClassName(), limb->mCloud->GetName() );
 				}
-				child.AddChild( IMaterial::ClassID(), limb->mMat->GetName() );
+				child.AddChild( IMaterial::ClassName(), limb->mMat->GetName() );
 			}
 		}
 	}
@@ -586,7 +586,7 @@ bool ModelTemplate::Save (TreeNode& root) const
 		{
 			TreeNode& child = graphics.mChildren[b];
 
-			if (child.mTag == IMaterial::ClassID() &&
+			if (child.mTag == IMaterial::ClassName() &&
 				child.mValue.IsString() &&
 				child.mValue.AsString() == mat->GetName())
 			{
@@ -613,7 +613,7 @@ bool ModelTemplate::Save (TreeNode& root) const
 		{
 			TreeNode& child = core.mChildren[b];
 
-			if (child.mTag == Mesh::ClassID() &&
+			if (child.mTag == Mesh::ClassName() &&
 				child.mValue.IsString() &&
 				child.mValue.AsString() == mesh->GetName())
 			{
@@ -633,7 +633,7 @@ bool ModelTemplate::Save (TreeNode& root) const
 		{
 			TreeNode& child = core.mChildren[b];
 
-			if (child.mTag == Mesh::ClassID() &&
+			if (child.mTag == Mesh::ClassName() &&
 				child.mValue.IsString() &&
 				child.mValue.AsString() == mesh->GetName())
 			{
