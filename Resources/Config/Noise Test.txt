@@ -27,7 +27,7 @@ Root
 
 			Technique = "Opaque"
 			{
-				Shader = "Surface/N"
+				Shader = "Surface/Normal"
 
 				Textures = String[]
 				{

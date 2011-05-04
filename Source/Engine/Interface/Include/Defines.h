@@ -19,7 +19,7 @@
 #ifndef R5_DECLARE_INTERFACE_CLASS
 #define R5_DECLARE_INTERFACE_CLASS(MyClass) \
 	static const String&	ClassName()							{ static String name (#MyClass); return name; }	\
-	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual const String&	GetClassName() const				{ return ClassName(); }							\
 	virtual bool			IsOfClass (const String& s) const	{ return (s == ClassName()); }
 #endif
 
@@ -27,25 +27,25 @@
 #ifndef R5_DECLARE_ABSTRACT_CLASS
 #define R5_DECLARE_ABSTRACT_CLASS(MyClass, ParentClass) \
 	static const String&	ClassName()							{ static String name (#MyClass); return name; }	\
-	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual const String&	GetClassName() const				{ return ClassName(); }							\
 	virtual bool			IsOfClass (const String& s) const	{ return ((s == ClassName()) || ParentClass::IsOfClass(s)); }
 #endif
 
 // Createable root class
 #ifndef R5_DECLARE_BASE_CLASS
 #define R5_DECLARE_BASE_CLASS(MyClass) \
-	static MyClass*			_CreateNew()						{ return new MyClass();	}							\
+	static MyClass*			_CreateNew()						{ return new MyClass();	}						\
 	static const String&	ClassName()							{ static String name (#MyClass); return name; }	\
-	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual const String&	GetClassName() const				{ return ClassName(); }							\
 	virtual bool			IsOfClass (const String& s) const	{ return (s == ClassName()); }
 #endif
 
 // Createable inherited class
 #ifndef R5_DECLARE_INHERITED_CLASS
 #define R5_DECLARE_INHERITED_CLASS(MyClass, ParentClass, BaseClass) \
-	static BaseClass*		_CreateNew()						{ return new MyClass();	}							\
+	static BaseClass*		_CreateNew()						{ return new MyClass();	}						\
 	static const String&	ClassName()							{ static String name (#MyClass); return name; }	\
-	virtual const String&	GetClassName() const				{ return ClassName(); }								\
+	virtual const String&	GetClassName() const				{ return ClassName(); }							\
 	virtual bool			IsOfClass (const String& s) const	{ return ((s == ClassName()) || ParentClass::IsOfClass(s)); }
 #endif
 
