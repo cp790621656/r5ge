@@ -208,30 +208,26 @@ void ModelViewer::Load()
 		mInst->DestroyAllChildren();
 		mInst->SetModel(0);
 		mModel->Release(true, true, true);
-	}
-	mCore->Unlock();
 
-	// Load the model from the specified file
-	if ( mModel->Load(mLoadFilename) )
-	{
-		_loadFrame->Hide();
-
-		mCore->Lock();
+		// Load the model from the specified file
+		if ( mModel->Load(mLoadFilename) )
 		{
+			_loadFrame->Hide();
+
 			mInst->SetDirty();
 			mModel->SetDirty();
 			mInst->SetModel(mModel);
-		}
-		mCore->Unlock();
 
-		mResetCamera = 1;
-		SetStatusText( String("Loaded '%s'", mLoadFilename.GetBuffer()) );
+			mResetCamera = 1;
+			SetStatusText( String("Loaded '%s'", mLoadFilename.GetBuffer()) );
+		}
+		else
+		{
+			_loadFrame->Hide();
+			SetStatusText("Either path is invalid or the requested file cannot be opened", Color3f(1.0f, 0.0f, 0.0f));
+		}
 	}
-	else
-	{
-		_loadFrame->Hide();
-		SetStatusText("Either path is invalid or the requested file cannot be opened", Color3f(1.0f, 0.0f, 0.0f));
-	}
+	mCore->Unlock();
 }
 
 //============================================================================================================
@@ -2329,7 +2325,7 @@ void ModelViewer::OnColor (UIWidget* widget)
 	Color4f color ( _colorRed->GetValue(),
 					_colorGreen->GetValue(),
 					_colorBlue->GetValue(),
-					Float::Max(_colorAlpha->GetValue(), 0.003921568627451f) );
+					Max(_colorAlpha->GetValue(), 0.003921568627451f) );
 
 	_matDiff->SetColor(color);
 	IMaterial* mat = mGraphics->GetMaterial(_currentMat, false);
@@ -2623,7 +2619,7 @@ void ModelViewer::OnShaderListFocus (UIWidget* widget, bool hasFocus)
 				{
 					const IShader* shader = shaders[i];
 
-					if (shader != 0 && shader->IsValid())
+					if (shader != 0 && shader->GetFlag(7))
 					{
 						const String& name (shader->GetName());
 
@@ -2669,7 +2665,7 @@ void ModelViewer::_SetMatShader (const String& name)
 	{
 		IShader* shader = mGraphics->GetShader(name, true);
 
-		if (shader != 0 && !shader->IsValid())
+		if (shader != 0 && !shader->GetFlag(7))
 		{
 			SetStatusText("Unable to load the requested shader", Color3f(1.0f, 0.0f, 0.0f));
 			shader = 0;
