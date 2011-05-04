@@ -24,7 +24,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSDrawForward", OSDrawForward, OSDraw, Script);
+	R5_DECLARE_INHERITED_CLASS(OSDrawForward, OSDraw, Script);
 
 	// Initialize the scene
 	virtual void OnInit();

@@ -10,7 +10,7 @@
 
 struct IAudio
 {
-	R5_DECLARE_INTERFACE_CLASS("Audio");
+	R5_DECLARE_INTERFACE_CLASS(Audio);
 
 	virtual ~IAudio() {}
 

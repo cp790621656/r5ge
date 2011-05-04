@@ -33,7 +33,7 @@ class USSliderCaption : public UIScript
 public:
 
 	// Declare this script type
-	R5_DECLARE_INHERITED_CLASS("USSliderCaption", USSliderCaption, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USSliderCaption, UIScript, UIScript);
 
 	// Init function gets called when the script is first being initialized
 	virtual void OnInit()

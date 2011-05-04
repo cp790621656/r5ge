@@ -40,11 +40,11 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Model Instance = "Test Scene"
+		ModelInstance = "Test Scene"
 		{
 			Model = "Models/shadow test.r5a"
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Rotation = -0.193095 -0.186432 0.669095 0.693014
 				Ambient = 0.72549 0.72549 0.72549
@@ -55,7 +55,7 @@ Root
 				Script = "OSRotateLight"
 			}
 
-			Debug Camera = "Default Camera"
+			DebugCamera = "Default Camera"
 			{
 				Position = -0.007266 -1.306526 0.663197
 				Rotation = -0.319257 0.029006 -0.085713 0.943338

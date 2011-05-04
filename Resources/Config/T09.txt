@@ -46,7 +46,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = -0.520545 1.009997 -1.8068
 			Rotation = -0.314838 0.178396 -0.45958 0.811072
@@ -72,7 +72,7 @@ Root
 			}
 		}
 
-		Directional Light = "First Light"
+		DirectionalLight = "First Light"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = -0.240526 0.154892 -0.518793 0.805611

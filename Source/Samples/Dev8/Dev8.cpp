@@ -16,7 +16,7 @@ class SlowTwirl : public Script
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Slow Twirl", SlowTwirl, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(SlowTwirl, Script, Script);
 
 	virtual void OnPreUpdate()
 	{
@@ -37,7 +37,7 @@ private:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Slight Rotation", SlightRotation, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(SlightRotation, Script, Script);
 
 	virtual void OnInit() { mOriginal = mObject->GetRelativeRotation(); }
 

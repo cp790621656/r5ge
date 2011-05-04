@@ -83,7 +83,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Debug Camera = "Camera 0"
+		DebugCamera = "Camera 0"
 		{
 			Position = 0.0 0.0 0.6
 			Rotation = -0.024238 0.112673 -0.972085 0.204373
@@ -115,7 +115,7 @@ Root
 			}
 		}
 
-		Model Instance = "Plane"
+		ModelInstance = "Plane"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -130,7 +130,7 @@ Root
 			Scale = 1.0 1.0 1.0
 			Script = "OSSceneRoot"
 
-			Debug Camera = "Camera 1"
+			DebugCamera = "Camera 1"
 			{
 				Position = 0.0 0.0 1.0
 				Rotation = 0.029436 0.138777 -0.967555 -0.209075
@@ -156,7 +156,7 @@ Root
 				}
 			}
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.091038 0.33593 -0.904437 -0.246692
@@ -167,7 +167,7 @@ Root
 				Brightness = 1.0
 				Shadows = true
 
-				Directional Billboard = "Test 0"
+				DirectionalBillboard = "Test 0"
 				{
 					Position = 0.0 0.0 0.0
 					Rotation = 0.0 0.0 0.0 1.0
@@ -178,7 +178,7 @@ Root
 				}
 			}
 
-			Model Instance = "Peasant"
+			ModelInstance = "Peasant"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0

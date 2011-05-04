@@ -27,7 +27,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Projected Texture", ProjectedTexture, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(ProjectedTexture, Object, Object);
 
 	const Color4f&	GetColor()		const	{ return mColor;	}
 	const ITexture*	GetTexture()	const	{ return mTex;		}

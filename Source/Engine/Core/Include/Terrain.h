@@ -36,7 +36,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Terrain", Terrain, QuadTree, Object);
+	R5_DECLARE_INHERITED_CLASS(Terrain, QuadTree, Object);
 
 	// The terrain is usually associated with a material
 	const IMaterial* GetMaterial() const { return mMat; }

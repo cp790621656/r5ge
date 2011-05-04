@@ -91,7 +91,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = -0.303034 -0.196358 0.507058 0.782627
@@ -106,7 +106,7 @@ Root
 			}
 		}
 
-		Model Instance = "Teapot 7"
+		ModelInstance = "Teapot 7"
 		{
 			Position = 0.0 10.0 -2.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -117,7 +117,7 @@ Root
 			Model = "Teapot"
 		}
 
-		Model Instance = "Teapot 14"
+		ModelInstance = "Teapot 14"
 		{
 			Position = 0.0 20.0 -2.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -128,7 +128,7 @@ Root
 			Model = "Teapot"
 		}
 
-		Model Instance = "Teapot 21"
+		ModelInstance = "Teapot 21"
 		{
 			Position = 0.0 -10.0 -2.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -139,7 +139,7 @@ Root
 			Model = "Teapot"
 		}
 
-		Model Instance = "Teapot 28"
+		ModelInstance = "Teapot 28"
 		{
 			Position = 0.0 -20.0 -2.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -150,7 +150,7 @@ Root
 			Model = "Teapot"
 		}
 
-		Model Instance = "Plane"
+		ModelInstance = "Plane"
 		{
 			Scale = 30.0
 			Layer = 10

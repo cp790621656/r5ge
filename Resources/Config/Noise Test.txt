@@ -872,7 +872,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Directional Light = "Directional Light"
+		DirectionalLight = "DirectionalLight"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = -0.453398 0.187803 -0.333431 0.804975
@@ -884,7 +884,7 @@ Root
 			Shadows = false
 		}
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 3.0
 			Rotation = 0.140047 -0.301845 0.855456 -0.396827
@@ -910,7 +910,7 @@ Root
 			}
 		}
 
-		Model Instance = "Teapot"
+		ModelInstance = "Teapot"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -918,7 +918,7 @@ Root
 			Model = "Teapot"
 		}
 
-		Model Instance = "Plane"
+		ModelInstance = "Plane"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0

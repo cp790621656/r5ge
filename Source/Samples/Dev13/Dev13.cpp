@@ -21,7 +21,7 @@ class OSRotateLight : public Script
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSRotateLight", OSRotateLight, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSRotateLight, Script, Script);
 
 	virtual void OnInit()	 { mObject->SubscribeToMouseMove(1000); }
 	virtual void OnDestroy() { mObject->UnsubscribeFromMouseMove(1000); }

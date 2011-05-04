@@ -46,7 +46,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("ModelInstanceGroup", ModelInstanceGroup, Octree, Object);
+	R5_DECLARE_INHERITED_CLASS(ModelInstanceGroup, Octree, Object);
 
 protected:
 

@@ -42,7 +42,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UISlider", UISlider, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UISlider, UIWidget, UIWidget);
 
 	// Marks this specific widget as needing to be rebuilt
 	virtual void SetDirty() { const ITexture* tex = GetTexture(); if (tex) OnDirty(tex); }

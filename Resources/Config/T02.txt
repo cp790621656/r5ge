@@ -12,7 +12,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Rotation = -0.279848 0.115917 -0.364705 0.880476
 			Range = 0.3 100.0 90.0

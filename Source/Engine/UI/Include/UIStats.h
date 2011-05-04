@@ -23,7 +23,7 @@ public:
 
 	UIStats() : mIsDirty(false) {}
 
-	R5_DECLARE_INHERITED_CLASS("UIStats", UIStats, UIFrame, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UIStats, UIFrame, UIWidget);
 
 	// Font is the only thing that can be changed
 	const IFont* GetFont() const { return mLabels.IsValid() ? mLabels[0]->GetFont() : 0; }

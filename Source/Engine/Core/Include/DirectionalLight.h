@@ -32,7 +32,7 @@ private:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Directional Light", DirectionalLight, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(DirectionalLight, Object, Object);
 
 	const Color3f&	GetAmbient()	const { return mAmbient;	}
 	const Color3f&	GetDiffuse()	const { return mDiffuse;	}

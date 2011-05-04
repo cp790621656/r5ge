@@ -16,7 +16,7 @@ class USChatInput : public UIScript
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USChatInput", USChatInput, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USChatInput, UIScript, UIScript);
 
 	// Ensure the script is attached to an input and register a key listener
 	virtual void OnInit();

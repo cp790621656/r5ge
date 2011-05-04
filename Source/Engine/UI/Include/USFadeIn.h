@@ -19,7 +19,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USFadeIn", USFadeIn, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USFadeIn, UIScript, UIScript);
 
 	// Set the duration of the fade
 	void SetDuration(float duration) { mDuration = duration; }

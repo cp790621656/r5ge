@@ -31,7 +31,7 @@ class OSNameTag : public Script
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSNameTag", OSNameTag, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSNameTag, Script, Script);
 
 	OSNameTag() : mCore(0), mLabel(0) {}
 

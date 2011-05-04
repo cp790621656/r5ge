@@ -20,15 +20,13 @@ struct ISoundInstance
 		};
 	};
 
-	R5_DECLARE_INTERFACE_CLASS("ISoundInstance");
-
 	virtual ~ISoundInstance() {}
 	
 	virtual ISound*	GetSound()=0;
 
-	virtual const bool Is3D()		const=0;
-	virtual const bool IsPlaying()	const=0;
-	virtual const bool IsPaused()	const=0;
+	virtual bool Is3D()			const=0;
+	virtual bool IsPlaying()	const=0;
+	virtual bool IsPaused()		const=0;
 
 	// Update the sound
 	virtual void Update(ulong time)=0;

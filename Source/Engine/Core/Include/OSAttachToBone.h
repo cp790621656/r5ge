@@ -20,7 +20,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSAttachToBone", OSAttachToBone, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSAttachToBone, Script, Script);
 
 	// Reset the index of the bone, forcing it to be found again by its name next Update
 	void Reset() { mBoneIndex = -1; }

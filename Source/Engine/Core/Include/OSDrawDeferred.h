@@ -47,7 +47,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSDrawDeferred", OSDrawDeferred, OSDraw, Script);
+	R5_DECLARE_INHERITED_CLASS(OSDrawDeferred, OSDraw, Script);
 
 	// Bloom makes areas above the specified threshold appear to glow
 	float GetBloom() const { return mBloom; }

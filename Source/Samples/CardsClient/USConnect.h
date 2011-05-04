@@ -28,7 +28,7 @@ class USConnect : public UIScript
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USConnect", USConnect, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USConnect, UIScript, UIScript);
 
 	// Ensure the script is attached to a button
 	virtual void OnInit();

@@ -22,7 +22,7 @@ class OSTorchlight : public Script
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSTorchlight", OSTorchlight, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSTorchlight, Script, Script);
 
 	virtual void OnInit()
 	{

@@ -20,7 +20,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Glare", Glare, Billboard, Object);
+	R5_DECLARE_INHERITED_CLASS(Glare, Billboard, Object);
 
 protected:
 

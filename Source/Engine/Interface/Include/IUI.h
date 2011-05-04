@@ -10,7 +10,7 @@
 
 struct IUI : public IEventReceiver, public Thread::Lockable
 {
-	R5_DECLARE_INTERFACE_CLASS("UI");
+	R5_DECLARE_INTERFACE_CLASS(UI);
 
 	virtual ~IUI() {};
 

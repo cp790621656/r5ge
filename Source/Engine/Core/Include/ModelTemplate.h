@@ -51,7 +51,7 @@ public:
 	ModelTemplate (const String& name);
 
 	// Object creation
-	R5_DECLARE_INTERFACE_CLASS("Model Template");
+	R5_DECLARE_INTERFACE_CLASS(ModelTemplate);
 
 	// Unique identifiers are meant to be used as hash keys
 	uint GetUID() const { return mUID; }

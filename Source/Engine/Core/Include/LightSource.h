@@ -16,7 +16,7 @@ protected:
 
 public:
 
-	R5_DECLARE_ABSTRACT_CLASS("LightSource", Object);
+	R5_DECLARE_ABSTRACT_CLASS(LightSource, Object);
 
 	ILight& GetProperties() { return mProperties; }
 	const ILight& GetProperties() const { return mProperties; }

@@ -10,7 +10,7 @@
 
 struct ITechnique
 {
-	R5_DECLARE_INTERFACE_CLASS("Technique");
+	R5_DECLARE_INTERFACE_CLASS(Technique);
 
 	struct Flag
 	{

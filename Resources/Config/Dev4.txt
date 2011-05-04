@@ -68,7 +68,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = -0.901637 -0.396084 3.309464
 			Rotation = -0.250021 0.144458 -0.478978 0.828976
@@ -84,7 +84,7 @@ Root
 			}
 		}
 
-		Directional Light = "First Light"
+		DirectionalLight = "First Light"
 		{
 			Position = 0.000000 0.000000 0.000000
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
@@ -96,7 +96,7 @@ Root
 			Shadows = false
 		}
 
-		Model Instance = "Test Scene"
+		ModelInstance = "Test Scene"
 		{
 			Position = 0.000000 0.000000 2.500000
 			Rotation = 0.000000 0.000000 0.000000 1.000000

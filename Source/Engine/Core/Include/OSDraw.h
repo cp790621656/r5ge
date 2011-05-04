@@ -29,7 +29,7 @@ protected:
 
 public:
 
-	R5_DECLARE_ABSTRACT_CLASS("OSDraw", Script);
+	R5_DECLARE_ABSTRACT_CLASS(OSDraw, Script);
 
 	Scene& GetScene() { return mScene; }
 

@@ -17,7 +17,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Directional Billboard", DirectionalBillboard, Billboard, Object);
+	R5_DECLARE_INHERITED_CLASS(DirectionalBillboard, Billboard, Object);
 
 protected:
 

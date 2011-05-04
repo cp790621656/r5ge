@@ -16,7 +16,7 @@ class USFadeOut : public USFadeIn
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USFadeOut", USFadeOut, USFadeIn, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USFadeOut, USFadeIn, UIScript);
 
 	void SetDestroyWhenDone (bool val) { mDestroyWhenDone = val; }
 

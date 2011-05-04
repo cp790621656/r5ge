@@ -124,7 +124,7 @@ private:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UITextArea", UITextArea, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UITextArea, UIWidget, UIWidget);
 
 	// Area functions
 	virtual void SetDirty() { _MarkVisibleTexturesAsDirty(); }

@@ -18,7 +18,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSAudioListener", OSAudioListener, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSAudioListener, Script, Script);
 
 	virtual void OnInit()
 	{

@@ -23,7 +23,7 @@ Root
 
 	Scene
 	{
-		Point Light = "First Light"
+		PointLight = "First Light"
 		{
 			Position = 0.0 0.0 4.0
 			Rotation = -0.279848 0.115917 -0.364705 0.880476
@@ -59,7 +59,7 @@ Root
 			}
 		}
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 2.0
 			Rotation = -0.248792 0.048103 -0.184538 0.949597

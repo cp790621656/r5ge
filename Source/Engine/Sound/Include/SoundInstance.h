@@ -65,15 +65,13 @@ public:
 
 	virtual ~SoundInstance();
 
-	R5_DECLARE_ABSTRACT_CLASS("Sound Instance", ISoundInstance);
-
 public:
 
 	virtual ISound*	GetSound()	{ return mSound; }
 
-	virtual const bool		Is3D()		const	{ return mIs3D;		 }
-	virtual const bool		IsPlaying()	const	{ return mIsPlaying; }
-	virtual const bool		IsPaused()	const	{ return mIsPaused;	 }
+	virtual bool Is3D()			const	{ return mIs3D;		 }
+	virtual bool IsPlaying()	const	{ return mIsPlaying; }
+	virtual bool IsPaused()		const	{ return mIsPaused;	 }
 
 	// Update the sound
 	virtual void Update(ulong time);

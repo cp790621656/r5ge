@@ -11,12 +11,12 @@ using namespace R5;
 
 struct Test
 {
-	R5_DECLARE_BASE_CLASS("Test", Test);
+	R5_DECLARE_BASE_CLASS(Test);
 };
 
 struct Hmm : public Test
 {
-	R5_DECLARE_INHERITED_CLASS("Hmm", Hmm, Test, Test);
+	R5_DECLARE_INHERITED_CLASS(Hmm, Test, Test);
 };
 
 //============================================================================================================

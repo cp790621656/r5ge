@@ -30,7 +30,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UIHighlight", UIHighlight, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UIHighlight, UIWidget, UIWidget);
 
 	// Area functions
 	virtual void SetDirty() { OnDirty(0); }

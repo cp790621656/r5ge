@@ -55,7 +55,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Directional Light = "First Light"
+		DirectionalLight = "First Light"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = -0.388141 0.160773 -0.347273 0.838391
@@ -67,7 +67,7 @@ Root
 			Shadows = false
 		}
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 2.0
 			Rotation = -0.281647 0.04402 -0.149677 0.946749
@@ -95,7 +95,7 @@ Root
 				Rate = 0.1
 			}
 
-			Fire Emitter = "Fire 0"
+			FireEmitter = "Fire 0"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -106,7 +106,7 @@ Root
 				Max Particles = 15
 				Frequency = 66
 
-				Smoke Emitter = "Smoke 0"
+				SmokeEmitter = "Smoke 0"
 				{
 					Position = 0.0 0.0 0.0
 					Rotation = 0.0 0.0 0.0 1.0
@@ -119,7 +119,7 @@ Root
 				}
 			}
 
-			Fire Emitter = "Fire 1"
+			FireEmitter = "Fire 1"
 			{
 				Position = 3.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -130,7 +130,7 @@ Root
 				Max Particles = 15
 				Frequency = 66
 
-				Smoke Emitter = "Smoke 1"
+				SmokeEmitter = "Smoke 1"
 				{
 					Position = 0.0 0.0 0.0
 					Rotation = 0.0 0.0 0.0 1.0
@@ -143,7 +143,7 @@ Root
 				}
 			}
 
-			Fire Emitter = "Fire 2"
+			FireEmitter = "Fire 2"
 			{
 				Position = -3.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -154,7 +154,7 @@ Root
 				Max Particles = 15
 				Frequency = 66
 
-				Smoke Emitter = "Smoke 2"
+				SmokeEmitter = "Smoke 2"
 				{
 					Position = 0.0 0.0 0.0
 					Rotation = 0.0 0.0 0.0 1.0

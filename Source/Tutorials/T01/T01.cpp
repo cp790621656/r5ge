@@ -93,7 +93,7 @@ void TestApp::Run()
 	draw->SetBackgroundColor( Color4f(0.25f, 0.25f, 0.25f, 1.0f) );
 
 	// Unlock the core before entering the update loop
-	mCore->Unock();
+	mCore->Unlock();
 
 	// Enter the message processing loop
 	while (mCore->Update());

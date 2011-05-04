@@ -38,7 +38,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("UIColorPicker", UIColorPicker, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UIColorPicker, UIWidget, UIWidget);
 
 	// Gets the skin used by the sliders
 	const UISkin* GetSkin() const { return mLuminance.GetSkin(); }

@@ -10,7 +10,7 @@
 
 struct IMaterial
 {
-	R5_DECLARE_INTERFACE_CLASS("Material");
+	R5_DECLARE_INTERFACE_CLASS(Material);
 
 	typedef Array<const ITexture*> Textures;
 

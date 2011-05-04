@@ -17,13 +17,13 @@ Root
 
 	Core
 	{
-		Model Template = "Torch"
+		ModelTemplate = "Torch"
 		{
 			Source = "Models/torch.r5a"
 	
 			OnSerialize
 			{
-				Point Light = "Torchlight"
+				PointLight = "Torchlight"
 				{
 					Position = 0.000000 0.000000 0.35
 					Scale = 0.150000
@@ -37,7 +37,7 @@ Root
 
 					Script = "OSTorchlight"
 
-					Fire Emitter = "Fire 0"
+					FireEmitter = "Fire 0"
 					{
 						Position = 0.000000 0.000000 0.000000
 						Scale = 0.45
@@ -45,7 +45,7 @@ Root
 						Texture = "Textures/Billboards/fire.jpg"
 						Technique = "Particle"
 
-						Smoke Emitter = "Smoke 0"
+						SmokeEmitter = "Smoke 0"
 						{
 							Position = 0.000000 0.000000 0.000000
 							Rotation = 0.000000 0.000000 0.000000 1.000000
@@ -59,7 +59,7 @@ Root
 			}
 		}
 
-		Model Template = "Peasant"
+		ModelTemplate = "Peasant"
 		{
 			Source = "Models/Peasant.r5a"
 
@@ -87,7 +87,7 @@ Root
 						Bone = "Bip01 R Hand"
 					}
 					
-					Model Instance = "Right Hand"
+					ModelInstance = "Right Hand"
 					{
 						Scale = 1.000000
 						Layer = 10
@@ -105,7 +105,7 @@ Root
 						Bone = "Bip01 L Hand"
 					}
 	
-					Model Instance = "Left Hand"
+					ModelInstance = "Left Hand"
 					{
 						Scale = 1.000000
 						Layer = 10
@@ -118,7 +118,7 @@ Root
 
 	Scene
 	{
-		Model Instance = "Peasant"
+		ModelInstance = "Peasant"
 		{
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
@@ -126,7 +126,7 @@ Root
 			Model = "Peasant"
 		}
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.000000 0.000000 0.6000
 			Rotation = 0.024589 0.134162 -0.974424 -0.178590

@@ -21,7 +21,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Camera", Camera, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(Camera, Object, Object);
 
 	const Vector3f& GetRelativeRange() const { return mRelativeRange; }
 	const Vector3f& GetAbsoluteRange() const { return mAbsoluteRange; }

@@ -22,7 +22,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Model Instance", ModelInstance, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(ModelInstance, Object, Object);
 
 	~ModelInstance() { SetModel(0); }
 

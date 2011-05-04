@@ -63,7 +63,7 @@ Root
 
 	Core
 	{
-		Model Template = "Teapot"
+		ModelTemplate = "Teapot"
 		{
 			Source = "Models/teapot.r5c"
 
@@ -79,7 +79,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 2.7
 			Rotation = 0.001492 -0.001714 -0.754437 0.656368
@@ -95,7 +95,7 @@ Root
 				Bloom = 1.0
 			}
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -108,7 +108,7 @@ Root
 			}
 		}
 
-		Model Instance = "Teapot"
+		ModelInstance = "Teapot"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0

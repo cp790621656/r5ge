@@ -12,7 +12,7 @@ class SpinScript : public Script
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("SpinScript", SpinScript, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(SpinScript, Script, Script);
 
 	SpinScript() : mAxis(0.0f, 0.0f, 1.0f), mFactor(1.0f) {}
 
@@ -38,7 +38,7 @@ class TeapotScript : public Script
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("TeapotScript", TeapotScript, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(TeapotScript, Script, Script);
 
 	virtual void OnPreUpdate()
 	{

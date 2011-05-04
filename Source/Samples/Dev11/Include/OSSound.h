@@ -17,7 +17,7 @@ class OSSound : public Script
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSSound", OSSound, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSSound, Script, Script);
 
 	OSSound() : mAudio(0), mSound(0), mInst(0), mLayer(0) {}
 

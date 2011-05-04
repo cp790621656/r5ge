@@ -19,7 +19,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSPlayAnimations", OSPlayAnimations, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSPlayAnimations, Script, Script);
 
 	const Array<String>& Get() const { return mAnims; }
 	void Set (const Array<String>& anims);

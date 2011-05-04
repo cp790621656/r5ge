@@ -111,7 +111,7 @@ public:
 	virtual ~Object() { Release(); }
 
 	// This is a top-level base class
-	R5_DECLARE_BASE_CLASS("Object", Object);
+	R5_DECLARE_BASE_CLASS(Object);
 
 private:
 

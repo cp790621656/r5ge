@@ -45,7 +45,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INTERFACE_CLASS("Shader");
+	R5_DECLARE_INTERFACE_CLASS(Shader);
 
 	// Retrieves a unique identifier for this shader
 	uint GetUID() const { return mUID; }

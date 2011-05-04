@@ -23,8 +23,6 @@ private:
 
 public:
 
-	R5_DECLARE_ABSTRACT_CLASS("Sound", ISound);
-
 	virtual ~Sound();
 
 	// Get the name of the sound

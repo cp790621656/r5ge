@@ -19,7 +19,7 @@ class USCard : public UIScript
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USCard", USCard, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USCard, UIScript, UIScript);
 
 	const Card& GetCard() const { return mCard; }
 	void SetCard (const Card& card) { mCard = card; mButton->SetBackColor(mCard.GetColor()); }

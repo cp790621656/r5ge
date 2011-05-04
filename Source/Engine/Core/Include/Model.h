@@ -76,7 +76,7 @@ public:
 	Model (const String& name);
 
 	// Object creation
-	R5_DECLARE_ABSTRACT_CLASS("Model", Prop);
+	R5_DECLARE_ABSTRACT_CLASS(Model, Prop);
 
 	// Update the world matrix, advance the animation
 	void Update();

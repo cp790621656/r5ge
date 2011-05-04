@@ -11,7 +11,7 @@
 struct IGraphics;
 struct IWindow
 {
-	R5_DECLARE_INTERFACE_CLASS("Window");
+	R5_DECLARE_INTERFACE_CLASS(Window);
 
 	struct Style
 	{

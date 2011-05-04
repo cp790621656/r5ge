@@ -519,7 +519,7 @@ Root
 			Scale = 1.0 1.0 1.0
 			Script = "OSSceneRoot"
 
-			Model Instance = "Tree 0"
+			ModelInstance = "Tree 0"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -527,7 +527,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 1"
+			ModelInstance = "Tree 1"
 			{
 				Position = 10.0 10.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -535,7 +535,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 2"
+			ModelInstance = "Tree 2"
 			{
 				Position = -10.0 10.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -543,7 +543,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 3"
+			ModelInstance = "Tree 3"
 			{
 				Position = 10.0 -10.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -551,7 +551,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 4"
+			ModelInstance = "Tree 4"
 			{
 				Position = -10.0 -10.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -559,7 +559,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 5"
+			ModelInstance = "Tree 5"
 			{
 				Position = 0.0 10.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -567,7 +567,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 6"
+			ModelInstance = "Tree 6"
 			{
 				Position = 10.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -575,7 +575,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 7"
+			ModelInstance = "Tree 7"
 			{
 				Position = -10.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -583,7 +583,7 @@ Root
 				Model = "Tree"
 			}
 
-			Model Instance = "Tree 8"
+			ModelInstance = "Tree 8"
 			{
 				Position = 0.0 -10.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0
@@ -591,7 +591,7 @@ Root
 				Model = "Tree"
 			}
 
-			Debug Camera = "Default Camera"
+			DebugCamera = "Default Camera"
 			{
 				Position = 0.048904 0.235138 7.578767
 				Rotation = -0.226618 0.026254 -0.112052 0.96716
@@ -618,7 +618,7 @@ Root
 				}
 			}
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = -0.294863 -0.209613 0.540152 0.759839

@@ -65,7 +65,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_BASE_CLASS("UIWidget", UIWidget);
+	R5_DECLARE_BASE_CLASS(UIWidget);
 
 	// Property retrieval functions
 	UIManager*		GetUI()					{ return mUI;			}

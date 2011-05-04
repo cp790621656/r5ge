@@ -117,7 +117,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 1.118778 -4.750380 4.046780
 			Rotation = -0.218756 0.028878 -0.129805 0.966676
@@ -126,7 +126,7 @@ Root
 			Range = 0.300000 100.0 90.0
 			Dolly = 0.0 50.0 50.0
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0

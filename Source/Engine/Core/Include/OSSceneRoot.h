@@ -12,7 +12,7 @@ class OSSceneRoot : public Script
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSSceneRoot", OSSceneRoot, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSSceneRoot, Script, Script);
 
 	// Find the root of the specified parent object, creating a new one if necessary
 	static OSSceneRoot* FindRootOf (Object* parent);

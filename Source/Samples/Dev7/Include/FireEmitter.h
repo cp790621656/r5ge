@@ -12,7 +12,7 @@ class FireEmitter : public Emitter
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Fire Emitter", FireEmitter, Emitter, Object);
+	R5_DECLARE_INHERITED_CLASS(FireEmitter, Emitter, Object);
 
 	FireEmitter();
 

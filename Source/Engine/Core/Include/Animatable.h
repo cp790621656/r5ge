@@ -19,7 +19,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Animatable", Animatable, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(Animatable, Object, Object);
 
 	// Whether the node is considered to be animated
 	bool IsAnimated() const	{ return (mPosSpline.GetSize() > 1 ||

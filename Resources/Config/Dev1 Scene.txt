@@ -53,7 +53,7 @@ Root
 
 	Scene
 	{
-		Model Instance = Teapot 7
+		ModelInstance = Teapot 7
 		{
 			Position = 0.0 10.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -62,7 +62,7 @@ Root
 			Serializable = false
 		}
 
-		Model Instance = Teapot 14
+		ModelInstance = Teapot 14
 		{
 			Position = 0.0 20.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -71,7 +71,7 @@ Root
 			Serializable = false
 		}
 
-		Model Instance = Teapot 21
+		ModelInstance = Teapot 21
 		{
 			Position = 0.0 30.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -80,7 +80,7 @@ Root
 			Serializable = false
 		}
 
-		Model Instance = Teapot 28
+		ModelInstance = Teapot 28
 		{
 			Position = 0.0 40.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -89,7 +89,7 @@ Root
 			Serializable = false
 		}
 
-		Model Instance = Plane
+		ModelInstance = Plane
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0

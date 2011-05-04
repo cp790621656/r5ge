@@ -12,7 +12,7 @@ class USMessageLog : public UIScript
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USMessageLog", USMessageLog, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USMessageLog, UIScript, UIScript);
 
 	static void Show (const String& text);
 

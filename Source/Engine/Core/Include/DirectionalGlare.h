@@ -17,7 +17,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Directional Glare", DirectionalGlare, Glare, Object);
+	R5_DECLARE_INHERITED_CLASS(DirectionalGlare, Glare, Object);
 
 protected:
 

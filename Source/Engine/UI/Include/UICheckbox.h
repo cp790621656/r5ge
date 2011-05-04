@@ -28,7 +28,7 @@ public:
 	UICheckbox() { mPrefix = ClassName(); SetSticky(true); SetAlignment(UILabel::Alignment::Left); }
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UICheckbox", UICheckbox, UIButton, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UICheckbox, UIButton, UIWidget);
 
 	// Whether the checkbox is checked
 	bool IsChecked() const { return (mState & State::Checked) != 0; }

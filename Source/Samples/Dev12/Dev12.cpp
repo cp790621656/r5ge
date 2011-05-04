@@ -21,7 +21,7 @@ class USMoveCamera : public UIScript
 {
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USMoveCamera", USMoveCamera, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USMoveCamera, UIScript, UIScript);
 
 	virtual void OnMouseMove (const Vector2i& pos, const Vector2i& delta)
 	{

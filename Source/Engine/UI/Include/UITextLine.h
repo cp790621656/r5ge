@@ -38,7 +38,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UITextLine", UITextLine, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UITextLine, UIWidget, UIWidget);
 
 	// Mark the associated queue as dirty
 	virtual void SetDirty();

@@ -29,7 +29,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Point Light", PointLight, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(PointLight, Object, Object);
 
 	const Color3f&	GetAmbient()	const { return mAmbient;	}
 	const Color3f&	GetDiffuse()	const { return mDiffuse;	}

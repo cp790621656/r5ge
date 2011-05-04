@@ -81,7 +81,7 @@ public:
 public:
 
 	// This is a top-level base class
-	R5_DECLARE_INTERFACE_CLASS("Script");
+	R5_DECLARE_INTERFACE_CLASS(Script);
 
 	// Scripts should be removed via DestroySelf() or using the RemoveScript<> template
 	virtual ~Script();

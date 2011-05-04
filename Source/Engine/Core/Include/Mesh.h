@@ -91,7 +91,7 @@ public:
 	~Mesh();
 
 	// Static identifier, for consistency
-	R5_DECLARE_NAMED_CLASS("Mesh");
+	R5_DECLARE_NAMED_CLASS(Mesh);
 
 	// Clears all memory used by the mesh, but does not release it
 	void Clear() { ASSERT_IF_UNLOCKED; _Clear(); }

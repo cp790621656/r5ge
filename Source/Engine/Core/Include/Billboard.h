@@ -21,7 +21,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Billboard", Billboard, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(Billboard, Object, Object);
 
 	const Color4ub&		GetColor()		const	{ return mColor;	}
 	const ITexture*		GetTexture()	const	{ return mTex;		}

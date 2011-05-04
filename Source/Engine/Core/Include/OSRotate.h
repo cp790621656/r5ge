@@ -20,7 +20,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSRotate", OSRotate, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSRotate, Script, Script);
 
 	const Vector3f& GetAxis() const { return mAxis; }
 	float GetRate() const { return mRate; }

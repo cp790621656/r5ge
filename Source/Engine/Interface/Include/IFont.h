@@ -10,7 +10,7 @@
 
 struct IFont
 {
-	R5_DECLARE_INTERFACE_CLASS("Font");
+	R5_DECLARE_INTERFACE_CLASS(Font);
 
 	// Font uses the same vertex as the user interface
 	typedef IUI::Vertex		Vertex;

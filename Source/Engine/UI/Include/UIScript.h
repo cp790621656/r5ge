@@ -40,7 +40,7 @@ private:
 public:
 
 	// This is a top-level base class
-	R5_DECLARE_INTERFACE_CLASS("UIScript");
+	R5_DECLARE_INTERFACE_CLASS(UIScript);
 
 	// Registers a new script
 	template <typename Type> static void Register() { _Register( Type::ClassName(), &Type::_CreateNew ); }

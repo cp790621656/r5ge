@@ -10,7 +10,7 @@
 
 struct IGraphics : public IGraphicsController, public IGraphicsManager
 {
-	R5_DECLARE_INTERFACE_CLASS("Graphics");
+	R5_DECLARE_INTERFACE_CLASS(Graphics);
 
 	virtual ~IGraphics() {};
 

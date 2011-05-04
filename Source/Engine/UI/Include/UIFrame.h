@@ -27,7 +27,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UIFrame", UIFrame, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UIFrame, UIWidget, UIWidget);
 
 	// Clipping rectangle set before drawing the contents of the frame
 	virtual Rect GetClipRect() const;

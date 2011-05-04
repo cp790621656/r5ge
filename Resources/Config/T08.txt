@@ -59,7 +59,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 -2.0
 			Rotation = -0.126044 0.270991 -0.865276 0.40246
@@ -72,7 +72,7 @@ Root
 				Fog Range = 0.5 1.0
 			}
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Ambient = 0.15 0.15 0.15
 				Diffuse = 1.25 1.25 1.25

@@ -18,7 +18,7 @@ class USHand : public UIScript
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USHand", USHand, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USHand, UIScript, UIScript);
 
 	// Add a new card to the hand
 	void Add (byte value, byte color);

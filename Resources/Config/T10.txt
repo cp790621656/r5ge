@@ -12,7 +12,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Rotation = -0.024645 0.165179 -0.975162 0.145494
 			Range = 0.3 100.0 90.0
@@ -25,7 +25,7 @@ Root
 				Grid = true
 			}
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Ambient = 0.25 0.25 0.25
 				Diffuse = 0.85 0.85 0.85
@@ -35,7 +35,7 @@ Root
 			}
 		}
 
-		Model Instance = "First"
+		ModelInstance = "First"
 		{
 			Position = 0.0 3.0 0.0
 			Model = "Models/peasant.r5a"
@@ -43,14 +43,14 @@ Root
 			Script = "OSPlayIdleAnimations"
 		}
 
-		Model Instance = "Second"
+		ModelInstance = "Second"
 		{
 			Position = 1.0 -2.0 0.0
 			Model = "Models/peasant.r5a"
 			Script = "OSNameTag"
 		}
 
-		Model Instance = "Third"
+		ModelInstance = "Third"
 		{
 			Position = -2.0 1.0 0.0
 			Model = "Models/peasant.r5a"

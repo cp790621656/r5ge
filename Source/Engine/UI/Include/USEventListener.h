@@ -40,7 +40,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("USEventListener", USEventListener, UIScript, UIScript);
+	R5_DECLARE_INHERITED_CLASS(USEventListener, UIScript, UIScript);
 
 	void SetOnMouseMove		(const OnMouseMoveDelegate& fnct)	{ mOnMouseMove		= fnct; }
 	void SetOnKey			(const OnKeyDelegate&		fnct)	{ mOnKey			= fnct; }

@@ -15,7 +15,7 @@ public:
 	Prop (const String& name) : ModelTemplate(name) {}
 
 	// Object creation
-	R5_DECLARE_ABSTRACT_CLASS("Prop", ModelTemplate);
+	R5_DECLARE_ABSTRACT_CLASS(Prop, ModelTemplate);
 
 public:
 

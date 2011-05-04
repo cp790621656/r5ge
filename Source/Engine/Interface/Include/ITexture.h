@@ -97,7 +97,7 @@ protected:
 
 public: //============================================================================================================
 
-	R5_DECLARE_INTERFACE_CLASS("Texture");
+	R5_DECLARE_INTERFACE_CLASS(Texture);
 
 	// Retrieves a unique identifier for this texture
 	uint GetUID() const { return mUID; }

@@ -28,7 +28,7 @@ public:
 	DebugCamera();
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Debug Camera", DebugCamera, Camera, Object);
+	R5_DECLARE_INHERITED_CLASS(DebugCamera, Camera, Object);
 
 	// Dolly vector contains how close to the camera it can get (X), current value (Y), and maximum distance (Z)
 	const Vector3f& GetDolly() const	{ return mDolly; }

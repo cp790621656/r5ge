@@ -356,7 +356,7 @@ Root
 
 	Scene
 	{
-		Point Light = "First Light"
+		PointLight = "First Light"
 		{
 			Position = 0.000000 0.000000 10.000000
 			Rotation = -0.279848 0.115917 -0.364705 0.880476
@@ -394,7 +394,7 @@ Root
 			}
 		}
 
-		Model Instance = Teapot 28
+		ModelInstance = Teapot 28
 		{
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
@@ -408,7 +408,7 @@ Root
 			}
 		}
 
-		Model Instance = Plane
+		ModelInstance = Plane
 		{
 			Position = 0.000000 0.000000 0.000000
 			Rotation = 0.000000 0.000000 0.000000 1.000000
@@ -416,7 +416,7 @@ Root
 			Model = "Models/rect.r5a"
 		}
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 1.881875 -0.523906 3.444616
 			Rotation = -0.083335 0.236534 -0.913032 0.321683

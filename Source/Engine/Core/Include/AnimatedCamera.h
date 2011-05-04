@@ -19,7 +19,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Animated Camera", AnimatedCamera, Camera, Object);
+	R5_DECLARE_INHERITED_CLASS(AnimatedCamera, Camera, Object);
 
 	// Clear the animation splines
 	void Clear() { mV.Clear(); mQ.Clear(); mF.Clear(); }

@@ -41,7 +41,7 @@ protected:
 
 public:
 
-	R5_DECLARE_NAMED_CLASS("Animation");
+	R5_DECLARE_NAMED_CLASS(Animation);
 
 	Animation (const String& name) : mName(name), mIsDirty(true) { _Reset(); }
 

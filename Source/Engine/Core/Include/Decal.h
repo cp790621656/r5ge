@@ -26,7 +26,7 @@ protected:
 public:
 
 	// Object creation
-	R5_DECLARE_INHERITED_CLASS("Decal", Decal, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(Decal, Object, Object);
 
 	// Changes the default drawing layer that will be used by decals
 	static void SetDefaultLayer(byte layer);

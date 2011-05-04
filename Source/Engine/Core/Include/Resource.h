@@ -22,7 +22,7 @@ public:
 
 	Resource(const String& name) : mName(name) {}
 
-	R5_DECLARE_NAMED_CLASS("Resource");
+	R5_DECLARE_NAMED_CLASS(Resource);
 
 	Core* GetCore() { return mCore; }
 

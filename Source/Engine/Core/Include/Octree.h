@@ -63,7 +63,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("Octree", Octree, Object, Object);
+	R5_DECLARE_INHERITED_CLASS(Octree, Object, Object);
 
 protected:
 

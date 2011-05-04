@@ -12,7 +12,7 @@ Root
 
 	Scene
 	{
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.0 0.0 2.7
 			Rotation = 0.001492 -0.001714 -0.754437 0.656368
@@ -38,7 +38,7 @@ Root
 				}
 			}
 
-			Directional Light = "First Light"
+			DirectionalLight = "First Light"
 			{
 				Ambient = 0.15 0.15 0.15
 				Diffuse = 1.25 1.25 1.25

@@ -294,7 +294,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = 0.001267 0.0182 0.61719
 			Rotation = 0.011032 -0.146824 0.98632 -0.074117
@@ -326,7 +326,7 @@ Root
 				AO Parameters = 0.1 4.0 1.0
 			}
 
-			Directional Light = "Default Light"
+			DirectionalLight = "Default Light"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.350759 0.053338 -0.140635 -0.924856
@@ -337,7 +337,7 @@ Root
 				Brightness = 1.25
 				Shadows = false
 
-				Directional Billboard
+				DirectionalBillboard
 				{
 					Position = 0.0 0.0 0.0
 					Rotation = 0.0 0.0 0.0 1.0
@@ -347,7 +347,7 @@ Root
 					Technique = "Glow"
 				}
 
-				Directional Glare
+				DirectionalGlare
 				{
 					Position = 0.0 0.0 0.0
 					Rotation = 0.0 0.0 0.0 1.0
@@ -365,7 +365,7 @@ Root
 			Rotation = 0.0 0.0 0.0 1.0
 			Scale = 1.0 1.0 1.0
 
-			Model Instance = "Default Instance"
+			ModelInstance = "Default Instance"
 			{
 				Position = 0.0 0.0 0.0
 				Rotation = 0.0 0.0 0.0 1.0

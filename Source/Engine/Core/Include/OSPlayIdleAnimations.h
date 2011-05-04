@@ -29,7 +29,7 @@ protected:
 
 public:
 
-	R5_DECLARE_INHERITED_CLASS("OSPlayIdleAnimations", OSPlayIdleAnimations, Script, Script);
+	R5_DECLARE_INHERITED_CLASS(OSPlayIdleAnimations, Script, Script);
 
 	// When the script initializes, gather all idle animations
 	virtual void OnInit();

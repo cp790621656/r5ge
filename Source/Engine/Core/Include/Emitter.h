@@ -61,7 +61,7 @@ private:
 
 public:
 
-	R5_DECLARE_ABSTRACT_CLASS("Emitter", Object);
+	R5_DECLARE_ABSTRACT_CLASS(Emitter, Object);
 
 	const ITexture*		GetTexture()	const	{ return mTex;		}
 	const ITechnique*	GetTechnique()	const	{ return mTech;		}

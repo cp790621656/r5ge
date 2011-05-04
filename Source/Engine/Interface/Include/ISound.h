@@ -11,8 +11,6 @@
 struct IAudio;
 struct ISound
 {
-	R5_DECLARE_INTERFACE_CLASS("ISound");
-
 	virtual ~ISound() {}
 
 	// Get the name of the sound

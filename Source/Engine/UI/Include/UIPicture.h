@@ -22,7 +22,7 @@ public:
 	UIPicture() : mTex(0), mIgnoreAlpha(false), mColor(0xFFFFFFFF), mTiled(false) {}
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UIPicture", UIPicture, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UIPicture, UIWidget, UIWidget);
 
 	const ITexture* GetTexture() const { return mTex; }
 	void SetTexture (const ITexture* tex);

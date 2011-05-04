@@ -49,7 +49,7 @@ protected:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UITreeView", UITreeView, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UITreeView, UIWidget, UIWidget);
 
 	// Font used by the widget
 	const IFont* GetFont() const { return mFont; }

@@ -28,7 +28,7 @@ public:
 public:
 
 	// Area creation
-	R5_DECLARE_INHERITED_CLASS("UIShadedArea", UIShadedArea, UIWidget, UIWidget);
+	R5_DECLARE_INHERITED_CLASS(UIShadedArea, UIWidget, UIWidget);
 
 	// Area functions
 	virtual void SetDirty()	{ OnDirty(0, mLayer, this); }

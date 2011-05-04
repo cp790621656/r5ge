@@ -4,7 +4,7 @@ Root
 {
 	Window
 	{
-		Title = "R5 Engine: Dev8 (Projected Textures)"
+		Title = "R5 Engine: Dev8 (ProjectedTextures)"
 		Position = 165 143
 		Size = 900 600
 		Full Screen = false
@@ -89,7 +89,7 @@ Root
 	{
 		Script = "OSSceneRoot"
 
-		Debug Camera = "Default Camera"
+		DebugCamera = "Default Camera"
 		{
 			Position = -0.901637 -0.396084 3.309464
 			Rotation = -0.250021 0.144458 -0.478978 0.828976
@@ -121,7 +121,7 @@ Root
 			}
 		}
 
-		Directional Light = "First Light"
+		DirectionalLight = "First Light"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = -0.230009 0.077978 -0.311459 0.9187
@@ -131,10 +131,10 @@ Root
 			Specular = 1.0 1.0 1.0
 			Brightness = 1.0
 			Shadows = false
-			Script = "Slight Rotation"
+			Script = "SlightRotation"
 		}
 
-		Model Instance = "Test Scene"
+		ModelInstance = "Test Scene"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -143,7 +143,7 @@ Root
 			Model = "Models/test scene.r5a"
 		}
 
-		Model Instance = "Teapot"
+		ModelInstance = "Teapot"
 		{
 			Position = 0.0 0.0 0.0
 			Rotation = 0.0 0.0 0.0 1.0
@@ -166,10 +166,10 @@ Root
 				"Textures/Stone/brick_ns.png"
 			}
 
-			Script = "Slow Twirl"
+			Script = "SlowTwirl"
 		}
 
-		Projected Texture = "First Projected Texture"
+		ProjectedTexture = "First ProjectedTexture"
 		{
 			Position = -2.0 0.0 3.0
 			Rotation = -0.358507 0.228658 -0.377792 0.822477
@@ -178,7 +178,7 @@ Root
 			Color = 1.0 1.0 1.0 1.0
 			Texture = "Textures/Billboards/leaf3.png"
 			Blending = "Modulate"
-			Script = "Slow Twirl"
+			Script = "SlowTwirl"
 		}
 	}
 }

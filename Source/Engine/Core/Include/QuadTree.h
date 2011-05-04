@@ -26,7 +26,7 @@ public:
 	virtual ~QuadTree() { if (mRootNode != 0) delete mRootNode; }
 
 	// QuadTree is an abstract class, so mark it as such
-	R5_DECLARE_ABSTRACT_CLASS("QuadTree", Object);
+	R5_DECLARE_ABSTRACT_CLASS(QuadTree, Object);
 
 	// Changes the default drawing layer that will be used by all QuadTrees
 	static void SetDefaultLayer(byte layer);
