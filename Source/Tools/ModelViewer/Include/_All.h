@@ -1,8 +1,8 @@
 #pragma once
 
 //============================================================================================================
-//											R5 Game Engine
-//									http://code.google.com/p/r5ge/
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // R5 Model Viewer
 // Author: Michael Lyashenko

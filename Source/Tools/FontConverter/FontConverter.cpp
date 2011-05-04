@@ -1,8 +1,9 @@
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // FontConverter can be used to convert R5F files into TGA + FD pairs and back
+// Author: Michael Lyashenko
 //============================================================================================================
 
 #include "../../Engine/Font/Include/_All.h"

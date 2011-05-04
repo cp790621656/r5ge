@@ -1,8 +1,8 @@
 #pragma once
 
 //============================================================================================================
-//											R5 Game Engine
-//                                  Contact: arenmook@gmail.com
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // R5 exporter plugin for Autodesk's 3ds Max
 // Author: Michael Lyashenko

@@ -1,8 +1,8 @@
 #pragma once
 
 //============================================================================================================
-//											R5 Game Engine
-//									http://code.google.com/p/r5ge/
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // Model Viewer -- Legacy application that keeps getting "patched", but not rewritten. As such its code is
 // crap, but it does what it's supposed to do -- allows viewing and modification of basic model properties.

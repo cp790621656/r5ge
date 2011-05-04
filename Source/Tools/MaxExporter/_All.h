@@ -1,10 +1,10 @@
 #pragma once
 
 //============================================================================================================
-//											R5 Game Engine
-//                                  Contact: arenmook@gmail.com
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
-// NOTE: You must add your 3ds Max 9 SDK folders to the configuration lists! Example:
+// NOTE: You must add your 3ds Max SDK folders to the configuration lists! Example:
 // Author: Michael Lyashenko
 //============================================================================================================
 // Tools -> Options -> Projects & Solutions -> VC++ Directories

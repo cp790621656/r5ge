@@ -1,8 +1,9 @@
 //============================================================================================================
-//                  R5 Engine, Copyright (c) 2007-2010 Michael Lyashenko. All rights reserved.
-//											www.nextrevision.com
+//			R5 Game Engine, individual file copyright belongs to their respective authors.
+//									http://r5ge.googlecode.com/
 //============================================================================================================
 // ConfigConverter can be used to convert R5A and R5B files into R5C and vice versa
+// Author: Michael Lyashenko
 //============================================================================================================
 
 #include "../../Engine/Image/Include/_All.h"
