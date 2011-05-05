@@ -49,6 +49,9 @@ namespace System
 	// Reads the contents of the specified folder, populating file and folder lists
 	bool ReadFolder (const String& dir, Array<String>& folders, Array<String>& files);
 
+	// Recursive file search function
+	uint FindFiles (const String& dir, const String& name, const String& ext, Array<String>& files, bool recursive);
+
 	// Fills out a list of all files with the partial path matching 'path'. Returns 'true' if one was found.
 	bool GetFiles (const String& path, Array<String>& files, bool recursive = false);
 

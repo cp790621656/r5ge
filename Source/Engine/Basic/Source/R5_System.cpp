@@ -406,7 +406,7 @@ bool System::ReadFolder (const String& dir, Array<String>& folders, Array<String
 // Recursive file search function
 //============================================================================================================
 
-uint FindFiles (const String& dir, const String& name, const String& ext, Array<String>& files, bool recursive)
+uint System::FindFiles (const String& dir, const String& name, const String& ext, Array<String>& files, bool recursive)
 {
 	uint count (0);
 	String match (dir);
@@ -430,7 +430,7 @@ uint FindFiles (const String& dir, const String& name, const String& ext, Array<
 		{
 			FOREACH(i, fd)
 			{
-				count += FindFiles(fd[i], name, ext, files, true);
+				count += System::FindFiles(fd[i], name, ext, files, true);
 			}
 		}
 	}
@@ -456,7 +456,7 @@ bool System::GetFiles (const String& path, Array<String>& files, bool recursive)
 		String name (GetFilenameFromPath(path, false));
 		String ext	(GetExtensionFromFilename(path));
 
-		count += ::FindFiles(dir, name, ext, files, recursive);
+		count += System::FindFiles(dir, name, ext, files, recursive);
 
 		if (!path.EndsWith(".r5d"))
 		{
