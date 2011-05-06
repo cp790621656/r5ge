@@ -66,7 +66,7 @@ R5_READ_IMAGE_CODEC(TGA)
 					{
 						uint tmp = ptr[i];
 						ptr[i]	 = ptr[i+2];
-						ptr[i+2] = ptr[i];
+						ptr[i+2] = tmp;
 					}
 					return true;
 				}
