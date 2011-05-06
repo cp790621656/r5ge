@@ -34,7 +34,7 @@ public:
 		{
 			if (mSound != 0 && mSound->IsValid())
 			{
-				mInst = mSound->Play(mObject->GetAbsolutePosition(), mLayer, 0.1f, true);
+				mInst = mAudio->Instantiate(mSound, mObject->GetAbsolutePosition(), mLayer, 0.1f, true);
 				mInst->SetEffect(ISoundInstance::Effect::Auditorium);
 			}
 		}

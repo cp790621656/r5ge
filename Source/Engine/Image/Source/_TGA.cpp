@@ -64,7 +64,8 @@ R5_READ_IMAGE_CODEC(TGA)
 					// Convert BGRA to RGBA
 					for (uint i = 0; i < length; i += bpp)
 					{
-						ptr[i] ^= ptr[i+2] ^= ptr[i] ^= ptr[i+2];
+						ptr[i+2] ^= ptr[i] ^= ptr[i+2];
+						ptr[i] ^= ptr[i+2];
 					}
 					return true;
 				}
@@ -114,7 +115,8 @@ R5_WRITE_IMAGE_CODEC(TGA)
 	// Flip RGBA to BGRA as that's what TGA expects
 	for (uint i = 0; i < size; i += format)
 	{
-		outBuffer[i] ^= outBuffer[i+2] ^= outBuffer[i] ^= outBuffer[i+2];
+		outBuffer[i+2] ^= outBuffer[i] ^= outBuffer[i+2];
+		outBuffer[i] ^= outBuffer[i+2];
 	}
 
 	// Append the footer

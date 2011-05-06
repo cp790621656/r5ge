@@ -238,7 +238,7 @@ bool InitOpenGL (uint requiredVersion)
 		if (versionStr != 0) { sscanf(versionStr, "%f", &reportedVersion); }
 		if (shaderStr  != 0) { sscanf(shaderStr,  "%f", &glslVersion); }
 
-#ifdef _WINDOWS
+#if defined(_WINDOWS) || (defined (_LINUX) && !defined(GL_GLEXT_PROTOTYPES))
 		supported = _BindFunctionPointers() && supported;
 #endif
 

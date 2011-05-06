@@ -8,7 +8,7 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#define GLX_GLXEXT_PROTOTYPES
+//#define GLX_GLXEXT_PROTOTYPES
 #include <GL/glx.h>
 #include <GL/glxext.h>
 
@@ -220,17 +220,27 @@ bool SysWindow::Create(
 				Window root;
 				root = ::XDefaultRootWindow(mDisplay);
 
-#ifdef GLX_ARB_create_context
-				const int attribList[] = {
-					GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-					GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-					None
-				};
+#ifndef NO_OPENGL3 // in case it's needed in the future to target non-OpenGL3 platforms
+#ifndef GL_GLX_PROTOTYPES
+				PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 
+					(PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*) "glXCreateContextAttribsARB");
+				if (glXCreateContextAttribsARB == NULL)
+				{
+					mGLXContext = ::glXCreateContext(mDisplay, &vi, NULL, GL_TRUE);
+				}
+				else
+#endif
+				{
+					const int attribList[] = {
+						GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+						GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+						None
+					};
 
-				mGLXContext = ::glXCreateContextAttribsARB(mDisplay, fbConfig, 0, True, attribList);
+					mGLXContext = glXCreateContextAttribsARB(mDisplay, fbConfig, 0, True, attribList);
+				}
 #else
-#warning "OpenGL 3.0 can't be used, using older version"
-				mGLXContext = ::glXCreateContext(mDisplay, vi, NULL, GL_TRUE);
+				mGLXContext = ::glXCreateContext(mDisplay, &vi, NULL, GL_TRUE);
 #endif
 
 				XSetWindowAttributes swa;
@@ -271,6 +281,7 @@ bool SysWindow::Create(
 
 					retVal = _CreateContext();
 				}
+
 			}
 		}
 	
