@@ -69,6 +69,9 @@ public:
 	// Function called when the UI script is being destroyed
 	virtual void OnDestroy() {}
 
+	// Callback triggered after the script has finished serializing
+	virtual void OnPostSerialize() {}
+
 	// Virtual functions that should be overwritten to add functionality
 	virtual void OnMouseMove	(const Vector2i& pos, const Vector2i& delta)	{}
 	virtual void OnKeyPress		(const Vector2i& pos, byte key, bool isDown)	{}

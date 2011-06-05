@@ -112,6 +112,9 @@ protected:
 	// Callback triggered when DestroySelf() gets called
 	virtual void OnDestroy() {}
 
+	// Callback triggered after SerializeFrom() completes
+	virtual void OnPostSerialize() {}
+
 	// Called prior to object's Update function
 	virtual void OnPreUpdate() { mIgnore.Set(Ignore::PreUpdate, true); }
 

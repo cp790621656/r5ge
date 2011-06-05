@@ -1159,6 +1159,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				// The object should not remain locked during script serialization
 				ptr->SerializeFrom(node);
 				if (!serializable && mParent == 0) ptr->SetSerializable(false);
+				ptr->OnPostSerialize();
 			}
 		}
 		else if (mIgnore.Get(Ignore::SerializeFrom) || !OnSerializeFrom(node))
@@ -1171,6 +1172,7 @@ bool Object::SerializeFrom (const TreeNode& root, bool forceUpdate)
 				ptr->SerializeFrom(node, forceUpdate);
 				if (!serializable && mParent == 0) ptr->SetSerializable(false);
 				ptr->SetDirty();
+				ptr->OnPostSerialize();
 			}
 		}
 	}

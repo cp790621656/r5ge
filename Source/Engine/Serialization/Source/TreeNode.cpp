@@ -434,7 +434,7 @@ bool TreeNode::ParseProperties (const String& s, uint& from, uint to)
 	{
 		String temp;
 
-		// If the from character is an equality sign, we must be expecting a temp
+		// If the from character is an equality sign, we must be expecting a value
 		if (s[from] == '=')
 		{
 			uint wordStart = ++from;

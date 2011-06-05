@@ -291,6 +291,9 @@ protected:
 	// Called before the object gets destroyed
 	virtual void OnDestroy() {}
 
+	// Callback triggered after SerializeFrom() completes
+	virtual void OnPostSerialize() {}
+
 	// Function called when a new child object has been added
 	virtual void OnAddChild (Object* obj) {}
 

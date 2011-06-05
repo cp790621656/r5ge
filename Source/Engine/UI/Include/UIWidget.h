@@ -234,6 +234,9 @@ public:
 	// Function called when the widget is being destroyed
 	virtual void OnDestroy() {}
 
+	// Callback triggered after SerializeFrom() completes
+	virtual void OnPostSerialize() {}
+
 	// Called when something changes in the texture
 	virtual void OnTextureChanged (const ITexture* ptr) {}
 

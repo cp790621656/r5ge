@@ -661,6 +661,7 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 					{
 						script->OnSerializeFrom(node.mChildren[b]);
 					}
+					script->OnPostSerialize();
 				}
 			}
 			else if (tag == "Script")
@@ -676,6 +677,7 @@ bool UIWidget::SerializeFrom (const TreeNode& root)
 				{
 					child->SerializeFrom(node);
 					if (!serializable) child->SetSerializable(false);
+					child->OnPostSerialize();
 				}
 			}
 		}
