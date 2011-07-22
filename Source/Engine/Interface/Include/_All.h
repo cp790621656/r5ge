@@ -21,6 +21,7 @@ namespace R5
 	#include "ISoundInstance.h"			// Base class for the sound instance class
 	#include "ISound.h"					// Base class for the sound class
 	#include "IAudio.h"					// Base class for the audio controller class
+	#include "IAudioLayer.h"			// Base class for the audio layer class
 
 	#include "ITechnique.h"				// Rendering technique is used to batch objects of similar properties together
 	#include "ITexture.h"				// Base class for textures (Images stored on the videocard)

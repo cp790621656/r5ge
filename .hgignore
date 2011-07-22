@@ -1,5 +1,9 @@
+syntax: glob
+
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 libr5ge.a
+log.txt
+a.out

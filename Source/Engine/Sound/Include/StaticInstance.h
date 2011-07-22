@@ -7,26 +7,21 @@
 // Author: Eugene Gorodinsky
 //============================================================================================================
 
-class Sound: public ISound
+class StaticInstance: public SoundInstance
 {
-friend class Audio;
-friend class SoundInstance;
+friend class StaticSound;
 
 protected:
-	uint	mRefCount;
-	String	mName;
+	StaticInstance(){}
+	StaticInstance(Sound* sound);
+	virtual ~StaticInstance();
 
-	LinkedList<Sound*>::Entry*	mSoundsEntry;
-
-protected:
-	Sound(): mRefCount(0) {}
-	virtual ~Sound() {}
-
-	virtual void SetAudioData(AudioData *audioData) = 0;
-	virtual SoundInstance* Instantiate() = 0;
-	
 public:
+	virtual bool Update()
+		{ return false; }
 
-	virtual const String& GetName() const
-		{ return mName; }
+	virtual void SetRepeat(bool repeat);
+	virtual void Play();
+	virtual void Pause();
+	virtual void Stop();
 };

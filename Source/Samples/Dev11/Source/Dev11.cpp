@@ -106,7 +106,7 @@ void TestApp::Run()
 
 				if (namedSound->mSound != 0)
 				{
-					if (!namedSound->mSound->IsPlaying() && !namedSound->mSound->IsPaused())
+					if (namedSound->mSound->IsStopped())
 					{
 						namedSound->mSound->DestroySelf();
 						mSounds.Remove(namedSound);
@@ -143,7 +143,7 @@ void TestApp::OnVolumeChange (UIWidget* widget)
 				{
 					if (namedSound->mSound != 0)
 					{
-						namedSound->mSound->SetVolume(val, 0.0f);
+						namedSound->mSound->SetVolume(val);
 					}
 					
 					break;
@@ -181,9 +181,11 @@ void TestApp::OnPlayClick (UIWidget* widget, uint state, bool isSet)
 				uint layerVal;
 				if (!(layer->GetText() >> layerVal)) layerVal = 0;
 
-				namedSound->mSound = (SoundInstance*)mAudio->GetSound(sound->GetText())->Play(layerVal, 0.0f, 
-					(checkBox->GetState() & UIButton::State::Pressed) != 0);
-				namedSound->mSound->SetVolume(slider->GetValue(), 0.0f);
+				namedSound->mSound = (SoundInstance*)mAudio->Instantiate
+						(mAudio->GetSound(sound->GetText()), layerVal, 0.0f, (checkBox->GetState() & UIButton::State::Pressed) != 0);
+
+				namedSound->mSound->Play();
+				namedSound->mSound->SetVolume(slider->GetValue());
 				namedSound->mName = sound->GetText();
 				mSounds.Expand() = namedSound;				
 			}
@@ -215,7 +217,7 @@ void TestApp::OnStopClick (UIWidget* widget, uint state, bool isSet)
 
 					if (!(layer->GetText() >> layerVal)) layerVal = 0;
 
-					if (namedSound->mName == sound->GetText() && namedSound->mSound->GetLayer() == layerVal)
+					if (namedSound->mName == sound->GetText() && namedSound->mSound->GetLayer() == mAudio->GetLayer(layerVal))
 					{
 						if (namedSound->mSound != 0)
 						{
@@ -253,7 +255,7 @@ void TestApp::OnPauseClick (UIWidget* widget, uint state, bool isSet)
 
 					if (!(layer->GetText() >> layerVal)) layerVal = 0;
 
-					if (namedSound->mName == sound->GetText() && namedSound->mSound->GetLayer() == layerVal)
+					if (namedSound->mName == sound->GetText() && namedSound->mSound->GetLayer() == mAudio->GetLayer(layerVal))
 					{
 						if (namedSound->mSound != 0)
 						{
@@ -291,7 +293,9 @@ void TestApp::OnResumeClick (UIWidget* widget, uint state, bool isSet)
 
 					if (!(layer->GetText() >> layerVal)) layerVal = 0;
 
-					if (namedSound->mName == sound->GetText() && namedSound->mSound->GetLayer() == layerVal && namedSound->mSound->IsPaused())
+					if (namedSound->mName == sound->GetText() && 
+						namedSound->mSound->GetLayer() == mAudio->GetLayer(layerVal) && 
+						namedSound->mSound->IsPaused())
 					{
 						if (namedSound->mSound != 0)
 						{
@@ -322,7 +326,7 @@ void TestApp::OnLayerVolumeChange (UIWidget* widget)
 
 		if (!(layer->GetText() >> layerVal)) layerVal = 0;	
 
-		mAudio->SetLayerVolume(layerVal, val);
+		mAudio->GetLayer(layerVal)->SetVolume(val);
 
 		UITextLine* txt = slider->FindWidget<UITextLine>(slider->GetName() + " Value", false);
 		if (txt) txt->SetText( String("%.2f", val) );
@@ -341,7 +345,7 @@ void TestApp::OnLayerChanged (UIWidget* widget, bool focus)
 
 		if (!(layer->GetText() >> layerVal)) layerVal = 0;	
 
-		slider->SetValue(mAudio->GetLayerVolume(layerVal));
+		slider->SetValue(mAudio->GetLayer(layerVal)->GetVolume());
 	}
 }
 

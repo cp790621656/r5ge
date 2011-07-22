@@ -7,26 +7,27 @@
 // Author: Eugene Gorodinsky
 //============================================================================================================
 
-class Sound: public ISound
+class Audio;
+class SoundInstance;
+class StaticInstance;
+class StreamedInstance;
+
+class AudioLayer: public IAudioLayer
 {
 friend class Audio;
 friend class SoundInstance;
+friend class StaticInstance;
+friend class StreamedInstance;
 
-protected:
-	uint	mRefCount;
-	String	mName;
+private:
+	LinkedList<SoundInstance*> mInstances;
+	float mVolume;
 
-	LinkedList<Sound*>::Entry*	mSoundsEntry;
-
-protected:
-	Sound(): mRefCount(0) {}
-	virtual ~Sound() {}
-
-	virtual void SetAudioData(AudioData *audioData) = 0;
-	virtual SoundInstance* Instantiate() = 0;
-	
 public:
-
-	virtual const String& GetName() const
-		{ return mName; }
+	virtual float GetVolume() const 
+		{ return mVolume; }
+	virtual void SetVolume(float volume);
+	
+	AudioLayer():mVolume(1.0f) {}
+	virtual ~AudioLayer();
 };

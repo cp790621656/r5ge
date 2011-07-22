@@ -30,25 +30,30 @@ public:
 	// Update the sound's position
 	virtual void OnUpdate()
 	{
-		if (!mInst)
-		{
-			if (mSound != 0 && mSound->IsValid())
-			{
-				mInst = mAudio->Instantiate(mSound, mObject->GetAbsolutePosition(), mLayer, 0.1f, true);
-				mInst->SetEffect(ISoundInstance::Effect::Auditorium);
-			}
-		}
-		else
+		if (mInst)
 		{
 			mInst->SetPosition(mObject->GetAbsolutePosition());
+			mInst->SetVelocity(mObject->GetAbsoluteVelocity());
+		}
+	}
+
+	virtual void OnPostSerialize()
+	{
+		if (mSound != 0)
+		{
+			mInst = mAudio->Instantiate(mSound, mObject->GetAbsolutePosition(), mLayer, 0.1f, true);
+			mInst->SetEffect(ISoundInstance::Effect::Auditorium);
+			mInst->Play();
 		}
 	}
 
 	// Serialization -- Save
 	virtual void OnSerializeTo(TreeNode& node) const
 	{
+
 		if (mSound != 0) node.AddChild("Sound", mSound->GetName());
 		node.AddChild("Layer", mLayer);
+
 	}
 
 	// Serialization -- Load

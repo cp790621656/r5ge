@@ -29,6 +29,6 @@ public:
 	virtual void OnUpdate()
 	{
 		const Quaternion& rot = mObject->GetAbsoluteRotation();
-		mAudio->SetListener(mObject->GetAbsolutePosition(), rot.GetForward(), rot.GetUp());
+		mAudio->SetListener(mObject->GetAbsolutePosition(), rot.GetForward(), rot.GetUp(), mObject->GetAbsoluteVelocity());
 	}
 };

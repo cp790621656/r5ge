@@ -9,8 +9,18 @@
 
 namespace R5
 {
+
+	#include "AudioLayer.h"
 	#include "AudioLibrary.h"
-	#include "Audio.h"
+	#include "AudioData.h"
+
 	#include "Sound.h"
+	#include "StaticSound.h"
+	#include "StreamedSound.h"
+
 	#include "SoundInstance.h"
+	#include "StaticInstance.h"
+	#include "StreamedInstance.h"
+
+	#include "Audio.h"
 };

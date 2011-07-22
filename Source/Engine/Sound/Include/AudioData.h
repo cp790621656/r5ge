@@ -7,26 +7,41 @@
 // Author: Eugene Gorodinsky
 //============================================================================================================
 
-class Sound: public ISound
+#define OV_EXCLUDE_STATIC_CALLBACKS
+
+#include <vorbis/vorbisfile.h>
+
+#pragma once
+
+class AudioData
 {
-friend class Audio;
-friend class SoundInstance;
+private:
+	Memory	mData;
 
-protected:
-	uint	mRefCount;
-	String	mName;
+	uint	mChannels;
+	uint	mRate;
 
-	LinkedList<Sound*>::Entry*	mSoundsEntry;
+	uint	mChunkSize;
+	bool	mEOF;
 
-protected:
-	Sound(): mRefCount(0) {}
-	virtual ~Sound() {}
+	OggVorbis_File*	mOggFile;
 
-	virtual void SetAudioData(AudioData *audioData) = 0;
-	virtual SoundInstance* Instantiate() = 0;
-	
 public:
+	AudioData();
+	~AudioData();
 
-	virtual const String& GetName() const
-		{ return mName; }
+	uint GetChannels()
+		{ return mChannels; }
+	uint GetRate()
+		{ return mRate; }
+	void SetChunkSize(uint size)
+		{ mChunkSize = size; }
+	bool IsEOF()
+		{ return mEOF; }
+
+	long GetLength();
+	bool Load(const String& name);
+	void Decode(Memory& dataOut);
+	void Reset();
 };
+

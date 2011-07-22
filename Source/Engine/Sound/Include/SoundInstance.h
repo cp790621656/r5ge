@@ -4,124 +4,74 @@
 //			R5 Game Engine, individual file copyright belongs to their respective authors.
 //									http://r5ge.googlecode.com/
 //============================================================================================================
-// Instanced sound object
-// Authors: Philip Cosgrave and Michael Lyashenko
+// Author: Eugene Gorodinsky
 //============================================================================================================
 
-class SoundInstance : public ISoundInstance
+class AudioLayer;
+
+class SoundInstance: public ISoundInstance
 {
-private:
+friend class Audio;
 
-	friend class Sound;
-	friend class Audio;
-
-	struct TargetAction
+public:
+	struct State
 	{
 		enum
 		{
-			None	= 0,
-			Pause	= 1,
-			Stop	= 2,
+			Stopped = 0,
+			Playing,
+			Paused,
 		};
 	};
 
 protected:
+	Sound*		mSound;
+	uint		mSource;
+	uint		mState;
+	float		mVolume;
+	AudioLayer*	mLayer;
 
-	Vector3f	mPosition;		// The location the sound is being played from
-	Vector3f	mLastPosition;	// The last position the sound was at (used for velocity)
-	Vector4f	mVolume;		// Volume the sound is at. X = start, Y = current, Z = end, W = volume unmodified
-	bool		mRepeat;		// If this sound will repeat
-	uint		mLayer;			// Layer this sound belongs to
-	uint		mSource;		// ID of the audio source
-	float		mFadeDuration;	// Fade duration
-	ulong		mFadeStart;		// The start time of the fade
-	byte		mAction;		// What action will be executed when the fade completes
-	bool		mIs3D;			// If this sound is being player in 3D
-	ISound*		mSound;			// The sound this instance was created from
-	Vector2f	mRange;			// The range of which the sound is played
-	ulong		mDuration;		// How long the sound has been playing
-	bool		mIsPlaying;		// If the sound is playing
-	bool		mIsPaused;		// If the sound is paused
-	byte		mEffect;		// The effect that is being played on the sound
+	LinkedList<SoundInstance*>::Entry*	mInstancesEntry;
 
-public:
+	LinkedList<SoundInstance*>*			mActiveInstances;
+	LinkedList<SoundInstance*>::Entry*	mActiveInstancesEntry;
 
-	SoundInstance()	:
-			mPosition		(0.0f, 0.0f, 0.0f),
-			mLastPosition	(0.0f, 0.0f, 0.0f),
-			mVolume			(0.0f, 0.0f, 1.0f, 1.0f), 
-			mLayer			(0),
-			mSource			(0),
-			mFadeDuration	(0.0f),
-			mFadeStart		(0),
-			mAction			(TargetAction::None),
-			mIs3D			(false),
-			mSound			(0),
-			mRange			(1, 15),
-			mDuration		(0),
-			mIsPlaying		(false),
-			mIsPaused		(false),
-			mEffect			(Effect::None) {}
+protected:
+	SoundInstance(){}
 
+	SoundInstance(Sound* sound);
 	virtual ~SoundInstance();
 
 public:
+	void SetSpatial(bool isSpatial);
 
-	virtual ISound*	GetSound()	{ return mSound; }
+	virtual void SetPosition(const Vector3f& position);
+	virtual void SetVelocity(const Vector3f& velocity);
 
-	virtual bool Is3D()			const	{ return mIs3D;		 }
-	virtual bool IsPlaying()	const	{ return mIsPlaying; }
-	virtual bool IsPaused()		const	{ return mIsPaused;	 }
+	virtual void SetRepeat(bool repeat)			= 0;
+	virtual void Play()							= 0;
+	virtual void Pause()						= 0;
+	virtual void Stop()							= 0;
+	virtual bool Update()						= 0;
 
-	// Update the sound
-	virtual void Update(ulong time);
 
-	// Destory the sound
-	virtual void DestroySelf();
+	virtual void SetVolume(float volume);
 
-	// Play the sound
-	virtual void Play();
-
-	// Pause the sound
-	virtual void Pause (float duration = 0.25f);
-
-	// Stop the sound playback
-	virtual void Stop (float duration = 0.25f);
-
-	// Sets the 3D position of the specified sound
-	virtual void SetPosition (const Vector3f& position);
+	virtual float GetVolume() const
+		{ return mVolume; }
 	
-	// Changes the volume of the specified sound
-	virtual void SetVolume (float volume, float duration = 0.25f);
+	virtual bool IsStopped() const 
+		{ return mState == State::Stopped; }
 
-	// Sets whether the sound will repeat after it ends
-	virtual void SetRepeat (bool repeat);
+	virtual bool IsPaused() const 
+		{ return mState == State::Paused; }
 
-	// Sets the range of the sound x = min distance (max sound), y = max distance(no sound)
-	virtual void SetRange (const Vector2f& range);
+	virtual void DestroySelf()
+		{ delete this; }
 
-	// The effect that is going to be played on this sound. Null will disable the effect
-	virtual void SetEffect (byte effect);
-
-	// Gets the volume of the specified sound
-	virtual const float	GetVolume() const { return mVolume.w; }
-
-	// Gets the volume of the specified sound
-	virtual const bool	GetRepeat() const { return mRepeat; }
+	virtual void SetEffect(byte) 
+		{ /* TODO: Implement this */ }	
 	
-	// Gets the volume of the specified sound
-	virtual const Vector3f&	GetPosition() const { return mPosition; }
-
-	// Gets the layer of the specified sound
-	virtual const uint GetLayer() const { return mLayer; }
-
-	// Gets the sound range
-	virtual const Vector2f GetRange() const { return mRange; }
-
-	// The effect that is playing on the sound
-	virtual const byte GetEffect() const { return mEffect; }
-
-private:
-
-	void _SetVolume	(float volume, float calculatedVolume, float duration);
+	virtual AudioLayer* GetLayer() const
+		{ return mLayer; }
 };

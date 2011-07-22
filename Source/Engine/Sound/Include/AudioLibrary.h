@@ -10,7 +10,6 @@
 class AudioLibrary : public Thread::Lockable
 {
 public:
-
 	AudioLibrary();
 	~AudioLibrary();
 };

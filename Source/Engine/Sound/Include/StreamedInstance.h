@@ -7,26 +7,28 @@
 // Author: Eugene Gorodinsky
 //============================================================================================================
 
-class Sound: public ISound
+class StreamedInstance: public SoundInstance
 {
-friend class Audio;
-friend class SoundInstance;
+friend class StreamedSound;
 
 protected:
-	uint	mRefCount;
-	String	mName;
-
-	LinkedList<Sound*>::Entry*	mSoundsEntry;
+	uint			mBuffers[2];
+	int				mBuffersProcessed;
+	bool			mRepeat;
+	uint			mChunk;
+	uint			mNextChunk;
 
 protected:
-	Sound(): mRefCount(0) {}
-	virtual ~Sound() {}
+	StreamedInstance() {}
+	StreamedInstance(Sound* sound);
+	virtual ~StreamedInstance();
 
-	virtual void SetAudioData(AudioData *audioData) = 0;
-	virtual SoundInstance* Instantiate() = 0;
-	
 public:
+	virtual void SetRepeat(bool repeat);
+	virtual void Init();
+	virtual bool Update();
 
-	virtual const String& GetName() const
-		{ return mName; }
+	virtual void Play();
+	virtual void Pause();
+	virtual void Stop();
 };
