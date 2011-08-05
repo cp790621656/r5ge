@@ -9,7 +9,7 @@
 #endif
 
 //============================================================================================================
-// LZMA Compression library is written in C, so it can't use s precompiled header properly.
+// LZMA Compression library is written in C, so it can't use the precompiled header properly.
 //============================================================================================================
 
 #include "../LZMA/LzFind.c"
@@ -37,7 +37,7 @@ static void* AllocForLzma (void *p, size_t size)
 	return (size < max) ? new byte[size] : 0;
 }
 
-static void FreeForLzma (void *p, void *address) { delete [] ((byte*)address); }
+static void FreeForLzma (void *p, void *address) { if (address) delete [] ((byte*)address); }
 static ISzAlloc SzAllocForLzma = { &AllocForLzma, &FreeForLzma };
 
 //============================================================================================================
@@ -72,7 +72,7 @@ int ReadStream (void* p, void* buf, SizeT* size)
 	if (*size)
 	{
 		memcpy(buf, stream->buffer + stream->offset, *size);
-		stream->offset += *size;
+		stream->offset += (uint)(*size);
 	}
 	return SZ_OK;
 }
@@ -94,6 +94,7 @@ SizeT WriteToMemory (void* p, const void* buf, SizeT size)
 
 bool R5::CompressLZMA (const byte* buffer, uint length, Memory& memOut)
 {
+	bool retVal (false);
 	CLzmaEncHandle enc = LzmaEnc_Create(&SzAllocForLzma);
 
 	if (enc)
@@ -115,23 +116,21 @@ bool R5::CompressLZMA (const byte* buffer, uint length, Memory& memOut)
 				VectorOutStream outStream = { {&WriteToMemory}, memOut };
 
 				// Append the header
-				memOut.Append(propData, propsSize);
+				memOut.Append(propData, (uint)propsSize);
 
 				// Encode the entire memory stream
-				bool retVal = (SZ_OK == LzmaEnc_Encode(enc,
+				retVal = (SZ_OK == LzmaEnc_Encode(enc,
 					(ISeqOutStream*)&outStream,
 					(ISeqInStream*)&inStream,
 					0, &SzAllocForLzma, &SzAllocForLzma));
 
 				ASSERT(retVal, "Failed to compress the stream");
-				return retVal;
 			}
 		}
-
-		// Free memory
-		LzmaEnc_Destroy(enc, &SzAllocForLzma, &SzAllocForLzma);
 	}
-	return false;
+	// Free the memory
+	LzmaEnc_Destroy(enc, &SzAllocForLzma, &SzAllocForLzma);
+	return retVal;
 }
 
 //============================================================================================================
@@ -174,8 +173,8 @@ bool R5::DecompressLZMA (const byte* buffer, uint length, Memory& memOut)
 
 			if (result == SZ_OK)
 			{
-				inOffset += inSize;
-				outOffset += outSize;
+				inOffset += (uint)inSize;
+				outOffset += (uint)outSize;
 
 				// Keep going until we finish the decoding process
 				if (status != LZMA_STATUS_FINISHED_WITH_MARK) continue;

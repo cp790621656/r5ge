@@ -113,7 +113,7 @@ void Memory::Remove (uint size)
 
 void Memory::Append (const char* s)
 {
-	uint length = strlen(s);
+	uint length = (uint)strlen(s);
 	AppendSize(length);
 	Append(s, length);
 }
@@ -124,7 +124,7 @@ void Memory::Append (const char* s)
 
 void Memory::Append (const String& s)
 {
-	uint length = s.GetLength();
+	uint length = (uint)s.GetLength();
 	AppendSize(length);
 	Append(s.GetBuffer(), length);
 }
@@ -305,7 +305,8 @@ bool Memory::Save (const String& filename)
 			fileDir.Replace("/", "\\");
 #endif
 			// Folder does not exist -- create it
-			System::Execute(String("mkdir ""%s""", fileDir.GetBuffer()));
+			String dir ("mkdir \"%s\"", fileDir.GetBuffer());
+			System::Execute(dir);
 		}
 	}
 
