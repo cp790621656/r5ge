@@ -13,7 +13,7 @@ using namespace R5;
 // Main application entry point
 //============================================================================================================
 
-int main (int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	String path ( System::GetPathFromFilename(argv[0]) );
 	System::SetCurrentPath(path.GetBuffer());
@@ -24,7 +24,6 @@ int main (int argc, char* argv[])
 	System::SetCurrentPath("../../../");
 #endif
 
-	//"Models/Buildings/Barracks.r5c" "Textures/Buildings/Barracks" "Shaders/Deferred/building"
 	bool showUsage = true;
 
 	String folder (System::GetCurrentPath());
@@ -35,13 +34,30 @@ int main (int argc, char* argv[])
 		String bundleFile;
 		Array<String> files;
 
+		// Files with these extensions that will be compressed automatically
+		Array<String> extensionList;
+		extensionList.Expand() = ".txt";
+		extensionList.Expand() = ".frag";
+		extensionList.Expand() = ".vert";
+		extensionList.Expand() = ".shader";
+
 		// Collect all files referenced via arguments
 		for (int i = 1; i < argc; ++i)
 		{
 			String arg (argv[i]);
 			arg.Replace("\\", "/");
 
-			if (arg.EndsWith(".r5d")) bundleFile = arg;
+			if (arg.EndsWith(".r5d"))
+			{
+				bundleFile = arg;
+			}
+			else if (arg[0] == '-')
+			{
+				// Additional extensions to be compressed are specified via a dash
+				String& ext = extensionList.Expand();
+				ext = arg;
+				ext[0] = '.';
+			}
 			else System::GetFiles(arg, files, true);
 		}
 
@@ -122,7 +138,10 @@ int main (int argc, char* argv[])
 				{
 					bool compressed = false;
 
-					// Automatically compress R5A, R5B, and TGA files
+					bool isTGA = file.EndsWith(".tga");
+					bool isPNG = !isTGA && file.EndsWith(".png");
+
+					// Automatically compress R5A, R5B, TGA and PNG files
 					if (file.EndsWith(".r5a") || file.EndsWith(".r5b"))
 					{
 						TreeNode root;
@@ -145,7 +164,7 @@ int main (int argc, char* argv[])
 
 						printf("compressed to ");
 					}
-					else if (file.EndsWith(".tga"))
+					else if (isTGA || isPNG)
 					{
 						Image img;
 
@@ -162,22 +181,32 @@ int main (int argc, char* argv[])
 							puts("save failed");
 							continue;
 						}
-						file.Replace(".tga", ".r5t");
+						if (isTGA) file.Replace(".tga", ".r5t");
+						if (isPNG) file.Replace(".png", ".r5t");
 						printf("compressed to ");
 					}
-					else if (file.EndsWith(".txt") || file.EndsWith(".frag") || file.EndsWith(".vert"))
+					else
 					{
-						Memory comp;
-
-						if (!Compress(temp, comp))
+						FOREACH(b, extensionList)
 						{
-							puts("failed to load");
-							continue;
-						}
+							const String& ext (extensionList[b]);
 
-						temp = comp;
-						compressed = true;
-						printf("compressed to ");
+							if (file.EndsWith(ext))
+							{
+								Memory comp;
+
+								if (!Compress(temp, comp))
+								{
+									puts("failed to load");
+									continue;
+								}
+
+								temp = comp;
+								compressed = true;
+								printf("compressed to ");
+								break;
+							}
+						}
 					}
 
 					mem.Append(file);
@@ -205,13 +234,22 @@ int main (int argc, char* argv[])
 	
 	if (showUsage)
 	{
-		puts("R5 Bundle Maker Tool v.1.2.0 by Michael Lyashenko");
-		puts("Usage: BundleMaker [file/folder 1] [file/folder 2] [...]");
-		puts("Example 1: BundleMaker bundle.r5d model.r5c texture0.png texture1.png");
-		puts("Example 2: BundleMaker bundle.r5d");
-		puts("Example 3: BundleMaker bundle.r5d *.jpg *.png");
-		puts("Press Enter to exit...");
+		puts("R5 Bundle Maker Tool v.1.3.1 by Michael Lyashenko");
+		puts("Usage: BundleMaker [file/folder 1] [file/folder 2] [...]\n");
+
+		puts("Example 1: Bundle the specified set of files:");
+		puts("           BundleMaker bundle.r5d model.r5c texture0.png texture1.png\n");
+
+		puts("Example 2: Unbundle everything inside the specified bundle:");
+		puts("           BundleMaker bundle.r5d\n");
+
+		puts("Example 3: Create a bundle called 'bundle.r5d' with all JPGs and PNGs:");
+		puts("           BundleMaker bundle.r5d *.jpg *.png\n");
+
+		puts("Example 4: Compress FBX and HTML extension files:");
+		puts("           BundleMaker bundle.r5d *.* -fbx -html");
 	}
+	puts("\nPress Enter to exit...");
 	getchar();
 	return 0;
 }

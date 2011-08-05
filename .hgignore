@@ -7,3 +7,14 @@ Makefile
 libr5ge.a
 log.txt
 a.out
+*.exe
+*.obj
+*.lib
+*.user
+*.pch
+*.idb
+*.dep
+*.htm
+*.suo
+*.ncb
+*.manifest
