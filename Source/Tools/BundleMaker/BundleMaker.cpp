@@ -41,22 +41,32 @@ int main(int argc, char* argv[])
 		extensionList.Expand() = ".vert";
 		extensionList.Expand() = ".shader";
 
+		bool extractTGA = false;
+		char param = 0;
+
 		// Collect all files referenced via arguments
 		for (int i = 1; i < argc; ++i)
 		{
 			String arg (argv[i]);
 			arg.Replace("\\", "/");
 
-			if (arg.EndsWith(".r5d"))
+			if (arg[0] == '-')
 			{
+				if		(arg == "-o") param = 1;
+				else if (arg == "-c") param = 2;
+				else if (arg == "-t") extractTGA = true;
+			}
+			else if (param == 1 || arg.EndsWith(".r5d"))
+			{
+				param = 0;
 				bundleFile = arg;
 			}
-			else if (arg[0] == '-')
+			else if (param == 2)
 			{
-				// Additional extensions to be compressed are specified via a dash
+				param = 0;
 				String& ext = extensionList.Expand();
-				ext = arg;
-				ext[0] = '.';
+				ext = ".";
+				ext << arg;
 			}
 			else System::GetFiles(arg, files, true);
 		}
@@ -97,20 +107,37 @@ int main(int argc, char* argv[])
 				{
 					const Bundle::Asset& asset = assets[i];
 					printf("  %s... ", asset.name.GetBuffer());
-					String assetName;
-					assetName << asset.name;
 
-					if (!b.Extract(assetName, mem))
+					if (!b.Extract(asset.name, mem))
 					{
 						puts("Failed to extract");
 					}
-					else if (mem.Save(asset.name))
-					{
-						puts("extracted");
-					}
 					else
 					{
-						puts("SKIPPED");
+						if (extractTGA && asset.name.EndsWith(".r5t"))
+						{
+							Image img;
+
+							if (img.Load(mem.GetBuffer(), mem.GetSize()))
+							{
+								String file = asset.name;
+								file.Replace(".r5t", ".tga");
+								img.Save(file);
+								puts("-> TGA");
+							}
+							else
+							{
+								puts("INVALID");
+							}
+						}
+						else if (mem.Save(asset.name))
+						{
+							puts("extracted");
+						}
+						else
+						{
+							puts("SKIPPED");
+						}
 					}
 				}
 			}
@@ -138,11 +165,13 @@ int main(int argc, char* argv[])
 				{
 					bool compressed = false;
 
+					bool isR5A = file.EndsWith(".r5a");
+					bool isR5B = !isR5B && file.EndsWith(".r5b");
 					bool isTGA = file.EndsWith(".tga");
 					bool isPNG = !isTGA && file.EndsWith(".png");
 
 					// Automatically compress R5A, R5B, TGA and PNG files
-					if (file.EndsWith(".r5a") || file.EndsWith(".r5b"))
+					if (isR5A || isR5B)
 					{
 						TreeNode root;
 
@@ -159,8 +188,8 @@ int main(int argc, char* argv[])
 						temp.Append("//R5C", 5);
 						Compress(raw, temp);
 
-						file.Replace(".r5a", ".r5c");
-						file.Replace(".r5b", ".r5c");
+						if (isR5A) file.Replace(".r5a", ".r5c");
+						if (isR5B) file.Replace(".r5b", ".r5c");
 
 						printf("compressed to ");
 					}
@@ -234,20 +263,23 @@ int main(int argc, char* argv[])
 	
 	if (showUsage)
 	{
-		puts("R5 Bundle Maker Tool v.1.3.1 by Michael Lyashenko");
-		puts("Usage: BundleMaker [file/folder 1] [file/folder 2] [...]\n");
+		puts("R5 Bundle Maker Tool v.1.4.0 by Michael Lyashenko");
+		puts("Usage: BundleMaker [file/folder 1] [file/folder 2] [...]");
+		puts("    -c <extension> -- compress files with the specified extension");
+		puts("    -o <filename>  -- output filename");
+		puts("    -t             -- save all textures in TGA format\n");
 
 		puts("Example 1: Bundle the specified set of files:");
-		puts("           BundleMaker bundle.r5d model.r5c texture0.png texture1.png\n");
+		puts("           BundleMaker model.r5c texture0.png texture1.png -o bundle.r5d\n");
 
 		puts("Example 2: Unbundle everything inside the specified bundle:");
 		puts("           BundleMaker bundle.r5d\n");
 
 		puts("Example 3: Create a bundle called 'bundle.r5d' with all JPGs and PNGs:");
-		puts("           BundleMaker bundle.r5d *.jpg *.png\n");
+		puts("           BundleMaker *.jpg *.png -o bundle.r5d\n");
 
 		puts("Example 4: Compress FBX and HTML extension files:");
-		puts("           BundleMaker bundle.r5d *.* -fbx -html");
+		puts("           BundleMaker *.* -c fbx -c html -o bundle.r5d");
 	}
 	puts("\nPress Enter to exit...");
 	getchar();
