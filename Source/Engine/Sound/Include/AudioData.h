@@ -9,7 +9,7 @@
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
-#include <vorbis/vorbisfile.h>
+#include "vorbis/vorbisfile.h"
 
 #pragma once
 
@@ -30,16 +30,12 @@ public:
 	AudioData();
 	~AudioData();
 
-	uint GetChannels()
-		{ return mChannels; }
-	uint GetRate()
-		{ return mRate; }
-	void SetChunkSize(uint size)
-		{ mChunkSize = size; }
-	bool IsEOF()
-		{ return mEOF; }
+	uint GetChannels() const			{ return mChannels; }
+	uint GetRate() const				{ return mRate; }
+	void SetChunkSize(uint size)		{ mChunkSize = size; }
+	bool IsEOF() const					{ return mEOF; }
 
-	long GetLength();
+	long GetLength() const;
 	bool Load(const String& name);
 	void Decode(Memory& dataOut);
 	void Reset();

@@ -147,7 +147,7 @@ bool Audio::Release(ISound* sound)
 
 ISoundInstance* Audio::Instantiate(ISound* sound, const Vector3f& position, uint layer, float fadeInTime, bool repeat)
 {
-	ASSERT(sound, "A NULL pointer has been passed to Audio::Instantiate() when creating a 3D sound instance");
+	ASSERT(sound != NULL, "A NULL pointer has been passed to Audio::Instantiate() when creating a 3D sound instance");
 
 	SoundInstance *instance = _Instantiate((Sound*)sound, layer, repeat);
 	instance->SetPosition(position);
@@ -161,7 +161,7 @@ ISoundInstance* Audio::Instantiate(ISound* sound, const Vector3f& position, uint
 
 ISoundInstance* Audio::Instantiate(ISound* sound, uint layer, float fadeInTime, bool repeat)
 {
-	ASSERT(sound, "A NULL pointer has been passed to Audio::Instantiate() when creating a 2D sound instance");
+	ASSERT(sound != NULL, "A NULL pointer has been passed to Audio::Instantiate() when creating a 2D sound instance");
 
 	SoundInstance *instance = _Instantiate((Sound*)sound, layer, repeat);
 	instance->SetSpatial(false);

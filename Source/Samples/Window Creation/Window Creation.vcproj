@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Window Creation"
 	ProjectGUID="{555CD0C7-EB52-4587-BA62-DCD969435BC5}"
 	RootNamespace="Window Creation"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

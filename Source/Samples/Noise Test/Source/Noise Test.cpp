@@ -144,7 +144,7 @@ void TestApp::Regenerate()
 		ulong startTime = Time::GetMilliseconds();
 
 		// Use the timestamp as the seed
-		mNoise.SetSeed(123456789);
+		mNoise.SetSeed((uint)Time::GetMilliseconds());
 		mNoise.SetSeamless(true);
 
 		// Generate the noise
@@ -164,6 +164,7 @@ void TestApp::Regenerate()
 		// Generate normals
 		Array<Color4ub> colors;
 		Image::HeightMapToNormalMap(buffer, width, height, colors, mNoise.IsSeamless());
+		Image::StaticSave("heightmap.tga", (const byte*)colors.GetBuffer(), width, height, ITexture::Format::RGBA);
 
 		// Create the normal map texture
 		nmapTex->Set(colors, width, height, 1,
@@ -214,6 +215,7 @@ void TestApp::Generate (UIWidget* widget, const Vector2i& pos, byte key, bool is
 		{
 			mNoise.Release(true);
 			mNoise.SetSize(dimension, dimension);
+			mNoise.SetSeed((uint)Time::GetMilliseconds());
 
 			// Retrieve the current filters and fill the noise
 			for (uint i = 0; i < 10; ++i)

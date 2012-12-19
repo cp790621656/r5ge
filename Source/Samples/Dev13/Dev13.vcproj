@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Dev13"
 	ProjectGUID="{11312B60-D2F0-4324-8982-120DB5382D13}"
 	RootNamespace="Dev13"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Common Components", "1. Common Components", "{C70C4404-C41D-4A5E-BC0E-B83D7FFF0A35}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Interface", "2. Interface", "{EF235F9C-D186-419D-A4A6-EF5B88DDE93D}"

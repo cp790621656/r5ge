@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Network"
 	ProjectGUID="{12B24CDE-1544-4FE1-923E-3BC708EA4A83}"
 	RootNamespace="Network"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

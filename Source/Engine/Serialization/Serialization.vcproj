@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Serialization"
 	ProjectGUID="{5D0DB908-FB76-47C7-AAAE-515AB1867D53}"
 	RootNamespace="Common"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

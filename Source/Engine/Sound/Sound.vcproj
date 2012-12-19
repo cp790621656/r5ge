@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Sound"
 	ProjectGUID="{C8615344-FC25-49E8-8AE0-B0B7FDD496D5}"
 	RootNamespace="FT2"
 	Keyword="ManagedCProj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -160,15 +161,35 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\AudioData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\AudioLayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\AudioLibrary.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Sound.cpp"
+				RelativePath=".\Source\SoundInstance.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\SoundInstance.cpp"
+				RelativePath=".\Source\StaticInstance.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\StaticSound.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\StreamedInstance.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\StreamedSound.cpp"
 				>
 			</File>
 		</Filter>
@@ -186,6 +207,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\AudioData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\AudioLayer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\AudioLibrary.h"
 				>
 			</File>
@@ -195,6 +224,22 @@
 			</File>
 			<File
 				RelativePath=".\Include\SoundInstance.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\StaticInstance.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\StaticSound.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\StreamedInstance.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\StreamedSound.h"
 				>
 			</File>
 		</Filter>

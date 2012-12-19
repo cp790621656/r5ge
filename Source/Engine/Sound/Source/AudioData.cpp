@@ -81,9 +81,9 @@ AudioData::~AudioData()
 // Get the length of the audio stream in seconds
 //============================================================================================================
 
-long AudioData::GetLength()
+long AudioData::GetLength() const
 {
-	return ov_pcm_total(mOggFile, -1)*2;
+	return (long)ov_pcm_total(mOggFile, -1) << 1;
 }
 
 //============================================================================================================
@@ -110,7 +110,6 @@ bool AudioData::Load(const String& name)
 
 		return true;
 	}
-
 	return false;
 }
 

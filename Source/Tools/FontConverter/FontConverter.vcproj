@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="FontConverter"
 	ProjectGUID="{11322B60-D2F0-4337-8922-8C0CB5382D12}"
 	RootNamespace="FontConverter"
