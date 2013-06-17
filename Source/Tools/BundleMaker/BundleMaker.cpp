@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
 					bool compressed = false;
 
 					bool isR5A = file.EndsWith(".r5a");
-					bool isR5B = !isR5B && file.EndsWith(".r5b");
+					bool isR5B = !isR5A && file.EndsWith(".r5b");
 					bool isTGA = file.EndsWith(".tga");
 					bool isPNG = !isTGA && file.EndsWith(".png");
 
